@@ -16,11 +16,16 @@ import { startFileCleanup } from './utils/fileCleanup'
 const app = express()
 const PORT = process.env.PORT || 3001
 
+// Required behind Railway / Render / Fly / Vercel: trust one proxy hop so rate-limit doesn't throw on X-Forwarded-For
+app.set('trust proxy', 1)
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 10, // 10 requests per hour
   message: 'Too many requests. Please wait.',
+  standardHeaders: true,
+  legacyHeaders: false,
 })
 
 // Middleware
