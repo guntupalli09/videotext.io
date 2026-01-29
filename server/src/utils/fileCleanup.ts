@@ -1,7 +1,9 @@
 import fs from 'fs'
 import path from 'path'
 
-const tempDir = process.env.TEMP_FILE_PATH || path.join(process.cwd(), 'temp')
+const tempDir =
+  process.env.TEMP_FILE_PATH ||
+  (process.platform === 'win32' ? path.join(process.cwd(), 'temp') : '/tmp')
 const CLEANUP_INTERVAL = 60 * 60 * 1000 // 1 hour
 const FILE_MAX_AGE = 60 * 60 * 1000 // 1 hour
 

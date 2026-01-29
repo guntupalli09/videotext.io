@@ -29,9 +29,10 @@ export interface UploadOptions {
 
 export async function uploadFile(file: File, options: UploadOptions): Promise<UploadResponse> {
   const formData = new FormData()
+  // Field name must be exactly "file" for Multer upload.single('file')
   formData.append('file', file)
   formData.append('toolType', options.toolType)
-  
+
   if (options.format) formData.append('format', options.format)
   if (options.language) formData.append('language', options.language)
   if (options.targetLanguage) formData.append('targetLanguage', options.targetLanguage)
@@ -42,6 +43,7 @@ export async function uploadFile(file: File, options: UploadOptions): Promise<Up
     formData.append('additionalLanguages', JSON.stringify(options.additionalLanguages))
   }
 
+  // Do NOT set Content-Type: browser must set multipart/form-data with boundary
   const response = await fetch(`${API_BASE}/upload`, {
     method: 'POST',
     body: formData,

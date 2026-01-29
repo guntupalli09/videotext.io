@@ -1,7 +1,9 @@
 import ffmpeg from 'fluent-ffmpeg'
 import path from 'path'
 
-const tempDir = process.env.TEMP_FILE_PATH || path.join(process.cwd(), 'temp')
+const tempDir =
+  process.env.TEMP_FILE_PATH ||
+  (process.platform === 'win32' ? path.join(process.cwd(), 'temp') : '/tmp')
 
 export interface TrimOptions {
   inputPath: string

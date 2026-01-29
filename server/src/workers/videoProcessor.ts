@@ -97,7 +97,9 @@ function getOrCreateUserForJob(userId: string, plan: PlanType) {
   return user
 }
 
-const tempDir = process.env.TEMP_FILE_PATH || path.join(process.cwd(), 'temp')
+const tempDir =
+  process.env.TEMP_FILE_PATH ||
+  (process.platform === 'win32' ? path.join(process.cwd(), 'temp') : '/tmp')
 
 async function generateBatchZip(batchId: string, batch: BatchJob): Promise<void> {
   const zipPath = path.join(tempDir, `batch-${batchId}.zip`)

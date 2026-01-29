@@ -12,8 +12,10 @@ import { getAuthFromRequest } from '../utils/auth'
 
 const router = express.Router()
 
-// Configure multer for file uploads
-const tempDir = process.env.TEMP_FILE_PATH || path.join(process.cwd(), 'temp')
+// Configure multer for file uploads. On Railway/Fly/Render only /tmp is guaranteed; relative paths can stall Multer.
+const tempDir =
+  process.env.TEMP_FILE_PATH ||
+  (process.platform === 'win32' ? path.join(process.cwd(), 'temp') : '/tmp')
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true })
 }

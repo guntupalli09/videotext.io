@@ -4,7 +4,9 @@ import fs from 'fs'
 
 const router = express.Router()
 
-const tempDir = process.env.TEMP_FILE_PATH || path.join(process.cwd(), 'temp')
+const tempDir =
+  process.env.TEMP_FILE_PATH ||
+  (process.platform === 'win32' ? path.join(process.cwd(), 'temp') : '/tmp')
 
 router.get('/:filename', (req: Request, res: Response) => {
   try {
