@@ -160,6 +160,9 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       return res.status(400).json({ message: typeError })
     }
 
+    // Cleanup (unlinkSync) runs only on error paths above; we never delete the file before enqueue.
+    // The worker needs the file on disk; fileCleanup cron removes old files later.
+
     // Parse additional languages if provided
     let additionalLanguages: string[] = []
     if (options.additionalLanguages) {

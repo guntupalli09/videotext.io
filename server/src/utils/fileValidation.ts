@@ -19,7 +19,8 @@ export function validateFileSize(size: number): string | null {
 export async function validateFileType(filePath: string): Promise<string | null> {
   try {
     const fileType = await fileTypeFromFile(filePath)
-    
+    console.log('[upload] detected fileType:', fileType)
+
     if (!fileType) {
       return 'Please upload MP4, MOV, AVI, or WEBM'
     }

@@ -15,11 +15,10 @@ import { getUser, saveUser, PlanType } from '../models/User'
 import { getPlanLimits } from '../utils/limits'
 import { calculateTranslationMinutes, secondsToMinutes } from '../utils/metering'
 import { saveDuplicateResult } from '../services/duplicate'
-
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379'
+import { createRedisClient } from '../utils/redis'
 
 export const fileQueue = new Queue('file-processing', {
-  redis: redisUrl,
+  createClient: createRedisClient,
 })
 
 interface JobData {

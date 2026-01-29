@@ -1,10 +1,9 @@
 import Queue from 'bull'
 import path from 'path'
-
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379'
+import { createRedisClient } from '../utils/redis'
 
 export const fileQueue = new Queue('file-processing', {
-  redis: redisUrl,
+  createClient: createRedisClient,
 })
 
 interface JobData {

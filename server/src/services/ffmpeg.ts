@@ -87,8 +87,13 @@ export function burnSubtitles(
     // scale the text to huge sizes (common on 1080x1920 vertical videos).
     const probeVideoSize = (p: string): Promise<{ width: number; height: number }> =>
       new Promise((res, rej) => {
+        console.log('[upload] About to run ffprobe (size) on:', p)
         ;(ffmpeg as any).ffprobe(p, (err: Error | null, metadata: any) => {
-          if (err) return rej(err)
+          if (err) {
+            console.error('[upload] ffprobe failed:', err)
+            return rej(err)
+          }
+          console.log('[upload] ffprobe (size) succeeded for:', p)
           const v = (metadata?.streams || []).find((s: any) => s.codec_type === 'video')
           const width = Number(v?.width) || 0
           const height = Number(v?.height) || 0
@@ -278,14 +283,18 @@ export function getVideoDuration(videoPath: string): Promise<number> {
       return
     }
 
+    console.log('[upload] About to run ffprobe on:', videoPath)
     ffmpeg.ffprobe(videoPath, (err: Error | null, metadata: FfprobeData) => {
       if (err) {
+        console.error('[upload] ffprobe failed:', err)
         console.error('FFprobe error:', err.message)
         console.error('Video path:', videoPath)
         reject(new Error(`Failed to probe video: ${err.message}`))
         return
       }
-      
+
+      console.log('[upload] ffprobe succeeded for:', videoPath)
+
       if (!metadata || !metadata.format) {
         reject(new Error('Invalid video metadata'))
         return
@@ -296,7 +305,7 @@ export function getVideoDuration(videoPath: string): Promise<number> {
         reject(new Error('Could not determine video duration from metadata'))
         return
       }
-      
+
       resolve(duration)
     })
   })
