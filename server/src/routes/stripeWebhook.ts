@@ -129,12 +129,18 @@ async function handleInvoicePaymentSucceeded(event: Stripe.Event): Promise<void>
     invoice.customer_email || undefined
   )
 
-  // Determine active subscription plan from line items
+  // Determine active subscription plan from line items (Stripe API: pricing.price_details.price)
   let activePlan: PlanType | null = null
   for (const line of invoice.lines.data) {
-    const price = line.price
-    if (!price || typeof price.id !== 'string') continue
-    const plan = getPlanFromPriceId(price.id)
+    const priceDetails = line.pricing?.price_details
+    const priceId =
+      !priceDetails
+        ? null
+        : typeof priceDetails.price === 'string'
+          ? priceDetails.price
+          : priceDetails.price?.id ?? null
+    if (!priceId) continue
+    const plan = getPlanFromPriceId(priceId)
     if (plan) {
       activePlan = plan
       break
@@ -181,7 +187,9 @@ async function handleInvoicePaymentSucceeded(event: Stripe.Event): Promise<void>
 }
 
 async function handleCustomerSubscriptionDeleted(event: Stripe.Event): Promise<void> {
-  const subscription = event.data.object as Stripe.Subscription
+  const subscription = event.data.object as Stripe.Subscription & {
+    current_period_end?: number
+  }
   const stripeCustomerId = (subscription.customer as string) || ''
   if (!stripeCustomerId) {
     return
