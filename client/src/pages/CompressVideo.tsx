@@ -275,8 +275,11 @@ export default function CompressVideo() {
         <PaywallModal
           isOpen={showPaywall}
           onClose={() => setShowPaywall(false)}
-          used={usage.count}
-          limit={limit}
+          usedMinutes={usage.count}
+          availableMinutes={limit}
+          onUpgrade={() => {
+            window.location.href = '/pricing'
+          }}
         />
       </div>
     </div>
