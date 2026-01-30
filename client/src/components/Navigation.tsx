@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Video, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const tools = [
@@ -23,8 +23,8 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-            <Video className="h-6 w-6 text-violet-600" />
-            <span className="text-xl font-semibold text-gray-800">VideoTools</span>
+            <img src="/logo.svg" alt="VideoText" className="h-8 w-8" />
+            <span className="text-xl font-semibold text-gray-800">VideoText</span>
           </Link>
 
           {/* Desktop Navigation */}

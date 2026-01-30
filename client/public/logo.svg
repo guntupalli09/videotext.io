@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="vt-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#6d28d9"/>
+    </linearGradient>
+  </defs>
+  <!-- Play triangle -->
+  <path fill="url(#vt-grad)" d="M12 8v16l12-8-12-8z"/>
+  <!-- Subtitle lines (text) -->
+  <rect x="4" y="22" width="6" height="1.2" rx="0.4" fill="url(#vt-grad)" opacity="0.9"/>
+  <rect x="4" y="25" width="8" height="1.2" rx="0.4" fill="url(#vt-grad)" opacity="0.7"/>
+</svg>

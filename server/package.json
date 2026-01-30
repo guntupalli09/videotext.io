@@ -1,7 +1,7 @@
 {
   "name": "videotools-server",
   "version": "1.0.0",
-  "description": "VideoTools backend server",
+  "description": "VideoText backend server",
   "main": "dist/index.js",
   "engines": {
     "node": ">=18"

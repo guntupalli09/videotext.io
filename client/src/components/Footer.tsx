@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { Video } from 'lucide-react'
 
 export default function Footer() {
   return (
@@ -9,8 +8,8 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <Video className="h-6 w-6 text-violet-600" />
-              <span className="text-xl font-semibold text-white">VideoTools</span>
+              <img src="/logo.svg" alt="VideoText" className="h-8 w-8" />
+              <span className="text-xl font-semibold text-white">VideoText</span>
             </div>
             <p className="text-sm">
               Professional video utilities for creators. No bloat. No signup. Just drop your file and go.
@@ -64,7 +63,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-gray-800 text-sm text-center">
-          <p>&copy; {new Date().getFullYear()} VideoTools. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} VideoText. All rights reserved.</p>
         </div>
       </div>
     </footer>

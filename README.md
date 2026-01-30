@@ -1,4 +1,4 @@
-# VideoTools - Phase 0
+# VideoText - Phase 0
 
 Professional video utilities platform. Phase 0 includes foundation setup, UI components, and backend infrastructure with dummy job processing.
 
@@ -124,6 +124,13 @@ redis-cli
 > KEYS *
 # Should see Bull queue keys
 ```
+
+## SEO (organic reach)
+
+- **Per-page meta:** Each route has a unique `<title>` and `<meta name="description">` (e.g. "Video to Transcript — Free Online Transcription | VideoText"). Implemented via `react-helmet-async` and `client/src/lib/seoMeta.ts`.
+- **Canonical & sitemap:** Set **`VITE_SITE_URL`** in the client build (e.g. `https://videotext.io`) so canonicals and Open Graph URLs are correct. `client/public/sitemap.xml` and `robots.txt` point crawlers to all tool pages; update the domain in those files if you use a different one.
+- **Structured data:** Homepage includes JSON-LD `Organization` and `WebApplication` so search engines can show rich results.
+- **OG image:** Add **`client/public/og-image.png`** (e.g. 1200×630) for social sharing; `index.html` and `Seo` reference `/og-image.png`.
 
 ## Production: Vercel (frontend) + Hetzner (API)
 
