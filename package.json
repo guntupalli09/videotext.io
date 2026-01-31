@@ -2,6 +2,6 @@
   "name": "videotext-root",
   "private": true,
   "scripts": {
-    "build": "cd client && npm ci && npm run build"
+    "build": "cd client && npm ci && npm run build && node -e \"require('fs').cpSync('dist','../dist',{recursive:true})\""
   }
 }
