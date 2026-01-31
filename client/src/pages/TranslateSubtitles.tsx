@@ -11,7 +11,7 @@ import UsageDisplay from '../components/UsageDisplay'
 import SubtitleEditor, { SubtitleRow } from '../components/SubtitleEditor'
 import { checkLimit, incrementUsage } from '../lib/usage'
 import { uploadFile, getJobStatus, BACKEND_TOOL_TYPES } from '../lib/api'
-import { API_ORIGIN } from '../lib/apiBase'
+import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import toast from 'react-hot-toast'
 import { Film, Wrench } from 'lucide-react'
 

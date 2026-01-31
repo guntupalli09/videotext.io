@@ -11,7 +11,7 @@ import UsageDisplay from '../components/UsageDisplay'
 import VideoTrimmer from '../components/VideoTrimmer'
 import { checkLimit, incrementUsage } from '../lib/usage'
 import { uploadDualFiles, getJobStatus, BACKEND_TOOL_TYPES } from '../lib/api'
-import { API_ORIGIN } from '../lib/apiBase'
+import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import toast from 'react-hot-toast'
 import { Minimize2 } from 'lucide-react'
 
