@@ -9,5 +9,5 @@ export const SITE_URL =
 
 export const SITE_NAME = 'VideoText'
 export const DEFAULT_DESCRIPTION =
-  'VideoText: transcribe video to text, generate SRT/VTT subtitles, translate and fix subtitles, burn captions, compress video. Free tier. No signup required.'
+  'VideoText: AI-powered video to text and subtitle tools. Transcribe, generate SRT/VTT, translate, fix, burn captions, compress video. Paste URL or upload. Free tier. No signup.'
 export const DEFAULT_OG_IMAGE = '/og-image.png'

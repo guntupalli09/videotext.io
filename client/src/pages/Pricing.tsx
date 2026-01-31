@@ -65,7 +65,6 @@ export default function Pricing() {
               <li>1 language</li>
               <li>Watermark on subtitles</li>
               <li>No batch processing</li>
-              <li>1 concurrent job</li>
             </ul>
             <p className={limits}>60 min / month</p>
             <p className={limits}>Up to 5 min per video</p>
@@ -80,15 +79,15 @@ export default function Pricing() {
             </button>
           </div>
 
-          {/* BASIC — $15 / month */}
+          {/* BASIC — $19 / month (450 min) */}
           <div className={`${cardBase} border-gray-200 min-h-[420px]`}>
             <h3 className="text-xl font-semibold text-gray-900">Basic</h3>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900">$15</span>
+              <span className="text-2xl font-bold text-gray-900">$19</span>
               <span className="text-sm text-gray-500">/ month</span>
             </div>
             <p className="mt-0.5 text-xs text-gray-500">
-              $12 / month billed annually
+              $15 / month billed annually
             </p>
             <p className="mt-3 text-base font-medium text-gray-900">
               For light, occasional use
@@ -101,7 +100,6 @@ export default function Pricing() {
               <li>2 languages (your choice)</li>
               <li>No watermark</li>
               <li>No batch processing</li>
-              <li>1 concurrent job</li>
             </ul>
             <p className={limits}>450 min / month</p>
             <p className={limits}>Up to 30 min per video</p>
@@ -124,7 +122,7 @@ export default function Pricing() {
             </div>
           </div>
 
-          {/* PRO — $49 / month 🏆 */}
+          {/* PRO — $29 / month 🏆 */}
           <div
             className={`${cardBase} border-violet-500 relative min-h-[420px] shadow-lg shadow-violet-500/10`}
           >
@@ -149,8 +147,6 @@ export default function Pricing() {
               <li>Batch processing</li>
               <li>Up to 5 languages</li>
               <li>Long-form video support</li>
-              <li>Faster processing during high demand</li>
-              <li>2 concurrent jobs</li>
             </ul>
             <p className="text-xs text-gray-500 mt-1">20 videos per batch · 60 min per batch</p>
             <p className={limits}>1,200 min / month</p>
@@ -174,15 +170,15 @@ export default function Pricing() {
             </div>
           </div>
 
-          {/* AGENCY — $99 / month */}
+          {/* AGENCY — $129 / month (3,000 min) */}
           <div className={`${cardBase} border-gray-200 min-h-[420px]`}>
             <h3 className="text-xl font-semibold text-gray-900">Agency</h3>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900">$99</span>
+              <span className="text-2xl font-bold text-gray-900">$129</span>
               <span className="text-sm text-gray-500">/ month</span>
             </div>
             <p className="mt-0.5 text-xs text-gray-500">
-              $79 / month billed annually
+              $103 / month billed annually
             </p>
             <p className="mt-3 text-base font-medium text-gray-900">
               Scale without breaking your pipeline
@@ -195,7 +191,6 @@ export default function Pricing() {
               <li>ZIP batch exports</li>
               <li>Commercial usage allowed</li>
               <li>Up to 10 languages</li>
-              <li>3 concurrent jobs</li>
             </ul>
             <p className="text-xs text-gray-500 mt-1">100 videos per batch · 300 min per batch</p>
             <p className={limits}>3,000 min / month</p>
