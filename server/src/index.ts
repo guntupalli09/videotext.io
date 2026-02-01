@@ -29,25 +29,36 @@ const generalLimiter = rateLimit({
   legacyHeaders: false,
 })
 
-// CORS: production allowlist only.
-const allowedOrigins = [
+// CORS: production allowlist + any *.vercel.app
+const allowedExactOrigins = new Set([
   'https://videotext.io',
   'https://www.videotext.io',
-  'https://videotools-l4yktavlp-santhosh-guntupallis-projects.vercel.app',
-]
+])
+
+function isAllowedOrigin(origin?: string) {
+  if (!origin) return true // curl, server-to-server
+  if (allowedExactOrigins.has(origin)) return true
+  if (origin.endsWith('.vercel.app')) return true
+  return false
+}
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true)
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true)
+      if (isAllowedOrigin(origin)) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
       }
-      return callback(new Error('Not allowed by CORS'))
     },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Id', 'X-Plan'],
     credentials: true,
   })
 )
+
+// Explicit preflight for all routes
+app.options('*', cors())
 
 // Stripe webhook must receive the raw body for signature verification
 app.post(
