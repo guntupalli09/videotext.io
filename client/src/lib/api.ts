@@ -72,7 +72,24 @@ export async function uploadFile(file: File, options: UploadOptions): Promise<Up
     throw new Error(error.message || 'Upload failed')
   }
 
-  return response.json()
+  // 204 or empty body: no jobId to poll; treat as error so UI doesn't show "Processing failed" from JSON parse error
+  if (response.status === 204) {
+    throw new Error('Upload accepted but no job ID returned. Please retry.')
+  }
+  const text = await response.text()
+  if (!text || !text.trim()) {
+    throw new Error('Upload accepted but no job ID returned. Please retry.')
+  }
+  let data: UploadResponse
+  try {
+    data = JSON.parse(text) as UploadResponse
+  } catch {
+    throw new Error('Invalid upload response. Please retry.')
+  }
+  if (!data?.jobId) {
+    throw new Error('Invalid upload response. Please retry.')
+  }
+  return data
 }
 
 export async function uploadFromURL(url: string, options: UploadOptions): Promise<UploadResponse> {
@@ -97,7 +114,23 @@ export async function uploadFromURL(url: string, options: UploadOptions): Promis
     throw new Error(error.message || 'Upload failed')
   }
 
-  return response.json()
+  if (response.status === 204) {
+    throw new Error('Upload accepted but no job ID returned. Please retry.')
+  }
+  const text = await response.text()
+  if (!text || !text.trim()) {
+    throw new Error('Upload accepted but no job ID returned. Please retry.')
+  }
+  let data: UploadResponse
+  try {
+    data = JSON.parse(text) as UploadResponse
+  } catch {
+    throw new Error('Invalid upload response. Please retry.')
+  }
+  if (!data?.jobId) {
+    throw new Error('Invalid upload response. Please retry.')
+  }
+  return data
 }
 
 export async function uploadDualFiles(
@@ -131,7 +164,23 @@ export async function uploadDualFiles(
     throw new Error(error.message || 'Upload failed')
   }
 
-  return response.json()
+  if (response.status === 204) {
+    throw new Error('Upload accepted but no job ID returned. Please retry.')
+  }
+  const text = await response.text()
+  if (!text || !text.trim()) {
+    throw new Error('Upload accepted but no job ID returned. Please retry.')
+  }
+  let data: UploadResponse
+  try {
+    data = JSON.parse(text) as UploadResponse
+  } catch {
+    throw new Error('Invalid upload response. Please retry.')
+  }
+  if (!data?.jobId) {
+    throw new Error('Invalid upload response. Please retry.')
+  }
+  return data
 }
 
 export async function getJobStatus(jobId: string): Promise<JobStatus> {

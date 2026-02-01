@@ -78,28 +78,31 @@ export default function FixSubtitles() {
         toolType: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
       })
 
-      const pollInterval = setInterval(async () => {
+      const pollIntervalRef = { current: 0 as ReturnType<typeof setInterval> }
+      const doPoll = async () => {
         try {
           const jobStatus = await getJobStatus(response.jobId)
           setProgress(jobStatus.progress)
 
           if (jobStatus.status === 'completed' && jobStatus.result) {
-            clearInterval(pollInterval)
+            clearInterval(pollIntervalRef.current)
             setIssues(jobStatus.result.issues || [])
             setShowIssues(true)
             setStatus('idle')
             setResult(jobStatus.result)
           } else if (jobStatus.status === 'failed') {
-            clearInterval(pollInterval)
+            clearInterval(pollIntervalRef.current)
             setStatus('failed')
             toast.error('Analysis failed. Please try again.')
           }
         } catch (error: any) {
-          clearInterval(pollInterval)
+          clearInterval(pollIntervalRef.current)
           setStatus('failed')
           toast.error(error.message || 'Failed to analyze file')
         }
-      }, 2000)
+      }
+      pollIntervalRef.current = setInterval(doPoll, 2000)
+      doPoll()
     } catch (error: any) {
       setStatus('failed')
       toast.error(error.message || 'Upload failed')
@@ -117,13 +120,14 @@ export default function FixSubtitles() {
         toolType: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
       })
 
-      const pollInterval = setInterval(async () => {
+      const pollIntervalRef = { current: 0 as ReturnType<typeof setInterval> }
+      const doPoll = async () => {
         try {
           const jobStatus = await getJobStatus(response.jobId)
           setProgress(jobStatus.progress)
 
           if (jobStatus.status === 'completed' && jobStatus.result) {
-            clearInterval(pollInterval)
+            clearInterval(pollIntervalRef.current)
             setStatus('completed')
             setResult(jobStatus.result)
             incrementUsage('fix-subtitles')
@@ -139,16 +143,18 @@ export default function FixSubtitles() {
               }
             }
           } else if (jobStatus.status === 'failed') {
-            clearInterval(pollInterval)
+            clearInterval(pollIntervalRef.current)
             setStatus('failed')
             toast.error('Processing failed. Please try again.')
           }
         } catch (error: any) {
-          clearInterval(pollInterval)
+          clearInterval(pollIntervalRef.current)
           setStatus('failed')
           toast.error(error.message || 'Failed to get job status')
         }
-      }, 2000)
+      }
+      pollIntervalRef.current = setInterval(doPoll, 2000)
+      doPoll()
     } catch (error: any) {
       setStatus('failed')
       toast.error(error.message || 'Upload failed')

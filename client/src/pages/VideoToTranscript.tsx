@@ -91,15 +91,15 @@ export default function VideoToTranscript() {
         return
       }
 
-      // Poll for status
-      const pollInterval = setInterval(async () => {
+      // Poll for status: run first poll immediately, then every 2s
+      const doPoll = async () => {
         try {
           const jobStatus = await getJobStatus(response.jobId)
           setProgress(jobStatus.progress)
           if (jobStatus.queuePosition !== undefined) setQueuePosition(jobStatus.queuePosition)
 
           if (jobStatus.status === 'completed' && jobStatus.result) {
-            clearInterval(pollInterval)
+            clearInterval(pollIntervalRef.current)
             setStatus('completed')
             setResult(jobStatus.result)
             
@@ -118,16 +118,19 @@ export default function VideoToTranscript() {
             incrementUsage('video-to-transcript')
             trackEvent('processing_completed', { tool: 'video-to-transcript' })
           } else if (jobStatus.status === 'failed') {
-            clearInterval(pollInterval)
+            clearInterval(pollIntervalRef.current)
             setStatus('failed')
             toast.error('Processing failed. Please try again.')
           }
         } catch (error: any) {
-          clearInterval(pollInterval)
+          clearInterval(pollIntervalRef.current)
           setStatus('failed')
           toast.error(error.message || 'Failed to get job status')
         }
-      }, 2000)
+      }
+      const pollIntervalRef = { current: 0 as ReturnType<typeof setInterval> }
+      pollIntervalRef.current = setInterval(doPoll, 2000)
+      doPoll()
     } catch (error: any) {
       setStatus('failed')
       toast.error(error.message || 'Upload failed')
