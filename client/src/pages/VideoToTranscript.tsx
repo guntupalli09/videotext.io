@@ -123,6 +123,7 @@ export default function VideoToTranscript() {
             toast.error('Processing failed. Please try again.')
           }
         } catch (error: any) {
+          console.error('POLL ERROR:', error)
           clearInterval(pollIntervalRef.current)
           setStatus('failed')
           toast.error(error.message || 'Failed to get job status')
