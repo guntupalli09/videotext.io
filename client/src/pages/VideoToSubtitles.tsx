@@ -18,7 +18,7 @@ import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { createCheckoutSession } from '../lib/billing'
 import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
-import { Languages, Film, Wrench } from 'lucide-react'
+import { Languages, Film, Wrench, FileDown } from 'lucide-react'
 
 /** Optional SEO overrides for alternate entry points (e.g. /mp4-to-srt, /subtitle-generator). Do NOT duplicate logic. */
 export type VideoToSubtitlesSeoProps = {
@@ -37,13 +37,16 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [additionalLanguages, setAdditionalLanguages] = useState<string[]>([])
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
   const [progress, setProgress] = useState(0)
-  const [result, setResult] = useState<{ downloadUrl: string; fileName?: string } | null>(null)
+  const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; warnings?: { type: string; message: string; line?: number }[] } | null>(null)
   const [subtitlePreview, setSubtitlePreview] = useState('')
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
   const [showPaywall, setShowPaywall] = useState(false)
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
   const [usedMinutes, setUsedMinutes] = useState<number | null>(null)
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
+  const [convertTargetFormat, setConvertTargetFormat] = useState<'srt' | 'vtt' | 'txt'>('srt')
+  const [convertProgress, setConvertProgress] = useState(false)
+  const [convertPreview, setConvertPreview] = useState<string | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const canEdit = plan !== 'free'
@@ -200,6 +203,56 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const getDownloadUrl = () => {
     if (!result?.downloadUrl) return ''
     return getAbsoluteDownloadUrl(result.downloadUrl)
+  }
+
+  const currentResultFormat = result?.fileName?.toLowerCase().endsWith('.vtt') ? 'vtt' : result?.fileName?.toLowerCase().endsWith('.txt') ? 'txt' : 'srt'
+
+  const handleConvertFormat = async () => {
+    if (!result?.downloadUrl || !result?.fileName) return
+    if (convertTargetFormat === currentResultFormat) {
+      window.open(getDownloadUrl(), '_blank')
+      return
+    }
+    try {
+      setConvertProgress(true)
+      setConvertPreview(null)
+      const res = await fetch(getDownloadUrl())
+      const blob = await res.blob()
+      const file = new File([blob], result.fileName || 'subtitles.srt', { type: blob.type || 'text/plain' })
+      const uploadRes = await uploadFile(file, {
+        toolType: BACKEND_TOOL_TYPES.CONVERT_SUBTITLES,
+        targetFormat: convertTargetFormat,
+      })
+      const pollIntervalRef = { current: 0 as ReturnType<typeof setInterval> }
+      const doPoll = async () => {
+        try {
+          const jobStatus = await getJobStatus(uploadRes.jobId)
+          if (getJobLifecycleTransition(jobStatus) === 'completed' && jobStatus.result?.downloadUrl) {
+            clearInterval(pollIntervalRef.current)
+            const convertedUrl = getAbsoluteDownloadUrl(jobStatus.result.downloadUrl)
+            if (plan === 'free') {
+              const prevRes = await fetch(convertedUrl)
+              const text = await prevRes.text()
+              const lines = text.split(/\n\n|\n/).slice(0, 30)
+              setConvertPreview(lines.join('\n'))
+            } else {
+              window.open(convertedUrl, '_blank')
+            }
+          } else if (getJobLifecycleTransition(jobStatus) === 'failed') {
+            clearInterval(pollIntervalRef.current)
+            toast.error('Conversion failed.')
+          }
+        } catch {
+          // keep polling
+        }
+      }
+      pollIntervalRef.current = setInterval(doPoll, 2000)
+      doPoll()
+    } catch (e: any) {
+      toast.error(e.message || 'Conversion failed')
+    } finally {
+      setConvertProgress(false)
+    }
   }
 
   return (
@@ -369,6 +422,19 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               </div>
             )}
 
+            {result.warnings && result.warnings.length > 0 && (
+              <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
+                <h3 className="text-lg font-semibold text-amber-800 mb-2">Validation (informational)</h3>
+                <p className="text-sm text-amber-900 mb-2">Some lines may need attention. Not blocking.</p>
+                <ul className="text-sm text-amber-900 space-y-1">
+                  {result.warnings.slice(0, 8).map((w, i) => (
+                    <li key={i}>{w.line != null ? `Line ${w.line}: ` : ''}{w.message}</li>
+                  ))}
+                  {result.warnings.length > 8 && <li>… and {result.warnings.length - 8} more</li>}
+                </ul>
+              </div>
+            )}
+
             {subtitlePreview && (
               <div className="bg-white rounded-xl p-6 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview (first 10 entries)</h3>
@@ -377,6 +443,42 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                 </div>
               </div>
             )}
+
+            {/* Phase 1B — UTILITY 2B: Convert format. Derived from subtitle files; free: preview 30 lines, paid: full download. */}
+            <div className="bg-white rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                <FileDown className="h-5 w-5 text-violet-600" />
+                Convert format
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">Download subtitles in another format (SRT, VTT, or plain text).</p>
+              <div className="flex flex-wrap items-center gap-3">
+                <select
+                  value={convertTargetFormat}
+                  onChange={(e) => setConvertTargetFormat(e.target.value as 'srt' | 'vtt' | 'txt')}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 text-sm"
+                >
+                  <option value="srt">SRT</option>
+                  <option value="vtt">VTT</option>
+                  <option value="txt">TXT (plain text)</option>
+                </select>
+                <button
+                  onClick={handleConvertFormat}
+                  disabled={convertProgress}
+                  className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {convertProgress ? 'Converting…' : `Get as ${convertTargetFormat.toUpperCase()}`}
+                </button>
+              </div>
+              {plan === 'free' && (
+                <p className="text-xs text-gray-500 mt-2">Free plan: preview first 30 lines only. Upgrade for full download.</p>
+              )}
+              {convertPreview !== null && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-lg max-h-48 overflow-y-auto">
+                  <p className="text-xs font-medium text-gray-700 mb-2">Preview (first 30 lines)</p>
+                  <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono">{convertPreview}</pre>
+                </div>
+              )}
+            </div>
 
             <CrossToolSuggestions
               suggestions={[

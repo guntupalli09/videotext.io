@@ -20,6 +20,7 @@ export const BACKEND_TOOL_TYPES = {
   FIX_SUBTITLES: 'fix-subtitles',
   BURN_SUBTITLES: 'burn-subtitles',
   COMPRESS_VIDEO: 'compress-video',
+  CONVERT_SUBTITLES: 'convert-subtitles',
 } as const
 
 export type BackendToolType = (typeof BACKEND_TOOL_TYPES)[keyof typeof BACKEND_TOOL_TYPES]
@@ -38,6 +39,8 @@ export interface JobStatus {
     downloadUrl: string
     fileName?: string
     issues?: any[]
+    warnings?: { type: string; message: string; line?: number }[]
+    consistencyIssues?: { line: number; issueType: string }[]
   }
 }
 
@@ -51,6 +54,12 @@ export interface UploadOptions {
   trimmedStart?: number // seconds
   trimmedEnd?: number // seconds
   additionalLanguages?: string[] // For multi-language
+  targetFormat?: 'srt' | 'vtt' | 'txt' // Phase 1B: convert-subtitles
+  fixTiming?: boolean
+  timingOffsetMs?: number
+  grammarFix?: boolean
+  lineBreakFix?: boolean
+  compressProfile?: 'web' | 'mobile' | 'archive'
 }
 
 /** Map backend subtitle validation errors to human-friendly messages. */
@@ -76,6 +85,12 @@ export async function uploadFile(file: File, options: UploadOptions): Promise<Up
   if (options.additionalLanguages && options.additionalLanguages.length > 0) {
     formData.append('additionalLanguages', JSON.stringify(options.additionalLanguages))
   }
+  if (options.targetFormat) formData.append('targetFormat', options.targetFormat)
+  if (options.fixTiming !== undefined) formData.append('fixTiming', String(options.fixTiming))
+  if (options.timingOffsetMs !== undefined) formData.append('timingOffsetMs', options.timingOffsetMs.toString())
+  if (options.grammarFix !== undefined) formData.append('grammarFix', String(options.grammarFix))
+  if (options.lineBreakFix !== undefined) formData.append('lineBreakFix', String(options.lineBreakFix))
+  if (options.compressProfile) formData.append('compressProfile', options.compressProfile)
 
   // Do NOT set Content-Type: browser must set multipart/form-data with boundary
   const response = await api('/api/upload', {
@@ -91,7 +106,7 @@ export async function uploadFile(file: File, options: UploadOptions): Promise<Up
     const error = await response.json().catch(() => ({ message: 'Upload failed' }))
     const message = error.message || 'Upload failed'
     const displayMessage =
-      options.toolType === 'translate-subtitles' || options.toolType === 'fix-subtitles'
+      options.toolType === 'translate-subtitles' || options.toolType === 'fix-subtitles' || options.toolType === 'convert-subtitles'
         ? mapSubtitleUploadError(message)
         : message
     throw new Error(displayMessage)
@@ -162,7 +177,13 @@ export async function uploadDualFiles(
   videoFile: File,
   subtitleFile: File,
   toolType: BackendToolType,
-  options?: { trimmedStart?: number; trimmedEnd?: number }
+  options?: {
+    trimmedStart?: number
+    trimmedEnd?: number
+    burnFontSize?: 'small' | 'medium' | 'large'
+    burnPosition?: 'bottom' | 'middle'
+    burnBackgroundOpacity?: 'none' | 'low' | 'high'
+  }
 ): Promise<UploadResponse> {
   const formData = new FormData()
   formData.append('video', videoFile)
@@ -174,6 +195,9 @@ export async function uploadDualFiles(
   if (options?.trimmedEnd !== undefined) {
     formData.append('trimmedEnd', options.trimmedEnd.toString())
   }
+  if (options?.burnFontSize) formData.append('burnFontSize', options.burnFontSize)
+  if (options?.burnPosition) formData.append('burnPosition', options.burnPosition)
+  if (options?.burnBackgroundOpacity) formData.append('burnBackgroundOpacity', options.burnBackgroundOpacity)
 
   const response = await api('/api/upload/dual', {
     method: 'POST',

@@ -169,7 +169,7 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
 
     // Validate file type based on tool
     let typeError: string | null = null
-    if (toolType === 'translate-subtitles' || toolType === 'fix-subtitles') {
+    if (toolType === 'translate-subtitles' || toolType === 'fix-subtitles' || toolType === 'convert-subtitles') {
       const subResult = await validateSubtitleFile(req.file.path)
       console.log('[upload] subtitle validation', {
         toolType,
@@ -211,6 +211,12 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       language: options.language,
       targetLanguage: options.targetLanguage,
       compressionLevel: options.compressionLevel,
+      targetFormat: options.targetFormat,
+      fixTiming: options.fixTiming,
+      timingOffsetMs: options.timingOffsetMs,
+      grammarFix: options.grammarFix,
+      lineBreakFix: options.lineBreakFix,
+      compressProfile: options.compressProfile,
     }
     if (additionalLanguages.length > 0) {
       jobOptions.additionalLanguages = additionalLanguages
@@ -289,7 +295,7 @@ router.post('/dual', upload.fields([
   { name: 'subtitles', maxCount: 1 },
 ]), async (req: Request, res: Response) => {
   try {
-    const { toolType, trimmedStart, trimmedEnd } = req.body
+    const { toolType, trimmedStart, trimmedEnd, burnFontSize, burnPosition, burnBackgroundOpacity } = req.body
     const userId = (req.headers['x-user-id'] as string) || 'demo-user'
     const planHeader = (req.headers['x-plan'] as string) as PlanType | undefined
     const plan: PlanType =
@@ -358,7 +364,6 @@ router.post('/dual', upload.fields([
       return res.status(400).json({ message: subResult.error })
     }
 
-    // Create job in queue
     const job = await addJobToQueue(plan, {
       toolType: 'burn-subtitles',
       filePath: videoFile.path,
@@ -370,6 +375,14 @@ router.post('/dual', upload.fields([
       fileSize: videoFile.size,
       trimmedStart: trimmedStart ? parseFloat(trimmedStart) : undefined,
       trimmedEnd: trimmedEnd ? parseFloat(trimmedEnd) : undefined,
+      options:
+        burnFontSize || burnPosition || burnBackgroundOpacity
+          ? {
+              burnFontSize: burnFontSize || undefined,
+              burnPosition: burnPosition || undefined,
+              burnBackgroundOpacity: burnBackgroundOpacity || undefined,
+            }
+          : undefined,
     })
 
     res.status(202).json({

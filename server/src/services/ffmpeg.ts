@@ -80,6 +80,13 @@ export function extractAudio(
   })
 }
 
+/** Phase 1B — UTILITY 5B: Style presets (subtitle metadata only). No custom styling editor. */
+export interface BurnStylePreset {
+  fontSize?: 'small' | 'medium' | 'large'
+  position?: 'bottom' | 'middle'
+  backgroundOpacity?: 'none' | 'low' | 'high'
+}
+
 /**
  * Burn subtitles into video
  */
@@ -87,7 +94,8 @@ export function burnSubtitles(
   videoPath: string,
   subtitlePath: string,
   outputPath: string,
-  onProgress?: (progress: FFmpegProgress) => void
+  onProgress?: (progress: FFmpegProgress) => void,
+  preset?: BurnStylePreset
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // Check if files exist
@@ -139,14 +147,14 @@ export function burnSubtitles(
         // generate a temporary ASS file with explicit styling + PlayRes set to the
         // video resolution. This guarantees bottom placement and clean "movie" styling.
 
-        // Scale style based on resolution so subtitles are readable across formats.
-        // Rough targets:
-        // - 1920px tall => ~65px font
-        // - 1080px tall => ~38px font
-        // - 720px tall  => ~25px font
-        const fontSize = Math.max(24, Math.min(80, Math.round(height * 0.035)))
-        const marginV = Math.max(40, Math.min(180, Math.round(height * 0.05)))
+        // Scale style based on resolution; Phase 1B presets adjust scale.
+        const baseFontSize = Math.max(24, Math.min(80, Math.round(height * 0.035)))
+        const sizeMult = preset?.fontSize === 'small' ? 0.75 : preset?.fontSize === 'large' ? 1.25 : 1
+        const fontSize = Math.round(baseFontSize * sizeMult)
+        const isMiddle = preset?.position === 'middle'
+        const marginV = isMiddle ? Math.round(height * 0.4) : Math.max(40, Math.min(180, Math.round(height * 0.05)))
         const marginLR = Math.max(20, Math.min(80, Math.round(width * 0.03)))
+        const backAlpha = preset?.backgroundOpacity === 'none' ? '00' : preset?.backgroundOpacity === 'high' ? 'B3' : '80'
 
         const format = detectSubtitleFormat(tempSubtitlePath)
         const entries = format === 'srt' ? parseSRT(tempSubtitlePath) : parseVTT(tempSubtitlePath)
@@ -181,8 +189,8 @@ export function burnSubtitles(
           `\n` +
           `[V4+ Styles]\n` +
           `Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n` +
-          // PrimaryColour/BackColour are &HAABBGGRR&; BackColour alpha 0x80 = 50% transparent
-          `Style: Default,Arial,${fontSize},&H00FFFFFF&,&H00FFFFFF&,&H00000000&,&H80000000&,0,0,0,0,100,100,0,0,3,0,0,2,${marginLR},${marginLR},${marginV},1\n` +
+          // PrimaryColour/BackColour are &HAABBGGRR&; BackColour alpha from preset
+          `Style: Default,Arial,${fontSize},&H00FFFFFF&,&H00FFFFFF&,&H00000000&,&H${backAlpha}000000&,0,0,0,0,100,100,0,0,3,0,0,${isMiddle ? '5' : '2'},${marginLR},${marginLR},${marginV},1\n` +
           `\n` +
           `[Events]\n` +
           `Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n` +
@@ -258,40 +266,63 @@ export function burnSubtitles(
 }
 
 /**
- * Compress video
+ * Compress video. Phase 1B: optional profile (web/mobile/archive) for resolution + CRF.
  */
 export function compressVideo(
   inputPath: string,
   outputPath: string,
   crf: number,
-  onProgress?: (progress: FFmpegProgress) => void
+  onProgress?: (progress: FFmpegProgress) => void,
+  profile?: CompressProfile
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    const cmd = ffmpeg(inputPath)
-      .videoCodec('libx264')
-      .outputOptions([
+    const run = (scaleFilter: string | null, useCrf: number) => {
+      const opts: string[] = [
         '-threads', FFMPEG_THREADS,
-        `-crf ${crf}`,
+        `-crf ${useCrf}`,
         '-preset medium',
         '-movflags +faststart',
-      ])
-      .on('progress', (progress: { percent?: number; timemark?: string }) => {
-        hung.reset()
-        onProgress?.({
-          percent: progress.percent || 0,
-          timemark: progress.timemark,
+      ]
+      const cmd = ffmpeg(inputPath).videoCodec('libx264')
+      if (scaleFilter) {
+        cmd.outputOptions(['-vf', scaleFilter])
+      }
+      cmd
+        .outputOptions(opts)
+        .on('progress', (progress: { percent?: number; timemark?: string }) => {
+          hung.reset()
+          onProgress?.({ percent: progress.percent || 0, timemark: progress.timemark })
         })
+        .on('end', () => {
+          hung.clear()
+          resolve(outputPath)
+        })
+        .on('error', (err: Error) => {
+          hung.clear()
+          reject(err)
+        })
+      const hung = setupHungProtection(cmd, reject)
+      cmd.save(outputPath)
+    }
+
+    if (!profile || profile === 'archive') {
+      run(null, crf)
+      return
+    }
+
+    getVideoMetadata(inputPath)
+      .then(({ width, height }) => {
+        const max = PROFILE_MAX[profile]
+        let scaleFilter: string | null = null
+        if (width > max.w || height > max.h) {
+          const scale = Math.min(max.w / width, max.h / height, 1)
+          const w = Math.round(width * scale)
+          const h = Math.round(height * scale)
+          scaleFilter = `scale=${w}:${h}:force_original_aspect_ratio=decrease`
+        }
+        run(scaleFilter, PROFILE_CRF[profile])
       })
-      .on('end', () => {
-        hung.clear()
-        resolve(outputPath)
-      })
-      .on('error', (err: Error) => {
-        hung.clear()
-        reject(err)
-      })
-    const hung = setupHungProtection(cmd, reject)
-    cmd.save(outputPath)
+      .catch(() => run(null, crf))
   })
 }
 
@@ -332,4 +363,38 @@ export function getVideoDuration(videoPath: string): Promise<number> {
       resolve(duration)
     })
   })
+}
+
+/** Phase 1B — UTILITY 6: Video metadata for resolution targeting. */
+export function getVideoMetadata(videoPath: string): Promise<{ width: number; height: number; duration: number }> {
+  return new Promise((resolve, reject) => {
+    if (!fs.existsSync(videoPath)) {
+      reject(new Error(`Video file not found: ${videoPath}`))
+      return
+    }
+    ffmpeg.ffprobe(videoPath, (err: Error | null, metadata: FfprobeData) => {
+      if (err) return reject(err)
+      const v = (metadata?.streams || []).find((s: any) => s.codec_type === 'video')
+      const width = Number(v?.width) || 0
+      const height = Number(v?.height) || 0
+      const duration = metadata?.format?.duration || 0
+      if (!width || !height) return reject(new Error('Could not read video resolution'))
+      resolve({ width, height, duration })
+    })
+  })
+}
+
+/** Phase 1B — Preset profiles: Web (720p), Mobile (480p), Archive (original). */
+export type CompressProfile = 'web' | 'mobile' | 'archive'
+
+const PROFILE_MAX: Record<CompressProfile, { w: number; h: number }> = {
+  web: { w: 1280, h: 720 },
+  mobile: { w: 854, h: 480 },
+  archive: { w: 4096, h: 2160 },
+}
+
+const PROFILE_CRF: Record<CompressProfile, number> = {
+  web: 26,
+  mobile: 28,
+  archive: 23,
 }

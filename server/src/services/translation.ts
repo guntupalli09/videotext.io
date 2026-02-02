@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import OpenAI from 'openai'
-import { SubtitleEntry, parseSRT, parseVTT, toSRT, toVTT, detectSubtitleFormat } from '../utils/srtParser'
+import type { SubtitleEntry } from '../utils/srtParser'
+import { parseSRT, parseVTT, toSRT, toVTT, detectSubtitleFormat } from '../utils/srtParser'
 import { transcribeVideo } from './transcription'
 import fs from 'fs'
 import path from 'path'
@@ -158,6 +159,60 @@ Return ALL ${batch.length} translations in numbered format (1. through ${batch.l
   }
   
   return translatedEntries
+}
+
+/** Phase 1B — UTILITY 3A: Language consistency. Detect mixed-language or untranslated lines. */
+export interface LanguageConsistencyIssue {
+  line: number
+  issueType: 'mixed_language' | 'untranslated'
+}
+
+const ARABIC_SCRIPT = /\p{Script=Arabic}/u
+const DEVANAGARI_SCRIPT = /\p{Script=Devanagari}/u
+const LATIN_SCRIPT = /\p{Script=Latin}/u
+
+function countScriptRanges(text: string): { arabic: number; devanagari: number; latin: number } {
+  let arabic = 0, devanagari = 0, latin = 0
+  for (const ch of text) {
+    if (ARABIC_SCRIPT.test(ch)) arabic++
+    else if (DEVANAGARI_SCRIPT.test(ch)) devanagari++
+    else if (LATIN_SCRIPT.test(ch)) latin++
+  }
+  return { arabic, devanagari, latin }
+}
+
+export function detectLanguageConsistency(
+  translatedEntries: SubtitleEntry[],
+  targetLanguage: string
+): { issues: LanguageConsistencyIssue[] } {
+  const issues: LanguageConsistencyIssue[] = []
+  const target = targetLanguage.toLowerCase()
+  const expectArabic = target === 'arabic' || target === 'ar'
+  const expectHindi = target === 'hindi' || target === 'hi'
+
+  for (const entry of translatedEntries) {
+    const text = entry.text.trim()
+    if (!text) continue
+    const counts = countScriptRanges(text)
+    const total = counts.arabic + counts.devanagari + counts.latin
+    if (total === 0) continue
+
+    if (expectArabic) {
+      if (counts.latin > total * 0.7) {
+        issues.push({ line: entry.index, issueType: 'untranslated' })
+      } else if (counts.arabic > 0 && counts.latin > total * 0.3) {
+        issues.push({ line: entry.index, issueType: 'mixed_language' })
+      }
+    } else if (expectHindi) {
+      if (counts.latin > total * 0.7) {
+        issues.push({ line: entry.index, issueType: 'untranslated' })
+      } else if (counts.devanagari > 0 && counts.latin > total * 0.3) {
+        issues.push({ line: entry.index, issueType: 'mixed_language' })
+      }
+    }
+  }
+
+  return { issues }
 }
 
 /**

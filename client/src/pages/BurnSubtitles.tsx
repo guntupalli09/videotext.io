@@ -29,6 +29,9 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const [subtitleFile, setSubtitleFile] = useState<File | null>(null)
   const [trimStart, setTrimStart] = useState<number | null>(null)
   const [trimEnd, setTrimEnd] = useState<number | null>(null)
+  const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>('medium')
+  const [position, setPosition] = useState<'bottom' | 'middle'>('bottom')
+  const [backgroundOpacity, setBackgroundOpacity] = useState<'none' | 'low' | 'high'>('low')
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
   const [progress, setProgress] = useState(0)
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string } | null>(null)
@@ -62,6 +65,9 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
       const response = await uploadDualFiles(videoFile, subtitleFile, BACKEND_TOOL_TYPES.BURN_SUBTITLES, {
         trimmedStart: trimStart ?? undefined,
         trimmedEnd: trimEnd ?? undefined,
+        burnFontSize: fontSize,
+        burnPosition: position,
+        burnBackgroundOpacity: backgroundOpacity,
       })
 
       const pollIntervalRef = { current: 0 as ReturnType<typeof setInterval> }
@@ -128,6 +134,47 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
 
         {status === 'idle' && (
           <div className="bg-white rounded-xl p-8 border border-gray-200 mb-6">
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Caption style (preset)</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <span className="text-xs text-gray-600 block mb-1">Font size</span>
+                  <select
+                    value={fontSize}
+                    onChange={(e) => setFontSize(e.target.value as 'small' | 'medium' | 'large')}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  >
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                  </select>
+                </div>
+                <div>
+                  <span className="text-xs text-gray-600 block mb-1">Position</span>
+                  <select
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value as 'bottom' | 'middle')}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  >
+                    <option value="bottom">Bottom</option>
+                    <option value="middle">Middle</option>
+                  </select>
+                </div>
+                <div>
+                  <span className="text-xs text-gray-600 block mb-1">Background</span>
+                  <select
+                    value={backgroundOpacity}
+                    onChange={(e) => setBackgroundOpacity(e.target.value as 'none' | 'low' | 'high')}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  >
+                    <option value="none">None</option>
+                    <option value="low">Low</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Upload video</label>

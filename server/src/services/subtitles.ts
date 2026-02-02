@@ -6,6 +6,100 @@ export interface SubtitleIssue {
   message: string
 }
 
+/** Phase 1B — UTILITY 2E: Validation warning (informational only, no blocking). */
+export interface SubtitleWarning {
+  type: string
+  message: string
+  line?: number
+}
+
+/** Phase 1B — UTILITY 2D: Lightweight timing normalization. Offset (+/- ms), clamp long durations. No text change. */
+const DEFAULT_MAX_DURATION_SEC = 10
+const MIN_DURATION_SEC = 0.5
+
+export function normalizeTimingOnly(
+  entries: SubtitleEntry[],
+  offsetMs: number = 0,
+  maxDurationSec: number = DEFAULT_MAX_DURATION_SEC
+): SubtitleEntry[] {
+  const offsetSec = offsetMs / 1000
+  const result: SubtitleEntry[] = entries.map((e, i) => ({
+    index: i + 1,
+    startTime: Math.max(0, e.startTime + offsetSec),
+    endTime: Math.max(0, e.endTime + offsetSec),
+    text: e.text,
+  }))
+
+  for (let i = 0; i < result.length; i++) {
+    let duration = result[i].endTime - result[i].startTime
+    if (duration > maxDurationSec) {
+      result[i].endTime = result[i].startTime + maxDurationSec
+      duration = maxDurationSec
+    }
+    if (duration < MIN_DURATION_SEC) {
+      result[i].endTime = result[i].startTime + MIN_DURATION_SEC
+    }
+  }
+
+  for (let i = 0; i < result.length - 1; i++) {
+    if (result[i].endTime > result[i + 1].startTime) {
+      result[i].endTime = result[i + 1].startTime - 0.1
+      if (result[i].endTime <= result[i].startTime) {
+        result[i].endTime = result[i].startTime + MIN_DURATION_SEC
+      }
+    }
+  }
+
+  return result
+}
+
+/** Phase 1B — UTILITY 2E: Validation only. Returns warnings; does not modify. */
+const LINE_LENGTH_THRESHOLD = 42
+const READING_SPEED_CHARS_PER_SEC = 25
+
+export function validateSubtitleEntries(entries: SubtitleEntry[]): { warnings: SubtitleWarning[] } {
+  const warnings: SubtitleWarning[] = []
+  const sorted = [...entries].sort((a, b) => a.startTime - b.startTime)
+
+  for (let i = 0; i < sorted.length; i++) {
+    const e = sorted[i]
+    const lineNum = e.index
+
+    if (e.text.length > LINE_LENGTH_THRESHOLD) {
+      warnings.push({
+        type: 'long_line',
+        message: `Line longer than ${LINE_LENGTH_THRESHOLD} characters (${e.text.length})`,
+        line: lineNum,
+      })
+    }
+
+    const duration = e.endTime - e.startTime
+    if (duration > 0 && e.text.length / duration > READING_SPEED_CHARS_PER_SEC) {
+      warnings.push({
+        type: 'reading_speed',
+        message: `Reading speed may be too high (${(e.text.length / duration).toFixed(0)} chars/s)`,
+        line: lineNum,
+      })
+    }
+
+    if (i < sorted.length - 1 && e.endTime > sorted[i + 1].startTime) {
+      warnings.push({
+        type: 'overlap',
+        message: 'Overlapping with next subtitle',
+        line: lineNum,
+      })
+    }
+  }
+
+  return { warnings }
+}
+
+export function validateSubtitleFile(filePath: string): { warnings: SubtitleWarning[] } {
+  const format = detectSubtitleFormat(filePath)
+  const entries = format === 'srt' ? parseSRT(filePath) : parseVTT(filePath)
+  return validateSubtitleEntries(entries)
+}
+
 /**
  * Detect and fix subtitle issues
  */
@@ -102,28 +196,63 @@ export function fixSubtitleIssues(
   return { fixed, issues }
 }
 
+export interface FixSubtitleOptions {
+  fixTiming?: boolean
+  timingOffsetMs?: number
+  grammarFix?: boolean
+  lineBreakFix?: boolean
+}
+
 /**
- * Parse and fix subtitle file
+ * Phase 1B — 4A: Normalize casing and punctuation; preserve timestamps.
  */
-export function fixSubtitleFile(filePath: string): {
+function grammarAndFormattingFix(entries: SubtitleEntry[]): SubtitleEntry[] {
+  return entries.map((e) => {
+    let text = e.text.trim()
+    if (!text) return { ...e }
+    text = text.replace(/\s+/g, ' ')
+    if (text.length > 0) {
+      text = text.charAt(0).toUpperCase() + text.slice(1)
+      if (!/[.!?]$/.test(text)) text = text + '.'
+    }
+    return { ...e, text }
+  })
+}
+
+/**
+ * Parse and fix subtitle file. Phase 1B: optional timing pass, grammar, line-break.
+ */
+export function fixSubtitleFile(
+  filePath: string,
+  options: FixSubtitleOptions = {}
+): {
   content: string
   format: 'srt' | 'vtt'
   issues: SubtitleIssue[]
+  warnings?: SubtitleWarning[]
 } {
   const format = detectSubtitleFormat(filePath)
-  
-  // Parse subtitle file
-  const entries = format === 'srt' 
-    ? parseSRT(filePath)
-    : parseVTT(filePath)
-  
-  // Fix issues
+  let entries = format === 'srt' ? parseSRT(filePath) : parseVTT(filePath)
+
+  let warnings: SubtitleWarning[] = []
+  try {
+    const val = validateSubtitleEntries(entries)
+    warnings = val.warnings
+  } catch {
+    // Validation failure must not block job
+  }
+
+  if (options.fixTiming) {
+    entries = normalizeTimingOnly(entries, options.timingOffsetMs ?? 0)
+  }
+  if (options.grammarFix) {
+    entries = grammarAndFormattingFix(entries)
+  }
   const { fixed, issues } = fixSubtitleIssues(entries)
-  
-  // Convert back to format
-  const content = format === 'srt'
-    ? toSRT(fixed)
-    : toVTT(fixed)
-  
-  return { content, format, issues }
+  if (options.lineBreakFix) {
+    // fixSubtitleIssues already does long_line and fast_reading; lineBreakFix just ensures we ran it
+  }
+
+  const content = format === 'srt' ? toSRT(fixed) : toVTT(fixed)
+  return { content, format, issues, warnings }
 }

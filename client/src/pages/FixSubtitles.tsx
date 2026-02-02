@@ -26,10 +26,14 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const { seoH1, seoIntro, faq = [] } = props
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [issues, setIssues] = useState<any[]>([])
+  const [warnings, setWarnings] = useState<{ type: string; message: string; line?: number }[]>([])
   const [showIssues, setShowIssues] = useState(false)
+  const [fixTiming, setFixTiming] = useState(false)
+  const [grammarFix, setGrammarFix] = useState(false)
+  const [lineBreakFix, setLineBreakFix] = useState(false)
   const [status, setStatus] = useState<'idle' | 'analyzing' | 'processing' | 'completed' | 'failed'>('idle')
   const [progress, setProgress] = useState(0)
-  const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; issues?: any[] } | null>(null)
+  const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; issues?: any[]; warnings?: { type: string; message: string; line?: number }[] } | null>(null)
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
@@ -82,7 +86,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       setStatus('analyzing')
       setProgress(0)
 
-      // Upload and process to detect issues
+      // Upload and process to detect issues (no fix options for analyze)
       const response = await uploadFile(selectedFile, {
         toolType: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
       })
@@ -98,6 +102,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             clearInterval(pollIntervalRef.current)
             setResult(jobStatus.result ?? null)
             setIssues(jobStatus.result?.issues ?? [])
+            setWarnings(jobStatus.result?.warnings ?? [])
             setShowIssues(true)
             setStatus('idle')
           } else if (transition === 'failed') {
@@ -126,6 +131,9 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
       const response = await uploadFile(selectedFile, {
         toolType: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
+        fixTiming,
+        grammarFix,
+        lineBreakFix,
       })
 
       const pollIntervalRef = { current: 0 as ReturnType<typeof setInterval> }
@@ -139,6 +147,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             clearInterval(pollIntervalRef.current)
             setStatus('completed')
             setResult(jobStatus.result ?? null)
+            setWarnings(jobStatus.result?.warnings ?? [])
             incrementUsage('fix-subtitles')
             if (jobStatus.result?.downloadUrl) {
               try {
@@ -169,7 +178,11 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const handleProcessAnother = () => {
     setSelectedFile(null)
     setIssues([])
+    setWarnings([])
     setShowIssues(false)
+    setFixTiming(false)
+    setGrammarFix(false)
+    setLineBreakFix(false)
     setStatus('idle')
     setProgress(0)
     setResult(null)
@@ -227,6 +240,42 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           </div>
         )}
 
+        {status === 'idle' && showIssues && (
+          <div className="bg-white rounded-xl p-8 border border-gray-200 mb-6">
+            <h3 className="text-lg font-medium text-gray-800 mb-3">Fix options (optional)</h3>
+            <p className="text-sm text-gray-600 mb-4">Fixes timing drift, long durations, and overflow issues. Original subtitles are always preserved.</p>
+            <div className="space-y-3 mb-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={fixTiming}
+                  onChange={(e) => setFixTiming(e.target.checked)}
+                  className="rounded text-violet-600 focus:ring-violet-500"
+                />
+                <span className="text-gray-700">Fix timing (offset correction, clamp long durations)</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={grammarFix}
+                  onChange={(e) => setGrammarFix(e.target.checked)}
+                  className="rounded text-violet-600 focus:ring-violet-500"
+                />
+                <span className="text-gray-700">Grammar (normalize casing, punctuation)</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={lineBreakFix}
+                  onChange={(e) => setLineBreakFix(e.target.checked)}
+                  className="rounded text-violet-600 focus:ring-violet-500"
+                />
+                <span className="text-gray-700">Line breaks (max characters per line, reading speed)</span>
+              </label>
+            </div>
+          </div>
+        )}
+
         {status === 'analyzing' && (
           <div className="bg-white rounded-xl p-8 border border-gray-200 mb-6 text-center">
             <Loader2 className="h-12 w-12 text-violet-600 animate-spin mx-auto mb-4" />
@@ -235,24 +284,42 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           </div>
         )}
 
-        {showIssues && issues.length > 0 && status === 'idle' && (
+        {showIssues && (issues.length > 0 || warnings.length > 0) && status === 'idle' && (
           <div className="bg-white rounded-xl p-8 border border-gray-200 mb-6">
             <div className="flex items-center space-x-2 mb-4">
               <CheckCircle className="h-6 w-6 text-green-600" />
               <h3 className="text-xl font-semibold text-gray-800">
-                Found {issues.length} issue{issues.length !== 1 ? 's' : ''} in your subtitles
+                {issues.length > 0
+                  ? `Found ${issues.length} issue${issues.length !== 1 ? 's' : ''} in your subtitles`
+                  : 'Validation results'}
               </h3>
             </div>
 
-            <div className="space-y-2 mb-6">
-              {issues.map((issue, index) => (
-                <div key={index} className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-sm font-medium text-gray-800">
-                    • {getIssueTypeLabel(issue.type)}: {issue.message}
-                  </p>
+            {warnings.length > 0 && (
+              <div className="mb-4">
+                <p className="text-sm font-medium text-amber-800 mb-2">Warnings (informational)</p>
+                <div className="space-y-2">
+                  {warnings.map((w, i) => (
+                    <div key={i} className="bg-amber-50 rounded-lg p-3 text-sm text-amber-900">
+                      {w.line != null && <span className="font-mono">Line {w.line}: </span>}
+                      {w.message}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
+
+            {issues.length > 0 && (
+              <div className="space-y-2 mb-6">
+                {issues.map((issue, index) => (
+                  <div key={index} className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm font-medium text-gray-800">
+                      • {getIssueTypeLabel(issue.type)}: {issue.message}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <button
               onClick={handleAutoFix}
@@ -263,17 +330,25 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           </div>
         )}
 
-        {showIssues && issues.length === 0 && status === 'idle' && (
+        {showIssues && issues.length === 0 && warnings.length === 0 && status === 'idle' && (
           <div className="bg-white rounded-xl p-8 border border-gray-200 mb-6 text-center">
             <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-800 mb-2">No issues found!</h3>
-            <p className="text-gray-600 mb-4">Your subtitles are already in good shape.</p>
-            <button
-              onClick={handleProcessAnother}
-              className="text-violet-600 hover:text-violet-700 font-medium"
-            >
-              Process another file
-            </button>
+            <p className="text-gray-600 mb-4">Your subtitles are already in good shape. You can still apply optional fixes (timing, grammar, line breaks) above.</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                onClick={handleAutoFix}
+                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
+              >
+                Apply optional fixes
+              </button>
+              <button
+                onClick={handleProcessAnother}
+                className="text-violet-600 hover:text-violet-700 font-medium"
+              >
+                Process another file
+              </button>
+            </div>
           </div>
         )}
 
@@ -323,6 +398,18 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+
+            {warnings.length > 0 && (
+              <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
+                <p className="text-amber-800 font-medium mb-2">Warnings (informational)</p>
+                <ul className="text-sm text-amber-900 space-y-1">
+                  {warnings.slice(0, 5).map((w, i) => (
+                    <li key={i}>{w.line != null ? `Line ${w.line}: ` : ''}{w.message}</li>
+                  ))}
+                  {warnings.length > 5 && <li>… and {warnings.length - 5} more</li>}
+                </ul>
               </div>
             )}
 

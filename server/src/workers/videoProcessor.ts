@@ -3,9 +3,10 @@ import path from 'path'
 import fs from 'fs'
 import archiver from 'archiver'
 import { transcribeVideo } from '../services/transcription'
-import { translateSubtitleFile } from '../services/translation'
-import { fixSubtitleFile } from '../services/subtitles'
-import { burnSubtitles, compressVideo, HUNG_JOB_MESSAGE } from '../services/ffmpeg'
+import { translateSubtitleFile, detectLanguageConsistency } from '../services/translation'
+import { fixSubtitleFile, validateSubtitleFile } from '../services/subtitles'
+import { convertSubtitleFile } from '../services/subtitleConverter'
+import { burnSubtitles, compressVideo, HUNG_JOB_MESSAGE, type CompressProfile } from '../services/ffmpeg'
 import { generateOutputFilename, downloadVideoFromURL, validateVideoDuration } from '../services/video'
 import { validateFileType, validateFileSize } from '../utils/fileValidation'
 import { trimVideoSegment } from '../services/trimming'
@@ -16,6 +17,7 @@ import { getPlanLimits, getJobPriority, getMaxJobRuntimeMinutes } from '../utils
 import { calculateTranslationMinutes, secondsToMinutes } from '../utils/metering'
 import { saveDuplicateResult } from '../services/duplicate'
 import { createRedisClient } from '../utils/redis'
+import { parseSRT, parseVTT, detectSubtitleFormat } from '../utils/srtParser'
 import { MAX_GLOBAL_WORKERS, PAID_TIER_RESERVATION_QUEUE_THRESHOLD } from '../utils/queueConfig'
 
 export const fileQueue = new Queue('file-processing', {
@@ -86,6 +88,15 @@ interface JobData {
     targetLanguage?: string
     compressionLevel?: 'light' | 'medium' | 'heavy'
     additionalLanguages?: string[] // For multi-language
+    targetFormat?: 'srt' | 'vtt' | 'txt' // Phase 1B: convert-subtitles
+    fixTiming?: boolean
+    timingOffsetMs?: number
+    grammarFix?: boolean
+    lineBreakFix?: boolean
+    burnFontSize?: 'small' | 'medium' | 'large'
+    burnPosition?: 'bottom' | 'middle'
+    burnBackgroundOpacity?: 'none' | 'low' | 'high'
+    compressProfile?: 'web' | 'mobile' | 'archive'
   }
 }
 
@@ -172,9 +183,16 @@ async function generateBatchZip(batchId: string, batch: BatchJob): Promise<void>
         name: f.replace(`batch-${batchId}-`, ''), // Remove batch prefix
       }))
 
-    // Add all SRT files
+    // Add all SRT files; Phase 1B — 7B: also add VTT converted versions to ZIP
     for (const file of batchFiles) {
       archive.file(file.path, { name: file.name })
+      try {
+        const converted = convertSubtitleFile(file.path, 'vtt')
+        const vttName = file.name.replace(/\.srt$/i, '.vtt')
+        archive.append(converted.content, { name: vttName })
+      } catch {
+        // Derived utility failure must not block batch completion
+      }
     }
 
     // Add error log if there are errors
@@ -408,9 +426,18 @@ async function processJob(job: import('bull').Job<JobData>) {
             const outputPath = path.join(tempDir, outputFilename)
             fs.writeFileSync(outputPath, subtitles)
 
+            let warnings: { type: string; message: string; line?: number }[] = []
+            try {
+              const val = validateSubtitleFile(outputPath)
+              warnings = val.warnings
+            } catch {
+              // Phase 1B: derived validation must not block job
+            }
+
             result = {
               downloadUrl: `/api/download/${outputFilename}`,
               fileName: outputFilename,
+              warnings: warnings.length > 0 ? warnings : undefined,
             }
 
           if (data.videoHash) {
@@ -518,16 +545,34 @@ async function processJob(job: import('bull').Job<JobData>) {
           const outputPath = path.join(tempDir, outputFilename)
           fs.writeFileSync(outputPath, translated.content)
 
+          let consistencyIssues: { line: number; issueType: string }[] = []
+          try {
+            const format = detectSubtitleFormat(outputPath)
+            const entries = format === 'srt' ? parseSRT(outputPath) : parseVTT(outputPath)
+            const check = detectLanguageConsistency(entries, options?.targetLanguage || 'arabic')
+            consistencyIssues = check.issues
+          } catch {
+            // Phase 1B: derived check must not block job
+          }
+
           result = {
             downloadUrl: `/api/download/${outputFilename}`,
             fileName: outputFilename,
+            consistencyIssues: consistencyIssues.length > 0 ? consistencyIssues : undefined,
           }
           break
         }
 
         case 'fix-subtitles': {
           await job.progress(20)
-          const fixed = fixSubtitleFile(data.filePath!)
+          const opt = options as Record<string, unknown> | undefined
+          const fixOptions = {
+            fixTiming: opt?.fixTiming === true || opt?.fixTiming === 'true',
+            timingOffsetMs: opt?.timingOffsetMs != null ? Number(opt.timingOffsetMs) : undefined,
+            grammarFix: opt?.grammarFix === true || opt?.grammarFix === 'true',
+            lineBreakFix: opt?.lineBreakFix === true || opt?.lineBreakFix === 'true',
+          }
+          const fixed = fixSubtitleFile(data.filePath!, fixOptions)
 
           // Save fixed file
           await job.progress(70)
@@ -540,6 +585,26 @@ async function processJob(job: import('bull').Job<JobData>) {
             downloadUrl: `/api/download/${outputFilename}`,
             fileName: outputFilename,
             issues: fixed.issues,
+            warnings: fixed.warnings,
+          }
+          break
+        }
+
+        // Phase 1B — UTILITY 2B: Subtitle Format Converter. Derived from subtitle files only; no AI.
+        case 'convert-subtitles': {
+          await job.progress(20)
+          const targetFormat = (options?.targetFormat || 'vtt') as 'srt' | 'vtt' | 'txt'
+          const converted = convertSubtitleFile(data.filePath!, targetFormat)
+
+          await job.progress(70)
+          const ext = converted.format === 'txt' ? '.txt' : converted.format === 'vtt' ? '.vtt' : '.srt'
+          const outputFilename = generateOutputFilename(data.originalName || 'subtitles', '_converted', ext)
+          const outputPath = path.join(tempDir, outputFilename)
+          fs.writeFileSync(outputPath, converted.content)
+
+          result = {
+            downloadUrl: `/api/download/${outputFilename}`,
+            fileName: outputFilename,
           }
           break
         }
@@ -567,15 +632,23 @@ async function processJob(job: import('bull').Job<JobData>) {
           const outputFilename = generateOutputFilename(data.originalName || 'video', '_subtitled', '.mp4')
           const outputPath = path.join(tempDir, outputFilename)
 
+          const burnPreset = (options?.burnFontSize || options?.burnPosition || options?.burnBackgroundOpacity)
+            ? {
+                fontSize: options?.burnFontSize,
+                position: options?.burnPosition,
+                backgroundOpacity: options?.burnBackgroundOpacity,
+              }
+            : undefined
+
           await burnSubtitles(
             videoPath,
             subtitlePath,
             outputPath,
             (progress) => {
-              // Update progress (20% to 90%)
               const mappedProgress = 20 + (progress.percent * 0.7)
               job.progress(mappedProgress)
-            }
+            },
+            burnPreset
           )
 
           result = {
@@ -615,15 +688,15 @@ async function processJob(job: import('bull').Job<JobData>) {
             videoPath = trimResult.outputPath
           }
 
-          // Get CRF value
+          // Phase 1B: profile (web/mobile/archive) for resolution + CRF; else legacy compressionLevel
           const crfMap: Record<string, number> = {
             light: 23,
             medium: 28,
             heavy: 32,
           }
-          const crf = crfMap[options?.compressionLevel || 'medium']
+          const profile = options?.compressProfile as CompressProfile | undefined
+          const crf = profile ? 28 : crfMap[options?.compressionLevel || 'medium']
 
-          // Compress
           await job.progress(20)
           const outputFilename = generateOutputFilename(data.originalName || 'video', '_compressed', '.mp4')
           const outputPath = path.join(tempDir, outputFilename)
@@ -633,10 +706,10 @@ async function processJob(job: import('bull').Job<JobData>) {
             outputPath,
             crf,
             (progress) => {
-              // Update progress (20% to 90%)
               const mappedProgress = 20 + (progress.percent * 0.7)
               job.progress(mappedProgress)
-            }
+            },
+            profile
           )
 
           result = {

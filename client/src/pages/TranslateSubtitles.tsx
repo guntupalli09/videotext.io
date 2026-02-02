@@ -33,7 +33,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [targetLanguage, setTargetLanguage] = useState<string>('arabic')
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
   const [progress, setProgress] = useState(0)
-  const [result, setResult] = useState<{ downloadUrl: string; fileName?: string } | null>(null)
+  const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; consistencyIssues?: { line: number; issueType: string }[] } | null>(null)
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
   const [showPaywall, setShowPaywall] = useState(false)
 
@@ -270,6 +270,19 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
               downloadUrl={getDownloadUrl()}
               onProcessAnother={handleProcessAnother}
             />
+
+            {result.consistencyIssues && result.consistencyIssues.length > 0 && (
+              <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
+                <p className="text-amber-800 font-medium mb-2">Some lines may not be translated.</p>
+                <p className="text-sm text-amber-900 mb-2">Non-blocking: review lines below if needed.</p>
+                <ul className="text-sm text-amber-900 space-y-1">
+                  {result.consistencyIssues.slice(0, 8).map((issue, i) => (
+                    <li key={i}>Line {issue.line}: {issue.issueType === 'untranslated' ? 'possibly untranslated' : 'mixed language'}</li>
+                  ))}
+                  {result.consistencyIssues.length > 8 && <li>… and {result.consistencyIssues.length - 8} more</li>}
+                </ul>
+              </div>
+            )}
 
             {subtitleRows.length > 0 && (
               <div className="bg-white rounded-xl p-6 border border-gray-200">

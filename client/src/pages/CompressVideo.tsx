@@ -18,6 +18,7 @@ import { MessageSquare } from 'lucide-react'
 import { formatFileSize } from '../lib/utils'
 
 type CompressionLevel = 'light' | 'medium' | 'heavy'
+type CompressProfile = 'web' | 'mobile' | 'archive'
 
 /** Optional SEO overrides for alternate entry points. Do NOT duplicate logic. */
 export type CompressVideoSeoProps = {
@@ -32,6 +33,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const [trimStart, setTrimStart] = useState<number | null>(null)
   const [trimEnd, setTrimEnd] = useState<number | null>(null)
   const [compressionLevel, setCompressionLevel] = useState<CompressionLevel>('medium')
+  const [compressProfile, setCompressProfile] = useState<CompressProfile | ''>('')
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
   const [progress, setProgress] = useState(0)
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string } | null>(null)
@@ -71,6 +73,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
       const response = await uploadFile(selectedFile, {
         toolType: BACKEND_TOOL_TYPES.COMPRESS_VIDEO,
         compressionLevel,
+        compressProfile: compressProfile || undefined,
         trimmedStart: trimStart ?? undefined,
         trimmedEnd: trimEnd ?? undefined,
       })
@@ -136,51 +139,83 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
 
         {status === 'idle' && (
           <div className="bg-white rounded-xl p-8 border border-gray-200 mb-6">
-            {/* Compression Level Selector */}
+            {/* Phase 1B: Profile (Web / Mobile / Archive) or legacy level */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Compression Level</label>
-              <div className="space-y-3">
-                <label className="flex items-center space-x-3 cursor-pointer p-4 border-2 rounded-lg hover:border-violet-400 transition-colors">
+              <label className="block text-sm font-medium text-gray-700 mb-3">Profile (recommended)</label>
+              <div className="flex flex-wrap gap-3 mb-3">
+                {(['web', 'mobile', 'archive'] as const).map((p) => (
+                  <label key={p} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="profile"
+                      value={p}
+                      checked={compressProfile === p}
+                      onChange={() => setCompressProfile(p)}
+                      className="text-violet-600 focus:ring-violet-500"
+                    />
+                    <span className="text-gray-700 capitalize">{p}</span>
+                  </label>
+                ))}
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
-                    name="compression"
-                    value="light"
-                    checked={compressionLevel === 'light'}
-                    onChange={(e) => setCompressionLevel(e.target.value as CompressionLevel)}
+                    name="profile"
+                    value=""
+                    checked={compressProfile === ''}
+                    onChange={() => setCompressProfile('')}
                     className="text-violet-600 focus:ring-violet-500"
                   />
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-800">Light (best quality, ~30% smaller)</div>
-                  </div>
-                </label>
-                <label className="flex items-center space-x-3 cursor-pointer p-4 border-2 border-violet-600 rounded-lg bg-violet-50">
-                  <input
-                    type="radio"
-                    name="compression"
-                    value="medium"
-                    checked={compressionLevel === 'medium'}
-                    onChange={(e) => setCompressionLevel(e.target.value as CompressionLevel)}
-                    className="text-violet-600 focus:ring-violet-500"
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-800">Medium (recommended, ~50% smaller)</div>
-                  </div>
-                </label>
-                <label className="flex items-center space-x-3 cursor-pointer p-4 border-2 rounded-lg hover:border-violet-400 transition-colors">
-                  <input
-                    type="radio"
-                    name="compression"
-                    value="heavy"
-                    checked={compressionLevel === 'heavy'}
-                    onChange={(e) => setCompressionLevel(e.target.value as CompressionLevel)}
-                    className="text-violet-600 focus:ring-violet-500"
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-800">Heavy (smallest size, ~70% smaller)</div>
-                  </div>
+                  <span className="text-gray-700">Custom level</span>
                 </label>
               </div>
             </div>
+
+            {compressProfile === '' && (
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">Compression Level</label>
+                <div className="space-y-3">
+                  <label className="flex items-center space-x-3 cursor-pointer p-4 border-2 rounded-lg hover:border-violet-400 transition-colors">
+                    <input
+                      type="radio"
+                      name="compression"
+                      value="light"
+                      checked={compressionLevel === 'light'}
+                      onChange={(e) => setCompressionLevel(e.target.value as CompressionLevel)}
+                      className="text-violet-600 focus:ring-violet-500"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-800">Light (best quality, ~30% smaller)</div>
+                    </div>
+                  </label>
+                  <label className="flex items-center space-x-3 cursor-pointer p-4 border-2 border-violet-600 rounded-lg bg-violet-50">
+                    <input
+                      type="radio"
+                      name="compression"
+                      value="medium"
+                      checked={compressionLevel === 'medium'}
+                      onChange={(e) => setCompressionLevel(e.target.value as CompressionLevel)}
+                      className="text-violet-600 focus:ring-violet-500"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-800">Medium (recommended, ~50% smaller)</div>
+                    </div>
+                  </label>
+                  <label className="flex items-center space-x-3 cursor-pointer p-4 border-2 rounded-lg hover:border-violet-400 transition-colors">
+                    <input
+                      type="radio"
+                      name="compression"
+                      value="heavy"
+                      checked={compressionLevel === 'heavy'}
+                      onChange={(e) => setCompressionLevel(e.target.value as CompressionLevel)}
+                      className="text-violet-600 focus:ring-violet-500"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-800">Heavy (smallest size, ~70% smaller)</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            )}
 
             {/* File Size Estimate */}
             {selectedFile && (

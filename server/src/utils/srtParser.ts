@@ -143,6 +143,13 @@ export function toVTT(entries: SubtitleEntry[]): string {
   return header + body
 }
 
+/**
+ * Convert subtitle entries to plain text (no timestamps). Derived utility for export.
+ */
+export function toTXT(entries: SubtitleEntry[]): string {
+  return entries.map((e) => e.text).join('\n\n')
+}
+
 function formatSRTTime(seconds: number): string {
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.floor((seconds % 3600) / 60)
