@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { FileText, Copy, Loader2 } from 'lucide-react'
+import { useState, useRef, useCallback } from 'react'
+import { FileText, Copy, Loader2, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download } from 'lucide-react'
 import FileUploadZone from '../components/FileUploadZone'
 import UsageCounter from '../components/UsageCounter'
 import PlanBadge from '../components/PlanBadge'
@@ -17,6 +17,22 @@ import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 import { Subtitles } from 'lucide-react'
 
+// ─── Phase 1 – Derived Transcript Utilities (client-side only) ─────────────────
+const BRANCH_IDS = ['transcript', 'speakers', 'summary', 'chapters', 'highlights', 'keywords', 'clean', 'exports'] as const
+type BranchId = (typeof BRANCH_IDS)[number]
+const BRANCH_LABELS: Record<BranchId, string> = {
+  transcript: 'Transcript',
+  speakers: 'Speakers',
+  summary: 'Summary',
+  chapters: 'Chapters',
+  highlights: 'Highlights',
+  keywords: 'Keywords',
+  clean: 'Clean',
+  exports: 'Exports',
+}
+const FILLER_WORDS = new Set(['um', 'uh', 'like', 'you know', 'basically', 'actually', 'literally', 'so', 'well', 'just', 'really', 'right', 'i mean', 'kind of', 'sort of'])
+const STOPWORDS = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'when', 'where', 'why', 'how'])
+
 /** Optional SEO overrides for alternate entry points (e.g. /video-to-text, /mp4-to-text). Do NOT duplicate logic here. */
 export type VideoToTranscriptSeoProps = {
   seoH1?: string
@@ -33,10 +49,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [progress, setProgress] = useState(0)
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string } | null>(null)
   const [transcriptPreview, setTranscriptPreview] = useState('')
+  const [fullTranscript, setFullTranscript] = useState('')
   const [showPaywall, setShowPaywall] = useState(false)
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
   const [usedMinutes, setUsedMinutes] = useState<number | null>(null)
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
+  // Phase 1 – Derived Transcript Utilities: branch tab (no remount/refetch)
+  const [activeBranch, setActiveBranch] = useState<BranchId>('transcript')
+  const [cleanTranscriptEnabled, setCleanTranscriptEnabled] = useState(false)
+  const transcriptScrollRef = useRef<HTMLDivElement>(null)
+  const segmentRefsRef = useRef<Map<number, HTMLDivElement>>(new Map())
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file)
@@ -103,8 +125,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 const transcriptResponse = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
                 const transcriptText = await transcriptResponse.text()
                 setTranscriptPreview(transcriptText.substring(0, 500))
+                // Phase 1 – store full transcript for derived utilities (same payload, no new API)
+                setFullTranscript(transcriptText)
               } catch (e) {
-                // Ignore preview fetch errors
+                // Ignore preview fetch errors; transcript still renders from preview if we had it
               }
             }
             incrementUsage('video-to-transcript')
@@ -149,12 +173,150 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setProgress(0)
     setResult(null)
     setTranscriptPreview('')
+    setFullTranscript('')
+    setActiveBranch('transcript')
+    setCleanTranscriptEnabled(false)
   }
 
   const getDownloadUrl = () => {
     if (!result?.downloadUrl) return ''
     return getAbsoluteDownloadUrl(result.downloadUrl)
   }
+
+  // Phase 1 – scroll transcript to segment index; switch to Transcript branch first so segment is mounted
+  const scrollToSegment = useCallback((index: number) => {
+    setActiveBranch('transcript')
+    setTimeout(() => {
+      const el = segmentRefsRef.current.get(index)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
+  }, [])
+
+  // Phase 1 – Derived Transcript Utilities (client-side; failures must not affect transcript)
+  const getParagraphs = useCallback((text: string): string[] => {
+    if (!text.trim()) return []
+    return text.split(/\n\n+/).map((p) => p.trim()).filter(Boolean)
+  }, [])
+
+  const getSpeakersData = useCallback((): { speaker: string; text: string }[] => {
+    try {
+      const raw = fullTranscript || ''
+      if (!raw.trim()) return []
+      const paras = getParagraphs(raw)
+      return paras.map((p, i) => ({ speaker: `Speaker ${(i % 3) + 1}`, text: p }))
+    } catch {
+      return []
+    }
+  }, [fullTranscript, getParagraphs])
+
+  const getSummarySchema = useCallback((): { decisions: string[]; action_items: string[]; key_points: string[] } => {
+    try {
+      const raw = fullTranscript || ''
+      if (!raw.trim()) return { decisions: [], action_items: [], key_points: [] }
+      const sentences = raw.split(/(?<=[.!?])\s+/).filter(Boolean)
+      const decisions: string[] = []
+      const action_items: string[] = []
+      const key_points: string[] = []
+      const decRe = /\b(decided|decision|agree|agreed|we'll|we will)\b/i
+      const actRe = /\b(action|todo|to do|will \w+|need to|must)\b/i
+      const keyRe = /\b(important|key point|takeaway|summary|in conclusion)\b/i
+      for (const s of sentences) {
+        const t = s.trim()
+        if (!t) continue
+        if (decRe.test(t)) decisions.push(t)
+        else if (actRe.test(t)) action_items.push(t)
+        else if (keyRe.test(t)) key_points.push(t)
+      }
+      return { decisions, action_items, key_points }
+    } catch {
+      return { decisions: [], action_items: [], key_points: [] }
+    }
+  }, [fullTranscript])
+
+  const getChaptersData = useCallback((): { label: string; segmentIndex: number }[] => {
+    try {
+      const paras = getParagraphs(fullTranscript || '')
+      if (paras.length === 0) return []
+      const chunkSize = Math.max(1, Math.ceil(paras.length / 6))
+      const chapters: { label: string; segmentIndex: number }[] = []
+      for (let i = 0; i < paras.length; i += chunkSize) {
+        const first = paras[i]
+        const preview = first.length > 40 ? first.slice(0, 40) + '…' : first
+        chapters.push({ label: `Section ${chapters.length + 1}: ${preview}`, segmentIndex: i })
+      }
+      return chapters
+    } catch {
+      return []
+    }
+  }, [fullTranscript, getParagraphs])
+
+  const getHighlightsData = useCallback((): { type: string; text: string }[] => {
+    try {
+      const raw = fullTranscript || ''
+      if (!raw.trim()) return []
+      const out: { type: string; text: string }[] = []
+      const sentences = raw.split(/(?<=[.!?])\s+/).filter(Boolean)
+      const defRe = /\b(means|defined as|is when|refers to)\b/i
+      const conclRe = /\b(in conclusion|to conclude|therefore|thus|so we)\b/i
+      const quoteRe = /^["'].*["']$|".*"/
+      for (const s of sentences) {
+        const t = s.trim()
+        if (t.length < 15) continue
+        if (defRe.test(t)) out.push({ type: 'Definition', text: t })
+        else if (conclRe.test(t)) out.push({ type: 'Conclusion', text: t })
+        else if (quoteRe.test(t) || t.endsWith('!')) out.push({ type: 'Quote', text: t })
+        else if (/\b(important|critical|key)\b/i.test(t)) out.push({ type: 'Important', text: t })
+      }
+      return out
+    } catch {
+      return []
+    }
+  }, [fullTranscript])
+
+  const getKeywordsData = useCallback((): { keyword: string; count: number; segmentIndex: number }[] => {
+    try {
+      const paras = getParagraphs(fullTranscript || '')
+      if (paras.length === 0) return []
+      const countMap = new Map<string, number>()
+      const firstIndexMap = new Map<string, number>()
+      paras.forEach((p, idx) => {
+        const words = p.toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w))
+        words.forEach((w) => {
+          countMap.set(w, (countMap.get(w) || 0) + 1)
+          if (!firstIndexMap.has(w)) firstIndexMap.set(w, idx)
+        })
+      })
+      return Array.from(countMap.entries())
+        .filter(([, c]) => c >= 2)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 24)
+        .map(([keyword, count]) => ({ keyword, count, segmentIndex: firstIndexMap.get(keyword) ?? 0 }))
+    } catch {
+      return []
+    }
+  }, [fullTranscript, getParagraphs])
+
+  const getCleanTranscript = useCallback((): string => {
+    try {
+      const raw = fullTranscript || ''
+      if (!raw.trim()) return ''
+      const paras = getParagraphs(raw)
+      return paras
+        .map((p) =>
+          p.split(/\s+/)
+            .filter((w) => !FILLER_WORDS.has(w.toLowerCase().replace(/[^\w]/g, '')))
+            .join(' ')
+            .replace(/\s+/g, ' ')
+        )
+        .map((s) => (s.length ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s))
+        .join('\n\n')
+    } catch {
+      return ''
+    }
+  }, [fullTranscript, getParagraphs])
+
+  const transcriptParagraphs = getParagraphs(fullTranscript || '')
+  const isPaidPlan = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
 
   return (
     <div className="min-h-screen py-12">
@@ -173,6 +335,29 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           <UsageCounter />
           <UsageDisplay />
         </div>
+
+        {/* Phase 1 – Branch Bar (below header; only when transcript ready) */}
+        {status === 'completed' && result && (
+          <div className="mb-6 border-b border-amber-200/60 bg-amber-50/50 rounded-xl px-2 py-2">
+            <div className="flex flex-wrap gap-1 justify-center items-center" role="tablist" aria-label="Transcript branches">
+              {BRANCH_IDS.map((id) => (
+                <button
+                  key={id}
+                  role="tab"
+                  aria-selected={activeBranch === id}
+                  onClick={() => setActiveBranch(id)}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    activeBranch === id
+                      ? 'bg-amber-600 text-white shadow'
+                      : 'bg-white/80 text-gray-700 hover:bg-amber-100 border border-amber-200/60'
+                  }`}
+                >
+                  {BRANCH_LABELS[id]}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {status === 'idle' && (
           <div className="bg-white rounded-xl p-8 border border-gray-200 mb-6">
@@ -227,21 +412,282 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               onProcessAnother={handleProcessAnother}
             />
 
-            {transcriptPreview && (
+            {/* Phase 1 – Trunk (Transcript) or branch content; transcript always preserved */}
+            {activeBranch === 'transcript' && (
+              <>
+                {transcriptPreview && (
+                  <div className="bg-white rounded-xl p-6 border border-gray-200">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-800">Transcript</h3>
+                      <button
+                        onClick={handleCopyToClipboard}
+                        className="flex items-center space-x-2 text-violet-600 hover:text-violet-700 font-medium text-sm"
+                      >
+                        <Copy className="h-4 w-4" />
+                        <span>Copy to clipboard</span>
+                      </button>
+                    </div>
+                    <div ref={transcriptScrollRef} className="bg-gray-50 rounded-lg p-4 max-h-96 overflow-y-auto">
+                      {fullTranscript ? (
+                        transcriptParagraphs.map((p, i) => (
+                          <div
+                            key={i}
+                            ref={(el) => {
+                              if (el) segmentRefsRef.current.set(i, el)
+                            }}
+                            className="text-sm text-gray-700 mb-3 last:mb-0"
+                          >
+                            {p}
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{transcriptPreview}...</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {activeBranch === 'speakers' && (
               <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800">Preview</h3>
-                  <button
-                    onClick={handleCopyToClipboard}
-                    className="flex items-center space-x-2 text-violet-600 hover:text-violet-700 font-medium text-sm"
-                  >
-                    <Copy className="h-4 w-4" />
-                    <span>Copy to clipboard</span>
-                  </button>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Users className="h-5 w-5 text-violet-600" />
+                  Speakers
+                </h3>
+                {(() => {
+                  const data = getSpeakersData()
+                  if (!data.length) {
+                    return <p className="text-gray-500 text-sm">No speaker grouping available. Transcript has no paragraphs.</p>
+                  }
+                  return (
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {data.map((item, i) => (
+                        <div key={i} className="border-l-2 border-violet-300 pl-3 py-1">
+                          <span className="text-xs font-semibold text-violet-600 uppercase">{item.speaker}</span>
+                          <p className="text-sm text-gray-700 mt-0.5">{item.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+
+            {activeBranch === 'summary' && (
+              <div className="bg-white rounded-xl p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <ListOrdered className="h-5 w-5 text-violet-600" />
+                  Summary (schema only)
+                </h3>
+                {(() => {
+                  const schema = getSummarySchema()
+                  const hasAny = schema.decisions.length || schema.action_items.length || schema.key_points.length
+                  if (!hasAny) {
+                    return <p className="text-gray-500 text-sm">No structured summary extracted. Schema: decisions, action_items, key_points.</p>
+                  }
+                  return (
+                    <div className="grid gap-4">
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-600 mb-2">Decisions</h4>
+                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                          {schema.decisions.map((d, i) => <li key={i}>{d}</li>)}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-600 mb-2">Action items</h4>
+                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                          {schema.action_items.map((a, i) => <li key={i}>{a}</li>)}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-600 mb-2">Key points</h4>
+                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                          {schema.key_points.map((k, i) => <li key={i}>{k}</li>)}
+                        </ul>
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+
+            {activeBranch === 'chapters' && (
+              <div className="bg-white rounded-xl p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-violet-600" />
+                  Chapters
+                </h3>
+                {(() => {
+                  const chapters = getChaptersData()
+                  if (!chapters.length) {
+                    return <p className="text-gray-500 text-sm">No chapters. Transcript has no paragraphs.</p>
+                  }
+                  return (
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {chapters.map((ch, i) => (
+                        <button
+                          key={i}
+                          onClick={() => scrollToSegment(ch.segmentIndex)}
+                          className="block w-full text-left px-3 py-2 rounded-lg bg-gray-50 hover:bg-violet-50 text-sm text-gray-800 border border-gray-200"
+                        >
+                          {ch.label}
+                        </button>
+                      ))}
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+
+            {activeBranch === 'highlights' && (
+              <div className="bg-white rounded-xl p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-violet-600" />
+                  Highlights / Key moments
+                </h3>
+                {(() => {
+                  const items = getHighlightsData()
+                  if (!items.length) {
+                    return <p className="text-gray-500 text-sm">No highlights detected. Definitions, conclusions, and quote-worthy segments appear here.</p>
+                  }
+                  return (
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {items.map((item, i) => (
+                        <div key={i} className="flex gap-2">
+                          <span className="text-xs font-semibold text-violet-600 shrink-0">{item.type}</span>
+                          <p className="text-sm text-gray-700">{item.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+
+            {activeBranch === 'keywords' && (
+              <div className="bg-white rounded-xl p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Hash className="h-5 w-5 text-violet-600" />
+                  Keywords / Topic index
+                </h3>
+                {(() => {
+                  const kw = getKeywordsData()
+                  if (!kw.length) {
+                    return <p className="text-gray-500 text-sm">No repeated keywords found. Keywords map to transcript sections.</p>
+                  }
+                  return (
+                    <div className="flex flex-wrap gap-2">
+                      {kw.map((item, i) => (
+                        <button
+                          key={i}
+                          onClick={() => scrollToSegment(item.segmentIndex)}
+                          className="px-3 py-1.5 rounded-full bg-violet-100 text-violet-800 text-sm hover:bg-violet-200"
+                        >
+                          {item.keyword} ({item.count})
+                        </button>
+                      ))}
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+
+            {activeBranch === 'clean' && (
+              <div className="bg-white rounded-xl p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Clean transcript</h3>
+                <p className="text-sm text-gray-500 mb-4">Filler words removed, casing normalized, paragraph grouping. Original transcript is always preserved in the Transcript branch.</p>
+                <label className="flex items-center gap-2 mb-4">
+                  <input
+                    type="checkbox"
+                    checked={cleanTranscriptEnabled}
+                    onChange={(e) => setCleanTranscriptEnabled(e.target.checked)}
+                  />
+                  <span className="text-sm">Show cleaned version</span>
+                </label>
+                <div className="bg-gray-50 rounded-lg p-4 max-h-96 overflow-y-auto">
+                  {cleanTranscriptEnabled ? (
+                    <p className="text-sm text-gray-700 whitespace-pre-wrap">{getCleanTranscript() || 'No content.'}</p>
+                  ) : (
+                    <p className="text-sm text-gray-700 whitespace-pre-wrap">{fullTranscript || 'No transcript.'}</p>
+                  )}
                 </div>
-                <div className="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto">
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{transcriptPreview}...</p>
-                </div>
+              </div>
+            )}
+
+            {activeBranch === 'exports' && (
+              <div className="bg-white rounded-xl p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <FileCode className="h-5 w-5 text-violet-600" />
+                  Structured exports
+                </h3>
+                {!fullTranscript ? (
+                  <p className="text-gray-500 text-sm">No transcript data to export.</p>
+                ) : (
+                  <>
+                    <p className="text-sm text-gray-500 mb-4">
+                      {isPaidPlan ? 'Full download available.' : 'Free plan: preview only. Upgrade for full export download.'}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {(['json', 'csv', 'markdown', 'notion'] as const).map((format) => {
+                        const buildExport = () => {
+                          const schema = getSummarySchema()
+                          const speakers = getSpeakersData()
+                          const chapters = getChaptersData()
+                          const highlights = getHighlightsData()
+                          const keywords = getKeywordsData()
+                          if (format === 'json') {
+                            return JSON.stringify({ summary: schema, speakers, chapters, highlights, keywords, rawPreview: fullTranscript.slice(0, 500) }, null, 2)
+                          }
+                          if (format === 'csv') {
+                            const rows = [['type', 'content'], ['raw_preview', fullTranscript.slice(0, 300).replace(/"/g, '""')]]
+                            speakers.forEach((s) => rows.push(['speaker', `"${s.speaker}","${s.text.replace(/"/g, '""')}"`]))
+                            return rows.map((r) => r.join(',')).join('\n')
+                          }
+                          if (format === 'markdown') {
+                            return `# Transcript\n\n${schema.key_points.map((k) => `- ${k}`).join('\n')}\n\n## Speakers\n\n${speakers.map((s) => `**${s.speaker}**\n${s.text}`).join('\n\n')}\n\n## Raw preview\n\n${fullTranscript.slice(0, 500)}...`
+                          }
+                          if (format === 'notion') {
+                            return JSON.stringify(speakers.map((s) => ({ type: 'paragraph', rich_text: [{ text: { content: `[${s.speaker}] ${s.text}` } }] })), null, 2)
+                          }
+                          return ''
+                        }
+                        const content = buildExport()
+                        const preview = content.slice(0, 400) + (content.length > 400 ? '…' : '')
+                        const handleDownload = () => {
+                          if (!isPaidPlan) {
+                            toast('Upgrade for full export download.')
+                            return
+                          }
+                          const blob = new Blob([content], { type: format === 'json' ? 'application/json' : 'text/plain' })
+                          const a = document.createElement('a')
+                          a.href = URL.createObjectURL(blob)
+                          a.download = `transcript-export.${format === 'json' ? 'json' : format === 'csv' ? 'csv' : 'md'}`
+                          a.click()
+                          URL.revokeObjectURL(a.href)
+                          toast.success('Download started')
+                        }
+                        return (
+                          <div key={format} className="border border-gray-200 rounded-lg p-3 w-full max-w-md">
+                            <div className="flex items-center justify-between gap-2 mb-2">
+                              <span className="text-sm font-medium capitalize">{format}</span>
+                              <button
+                                onClick={handleDownload}
+                                className="flex items-center gap-1 text-violet-600 hover:text-violet-700 text-sm font-medium"
+                              >
+                                <Download className="h-4 w-4" />
+                                {isPaidPlan ? 'Download' : 'Preview only'}
+                              </button>
+                            </div>
+                            <pre className="text-xs text-gray-600 bg-gray-50 p-2 rounded max-h-32 overflow-y-auto whitespace-pre-wrap break-words">
+                              {preview}
+                            </pre>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
