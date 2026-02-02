@@ -83,9 +83,7 @@ export default function CompressVideo() {
             toast.error('Processing failed. Please try again.')
           }
         } catch (error: any) {
-          clearInterval(pollIntervalRef.current)
-          setStatus('failed')
-          toast.error(error.message || 'Failed to get job status')
+          // Only jobStatus.status === 'failed' is failure; network/parse errors => keep polling
         }
       }
       pollIntervalRef.current = setInterval(doPoll, 2000)
