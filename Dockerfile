@@ -1,9 +1,14 @@
 # Single image for API and worker. Node 18 LTS.
 FROM node:20-slim
 
-# FFmpeg + ffprobe required by workers (transcription, burn, compress, trim).
+# System dependencies (ffmpeg for workers; yt-dlp for URL-based video import).
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
+    python3 \
+    python3-pip \
+    curl \
+    && pip3 install --no-cache-dir yt-dlp \
+    && ln -sf /usr/local/bin/yt-dlp /usr/bin/yt-dlp \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
