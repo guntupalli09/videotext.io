@@ -1,14 +1,14 @@
 # Single image for API and worker. Node 18 LTS.
 FROM node:20-slim
 
-# System dependencies (ffmpeg for workers; yt-dlp for URL-based video import).
+# System dependencies (ffmpeg for workers; yt-dlp binary for URL-based video import).
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
-    python3 \
-    python3-pip \
     curl \
-    && pip3 install --no-cache-dir yt-dlp \
-    && ln -sf /usr/local/bin/yt-dlp /usr/bin/yt-dlp \
+    ca-certificates \
+    && curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
+        -o /usr/local/bin/yt-dlp \
+    && chmod +x /usr/local/bin/yt-dlp \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
