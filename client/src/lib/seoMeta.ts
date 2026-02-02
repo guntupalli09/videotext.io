@@ -47,6 +47,32 @@ export const ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans. Multi-language optional.',
   },
+  // SEO utility pages: same tools, alternate entry points. No new API or logic.
+  '/video-to-text': {
+    title: 'Video to Text Online – Fast & Accurate | VideoText',
+    description:
+      'Convert video to text online. Upload any video, get a plain-text transcript in seconds. No signup required for the free tier.',
+  },
+  '/mp4-to-text': {
+    title: 'MP4 to Text Online – Fast & Accurate | VideoText',
+    description:
+      'Convert MP4 to text online. Upload your MP4, get an accurate transcript. Fast and no signup required for the free tier.',
+  },
+  '/mp4-to-srt': {
+    title: 'MP4 to SRT Online – Fast & Accurate | VideoText',
+    description:
+      'Generate SRT subtitles from MP4 video. Upload your file, pick SRT or VTT, download timed captions. No signup required for the free tier.',
+  },
+  '/subtitle-generator': {
+    title: 'Subtitle Generator Online – Fast & Accurate | VideoText',
+    description:
+      'Generate subtitles from video in one click. Upload any video, get SRT or VTT with accurate timestamps. Fast and free tier available.',
+  },
+  '/srt-translator': {
+    title: 'SRT Translator Online – Fast & Accurate | VideoText',
+    description:
+      'Translate SRT subtitle files to another language. Upload your SRT or VTT, choose target language, download translated captions with timestamps intact.',
+  },
 }
 
 /** JSON-LD Organization + WebApplication for rich results (homepage or global). */

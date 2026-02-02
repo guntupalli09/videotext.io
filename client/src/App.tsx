@@ -13,6 +13,12 @@ import TranslateSubtitles from './pages/TranslateSubtitles'
 import FixSubtitles from './pages/FixSubtitles'
 import BurnSubtitles from './pages/BurnSubtitles'
 import CompressVideo from './pages/CompressVideo'
+// SEO entry points: reuse same tool components. Do NOT add new API or duplicate logic.
+import VideoToTextPage from './pages/seo/VideoToTextPage'
+import Mp4ToTextPage from './pages/seo/Mp4ToTextPage'
+import Mp4ToSrtPage from './pages/seo/Mp4ToSrtPage'
+import SubtitleGeneratorPage from './pages/seo/SubtitleGeneratorPage'
+import SrtTranslatorPage from './pages/seo/SrtTranslatorPage'
 
 function AppSeo() {
   const { pathname } = useLocation()
@@ -48,6 +54,12 @@ function App() {
             <Route path="/fix-subtitles" element={<FixSubtitles />} />
             <Route path="/burn-subtitles" element={<BurnSubtitles />} />
             <Route path="/compress-video" element={<CompressVideo />} />
+            {/* SEO utility routes: same tools, alternate URLs. No backend or behavior change. */}
+            <Route path="/video-to-text" element={<VideoToTextPage />} />
+            <Route path="/mp4-to-text" element={<Mp4ToTextPage />} />
+            <Route path="/mp4-to-srt" element={<Mp4ToSrtPage />} />
+            <Route path="/subtitle-generator" element={<SubtitleGeneratorPage />} />
+            <Route path="/srt-translator" element={<SrtTranslatorPage />} />
           </Routes>
         </main>
         <Footer />

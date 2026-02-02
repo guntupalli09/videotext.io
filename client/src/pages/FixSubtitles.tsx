@@ -15,7 +15,15 @@ import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import toast from 'react-hot-toast'
 import { Film, Languages } from 'lucide-react'
 
-export default function FixSubtitles() {
+/** Optional SEO overrides for alternate entry points. Do NOT duplicate logic. */
+export type FixSubtitlesSeoProps = {
+  seoH1?: string
+  seoIntro?: string
+  faq?: { q: string; a: string }[]
+}
+
+export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
+  const { seoH1, seoIntro, faq = [] } = props
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [issues, setIssues] = useState<any[]>([])
   const [showIssues, setShowIssues] = useState(false)
@@ -193,9 +201,9 @@ export default function FixSubtitles() {
           <div className="bg-violet-100 rounded-xl p-4 w-16 h-16 flex items-center justify-center mx-auto mb-4">
             <Wrench className="h-8 w-8 text-violet-600" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Fix Subtitles</h1>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">{seoH1 ?? 'Fix Subtitles'}</h1>
           <p className="text-lg text-gray-600 mb-6">
-            Auto-correct timing issues and formatting errors
+            {seoIntro ?? 'Auto-correct timing issues and formatting errors'}
           </p>
           <UsageCounter />
           <UsageDisplay />
@@ -353,6 +361,20 @@ export default function FixSubtitles() {
               Try again
             </button>
           </div>
+        )}
+
+        {faq.length > 0 && (
+          <section className="mt-12 pt-8 border-t border-gray-200" aria-label="FAQ">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Frequently asked questions</h2>
+            <dl className="space-y-4">
+              {faq.map((item, i) => (
+                <div key={i}>
+                  <dt className="font-medium text-gray-800">{item.q}</dt>
+                  <dd className="mt-1 text-gray-600">{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
         )}
       </div>
     </div>
