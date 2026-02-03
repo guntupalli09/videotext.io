@@ -9,8 +9,8 @@ import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
 import UsageDisplay from '../components/UsageDisplay'
 import SubtitleEditor, { SubtitleRow } from '../components/SubtitleEditor'
-import { checkLimit, incrementUsage } from '../lib/usage'
-import { uploadFile, getJobStatus, BACKEND_TOOL_TYPES } from '../lib/api'
+import { incrementUsage } from '../lib/usage'
+import { uploadFile, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES } from '../lib/api'
 import { getJobLifecycleTransition } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import toast from 'react-hot-toast'
@@ -36,6 +36,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; consistencyIssues?: { line: number; issueType: string }[] } | null>(null)
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
   const [showPaywall, setShowPaywall] = useState(false)
+  const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
+  const [usedMinutes, setUsedMinutes] = useState<number | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const canEdit = plan !== 'free'
@@ -76,9 +78,19 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   }
 
   const handleProcess = async () => {
-    if (checkLimit('translate-subtitles')) {
-      setShowPaywall(true)
-      return
+    try {
+      const usageData = await getCurrentUsage()
+      const totalAvailable = usageData.limits.minutesPerMonth + usageData.overages.minutes
+      const used = usageData.usage.totalMinutes
+      setAvailableMinutes(totalAvailable)
+      setUsedMinutes(used)
+      const atOrOverLimit = totalAvailable > 0 && used >= totalAvailable
+      if (atOrOverLimit) {
+        setShowPaywall(true)
+        return
+      }
+    } catch {
+      // If usage lookup fails, fall back to allowing processing
     }
 
     try {
@@ -349,8 +361,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
         <PaywallModal
           isOpen={showPaywall}
           onClose={() => setShowPaywall(false)}
-          usedMinutes={0}
-          availableMinutes={0}
+          usedMinutes={usedMinutes ?? 0}
+          availableMinutes={availableMinutes ?? 0}
           onUpgrade={() => {
             window.location.href = '/pricing'
           }}

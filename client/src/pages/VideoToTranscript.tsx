@@ -9,7 +9,7 @@ import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
 import UsageDisplay from '../components/UsageDisplay'
 import VideoTrimmer from '../components/VideoTrimmer'
-import { checkLimit, incrementUsage } from '../lib/usage'
+import { incrementUsage } from '../lib/usage'
 import { uploadFile, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES } from '../lib/api'
 import { getJobLifecycleTransition } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
@@ -77,13 +77,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   }
 
   const handleProcess = async () => {
-    // Check simple per-tool limit (Phase 1.5 local counter)
-    if (checkLimit('video-to-transcript')) {
-      setShowPaywall(true)
-      return
-    }
-
-    // Check backend minute-based limits (Phase 2)
+    // Check backend minute-based limits only (no local counter — minutes are source of truth)
     try {
       const usageData = await getCurrentUsage()
       const totalAvailable = usageData.limits.minutesPerMonth + usageData.overages.minutes

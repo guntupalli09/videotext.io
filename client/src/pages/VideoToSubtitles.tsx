@@ -11,7 +11,7 @@ import UsageDisplay from '../components/UsageDisplay'
 import VideoTrimmer from '../components/VideoTrimmer'
 import LanguageSelector from '../components/LanguageSelector'
 import SubtitleEditor, { SubtitleRow } from '../components/SubtitleEditor'
-import { checkLimit, incrementUsage } from '../lib/usage'
+import { incrementUsage } from '../lib/usage'
 import { uploadFile, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES } from '../lib/api'
 import { getJobLifecycleTransition } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
@@ -96,12 +96,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   }
 
   const handleProcess = async () => {
-    if (checkLimit('video-to-subtitles')) {
-      setShowPaywall(true)
-      return
-    }
-
-    // Check backend minute-based limits (Phase 2)
+    // Check backend minute-based limits only (no local counter — minutes are source of truth)
     try {
       const usageData = await getCurrentUsage()
       const totalAvailable = usageData.limits.minutesPerMonth + usageData.overages.minutes

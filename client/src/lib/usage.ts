@@ -3,15 +3,6 @@ export interface UsageData {
   resetDate: string
 }
 
-const FREE_LIMITS: Record<string, number> = {
-  'video-to-transcript': 5,
-  'video-to-subtitles': 10,
-  'translate-subtitles': 3,
-  'fix-subtitles': 999999, // unlimited
-  'burn-subtitles': 2,
-  'compress-video': 5,
-}
-
 export function getUsage(toolName: string): UsageData {
   const usageKey = `videotool_usage_${toolName}`
   const stored = localStorage.getItem(usageKey)
@@ -51,12 +42,7 @@ export function incrementUsage(toolName: string): void {
   localStorage.setItem(usageKey, JSON.stringify(usage))
 }
 
-export function checkLimit(toolName: string): boolean {
-  const usage = getUsage(toolName)
-  const limit = FREE_LIMITS[toolName] || 999999
-  return usage.count >= limit
-}
-
-export function getLimit(toolName: string): number {
-  return FREE_LIMITS[toolName] || 999999
+/** No per-tool use limit; only backend minute limit applies. Kept for backwards compatibility if needed. */
+export function getLimit(_toolName: string): number {
+  return 999999
 }

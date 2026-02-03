@@ -9,8 +9,8 @@ import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
 import UsageDisplay from '../components/UsageDisplay'
 import VideoTrimmer from '../components/VideoTrimmer'
-import { checkLimit, incrementUsage } from '../lib/usage'
-import { uploadFile, getJobStatus, BACKEND_TOOL_TYPES } from '../lib/api'
+import { incrementUsage } from '../lib/usage'
+import { uploadFile, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES } from '../lib/api'
 import { getJobLifecycleTransition } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import toast from 'react-hot-toast'
@@ -38,6 +38,8 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const [progress, setProgress] = useState(0)
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string } | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
+  const [usedMinutes, setUsedMinutes] = useState<number | null>(null)
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file)
@@ -56,14 +58,24 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   }
 
   const handleProcess = async () => {
-    if (checkLimit('compress-video')) {
-      setShowPaywall(true)
-      return
-    }
-
     if (!selectedFile) {
       toast.error('Please select a file')
       return
+    }
+
+    try {
+      const usageData = await getCurrentUsage()
+      const totalAvailable = usageData.limits.minutesPerMonth + usageData.overages.minutes
+      const used = usageData.usage.totalMinutes
+      setAvailableMinutes(totalAvailable)
+      setUsedMinutes(used)
+      const atOrOverLimit = totalAvailable > 0 && used >= totalAvailable
+      if (atOrOverLimit) {
+        setShowPaywall(true)
+        return
+      }
+    } catch {
+      // If usage lookup fails, fall back to allowing processing
     }
 
     try {
@@ -319,8 +331,8 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
         <PaywallModal
           isOpen={showPaywall}
           onClose={() => setShowPaywall(false)}
-          usedMinutes={0}
-          availableMinutes={0}
+          usedMinutes={usedMinutes ?? 0}
+          availableMinutes={availableMinutes ?? 0}
           onUpgrade={() => {
             window.location.href = '/pricing'
           }}

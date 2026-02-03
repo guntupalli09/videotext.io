@@ -9,8 +9,8 @@ import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
 import UsageDisplay from '../components/UsageDisplay'
 import VideoTrimmer from '../components/VideoTrimmer'
-import { checkLimit, incrementUsage } from '../lib/usage'
-import { uploadDualFiles, getJobStatus, BACKEND_TOOL_TYPES } from '../lib/api'
+import { incrementUsage } from '../lib/usage'
+import { uploadDualFiles, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES } from '../lib/api'
 import { getJobLifecycleTransition } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import toast from 'react-hot-toast'
@@ -36,6 +36,8 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const [progress, setProgress] = useState(0)
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string } | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
+  const [usedMinutes, setUsedMinutes] = useState<number | null>(null)
 
   const handleVideoSelect = (file: File) => {
     setVideoFile(file)
@@ -48,14 +50,24 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   }
 
   const handleProcess = async () => {
-    if (checkLimit('burn-subtitles')) {
-      setShowPaywall(true)
-      return
-    }
-
     if (!videoFile || !subtitleFile) {
       toast.error('Please upload both video and subtitle files')
       return
+    }
+
+    try {
+      const usageData = await getCurrentUsage()
+      const totalAvailable = usageData.limits.minutesPerMonth + usageData.overages.minutes
+      const used = usageData.usage.totalMinutes
+      setAvailableMinutes(totalAvailable)
+      setUsedMinutes(used)
+      const atOrOverLimit = totalAvailable > 0 && used >= totalAvailable
+      if (atOrOverLimit) {
+        setShowPaywall(true)
+        return
+      }
+    } catch {
+      // If usage lookup fails, fall back to allowing processing
     }
 
     try {
@@ -259,8 +271,8 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
         <PaywallModal
           isOpen={showPaywall}
           onClose={() => setShowPaywall(false)}
-          usedMinutes={0}
-          availableMinutes={0}
+          usedMinutes={usedMinutes ?? 0}
+          availableMinutes={availableMinutes ?? 0}
           onUpgrade={() => {
             window.location.href = '/pricing'
           }}
