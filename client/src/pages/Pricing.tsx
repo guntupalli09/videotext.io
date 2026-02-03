@@ -2,6 +2,14 @@ import { createCheckoutSession } from '../lib/billing'
 import { trackEvent } from '../lib/analytics'
 import type { BillingPlan } from '../lib/billing'
 
+function CheckIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg className={`w-4 h-4 shrink-0 text-emerald-500 ${className}`} fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+    </svg>
+  )
+}
+
 export default function Pricing() {
   async function handleSubscribe(plan: BillingPlan, annual = false) {
     try {
@@ -24,20 +32,17 @@ export default function Pricing() {
     }
   }
 
-  const cardBase =
-    'bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 flex flex-col'
-  const subhead = 'text-sm text-gray-600 leading-relaxed'
-  const limits = 'text-xs text-gray-500 mt-1'
-  const bullets = 'mt-4 space-y-2 text-sm text-gray-600 flex-1'
+  const bulletRow = 'flex items-start gap-2.5 text-sm text-gray-600'
+  const limitsClass = 'text-xs text-gray-500 mt-1'
   const noteBox =
     'text-xs text-gray-600 bg-gray-50 rounded-lg px-3 py-2.5 mt-4 border border-gray-100 italic'
   const noteBoxPro =
     'text-xs text-violet-800 bg-violet-50/50 rounded-lg px-3 py-2.5 mt-4 border border-violet-100'
 
   return (
-    <div className="min-h-screen py-16 sm:py-20 bg-gray-50/50">
+    <div className="min-h-screen py-16 sm:py-24 bg-gradient-to-b from-gray-50/90 to-gray-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="text-center mb-14">
+        <header className="text-center mb-14 sm:mb-16">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
             Pricing
           </h1>
@@ -46,28 +51,26 @@ export default function Pricing() {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* FREE — $0 */}
-          <div className={`${cardBase} border-gray-100 min-h-[420px]`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 items-stretch">
+          {/* FREE — $0 — muted, lightweight */}
+          <div className="flex flex-col bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6 sm:p-8 min-h-[480px] hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-900">Free</h3>
-              <span className="text-2xl font-bold text-gray-900">$0</span>
+              <h3 className="text-xl font-semibold text-gray-700">Free</h3>
+              <span className="text-2xl font-bold text-gray-800">$0</span>
             </div>
-            <p className="mt-3 text-base font-medium text-gray-900">
-              Try the magic
-            </p>
-            <p className={`mt-1 ${subhead}`}>
+            <p className="mt-3 text-base font-medium text-gray-800">Try it</p>
+            <p className="mt-1 text-sm text-gray-500 leading-relaxed">
               Short clips · Single language · Watermarked
             </p>
-            <ul className={bullets}>
-              <li>Video → Transcript</li>
-              <li>Video → Subtitles</li>
-              <li>1 language</li>
-              <li>Watermark on subtitles</li>
-              <li>No batch processing</li>
+            <ul className="mt-5 space-y-2.5 flex-1">
+              <li className={bulletRow}><CheckIcon /><span>Video → Transcript</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Video → Subtitles</span></li>
+              <li className={bulletRow}><CheckIcon /><span>1 language</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Watermark on subtitles</span></li>
+              <li className={bulletRow}><CheckIcon /><span>No batch processing</span></li>
             </ul>
-            <p className={limits}>60 min / month</p>
-            <p className={limits}>Up to 5 min per video</p>
+            <p className={limitsClass}>60 min / month</p>
+            <p className={limitsClass}>Up to 5 min per video</p>
             <p className={noteBox}>
               Free jobs may queue longer during peak times.
             </p>
@@ -79,8 +82,8 @@ export default function Pricing() {
             </button>
           </div>
 
-          {/* BASIC — $19 / month (450 min) */}
-          <div className={`${cardBase} border-gray-100 min-h-[420px]`}>
+          {/* BASIC — $19 — clean, professional */}
+          <div className="flex flex-col bg-white rounded-2xl border border-gray-200 shadow p-6 sm:p-8 min-h-[480px] hover:shadow-lg hover:border-gray-300 transition-all duration-200">
             <h3 className="text-xl font-semibold text-gray-900">Basic</h3>
             <div className="mt-2 flex items-baseline gap-1">
               <span className="text-2xl font-bold text-gray-900">$19</span>
@@ -89,20 +92,18 @@ export default function Pricing() {
             <p className="mt-0.5 text-xs text-gray-500">
               $15 / month billed annually
             </p>
-            <p className="mt-3 text-base font-medium text-gray-900">
-              For light, occasional use
-            </p>
-            <p className={`mt-1 ${subhead}`}>
+            <p className="mt-3 text-base font-medium text-gray-900">For individuals</p>
+            <p className="mt-1 text-sm text-gray-600 leading-relaxed">
               Clean subtitles without watermarks
             </p>
-            <ul className={bullets}>
-              <li>Subtitle editing unlocked</li>
-              <li>2 languages (your choice)</li>
-              <li>No watermark</li>
-              <li>No batch processing</li>
+            <ul className="mt-5 space-y-2.5 flex-1">
+              <li className={bulletRow}><CheckIcon /><span>Subtitle editing unlocked</span></li>
+              <li className={bulletRow}><CheckIcon /><span>2 languages (your choice)</span></li>
+              <li className={bulletRow}><CheckIcon /><span>No watermark</span></li>
+              <li className={bulletRow}><CheckIcon /><span>No batch processing</span></li>
             </ul>
-            <p className={limits}>450 min / month</p>
-            <p className={limits}>Up to 30 min per video</p>
+            <p className={limitsClass}>450 min / month</p>
+            <p className={limitsClass}>Up to 30 min per video</p>
             <p className={noteBox}>
               Usable — but designed to push Pro for real workflows.
             </p>
@@ -122,14 +123,12 @@ export default function Pricing() {
             </div>
           </div>
 
-          {/* PRO — $29 / month 🏆 */}
-          <div
-            className={`${cardBase} border-violet-500 relative min-h-[420px] shadow-lg shadow-violet-500/10`}
-          >
-            <span className="absolute top-4 right-4 bg-violet-600 text-white text-xs font-medium px-2.5 py-1 rounded-full">
+          {/* PRO — $49 — dominant, primary CTA */}
+          <div className="relative flex flex-col bg-white rounded-2xl border-2 border-violet-500 shadow-xl shadow-violet-500/20 p-6 sm:p-8 min-h-[480px] lg:scale-[1.03] z-10 hover:shadow-2xl hover:shadow-violet-500/25 transition-all duration-200">
+            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm whitespace-nowrap">
               Most Popular
             </span>
-            <h3 className="text-xl font-semibold text-gray-900">Pro</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mt-1">Pro</h3>
             <div className="mt-2 flex items-baseline gap-1">
               <span className="text-2xl font-bold text-gray-900">$49</span>
               <span className="text-sm text-gray-500">/ month</span>
@@ -137,27 +136,25 @@ export default function Pricing() {
             <p className="mt-0.5 text-xs text-gray-500">
               $39 / month billed annually
             </p>
-            <p className="mt-3 text-base font-medium text-gray-900">
-              Finish real video workflows
-            </p>
-            <p className={`mt-1 ${subhead}`}>
+            <p className="mt-3 text-base font-medium text-gray-900">For serious creators</p>
+            <p className="mt-1 text-sm text-gray-600 leading-relaxed">
               Batch processing · Long-form videos · Priority queue
             </p>
-            <ul className={bullets}>
-              <li>Batch processing</li>
-              <li>Up to 5 languages</li>
-              <li>Long-form video support</li>
+            <ul className="mt-5 space-y-2.5 flex-1">
+              <li className={bulletRow}><CheckIcon /><span>Batch processing</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Up to 5 languages</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Long-form video support</span></li>
             </ul>
             <p className="text-xs text-gray-500 mt-1">20 videos per batch · 60 min per batch</p>
-            <p className={limits}>1,200 min / month</p>
-            <p className={limits}>Up to 120 min per video</p>
+            <p className={limitsClass}>1,200 min / month</p>
+            <p className={limitsClass}>Up to 120 min per video</p>
             <p className={noteBoxPro}>
               Pro jobs are prioritized during high demand.
             </p>
             <div className="mt-6 space-y-2">
               <button
                 onClick={() => handleSubscribe('pro', false)}
-                className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-medium text-sm transition-colors"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white font-semibold text-sm shadow-lg shadow-violet-600/30 transition-all duration-200"
               >
                 Choose Pro
               </button>
@@ -170,8 +167,8 @@ export default function Pricing() {
             </div>
           </div>
 
-          {/* AGENCY — $129 / month (3,000 min) */}
-          <div className={`${cardBase} border-gray-100 min-h-[420px]`}>
+          {/* AGENCY — $129 — enterprise-grade */}
+          <div className="flex flex-col bg-white rounded-2xl border border-gray-200 shadow-md p-6 sm:p-8 min-h-[480px] hover:shadow-xl hover:border-gray-300 transition-all duration-200">
             <h3 className="text-xl font-semibold text-gray-900">Agency</h3>
             <div className="mt-2 flex items-baseline gap-1">
               <span className="text-2xl font-bold text-gray-900">$129</span>
@@ -180,28 +177,26 @@ export default function Pricing() {
             <p className="mt-0.5 text-xs text-gray-500">
               $103 / month billed annually
             </p>
-            <p className="mt-3 text-base font-medium text-gray-900">
-              Scale without breaking your pipeline
-            </p>
-            <p className={`mt-1 ${subhead}`}>
+            <p className="mt-3 text-base font-medium text-gray-900">For teams & agencies</p>
+            <p className="mt-1 text-sm text-gray-600 leading-relaxed">
               Heavy batch · ZIP exports · Commercial use
             </p>
-            <ul className={bullets}>
-              <li>Heavy batch processing</li>
-              <li>ZIP batch exports</li>
-              <li>Commercial usage allowed</li>
-              <li>Up to 10 languages</li>
+            <ul className="mt-5 space-y-2.5 flex-1">
+              <li className={bulletRow}><CheckIcon /><span>Heavy batch processing</span></li>
+              <li className={bulletRow}><CheckIcon /><span>ZIP batch exports</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Commercial usage allowed</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Up to 10 languages</span></li>
             </ul>
             <p className="text-xs text-gray-500 mt-1">100 videos per batch · 300 min per batch</p>
-            <p className={limits}>3,000 min / month</p>
-            <p className={limits}>Up to 240 min per video</p>
+            <p className={limitsClass}>3,000 min / month</p>
+            <p className={limitsClass}>Up to 240 min per video</p>
             <p className={noteBox}>
               Designed for sustained high-volume workloads.
             </p>
             <div className="mt-6 space-y-2">
               <button
                 onClick={() => handleSubscribe('agency', false)}
-                className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-medium text-sm transition-colors"
+                className="w-full py-3.5 rounded-xl bg-violet-700 hover:bg-violet-800 text-white font-semibold text-sm border-2 border-violet-800/50 transition-colors"
               >
                 Choose Agency
               </button>
@@ -216,7 +211,7 @@ export default function Pricing() {
         </div>
 
         {/* Overage footer */}
-        <div className="mt-12 pt-8 border-t border-gray-100 text-center">
+        <div className="mt-14 pt-10 border-t border-gray-200 text-center">
           <p className="text-sm text-gray-600 font-medium">
             Overage: 100 minutes = $5
           </p>
