@@ -81,30 +81,32 @@ export default function UserMenu() {
               onClick={() => setOpen(false)}
               aria-hidden
             />
-            <motion.aside
+            <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.25 }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm flex flex-col shadow-2xl border-l border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 isolate"
+              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm flex flex-col"
             >
-              {/* Opaque panel: solid background so content is never transparent */}
-              <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-gray-800 overflow-hidden">
-              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 shrink-0">
-                <span className="font-semibold text-gray-900 dark:text-white">Menu</span>
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="p-2 rounded-lg text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  aria-label="Close menu"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+              <aside
+                data-user-menu-panel
+                className="w-full h-full flex flex-col shadow-2xl border-l border-gray-200 dark:border-gray-600 isolate"
+              >
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 shrink-0 bg-white dark:bg-gray-800">
+                  <span className="font-semibold text-gray-900 dark:text-white">Menu</span>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="p-2 rounded-lg text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    aria-label="Close menu"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-white dark:bg-gray-800">
-                {/* Minutes left */}
-                {usage && (
+                <div data-user-menu-body className="flex-1 overflow-y-auto p-4 space-y-6 min-h-[60vh] bg-white dark:bg-gray-800">
+                {/* Minutes left — always show a block so content is visible */}
+                {usage ? (
                   <div className="rounded-xl bg-violet-100 dark:bg-violet-900/40 border border-violet-200 dark:border-violet-800 p-4">
                     <div className="flex items-center gap-2 text-violet-800 dark:text-violet-200 text-sm font-medium">
                       <Clock className="w-4 h-4 shrink-0" />
@@ -116,6 +118,11 @@ export default function UserMenu() {
                     <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
                       {usage.plan} plan · Resets {new Date(usage.resetDate).toLocaleDateString()}
                     </p>
+                  </div>
+                ) : (
+                  <div className="rounded-xl bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Minutes left</p>
+                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">Loading…</p>
                   </div>
                 )}
 
@@ -198,9 +205,9 @@ export default function UserMenu() {
                     Try Free →
                   </Link>
                 </div>
-              </div>
-              </div>
-            </motion.aside>
+                </div>
+              </aside>
+            </motion.div>
           </>
         )}
       </AnimatePresence>
