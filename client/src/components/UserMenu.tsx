@@ -86,32 +86,34 @@ export default function UserMenu() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.25 }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm bg-white dark:bg-gray-800 shadow-xl border-l border-gray-200 dark:border-gray-700 flex flex-col"
+              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm flex flex-col shadow-2xl border-l border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 isolate"
             >
-              <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
+              {/* Opaque panel: solid background so content is never transparent */}
+              <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-gray-800 overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 shrink-0">
                 <span className="font-semibold text-gray-900 dark:text-white">Menu</span>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="p-2 rounded-lg text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   aria-label="Close menu"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-6">
+              <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-white dark:bg-gray-800">
                 {/* Minutes left */}
                 {usage && (
-                  <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800/50 p-4">
-                    <div className="flex items-center gap-2 text-violet-700 dark:text-violet-300 text-sm font-medium">
+                  <div className="rounded-xl bg-violet-100 dark:bg-violet-900/40 border border-violet-200 dark:border-violet-800 p-4">
+                    <div className="flex items-center gap-2 text-violet-800 dark:text-violet-200 text-sm font-medium">
                       <Clock className="w-4 h-4 shrink-0" />
                       Minutes left
                     </div>
                     <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-                      {usage.remaining} <span className="text-base font-normal text-gray-500 dark:text-gray-400">/ {usage.totalPlanMinutes} min</span>
+                      {usage.remaining} <span className="text-base font-normal text-gray-600 dark:text-gray-300">/ {usage.totalPlanMinutes} min</span>
                     </p>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
                       {usage.plan} plan · Resets {new Date(usage.resetDate).toLocaleDateString()}
                     </p>
                   </div>
@@ -123,9 +125,9 @@ export default function UserMenu() {
                     type="button"
                     onClick={handleManageSubscription}
                     disabled={!isPaidPlan || portalLoading}
-                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <CreditCard className="w-5 h-5 shrink-0 text-gray-500 dark:text-gray-400" />
+                    <CreditCard className="w-5 h-5 shrink-0 text-gray-600 dark:text-gray-300" />
                     <span>
                       {portalLoading ? 'Opening…' : isPaidPlan ? 'Manage subscription' : 'Manage subscription (upgrade first)'}
                     </span>
@@ -135,30 +137,30 @@ export default function UserMenu() {
                 {/* Contact support */}
                 <a
                   href={`mailto:${SUPPORT_EMAIL}`}
-                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
+                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   onClick={() => setOpen(false)}
                 >
-                  <Headphones className="w-5 h-5 shrink-0 text-gray-500 dark:text-gray-400" />
+                  <Headphones className="w-5 h-5 shrink-0 text-gray-600 dark:text-gray-300" />
                   <span>Contact support</span>
                 </a>
 
                 {/* Refer and earn */}
                 <Link
                   to="/refer"
-                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
+                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   onClick={() => setOpen(false)}
                 >
-                  <Gift className="w-5 h-5 shrink-0 text-gray-500 dark:text-gray-400" />
+                  <Gift className="w-5 h-5 shrink-0 text-gray-600 dark:text-gray-300" />
                   <span>Refer and earn — 45 min free (Free, Basic, Pro)</span>
                 </Link>
 
                 {/* Theme toggle */}
-                <div className="flex items-center justify-between rounded-xl px-4 py-3 bg-gray-50 dark:bg-gray-700/30">
-                  <span className="text-gray-700 dark:text-gray-200">Theme</span>
+                <div className="flex items-center justify-between rounded-xl px-4 py-3 bg-gray-100 dark:bg-gray-700">
+                  <span className="text-gray-900 dark:text-gray-100 font-medium">Theme</span>
                   <button
                     type="button"
                     onClick={toggleTheme}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
                     aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
                   >
                     {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
@@ -167,14 +169,14 @@ export default function UserMenu() {
                 </div>
 
                 {/* Nav links (for mobile: Tools + Pricing + CTA) */}
-                <div className="pt-4 border-t border-gray-100 dark:border-gray-700 md:hidden">
-                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Tools</p>
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-600 md:hidden">
+                  <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider mb-2">Tools</p>
                   <div className="space-y-1">
                     {tools.map((t) => (
                       <Link
                         key={t.path}
                         to={t.path}
-                        className="block rounded-lg px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/50"
+                        className="block rounded-lg px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => setOpen(false)}
                       >
                         {t.name}
@@ -183,7 +185,7 @@ export default function UserMenu() {
                   </div>
                   <Link
                     to="/pricing"
-                    className="mt-3 block rounded-xl px-4 py-3 text-center font-medium text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 border border-violet-200 dark:border-violet-800"
+                    className="mt-3 block rounded-xl px-4 py-3 text-center font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30 border border-violet-300 dark:border-violet-700"
                     onClick={() => setOpen(false)}
                   >
                     Pricing
@@ -196,6 +198,7 @@ export default function UserMenu() {
                     Try Free →
                   </Link>
                 </div>
+              </div>
               </div>
             </motion.aside>
           </>
