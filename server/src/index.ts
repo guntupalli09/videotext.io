@@ -75,6 +75,12 @@ app.post(
   express.raw({ type: 'application/octet-stream', limit: '10mb' }),
   handleUploadChunk
 )
+// Allow preflight and avoid 404 confusion: GET returns 405 so the path is clearly registered
+app.all('/api/upload/chunk', (req, res) => {
+  if (req.method === 'OPTIONS') return res.sendStatus(204)
+  res.set('Allow', 'POST')
+  res.status(405).json({ message: 'Method not allowed. Use POST with x-upload-id and x-chunk-index.' })
+})
 
 // JSON body parsing for all other routes
 app.use(express.json())
