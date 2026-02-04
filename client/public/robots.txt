@@ -4,3 +4,10 @@ Allow: /
 
 # Sitemap (update domain if different)
 Sitemap: https://www.videotext.io/sitemap.xml
+
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemap (update domain if different)
+Sitemap: https://www.videotext.io/sitemap.xml

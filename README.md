@@ -4,6 +4,13 @@ Professional video utilities platform: transcribe video to text, generate and tr
 
 **We don’t store your data.** User uploads and generated outputs are processed and then deleted; we don’t keep copies. This is a core product commitment and is highlighted in the app (Privacy, FAQ, Pricing, and Home).
 
+### Recent updates (high level)
+
+- **In-app translation viewers**: Translate transcript text (Video → Transcript) and subtitle cue text (Video → Subtitles) into English, Hindi, Telugu, Spanish, Chinese, or Russian.
+- **Faster long-video transcription**: parallel chunking + merge (same result shape).
+- **Optional GPU FFmpeg**: set `FFMPEG_USE_GPU=true` to use GPU decode/encode where available.
+- **Result caching**: repeat processing (same user + file + tool + options) returns instantly within `CACHE_TTL_DAYS`.
+
 ---
 
 ## Table of contents
@@ -28,7 +35,7 @@ Professional video utilities platform: transcribe video to text, generate and tr
 | Tool | Route | Description |
 |------|--------|-------------|
 | **Video → Transcript** | `/video-to-transcript` | Extract spoken text from video (upload or URL). Optional summary, chapters, speaker diarization, glossary. |
-| **Video → Subtitles** | `/video-to-subtitles` | Generate SRT/VTT from video. Multi-language (Basic+: 2, Pro: 5, Agency: 10). |
+| **Video → Subtitles** | `/video-to-subtitles` | Generate SRT/VTT from video. Multi-language (Basic+: 2, Pro: 5, Agency: 10). Includes a **“View in another language”** (plain-text) translation viewer for copy/paste. |
 | **Translate Subtitles** | `/translate-subtitles` | Translate SRT/VTT to Arabic, Hindi, etc. Upload or paste. |
 | **Fix Subtitles** | `/fix-subtitles` | Auto-correct timing, grammar, line breaks, remove fillers. |
 | **Burn Subtitles** | `/burn-subtitles` | Hardcode subtitles into video (dual upload: video + SRT/VTT). |
@@ -50,9 +57,40 @@ After a transcript is generated, the **Transcript** view is the main trunk. The 
 | **Clean** | Filler words removed, casing normalized; original always in Transcript. |
 | **Exports** | Download as TXT, JSON, CSV, Markdown, Notion (paid for full export). |
 
+### Video → Subtitles: notable capabilities
+
+- **Formats**: generates **SRT** or **VTT**; also includes a “Convert format” utility (SRT/VTT/TXT) that re-uploads the output to the `convert-subtitles` backend tool.
+- **Multi-language**: when additional languages are selected, the worker generates multiple subtitle files and returns a **ZIP**.
+- **Validation (informational)**: the worker runs derived subtitle validation and returns `warnings` (not blocking).
+- **In-app translation viewer**: “View in another language” uses `POST /api/translate-transcript` to translate the **plain subtitle cue text** for reading/copy. It **does not** rewrite timestamps or generate a translated SRT/VTT file. For translated subtitle files use **Translate Subtitles** or **Multi-language** output.
+
 ### Backend tool types (must match exactly)
 
-Used in upload and worker: `video-to-transcript`, `video-to-subtitles`, `translate-subtitles`, `fix-subtitles`, `burn-subtitles`, `compress-video`, `convert-subtitles`. Multi-language and batch use the same pipeline with options.
+Used in upload and worker: `video-to-transcript`, `video-to-subtitles`, `translate-subtitles`, `fix-subtitles`, `burn-subtitles`, `compress-video`, `convert-subtitles`.
+
+Internal (worker-only) tool type: `batch-video-to-subtitles` (queued by `/api/batch/upload`).
+
+### Tool architecture map (frontend → API → queue → worker → download)
+
+All tools share the same backbone:
+
+- **Client uploads** to the API (`/api/upload`, `/api/upload/dual`, or `/api/batch/upload`).
+- API enqueues a Bull job (Redis).
+- **Worker** (`server/src/workers/videoProcessor.ts`) runs the tool pipeline and writes outputs into `TEMP_FILE_PATH` (or `/tmp`).
+- Client polls `GET /api/job/:jobId` and downloads via `GET /api/download/:filename`.
+
+| Tool | Frontend entry | API entry | Worker `toolType` | Key services | Output (download) |
+|------|----------------|----------|-------------------|-------------|-------------------|
+| **Video → Transcript** | `client/src/pages/VideoToTranscript.tsx` | `POST /api/upload` (file) or `POST /api/upload` with `url` | `video-to-transcript` | `services/transcription.ts` (Whisper; parallel chunking), optional `services/diarization.ts`, `services/transcriptSummary.ts`, `services/transcriptExport.ts` | `.txt` (or `.zip` when exporting JSON/DOCX/PDF); job status includes `segments`, `summary`, `chapters` |
+| **Transcript translation (viewer)** | `client/src/pages/VideoToTranscript.tsx` | `POST /api/translate-transcript` | (no queue; direct route) | `services/translation.ts` (`translateTranscriptText`) | `{ translatedText }` (cached in client per language) |
+| **Video → Subtitles** | `client/src/pages/VideoToSubtitles.tsx` | `POST /api/upload` (file) or with `url` | `video-to-subtitles` | `services/transcription.ts` (Whisper → SRT/VTT), `services/multiLanguage.ts` for ZIP, derived `services/subtitles.ts` validation | `.srt` / `.vtt` or `.zip` (multi-language) |
+| **Subtitles translation (viewer)** | `client/src/pages/VideoToSubtitles.tsx` | `POST /api/translate-transcript` | (no queue; direct route) | `services/translation.ts` (`translateTranscriptText`) | `{ translatedText }` (plain text only; timestamps unchanged) |
+| **Translate Subtitles** | `client/src/pages/TranslateSubtitles.tsx` | `POST /api/upload` | `translate-subtitles` | `services/translation.ts` (`translateSubtitleFile`) + derived `detectLanguageConsistency` | translated `.srt` / `.vtt` |
+| **Fix Subtitles** | `client/src/pages/FixSubtitles.tsx` | `POST /api/upload` | `fix-subtitles` | `services/subtitles.ts` (`fixSubtitleFile`, derived `validateSubtitleFile`) | `_fixed.srt` / `_fixed.vtt` + `issues`/`warnings` |
+| **Convert Subtitles** | `client/src/pages/VideoToSubtitles.tsx` (Convert format card) | `POST /api/upload` | `convert-subtitles` | `services/subtitleConverter.ts` (`convertSubtitleFile`) | `_converted.srt` / `_converted.vtt` / `_converted.txt` |
+| **Burn Subtitles** | `client/src/pages/BurnSubtitles.tsx` | `POST /api/upload/dual` (video + subtitles) | `burn-subtitles` | `services/ffmpeg.ts` (`burnSubtitles`; optional GPU) | `_subtitled.mp4` |
+| **Compress Video** | `client/src/pages/CompressVideo.tsx` | `POST /api/upload` | `compress-video` | `services/ffmpeg.ts` (`compressVideo`; optional GPU) | `_compressed.mp4` |
+| **Batch Processing** | `client/src/pages/BatchProcess.tsx` | `POST /api/batch/upload`, `GET /api/batch/:batchId/status` | `batch-video-to-subtitles` | worker per-video subtitles + `generateBatchZip()` | batch zip `batch-<id>.zip` (SRT + derived VTT; includes `error_log.txt` on failures) |
 
 ### SEO entry points (same tools, alternate URLs)
 
@@ -140,6 +178,7 @@ In `server/.env` (or Docker env). Use `server/.env.example` as template.
 - **Single-file:** `POST /api/upload` — `multipart/form-data`, field **`file`**, **`toolType`** (required). Optional: `url` (video-to-transcript/subtitles), `format`, `language`, `targetLanguage`, `compressionLevel`, `trimmedStart`, `trimmedEnd`, `additionalLanguages` (JSON string), etc.
 - **Dual-file (burn):** `POST /api/upload/dual` — fields **`video`**, **`subtitles`**, **`toolType`** = `burn-subtitles`.
 - **Chunked upload:** `POST /api/upload/chunk` (binary); metadata includes `toolType`, `filename`, `totalChunks`.
+- **Batch upload:** `POST /api/batch/upload` — `multipart/form-data`, field **`files`** (array), optional `primaryLanguage` and `additionalLanguages`. Status: `GET /api/batch/:batchId/status`.
 
 Valid `toolType` values: `video-to-transcript`, `video-to-subtitles`, `translate-subtitles`, `fix-subtitles`, `burn-subtitles`, `compress-video`, `convert-subtitles`. Client uses `BACKEND_TOOL_TYPES` in `client/src/lib/api.ts`; do not invent other names.
 
