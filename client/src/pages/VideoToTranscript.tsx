@@ -402,7 +402,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
     try {
       const raw = fullTranscript || ''
-      if (!raw.trim()) return { decisions: [], action_items: [], key_points: [] }
+      if (!raw.trim()) return { bullets: [], decisions: [], action_items: [], key_points: [] }
       const sentences = raw.split(/(?<=[.!?])\s+/).filter(Boolean)
       const decisions: string[] = []
       const action_items: string[] = []
@@ -417,9 +417,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         else if (actRe.test(t)) action_items.push(t)
         else if (keyRe.test(t)) key_points.push(t)
       }
-      return { decisions, action_items, key_points }
+      return { bullets: [], decisions, action_items, key_points }
     } catch {
-      return { decisions: [], action_items: [], key_points: [] }
+      return { bullets: [], decisions: [], action_items: [], key_points: [] }
     }
   }, [result?.summary, fullTranscript])
 
