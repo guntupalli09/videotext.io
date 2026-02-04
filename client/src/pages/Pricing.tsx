@@ -69,6 +69,10 @@ export default function Pricing() {
     <div className="min-h-screen py-16 sm:py-24 bg-gradient-to-b from-gray-50/90 to-gray-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <header className="text-center mb-14 sm:mb-16">
+          <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-full text-sm font-medium border border-emerald-100 mb-6">
+            <span>🔒</span>
+            <span>We don’t store your data—your files are processed and deleted.</span>
+          </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
             Pricing
           </h1>

@@ -1,158 +1,252 @@
-# VideoText - Phase 0
+# VideoText
 
-Professional video utilities platform. Phase 0 includes foundation setup, UI components, and backend infrastructure with dummy job processing.
+Professional video utilities platform: transcribe video to text, generate and translate subtitles, fix timing, burn captions, compress video, and batch process. React + Vite frontend, Express backend, Bull queue, Stripe billing.
 
-## Prerequisites
+**We don’t store your data.** User uploads and generated outputs are processed and then deleted; we don’t keep copies. This is a core product commitment and is highlighted in the app (Privacy, FAQ, Pricing, and Home).
 
-- Node.js (v18+)
-- Docker Desktop (for Redis) - [Download here](https://www.docker.com/products/docker-desktop/)
-- FFmpeg (installed but not used in Phase 0)
+---
 
-**Note:** If you don't have Docker, you can install Redis locally instead (see Alternative Setup below).
+## Table of contents
 
-## Setup
+1. [Features & tools (trees and branches)](#1-features--tools-trees-and-branches)
+2. [Prerequisites & setup](#2-prerequisites--setup)
+3. [Environment variables](#3-environment-variables)
+4. [API contract (upload)](#4-api-contract-upload)
+5. [Billing & usage](#5-billing--usage)
+6. [Stripe (go live)](#6-stripe-go-live)
+7. [Redis](#7-redis)
+8. [Deployment (Hetzner + Caddy)](#8-deployment-hetzner--caddy)
+9. [SEO & production URLs](#9-seo--production-urls)
+10. [Project structure](#10-project-structure)
 
-### 1. Install Dependencies
+---
+
+## 1. Features & tools (trees and branches)
+
+### Core tools (main routes)
+
+| Tool | Route | Description |
+|------|--------|-------------|
+| **Video → Transcript** | `/video-to-transcript` | Extract spoken text from video (upload or URL). Optional summary, chapters, speaker diarization, glossary. |
+| **Video → Subtitles** | `/video-to-subtitles` | Generate SRT/VTT from video. Multi-language (Basic+: 2, Pro: 5, Agency: 10). |
+| **Translate Subtitles** | `/translate-subtitles` | Translate SRT/VTT to Arabic, Hindi, etc. Upload or paste. |
+| **Fix Subtitles** | `/fix-subtitles` | Auto-correct timing, grammar, line breaks, remove fillers. |
+| **Burn Subtitles** | `/burn-subtitles` | Hardcode subtitles into video (dual upload: video + SRT/VTT). |
+| **Compress Video** | `/compress-video` | Reduce file size (web / mobile / archive profiles). |
+| **Batch Processing** | `/batch-process` | Process multiple videos (Pro/Agency). |
+
+### Video → Transcript: tree and branches
+
+After a transcript is generated, the **Transcript** view is the main trunk. The following **branches** are derived client-side from the same transcript (no re-fetch):
+
+| Branch | Description |
+|--------|-------------|
+| **Transcript** | Full text, search, edit segments, copy, export SRT/VTT. **Translate** button: show transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian (cached per language). |
+| **Speakers** | Paragraphs grouped by speaker (when structure allows). |
+| **Summary** | AI summary, bullets, action items. |
+| **Chapters** | Section headings with timestamps. |
+| **Highlights** | Definitions, conclusions, quotes, important statements. |
+| **Keywords** | Repeated terms linking to sections. |
+| **Clean** | Filler words removed, casing normalized; original always in Transcript. |
+| **Exports** | Download as TXT, JSON, CSV, Markdown, Notion (paid for full export). |
+
+### Backend tool types (must match exactly)
+
+Used in upload and worker: `video-to-transcript`, `video-to-subtitles`, `translate-subtitles`, `fix-subtitles`, `burn-subtitles`, `compress-video`, `convert-subtitles`. Multi-language and batch use the same pipeline with options.
+
+### SEO entry points (same tools, alternate URLs)
+
+No duplicate logic; these routes render the same tool component with different meta/FAQ:
+
+- `/video-to-text`, `/mp4-to-text`, `/mp4-to-srt`, `/subtitle-generator`, `/srt-translator`, `/meeting-transcript`, `/speaker-diarization`, `/video-summary-generator`, `/video-chapters-generator`, `/keyword-indexed-transcript`
+- `/srt-to-vtt`, `/subtitle-converter`, `/subtitle-timing-fixer`, `/subtitle-validation`, `/subtitle-translator`, `/multilingual-subtitles`, `/subtitle-language-checker`, `/subtitle-grammar-fixer`, `/subtitle-line-break-fixer`
+- `/hardcoded-captions`, `/video-with-subtitles`, `/video-compressor`, `/reduce-video-size`, `/batch-video-processing`, `/bulk-subtitle-export`, `/bulk-transcript-export`
+
+### App pages: Privacy, FAQ, Terms
+
+- **`/privacy`** — Privacy Policy. Prominently states that we do not store user data; files are processed and deleted.
+- **`/faq`** — App-wide FAQ: privacy and data, billing, tools, transcript translation. Includes a “We don’t store your data” trust line.
+- **`/terms`** — Terms of Service; references Privacy for data handling.
+
+---
+
+## 2. Prerequisites & setup
+
+- **Node.js** v18+
+- **Docker Desktop** (for Redis), or install Redis locally
+- **FFmpeg** (used by worker for video/subtitle processing)
+
+### Install and run
 
 ```bash
 # Client
-cd client
-npm install
+cd client && npm install && npm run dev
 
-# Server
-cd ../server
-npm install
+# Server (separate terminal)
+cd server && npm install && npm run dev
 ```
 
-### 2. Start Redis
+- Client: `http://localhost:3000`
+- Server: `http://localhost:3001`
 
-**Option A: Using Docker (Recommended)**
+### Redis
 
-If you have Docker Desktop installed:
-```bash
-# Modern Docker (uses space, not hyphen)
-docker compose up -d
+Start Redis so the job queue works:
 
-# OR if you have older Docker Compose standalone:
-docker-compose up -d
+- **Docker:** from project root run `docker compose up -d` (Redis + optional API/worker).
+- **Local:** e.g. `brew install redis && brew services start redis` (macOS), or install Redis on Windows/Linux and ensure it listens on `localhost:6379`.
+
+See [§7 Redis](#7-redis) for URL and migration options.
+
+---
+
+## 3. Environment variables
+
+### Client (Vite)
+
+In `client/.env` or Vercel env:
+
+| Variable | Required | Example | Notes |
+|----------|----------|---------|--------|
+| `VITE_API_URL` | Yes (production) | `https://api.videotext.io` | **Origin only**; do not include `/api`. |
+| `VITE_SITE_URL` | No | `https://www.videotext.io` | Canonical/OG/sitemap base. |
+
+### Server
+
+In `server/.env` (or Docker env). Use `server/.env.example` as template.
+
+| Area | Variables |
+|------|-----------|
+| **API** | `PORT` (default 3001), `NODE_ENV`, `CORS_ORIGINS` (comma-separated) |
+| **Stripe** | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_BASIC`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_AGENCY`, `STRIPE_PRICE_OVERAGE`; optional `STRIPE_PRICE_*_ANNUAL` |
+| **Redirects** | `BASE_URL` (frontend URL for Stripe success/cancel) |
+| **Redis** | `REDIS_URL` (e.g. `redis://redis:6379` or Upstash `rediss://...`) |
+| **Processing** | `TEMP_FILE_PATH` (default `/tmp`), `DISABLE_WORKER` (set on API-only container if worker runs elsewhere) |
+| **Transcription / translation** | `OPENAI_API_KEY` |
+| **Auth** | `JWT_SECRET` |
+
+---
+
+## 4. API contract (upload)
+
+- **Single-file:** `POST /api/upload` — `multipart/form-data`, field **`file`**, **`toolType`** (required). Optional: `url` (video-to-transcript/subtitles), `format`, `language`, `targetLanguage`, `compressionLevel`, `trimmedStart`, `trimmedEnd`, `additionalLanguages` (JSON string), etc.
+- **Dual-file (burn):** `POST /api/upload/dual` — fields **`video`**, **`subtitles`**, **`toolType`** = `burn-subtitles`.
+- **Chunked upload:** `POST /api/upload/chunk` (binary); metadata includes `toolType`, `filename`, `totalChunks`.
+
+Valid `toolType` values: `video-to-transcript`, `video-to-subtitles`, `translate-subtitles`, `fix-subtitles`, `burn-subtitles`, `compress-video`, `convert-subtitles`. Client uses `BACKEND_TOOL_TYPES` in `client/src/lib/api.ts`; do not invent other names.
+
+**Translate transcript (in-app):** `POST /api/translate-transcript` — JSON body `{ "text": "...", "targetLanguage": "English" | "Hindi" | "Telugu" | "Spanish" | "Chinese" | "Russian" }`, returns `{ "translatedText": "..." }`.
+
+---
+
+## 5. Billing & usage
+
+- **Plans:** free, basic, pro, agency. Stored in user model; set by Stripe webhooks (checkout, invoice, subscription deleted) or by headers `x-user-id` / `x-plan` when no JWT.
+- **Limits** (see `server/src/utils/limits.ts`): minutes/month, max video duration, max file size, max subtitle languages, batch enabled (Pro/Agency), batch max videos and max minutes. Translation minutes cap for Pro/Agency.
+- **Usage:** Recorded in the **worker** when a job **completes** (totalMinutes, translatedMinutes, etc.). Reset on invoice period (paid) or calendar month (free). Overage allowed only for users with `stripeCustomerId`.
+- **Client:** Sends `x-user-id` and `x-plan`; after checkout, client stores `userId` and `plan` so usage and “Manage subscription” reflect the paid user.
+
+---
+
+## 6. Stripe (go live)
+
+1. **Products & prices** in Dashboard: Basic/Pro/Agency (monthly; optional annual). One-time overage price. Copy Price IDs into env.
+2. **API keys:** Use **Secret key** (test or live) in `STRIPE_SECRET_KEY`.
+3. **Webhook:** Add endpoint `https://YOUR_API_DOMAIN/api/stripe/webhook`; events: `checkout.session.completed`, `invoice.payment_succeeded`, `customer.subscription.deleted`. Set **Signing secret** in `STRIPE_WEBHOOK_SECRET`.
+4. **Success/cancel:** Use `BASE_URL` or client `frontendOrigin` so redirects go to your frontend.
+5. **Customer portal:** Configure in Stripe (Settings → Billing → Customer portal) so “Manage subscription” works.
+
+---
+
+## 7. Redis
+
+Used for the **Bull job queue** only (not auth or Stripe). Switch by changing `REDIS_URL` and restarting API and worker.
+
+- **Self-hosted (Docker):** `docker-compose.yml` includes Redis; `REDIS_URL=redis://redis:6379`.
+- **Self-hosted (host):** Install Redis, set `REDIS_URL=redis://localhost:6379` (or host IP for containers).
+- **Upstash:** Set `REDIS_URL=rediss://...` from Upstash console. If using Docker Compose, remove `REDIS_URL` from compose `environment` so `.env` is used.
+
+Changing Redis invalidates existing job IDs (queue state is not migrated).
+
+---
+
+## 8. Deployment (Hetzner + Caddy)
+
+### Backend on Hetzner (single VM)
+
+1. **Docker:** Install Docker and Compose on Ubuntu 22.04 (see Docker docs).
+2. **Project & env:** Copy repo and create `.env` from `.env.example` (Redis, Stripe, `OPENAI_API_KEY`, `JWT_SECRET`, `BASE_URL`, etc.).
+3. **Start:** From project root: `docker compose up --build -d`. API on port 3001; Redis and worker run in the same stack.
+4. **Restart:** `docker compose up -d --build api worker`.
+
+### Caddy (HTTPS for API)
+
+1. DNS: point `api.yourdomain.com` to the server.
+2. Install Caddy, then use a Caddyfile:
+   ```text
+   api.videotext.io {
+       reverse_proxy localhost:3001
+   }
+   ```
+   If the API is mapped to 3002 on the host, use `reverse_proxy localhost:3002`.
+3. Restart Caddy. Test: `curl -sS https://api.videotext.io/health` → `{"status":"ok"}`.
+
+### Frontend (Vercel)
+
+- Set **Root directory** to `client`, build command `npm run build`, output `dist`.
+- Set **VITE_API_URL** to your API origin (e.g. `https://api.videotext.io`) — **no** `/api` suffix.
+
+**Mixed content:** If the site is HTTPS, `VITE_API_URL` must be HTTPS (e.g. `https://api.videotext.io`). Do not use `http://IP:port` in production.
+
+---
+
+## 9. SEO & production URLs
+
+- **Per-route meta:** Each route has `<title>` and `<meta name="description">` via `react-helmet-async` and `client/src/lib/seoMeta.ts`.
+- **Canonical & sitemap:** Set `VITE_SITE_URL` for canonicals and OG. Update `client/public/sitemap.xml` and `robots.txt` if the domain changes.
+- **Structured data:** Homepage includes JSON-LD (Organization, WebApplication). Add `client/public/og-image.png` (e.g. 1200×630) for social sharing.
+
+---
+
+## 10. Project structure
+
+```text
+├── client/                 # React + Vite
+│   ├── src/
+│   │   ├── components/     # UI (Navigation, FileUploadZone, SuccessState, etc.)
+│   │   ├── lib/            # api, apiBase, billing, jobPolling, seoMeta, theme, usage, …
+│   │   ├── pages/          # Home, VideoToTranscript, VideoToSubtitles, BatchProcess, …
+│   │   └── pages/seo/      # SEO entry-point wrappers (same tools, different meta)
+│   ├── public/
+│   └── index.html
+├── server/
+│   ├── src/
+│   │   ├── routes/         # upload, jobs, download, usage, batch, billing, auth, stripeWebhook, translateTranscript
+│   │   ├── services/      # transcription, translation, subtitles, ffmpeg, stripe, …
+│   │   ├── workers/       # videoProcessor (Bull)
+│   │   ├── models/        # User, Job, UsageLog, …
+│   │   └── utils/         # auth, limits, metering, srtParser, redis, …
+│   └── package.json
+├── deploy/
+│   ├── Caddyfile           # Reverse proxy for API
+│   └── (no separate README; see §8 above)
+├── docker-compose.yml      # Redis, api, worker
+├── Dockerfile
+└── README.md               # This file
 ```
 
-**Option B: Install Redis Locally (Alternative)**
+---
 
-If you don't have Docker, you can install Redis directly:
-- **Windows:** Download from [Redis for Windows](https://github.com/microsoftarchive/redis/releases) or use WSL
-- **macOS:** `brew install redis` then `brew services start redis`
-- **Linux:** `sudo apt-get install redis-server` then `sudo systemctl start redis`
+## Quick reference
 
-Make sure Redis is running on `localhost:6379`
+| Task | Command / action |
+|------|-------------------|
+| Run client | `cd client && npm run dev` |
+| Run server | `cd server && npm run dev` |
+| Redis (Docker) | `docker compose up -d` |
+| Deploy backend | `docker compose up --build -d` |
+| Restart API + worker | `docker compose up -d --build api worker` |
+| Job status | `GET /api/job/:jobId` |
+| Health | `GET /health` → `{"status":"ok"}` |
 
-### 3. Environment Variables
-
-Copy `.env.example` to `.env` in the server directory and update if needed:
-
-```bash
-cp .env.example server/.env
-```
-
-### 4. Start Development Servers
-
-**Terminal 1 - Client:**
-```bash
-cd client
-npm run dev
-```
-
-**Terminal 2 - Server:**
-```bash
-cd server
-npm run dev
-```
-
-The client will be available at `http://localhost:3000` and the server at `http://localhost:3001`.
-
-## Project Structure
-
-```
-videotools/
-├── client/          # React + Vite frontend
-├── server/          # Express backend
-├── docker-compose.yml
-├── .env.example
-└── README.md
-```
-
-## Features (Phase 0)
-
-- ✅ Complete UI with all components
-- ✅ Homepage with all sections
-- ✅ 6 tool placeholder pages
-- ✅ File upload UI (no processing)
-- ✅ Dummy job queue system
-- ✅ File validation (size, type, magic bytes)
-- ✅ Rate limiting
-- ✅ Auto file cleanup
-
-## Testing
-
-### Test File Upload
-
-```bash
-curl -X POST http://localhost:3001/api/upload \
-  -F "file=@test-video.mp4"
-```
-
-Should return: `{ "jobId": "...", "status": "queued" }`
-
-### Check Job Status
-
-```bash
-curl http://localhost:3001/api/job/{jobId}
-```
-
-### Check Redis
-
-**If using Docker:**
-```bash
-docker exec -it videotools-redis redis-cli
-> KEYS *
-# Should see Bull queue keys
-```
-
-**If using local Redis:**
-```bash
-redis-cli
-> KEYS *
-# Should see Bull queue keys
-```
-
-## SEO (organic reach)
-
-- **Per-page meta:** Each route has a unique `<title>` and `<meta name="description">` (e.g. "Video to Transcript — Free Online Transcription | VideoText"). Implemented via `react-helmet-async` and `client/src/lib/seoMeta.ts`.
-- **Canonical & sitemap:** Set **`VITE_SITE_URL`** in the client build (e.g. `https://videotext.io`) so canonicals and Open Graph URLs are correct. `client/public/sitemap.xml` and `robots.txt` point crawlers to all tool pages; update the domain in those files if you use a different one.
-- **Structured data:** Homepage includes JSON-LD `Organization` and `WebApplication` so search engines can show rich results.
-- **OG image:** Add **`client/public/og-image.png`** (e.g. 1200×630) for social sharing; `index.html` and `Seo` reference `/og-image.png`.
-
-## Production: Vercel (frontend) + Hetzner (API)
-
-- **Frontend on Vercel** does **not** call the Vercel URL for the API. It calls whatever URL you set in **`VITE_API_URL`** (your backend).
-- **In production:** Deploy the API (Docker stack) on Hetzner. Put a reverse proxy + domain in front (e.g. `https://api.yourdomain.com`). In **Vercel** → Project → Settings → Environment Variables, set **`VITE_API_URL`** = `https://api.yourdomain.com` (no `/api` suffix; the client adds `/api` where needed). Redeploy the frontend so the build picks up the variable.
-- **localhost:3001 / 3002** are for **local development only**. Keep the fallback in code as-is (`http://localhost:3001/api`). When you run the API in Docker locally, use **`http://localhost:3002`** (or set `VITE_API_URL=http://localhost:3002` in `client/.env.local`). In production you never use localhost.
-
-See **`deploy/README.md`** for Hetzner Docker deployment.
-
-### Next steps (Railway → Hetzner migration)
-
-- **Railway-specific files removed:** `railway.json` and `server/nixpacks.toml` are deleted; the backend is Docker-only for Hetzner. No Railway config remains.
-- **Hetzner:** There is nothing named “Hetzner” to install. Hetzner Cloud is a VPS provider. You create an account, create a server (e.g. Ubuntu 22.04), and run Docker on it (see `deploy/README.md`). The **CX43** plan has a monthly fee (around €11–12); you pay for the VM, not for “Hetzner software.”
-- **What to do when ready for production:** 1) Sign up at [hetzner.com/cloud](https://www.hetzner.com/cloud); 2) Create a server (e.g. CX43, Ubuntu 22.04); 3) SSH in and follow `deploy/README.md` (install Docker, copy project + `.env`, `docker compose up -d`); 4) Point a domain (or IP) at the server and set `VITE_API_URL` on Vercel to that URL.
-
-## Notes
-
-- **No real video processing** in Phase 0
-- **No API calls** to OpenAI/Stripe
-- **No authentication** system
-- All tool pages show "Tool processing coming in Phase 1"
-
-## Next Steps
-
-Phase 0 is complete. Wait for explicit approval before proceeding to Phase 1.
+All product behavior, trees, branches, and features are described in [§1 Features & tools](#1-features--tools-trees-and-branches). For env details use `server/.env.example` and the tables in [§3 Environment variables](#3-environment-variables).

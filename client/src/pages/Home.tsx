@@ -68,9 +68,15 @@ export default function Home() {
             transition={{ duration: 0.5 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <div className="inline-flex items-center space-x-2 bg-violet-100 text-violet-700 px-4 py-2 rounded-full mb-6">
-              <span>✨</span>
-              <span className="text-sm font-medium">No signup required • Free tools</span>
+            <div className="inline-flex flex-wrap items-center justify-center gap-2 mb-6">
+              <span className="inline-flex items-center space-x-2 bg-violet-100 text-violet-700 px-4 py-2 rounded-full text-sm font-medium">
+                <span>✨</span>
+                <span>No signup required • Free tools</span>
+              </span>
+              <span className="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-800 px-4 py-2 rounded-full text-sm font-medium border border-emerald-100">
+                <span>🔒</span>
+                <span>We don’t store your data</span>
+              </span>
             </div>
 
             <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-6">
@@ -78,7 +84,7 @@ export default function Home() {
             </h1>
 
             <p className="text-xl text-gray-600 mb-8">
-              Professional video tools for creators. No bloat. No signup. Just drop your file and go.
+              Professional video tools for creators. Your files are processed and deleted—we never keep them. No bloat. No signup. Just drop your file and go.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -168,7 +174,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Social Proof */}
+      {/* Trust & Social Proof */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -178,7 +184,10 @@ export default function Home() {
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <div className="inline-flex items-center space-x-4 text-gray-600 text-sm font-medium">
+            <p className="text-gray-600 text-sm font-medium mb-3">
+              Your videos and files are processed then deleted. We don’t keep copies—your content stays yours.
+            </p>
+            <div className="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-gray-500 text-sm">
               <span>100K+ videos processed</span>
               <span className="text-gray-300">•</span>
               <span>4.9★ rating</span>

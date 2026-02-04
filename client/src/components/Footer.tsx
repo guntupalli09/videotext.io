@@ -12,7 +12,7 @@ export default function Footer() {
               <span className="text-xl font-semibold text-white">VideoText</span>
             </div>
             <p className="text-sm">
-              Professional video utilities for creators. No bloat. No signup. Just drop your file and go.
+              Professional video utilities for creators. We don’t store your data—files are processed and deleted. No bloat. No signup.
             </p>
           </div>
 
@@ -31,7 +31,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="#how-it-works" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
+                  FAQ
+                </Link>
+              </li>
+              <li>
+                <a href="/#how-it-works" className="hover:text-white transition-colors">
                   How it works
                 </a>
               </li>
@@ -43,19 +48,17 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Legal</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link to="/privacy" className="hover:text-white transition-colors">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link to="/terms" className="hover:text-white transition-colors">
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Contact
-                </a>
+                <span className="text-gray-500">Contact: use in-app support</span>
               </li>
             </ul>
           </div>

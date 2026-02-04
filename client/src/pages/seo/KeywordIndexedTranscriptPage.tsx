@@ -14,7 +14,7 @@ export default function KeywordIndexedTranscriptPage() {
   return (
     <VideoToTranscript
       seoH1="Keyword-Indexed Transcript — Topic Index from Video"
-      seoIntro="Get a keyword index from your video transcript. Upload, transcribe, then open the Keywords branch to see repeated terms and jump to sections."
+      seoIntro="Get a keyword index from your video transcript. Upload, transcribe, open the Keywords branch, and view the transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian."
       faq={FAQ}
     />
   )

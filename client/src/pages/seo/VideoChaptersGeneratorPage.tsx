@@ -14,7 +14,7 @@ export default function VideoChaptersGeneratorPage() {
   return (
     <VideoToTranscript
       seoH1="Video Chapters Generator — Section Headings from Transcript"
-      seoIntro="Generate chapter-style sections from your video transcript. Upload, transcribe, then use the Chapters branch to jump by section."
+      seoIntro="Generate chapter-style sections from your video transcript. Upload, transcribe, use the Chapters branch to jump by section, and view or translate the transcript in 6 languages."
       faq={FAQ}
     />
   )

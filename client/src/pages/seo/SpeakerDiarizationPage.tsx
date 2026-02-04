@@ -14,7 +14,7 @@ export default function SpeakerDiarizationPage() {
   return (
     <VideoToTranscript
       seoH1="Speaker-Separated Video Transcripts — Instantly Online"
-      seoIntro="Get video transcripts with speaker-style grouping. Upload any video, transcribe, then open the Speakers branch to see who said what."
+      seoIntro="Get video transcripts with speaker-style grouping. Transcribe, then open the Speakers branch and optionally view the transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian."
       faq={FAQ}
     />
   )

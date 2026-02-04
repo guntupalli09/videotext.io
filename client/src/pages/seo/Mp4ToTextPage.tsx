@@ -17,13 +17,17 @@ const FAQ = [
     q: 'Is there a file size limit?',
     a: 'Large files are supported; check the upload zone for the current limit. You can also trim the video to a segment before transcribing.',
   },
+  {
+    q: 'Can I translate the transcript?',
+    a: 'Yes. After transcribing, click Translate and choose English, Hindi, Telugu, Spanish, Chinese, or Russian to view the transcript in that language.',
+  },
 ]
 
 export default function Mp4ToTextPage() {
   return (
     <VideoToTranscript
       seoH1="MP4 to Text Online"
-      seoIntro="Convert MP4 video to text online. Upload your MP4, get an accurate transcript. Fast and no signup required for the free tier."
+      seoIntro="Convert MP4 video to text online. Upload your MP4, get an accurate transcript, then view it in Hindi, Telugu, Spanish, Chinese, Russian, or English. Fast. No signup for free tier."
       faq={FAQ}
     />
   )

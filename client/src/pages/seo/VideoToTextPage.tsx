@@ -17,13 +17,17 @@ const FAQ = [
     q: 'Can I copy the transcript?',
     a: 'Yes. After processing, you can download the transcript file or copy the text to your clipboard from the preview.',
   },
+  {
+    q: 'Can I view the transcript in another language?',
+    a: 'Yes. Use the Translate button to view the transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian. Translations are cached so you can switch instantly.',
+  },
 ]
 
 export default function VideoToTextPage() {
   return (
     <VideoToTranscript
       seoH1="Video to Text Online"
-      seoIntro="Turn any video into text in seconds. Upload a video, get a plain-text transcript. No signup required for the free tier."
+      seoIntro="Turn any video into text in seconds. Upload a video, get a transcript, then view it in English, Hindi, Telugu, Spanish, Chinese, or Russian. No signup required for the free tier."
       faq={FAQ}
     />
   )

@@ -9,6 +9,9 @@ import { ROUTE_SEO, getOrganizationJsonLd, getWebApplicationJsonLd } from './lib
 import Home from './pages/Home'
 import Pricing from './pages/Pricing'
 import Refer from './pages/Refer'
+import Privacy from './pages/Privacy'
+import Faq from './pages/Faq'
+import Terms from './pages/Terms'
 import VideoToTranscript from './pages/VideoToTranscript'
 import VideoToSubtitles from './pages/VideoToSubtitles'
 import BatchProcess from './pages/BatchProcess'
@@ -114,6 +117,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/refer" element={<Refer />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/faq" element={<Faq />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
             <Route path="/batch-process" element={<BatchProcess />} />

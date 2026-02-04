@@ -5,17 +5,32 @@ export const ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/': {
     title: 'Video to Text & Subtitles — Free Online Tools',
     description:
-      'VideoText: AI-powered video to text and subtitle tools. Transcribe video to transcript, generate SRT/VTT subtitles, translate, fix timing, burn captions, compress video. Paste URL or upload. No signup. Free tier.',
+      'VideoText: AI-powered video to text and subtitle tools. Transcribe video to transcript, view in 6 languages (English, Hindi, Telugu, Spanish, Chinese, Russian), generate SRT/VTT, translate subtitles, fix timing, burn captions, compress video. Paste URL or upload. No signup. Free tier.',
   },
   '/pricing': {
     title: 'Pricing — Free, Basic, Pro & Agency Plans',
     description:
-      'VideoText pricing: Free 60 min/month, Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Multi-language, batch on Pro+. Upgrade when you need more.',
+      'VideoText pricing: Free 60 min/month, Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Multi-language, batch on Pro+. We don’t store your data. Upgrade when you need more.',
+  },
+  '/privacy': {
+    title: 'Privacy Policy — We Don’t Store Your Data | VideoText',
+    description:
+      'VideoText privacy: We process your files and delete them. We don’t keep your uploads, transcripts, or outputs. Your content stays yours. Read our full policy.',
+  },
+  '/faq': {
+    title: 'FAQ — Privacy, Billing, Tools | VideoText',
+    description:
+      'Frequently asked questions about VideoText: privacy and data (we don’t store your files), billing, free tier, translation, and tools. Your files are processed and deleted.',
+  },
+  '/terms': {
+    title: 'Terms of Service | VideoText',
+    description:
+      'Terms of use for VideoText. We don’t store your data; see our Privacy Policy for details. Billing via Stripe. Use the service in accordance with these terms.',
   },
   '/video-to-transcript': {
-    title: 'Video to Transcript — Free AI Transcription',
+    title: 'Video to Transcript — Free AI Transcription & Translation',
     description:
-      'Convert video to text with AI. Paste a URL or upload a video, get a plain-text transcript in seconds. Multiple languages. No signup. Free tier. Download or copy to clipboard.',
+      'Convert video to text with AI. View transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian with one click. Paste URL or upload, get plain-text transcript. Summary, chapters, speakers. Download or copy. No signup. Free tier.',
   },
   '/video-to-subtitles': {
     title: 'Video to Subtitles — SRT & VTT Generator',
@@ -51,12 +66,12 @@ export const ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/video-to-text': {
     title: 'Video to Text Online – Fast & Accurate | VideoText',
     description:
-      'Convert video to text online. Upload any video, get a plain-text transcript in seconds. No signup required for the free tier.',
+      'Convert video to text online. Get a transcript in seconds, then view it in English, Hindi, Telugu, Spanish, Chinese, or Russian. No signup required for the free tier.',
   },
   '/mp4-to-text': {
     title: 'MP4 to Text Online – Fast & Accurate | VideoText',
     description:
-      'Convert MP4 to text online. Upload your MP4, get an accurate transcript. Fast and no signup required for the free tier.',
+      'Convert MP4 to text online. Get an accurate transcript, then translate it to Hindi, Telugu, Spanish, Chinese, Russian, or English. Fast. No signup for free tier.',
   },
   '/mp4-to-srt': {
     title: 'MP4 to SRT Online – Fast & Accurate | VideoText',
@@ -77,27 +92,27 @@ export const ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/meeting-transcript': {
     title: 'Meeting Transcript — Turn Meetings into Text | VideoText',
     description:
-      'Convert meeting recordings to text. Upload a video, get a transcript in seconds. No signup for the free tier. Download or copy.',
+      'Convert meeting recordings to text. Get a transcript in seconds, then view it in English, Hindi, Telugu, Spanish, Chinese, or Russian. Download or copy. No signup for free tier.',
   },
   '/speaker-diarization': {
     title: 'Speaker-Separated Video Transcripts — Instantly Online | VideoText',
     description:
-      'Get video transcripts with speaker labels. Upload any video, transcribe, then view Speakers view for who said what. Free tier available.',
+      'Get video transcripts with speaker labels. Transcribe, then view Speakers branch and translate transcript to Hindi, Telugu, Spanish, Chinese, Russian, or English. Free tier.',
   },
   '/video-summary-generator': {
     title: 'Video Summary Generator — Decisions, Actions, Key Points | VideoText',
     description:
-      'Extract structured summaries from video: decisions, action items, key points. Transcribe first, then use the Summary branch. Free tier.',
+      'Extract structured summaries from video: decisions, action items, key points. Transcribe, use Summary branch, and translate transcript to 6 languages. Free tier.',
   },
   '/video-chapters-generator': {
     title: 'Video Chapters Generator — Section Headings from Transcript | VideoText',
     description:
-      'Generate chapter headings from your video transcript. Upload, transcribe, then use the Chapters branch to jump by section. Free.',
+      'Generate chapter headings from your video transcript. Upload, transcribe, use Chapters branch. View or translate transcript in English, Hindi, Telugu, Spanish, Chinese, Russian. Free.',
   },
   '/keyword-indexed-transcript': {
     title: 'Keyword-Indexed Transcript — Topic Index from Video | VideoText',
     description:
-      'Get a keyword index from your video transcript. Repeated terms link to transcript sections. Upload, transcribe, open Keywords branch.',
+      'Get a keyword index from your video transcript. Repeated terms link to sections. Translate transcript to Hindi, Telugu, Spanish, Chinese, Russian, or English. Upload, transcribe, open Keywords branch.',
   },
   // VIDEO → SUBTITLES tree (SEO entry points; same tool as /video-to-subtitles)
   '/srt-to-vtt': {
@@ -195,7 +210,7 @@ export function getOrganizationJsonLd() {
     name: SITE_NAME,
     url: SITE_URL,
     description:
-      'VideoText: AI-powered video to text and subtitle tools. Transcribe, generate SRT/VTT, translate, fix, burn subtitles, compress video. Paste URL or upload. Free tier.',
+      'VideoText: AI-powered video to text and subtitle tools. Transcribe, view transcript in 6 languages (English, Hindi, Telugu, Spanish, Chinese, Russian), generate SRT/VTT, translate subtitles, fix, burn, compress video. Paste URL or upload. Free tier.',
     sameAs: [],
   }
 }
@@ -207,7 +222,7 @@ export function getWebApplicationJsonLd() {
     name: SITE_NAME,
     url: SITE_URL,
     description:
-      'Free online tools: video to transcript, video to subtitles (SRT/VTT), translate subtitles, fix subtitles, burn subtitles, compress video. AI-powered. No signup.',
+      'Free online tools: video to transcript (with translation to Hindi, Telugu, Spanish, Chinese, Russian), video to subtitles (SRT/VTT), translate subtitles, fix, burn, compress video. AI-powered. No signup.',
     applicationCategory: 'MultimediaApplication',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
   }

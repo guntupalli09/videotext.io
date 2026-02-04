@@ -14,7 +14,7 @@ export default function VideoSummaryGeneratorPage() {
   return (
     <VideoToTranscript
       seoH1="Video Summary Generator — Decisions, Actions, Key Points"
-      seoIntro="Extract structured summaries from video: decisions, action items, key points. Upload, transcribe, then open the Summary branch."
+      seoIntro="Extract structured summaries from video: decisions, action items, key points. Upload, transcribe, open the Summary branch, and translate the transcript to 6 languages if needed."
       faq={FAQ}
     />
   )
