@@ -431,15 +431,29 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     return text.split(/\n\n+/).map((p) => p.trim()).filter(Boolean)
   }, [])
 
-  const getSpeakersData = useCallback((): { speaker: string; text: string }[] => {
+  const getSpeakersData = useCallback((): { speaker: string; text: string; isDiarized: boolean }[] => {
     if (result?.segments?.length) {
-      return result.segments.map((s) => ({ speaker: s.speaker || 'Speaker', text: s.text }))
+      const rawLabels = result.segments.map((s) => s.speaker?.trim() || 'Speaker')
+      const unique = [...new Set(rawLabels)]
+      const labelToFriendly: Record<string, string> = {}
+      unique.forEach((label, idx) => {
+        labelToFriendly[label] = `Speaker ${idx + 1}`
+      })
+      return result.segments.map((s) => ({
+        speaker: labelToFriendly[s.speaker?.trim() || 'Speaker'] || 'Speaker',
+        text: s.text,
+        isDiarized: true,
+      }))
     }
     try {
       const raw = fullTranscript || ''
       if (!raw.trim()) return []
       const paras = getParagraphs(raw)
-      return paras.map((p, i) => ({ speaker: `Speaker ${(i % 3) + 1}`, text: p }))
+      return paras.map((p, i) => ({
+        speaker: `Speaker ${(i % 3) + 1}`,
+        text: p,
+        isDiarized: false,
+      }))
     } catch {
       return []
     }
@@ -994,29 +1008,37 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
             {activeBranch === 'speakers' && (
               <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
                   <Users className="h-5 w-5 text-violet-600" />
-                  Speakers
+                  Who said what
                 </h3>
                 {(() => {
                   const data = getSpeakersData()
+                  const hasDiarizedSegments = (result?.segments?.length ?? 0) > 0
                   if (!data.length) {
                     return (
                       <div className="rounded-xl bg-gray-50/80 p-4">
                         <p className="text-gray-600 text-sm font-medium mb-1">Speakers</p>
-                        <p className="text-gray-500 text-sm">Groups transcript by speaker. Empty when the transcript has no paragraph breaks to assign.</p>
+                        <p className="text-gray-500 text-sm">Enable &quot;Speaker diarization&quot; when processing to see who said what. Otherwise this view stays empty or uses paragraph grouping.</p>
                       </div>
                     )
                   }
                   return (
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {data.map((item, i) => (
-                        <div key={i} className="border-l-2 border-violet-300 pl-3 py-1">
-                          <span className="text-xs font-semibold text-violet-600 uppercase">{item.speaker}</span>
-                          <p className="text-sm text-gray-700 mt-0.5">{item.text}</p>
-                        </div>
-                      ))}
-                    </div>
+                    <>
+                      <p className="text-sm text-gray-500 mb-4">
+                        {hasDiarizedSegments
+                          ? 'Labels (Speaker 1, 2, …) come from automatic speaker detection. They are not real names—each label is one distinct voice in the video.'
+                          : 'Paragraph view. Enable &quot;Speaker diarization&quot; when processing to get automatic speaker labels (Speaker 1, 2, …) per segment.'}
+                      </p>
+                      <div className="space-y-4 max-h-96 overflow-y-auto">
+                        {data.map((item, i) => (
+                          <div key={i} className="border-l-2 border-violet-300 pl-3 py-1">
+                            <span className="text-xs font-semibold text-violet-600 uppercase">{item.speaker}</span>
+                            <p className="text-sm text-gray-700 mt-0.5">{item.text}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </>
                   )
                 })()}
               </div>
