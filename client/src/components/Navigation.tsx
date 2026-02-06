@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import UserMenu from './UserMenu'
+import { prefetchRoute } from '../lib/prefetch'
 
 const tools = [
   { name: 'Video → Transcript', path: '/video-to-transcript' },
@@ -21,7 +22,12 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link
+            to="/"
+            className="flex items-center space-x-2"
+            onMouseEnter={() => prefetchRoute('/')}
+            onFocus={() => prefetchRoute('/')}
+          >
             <img src="/logo.svg" alt="VideoText" className="h-8 w-8" />
             <span className="text-xl font-semibold text-gray-800 dark:text-white">VideoText</span>
           </Link>
@@ -54,6 +60,8 @@ export default function Navigation() {
                         key={tool.path}
                         to={tool.path}
                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-violet-100 dark:hover:bg-violet-900/30 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                        onMouseEnter={() => prefetchRoute(tool.path)}
+                        onFocus={() => prefetchRoute(tool.path)}
                       >
                         {tool.name}
                       </Link>
@@ -66,6 +74,8 @@ export default function Navigation() {
             <Link
               to="/pricing"
               className="text-gray-700 dark:text-gray-200 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+              onMouseEnter={() => prefetchRoute('/pricing')}
+              onFocus={() => prefetchRoute('/pricing')}
             >
               Pricing
             </Link>
@@ -75,6 +85,8 @@ export default function Navigation() {
             <Link
               to="/pricing"
               className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              onMouseEnter={() => prefetchRoute('/pricing')}
+              onFocus={() => prefetchRoute('/pricing')}
             >
               Try Free →
             </Link>

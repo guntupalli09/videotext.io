@@ -67,7 +67,8 @@ export async function createBillingPortalSession(returnUrl: string): Promise<{ u
 /** After checkout success: exchange session_id for userId and plan so the client can set identity. */
 export async function getSessionDetails(sessionId: string): Promise<{ userId: string; plan: string }> {
   const response = await api(
-    `/api/billing/session-details?session_id=${encodeURIComponent(sessionId)}`
+    `/api/billing/session-details?session_id=${encodeURIComponent(sessionId)}`,
+    { timeout: 25_000 }
   )
 
   if (!response.ok) {

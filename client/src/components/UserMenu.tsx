@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Menu, X, Sun, Moon, Clock, CreditCard, Headphones, Gift } from 'lucide-react'
+import { prefetchRoute } from '../lib/prefetch'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getCurrentUsage } from '../lib/api'
 import { createBillingPortalSession } from '../lib/billing'
@@ -156,6 +157,8 @@ export default function UserMenu() {
                   to="/refer"
                   className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   onClick={() => setOpen(false)}
+                  onMouseEnter={() => prefetchRoute('/refer')}
+                  onFocus={() => prefetchRoute('/refer')}
                 >
                   <Gift className="w-5 h-5 shrink-0 text-gray-600 dark:text-gray-300" />
                   <span>Refer and earn — 45 min free (Free, Basic, Pro)</span>
@@ -185,6 +188,8 @@ export default function UserMenu() {
                         to={t.path}
                         className="block rounded-lg px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => setOpen(false)}
+                        onMouseEnter={() => prefetchRoute(t.path)}
+                        onFocus={() => prefetchRoute(t.path)}
                       >
                         {t.name}
                       </Link>
@@ -194,6 +199,8 @@ export default function UserMenu() {
                     to="/pricing"
                     className="mt-3 block rounded-xl px-4 py-3 text-center font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30 border border-violet-300 dark:border-violet-700"
                     onClick={() => setOpen(false)}
+                    onMouseEnter={() => prefetchRoute('/pricing')}
+                    onFocus={() => prefetchRoute('/pricing')}
                   >
                     Pricing
                   </Link>
@@ -201,6 +208,8 @@ export default function UserMenu() {
                     to="/pricing"
                     className="mt-2 block rounded-xl bg-violet-600 hover:bg-violet-700 text-white px-4 py-3 text-center font-medium transition-colors"
                     onClick={() => setOpen(false)}
+                    onMouseEnter={() => prefetchRoute('/pricing')}
+                    onFocus={() => prefetchRoute('/pricing')}
                   >
                     Try Free →
                   </Link>

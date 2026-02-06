@@ -14,7 +14,7 @@ import VideoTrimmer from '../components/VideoTrimmer'
 import LanguageSelector from '../components/LanguageSelector'
 import SubtitleEditor, { SubtitleRow } from '../components/SubtitleEditor'
 import { incrementUsage } from '../lib/usage'
-import { uploadFile, uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, translateTranscript, TRANSCRIPT_TRANSLATION_LANGUAGES } from '../lib/api'
+import { uploadFile, uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, translateTranscript, TRANSCRIPT_TRANSLATION_LANGUAGES } from '../lib/api'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getJobLifecycleTransition } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
@@ -203,6 +203,16 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     }
   }, [location.pathname, navigate])
 
+  // Remind user to keep tab open when they switch away during upload (helps mobile)
+  useEffect(() => {
+    if (uploadPhase !== 'uploading') return
+    const onVisibility = () => {
+      if (document.hidden) toast('Keep this tab open until the upload finishes.', { icon: '📤', duration: 4000 })
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => document.removeEventListener('visibilitychange', onVisibility)
+  }, [uploadPhase])
+
   const handleFileSelect = (file: File) => {
     setSelectedFile(file)
     setTrimStart(null)
@@ -365,7 +375,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       } else {
         setStatus('failed')
       }
-      toast.error(error.message || 'Upload failed')
+      toast.error(getUserFacingMessage(error))
     }
   }
 

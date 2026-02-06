@@ -12,6 +12,9 @@ Professional video utilities platform: transcribe video to text, generate and tr
 - **Result caching**: repeat processing (same user + file + tool + options) returns instantly within `CACHE_TTL_DAYS`.
 - **Plan limits**: Free = 60 min/month, 15 min max per video; Basic = 45 min max per video. See [§5 Billing & usage](#5-billing--usage).
 - **Usage tracking**: Batch jobs charge minutes per video; all tools show minutes remaining and refetch when a job completes.
+- **Client: fast load & revisits** — Route-level code splitting (lazy-loaded pages), prefetch on link hover/focus, and PWA (precache of static assets; API is never cached). See [§10 Client: performance, devices & reliability](#10-client-performance-devices--reliability).
+- **Client: mobile & reliability** — Chunked upload is mobile-optimised (smaller chunks, sequential, per-chunk timeout and retry); “keep tab open” reminder during upload; offline banner when the app loses connection; user-facing “Check your connection” message on network/abort errors; error boundary and unhandled-rejection safety net.
+- **Client: cross-browser** — Build target `es2020` and `browserslist` (last 2 Chrome, Firefox, Safari, Edge) for a clear compatibility baseline.
 
 ---
 
@@ -26,7 +29,8 @@ Professional video utilities platform: transcribe video to text, generate and tr
 7. [Redis](#7-redis)
 8. [Deployment (Hetzner + Caddy)](#8-deployment-hetzner--caddy)
 9. [SEO & production URLs](#9-seo--production-urls)
-10. [Project structure](#10-project-structure)
+10. [Client: performance, devices & reliability](#10-client-performance-devices--reliability)
+11. [Project structure](#11-project-structure)
 
 ---
 
@@ -179,7 +183,7 @@ In `server/.env` (or Docker env). Use `server/.env.example` as template.
 
 - **Single-file:** `POST /api/upload` — `multipart/form-data`, field **`file`**, **`toolType`** (required). Optional: `url` (video-to-transcript/subtitles), `format`, `language`, `targetLanguage`, `compressionLevel`, `trimmedStart`, `trimmedEnd`, `additionalLanguages` (JSON string), etc.
 - **Dual-file (burn):** `POST /api/upload/dual` — fields **`video`**, **`subtitles`**, **`toolType`** = `burn-subtitles`.
-- **Chunked upload:** `POST /api/upload/chunk` (binary); metadata includes `toolType`, `filename`, `totalChunks`.
+- **Chunked upload:** `POST /api/upload/chunk` (binary); metadata includes `toolType`, `filename`, `totalChunks`. The client uses smaller chunks and sequential upload on mobile for reliability; state is resumable on retry.
 - **Batch upload:** `POST /api/batch/upload` — `multipart/form-data`, field **`files`** (array), optional `primaryLanguage` and `additionalLanguages`. Status: `GET /api/batch/:batchId/status`.
 
 Valid `toolType` values: `video-to-transcript`, `video-to-subtitles`, `translate-subtitles`, `fix-subtitles`, `burn-subtitles`, `compress-video`, `convert-subtitles`. Client uses `BACKEND_TOOL_TYPES` in `client/src/lib/api.ts`; do not invent other names.
@@ -266,14 +270,45 @@ Changing Redis invalidates existing job IDs (queue state is not migrated).
 
 ---
 
-## 10. Project structure
+## 10. Client: performance, devices & reliability
+
+The frontend is built for **fast first load**, **reliable behaviour on slow or flaky networks**, and **good experience across devices and browsers**.
+
+### Performance & revisits
+
+- **Code splitting:** Every page (Home, tools, SEO routes) is lazy-loaded with `React.lazy()`; only the current route’s JS is loaded on first visit. Vendor chunks (React, router, UI libs) are split for better caching.
+- **Prefetch:** Navigation and UserMenu links prefetch the corresponding route chunk on hover/focus so navigation feels instant when the user clicks.
+- **PWA:** `vite-plugin-pwa` generates a service worker that precaches static assets (JS, CSS, HTML, images). Repeat visits and brief offline periods can serve the app shell from cache. **API is never cached** so usage, billing, and job state stay correct.
+
+### Mobile & large uploads
+
+- **Chunked upload:** Files over 15 MB use resumable chunked upload. On mobile (or narrow viewport / touch), the client uses **smaller chunks** (2 MB) and **sequential** upload with a **per-chunk timeout** (90 s) and retries so long uploads are more likely to complete. Chunk size and progress are stored so a retry continues from the last successful chunk.
+- **Visibility:** While the upload phase is active (Video → Transcript, Video → Subtitles), if the user switches tabs the app shows a toast: “Keep this tab open until the upload finishes.” (FAQ also explains Wi‑Fi and keeping the tab open on mobile.)
+
+### Reliability & errors
+
+- **API timeouts:** GET requests for job status, usage, and billing session use a 25 s timeout so slow networks fail fast and polling can retry instead of hanging.
+- **Network errors:** When an upload or request fails due to network/abort (e.g. timeout, offline), the user sees “Check your connection and try again.” via `getUserFacingMessage()` in `client/src/lib/api.ts`.
+- **Offline banner:** When the app goes offline (`navigator.onLine` false), a sticky banner appears: “You’re offline. Uploads and processing will work when your connection is back.”
+- **Error boundary:** `SessionErrorBoundary` catches render errors and shows a friendly “session expired” style message with a link to home; errors are logged (and can be wired to Sentry later).
+- **Unhandled rejections:** A global `unhandledrejection` handler shows a generic “Something went wrong” toast so uncaught promise rejections don’t leave the user with no feedback.
+
+### Cross-browser baseline
+
+- **Build:** Vite `build.target` is `es2020`. `package.json` includes a `browserslist` (last 2 Chrome, Firefox, Safari, Edge) so tooling and future legacy builds have a clear baseline. No polyfills or legacy bundle by default; the app targets modern browsers.
+
+A more detailed comparison with industry norms and optional next steps (tests, Sentry, a11y) is in `docs/FRONTEND_BENCHMARK.md`.
+
+---
+
+## 11. Project structure
 
 ```text
-├── client/                 # React + Vite
+├── client/                 # React + Vite; PWA (vite-plugin-pwa)
 │   ├── src/
-│   │   ├── components/     # UI (Navigation, FileUploadZone, SuccessState, etc.)
-│   │   ├── lib/            # api, apiBase, billing, jobPolling, seoMeta, theme, usage, …
-│   │   ├── pages/          # Home, VideoToTranscript, VideoToSubtitles, BatchProcess, …
+│   │   ├── components/     # UI (Navigation, FileUploadZone, SuccessState, OfflineBanner, SessionErrorBoundary, …)
+│   │   ├── lib/            # api, apiBase, billing, jobPolling, prefetch, seoMeta, theme, usage, …
+│   │   ├── pages/          # Home, VideoToTranscript, VideoToSubtitles, BatchProcess, … (lazy-loaded)
 │   │   └── pages/seo/      # SEO entry-point wrappers (same tools, different meta)
 │   ├── public/
 │   └── index.html
@@ -285,6 +320,7 @@ Changing Redis invalidates existing job IDs (queue state is not migrated).
 │   │   ├── models/        # User, Job, UsageLog, …
 │   │   └── utils/         # auth, limits, metering, srtParser, redis, …
 │   └── package.json
+├── docs/                   # FRONTEND_BENCHMARK.md (client vs industry), API_UPLOAD_CONTRACT, …
 ├── deploy/
 │   ├── Caddyfile           # Reverse proxy for API
 │   └── (no separate README; see §8 above)
@@ -307,4 +343,4 @@ Changing Redis invalidates existing job IDs (queue state is not migrated).
 | Job status | `GET /api/job/:jobId` |
 | Health | `GET /health` → `{"status":"ok"}` |
 
-All product behavior, trees, branches, and features are described in [§1 Features & tools](#1-features--tools-trees-and-branches). For env details use `server/.env.example` and the tables in [§3 Environment variables](#3-environment-variables).
+All product behavior, trees, branches, and features are described in [§1 Features & tools](#1-features--tools-trees-and-branches). Client performance and device/reliability details are in [§10 Client: performance, devices & reliability](#10-client-performance-devices--reliability). For env details use `server/.env.example` and the tables in [§3 Environment variables](#3-environment-variables).

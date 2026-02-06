@@ -1,15 +1,27 @@
 import { API_ORIGIN } from './apiBase'
 
+/** RequestInit plus optional timeout (ms). Timeout applies only when no custom signal is provided. */
+export type ApiInit = RequestInit & { timeout?: number }
+
 /**
  * Single entry point for all API requests. Enforces /api/* contract so no request
  * can hit /upload, /usage, etc. (missing /api) or /api/api/* (double prefix).
  * VITE_API_URL must be ORIGIN ONLY (e.g. https://api.videotext.io), NOT .../api.
+ * Use init.timeout for GET/short requests so slow networks fail fast and can retry (e.g. polling).
  */
-export function api(path: string, init?: RequestInit): Promise<Response> {
+export function api(path: string, init?: ApiInit): Promise<Response> {
   if (!path.startsWith('/api/')) {
     throw new Error(`API path must start with /api/. Got: ${path}`)
   }
-  return fetch(`${API_ORIGIN}${path}`, init)
+  const { timeout, ...rest } = init ?? {}
+  let signal = rest.signal
+  if (timeout != null && timeout > 0 && !signal) {
+    const controller = new AbortController()
+    signal = controller.signal
+    const t = setTimeout(() => controller.abort(), timeout)
+    return fetch(`${API_ORIGIN}${path}`, { ...rest, signal }).finally(() => clearTimeout(t))
+  }
+  return fetch(`${API_ORIGIN}${path}`, rest)
 }
 
 /** Backend-supported toolType values. Match server/src/routes/upload.ts and workers/videoProcessor.ts exactly. Do not invent names. */
@@ -116,10 +128,20 @@ export interface UploadProgressOptions {
   onProgress?: (percent: number) => void
 }
 
-const CHUNK_SIZE = 5 * 1024 * 1024 // 5 MB
 const CHUNK_THRESHOLD = 15 * 1024 * 1024 // 15 MB — use chunked upload above this
-const CHUNK_PARALLEL = 4 // upload 4 chunks at a time for faster large uploads
 const CHUNKED_UPLOAD_STATE_KEY = 'videotools_chunked_upload'
+/** Per-chunk timeout so we retry instead of hanging until OS kills the connection (helps mobile). */
+const CHUNK_FETCH_TIMEOUT_MS = 90_000
+
+/** Heuristic: touch device or narrow screen or common mobile UA. Used to pick smaller chunks + sequential upload. */
+function isMobile(): boolean {
+  if (typeof window === 'undefined') return false
+  const ua = navigator.userAgent || ''
+  if (/iPhone|iPad|iPod|Android|webOS|Mobile/i.test(ua)) return true
+  if ('ontouchstart' in window) return true
+  if (window.innerWidth > 0 && window.innerWidth < 768) return true
+  return false
+}
 
 interface ChunkedUploadState {
   uploadId: string
@@ -127,15 +149,17 @@ interface ChunkedUploadState {
   fileSize: number
   totalChunks: number
   uploadedChunks: number[]
+  chunkSize: number // so resume uses same chunking
 }
 
 function getChunkedUploadState(): ChunkedUploadState | null {
   try {
     const raw = sessionStorage.getItem(CHUNKED_UPLOAD_STATE_KEY)
     if (!raw) return null
-    const s = JSON.parse(raw) as ChunkedUploadState
+    const s = JSON.parse(raw) as ChunkedUploadState & { chunkSize?: number }
     if (!s?.uploadId || !Array.isArray(s.uploadedChunks)) return null
-    return s
+    const chunkSize = s.chunkSize ?? 5 * 1024 * 1024
+    return { ...s, chunkSize }
   } catch {
     return null
   }
@@ -157,11 +181,12 @@ function clearChunkedUploadState(): void {
   }
 }
 
-function buildInitBody(file: File, options: UploadOptions): Record<string, unknown> {
+function buildInitBody(file: File, options: UploadOptions, totalChunks?: number): Record<string, unknown> {
+  const defaultChunkSize = isMobile() ? 2 * 1024 * 1024 : 5 * 1024 * 1024
   const body: Record<string, unknown> = {
     filename: file.name,
     totalSize: file.size,
-    totalChunks: Math.ceil(file.size / CHUNK_SIZE),
+    totalChunks: totalChunks ?? Math.ceil(file.size / defaultChunkSize),
     toolType: options.toolType,
   }
   if (options.format) body.format = options.format
@@ -189,7 +214,7 @@ function buildInitBody(file: File, options: UploadOptions): Record<string, unkno
   return body
 }
 
-/** Chunked upload for large files. Resumable: same file retry reuses uploadId and only sends missing chunks. */
+/** Chunked upload for large files. Resumable: same file retry reuses uploadId and only sends missing chunks. Mobile: smaller chunks + sequential for reliability. */
 async function uploadFileChunked(
   file: File,
   options: UploadOptions,
@@ -197,17 +222,19 @@ async function uploadFileChunked(
 ): Promise<UploadResponse> {
   const userId = localStorage.getItem('userId') || 'demo-user'
   const plan = localStorage.getItem('plan') || 'free'
-  const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
+  const mobile = isMobile()
+  const defaultChunkSize = mobile ? 2 * 1024 * 1024 : 5 * 1024 * 1024 // 2 MB on mobile, 5 MB on desktop
+  const chunkParallel = mobile ? 1 : 4 // sequential on mobile to avoid connection limits
+
+  const existing = getChunkedUploadState()
+  const sameFile = existing && existing.fileName === file.name && existing.fileSize === file.size
+  const chunkSize = sameFile ? (existing!.chunkSize ?? defaultChunkSize) : defaultChunkSize
+  const totalChunks = sameFile ? (existing!.totalChunks ?? Math.ceil(file.size / chunkSize)) : Math.ceil(file.size / chunkSize)
 
   let uploadId: string
   let uploadedChunks: number[]
 
-  const existing = getChunkedUploadState()
-  const canResume =
-    existing &&
-    existing.fileName === file.name &&
-    existing.fileSize === file.size &&
-    existing.totalChunks === totalChunks
+  const canResume = sameFile && existing!.uploadId && existing!.totalChunks === totalChunks
 
   if (canResume && existing) {
     uploadId = existing.uploadId
@@ -220,7 +247,7 @@ async function uploadFileChunked(
         'x-user-id': userId,
         'x-plan': plan,
       },
-      body: JSON.stringify(buildInitBody(file, options)),
+      body: JSON.stringify(buildInitBody(file, options, totalChunks)),
     })
     if (!initRes.ok) {
       const err = await initRes.json().catch(() => ({ message: 'Upload init failed' }))
@@ -235,43 +262,62 @@ async function uploadFileChunked(
       fileSize: file.size,
       totalChunks,
       uploadedChunks: [],
+      chunkSize,
     })
     progressOptions?.onProgress?.(0)
   }
 
-  const uploadChunk = async (chunkIndex: number): Promise<void> => {
-    const start = chunkIndex * CHUNK_SIZE
-    const end = Math.min(start + CHUNK_SIZE, file.size)
+  const uploadChunk = async (chunkIndex: number, retries = 2): Promise<void> => {
+    const start = chunkIndex * chunkSize
+    const end = Math.min(start + chunkSize, file.size)
     const blob = file.slice(start, end)
-    const res = await fetch(`${API_ORIGIN}/api/upload/chunk`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/octet-stream',
-        'x-upload-id': uploadId,
-        'x-chunk-index': String(chunkIndex),
-        'x-user-id': userId,
-        'x-plan': plan,
-      },
-      body: blob,
-    })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ message: 'Chunk upload failed' }))
-      throw new Error(err.message || 'Chunk upload failed')
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), CHUNK_FETCH_TIMEOUT_MS)
+        const res = await fetch(`${API_ORIGIN}/api/upload/chunk`, {
+          method: 'POST',
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            'x-upload-id': uploadId,
+            'x-chunk-index': String(chunkIndex),
+            'x-user-id': userId,
+            'x-plan': plan,
+          },
+          body: blob,
+        })
+        clearTimeout(timeoutId)
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ message: 'Chunk upload failed' }))
+          throw new Error(err.message || 'Chunk upload failed')
+        }
+        uploadedChunks.push(chunkIndex)
+        setChunkedUploadState({
+          uploadId,
+          fileName: file.name,
+          fileSize: file.size,
+          totalChunks,
+          uploadedChunks: [...uploadedChunks],
+          chunkSize,
+        })
+        return
+      } catch (e) {
+        if (attempt === retries) {
+          const msg = e instanceof Error ? e.message : 'Chunk upload failed'
+          throw new Error(
+            msg +
+              ' On mobile or slow connections, use Wi‑Fi and keep the tab open, then try again.'
+          )
+        }
+      }
     }
-    uploadedChunks.push(chunkIndex)
-    setChunkedUploadState({
-      uploadId,
-      fileName: file.name,
-      fileSize: file.size,
-      totalChunks,
-      uploadedChunks: [...uploadedChunks],
-    })
   }
 
   const indicesToUpload = Array.from({ length: totalChunks }, (_, i) => i).filter((i) => !uploadedChunks.includes(i))
   let done = uploadedChunks.length
-  for (let i = 0; i < indicesToUpload.length; i += CHUNK_PARALLEL) {
-    const batch = indicesToUpload.slice(i, i + CHUNK_PARALLEL).map((chunkIndex) => uploadChunk(chunkIndex))
+  for (let i = 0; i < indicesToUpload.length; i += chunkParallel) {
+    const batch = indicesToUpload.slice(i, i + chunkParallel).map((chunkIndex) => uploadChunk(chunkIndex))
     await Promise.all(batch)
     done += batch.length
     progressOptions?.onProgress?.(Math.round((done / totalChunks) * 100))
@@ -502,8 +548,25 @@ export class SessionExpiredError extends Error {
   }
 }
 
+/** True if the error is a network/abort failure (timeout, offline, DNS). */
+export function isNetworkError(e: unknown): boolean {
+  if (e instanceof TypeError && (e.message === 'Failed to fetch' || e.message === 'Load failed')) return true
+  if (e instanceof Error && e.name === 'AbortError') return true
+  return false
+}
+
+/** User-facing message for API failures: network hint when applicable, else error message or generic. */
+export function getUserFacingMessage(e: unknown): string {
+  if (isNetworkError(e)) return "Check your connection and try again."
+  if (e instanceof Error && e.message) return e.message
+  return 'Something went wrong. Please try again.'
+}
+
+/** Timeout for status/usage GET requests so slow networks fail fast and polling can retry. */
+const API_GET_TIMEOUT_MS = 25_000
+
 export async function getJobStatus(jobId: string): Promise<JobStatus> {
-  const response = await api(`/api/job/${jobId}`)
+  const response = await api(`/api/job/${jobId}`, { timeout: API_GET_TIMEOUT_MS })
 
   if (response.status === 404) {
     throw new SessionExpiredError('Session expired. Please upload again.')
@@ -570,7 +633,7 @@ export interface BatchStatus {
 }
 
 export async function getBatchStatus(batchId: string): Promise<BatchStatus> {
-  const response = await api(`/api/batch/${batchId}/status`)
+  const response = await api(`/api/batch/${batchId}/status`, { timeout: API_GET_TIMEOUT_MS })
 
   if (!response.ok) {
     throw new Error('Failed to get batch status')
@@ -608,6 +671,7 @@ export interface UsageData {
 
 export async function getCurrentUsage(): Promise<UsageData> {
   const response = await api('/api/usage/current', {
+    timeout: API_GET_TIMEOUT_MS,
     headers: {
       'x-user-id': localStorage.getItem('userId') || 'demo-user',
       'x-plan': localStorage.getItem('plan') || 'free',

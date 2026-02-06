@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'react-hot-toast'
 import Navigation from './components/Navigation'
@@ -6,47 +6,58 @@ import { getSessionDetails } from './lib/billing'
 import Footer from './components/Footer'
 import Seo from './components/Seo'
 import { ROUTE_SEO, getOrganizationJsonLd, getWebApplicationJsonLd } from './lib/seoMeta'
-import Home from './pages/Home'
-import Pricing from './pages/Pricing'
-import Refer from './pages/Refer'
-import Privacy from './pages/Privacy'
-import Faq from './pages/Faq'
-import Terms from './pages/Terms'
-import VideoToTranscript from './pages/VideoToTranscript'
-import VideoToSubtitles from './pages/VideoToSubtitles'
-import BatchProcess from './pages/BatchProcess'
-import TranslateSubtitles from './pages/TranslateSubtitles'
-import FixSubtitles from './pages/FixSubtitles'
-import BurnSubtitles from './pages/BurnSubtitles'
-import CompressVideo from './pages/CompressVideo'
-// SEO entry points: reuse same tool components. Do NOT add new API or duplicate logic.
-import VideoToTextPage from './pages/seo/VideoToTextPage'
-import Mp4ToTextPage from './pages/seo/Mp4ToTextPage'
-import Mp4ToSrtPage from './pages/seo/Mp4ToSrtPage'
-import SubtitleGeneratorPage from './pages/seo/SubtitleGeneratorPage'
-import SrtTranslatorPage from './pages/seo/SrtTranslatorPage'
-import MeetingTranscriptPage from './pages/seo/MeetingTranscriptPage'
-import SpeakerDiarizationPage from './pages/seo/SpeakerDiarizationPage'
-import VideoSummaryGeneratorPage from './pages/seo/VideoSummaryGeneratorPage'
-import VideoChaptersGeneratorPage from './pages/seo/VideoChaptersGeneratorPage'
-import KeywordIndexedTranscriptPage from './pages/seo/KeywordIndexedTranscriptPage'
-import SrtToVttPage from './pages/seo/SrtToVttPage'
-import SubtitleConverterPage from './pages/seo/SubtitleConverterPage'
-import SubtitleTimingFixerPage from './pages/seo/SubtitleTimingFixerPage'
-import SubtitleValidationPage from './pages/seo/SubtitleValidationPage'
-import SubtitleTranslatorPage from './pages/seo/SubtitleTranslatorPage'
-import MultilingualSubtitlesPage from './pages/seo/MultilingualSubtitlesPage'
-import SubtitleLanguageCheckerPage from './pages/seo/SubtitleLanguageCheckerPage'
-import SubtitleGrammarFixerPage from './pages/seo/SubtitleGrammarFixerPage'
-import SubtitleLineBreakFixerPage from './pages/seo/SubtitleLineBreakFixerPage'
-import HardcodedCaptionsPage from './pages/seo/HardcodedCaptionsPage'
-import VideoWithSubtitlesPage from './pages/seo/VideoWithSubtitlesPage'
-import VideoCompressorPage from './pages/seo/VideoCompressorPage'
-import ReduceVideoSizePage from './pages/seo/ReduceVideoSizePage'
-import BatchVideoProcessingPage from './pages/seo/BatchVideoProcessingPage'
-import BulkSubtitleExportPage from './pages/seo/BulkSubtitleExportPage'
-import BulkTranscriptExportPage from './pages/seo/BulkTranscriptExportPage'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
+import OfflineBanner from './components/OfflineBanner'
+
+// Lazy-load pages for fast initial load on any device; each route loads only when visited.
+const Home = lazy(() => import('./pages/Home'))
+const Pricing = lazy(() => import('./pages/Pricing'))
+const Refer = lazy(() => import('./pages/Refer'))
+const Privacy = lazy(() => import('./pages/Privacy'))
+const Faq = lazy(() => import('./pages/Faq'))
+const Terms = lazy(() => import('./pages/Terms'))
+const VideoToTranscript = lazy(() => import('./pages/VideoToTranscript'))
+const VideoToSubtitles = lazy(() => import('./pages/VideoToSubtitles'))
+const BatchProcess = lazy(() => import('./pages/BatchProcess'))
+const TranslateSubtitles = lazy(() => import('./pages/TranslateSubtitles'))
+const FixSubtitles = lazy(() => import('./pages/FixSubtitles'))
+const BurnSubtitles = lazy(() => import('./pages/BurnSubtitles'))
+const CompressVideo = lazy(() => import('./pages/CompressVideo'))
+const VideoToTextPage = lazy(() => import('./pages/seo/VideoToTextPage'))
+const Mp4ToTextPage = lazy(() => import('./pages/seo/Mp4ToTextPage'))
+const Mp4ToSrtPage = lazy(() => import('./pages/seo/Mp4ToSrtPage'))
+const SubtitleGeneratorPage = lazy(() => import('./pages/seo/SubtitleGeneratorPage'))
+const SrtTranslatorPage = lazy(() => import('./pages/seo/SrtTranslatorPage'))
+const MeetingTranscriptPage = lazy(() => import('./pages/seo/MeetingTranscriptPage'))
+const SpeakerDiarizationPage = lazy(() => import('./pages/seo/SpeakerDiarizationPage'))
+const VideoSummaryGeneratorPage = lazy(() => import('./pages/seo/VideoSummaryGeneratorPage'))
+const VideoChaptersGeneratorPage = lazy(() => import('./pages/seo/VideoChaptersGeneratorPage'))
+const KeywordIndexedTranscriptPage = lazy(() => import('./pages/seo/KeywordIndexedTranscriptPage'))
+const SrtToVttPage = lazy(() => import('./pages/seo/SrtToVttPage'))
+const SubtitleConverterPage = lazy(() => import('./pages/seo/SubtitleConverterPage'))
+const SubtitleTimingFixerPage = lazy(() => import('./pages/seo/SubtitleTimingFixerPage'))
+const SubtitleValidationPage = lazy(() => import('./pages/seo/SubtitleValidationPage'))
+const SubtitleTranslatorPage = lazy(() => import('./pages/seo/SubtitleTranslatorPage'))
+const MultilingualSubtitlesPage = lazy(() => import('./pages/seo/MultilingualSubtitlesPage'))
+const SubtitleLanguageCheckerPage = lazy(() => import('./pages/seo/SubtitleLanguageCheckerPage'))
+const SubtitleGrammarFixerPage = lazy(() => import('./pages/seo/SubtitleGrammarFixerPage'))
+const SubtitleLineBreakFixerPage = lazy(() => import('./pages/seo/SubtitleLineBreakFixerPage'))
+const HardcodedCaptionsPage = lazy(() => import('./pages/seo/HardcodedCaptionsPage'))
+const VideoWithSubtitlesPage = lazy(() => import('./pages/seo/VideoWithSubtitlesPage'))
+const VideoCompressorPage = lazy(() => import('./pages/seo/VideoCompressorPage'))
+const ReduceVideoSizePage = lazy(() => import('./pages/seo/ReduceVideoSizePage'))
+const BatchVideoProcessingPage = lazy(() => import('./pages/seo/BatchVideoProcessingPage'))
+const BulkSubtitleExportPage = lazy(() => import('./pages/seo/BulkSubtitleExportPage'))
+const BulkTranscriptExportPage = lazy(() => import('./pages/seo/BulkTranscriptExportPage'))
+
+/** Minimal loading fallback for route chunks — fast, accessible, no layout shift. */
+function RouteFallback() {
+  return (
+    <div className="flex min-h-[40vh] items-center justify-center" role="status" aria-live="polite" aria-label="Loading">
+      <p className="text-violet-600 font-medium">Loading…</p>
+    </div>
+  )
+}
 
 function AppSeo() {
   const { pathname } = useLocation()
@@ -111,9 +122,11 @@ function App() {
       </a>
       <div className="min-h-screen flex flex-col">
         <Navigation />
+        <OfflineBanner />
         <main id="main" className="flex-grow" role="main">
           <SessionErrorBoundary>
-          <Routes>
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/refer" element={<Refer />} />
@@ -154,7 +167,8 @@ function App() {
             <Route path="/batch-video-processing" element={<BatchVideoProcessingPage />} />
             <Route path="/bulk-subtitle-export" element={<BulkSubtitleExportPage />} />
             <Route path="/bulk-transcript-export" element={<BulkTranscriptExportPage />} />
-          </Routes>
+              </Routes>
+            </Suspense>
           </SessionErrorBoundary>
         </main>
         <Footer />

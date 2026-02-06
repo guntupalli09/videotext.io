@@ -51,6 +51,12 @@ const FAQ_ITEMS = [
     q: 'Can I translate subtitles or transcripts?',
     a: 'Yes. For subtitles: use the Translate Subtitles tool (SRT/VTT to another language). For transcripts: after generating a transcript, use the Translate button to view it in English, Hindi, Telugu, Spanish, Chinese, or Russian.',
   },
+  {
+    category: 'General',
+    icon: HelpCircle,
+    q: 'Upload fails on my phone (e.g. after a minute or two). Why?',
+    a: 'On mobile Safari and some phones, long uploads can be cut off by the browser or network after about 1–2 minutes. For large files: use Wi‑Fi (not cellular), keep the tab in the foreground and avoid locking the screen until the upload finishes. If it still fails, try from a laptop or a smaller file first.',
+  },
 ]
 
 export default function Faq() {

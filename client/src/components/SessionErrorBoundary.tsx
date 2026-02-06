@@ -23,8 +23,15 @@ export default class SessionErrorBoundary extends Component<Props, State> {
     return { hasError: true }
   }
 
-  componentDidCatch() {
-    // Log to console in dev; could report to monitoring in prod
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.error('[SessionErrorBoundary]', error, errorInfo)
+    } else {
+      // Production: log for debugging; when you add Sentry/LogRocket, report here.
+      // eslint-disable-next-line no-console
+      console.error('[SessionErrorBoundary]', error?.message, errorInfo?.componentStack)
+    }
   }
 
   render() {
