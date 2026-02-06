@@ -282,6 +282,7 @@ The frontend is built for **fast first load**, **reliable behaviour on slow or f
 
 ### Mobile & large uploads
 
+- **Retest (15 min video, 155 MB):** Laptop 2 min 16 s (upload + processing); mobile 1 min 26 s. Mobile can be faster due to different chunk strategy (2 MB sequential, no probe) and network conditions.
 - **Chunked upload:** Files over 15 MB use resumable chunked upload. **Desktop:** Before starting, the client probes connection speed (GET /health, < 2.5 s). **Fast** (< 400 ms) → 10 MB chunks, 4 in parallel; **medium** (< 1.2 s) → 5 MB, 2 parallel; **slow** or probe failure → 2 MB, 1 parallel. So good connections get maximum speed, weak ones get reliability without timeouts. **Mobile** (or narrow viewport / touch): always 2 MB, sequential, 90 s timeout. Resuming reuses existing chunk size; no re-probe. Chunk size and progress are stored so a retry continues from the last successful chunk.
 - **Visibility:** While the upload phase is active (Video → Transcript, Video → Subtitles), if the user switches tabs the app shows a toast: “Keep this tab open until the upload finishes.” (FAQ also explains Wi‑Fi and keeping the tab open on mobile.)
 

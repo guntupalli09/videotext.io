@@ -257,6 +257,7 @@ async function uploadFileChunked(
   options: UploadOptions,
   progressOptions?: UploadProgressOptions
 ): Promise<UploadResponse> {
+  const uploadStartMs = Date.now()
   const userId = localStorage.getItem('userId') || 'demo-user'
   const plan = localStorage.getItem('plan') || 'free'
   const mobile = isMobile()
@@ -399,6 +400,8 @@ async function uploadFileChunked(
   const data = (await completeRes.json()) as UploadResponse
   if (!data?.jobId) throw new Error('Invalid upload response. Please retry.')
   clearChunkedUploadState()
+  const uploadDurationMs = Date.now() - uploadStartMs
+  console.log('[UPLOAD_TIMING]', { file_size_bytes: file.size, upload_duration_ms: uploadDurationMs, tool_type: options.toolType, mode: 'chunked' })
   return data
 }
 
@@ -419,6 +422,7 @@ export function uploadFileWithProgress(
 
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
+    let uploadStartMs = 0
 
     xhr.upload.addEventListener('progress', (e) => {
       if (e.lengthComputable && progressOptions?.onProgress) {
@@ -439,6 +443,8 @@ export function uploadFileWithProgress(
         return
       }
       if (xhr.status >= 200 && xhr.status < 300 && data?.jobId) {
+        const uploadDurationMs = uploadStartMs ? Date.now() - uploadStartMs : 0
+        console.log('[UPLOAD_TIMING]', { file_size_bytes: file.size, upload_duration_ms: uploadDurationMs, tool_type: options.toolType, mode: 'xhr' })
         resolve({ jobId: data.jobId, status: data.status ?? 'queued' })
         return
       }
@@ -456,11 +462,13 @@ export function uploadFileWithProgress(
     xhr.open('POST', url)
     xhr.setRequestHeader('x-user-id', userId)
     xhr.setRequestHeader('x-plan', plan)
+    uploadStartMs = Date.now()
     xhr.send(formData)
   })
 }
 
 export async function uploadFile(file: File, options: UploadOptions): Promise<UploadResponse> {
+  const uploadStartMs = Date.now()
   const formData = buildUploadFormData(file, options)
   const response = await api('/api/upload', {
     method: 'POST',
@@ -497,6 +505,8 @@ export async function uploadFile(file: File, options: UploadOptions): Promise<Up
   if (!data?.jobId) {
     throw new Error('Invalid upload response. Please retry.')
   }
+  const uploadDurationMs = Date.now() - uploadStartMs
+  console.log('[UPLOAD_TIMING]', { file_size_bytes: file.size, upload_duration_ms: uploadDurationMs, tool_type: options.toolType, mode: 'fetch' })
   return data
 }
 

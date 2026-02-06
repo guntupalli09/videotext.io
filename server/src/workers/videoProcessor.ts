@@ -296,6 +296,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           const wantDiarization = options?.speakerDiarization === true
           let fullText: string
           let segments: { start: number; end: number; text: string; speaker?: string }[] = []
+          const processingStartMs = Date.now()
 
           if (wantDiarization) {
             await job.progress(22)
@@ -320,6 +321,9 @@ async function processJob(job: import('bull').Job<JobData>) {
             const glossary = options?.glossary?.trim()
             fullText = await transcribeVideo(videoPath, 'text', options?.language, glossary)
           }
+
+          const fileReceivedToTranscriptionFinishedMs = Date.now() - processingStartMs
+          console.log('[PROCESSING_TIMING]', { job_id: String(jobId), tool_type: 'video-to-transcript', file_received_to_transcription_finished_ms: fileReceivedToTranscriptionFinishedMs, file_size_bytes: data.fileSize ?? undefined })
 
           const baseName = path.basename(data.originalName || 'video', path.extname(data.originalName || 'video'))
           const filesToZip: { path: string; name: string }[] = []
@@ -463,12 +467,15 @@ async function processJob(job: import('bull').Job<JobData>) {
           // Multi-language processing
           if (additionalLangs.length > 0) {
             await job.progress(30)
+            const processingStartMs = Date.now()
             const multiLangResults = await generateMultiLanguageSubtitles(
               videoPath,
               options?.language || 'en',
               additionalLangs,
               format
             )
+            const fileReceivedToTranscriptionFinishedMs = Date.now() - processingStartMs
+            console.log('[PROCESSING_TIMING]', { job_id: String(jobId), tool_type: 'video-to-subtitles', file_received_to_transcription_finished_ms: fileReceivedToTranscriptionFinishedMs, file_size_bytes: data.fileSize ?? undefined, multi_language: true })
             
             // Save all language files
             await job.progress(80)
@@ -540,7 +547,10 @@ async function processJob(job: import('bull').Job<JobData>) {
             // Single language
             await job.progress(30)
             const glossary = options?.glossary?.trim()
+            const processingStartMs = Date.now()
             const subtitles = await transcribeVideo(videoPath, format, options?.language, glossary)
+            const fileReceivedToTranscriptionFinishedMs = Date.now() - processingStartMs
+            console.log('[PROCESSING_TIMING]', { job_id: String(jobId), tool_type: 'video-to-subtitles', file_received_to_transcription_finished_ms: fileReceivedToTranscriptionFinishedMs, file_size_bytes: data.fileSize ?? undefined })
 
             // Save subtitles
             await job.progress(80)
@@ -611,7 +621,10 @@ async function processJob(job: import('bull').Job<JobData>) {
             await job.progress(20)
             const format = options?.format || 'srt'
             const glossary = options?.glossary?.trim()
+            const processingStartMs = Date.now()
             const subtitles = await transcribeVideo(videoPath, format, options?.language, glossary)
+            const fileReceivedToTranscriptionFinishedMs = Date.now() - processingStartMs
+            console.log('[PROCESSING_TIMING]', { job_id: String(jobId), tool_type: 'batch-video-to-subtitles', file_received_to_transcription_finished_ms: fileReceivedToTranscriptionFinishedMs, file_size_bytes: data.fileSize ?? undefined, batch_id: batchId })
 
             // Save SRT file (preserve original name for ZIP)
             await job.progress(80)
