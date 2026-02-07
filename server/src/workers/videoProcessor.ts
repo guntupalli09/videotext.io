@@ -240,6 +240,7 @@ async function processJob(job: import('bull').Job<JobData>) {
   const data = job.data as JobData
   const plan = (data.plan || 'free') as PlanType
   const maxRuntimeMs = getMaxJobRuntimeMinutes(plan) * 60 * 1000
+  const processingStartMs = Date.now()
 
   const run = async (): Promise<any> => {
     console.log('[JOB]', jobId, 'STARTED')
