@@ -123,6 +123,7 @@ export async function addJobToQueue(
     attempts: 3,
     backoff: { type: 'exponential' as const, delay: 2000 },
     jobId: jobToken,
+    timeout: 120000, // 2 min — caption fetch should never hang this long
   }
   if (YOUTUBE_QUEUE_SEPARATION && data.toolType === 'youtube-to-transcript') {
     return captionQueue.add(jobData, jobOptions)
@@ -399,7 +400,7 @@ async function _processCaptionJob(job: import('bull').Job<JobData>): Promise<unk
   if (redis) await setJobStage(redis, job.id, 'downloading_audio')
   log.info({ msg: 'caption_handoff_to_audio', jobId: String(job.id) })
   const nextData: JobData = { ...data, toolType: 'youtube-audio-to-transcript', youtubeFallbackToAudio: true }
-  await audioQueue.add(nextData, { jobId: data.jobToken ?? String(job.id), attempts: 3, backoff: { type: 'exponential' as const, delay: 2000 } })
+  await audioQueue.add(nextData, { jobId: data.jobToken ?? String(job.id), attempts: 3, backoff: { type: 'exponential' as const, delay: 2000 }, timeout: 300000 }) // 5 min — audio download
   log.info({ msg: 'caption_job_completed', source: 'handoff_audio', jobId: String(job.id) })
   return HANDED_OFF
 }
@@ -432,7 +433,7 @@ async function processAudioJob(job: import('bull').Job<JobData>): Promise<unknow
   }
   if (redis) await setJobStage(redis, job.id, 'transcribing')
   log.info({ msg: 'audio_handoff_to_transcription', jobId: String(job.id) })
-  await transcriptionQueue.add(nextData, { jobId: data.jobToken ?? String(job.id), attempts: 3, backoff: { type: 'exponential' as const, delay: 2000 } })
+  await transcriptionQueue.add(nextData, { jobId: data.jobToken ?? String(job.id), attempts: 3, backoff: { type: 'exponential' as const, delay: 2000 }, timeout: 900000 }) // 15 min — Whisper transcription
   log.info({ msg: 'audio_job_completed', jobId: String(job.id) })
   return HANDED_OFF
 }
