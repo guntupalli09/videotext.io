@@ -329,9 +329,9 @@ const RUNTIME_QUEUE_THRESHOLD = 20
 const RUNTIME_CHECK_INTERVAL_MS = 15 * 1000
 
 const HANDED_OFF = { __handedOff: true } as const
-const CAPTION_CONCURRENCY = Math.max(20, parseInt(process.env.CAPTION_CONCURRENCY || '20', 10))
-const AUDIO_CONCURRENCY = Math.max(1, Math.min(5, parseInt(process.env.AUDIO_CONCURRENCY || '4', 10)))
-const TRANSCRIPTION_CONCURRENCY = Math.max(1, Math.min(2, parseInt(process.env.TRANSCRIPTION_CONCURRENCY || '2', 10)))
+const CAPTION_CONCURRENCY = Math.max(2, parseInt(process.env.CAPTION_CONCURRENCY || '2', 10))
+const AUDIO_CONCURRENCY = Math.max(1, Math.min(5, parseInt(process.env.AUDIO_CONCURRENCY || '1', 10)))
+const TRANSCRIPTION_CONCURRENCY = Math.max(1, Math.min(2, parseInt(process.env.TRANSCRIPTION_CONCURRENCY || '1', 10)))
 
 // Hard ceiling for the caption-fetch stage — must be well under lockDuration (600 s)
 // so the job fails with a clear error rather than silently stalling and consuming a
