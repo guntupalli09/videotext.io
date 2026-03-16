@@ -65,6 +65,15 @@ async function deleteJobStage(redis: import('ioredis').Redis, id: string | numbe
 
 const workerLog = getLogger('worker')
 
+/**
+ * Returns true when the error message indicates the source file is permanently
+ * corrupt or incomplete (e.g. truncated upload, missing moov atom).
+ * Jobs with these errors should not be retried — the file on disk will not change.
+ */
+function isCorruptInput(message: string): boolean {
+  return /moov atom not found|invalid data found when processing input|end of file/i.test(message)
+}
+
 /** Lock settings: 10-minute lock (covers long YouTube audio downloads) with 15s renewal intervals. */
 const QUEUE_SETTINGS = {
   createClient: createRedisClient,
@@ -1507,6 +1516,10 @@ async function processJob(job: import('bull').Job<JobData>) {
       await updateJobFailed(String(jobId), err?.message)
     } catch {
       // non-blocking
+    }
+    // Corrupt/incomplete input files cannot be fixed by retrying; discard remaining attempts immediately.
+    if (isCorruptInput(err?.message ?? '')) {
+      try { await job.discard() } catch { /* non-blocking — discard is best-effort */ }
     }
     // Failure: rethrow so Bull marks job as "failed" and stores error; no job can exit without terminal state
     log.error({ err, msg: 'job_failed', error_message: err?.message ?? String(err) })

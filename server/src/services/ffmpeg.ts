@@ -323,8 +323,8 @@ export function extractAndSplitAudio(
       .on('error', (err: Error) => {
         hung.clear()
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        const msg = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(msg))
+        const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
+        reject(new Error(getFriendlyFfmpegError(raw)))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.run()
@@ -378,8 +378,8 @@ function extractAndSplitAudioVariable(
       .on('error', (err: Error) => {
         hung.clear()
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        const msg = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(msg))
+        const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
+        reject(new Error(getFriendlyFfmpegError(raw)))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.run()
@@ -441,7 +441,8 @@ export function extractAndSplitAudioExtractionFirst(
       .on('error', (err: Error) => {
         hung.clear()
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        reject(new Error(stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message))
+        const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
+        reject(new Error(getFriendlyFfmpegError(raw)))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.run()
@@ -495,7 +496,8 @@ export function extractAndSplitAudioExtractionFirst(
         hung.clear()
         backgroundCmd = null
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        reject(new Error(stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message))
+        const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
+        reject(new Error(getFriendlyFfmpegError(raw)))
       })
     backgroundCmd = cmd
     const hung = setupHungProtection(cmd, reject)
