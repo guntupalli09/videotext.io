@@ -80,6 +80,26 @@ function setupHungProtection(
 }
 
 /**
+ * Map raw ffmpeg/ffprobe error messages to user-friendly descriptions.
+ * Returns the original message if no known pattern matches.
+ */
+export function getFriendlyFfmpegError(rawMessage: string): string {
+  if (/moov atom not found|invalid data found when processing input/i.test(rawMessage)) {
+    return 'The video file appears to be incomplete or corrupted. This often happens when a large upload is interrupted. Please re-upload the original file.'
+  }
+  if (/no such file or directory/i.test(rawMessage)) {
+    return 'The video file could not be found. Please try uploading again.'
+  }
+  if (/codec not currently supported in container/i.test(rawMessage)) {
+    return 'The video codec is not supported. Please convert to MP4 or MOV and try again.'
+  }
+  if (/end of file/i.test(rawMessage)) {
+    return 'The video file appears to be truncated or incomplete. Please re-upload the original file.'
+  }
+  return rawMessage
+}
+
+/**
  * Extract audio from video file (with 90s hung-job kill).
  */
 export function extractAudio(
@@ -107,8 +127,8 @@ export function extractAudio(
       .on('error', (err: Error) => {
         hung.clear()
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        const msg = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(msg))
+        const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
+        reject(new Error(getFriendlyFfmpegError(raw)))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.save(outputPath)
@@ -142,8 +162,8 @@ export function extractAudioToWav(
       .on('error', (err: Error) => {
         hung.clear()
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        const msg = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(msg))
+        const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
+        reject(new Error(getFriendlyFfmpegError(raw)))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.save(outputPath)

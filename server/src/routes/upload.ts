@@ -299,26 +299,33 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       }
     }
 
-    // Server-side minute limit for paid plans only; free plan uses import count (checked above)
+    // Validate video file integrity for all plans (ffprobe catches incomplete/corrupt uploads)
+    // Server-side minute limit enforcement for paid plans only; free plan uses import count (checked above)
     const minuteChargingTools = ['video-to-transcript', 'video-to-subtitles', 'burn-subtitles', 'compress-video']
-    if (user.plan !== 'free' && minuteChargingTools.includes(toolType)) {
+    if (minuteChargingTools.includes(toolType) && inputType !== 'audio') {
       let durationSeconds: number
       try {
         durationSeconds = await getVideoDuration(file.path)
-      } catch {
+      } catch (err: any) {
         fs.unlinkSync(file.path)
-        return res.status(400).json({ message: 'Could not read video/audio duration.' })
+        const rawMsg: string = err?.message ?? ''
+        const isCorrupt = /moov atom not found|invalid data found|no such file|end of file/i.test(rawMsg)
+        const message = isCorrupt
+          ? 'The video file appears to be incomplete or corrupted. This can happen when a large upload is interrupted. Please re-upload the original file.'
+          : 'Could not read video/audio duration.'
+        return res.status(400).json({ message })
       }
-      if (options.trimmedStart != null && options.trimmedEnd != null) {
-        const start = parseFloat(String(options.trimmedStart))
-        const end = parseFloat(String(options.trimmedEnd))
-        durationSeconds = Math.max(0, end - start)
-      }
-      const requestedMinutes = Math.ceil(durationSeconds / 60)
-      const limitCheck = await enforceUsageLimits(user, requestedMinutes)
-      if (!limitCheck.allowed) {
-        fs.unlinkSync(file.path)
-        return res.status(403).json({ message: 'Monthly minute limit reached. Upgrade or wait for reset.' })
+      if (user.plan !== 'free') {
+        const trimDurationSeconds =
+          options.trimmedStart != null && options.trimmedEnd != null
+            ? Math.max(0, parseFloat(String(options.trimmedEnd)) - parseFloat(String(options.trimmedStart)))
+            : durationSeconds
+        const requestedMinutes = Math.ceil(trimDurationSeconds / 60)
+        const limitCheck = await enforceUsageLimits(user, requestedMinutes)
+        if (!limitCheck.allowed) {
+          fs.unlinkSync(file.path)
+          return res.status(403).json({ message: 'Monthly minute limit reached. Upgrade or wait for reset.' })
+        }
       }
     }
 
