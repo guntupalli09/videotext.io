@@ -16,7 +16,7 @@ import { RadioGroup, Select } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
 import { incrementUsage } from '../lib/usage'
-import { uploadFile, uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken } from '../lib/api'
+import { uploadFile, uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, getPlanMaxUploadSizeLabel } from '../lib/api'
 import { getFailureMessage } from '../lib/failureMessage'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
@@ -741,6 +741,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         {status === 'idle' && !selectedFile && (
           <UploadZone
             immediateSelect
+            maxSize={getPlanMaxUploadSizeLabel(plan)}
             onFileSelect={handleFileSelect}
             initialFiles={selectedFile ? [selectedFile] : null}
             onRemove={() => {

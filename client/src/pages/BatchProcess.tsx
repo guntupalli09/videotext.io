@@ -6,7 +6,7 @@ import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
 import { TranslateResult } from '../components/figma/TranslateResult'
-import { getBatchDownloadUrl, getBatchStatus, uploadBatch } from '../lib/api'
+import { getBatchDownloadUrl, getBatchStatus, uploadBatch, getPlanMaxUploadSizeLabel } from '../lib/api'
 import { JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import { emitToolCompleted } from '../workflow/workflowStore'
@@ -94,6 +94,7 @@ export default function BatchProcess(props: BatchProcessSeoProps = {}) {
     setBatchInfo(null)
   }
 
+  const batchPlan = (typeof window !== 'undefined' ? localStorage.getItem('plan') : null) ?? 'free'
   const breadcrumbs = [{ label: 'Batch Processing', href: '/batch-process' }]
   const layoutProps = {
     breadcrumbs,
@@ -112,7 +113,7 @@ export default function BatchProcess(props: BatchProcessSeoProps = {}) {
             multiple
             onFilesSelect={handleFilesSelected}
             acceptedFormats={['MP4', 'MOV', 'AVI', 'WEBM', 'MKV']}
-            maxSize="10 GB"
+            maxSize={getPlanMaxUploadSizeLabel(batchPlan)}
           />
         )}
 

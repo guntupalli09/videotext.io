@@ -14,7 +14,7 @@ import { TranslateResult } from '../components/figma/TranslateResult'
 import { Select } from '../components/figma/FormControls'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { incrementUsage } from '../lib/usage'
-import { uploadDualFilesWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError } from '../lib/api'
+import { uploadDualFilesWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, getPlanMaxUploadSizeLabel } from '../lib/api'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
@@ -273,7 +273,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
             }}
             fromWorkflowLabel={videoFromWorkflow ? 'From previous step' : undefined}
             acceptedFormats={['MP4', 'MOV', 'AVI', 'WEBM']}
-            maxSize="10 GB"
+            maxSize={getPlanMaxUploadSizeLabel(plan)}
           />
         )}
 

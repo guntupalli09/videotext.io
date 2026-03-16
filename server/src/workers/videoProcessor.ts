@@ -32,7 +32,7 @@ import { segmentToStructuredText } from '../utils/pauseSegmenter'
 import type { SubtitleEntry } from '../utils/srtParser'
 import { createPartialWriter, deleteJobPartial } from '../utils/jobPartial'
 import { setJobSummary } from '../utils/jobSummary'
-import { waitForFileStable } from '../utils/fileStable'
+import { waitForFileStable, waitForExpectedFileSize } from '../utils/fileStable'
 import { DEFER_SUMMARY, PROCESSING_V2, STREAM_PROGRESS, WORKER_CONCURRENCY_V2, YOUTUBE_QUEUE_SEPARATION } from '../utils/featureFlags'
 import { MAX_GLOBAL_WORKERS, PAID_TIER_RESERVATION_QUEUE_THRESHOLD } from '../utils/queueConfig'
 import {
@@ -213,6 +213,13 @@ export interface JobData {
   youtubeFallbackToAudio?: boolean
   /** Pre-computed transcript from YouTube captions; skips Whisper. */
   precomputedTranscript?: { fullText: string; segments: { start: number; end: number; text: string }[] }
+  /**
+   * Expected final size of the file in bytes (set by chunked upload).
+   * When present, the worker waits until stat.size >= expectedFileSize before
+   * processing, preventing "moov atom not found" on large iPhone MOV files
+   * where the moov atom is written at the very end of the file.
+   */
+  expectedFileSize?: number
 }
 
 async function getOrCreateUserForJob(userId: string, plan: PlanType) {
@@ -448,11 +455,18 @@ async function processJob(job: import('bull').Job<JobData>) {
     try {
       await job.progress(5)
 
-      // Wait for file to be stable before extraction (avoids reading partially flushed file after early enqueue).
-      // Default 800ms; tune via FILE_STABLE_WAIT_MS env var for slow or fast disks.
-      const fileStableWaitMs = Number(process.env.FILE_STABLE_WAIT_MS) || 800
+      // Wait for file to be fully written before extraction.
+      // For chunked uploads, expectedFileSize is set so we wait until the assembler
+      // has written every byte (prevents "moov atom not found" on large iPhone MOV files
+      // where the moov atom lives at the end of the file).
+      // For single (multer) uploads, fall back to the size-stability heuristic.
       if (data.filePath && fs.existsSync(data.filePath)) {
-        await waitForFileStable(data.filePath, fileStableWaitMs)
+        if (data.expectedFileSize && data.expectedFileSize > 0) {
+          await waitForExpectedFileSize(data.filePath, data.expectedFileSize)
+        } else {
+          const fileStableWaitMs = Number(process.env.FILE_STABLE_WAIT_MS) || 800
+          await waitForFileStable(data.filePath, fileStableWaitMs)
+        }
       }
 
       let result: any

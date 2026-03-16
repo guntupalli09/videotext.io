@@ -15,7 +15,7 @@ import { ResultSkeleton } from '../components/figma/ResultSkeleton'
 import { TranscriptResult } from '../components/figma/TranscriptResult'
 import { Checkbox } from '../components/figma/FormControls'
 import { incrementUsage } from '../lib/usage'
-import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, invalidateUsageCache, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, submitYoutubeUrl, isYoutubeUrl, claimGuestJob, type YoutubeUploadResponse } from '../lib/api'
+import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, invalidateUsageCache, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, submitYoutubeUrl, isYoutubeUrl, claimGuestJob, getPlanMaxUploadSizeLabel, type YoutubeUploadResponse } from '../lib/api'
 import { getFailureMessage } from '../lib/failureMessage'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
@@ -1243,6 +1243,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const _displayParagraphs = getParagraphs(displayTranscript)
   void _displayParagraphs
   const isPaidPlan = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+  const planForUpload = (typeof window !== 'undefined' ? localStorage.getItem('plan') : null) ?? 'free'
 
   // Search: match in segments (if any) or paragraphs; return { index, snippet, startTime? }
   const _searchResults = useMemo(() => {
@@ -1330,6 +1331,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             {inputMode === 'file' && (
               <UploadZone
                 immediateSelect
+                maxSize={getPlanMaxUploadSizeLabel(planForUpload)}
                 onFileSelect={handleFileSelect}
                 initialFiles={selectedFile ? [selectedFile] : null}
                 onRemove={() => {

@@ -15,7 +15,7 @@ import { TranslateResult } from '../components/figma/TranslateResult'
 import { RadioGroup } from '../components/figma/FormControls'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { incrementUsage } from '../lib/usage'
-import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError } from '../lib/api'
+import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, getPlanMaxUploadSizeLabel } from '../lib/api'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
@@ -265,7 +265,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
             }}
             fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
             acceptedFormats={['MP4', 'MOV', 'AVI', 'WEBM', 'MKV']}
-            maxSize="10 GB"
+            maxSize={getPlanMaxUploadSizeLabel(plan)}
           />
         )}
 

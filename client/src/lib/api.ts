@@ -247,7 +247,20 @@ const PLAN_MAX_FILE_SIZE: Record<string, number> = {
   free: 2 * 1024 * 1024 * 1024,
   basic: 5 * 1024 * 1024 * 1024,
   pro: 10 * 1024 * 1024 * 1024,
+  founding_workflow: 10 * 1024 * 1024 * 1024,
   agency: 20 * 1024 * 1024 * 1024,
+}
+
+/** Human-readable max upload size label for the user's plan (e.g. "10 GB"). */
+export function getPlanMaxUploadSizeLabel(plan: string): string {
+  const labels: Record<string, string> = {
+    free: '2 GB',
+    basic: '5 GB',
+    pro: '10 GB',
+    founding_workflow: '10 GB',
+    agency: '20 GB',
+  }
+  return labels[plan.toLowerCase()] ?? '2 GB'
 }
 
 /** Minimum chunk size so a file at plan max size has totalChunks <= MAX_CHUNKS. */

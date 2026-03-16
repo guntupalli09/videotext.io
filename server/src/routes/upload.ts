@@ -26,6 +26,12 @@ import { checkAndRecordYoutubeJob } from '../utils/youtubeRateLimit'
 const router = express.Router()
 const uploadLog = getLogger('api')
 
+/** Format a byte count as a human-readable GB/MB string for error messages. */
+function formatPlanFileSize(bytes: number): string {
+  const gb = bytes / (1024 * 1024 * 1024)
+  return gb >= 1 ? `${gb % 1 === 0 ? gb.toFixed(0) : gb.toFixed(1)} GB` : `${(bytes / (1024 * 1024)).toFixed(0)} MB`
+}
+
 // Configure multer for file uploads. On Railway/Fly/Render only /tmp is guaranteed; relative paths can stall Multer.
 const tempDir =
   process.env.TEMP_FILE_PATH ||
@@ -203,7 +209,7 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
 
     if (file.size > limits.maxFileSize) {
       fs.unlinkSync(file.path)
-      return res.status(400).json({ message: `File exceeds plan limit. Upgrade for larger files.` })
+      return res.status(400).json({ message: `Your plan allows uploads up to ${formatPlanFileSize(limits.maxFileSize)}. Please upgrade to upload larger files.` })
     }
 
     // Audio-only upload (video-to-transcript / video-to-subtitles): client sent pre-extracted audio; skip server extraction
@@ -732,7 +738,7 @@ router.post('/init', async (req: Request, res: Response) => {
 
     const limits = getPlanLimits(user?.plan || plan)
     if (totalSize > limits.maxFileSize) {
-      return res.status(400).json({ message: 'Total size exceeds plan limit. Upgrade for larger files.' })
+      return res.status(400).json({ message: `Your plan allows uploads up to ${formatPlanFileSize(limits.maxFileSize)}. Please upgrade to upload larger files.` })
     }
 
     const uploadId = uuidv4()
@@ -898,7 +904,7 @@ router.post('/complete', async (req: Request, res: Response) => {
       const planLimit = getPlanLimits(meta.plan).maxFileSize
       if (fileSize > planLimit) {
         fs.unlinkSync(outPath)
-        throw Object.assign(new Error('File exceeds plan limit. Upgrade for larger files.'), { statusCode: 400 })
+        throw Object.assign(new Error(`Your plan allows uploads up to ${formatPlanFileSize(planLimit)}. Please upgrade to upload larger files.`), { statusCode: 400 })
       }
       const opts = meta.options || {}
       const trimmedStart = opts.trimmedStart != null ? (typeof opts.trimmedStart === 'number' ? opts.trimmedStart : parseFloat(String(opts.trimmedStart))) : undefined
@@ -914,6 +920,10 @@ router.post('/complete', async (req: Request, res: Response) => {
         plan: meta.plan,
         originalName: isChunkedAudioOnly && opts.originalFileName ? String(opts.originalFileName) : safeFilename,
         fileSize,
+        // Pass expected size so the worker waits for full assembly before processing.
+        // Prevents "moov atom not found" on large files (e.g. iPhone MOV) where the
+        // moov atom is written at the very end after early-enqueue fires at 10 MB.
+        expectedFileSize: meta.totalSize > 0 ? meta.totalSize : undefined,
         trimmedStart,
         trimmedEnd,
         options: Object.keys(restOptions).length > 0 ? restOptions : undefined,
@@ -973,7 +983,7 @@ router.post('/complete', async (req: Request, res: Response) => {
         if (totalSizeSoFar > maxFileSize) {
           out.destroy()
           try { fs.unlinkSync(outPath) } catch { /* ignore */ }
-          return res.status(400).json({ message: 'Total size exceeds plan limit. Upgrade for larger files.' })
+          return res.status(400).json({ message: `Your plan allows uploads up to ${formatPlanFileSize(maxFileSize)}. Please upgrade to upload larger files.` })
         }
         if (declaredTotal != null && totalSizeSoFar > declaredTotal) {
           out.destroy()
@@ -1050,7 +1060,7 @@ router.post('/complete', async (req: Request, res: Response) => {
         if (totalSizeSoFar > maxFileSize) {
           out.destroy()
           try { fs.unlinkSync(outPath) } catch { /* ignore */ }
-          return res.status(400).json({ message: 'Total size exceeds plan limit. Upgrade for larger files.' })
+          return res.status(400).json({ message: `Your plan allows uploads up to ${formatPlanFileSize(maxFileSize)}. Please upgrade to upload larger files.` })
         }
         if (declaredTotal != null && totalSizeSoFar > declaredTotal) {
           out.destroy()
@@ -1152,6 +1162,30 @@ router.post('/complete', async (req: Request, res: Response) => {
             jobToken: earlyJobResult.jobToken,
           })
         }
+        // Validate file integrity for minute-charging video tools before enqueueing.
+        // Mirrors the single-upload ffprobe check (lines ~302-316) for the chunked path.
+        // This catches truncated/corrupt uploads (e.g. "moov atom not found") before
+        // wasting a queue slot. Skip audio-only chunked uploads (pre-extracted audio).
+        const chunkMinuteChargingTools = ['video-to-transcript', 'video-to-subtitles', 'burn-subtitles', 'compress-video']
+        const isChunkedAudioOnlyComplete =
+          (meta.toolType === 'video-to-transcript' || meta.toolType === 'video-to-subtitles') &&
+          meta.options?.uploadMode === 'audio-only'
+        if (chunkMinuteChargingTools.includes(meta.toolType) && !isChunkedAudioOnlyComplete) {
+          try {
+            await getVideoDuration(outPath)
+          } catch (err: any) {
+            try { fs.unlinkSync(outPath) } catch { /* ignore */ }
+            chunkUploadMeta.delete(uploadId!)
+            const rawMsg: string = err?.message ?? ''
+            const isCorrupt = /moov atom not found|invalid data found|no such file|end of file/i.test(rawMsg)
+            const message = isCorrupt
+              ? 'The video file appears to be incomplete or corrupted. This can happen when a large upload is interrupted. Please re-upload the original file.'
+              : 'Could not read video/audio duration. Please check the file and try again.'
+            if (!res.headersSent) res.status(400).json({ message })
+            return
+          }
+        }
+
         timings.tBeforeEnqueue = Date.now()
         const { job, fileSize } = await doEnqueueJob()
         timings.tAfterEnqueue = Date.now()
