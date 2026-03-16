@@ -146,7 +146,7 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
         email: `${userId}@example.com`,
         passwordHash: '',
         plan,
-        stripeCustomerId: '',
+        stripeCustomerId: undefined,
         subscriptionId: '',
         paymentMethodId: undefined,
         usageThisMonth: {
@@ -490,7 +490,7 @@ router.post('/dual', upload.fields([
         email: `${userId}@example.com`,
         passwordHash: '',
         plan,
-        stripeCustomerId: '',
+        stripeCustomerId: undefined,
         subscriptionId: '',
         paymentMethodId: undefined,
         usageThisMonth: { totalMinutes: 0, videoCount: 0, batchCount: 0, languageCount: 0, translatedMinutes: 0, importCount: 0, resetDate },
@@ -878,7 +878,7 @@ router.post('/complete', async (req: Request, res: Response) => {
           email: `${meta.userId}@example.com`,
           passwordHash: '',
           plan: meta.plan,
-          stripeCustomerId: '',
+          stripeCustomerId: undefined,
           subscriptionId: '',
           paymentMethodId: undefined,
           usageThisMonth: {
@@ -1296,7 +1296,7 @@ router.post('/youtube', async (req: Request, res: Response) => {
         email: `${userId}@example.com`,
         passwordHash: '',
         plan,
-        stripeCustomerId: '',
+        stripeCustomerId: undefined,
         subscriptionId: '',
         paymentMethodId: undefined,
         usageThisMonth: {

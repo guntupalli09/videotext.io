@@ -74,7 +74,7 @@ async function getOrCreateDemoUser(req: Request): Promise<User> {
       email: `${userId}@example.com`,
       passwordHash: '',
       plan,
-      stripeCustomerId: '',
+      stripeCustomerId: undefined,
       subscriptionId: '',
       paymentMethodId: undefined,
       usageThisMonth: {
