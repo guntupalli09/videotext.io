@@ -13,7 +13,7 @@ import { exportTranscriptJson, exportTranscriptDocx, exportTranscriptPdf } from 
 import { fireWebhook } from '../utils/webhook'
 import { transcribeWithDiarization } from '../services/diarization'
 import { convertSubtitleFile } from '../services/subtitleConverter'
-import { burnSubtitles, compressVideo, getVideoDuration, HUNG_JOB_MESSAGE, type CompressProfile } from '../services/ffmpeg'
+import { burnSubtitles, compressVideo, getVideoDuration, HUNG_JOB_MESSAGE, type CompressProfile, type FfmpegError } from '../services/ffmpeg'
 import { generateOutputFilename, downloadVideoFromURL, validateVideoDuration } from '../services/video'
 import { validateFileType, validateFileSize } from '../utils/fileValidation'
 import { trimVideoSegment } from '../services/trimming'
@@ -65,14 +65,6 @@ async function deleteJobStage(redis: import('ioredis').Redis, id: string | numbe
 
 const workerLog = getLogger('worker')
 
-/**
- * Returns true when the error message indicates the source file is permanently
- * corrupt or incomplete (e.g. truncated upload, missing moov atom).
- * Jobs with these errors should not be retried — the file on disk will not change.
- */
-function isCorruptInput(message: string): boolean {
-  return /moov atom not found|invalid data found when processing input|end of file/i.test(message)
-}
 
 /** Lock settings: 10-minute lock (covers long YouTube audio downloads) with 15s renewal intervals. */
 const QUEUE_SETTINGS = {
@@ -1518,7 +1510,9 @@ async function processJob(job: import('bull').Job<JobData>) {
       // non-blocking
     }
     // Corrupt/incomplete input files cannot be fixed by retrying; discard remaining attempts immediately.
-    if (isCorruptInput(err?.message ?? '')) {
+    // Check the FfmpegError flag (set from raw stderr before friendly transform) — not err.message,
+    // which is already the friendly string and no longer contains the original ffmpeg patterns.
+    if ((err as FfmpegError)?.isCorruptInput === true) {
       try { await job.discard() } catch { /* non-blocking — discard is best-effort */ }
     }
     // Failure: rethrow so Bull marks job as "failed" and stores error; no job can exit without terminal state

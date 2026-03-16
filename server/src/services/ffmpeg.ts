@@ -9,6 +9,12 @@ import { getLogger } from '../lib/logger'
 
 const log = getLogger('worker')
 
+/** Error subtype emitted by ffmpeg helpers. `isCorruptInput` is set when the raw
+ *  stderr indicates a permanently unrecoverable source file so callers can skip retries. */
+export interface FfmpegError extends Error {
+  isCorruptInput: boolean
+}
+
 // Explicit paths: use env in Docker (e.g. /usr/bin/ffmpeg) if the file exists, else npm installer (works on Windows)
 function resolveFfmpegPath(envPath: string | undefined, fallback: string): string {
   if (envPath && fs.existsSync(envPath)) return envPath
@@ -80,6 +86,15 @@ function setupHungProtection(
 }
 
 /**
+ * Returns true when the raw ffmpeg/ffprobe error indicates the source file is
+ * permanently corrupt or incomplete (truncated upload, missing moov atom, etc.).
+ * Must be tested against the RAW message before getFriendlyFfmpegError transforms it.
+ */
+export function isCorruptInput(rawMessage: string): boolean {
+  return /moov atom not found|invalid data found when processing input|end of file/i.test(rawMessage)
+}
+
+/**
  * Map raw ffmpeg/ffprobe error messages to user-friendly descriptions.
  * Returns the original message if no known pattern matches.
  */
@@ -97,6 +112,14 @@ export function getFriendlyFfmpegError(rawMessage: string): string {
     return 'The video file appears to be truncated or incomplete. Please re-upload the original file.'
   }
   return rawMessage
+}
+
+/** Build an FfmpegError from a raw stderr string, attaching the isCorruptInput flag
+ *  before the message is replaced by its friendly equivalent. */
+function makeFfmpegError(raw: string): FfmpegError {
+  const err = new Error(getFriendlyFfmpegError(raw)) as FfmpegError
+  err.isCorruptInput = isCorruptInput(raw)
+  return err
 }
 
 /**
@@ -128,7 +151,7 @@ export function extractAudio(
         hung.clear()
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
         const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(getFriendlyFfmpegError(raw)))
+        reject(makeFfmpegError(raw))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.save(outputPath)
@@ -163,7 +186,7 @@ export function extractAudioToWav(
         hung.clear()
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
         const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(getFriendlyFfmpegError(raw)))
+        reject(makeFfmpegError(raw))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.save(outputPath)
@@ -324,7 +347,7 @@ export function extractAndSplitAudio(
         hung.clear()
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
         const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(getFriendlyFfmpegError(raw)))
+        reject(makeFfmpegError(raw))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.run()
@@ -379,7 +402,7 @@ function extractAndSplitAudioVariable(
         hung.clear()
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
         const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(getFriendlyFfmpegError(raw)))
+        reject(makeFfmpegError(raw))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.run()
@@ -442,7 +465,7 @@ export function extractAndSplitAudioExtractionFirst(
         hung.clear()
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
         const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(getFriendlyFfmpegError(raw)))
+        reject(makeFfmpegError(raw))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.run()
@@ -497,7 +520,7 @@ export function extractAndSplitAudioExtractionFirst(
         backgroundCmd = null
         const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
         const raw = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(getFriendlyFfmpegError(raw)))
+        reject(makeFfmpegError(raw))
       })
     backgroundCmd = cmd
     const hung = setupHungProtection(cmd, reject)
