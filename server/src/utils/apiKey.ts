@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import type { PlanType } from '../models/User'
+import { verifyAuthToken } from './auth'
 
 /**
  * Trusted identity set by apiKeyAuth when a valid API key is present.
@@ -65,6 +66,12 @@ export function apiKeyAuth(req: Request, _res: Response, next: NextFunction) {
     const userId = keyToUser.get(key)!
     const plan = keyToPlan.get(key) ?? 'free'
     req.apiKeyUser = { userId, plan }
+  } else if (key && key.startsWith('eyJ')) {
+    // Accept a signed JWT as x-api-key for convenience (e.g. copy token from browser)
+    const payload = verifyAuthToken(key)
+    if (payload?.userId) {
+      req.apiKeyUser = { userId: payload.userId, plan: payload.plan ?? 'free' }
+    }
   }
   next()
 }
