@@ -76,25 +76,52 @@ export default function FreeToolLayout({
         {/* The actual tool */}
         <section>{children}</section>
 
-        {/* CTA strip */}
-        <section className="rounded-2xl bg-violet-600 px-6 py-8 text-center text-white">
-          <p className="text-xs font-semibold uppercase tracking-widest text-violet-200 mb-2">Need AI-powered subtitles?</p>
-          <h2 className="text-xl sm:text-2xl font-display font-bold mb-4">
-            Generate subtitles automatically — just upload a video
-          </h2>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              to="/video-to-subtitles"
-              className="inline-block rounded-lg bg-white text-violet-700 font-semibold px-5 py-2.5 text-sm hover:bg-violet-50 transition-colors"
-            >
-              Generate subtitles free
-            </Link>
-            <Link
-              to="/video-to-transcript"
-              className="inline-block rounded-lg border border-white/50 text-white font-semibold px-5 py-2.5 text-sm hover:bg-violet-700 transition-colors"
-            >
-              Transcribe video instantly
-            </Link>
+        {/* Upgrade nudge — pain→solution framing, positioned immediately after the tool delivers value */}
+        <section className="rounded-2xl bg-gray-900 dark:bg-gray-800 border border-gray-700 dark:border-gray-600 overflow-hidden">
+          <div className="px-6 py-7 sm:px-8">
+            {/* Hook */}
+            <p className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-2">⚡ Skip the manual steps</p>
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-white leading-snug mb-1">
+              VideoText AI generates subtitles in under 2 minutes
+            </h2>
+            <p className="text-sm text-gray-400 mb-5">
+              Upload your video once — get accurate SRT and VTT files ready to publish.
+            </p>
+
+            {/* Feature proof — specificity builds trust */}
+            <ul className="space-y-2 mb-6">
+              {[
+                { icon: '✓', text: 'Accurate captions in 99 languages with speaker detection' },
+                { icon: '✓', text: 'Edit, translate, and burn-in subtitles — all in one place' },
+                { icon: '✓', text: 'Works with YouTube, TikTok, Zoom, Podcast, Screencasts' },
+              ].map((item) => (
+                <li key={item.text} className="flex items-start gap-2.5 text-sm text-gray-300">
+                  <span className="text-green-400 font-bold shrink-0 mt-px">{item.icon}</span>
+                  {item.text}
+                </li>
+              ))}
+            </ul>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                to="/video-to-subtitles"
+                className="inline-flex items-center justify-center rounded-xl bg-violet-500 hover:bg-violet-400 text-white font-semibold px-6 py-3 text-sm transition-colors"
+              >
+                Try free — no card needed →
+              </Link>
+              <Link
+                to="/pricing"
+                className="inline-flex items-center justify-center rounded-xl border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white font-semibold px-6 py-3 text-sm transition-colors"
+              >
+                See pricing
+              </Link>
+            </div>
+
+            {/* Social proof — reduces final hesitation */}
+            <p className="text-xs text-gray-500 mt-4">
+              Trusted by 12,000+ creators, podcasters, and video agencies.
+            </p>
           </div>
         </section>
 
