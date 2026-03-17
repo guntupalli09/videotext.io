@@ -135,7 +135,7 @@ export default function Home() {
               to="/subtitle-tools"
               className="text-sm font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 whitespace-nowrap transition-colors hidden sm:block"
             >
-              View all 14 tools →
+              View all 19 tools →
             </Link>
           </div>
 
@@ -169,7 +169,7 @@ export default function Home() {
               to="/subtitle-tools"
               className="sm:hidden text-sm font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400"
             >
-              View all 14 free tools →
+              View all 19 free tools →
             </Link>
             <p className="text-xs text-gray-400 dark:text-gray-500">
               Need AI-powered subtitles?{' '}
