@@ -200,6 +200,10 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: "How to Transcribe a Podcast Episode (Free, Any Format) | VideoText",
     description: "How to transcribe a podcast episode from MP3 or M4A in minutes. Free tool, 98.5% accuracy, speaker labels, and show notes export included.",
   },
+  '/blog/how-to-add-captions-youtube-video': {
+    title: "How to Add Captions to a YouTube Video (The Right Way) | VideoText",
+    description: "How to add captions to a YouTube video the right way: upload an SRT file instead of relying on auto-captions. Better accuracy, better SEO.",
+  },
 }
 
 /** Static breadcrumb items (non-SEO-registry routes). */
