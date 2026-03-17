@@ -62,5 +62,8 @@
   "/video-to-srt",
   "/srt-generator",
   "/translate-video",
-  "/video-translation"
+  "/video-translation",
+  "/happyscribe-alternative",
+  "/sonix-alternative",
+  "/easyscribe-alternative"
 ]
