@@ -8,7 +8,7 @@ import { getSessionDetails, setupPassword } from './lib/billing'
 import { invalidateUsageCache } from './lib/api'
 import Footer from './components/Footer'
 import Seo from './components/Seo'
-import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd } from './lib/seoMeta'
+import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd } from './lib/seoMeta'
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
 import OfflineBanner from './components/OfflineBanner'
@@ -106,19 +106,23 @@ function AppSeo() {
   }
   const isHome = pathname === '/'
   const is404 = !hasRoute
+  const isBlogPost = pathname.startsWith('/blog/') && pathname !== '/blog'
   const breadcrumb = ROUTE_BREADCRUMB[pathname]
   const seoEntry = getSeoEntry(pathname)
+  const blogPostingSchema = isBlogPost ? getBlogPostingJsonLd(pathname, meta.title, meta.description) : null
   const jsonLd = is404
     ? undefined
     : isHome
       ? [getOrganizationJsonLd(), getWebApplicationJsonLd()]
       : pathname === '/faq'
         ? [getFaqJsonLd()]
-        : breadcrumb
-          ? seoEntry?.faq?.length
-            ? [getBreadcrumbJsonLd(pathname, breadcrumb), getFaqJsonLdFromItems(seoEntry.faq)]
-            : [getBreadcrumbJsonLd(pathname, breadcrumb)]
-          : undefined
+        : isBlogPost
+          ? [breadcrumb && getBreadcrumbJsonLd(pathname, breadcrumb), blogPostingSchema].filter(Boolean) as object[]
+          : breadcrumb
+            ? seoEntry?.faq?.length
+              ? [getBreadcrumbJsonLd(pathname, breadcrumb), getFaqJsonLdFromItems(seoEntry.faq)]
+              : [getBreadcrumbJsonLd(pathname, breadcrumb)]
+            : undefined
   useEffect(() => {
     try {
       capturePageview(pathname) // feeds Web analytics dashboard (visitors, page views, sessions)

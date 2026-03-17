@@ -2524,6 +2524,7 @@ const POPULAR_FOOTER_PATHS: string[] = [
   '/audio-to-text-converter',
   '/video-to-subtitles',
   '/translate-subtitles',
+  '/subtitle-editor',
   '/compress-video',
   '/batch-process',
 ]

@@ -19,6 +19,10 @@ const tools = [
 const freeTools = [
   { name: 'SRT → VTT Converter', path: '/tools/srt-to-vtt' },
   { name: 'VTT → SRT Converter', path: '/tools/vtt-to-srt' },
+  { name: 'SBV → SRT Converter', path: '/tools/sbv-to-srt' },
+  { name: 'SRT → SBV Converter', path: '/tools/srt-to-sbv' },
+  { name: 'ASS / SSA → SRT', path: '/tools/ass-to-srt' },
+  { name: 'TTML → SRT Converter', path: '/tools/ttml-to-srt' },
   { name: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing' },
   { name: 'Merge SRT Files', path: '/tools/merge-srt-files' },
   { name: 'Subtitle Validator', path: '/tools/subtitle-validator' },
@@ -163,6 +167,15 @@ export default function Navigation() {
                 )}
               </AnimatePresence>
             </div>
+
+            <Link
+              to="/blog"
+              className="text-gray-700 dark:text-gray-200 hover:text-violet-600 dark:hover:text-violet-400 transition-motion text-sm font-medium"
+              onMouseEnter={() => prefetchRoute('/blog')}
+              onFocus={() => prefetchRoute('/blog')}
+            >
+              Blog
+            </Link>
 
             <Link
               to="/pricing"

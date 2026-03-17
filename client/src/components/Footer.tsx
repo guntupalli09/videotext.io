@@ -40,6 +40,12 @@ export default function Footer() {
               <li><Link to="/otter-ai-alternative" className="hover:text-white transition-colors">Otter.ai alternative</Link></li>
               <li><Link to="/trint-alternative" className="hover:text-white transition-colors">Trint alternative</Link></li>
               <li><Link to="/rev-alternative" className="hover:text-white transition-colors">Rev alternative</Link></li>
+              <li><Link to="/happyscribe-alternative" className="hover:text-white transition-colors">HappyScribe alternative</Link></li>
+              <li><Link to="/sonix-alternative" className="hover:text-white transition-colors">Sonix alternative</Link></li>
+              <li><Link to="/easyscribe-alternative" className="hover:text-white transition-colors">EasyScribe alternative</Link></li>
+              <li><Link to="/notta-alternative" className="hover:text-white transition-colors">Notta alternative</Link></li>
+              <li><Link to="/tactiq-alternative" className="hover:text-white transition-colors">Tactiq alternative</Link></li>
+              <li><Link to="/subly-alternative" className="hover:text-white transition-colors">Subly alternative</Link></li>
             </ul>
           </div>
           {/* Popular tools: from registry (core + selected SEO paths). */}
