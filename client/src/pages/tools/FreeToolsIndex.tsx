@@ -6,6 +6,10 @@ const TOOLS = [
     items: [
       { path: '/tools/srt-to-vtt', label: 'SRT to VTT Converter', desc: 'Convert SubRip (.srt) to WebVTT (.vtt) format instantly', keywords: 'srt to vtt, convert srt to vtt' },
       { path: '/tools/vtt-to-srt', label: 'VTT to SRT Converter', desc: 'Convert WebVTT back to SubRip format for video editors', keywords: 'vtt to srt, convert vtt' },
+      { path: '/tools/sbv-to-srt', label: 'SBV to SRT Converter', desc: 'Convert YouTube SBV caption files to standard SRT format', keywords: 'sbv to srt, youtube captions to srt, convert sbv' },
+      { path: '/tools/srt-to-sbv', label: 'SRT to SBV Converter', desc: 'Convert SRT subtitle files to YouTube\'s native SBV format', keywords: 'srt to sbv, convert to sbv, youtube sbv' },
+      { path: '/tools/ass-to-srt', label: 'ASS / SSA to SRT Converter', desc: 'Strip ASS/SSA styling tags and convert to plain SRT', keywords: 'ass to srt, ssa to srt, convert ass subtitles' },
+      { path: '/tools/ttml-to-srt', label: 'TTML to SRT Converter', desc: 'Convert TTML, DFXP, or EBU-TT subtitle files to SRT', keywords: 'ttml to srt, dfxp to srt, ebu-tt to srt' },
     ],
   },
   {

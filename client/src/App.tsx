@@ -50,6 +50,7 @@ const RevAlternative = lazy(() => import('./pages/seo/RevAlternativePage'))
 const HappyScribeAlternative = lazy(() => import('./pages/seo/HappyScribeAlternativePage'))
 const SonixAlternative = lazy(() => import('./pages/seo/SonixAlternativePage'))
 const EasyScribeAlternative = lazy(() => import('./pages/seo/EasyScribeAlternativePage'))
+const NottaAlternative = lazy(() => import('./pages/seo/NottaAlternativePage'))
 const Open = lazy(() => import('./pages/Open'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 // Free tools — client-side only, zero server dependency
@@ -71,6 +72,11 @@ const TimestampConverter = lazy(() => import('./pages/tools/TimestampConverter')
 const VideoMetadataViewer = lazy(() => import('./pages/tools/VideoMetadataViewer'))
 const SubtitleToolsHub = lazy(() => import('./pages/tools/SubtitleToolsHub'))
 const SubtitleResources = lazy(() => import('./pages/SubtitleResources'))
+// Format converter tools — client-side only, zero server dependency
+const SbvToSrt = lazy(() => import('./pages/tools/SbvToSrt'))
+const SrtToSbv = lazy(() => import('./pages/tools/SrtToSbv'))
+const AssToSrt = lazy(() => import('./pages/tools/AssToSrt'))
+const TtmlToSrt = lazy(() => import('./pages/tools/TtmlToSrt'))
 
 /** Minimal loading fallback for route chunks — fast, accessible, no layout shift. */
 function RouteFallback() {
@@ -348,6 +354,7 @@ function App() {
             <Route path="/happyscribe-alternative" element={<HappyScribeAlternative />} />
             <Route path="/sonix-alternative" element={<SonixAlternative />} />
             <Route path="/easyscribe-alternative" element={<EasyScribeAlternative />} />
+            <Route path="/notta-alternative" element={<NottaAlternative />} />
             <Route path="/open" element={<Open />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
@@ -379,6 +386,10 @@ function App() {
             <Route path="/tools/video-metadata-viewer" element={<VideoMetadataViewer />} />
             <Route path="/subtitle-tools" element={<SubtitleToolsHub />} />
             <Route path="/subtitle-resources" element={<SubtitleResources />} />
+            <Route path="/tools/sbv-to-srt" element={<SbvToSrt />} />
+            <Route path="/tools/srt-to-sbv" element={<SrtToSbv />} />
+            <Route path="/tools/ass-to-srt" element={<AssToSrt />} />
+            <Route path="/tools/ttml-to-srt" element={<TtmlToSrt />} />
             <Route path="*" element={<NotFound />} />
             </Route>
               </Routes>

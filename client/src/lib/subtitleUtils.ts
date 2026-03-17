@@ -211,3 +211,217 @@ export function downloadText(content: string, filename: string) {
 export function stripTags(text: string): string {
   return text.replace(/<[^>]+>/g, '')
 }
+
+// ─── SBV (YouTube) ────────────────────────────────────────────────────────────
+
+/**
+ * Parse SBV (YouTube SubViewer) format → cues.
+ * Timestamps: 0:00:01.000,0:00:03.000 (no block numbers)
+ */
+export function parseSbv(text: string): SubtitleCue[] {
+  const blocks = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split(/\n\n+/)
+  const cues: SubtitleCue[] = []
+  for (const block of blocks) {
+    const lines = block.trim().split('\n')
+    if (lines.length < 2) continue
+    const tm = lines[0].trim().match(/(\d+:\d+:\d+\.\d+),(\d+:\d+:\d+\.\d+)/)
+    if (!tm) continue
+    const text = lines.slice(1).join('\n').trim()
+    if (!text) continue
+    cues.push({
+      index: cues.length + 1,
+      startTime: sbvTimeToSrt(tm[1]),
+      endTime: sbvTimeToSrt(tm[2]),
+      text,
+    })
+  }
+  return cues
+}
+
+/** Convert SBV timestamp (0:00:01.000) → SRT timestamp (00:00:01,000) */
+function sbvTimeToSrt(t: string): string {
+  const parts = t.split(':')
+  const h = parts.length === 3 ? parts[0].padStart(2, '0') : '00'
+  const rest = parts.length === 3 ? parts.slice(1) : parts
+  const m = rest[0].padStart(2, '0')
+  const sec = rest[1].replace('.', ',')
+  return `${h}:${m}:${sec}`
+}
+
+/** Convert SRT timestamp (00:00:01,000) → SBV timestamp (0:00:01.000) */
+function srtTimeToSbv(t: string): string {
+  return t.replace(',', '.').replace(/^0/, '')
+}
+
+/** Cues → SBV string */
+export function cuesToSbv(cues: SubtitleCue[]): string {
+  const lines: string[] = []
+  for (const c of cues) {
+    lines.push(`${srtTimeToSbv(c.startTime)},${srtTimeToSbv(c.endTime)}`)
+    lines.push(c.text)
+    lines.push('')
+  }
+  return lines.join('\n')
+}
+
+// ─── ASS / SSA ────────────────────────────────────────────────────────────────
+
+/** Strip ASS override tags like {\an8}, {\pos(x,y)}, {\c&H...&}, etc. */
+function stripAssTags(text: string): string {
+  return text
+    .replace(/\{[^}]*\}/g, '')   // remove all {...} blocks
+    .replace(/\\N/g, '\n')        // soft line breaks
+    .replace(/\\n/g, '\n')        // hard line breaks
+    .replace(/\\h/g, ' ')         // non-breaking space
+    .trim()
+}
+
+/** Parse ASS timestamp (H:MM:SS.cc) → SRT timestamp (HH:MM:SS,mmm) */
+function assTimeToSrt(t: string): string {
+  const m = t.trim().match(/(\d+):(\d+):(\d+)\.(\d+)/)
+  if (!m) return '00:00:00,000'
+  const h = m[1].padStart(2, '0')
+  const min = m[2].padStart(2, '0')
+  const sec = m[3].padStart(2, '0')
+  const cs = m[4].padEnd(3, '0').slice(0, 3) // centiseconds → milliseconds
+  return `${h}:${min}:${sec},${cs}`
+}
+
+/**
+ * Parse ASS/SSA subtitle format → cues.
+ * Handles both v4 and v4+ styles. Extracts Dialogue events only.
+ */
+export function parseAss(text: string): SubtitleCue[] {
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n')
+  const cues: SubtitleCue[] = []
+
+  // Find Events section and Format line
+  let inEvents = false
+  let startIdx = -1
+  let endIdx = -1
+  let textIdx = -1
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (/^\[Events\]/i.test(trimmed)) { inEvents = true; continue }
+    if (inEvents && /^Format:/i.test(trimmed)) {
+      const fields = trimmed.replace(/^Format:\s*/i, '').split(',').map((f) => f.trim().toLowerCase())
+      startIdx = fields.indexOf('start')
+      endIdx = fields.indexOf('end')
+      textIdx = fields.indexOf('text')
+      continue
+    }
+    if (inEvents && /^Dialogue:/i.test(trimmed) && startIdx >= 0 && textIdx >= 0) {
+      const content = trimmed.replace(/^Dialogue:\s*/i, '')
+      // Split on commas but only up to (textIdx+1) fields — rest is text (may contain commas)
+      const maxFields = Math.max(startIdx, endIdx, textIdx) + 1
+      const parts: string[] = []
+      let remaining = content
+      for (let i = 0; i < maxFields - 1; i++) {
+        const comma = remaining.indexOf(',')
+        if (comma === -1) break
+        parts.push(remaining.slice(0, comma))
+        remaining = remaining.slice(comma + 1)
+      }
+      parts.push(remaining)
+
+      const start = parts[startIdx]?.trim()
+      const end = parts[endIdx]?.trim()
+      const rawText = parts[textIdx]?.trim() ?? ''
+      if (!start || !end || !rawText) continue
+
+      cues.push({
+        index: cues.length + 1,
+        startTime: assTimeToSrt(start),
+        endTime: assTimeToSrt(end),
+        text: stripAssTags(rawText),
+      })
+    }
+  }
+
+  // Sort by start time (ASS files are usually already sorted, but not always)
+  cues.sort((a, b) => parseTimeToMs(a.startTime) - parseTimeToMs(b.startTime))
+  cues.forEach((c, i) => { c.index = i + 1 })
+  return cues
+}
+
+// ─── TTML (Netflix / EBU-TT) ──────────────────────────────────────────────────
+
+/** Parse TTML offset time expression (e.g. "1.5s", "1500ms") → ms */
+function ttmlOffsetToMs(val: string): number {
+  const s = val.trim()
+  if (/^\d+(\.\d+)?s$/.test(s)) return Math.round(parseFloat(s) * 1000)
+  if (/^\d+(\.\d+)?ms$/.test(s)) return Math.round(parseFloat(s))
+  if (/^\d+(\.\d+)?f$/.test(s)) return Math.round(parseFloat(s) * (1000 / 25)) // assume 25fps
+  if (/^\d+:\d+:\d+(\.\d+)?$/.test(s)) {
+    const [h, m, rest] = s.split(':')
+    const secParts = rest.split('.')
+    return (
+      parseInt(h) * 3_600_000 +
+      parseInt(m) * 60_000 +
+      parseInt(secParts[0]) * 1_000 +
+      parseInt((secParts[1] ?? '0').padEnd(3, '0').slice(0, 3))
+    )
+  }
+  // HH:MM:SS,mmm or HH:MM:SS.mmm
+  return parseTimeToMs(s)
+}
+
+/**
+ * Parse TTML (W3C Timed Text Markup Language) → cues.
+ * Handles EBU-TT, SMPTE-TT, and standard TTML. Browser DOMParser for XML parsing.
+ */
+export function parseTtml(text: string): SubtitleCue[] {
+  // Use browser DOMParser for reliable XML parsing
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(text, 'application/xml')
+
+  // Check for parse errors
+  const parseError = doc.querySelector('parsererror')
+  if (parseError) {
+    // Try as HTML as fallback
+    const htmlDoc = parser.parseFromString(text, 'text/html')
+    return extractTtmlCues(htmlDoc)
+  }
+  return extractTtmlCues(doc)
+}
+
+function extractTtmlCues(doc: Document): SubtitleCue[] {
+  const cues: SubtitleCue[] = []
+  // Select all <p> elements with begin/end attributes (namespace-agnostic)
+  const paragraphs = doc.querySelectorAll('p[begin][end], p[begin]')
+
+  paragraphs.forEach((p) => {
+    const begin = p.getAttribute('begin') ?? ''
+    const end = p.getAttribute('end') ?? p.getAttribute('dur') ?? ''
+    if (!begin) return
+
+    const startMs = ttmlOffsetToMs(begin)
+    let endMs = ttmlOffsetToMs(end)
+    if (!end || endMs === 0) endMs = startMs + 2000 // fallback 2s
+
+    // Extract text content, preserving <br> as newlines
+    const rawHtml = p.innerHTML
+    const textContent = rawHtml
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<span[^>]*>/gi, '')
+      .replace(/<\/span>/gi, '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .trim()
+
+    if (!textContent) return
+    cues.push({
+      index: cues.length + 1,
+      startTime: msToSrtTime(startMs),
+      endTime: msToSrtTime(endMs),
+      text: textContent,
+    })
+  })
+
+  return cues
+}

@@ -123,6 +123,11 @@ export const CORE_PATHS: string[] = [
   '/zubtitle-alternative',
   '/adobe-premiere-captions-alternative',
   '/assembly-ai-alternative',
+  '/notta-alternative',
+  '/tactiq-alternative',
+  '/subly-alternative',
+  '/meetgeek-alternative',
+  '/maestra-alternative',
   // Cluster D — Audio formats
   '/mp3-to-text',
   '/wav-to-text',
@@ -132,6 +137,17 @@ export const CORE_PATHS: string[] = [
   '/aac-to-text',
   '/ogg-to-text',
   '/flac-to-text',
+  // Cluster E — Subtitle editor & landing pages
+  '/subtitle-editor',
+  '/online-subtitle-editor',
+  '/capcut-captions',
+  '/sdh-subtitles',
+  '/open-captions-vs-closed-captions',
+  '/video-accessibility',
+  '/ada-video-captions',
+  '/how-to-create-srt-file',
+  '/how-to-add-subtitles-to-mp4',
+  '/srt-to-word',
 ]
 
 /** Programmatic-only paths (from targets × intents). Submit after core. */
