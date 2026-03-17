@@ -52,6 +52,23 @@ const SonixAlternative = lazy(() => import('./pages/seo/SonixAlternativePage'))
 const EasyScribeAlternative = lazy(() => import('./pages/seo/EasyScribeAlternativePage'))
 const Open = lazy(() => import('./pages/Open'))
 const NotFound = lazy(() => import('./pages/NotFound'))
+// Free tools — client-side only, zero server dependency
+const FreeToolsIndex = lazy(() => import('./pages/tools/FreeToolsIndex'))
+const SrtToVtt = lazy(() => import('./pages/tools/SrtToVtt'))
+const VttToSrt = lazy(() => import('./pages/tools/VttToSrt'))
+const ShiftSubtitleTiming = lazy(() => import('./pages/tools/ShiftSubtitleTiming'))
+const MergeSrtFiles = lazy(() => import('./pages/tools/MergeSrtFiles'))
+const SrtToText = lazy(() => import('./pages/tools/SrtToText'))
+const SubtitleValidator = lazy(() => import('./pages/tools/SubtitleValidator'))
+const SubtitleReadingSpeed = lazy(() => import('./pages/tools/SubtitleReadingSpeed'))
+const SubtitleCharacterChecker = lazy(() => import('./pages/tools/SubtitleCharacterChecker'))
+const SubtitleWordCounter = lazy(() => import('./pages/tools/SubtitleWordCounter'))
+const VideoScriptTimer = lazy(() => import('./pages/tools/VideoScriptTimer'))
+const WordsPerMinute = lazy(() => import('./pages/tools/WordsPerMinute'))
+const VideoBitrateCalculator = lazy(() => import('./pages/tools/VideoBitrateCalculator'))
+const AspectRatioCalculator = lazy(() => import('./pages/tools/AspectRatioCalculator'))
+const TimestampConverter = lazy(() => import('./pages/tools/TimestampConverter'))
+const VideoMetadataViewer = lazy(() => import('./pages/tools/VideoMetadataViewer'))
 
 /** Minimal loading fallback for route chunks — fast, accessible, no layout shift. */
 function RouteFallback() {
@@ -341,6 +358,23 @@ function App() {
             {getAllSeoPaths().map((path) => (
               <Route key={path} path={path} element={<SeoToolPage />} />
             ))}
+            {/* Free tools — client-side only, no server calls */}
+            <Route path="/tools" element={<FreeToolsIndex />} />
+            <Route path="/tools/srt-to-vtt" element={<SrtToVtt />} />
+            <Route path="/tools/vtt-to-srt" element={<VttToSrt />} />
+            <Route path="/tools/shift-subtitle-timing" element={<ShiftSubtitleTiming />} />
+            <Route path="/tools/merge-srt-files" element={<MergeSrtFiles />} />
+            <Route path="/tools/srt-to-text" element={<SrtToText />} />
+            <Route path="/tools/subtitle-validator" element={<SubtitleValidator />} />
+            <Route path="/tools/subtitle-reading-speed" element={<SubtitleReadingSpeed />} />
+            <Route path="/tools/subtitle-character-checker" element={<SubtitleCharacterChecker />} />
+            <Route path="/tools/subtitle-word-counter" element={<SubtitleWordCounter />} />
+            <Route path="/tools/video-script-timer" element={<VideoScriptTimer />} />
+            <Route path="/tools/words-per-minute-calculator" element={<WordsPerMinute />} />
+            <Route path="/tools/video-bitrate-calculator" element={<VideoBitrateCalculator />} />
+            <Route path="/tools/aspect-ratio-calculator" element={<AspectRatioCalculator />} />
+            <Route path="/tools/timestamp-converter" element={<TimestampConverter />} />
+            <Route path="/tools/video-metadata-viewer" element={<VideoMetadataViewer />} />
             <Route path="*" element={<NotFound />} />
             </Route>
               </Routes>
