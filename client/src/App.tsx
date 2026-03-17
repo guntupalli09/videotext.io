@@ -69,6 +69,8 @@ const VideoBitrateCalculator = lazy(() => import('./pages/tools/VideoBitrateCalc
 const AspectRatioCalculator = lazy(() => import('./pages/tools/AspectRatioCalculator'))
 const TimestampConverter = lazy(() => import('./pages/tools/TimestampConverter'))
 const VideoMetadataViewer = lazy(() => import('./pages/tools/VideoMetadataViewer'))
+const SubtitleToolsHub = lazy(() => import('./pages/tools/SubtitleToolsHub'))
+const SubtitleResources = lazy(() => import('./pages/SubtitleResources'))
 
 /** Minimal loading fallback for route chunks — fast, accessible, no layout shift. */
 function RouteFallback() {
@@ -375,6 +377,8 @@ function App() {
             <Route path="/tools/aspect-ratio-calculator" element={<AspectRatioCalculator />} />
             <Route path="/tools/timestamp-converter" element={<TimestampConverter />} />
             <Route path="/tools/video-metadata-viewer" element={<VideoMetadataViewer />} />
+            <Route path="/subtitle-tools" element={<SubtitleToolsHub />} />
+            <Route path="/subtitle-resources" element={<SubtitleResources />} />
             <Route path="*" element={<NotFound />} />
             </Route>
               </Routes>

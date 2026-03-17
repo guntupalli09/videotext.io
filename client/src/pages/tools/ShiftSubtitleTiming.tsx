@@ -48,26 +48,46 @@ export default function ShiftSubtitleTiming() {
 
   return (
     <FreeToolLayout
-      title="Subtitle Time Shifter — Delay or Advance Subtitles"
-      description="Shift all subtitle timestamps forward or backward by any number of seconds. Fix out-of-sync subtitles instantly. Works with SRT and VTT files."
+      title="Subtitle Time Shifter — Delay or Advance All Subtitle Timestamps"
+      description="Fix out-of-sync subtitles by shifting every timestamp forward or backward by any number of seconds. Works with SRT and VTT files. Free, browser-based, instant."
+      hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
+      contentSections={[
+        {
+          heading: 'Why are subtitles out of sync?',
+          body: 'Subtitle sync issues happen when the subtitle file was created for a different version of the video. Common causes include: the video file has a longer intro or credits than the version the subtitle was made for; the video was re-encoded at a different frame rate (e.g., 24fps to 25fps shifts timing by ~4%); the video was trimmed or extended after subtitles were generated; or the subtitle was downloaded for a theatrical version of a film when you have the extended cut. In all these cases, every subtitle cue is offset by a consistent amount — which is exactly what this tool corrects.',
+        },
+        {
+          heading: 'Forward vs backward — which do I choose?',
+          body: 'Choose "Forward" if your subtitles appear too early — the text shows up before the person speaks. Choose "Backward" if your subtitles appear too late — the text appears after the person has already spoken. A simple test: if the first subtitle appears 2 seconds before the first word is spoken, shift backward by 2 seconds. If it appears 2 seconds after, shift forward by 2 seconds.',
+        },
+        {
+          heading: 'What if only part of the video is out of sync?',
+          body: 'This tool applies a uniform shift to all cues, which only fixes sync issues caused by a constant offset. If your video has multiple sync breaks at different points (common in subtitles for multi-episode compilations or videos with variable frame rates), you will need a subtitle editing tool like Subtitle Edit (desktop, free) or our AI-powered Fix Subtitles tool which can analyze and correct per-segment timing.',
+        },
+      ]}
       guideTitle="How to shift subtitle timing"
       guideSteps={[
-        { step: 'Upload your SRT or VTT file', desc: 'Click "Choose file" or paste your subtitle content. The tool auto-detects SRT and VTT formats.' },
-        { step: 'Enter the offset in seconds', desc: 'Type how many seconds to shift. Use "Forward" if subtitles appear too early, "Backward" if they appear too late.' },
-        { step: 'Download the adjusted file', desc: 'Click "Shift timing" and download your corrected subtitle file. All cues are shifted uniformly.' },
+        { step: 'Upload your SRT or VTT file', desc: 'Click "Choose file" or paste your subtitle content. The tool auto-detects SRT and VTT formats from the file content.' },
+        { step: 'Enter the offset in seconds', desc: 'Type how many seconds to shift. Decimals are supported (e.g., 1.5 seconds). Select Forward if subtitles are early, Backward if they are late.' },
+        { step: 'Download the adjusted file', desc: 'Click "Shift timing" and download the corrected subtitle file in the same format (SRT or VTT) as the original.' },
       ]}
       faqs={[
-        { q: 'My subtitles are 2 seconds behind the audio — what do I do?', a: 'Upload your file, enter 2 in the offset box, and select "Forward". This shifts all timestamps 2 seconds earlier, bringing them in sync.' },
-        { q: 'Can I shift subtitles backward past zero?', a: 'The tool clamps any negative timestamps to 00:00:00,000. If an early cue would go negative, it is set to zero.' },
-        { q: 'Does this work for partial sync issues?', a: 'This tool shifts ALL cues by the same offset. If only part of your video is out of sync (e.g., after a cut), you may need a subtitle editor.' },
-        { q: 'What file formats are supported?', a: 'SRT (.srt) and WebVTT (.vtt) are supported. The tool auto-detects the format from the file content.' },
-        { q: 'Why are my subtitles out of sync?', a: "Common causes: the video has an intro/outro that the subtitle file doesn't account for, the subtitle was made for a different cut of the video, or a different frame rate was used." },
+        { q: 'My subtitles are 2 seconds behind the audio — what do I do?', a: 'Upload your file, enter 2 in the offset box, and select "Forward". This shifts all timestamps 2 seconds earlier, bringing subtitles in sync with the audio.' },
+        { q: 'Can I shift by fractions of a second?', a: 'Yes. The offset field accepts decimal values. Enter 0.5 for half a second, 1.5 for one and a half seconds, etc.' },
+        { q: 'Can I shift subtitles backward past zero?', a: 'The tool clamps any timestamp that would go negative to 00:00:00,000. If the first cue starts at 0:00:01 and you shift backward 5 seconds, it becomes 0:00:00,000 rather than negative.' },
+        { q: 'What file formats are supported?', a: 'SRT (.srt) and WebVTT (.vtt) are fully supported. The tool auto-detects the format. The output file preserves the same format as the input.' },
+        { q: 'Will the cue index numbers change?', a: 'No. Index numbers are preserved from the original file. Only the timestamp values are modified.' },
+        { q: 'What causes frame rate sync issues?', a: 'A video encoded at 25fps will run slightly faster than the same video at 24fps. Over a 90-minute movie, this creates a drift of about 3.6 minutes. The sync error grows over time, which is why a constant offset shift won\'t fully fix it. This is called "frame rate mismatch" and requires a stretch/compress operation rather than a shift.' },
+        { q: 'Why are my subtitles 2 hours ahead?', a: 'This often means the subtitle was created with a different time base. For example, a subtitle starting at 01:00:00,000 for content that starts at 00:00:00 — common in broadcast timecode workflows. Shift backward by 3600 seconds (1 hour) to fix it.' },
+        { q: 'Does this work for ASS/SSA subtitle formats?', a: 'No. This tool supports SRT and VTT only. For ASS/SSA formats, use Aegisub or Subtitle Edit on desktop.' },
       ]}
       relatedTools={[
-        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check for overlaps and timing errors' },
-        { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert SRT to WebVTT format' },
+        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check for overlaps after shifting' },
+        { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert between subtitle formats' },
+        { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine two subtitle tracks' },
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'AI-powered subtitle timing correction' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate new subtitles from video with AI' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate fresh subtitles from video with AI' },
+        { label: 'Subtitle Word Counter', path: '/tools/subtitle-word-counter', desc: 'Analyze word count and speaking stats' },
       ]}
     >
       <div className="space-y-4">
@@ -86,15 +106,11 @@ export default function ShiftSubtitleTiming() {
           onChange={(e) => { setText(e.target.value); setOutput('') }}
         />
 
-        {/* Controls */}
         <div className="flex gap-3 items-end">
           <div className="flex-1">
             <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Offset (seconds)</label>
             <input
-              type="number"
-              min="0.1"
-              step="0.1"
-              value={offsetSec}
+              type="number" min="0.1" step="0.1" value={offsetSec}
               onChange={(e) => setOffsetSec(e.target.value)}
               className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
@@ -103,11 +119,7 @@ export default function ShiftSubtitleTiming() {
             <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Direction</label>
             <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600">
               {(['forward', 'backward'] as const).map((d) => (
-                <button
-                  key={d}
-                  onClick={() => setDirection(d)}
-                  className={`flex-1 py-2 text-sm font-medium capitalize transition-colors ${direction === d ? 'bg-violet-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
-                >
+                <button key={d} onClick={() => setDirection(d)} className={`flex-1 py-2 text-sm font-medium capitalize transition-colors ${direction === d ? 'bg-violet-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
                   {d === 'forward' ? '▶ Forward' : '◀ Backward'}
                 </button>
               ))}

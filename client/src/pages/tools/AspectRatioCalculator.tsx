@@ -45,6 +45,12 @@ export default function AspectRatioCalculator() {
     <FreeToolLayout
       title="Video Aspect Ratio Calculator — Free Online"
       description="Calculate video aspect ratios, find missing dimensions, and get crop sizes for YouTube (16:9), TikTok (9:16), Instagram, and more. Instant, browser-based."
+      hubLink={{ label: 'Free Video Tools', path: '/tools' }}
+      contentSections={[
+        { heading: 'What is aspect ratio?', body: 'Aspect ratio describes the proportional relationship between a video\'s width and height, expressed as two numbers separated by a colon — for example, 16:9. It defines the shape of the frame, not the actual pixel dimensions. A 1920×1080 video and a 1280×720 video are both 16:9 because they share the same proportional relationship. Aspect ratio affects how your video appears on different screens and platforms, and choosing the wrong one can result in black bars, cropping, or distortion when your content is displayed.' },
+        { heading: 'Common aspect ratios for video platforms', body: '16:9 is the universal standard for YouTube, TV, and most desktop players. 9:16 (vertical) is the native format for TikTok, Instagram Reels, and YouTube Shorts. 1:1 (square) works well in social media feeds and retains more screen space on mobile than 16:9. 4:5 (portrait) is Instagram\'s recommended format for feed videos because it takes up maximum vertical space without going fully vertical. 21:9 (ultrawide) is used in cinematic productions for a widescreen theatrical feel. Knowing which ratio suits your platform avoids wasted space and re-editing.' },
+        { heading: 'What happens when aspect ratios don\'t match?', body: 'When a video\'s native aspect ratio does not match the player or platform, one of two things happens: letterboxing adds black bars on top and bottom (for widescreen content in a square player) or pillarboxing adds black bars on the sides (for square content in a widescreen player). Some platforms automatically crop the video to fill the frame, cutting off part of the image. To avoid surprises, always check the required aspect ratio for your target platform before shooting or exporting, and use this calculator to confirm your dimensions before editing.' },
+      ]}
       guideTitle="How to use the aspect ratio calculator"
       guideSteps={[
         { step: 'Detect mode: enter width and height', desc: 'Type your video\'s pixel dimensions to see its aspect ratio and how it compares to common formats.' },
@@ -57,6 +63,9 @@ export default function AspectRatioCalculator() {
         { q: 'What aspect ratio is best for TikTok and Instagram Reels?', a: 'TikTok, Instagram Reels, and YouTube Shorts all use 9:16 (vertical portrait). The recommended resolution is 1080×1920.' },
         { q: 'What does "aspect ratio" mean?', a: 'Aspect ratio is the proportional relationship between video width and height. 16:9 means for every 16 units of width, there are 9 units of height. It determines the shape of your video frame.' },
         { q: 'How do I change aspect ratio without distortion?', a: 'You must crop the video (removing pixels) rather than stretch it. Use your video editor\'s crop tool with locked aspect ratio. Stretching always causes distortion.' },
+        { q: 'What aspect ratio is best for LinkedIn video?', a: 'LinkedIn supports multiple aspect ratios, but 16:9 (landscape) performs best in the desktop feed, while 1:1 (square) and 4:5 (portrait) get more screen real estate on mobile. LinkedIn\'s recommended resolution is 1920×1080 for landscape. Vertical 9:16 is supported but less common on LinkedIn compared to TikTok or Instagram.' },
+        { q: 'Can I upload 4:3 video to YouTube?', a: 'Yes. YouTube accepts 4:3 video and will display it with black pillarbox bars on either side within its 16:9 player. The video itself is not cropped or distorted. For the best viewing experience, convert 4:3 footage to 16:9 by adding letterbox bars or cropping before uploading.' },
+        { q: 'What aspect ratio is iPhone video?', a: 'iPhones record in 16:9 by default in landscape orientation, which means the actual pixel dimensions are 1920×1080 or 3840×2160 (4K). Holding the phone vertically gives 9:16. iPhone 15 and later models also support Action Mode, which may slightly crop the frame. Cinematic mode on iPhone records at approximately 2.39:1 for a widescreen look.' },
       ]}
       relatedTools={[
         { label: 'Video Bitrate Calculator', path: '/tools/video-bitrate-calculator', desc: 'Calculate bitrate for target file size' },

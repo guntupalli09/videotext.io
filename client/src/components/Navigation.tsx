@@ -25,6 +25,8 @@ const freeTools = [
   { name: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed' },
   { name: 'Script Timer', path: '/tools/video-script-timer' },
   { name: 'Timestamp Converter', path: '/tools/timestamp-converter' },
+  { name: 'Subtitle Tools Hub', path: '/subtitle-tools' },
+  { name: 'Subtitle Resources', path: '/subtitle-resources' },
   { name: '→ All free tools', path: '/tools' },
 ]
 

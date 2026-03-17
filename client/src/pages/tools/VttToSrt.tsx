@@ -38,23 +38,43 @@ export default function VttToSrt() {
   return (
     <FreeToolLayout
       title="VTT to SRT Converter — Free Online"
-      description="Convert WebVTT (.vtt) subtitle files to SubRip (.srt) format instantly in your browser. No upload, no account."
+      description="Convert WebVTT (.vtt) subtitle files to SubRip (.srt) format instantly in your browser. No upload, no account, no file size limit."
+      hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
+      contentSections={[
+        {
+          heading: 'What is WebVTT (VTT)?',
+          body: 'WebVTT (Web Video Text Tracks) is the W3C standard for web-based subtitles and captions. It\'s required by the HTML5 <track> element and used by YouTube, Vimeo, and virtually every browser-based player. VTT files start with a WEBVTT header line and use dot notation for milliseconds: 00:01:23.456. The format also supports CSS positioning cues, speaker labels (through <v> tags), and metadata tracks — features that SRT does not have.',
+        },
+        {
+          heading: 'Why convert VTT back to SRT?',
+          body: 'While VTT is the web standard, most offline video editing workflows require SRT. Adobe Premiere Pro, DaVinci Resolve, Final Cut Pro, Avid Media Composer, and Capcut all import SRT natively. Broadcast quality-control (QC) tools commonly parse SRT. Translation platforms like Smartling, Transifex, and most human translation agencies accept SRT. If you downloaded subtitles from a web platform (YouTube, Vimeo, Wistia) and need to edit them in a desktop editor, converting VTT → SRT is the first step.',
+        },
+        {
+          heading: 'What is lost when converting VTT to SRT?',
+          body: 'Basic text and timing is preserved losslessly. However, VTT-specific features — CSS positioning cues (line:, position:), speaker voice tags (<v Speaker>), chapter markers, and metadata tracks — are stripped because SRT does not support them. For typical subtitle files containing only dialogue timing and text, nothing meaningful is lost.',
+        },
+      ]}
       guideTitle="How to convert VTT to SRT"
       guideSteps={[
-        { step: 'Upload or paste your VTT file', desc: 'Click "Choose file" to upload a .vtt file, or paste the WebVTT content in the box below.' },
-        { step: 'Click Convert', desc: 'The tool strips the WEBVTT header, converts dot-separated timestamps to comma format, and numbers each cue.' },
-        { step: 'Download the SRT file', desc: 'Hit "Download .srt" to save the file, ready for video editing software like Premiere, DaVinci Resolve, or Final Cut.' },
+        { step: 'Upload or paste your VTT file', desc: 'Click "Choose file" to upload a .vtt file, or paste the WebVTT content directly into the text box.' },
+        { step: 'Conversion happens automatically', desc: 'The tool strips the WEBVTT header, converts dot timestamps to comma format, and adds sequential cue index numbers.' },
+        { step: 'Download your SRT file', desc: 'Hit "Download .srt" to save the converted file, ready for video editing software, translation platforms, or broadcast QC tools.' },
       ]}
       faqs={[
-        { q: 'Why convert VTT to SRT?', a: 'Most offline video editors (Adobe Premiere, DaVinci Resolve, Final Cut Pro) require SRT format. VTT is for web players; SRT is for editors and broadcast workflows.' },
-        { q: 'Will I lose any styling from my VTT file?', a: 'VTT supports CSS-style tags and positioning cues that SRT does not. Basic text and timing is preserved, but any <c.color> or positioning metadata will be stripped.' },
+        { q: 'Why convert VTT to SRT?', a: 'Most offline video editors (Adobe Premiere, DaVinci Resolve, Final Cut Pro) require SRT. VTT is for web players; SRT is for editors and broadcast workflows.' },
+        { q: 'Will I lose any styling from my VTT file?', a: 'VTT supports CSS-style tags and positioning cues that SRT does not. Basic text and timing is preserved, but <v Speaker> tags, positioning directives (line:, position:), and CSS classes will be stripped.' },
         { q: 'What is WebVTT used for?', a: 'WebVTT is the standard subtitle format for HTML5 <video> elements. It\'s used by YouTube, Vimeo, and most browser-based players. The W3C specification requires VTT for native browser subtitle tracks.' },
-        { q: 'Does my file get uploaded anywhere?', a: 'No. All processing happens locally in your browser. Your subtitle file never leaves your device.' },
-        { q: 'Can I convert multiple files at once?', a: 'This free tool processes one file at a time. For bulk conversion, check our Batch Processing tool which supports multiple files.' },
+        { q: 'Does the converted SRT work in Adobe Premiere?', a: 'Yes. Adobe Premiere Pro imports SRT files via the Graphics > Import Captions from File menu. The converted file will import correctly with all timing and text preserved.' },
+        { q: 'Can I convert multiple VTT files at once?', a: 'This free tool processes one file at a time. For bulk conversion across dozens of files, use our Batch Processing tool which handles multiple video files in parallel.' },
+        { q: 'Does my file get uploaded anywhere?', a: 'No. All processing happens locally in your browser using JavaScript. Your subtitle file never leaves your device, regardless of file size.' },
+        { q: 'What if my VTT has speaker labels like <v John>?', a: 'Speaker voice tags are stripped during conversion. The spoken text within those tags is preserved, but the speaker attribution itself is removed since SRT has no equivalent syntax.' },
+        { q: 'Is there a file size limit?', a: 'No. Since conversion runs entirely in your browser, there is no server-side size restriction. Very large files (thousands of cues) may take a second to process but will complete successfully.' },
       ]}
       relatedTools={[
         { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert SRT → WebVTT format' },
-        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct timing & overlaps in SRT/VTT' },
+        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'AI auto-correct timing & overlaps in SRT/VTT' },
+        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check for errors before converting' },
+        { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine two subtitle tracks into one' },
         { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate SRT/VTT from video with AI' },
         { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 50+ languages' },
       ]}
@@ -90,7 +110,10 @@ export default function VttToSrt() {
               </div>
               <pre className="text-xs text-gray-800 dark:text-gray-200 p-4 font-mono overflow-auto max-h-48 whitespace-pre-wrap">{output.slice(0, 600)}{output.length > 600 ? '\n…' : ''}</pre>
             </div>
-            <button onClick={() => { const blob = new Blob([output], { type: 'text/plain' }); const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = `${fileName || 'subtitles'}.srt`; a.click(); URL.revokeObjectURL(u) }} className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors">
+            <button
+              onClick={() => { const blob = new Blob([output], { type: 'text/plain' }); const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = `${fileName || 'subtitles'}.srt`; a.click(); URL.revokeObjectURL(u) }}
+              className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors"
+            >
               Download .srt file
             </button>
           </div>

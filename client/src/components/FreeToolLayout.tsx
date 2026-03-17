@@ -10,6 +10,11 @@ interface GuideStep {
   desc: string
 }
 
+interface ContentSection {
+  heading: string
+  body: string | React.ReactNode
+}
+
 interface FreeToolLayoutProps {
   title: string
   description: string
@@ -18,6 +23,10 @@ interface FreeToolLayoutProps {
   guideSteps?: GuideStep[]
   faqs?: FaqItem[]
   relatedTools?: { label: string; path: string; desc: string }[]
+  /** Rich explainer sections — appear between CTA strip and step guide. Used for SEO depth. */
+  contentSections?: ContentSection[]
+  /** Hub/authority page this tool belongs to */
+  hubLink?: { label: string; path: string }
 }
 
 const defaultRelated = [
@@ -35,15 +44,25 @@ export default function FreeToolLayout({
   guideSteps = [],
   faqs = [],
   relatedTools = defaultRelated,
+  contentSections = [],
+  hubLink,
 }: FreeToolLayoutProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Hero */}
       <div className="bg-gradient-to-b from-violet-50 to-white dark:from-gray-800 dark:to-gray-900 border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-3xl mx-auto px-4 py-10 sm:py-14 text-center">
-          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400 mb-3">
-            Free Tool — No account needed
-          </span>
+          {hubLink && (
+            <Link to={hubLink.path} className="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-600 dark:text-violet-400 hover:underline mb-3">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              {hubLink.label}
+            </Link>
+          )}
+          {!hubLink && (
+            <span className="inline-block text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400 mb-3">
+              Free Tool — No account needed
+            </span>
+          )}
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 dark:text-white leading-tight">
             {title}
           </h1>
@@ -78,6 +97,22 @@ export default function FreeToolLayout({
             </Link>
           </div>
         </section>
+
+        {/* Rich content sections — SEO depth text */}
+        {contentSections.length > 0 && (
+          <section className="space-y-6">
+            {contentSections.map((s, i) => (
+              <div key={i}>
+                <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white mb-3">{s.heading}</h2>
+                {typeof s.body === 'string' ? (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{s.body}</p>
+                ) : (
+                  <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed space-y-3">{s.body}</div>
+                )}
+              </div>
+            ))}
+          </section>
+        )}
 
         {/* Mini guide */}
         {guideSteps.length > 0 && (
@@ -131,6 +166,14 @@ export default function FreeToolLayout({
               </Link>
             ))}
           </div>
+          {hubLink && (
+            <div className="mt-3">
+              <Link to={hubLink.path} className="block rounded-xl border-2 border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20 p-4 text-center hover:border-violet-400 transition-colors">
+                <p className="font-semibold text-sm text-violet-700 dark:text-violet-300">← Back to {hubLink.label}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">See all free subtitle & video tools</p>
+              </Link>
+            </div>
+          )}
         </section>
       </div>
     </div>

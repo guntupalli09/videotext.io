@@ -3,13 +3,7 @@ import FreeToolLayout from '../../components/FreeToolLayout'
 import { parseSrt, parseVtt, detectFormat, stripTags } from '../../lib/subtitleUtils'
 
 interface CueCheck {
-  index: number
-  text: string
-  lines: string[]
-  longestLine: number
-  lineCount: number
-  pass: boolean
-  issues: string[]
+  index: number; text: string; lines: string[]; longestLine: number; lineCount: number; pass: boolean; issues: string[]
 }
 
 const STANDARDS = {
@@ -57,35 +51,78 @@ export default function SubtitleCharacterChecker() {
       })
       setPassCount(checks.filter((c) => c.pass).length)
       setResults(checks)
-    } catch {
-      setError('Failed to parse file.')
-    }
+    } catch { setError('Failed to parse file.') }
   }
 
   const failing = results?.filter((r) => !r.pass) ?? []
 
   return (
     <FreeToolLayout
-      title="Subtitle Character Limit Checker — Netflix, YouTube & BBC Standards"
-      description="Check if your subtitle lines meet Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) character limits. Instant pass/fail report for every cue."
+      title="Subtitle Character Limit Checker — Netflix, YouTube & BBC"
+      description="Verify every subtitle line meets Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) character limits. Instant pass/fail per cue. Free, browser-based."
+      hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
+      contentSections={[
+        {
+          heading: 'Why do subtitle character limits matter?',
+          body: 'Subtitle character limits exist because display screens have finite width. On a standard TV or monitor, a subtitle line exceeding 42 characters may wrap or be clipped at the edges of the screen, especially on older displays or when subtitles are rendered at small sizes. Netflix enforces 42 characters per line as a hard delivery requirement — files that violate this are rejected by their quality control system. The BBC\'s 37-character limit was set to ensure readability on lower-resolution TV screens. YouTube is more permissive at 80 characters, but long lines still wrap on mobile devices.',
+        },
+        {
+          heading: 'Character limit standards by platform',
+          body: (
+            <>
+              <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-600">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                      <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Platform</th>
+                      <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Max chars/line</th>
+                      <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Max lines</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {[
+                      { p: 'Netflix', c: 42, l: 2 },
+                      { p: 'BBC', c: 37, l: 2 },
+                      { p: 'Amazon Prime', c: 42, l: 2 },
+                      { p: 'YouTube', c: 80, l: 3 },
+                      { p: 'Vimeo', c: 80, l: 2 },
+                    ].map((r) => (
+                      <tr key={r.p}>
+                        <td className="px-4 py-2 text-gray-900 dark:text-white font-medium">{r.p}</td>
+                        <td className="px-4 py-2 text-gray-600 dark:text-gray-400">{r.c}</td>
+                        <td className="px-4 py-2 text-gray-600 dark:text-gray-400">{r.l}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          ),
+        },
+      ]}
       guideTitle="How to check subtitle character limits"
       guideSteps={[
         { step: 'Upload your SRT or VTT file', desc: 'Click "Choose file" or paste the content. Both SRT and VTT are supported.' },
-        { step: 'Select a platform standard', desc: 'Netflix requires max 42 characters per line, 2 lines. BBC requires 37 characters. YouTube allows 80 characters, 3 lines.' },
-        { step: 'Review cues that fail', desc: 'The tool shows every cue that exceeds the limit with the line length. Use our Fix Subtitles tool to auto-correct.' },
+        { step: 'Select a platform standard', desc: 'Choose Netflix (42), BBC (37), YouTube (80), or enter a custom character limit.' },
+        { step: 'Review failing cues', desc: 'Every cue that exceeds the limit is listed with the exact character count. Fix manually or use our Fix Subtitles tool.' },
       ]}
       faqs={[
-        { q: 'What is the Netflix subtitle character limit?', a: 'Netflix requires a maximum of 42 characters per line, with a maximum of 2 lines per cue. Lines longer than 42 characters may cause subtitle rejection during content quality checks.' },
-        { q: 'What is the YouTube subtitle character limit?', a: 'YouTube allows up to 80 characters per line and 3 lines per cue. However, on most displays only 2 lines are visible at once, so keeping to 2 lines is still recommended.' },
-        { q: 'Does this include spaces?', a: 'Yes. All character counts include spaces. A line reading "Hello, how are you today?" is 25 characters including the space and punctuation.' },
-        { q: 'What counts as one line in a subtitle?', a: 'Each newline in a cue creates a new line. Most subtitle editors show this as separate visual lines. A cue with two lines of dialogue counts as 2 lines.' },
-        { q: 'My subtitles fail the Netflix check — what now?', a: 'Options: (1) Manually shorten the text, (2) Split the cue into two shorter cues, or (3) Use our AI-powered Fix Subtitles tool which can auto-reformat long lines.' },
+        { q: 'What is the Netflix subtitle character limit?', a: 'Netflix requires a maximum of 42 characters per line, with a maximum of 2 lines per cue. Lines longer than 42 characters cause subtitle rejection during content quality checks.' },
+        { q: 'Does the character count include spaces?', a: 'Yes. All characters including spaces and punctuation count. "Hello, how are you today?" is 25 characters including the comma, space, and question mark.' },
+        { q: 'What is the YouTube subtitle character limit?', a: 'YouTube allows up to 80 characters per line and 3 lines per cue. However, on most displays only 2 lines are visible at once, so 2 lines is still recommended.' },
+        { q: 'What counts as one line?', a: 'Each newline character in a cue creates a new line. A cue with text on two lines (separated by a line break) counts as 2 lines. The character count is checked per individual line, not the total cue length.' },
+        { q: 'My subtitles fail the Netflix check — how do I fix them?', a: 'Options: (1) Shorten the text, (2) split the cue into two shorter cues, or (3) use our AI-powered Fix Subtitles tool which can auto-reformat long lines to meet specifications.' },
+        { q: 'What is the BBC subtitle specification?', a: 'The BBC Subtitle Guidelines specify a maximum of 37 characters per line and 2 lines per cue. BBC content is often re-used for broadcast across multiple markets, so the stricter limit accommodates multiple rendering environments.' },
+        { q: 'Do HTML tags like <b> count toward the character limit?', a: 'No. HTML tags are stripped before character counting. Only the visible text characters count toward the limit.' },
+        { q: 'Can I set a custom character limit?', a: 'Yes. Select "Custom" from the platform options and enter any maximum characters per line value to check against your own style guide or broadcaster specification.' },
       ]}
       relatedTools={[
-        { label: 'Subtitle Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Check CPS against broadcast standards' },
-        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Full error & warning report' },
+        { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Check CPS against broadcast standards' },
+        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Full validation including overlaps' },
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-fix long lines and formatting' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate broadcast-ready subtitles from video' },
+        { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert format after checking' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate broadcast-ready subtitles with AI' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate to 50+ languages' },
       ]}
     >
       <div className="space-y-4">
@@ -94,21 +131,12 @@ export default function SubtitleCharacterChecker() {
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{fileName || 'Click to upload SRT or VTT file'}</p>
           <p className="text-xs text-gray-400 mt-1">or paste content below</p>
         </div>
-
-        <textarea
-          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-28 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
-          placeholder="Paste SRT or VTT content…"
-          value={text}
-          onChange={(e) => { setText(e.target.value); setResults(null) }}
-        />
-
+        <textarea className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-28 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Paste SRT or VTT content…" value={text} onChange={(e) => { setText(e.target.value); setResults(null) }} />
         <div>
           <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">Platform standard</p>
           <div className="grid grid-cols-4 gap-2">
             {(Object.keys(STANDARDS) as (keyof typeof STANDARDS)[]).map((s) => (
-              <button key={s} onClick={() => setStandard(s)} className={`py-2 rounded-lg text-xs font-semibold uppercase tracking-wide transition-colors ${standard === s ? 'bg-violet-600 text-white' : 'border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
-                {STANDARDS[s].name}
-              </button>
+              <button key={s} onClick={() => setStandard(s)} className={`py-2 rounded-lg text-xs font-semibold uppercase tracking-wide transition-colors ${standard === s ? 'bg-violet-600 text-white' : 'border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>{STANDARDS[s].name}</button>
             ))}
           </div>
           {standard === 'custom' && (
@@ -118,28 +146,18 @@ export default function SubtitleCharacterChecker() {
             </div>
           )}
         </div>
-
-        <button onClick={handleCheck} className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors">
-          Check Character Limits
-        </button>
-
+        <button onClick={handleCheck} className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors">Check Character Limits</button>
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-
         {results !== null && (
           <div className="space-y-3">
             <div className="grid grid-cols-3 gap-2 text-center">
-              {[
-                { label: 'Total cues', val: results.length },
-                { label: 'Pass', val: passCount },
-                { label: 'Fail', val: results.length - passCount, bad: results.length - passCount > 0 },
-              ].map((s) => (
-                <div key={s.label} className={`rounded-xl p-3 ${s.bad ? 'bg-red-50 dark:bg-red-900/20' : 'bg-violet-50 dark:bg-violet-900/20'}`}>
-                  <p className={`text-xl font-bold ${s.bad ? 'text-red-700 dark:text-red-400' : 'text-violet-700 dark:text-violet-300'}`}>{s.val}</p>
+              {[{ label: 'Total cues', val: results.length }, { label: 'Pass', val: passCount }, { label: 'Fail', val: results.length - passCount, bad: results.length - passCount > 0 }].map((s) => (
+                <div key={s.label} className={`rounded-xl p-3 ${(s as {bad?: boolean}).bad ? 'bg-red-50 dark:bg-red-900/20' : 'bg-violet-50 dark:bg-violet-900/20'}`}>
+                  <p className={`text-xl font-bold ${(s as {bad?: boolean}).bad ? 'text-red-700 dark:text-red-400' : 'text-violet-700 dark:text-violet-300'}`}>{s.val}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
-
             {failing.length > 0 && (
               <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
                 {failing.map((r) => (
