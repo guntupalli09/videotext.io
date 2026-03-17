@@ -16,9 +16,28 @@ const tools = [
   { name: 'Batch Processing', path: '/batch-process' },
 ]
 
+const freeTools = [
+  { name: 'SRT → VTT Converter', path: '/tools/srt-to-vtt' },
+  { name: 'VTT → SRT Converter', path: '/tools/vtt-to-srt' },
+  { name: 'SBV → SRT Converter', path: '/tools/sbv-to-srt' },
+  { name: 'SRT → SBV Converter', path: '/tools/srt-to-sbv' },
+  { name: 'ASS / SSA → SRT', path: '/tools/ass-to-srt' },
+  { name: 'TTML → SRT Converter', path: '/tools/ttml-to-srt' },
+  { name: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing' },
+  { name: 'Merge SRT Files', path: '/tools/merge-srt-files' },
+  { name: 'Subtitle Validator', path: '/tools/subtitle-validator' },
+  { name: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed' },
+  { name: 'Script Timer', path: '/tools/video-script-timer' },
+  { name: 'Timestamp Converter', path: '/tools/timestamp-converter' },
+  { name: 'Subtitle Tools Hub', path: '/subtitle-tools' },
+  { name: 'Subtitle Resources', path: '/subtitle-resources' },
+  { name: '→ All free tools', path: '/tools' },
+]
+
 export default function Navigation() {
   const { isFounder, loading } = useFounderStatus()
   const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false)
+  const [freeToolsDropdownOpen, setFreeToolsDropdownOpen] = useState(false)
   // Re-render when login state changes so Login/Signup show on all pages when not logged in
   const [showAuthLinks, setShowAuthLinks] = useState(() => !isLoggedIn())
   useEffect(() => {
@@ -108,6 +127,55 @@ export default function Navigation() {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Free Tools dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setFreeToolsDropdownOpen(true)}
+              onMouseLeave={() => setFreeToolsDropdownOpen(false)}
+            >
+              <button className="flex items-center space-x-1 text-gray-700 dark:text-gray-200 hover:text-violet-600 dark:hover:text-violet-400 transition-motion text-sm font-medium">
+                <span>Free Tools</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <AnimatePresence>
+                {freeToolsDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-card-elevated border border-gray-100 dark:border-gray-700 py-2"
+                  >
+                    <div className="px-4 py-1.5">
+                      <span className="text-xs font-bold uppercase tracking-widest text-violet-500">No account needed</span>
+                    </div>
+                    {freeTools.map((tool) => (
+                      <Link
+                        key={tool.path}
+                        to={tool.path}
+                        className={`block px-4 py-2 text-sm hover:bg-violet-100 dark:hover:bg-violet-900/30 hover:text-violet-600 dark:hover:text-violet-400 transition-motion ${tool.path === '/tools' ? 'font-semibold text-violet-600 dark:text-violet-400 border-t border-gray-100 dark:border-gray-700 mt-1 pt-2' : 'text-gray-700 dark:text-gray-200'}`}
+                        onMouseEnter={() => prefetchRoute(tool.path)}
+                        onFocus={() => prefetchRoute(tool.path)}
+                      >
+                        {tool.name}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <Link
+              to="/blog"
+              className="text-gray-700 dark:text-gray-200 hover:text-violet-600 dark:hover:text-violet-400 transition-motion text-sm font-medium"
+              onMouseEnter={() => prefetchRoute('/blog')}
+              onFocus={() => prefetchRoute('/blog')}
+            >
+              Blog
+            </Link>
 
             <Link
               to="/pricing"

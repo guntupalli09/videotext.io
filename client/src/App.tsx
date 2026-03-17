@@ -8,7 +8,7 @@ import { getSessionDetails, setupPassword } from './lib/billing'
 import { invalidateUsageCache } from './lib/api'
 import Footer from './components/Footer'
 import Seo from './components/Seo'
-import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd } from './lib/seoMeta'
+import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd } from './lib/seoMeta'
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
 import OfflineBanner from './components/OfflineBanner'
@@ -50,8 +50,33 @@ const RevAlternative = lazy(() => import('./pages/seo/RevAlternativePage'))
 const HappyScribeAlternative = lazy(() => import('./pages/seo/HappyScribeAlternativePage'))
 const SonixAlternative = lazy(() => import('./pages/seo/SonixAlternativePage'))
 const EasyScribeAlternative = lazy(() => import('./pages/seo/EasyScribeAlternativePage'))
+const NottaAlternative = lazy(() => import('./pages/seo/NottaAlternativePage'))
 const Open = lazy(() => import('./pages/Open'))
 const NotFound = lazy(() => import('./pages/NotFound'))
+// Free tools — client-side only, zero server dependency
+const FreeToolsIndex = lazy(() => import('./pages/tools/FreeToolsIndex'))
+const SrtToVtt = lazy(() => import('./pages/tools/SrtToVtt'))
+const VttToSrt = lazy(() => import('./pages/tools/VttToSrt'))
+const ShiftSubtitleTiming = lazy(() => import('./pages/tools/ShiftSubtitleTiming'))
+const MergeSrtFiles = lazy(() => import('./pages/tools/MergeSrtFiles'))
+const SrtToText = lazy(() => import('./pages/tools/SrtToText'))
+const SubtitleValidator = lazy(() => import('./pages/tools/SubtitleValidator'))
+const SubtitleReadingSpeed = lazy(() => import('./pages/tools/SubtitleReadingSpeed'))
+const SubtitleCharacterChecker = lazy(() => import('./pages/tools/SubtitleCharacterChecker'))
+const SubtitleWordCounter = lazy(() => import('./pages/tools/SubtitleWordCounter'))
+const VideoScriptTimer = lazy(() => import('./pages/tools/VideoScriptTimer'))
+const WordsPerMinute = lazy(() => import('./pages/tools/WordsPerMinute'))
+const VideoBitrateCalculator = lazy(() => import('./pages/tools/VideoBitrateCalculator'))
+const AspectRatioCalculator = lazy(() => import('./pages/tools/AspectRatioCalculator'))
+const TimestampConverter = lazy(() => import('./pages/tools/TimestampConverter'))
+const VideoMetadataViewer = lazy(() => import('./pages/tools/VideoMetadataViewer'))
+const SubtitleToolsHub = lazy(() => import('./pages/tools/SubtitleToolsHub'))
+const SubtitleResources = lazy(() => import('./pages/SubtitleResources'))
+// Format converter tools — client-side only, zero server dependency
+const SbvToSrt = lazy(() => import('./pages/tools/SbvToSrt'))
+const SrtToSbv = lazy(() => import('./pages/tools/SrtToSbv'))
+const AssToSrt = lazy(() => import('./pages/tools/AssToSrt'))
+const TtmlToSrt = lazy(() => import('./pages/tools/TtmlToSrt'))
 
 /** Minimal loading fallback for route chunks — fast, accessible, no layout shift. */
 function RouteFallback() {
@@ -81,19 +106,23 @@ function AppSeo() {
   }
   const isHome = pathname === '/'
   const is404 = !hasRoute
+  const isBlogPost = pathname.startsWith('/blog/') && pathname !== '/blog'
   const breadcrumb = ROUTE_BREADCRUMB[pathname]
   const seoEntry = getSeoEntry(pathname)
+  const blogPostingSchema = isBlogPost ? getBlogPostingJsonLd(pathname, meta.title, meta.description) : null
   const jsonLd = is404
     ? undefined
     : isHome
       ? [getOrganizationJsonLd(), getWebApplicationJsonLd()]
       : pathname === '/faq'
         ? [getFaqJsonLd()]
-        : breadcrumb
-          ? seoEntry?.faq?.length
-            ? [getBreadcrumbJsonLd(pathname, breadcrumb), getFaqJsonLdFromItems(seoEntry.faq)]
-            : [getBreadcrumbJsonLd(pathname, breadcrumb)]
-          : undefined
+        : isBlogPost
+          ? [breadcrumb && getBreadcrumbJsonLd(pathname, breadcrumb), blogPostingSchema].filter(Boolean) as object[]
+          : breadcrumb
+            ? seoEntry?.faq?.length
+              ? [getBreadcrumbJsonLd(pathname, breadcrumb), getFaqJsonLdFromItems(seoEntry.faq)]
+              : [getBreadcrumbJsonLd(pathname, breadcrumb)]
+            : undefined
   useEffect(() => {
     try {
       capturePageview(pathname) // feeds Web analytics dashboard (visitors, page views, sessions)
@@ -329,6 +358,7 @@ function App() {
             <Route path="/happyscribe-alternative" element={<HappyScribeAlternative />} />
             <Route path="/sonix-alternative" element={<SonixAlternative />} />
             <Route path="/easyscribe-alternative" element={<EasyScribeAlternative />} />
+            <Route path="/notta-alternative" element={<NottaAlternative />} />
             <Route path="/open" element={<Open />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
@@ -341,6 +371,29 @@ function App() {
             {getAllSeoPaths().map((path) => (
               <Route key={path} path={path} element={<SeoToolPage />} />
             ))}
+            {/* Free tools — client-side only, no server calls */}
+            <Route path="/tools" element={<FreeToolsIndex />} />
+            <Route path="/tools/srt-to-vtt" element={<SrtToVtt />} />
+            <Route path="/tools/vtt-to-srt" element={<VttToSrt />} />
+            <Route path="/tools/shift-subtitle-timing" element={<ShiftSubtitleTiming />} />
+            <Route path="/tools/merge-srt-files" element={<MergeSrtFiles />} />
+            <Route path="/tools/srt-to-text" element={<SrtToText />} />
+            <Route path="/tools/subtitle-validator" element={<SubtitleValidator />} />
+            <Route path="/tools/subtitle-reading-speed" element={<SubtitleReadingSpeed />} />
+            <Route path="/tools/subtitle-character-checker" element={<SubtitleCharacterChecker />} />
+            <Route path="/tools/subtitle-word-counter" element={<SubtitleWordCounter />} />
+            <Route path="/tools/video-script-timer" element={<VideoScriptTimer />} />
+            <Route path="/tools/words-per-minute-calculator" element={<WordsPerMinute />} />
+            <Route path="/tools/video-bitrate-calculator" element={<VideoBitrateCalculator />} />
+            <Route path="/tools/aspect-ratio-calculator" element={<AspectRatioCalculator />} />
+            <Route path="/tools/timestamp-converter" element={<TimestampConverter />} />
+            <Route path="/tools/video-metadata-viewer" element={<VideoMetadataViewer />} />
+            <Route path="/subtitle-tools" element={<SubtitleToolsHub />} />
+            <Route path="/subtitle-resources" element={<SubtitleResources />} />
+            <Route path="/tools/sbv-to-srt" element={<SbvToSrt />} />
+            <Route path="/tools/srt-to-sbv" element={<SrtToSbv />} />
+            <Route path="/tools/ass-to-srt" element={<AssToSrt />} />
+            <Route path="/tools/ttml-to-srt" element={<TtmlToSrt />} />
             <Route path="*" element={<NotFound />} />
             </Route>
               </Routes>

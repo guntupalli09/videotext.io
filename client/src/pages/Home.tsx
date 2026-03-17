@@ -118,6 +118,69 @@ export default function Home() {
       {/* 7 — FAQ */}
       <FAQ />
 
+      {/* 7.5 — Free Tools cluster — catches non-converters, passes homepage authority into tool pages */}
+      <section className="bg-gray-50 dark:bg-gray-900/60 border-y border-gray-100 dark:border-gray-800 py-16">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Free — no account needed</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                Free subtitle &amp; video tools
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md">
+                Convert, validate, fix, and analyse subtitle files instantly in your browser. Nothing uploaded, nothing stored.
+              </p>
+            </div>
+            <Link
+              to="/subtitle-tools"
+              className="text-sm font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 whitespace-nowrap transition-colors hidden sm:block"
+            >
+              View all 19 tools →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {[
+              { label: 'SRT → VTT Converter', path: '/tools/srt-to-vtt', desc: 'For HTML5 video players & web apps', icon: '⇄' },
+              { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Catch timing overlaps & format errors', icon: '✓' },
+              { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Verify Netflix & EBU CPS limits', icon: '⏱' },
+              { label: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing', desc: 'Fix out-of-sync subtitles instantly', icon: '↔' },
+              { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Check 42-char Netflix line limits', icon: '≤' },
+              { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine multiple subtitle files', icon: '⊕' },
+            ].map((tool) => (
+              <Link
+                key={tool.path}
+                to={tool.path}
+                className="group flex items-start gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-sm transition-all"
+              >
+                <span className="text-xl leading-none mt-0.5 select-none">{tool.icon}</span>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors">
+                    {tool.label}
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{tool.desc}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <Link
+              to="/subtitle-tools"
+              className="sm:hidden text-sm font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400"
+            >
+              View all 19 free tools →
+            </Link>
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              Need AI-powered subtitles?{' '}
+              <Link to="/video-to-subtitles" className="text-violet-600 dark:text-violet-400 hover:underline font-medium">
+                Generate them automatically →
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* 8 — Final CTA */}
       <FinalCTA />
     </div>
