@@ -132,6 +132,21 @@ export const CORE_PATHS: string[] = [
   '/aac-to-text',
   '/ogg-to-text',
   '/flac-to-text',
+  // Cluster E — Journalist & Student pages
+  '/transcription-for-journalists',
+  '/transcription-for-students',
+  '/best-transcription-tool-for-journalists',
+  '/best-transcription-tool-for-students',
+  '/press-conference-transcription',
+  '/research-interview-transcription',
+  '/qualitative-research-transcription',
+  '/journalism-transcription',
+  '/academic-transcription',
+  // Blog posts for journalist & student audiences
+  '/blog/best-transcription-tools-for-journalists',
+  '/blog/best-transcription-tools-for-students',
+  '/blog/how-to-transcribe-interview-recording',
+  '/blog/how-to-transcribe-lecture-recording',
 ]
 
 /** Programmatic-only paths (from targets × intents). Submit after core. */

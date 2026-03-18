@@ -2183,6 +2183,374 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Is OGG to text conversion free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
     ],
   },
+  // ── Cluster E: Journalist & Student Pages ────────────────────────────────────
+  {
+    path: '/transcription-for-journalists',
+    title: 'Transcription Tool for Journalists – Fast Interview & Press Conference Transcription | VideoText',
+    description:
+      'Transcription software built for journalists. Transcribe interview recordings, press conferences, and field audio to text in seconds. Speaker labels, exact quotes, free tier. Used by reporters, news writers, and freelance journalists.',
+    h1: 'Transcription Tool for Journalists',
+    intro:
+      'Journalists need accurate transcripts fast — for quotes, fact-checking, and story filing. VideoText transcribes interview recordings, press conference audio, phone calls, and field recordings to text in seconds. Get speaker-labeled quotes, searchable full text, and export as TXT or SRT. Works with every format you record in: MP4, MP3, WAV, M4A. Free tier — no credit card.',
+    breadcrumbLabel: 'Transcription for Journalists',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/interview-transcription',
+      '/press-conference-transcription',
+      '/speaker-diarization',
+      '/best-transcription-tool-for-journalists',
+      '/mp3-to-text',
+    ],
+    indexable: true,
+    intentKey: 'transcription-for-journalists',
+    faq: [
+      {
+        q: 'Is VideoText accurate enough for journalism?',
+        a: 'VideoText uses OpenAI Whisper large-v3 with ~97–99% word accuracy on clear speech. For journalism, always verify quotes against the original recording before publishing — AI transcription may mishear proper nouns, names, and technical jargon. The transcript dramatically speeds up review but does not replace a final listen-back.',
+      },
+      {
+        q: 'Can I transcribe a phone interview recording?',
+        a: 'Yes. Upload the recording as MP3, M4A, or WAV. Phone call quality (8kHz) transcribes at lower accuracy than in-person or VOIP recordings. For better results, use a call recording app that captures both sides in higher quality (e.g., Recorder on Android, TapeACall, or Zoom audio).',
+      },
+      {
+        q: 'Does it separate the interviewer and interviewee in the transcript?',
+        a: 'Yes. Open the Speakers branch after transcribing — speech is grouped by speaker turn (Speaker 1, Speaker 2). For two-person interviews this clearly separates Q and A. Rename speakers to real names by editing the labels.',
+      },
+      {
+        q: 'Can I transcribe a press conference recording?',
+        a: 'Yes. Upload your press conference MP4 or audio file. Multi-speaker press conferences work well — the AI labels each speaker turn. For best accuracy with multiple microphones or a room full of questions, use a recording captured from the main PA feed rather than ambient room audio.',
+      },
+      {
+        q: 'Does VideoText delete my files after transcription?',
+        a: 'Yes. Your file is deleted immediately after processing completes. Nothing is stored on our servers — important for sensitive sources and embargoed material.',
+      },
+      {
+        q: 'What file formats do journalists typically use?',
+        a: 'Common formats supported: MP3 (most voice recorders), M4A (iPhone Voice Memos), MP4 (video interviews, Zoom calls), WAV (broadcast-quality field recorders), AAC, OGG, FLAC. No conversion needed before upload.',
+      },
+      {
+        q: 'Is there a deadline-friendly fast turnaround?',
+        a: 'Yes. Most files transcribe in 30–90 seconds for short clips; a 60-minute interview typically finishes in 5–8 minutes. Results stream in real time as each segment completes — you can start reading before the full file is done.',
+      },
+    ],
+  },
+  {
+    path: '/transcription-for-students',
+    title: 'Transcription Tool for Students – Transcribe Lectures, Classes & Interviews Free | VideoText',
+    description:
+      'Free transcription tool for students. Transcribe lecture recordings, class sessions, professor interviews, and study group audio to text. Searchable notes, chapter navigation, keyword index. No credit card.',
+    h1: 'Transcription Tool for Students',
+    intro:
+      'Turn any recorded lecture, class session, or study interview into searchable, shareable notes. Upload your recording (MP4 from Zoom class, MP3 from your recorder, M4A from iPhone) and get a full text transcript in seconds. Use Keywords to index every topic, Chapters to navigate by section, and Translate to study in your native language. Free tier — 3 imports per month, no credit card.',
+    breadcrumbLabel: 'Transcription for Students',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/lecture-transcription',
+      '/keyword-indexed-transcript',
+      '/video-chapters-generator',
+      '/best-transcription-tool-for-students',
+      '/zoom-recording-transcript',
+    ],
+    indexable: true,
+    intentKey: 'transcription-for-students',
+    faq: [
+      {
+        q: 'Is VideoText free for students?',
+        a: 'Yes. The free tier includes 3 imports per month with no credit card required. Most students can transcribe all their key lectures and interviews within the free limit. Sign up for free to start.',
+      },
+      {
+        q: 'Can I transcribe a Zoom lecture recording?',
+        a: 'Yes. Download the Zoom recording as MP4 from the Zoom cloud or your local Zoom folder, then upload it here. Works for any Zoom class, seminar, or office-hours recording.',
+      },
+      {
+        q: 'How do I use the transcript for studying?',
+        a: 'Paste it into Notion, Obsidian, or Google Docs and highlight key concepts. Use the Keywords branch to find every time a term was mentioned. Use Chapters to jump to specific lecture sections. Use Ctrl+F to search for anything the professor said.',
+      },
+      {
+        q: 'Can I transcribe an iPhone lecture recording?',
+        a: 'Yes. iPhone Voice Memos saves as M4A — upload directly, no conversion needed. Screen recordings from an iPad also work as MP4. Most campus recording devices export MP3 or WAV, both supported.',
+      },
+      {
+        q: 'Does it support technical or academic terminology?',
+        a: 'Whisper large-v3 handles most academic vocabulary well. Accuracy is highest for clearly spoken English. For highly specialized jargon or strong accents, review the transcript against the recording for critical terms.',
+      },
+      {
+        q: 'Can I share the transcript with classmates?',
+        a: 'Yes. Download the TXT file and share it via Google Drive, email, or your LMS. The transcript can also be pasted into a collaborative note document.',
+      },
+      {
+        q: 'Does it support non-English lectures?',
+        a: 'Yes. Whisper supports 90+ languages. Set the spoken language before processing for best accuracy. After transcribing, use the Translate branch to get a version in English, Spanish, Hindi, French, Chinese, or Russian.',
+      },
+    ],
+  },
+  {
+    path: '/best-transcription-tool-for-journalists',
+    title: 'Best Transcription Tool for Journalists 2026 – Fast, Accurate, Private | VideoText',
+    description:
+      'Best transcription tool for journalists in 2026. Transcribe interviews, press conferences, and field audio fast. Speaker labels, exact quotes, files deleted after processing. Free tier.',
+    h1: 'Best Transcription Tool for Journalists',
+    intro:
+      'The best transcription tool for journalists combines speed, accuracy, and privacy. VideoText transcribes interview recordings, press conferences, and field audio in seconds using Whisper large-v3. Get speaker-labeled quotes, full-text search, and SRT export — files are deleted immediately after processing. Free tier, no credit card.',
+    breadcrumbLabel: 'Best Transcription Tool for Journalists',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/transcription-for-journalists',
+      '/interview-transcription',
+      '/press-conference-transcription',
+      '/speaker-diarization',
+    ],
+    indexable: true,
+    intentKey: 'best-transcription-tool-for-journalists',
+    faq: [
+      {
+        q: 'What makes a transcription tool good for journalism?',
+        a: 'Key factors: accuracy (Whisper large-v3 ~97–99% on clear speech), speed (30–90 seconds for short clips), speaker separation (Q&A format), privacy (files deleted after processing), and format support (MP3, M4A, WAV, MP4 from any recorder).',
+      },
+      {
+        q: 'Does VideoText keep my interview recordings?',
+        a: 'No. Your file is deleted immediately after transcription completes. No storage, no retention — important for protecting sources and sensitive embargoed content.',
+      },
+      {
+        q: 'Is VideoText free for journalists?',
+        a: 'Yes. Free tier includes 3 imports per month with no credit card. Paid plans start at $19/month for 450 minutes — enough for most active reporters.',
+      },
+    ],
+  },
+  {
+    path: '/best-transcription-tool-for-students',
+    title: 'Best Free Transcription Tool for Students 2026 | VideoText',
+    description:
+      'Best free transcription tool for students in 2026. Transcribe lectures, class recordings, and interviews. Chapters, keywords, translate to your language. No credit card. Free tier.',
+    h1: 'Best Free Transcription Tool for Students',
+    intro:
+      'The best transcription tool for students is free, accurate, and built for lecture recordings. VideoText transcribes class recordings, Zoom lectures, and research interviews with chapter navigation and keyword indexing — all free to start. No credit card, no download.',
+    breadcrumbLabel: 'Best Transcription Tool for Students',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/transcription-for-students',
+      '/lecture-transcription',
+      '/keyword-indexed-transcript',
+      '/video-chapters-generator',
+    ],
+    indexable: true,
+    intentKey: 'best-transcription-tool-for-students',
+    faq: [
+      {
+        q: 'Why do students need a transcription tool?',
+        a: 'Lecture transcripts make studying more efficient: you can search for any term, copy definitions directly into notes, review sections you missed, share notes with classmates, and create summaries without re-listening to the whole recording.',
+      },
+      {
+        q: 'What is the best free transcription tool for students?',
+        a: 'VideoText offers 3 free imports per month with no credit card. Whisper large-v3 accuracy is among the best available. You get chapters, keywords, speaker labels, translation, and TXT/SRT export — all in the free tier.',
+      },
+      {
+        q: 'Is VideoText better than Otter.ai for students?',
+        a: 'VideoText and Otter.ai both offer free tiers. VideoText gives you more export formats (SRT, VTT, JSON), chapter navigation, keyword indexing, and instant translation. Otter.ai offers live recording in its app. For already-recorded lectures and class sessions, VideoText is more feature-complete.',
+      },
+    ],
+  },
+  {
+    path: '/press-conference-transcription',
+    title: 'Press Conference Transcription – Convert Press Conferences to Text | VideoText',
+    description:
+      'Transcribe press conference recordings to text online. Upload video or audio of any press conference and get a full, speaker-labeled transcript in seconds. Free. Used by journalists, PR teams.',
+    h1: 'Press Conference Transcription — Convert Press Conferences to Text',
+    intro:
+      'Transcribe press conference recordings to text quickly and accurately. Upload your press conference video (MP4, MOV) or audio (MP3, WAV) and get a full transcript with speaker labels. Use Speakers to track who said what across multiple officials and journalists, and Summary to extract key announcements. Free tier — perfect for journalists, PR teams, and communications professionals.',
+    breadcrumbLabel: 'Press Conference Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/interview-transcription',
+      '/transcription-for-journalists',
+      '/speaker-diarization',
+      '/mp4-to-text',
+    ],
+    indexable: true,
+    intentKey: 'press-conference-transcription',
+    faq: [
+      {
+        q: 'Can I transcribe a press conference with multiple speakers?',
+        a: 'Yes. After transcribing, the Speakers branch groups speech by speaker turn. Multiple officials, moderators, and journalists asking questions are each assigned a separate speaker label. For recordings from a PA feed or broadcast stream, speaker separation is cleanest.',
+      },
+      {
+        q: 'What formats work for press conference recordings?',
+        a: 'MP4, MOV, AVI, WebM (video) and MP3, WAV, M4A (audio). Broadcast recordings from TV streams, official government YouTube feeds, and recorder files from press pools all work without conversion.',
+      },
+      {
+        q: 'Can I get a summary of the key announcements?',
+        a: 'Yes. The Summary branch automatically extracts key decisions, statements, and action items from the transcript. Useful for generating a quick brief without reading the full transcript.',
+      },
+      {
+        q: 'Is press conference transcription free?',
+        a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try. Paid plans start at $19/month for 450 minutes.',
+      },
+    ],
+  },
+  {
+    path: '/research-interview-transcription',
+    title: 'Research Interview Transcription – Qualitative Research Transcription | VideoText',
+    description:
+      'Transcribe research interviews to text for qualitative analysis. Upload interview recordings and get speaker-labeled, accurate transcripts. Export TXT or SRT. Free tier. Used by researchers, academics, PhD students.',
+    h1: 'Research Interview Transcription — For Qualitative Research',
+    intro:
+      'Transcribe research interviews, focus groups, and fieldwork recordings for qualitative analysis. Upload your audio or video interview and get an accurate, speaker-labeled transcript in seconds. Export as TXT for coding in NVivo, Atlas.ti, or any QDAS software. Free tier — widely used by PhD students, academic researchers, and social scientists.',
+    breadcrumbLabel: 'Research Interview Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/interview-transcription',
+      '/transcription-for-students',
+      '/speaker-diarization',
+      '/qualitative-research-transcription',
+    ],
+    indexable: true,
+    intentKey: 'research-interview-transcription',
+    faq: [
+      {
+        q: 'Can I use VideoText transcripts for qualitative research?',
+        a: 'Yes. Export the transcript as TXT and import it into NVivo, Atlas.ti, MAXQDA, or any qualitative data analysis software (QDAS) for coding. The plain-text output is compatible with all major QDAS tools.',
+      },
+      {
+        q: 'Does it support verbatim transcription?',
+        a: 'The transcript captures all spoken words without paraphrasing. Whisper does not transcribe non-verbal sounds (um, uh) consistently — for fully verbatim transcription that includes every hesitation, review and edit the AI transcript against the recording.',
+      },
+      {
+        q: 'Can I transcribe focus group recordings?',
+        a: 'Yes. Upload the focus group recording. The Speakers branch separates participants by voice turn. For groups larger than 6–8 participants or recordings with significant crosstalk, accuracy of speaker separation decreases — a research-grade recording setup improves results.',
+      },
+      {
+        q: 'Is my interview data kept private?',
+        a: 'Yes. VideoText processes and immediately deletes your file — nothing is stored. Important for research involving human subjects and IRB/ethics board requirements for data minimization.',
+      },
+      {
+        q: 'Is it free for PhD students and academic researchers?',
+        a: 'Yes. Free tier includes 3 imports per month with no credit card. Most dissertation students use the paid tier ($10/month) during intensive fieldwork periods.',
+      },
+    ],
+  },
+  {
+    path: '/qualitative-research-transcription',
+    title: 'Qualitative Research Transcription – Transcribe Interviews for QDAS | VideoText',
+    description:
+      'Transcription for qualitative research. Transcribe interviews, focus groups, and fieldwork audio for NVivo, Atlas.ti, and MAXQDA. Speaker labels. Files deleted after processing. Free tier.',
+    h1: 'Qualitative Research Transcription',
+    intro:
+      'Accurate transcription for qualitative research workflows. Upload research interviews, focus groups, and fieldwork recordings — get a speaker-labeled TXT transcript ready to import into NVivo, Atlas.ti, MAXQDA, or Dedoose. VideoText uses Whisper large-v3 for high accuracy. Files are deleted immediately after processing — meeting data minimization requirements. Free tier.',
+    breadcrumbLabel: 'Qualitative Research Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/research-interview-transcription',
+      '/interview-transcription',
+      '/speaker-diarization',
+      '/transcription-for-students',
+    ],
+    indexable: true,
+    intentKey: 'qualitative-research-transcription',
+    faq: [
+      {
+        q: 'What qualitative analysis software does VideoText output work with?',
+        a: 'The plain TXT transcript imports directly into NVivo, Atlas.ti, MAXQDA, Dedoose, and HyperRESEARCH. The SRT export with timestamps can be used for time-coded analysis. Most QDAS tools accept TXT and can split by speaker turn if the transcript is formatted with speaker labels.',
+      },
+      {
+        q: 'Does the transcript include speaker labels for thematic coding?',
+        a: 'Yes. The Speakers branch produces a transcript segmented by speaker turn (Speaker 1, Speaker 2, etc.), which is the standard format for qualitative interview coding. You can label each speaker with participant pseudonyms before importing into QDAS.',
+      },
+      {
+        q: 'How does VideoText handle data privacy for research participants?',
+        a: 'VideoText processes and immediately deletes your file — no retention, no cloud storage of transcripts. This supports IRB/ethics board data minimization requirements. Your participants\' audio is not stored on any server after processing.',
+      },
+      {
+        q: 'Is VideoText free for academic research?',
+        a: 'Yes. Free tier includes 3 imports per month with no credit card. For intensive fieldwork, the $10/month plan provides 200 minutes and the $19/month plan provides 450 minutes.',
+      },
+    ],
+  },
+  {
+    path: '/journalism-transcription',
+    title: 'Journalism Transcription – Transcribe Interviews & Field Audio | VideoText',
+    description:
+      'Transcription for journalism. Transcribe recorded interviews, press conferences, and field audio to text. Speaker labels, fast turnaround, files deleted after processing. Free tier.',
+    h1: 'Journalism Transcription — Interviews, Press Conferences & Field Audio',
+    intro:
+      'Transcribe journalism recordings — interviews, press conferences, source calls, and field audio — to accurate, speaker-labeled text. VideoText handles every format journalists record in: MP3 from voice recorders, M4A from iPhones, MP4 from cameras and Zoom. Files are deleted immediately after transcription. Free tier with no credit card.',
+    breadcrumbLabel: 'Journalism Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/transcription-for-journalists',
+      '/interview-transcription',
+      '/press-conference-transcription',
+      '/speaker-diarization',
+      '/mp3-to-text',
+    ],
+    indexable: true,
+    intentKey: 'journalism-transcription',
+    faq: [
+      {
+        q: 'What journalism recording formats does VideoText support?',
+        a: 'MP3 (most digital voice recorders), M4A (iPhone Voice Memos), MP4 (Zoom, Teams, Skype video calls), WAV (broadcast field recorders), AAC, FLAC. Upload any of these directly without conversion.',
+      },
+      {
+        q: 'How quickly can I get a transcript for a deadline?',
+        a: 'Most files transcribe in 30–90 seconds for short clips. A 60-minute interview typically finishes in 5–8 minutes. Results stream in real time as segments complete — you can start pulling quotes before the full file is done.',
+      },
+      {
+        q: 'Does it label speakers so I can track quotes?',
+        a: 'Yes. The Speakers branch separates speech by speaker turn. For a two-person interview you get clear Journalist/Source separation. Multi-person press conferences are also labeled by turn.',
+      },
+      {
+        q: 'Are my files and sources protected?',
+        a: 'Yes. VideoText does not store files — your recording is deleted immediately after transcription. No cloud retention, no logs of content. Important for source protection and embargoed material.',
+      },
+      {
+        q: 'Is journalism transcription free?',
+        a: 'Yes. Free tier includes 3 imports per month. Sign up for free to try. No credit card.',
+      },
+    ],
+  },
+  {
+    path: '/academic-transcription',
+    title: 'Academic Transcription – Transcribe Research & Lecture Recordings | VideoText',
+    description:
+      'Academic transcription for students and researchers. Transcribe lectures, research interviews, seminars, and fieldwork audio to text. Chapters, keywords, speaker labels. Free tier.',
+    h1: 'Academic Transcription — Lectures, Research Interviews & Seminars',
+    intro:
+      'Academic transcription for university students, PhD researchers, and educators. Upload lecture recordings, research interviews, seminar discussions, and fieldwork audio — get accurate, speaker-labeled transcripts in seconds. Chapter navigation helps you review by topic; keyword indexing makes every concept searchable. Export TXT for note apps or SRT for accessible video. Free tier.',
+    breadcrumbLabel: 'Academic Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/transcription-for-students',
+      '/lecture-transcription',
+      '/research-interview-transcription',
+      '/keyword-indexed-transcript',
+      '/video-chapters-generator',
+    ],
+    indexable: true,
+    intentKey: 'academic-transcription',
+    faq: [
+      {
+        q: 'What academic recordings can I transcribe?',
+        a: 'Lecture recordings (Zoom, Panopto, Echo360), research interviews, focus groups, seminar discussions, thesis defenses, conference presentations, faculty talks, field recordings, and oral history interviews.',
+      },
+      {
+        q: 'How can I use lecture transcripts for accessibility?',
+        a: 'Under ADA and Section 508, video content in educational settings should include captions or transcripts for deaf and hard-of-hearing students. VideoText generates both — use SRT for captioned video upload or TXT as a standalone transcript document.',
+      },
+      {
+        q: 'Can I search a lecture transcript for specific concepts?',
+        a: 'Yes. The Keywords branch indexes every key term and shows where each appears in the transcript. Use Ctrl+F in the transcript view to search for any word or phrase the lecturer mentioned.',
+      },
+      {
+        q: 'Is academic transcription free for students?',
+        a: 'Yes. Free tier includes 3 imports per month with no credit card. Most students cover their key lectures within the free limit.',
+      },
+      {
+        q: 'What languages does academic transcription support?',
+        a: 'Whisper supports 90+ languages. Set the spoken language before processing. After transcribing, use Translate to get the transcript in English, Spanish, Hindi, French, Chinese, or Russian.',
+      },
+    ],
+  },
+
+  // ── Cluster F: FLAC ───────────────────────────────────────────────────────────
   {
     path: '/flac-to-text',
     title: 'FLAC to Text – Transcribe FLAC Audio Files Online | VideoText',
