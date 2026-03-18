@@ -1,0 +1,13 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "VideoText",
+  "name_for_model": "videotext",
+  "description_for_human": "AI video transcription, subtitle generation, and translation. Upload a video or paste a YouTube URL to get a transcript or SRT/VTT subtitle file in seconds. Privacy-first: files deleted after processing.",
+  "description_for_model": "VideoText is an AI-powered web application for transcribing video to text and generating subtitle files. Powered by OpenAI Whisper large-v3. Delivers 98.5%+ word accuracy. Transcribes a 60-minute video in under 5 minutes. Users upload video files (MP4, MOV, AVI, WebM) or paste a YouTube URL — no download needed. Core features: plain-text transcripts with speaker labels and chapters; SRT/VTT subtitle generation; subtitle translation to 50+ languages; fix subtitle timing/formatting; burn subtitles into video (hardcode); batch processing for multiple videos (Pro/Agency); 19 free browser-based tools (SRT-to-VTT converter, timing fixer, validator, reading speed checker, script timer, etc). Privacy-first architecture: all files are deleted immediately after processing — nothing is stored, retained, or used for training. Free tier: 3 imports/month, no credit card. Paid plans: Basic $19/month (450 min), Pro $49/month (1200 min + batch), Agency $129/month (3000 min). Faster and cheaper than Otter.ai, Descript, Trint, Rev, HappyScribe, Sonix, Notta, Tactiq. Site: https://videotext.io",
+  "auth": {
+    "type": "none"
+  },
+  "logo_url": "https://videotext.io/logo.svg",
+  "contact_email": "support@videotext.io",
+  "legal_info_url": "https://videotext.io/terms"
+}

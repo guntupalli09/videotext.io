@@ -181,6 +181,11 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'EasyScribe only does basic audio transcription. VideoText handles video files, YouTube URLs, SRT subtitle export, 50+ language translation, and subtitle burning. Free tier available.',
   },
+  '/about': {
+    title: 'About VideoText — AI Transcription Built for Speed & Privacy',
+    description:
+      'VideoText transcribes video to text in under 5 minutes with 98.5%+ word accuracy. Powered by OpenAI Whisper. Privacy-first: files deleted after processing. 127,000+ videos transcribed. Free tier available.',
+  },
   '/open': {
     title: 'Open Stats — Accuracy, Speed & Transparency | VideoText',
     description:
@@ -302,6 +307,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/guide': [{ name: 'Home', path: '/' }, { name: 'Guide', path: '/guide' }],
   '/privacy': [{ name: 'Home', path: '/' }, { name: 'Privacy', path: '/privacy' }],
   '/terms': [{ name: 'Home', path: '/' }, { name: 'Terms', path: '/terms' }],
+  '/about': [{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }],
   '/compare': [{ name: 'Home', path: '/' }, { name: 'Compare', path: '/compare' }],
   '/descript-alternative': [{ name: 'Home', path: '/' }, { name: 'Descript Alternative', path: '/descript-alternative' }],
   '/otter-ai-alternative': [{ name: 'Home', path: '/' }, { name: 'Otter.ai Alternative', path: '/otter-ai-alternative' }],
@@ -390,8 +396,8 @@ const FAQ_SCHEMA_ITEMS = [
   { q: 'Can I translate subtitles or transcripts?', a: "Yes. Use Translate Subtitles for SRT/VTT. For transcripts, use the Translate button after generating to view in 6 languages." },
 ]
 
-/** Published dates for blog posts — used for BlogPosting JSON-LD. */
-const BLOG_POST_DATES: Record<string, { datePublished: string; dateModified: string }> = {
+/** Published dates for blog posts — used for BlogPosting JSON-LD and og:article meta. */
+export const BLOG_POST_DATES: Record<string, { datePublished: string; dateModified: string }> = {
   '/blog/how-to-transcribe-zoom-recording':    { datePublished: '2026-03-07', dateModified: '2026-03-07' },
   '/blog/srt-vs-vtt-subtitle-formats':         { datePublished: '2026-03-05', dateModified: '2026-03-05' },
   '/blog/how-to-add-subtitles-to-video-free':  { datePublished: '2026-03-03', dateModified: '2026-03-03' },
@@ -479,6 +485,105 @@ export function getFaqJsonLdFromItems(faq: { q: string; a: string }[]) {
       '@type': 'Question',
       name: q,
       acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  }
+}
+
+/** SoftwareApplication JSON-LD for individual paid tool pages. */
+const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string; featureList: string }> = {
+  '/video-to-transcript': {
+    name: 'Video to Transcript — AI Transcription',
+    description: 'Upload any video file or paste a YouTube URL and get a plain-text transcript with speaker labels, automatic chapters, and a summary. View in 6 languages. Powered by OpenAI Whisper.',
+    featureList: 'AI transcription, Speaker labels, Automatic chapters, Summary, YouTube URL input, Multi-language viewing (English, Hindi, Telugu, Spanish, Chinese, Russian), Transcript download, Copy to clipboard',
+  },
+  '/video-to-subtitles': {
+    name: 'Video to Subtitles — SRT & VTT Generator',
+    description: 'Generate broadcast-ready SRT and VTT subtitle files from any video with AI. Single or multi-language. Powered by OpenAI Whisper.',
+    featureList: 'SRT generation, VTT generation, Multi-language subtitles, AI timing, YouTube URL input, Subtitle download',
+  },
+  '/translate-subtitles': {
+    name: 'Translate Subtitles — SRT/VTT to Any Language',
+    description: 'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, French, Japanese, and 50+ languages with AI. Upload subtitles, pick target language, download.',
+    featureList: 'SRT translation, VTT translation, 50+ target languages, Timestamp preservation, Download translated subtitles',
+  },
+  '/fix-subtitles': {
+    name: 'Fix Subtitles — Auto-Correct Timing & Format',
+    description: 'Auto-correct overlapping timestamps, long lines, and gaps in SRT/VTT files. Upload SRT or VTT, download corrected file.',
+    featureList: 'Fix overlapping timestamps, Fix long lines, Fix timing gaps, SRT support, VTT support, Instant download',
+  },
+  '/burn-subtitles': {
+    name: 'Burn Subtitles into Video — Hardcode Captions',
+    description: 'Hardcode SRT or VTT subtitles permanently into a video file. No player required to display captions.',
+    featureList: 'Burn SRT subtitles, Burn VTT subtitles, Hardcode captions, MP4 output, No account required for free tier',
+  },
+  '/compress-video': {
+    name: 'Compress Video — Reduce File Size Online',
+    description: 'Compress video online with light, medium, or heavy compression settings. Reduce file size for sharing and uploads.',
+    featureList: 'Video compression, Light compression, Medium compression, Heavy compression, MP4 output, No quality loss option',
+  },
+  '/batch-process': {
+    name: 'Batch Video to Subtitles — Multiple Videos at Once',
+    description: 'Transcribe or subtitle many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans.',
+    featureList: 'Batch transcription, Batch subtitle generation, ZIP download, Multi-language batch, Pro and Agency plans',
+  },
+}
+
+export function getSoftwareApplicationJsonLd(pathname: string): object | null {
+  const schema = TOOL_SOFTWARE_SCHEMAS[pathname]
+  if (!schema) return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: schema.name,
+    description: schema.description,
+    featureList: schema.featureList,
+    applicationCategory: 'MultimediaApplication',
+    operatingSystem: 'Web Browser',
+    url: `${SITE_URL}${pathname}`,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier: 3 imports/month. Paid plans from $19/month.' },
+    provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+  }
+}
+
+/** HowTo JSON-LD for step-by-step how-to pages. */
+const HOWTO_SCHEMAS: Record<string, { name: string; description: string; steps: { name: string; text: string }[] }> = {
+  '/how-to-create-srt-file': {
+    name: 'How to Create an SRT File',
+    description: 'A step-by-step guide to creating an SRT subtitle file from a video using VideoText.',
+    steps: [
+      { name: 'Sign up for VideoText', text: 'Go to videotext.io and sign up for a free account. No credit card required. You get 3 free imports per month.' },
+      { name: 'Upload your video or paste a YouTube URL', text: 'On the Video to Subtitles page, upload your video file (MP4, MOV, AVI, WebM) or paste a public YouTube URL directly.' },
+      { name: 'Select your language', text: 'Choose the spoken language of the video. VideoText supports 50+ languages via OpenAI Whisper.' },
+      { name: 'Generate subtitles', text: 'Click Generate. VideoText transcribes the audio and creates time-coded subtitle cues. A 60-minute video takes under 5 minutes.' },
+      { name: 'Download the SRT file', text: 'Click Download SRT. The file is saved to your device in standard SubRip (.srt) format, ready to upload to YouTube, Vimeo, or any video player.' },
+    ],
+  },
+  '/how-to-add-subtitles-to-mp4': {
+    name: 'How to Add Subtitles to an MP4 Video',
+    description: 'A step-by-step guide to adding subtitles to an MP4 video file — either as a soft subtitle file or burned-in permanently.',
+    steps: [
+      { name: 'Generate or obtain an SRT file', text: 'Use VideoText Video to Subtitles to automatically generate an SRT subtitle file from your MP4, or upload an existing SRT file.' },
+      { name: 'Choose your subtitle method', text: 'Decide between soft subtitles (uploadable SRT file, user can toggle on/off) or hard subtitles (burned into the video permanently). For social media, burn-in is recommended.' },
+      { name: 'For soft subtitles: upload SRT to your platform', text: 'On YouTube, go to Subtitles in Studio and upload the .srt file. On Vimeo, use the Distribution > Subtitles panel. The SRT file links timing to dialogue without modifying the video.' },
+      { name: 'For hard subtitles: use VideoText Burn Subtitles', text: 'Go to videotext.io/burn-subtitles. Upload your MP4 and your SRT file. VideoText renders the captions permanently into the video and returns a new MP4.' },
+      { name: 'Download and publish', text: 'Download the output MP4. The subtitles are now visible on any device or player without the need to upload a separate SRT file.' },
+    ],
+  },
+}
+
+export function getHowToJsonLd(pathname: string): object | null {
+  const schema = HOWTO_SCHEMAS[pathname]
+  if (!schema) return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: schema.name,
+    description: schema.description,
+    step: schema.steps.map((s, i) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      name: s.name,
+      text: s.text,
     })),
   }
 }
