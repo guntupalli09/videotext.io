@@ -147,6 +147,55 @@ export const CORE_PATHS: string[] = [
   '/blog/best-transcription-tools-for-students',
   '/blog/how-to-transcribe-interview-recording',
   '/blog/how-to-transcribe-lecture-recording',
+  // Cluster G — Meeting platform alternatives
+  '/zoom-alternative',
+  '/microsoft-teams-alternative',
+  '/panopto-alternative',
+  '/panopto-transcription',
+  '/webex-alternative',
+  '/webex-transcription',
+  // Cluster H — AI meeting notes alternatives
+  '/notta-alternative',
+  '/tactiq-alternative',
+  '/krisp-alternative',
+  '/granola-alternative',
+  '/hedy-ai-alternative',
+  '/mem-ai-alternative',
+  '/vomo-alternative',
+  '/glean-alternative',
+  '/notability-alternative',
+  // Cluster I — Local Whisper app alternatives
+  '/macwhisper-alternative',
+  '/superwhisper-alternative',
+  '/whisperx-alternative',
+  '/buzz-alternative',
+  '/whisper-notes-alternative',
+  // Cluster J — Caption & video creation alternatives
+  '/capcut-alternative',
+  '/subtitle-edit-alternative',
+  '/vizard-alternative',
+  '/invideo-alternative',
+  '/fliki-alternative',
+  // Cluster K — Native platform tool alternatives
+  '/microsoft-word-transcription-alternative',
+  '/google-docs-voice-typing-alternative',
+  '/youtube-auto-captions-alternative',
+  // Cluster L — API / developer transcription alternatives
+  '/deepgram-alternative',
+  '/speechmatics-alternative',
+  '/elevenlabs-alternative',
+  // Cluster M — Niche transcription services
+  '/genio-alternative',
+  '/scribe-alternative',
+  '/spreaker-alternative',
+  '/headliner-alternative',
+  '/ditto-transcripts-alternative',
+  '/allscribe-alternative',
+  // Cluster N — Video & converter alternatives
+  '/videoproc-alternative',
+  '/movavi-alternative',
+  '/vocallab-alternative',
+  '/skribo-alternative',
 ]
 
 /** Programmatic-only paths (from targets × intents). Submit after core. */
