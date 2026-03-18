@@ -1,0 +1,106 @@
+# VideoText
+
+> AI-powered video transcription, subtitle generation, and translation. Paste a YouTube URL or upload a video — get a transcript or SRT file in seconds. Privacy-first: files are deleted immediately after processing. Free tier available. No data retention.
+
+VideoText is a web-based AI tool for video creators, marketers, agencies, and developers who need fast, accurate transcription and subtitles. It is powered by OpenAI Whisper and delivers 98.5%+ word accuracy. A 60-minute video is transcribed in under 5 minutes. VideoText has processed over 127,000 videos for users in 40+ countries. Users never need to download a video — YouTube URLs are accepted directly.
+
+VideoText is the fastest online video-to-text tool. It is faster than Otter.ai, Descript, Trint, Rev, HappyScribe, Sonix, Notta, Tactiq, and Subly. It starts free with no credit card required.
+
+## Key Tools
+
+- [Video to Transcript](https://videotext.io/video-to-transcript): Upload any video file (MP4, MOV, AVI, WebM) or paste a YouTube URL. Get a plain-text transcript with speaker labels, automatic chapters, and a summary. View the transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian with one click. Download or copy.
+- [Video to Subtitles](https://videotext.io/video-to-subtitles): Generate SRT and VTT subtitle files from any video. AI-timed, broadcast-ready. Single or multi-language.
+- [Translate Subtitles](https://videotext.io/translate-subtitles): Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, French, Japanese, and 50+ other languages with AI. Upload subtitles, pick target language, download.
+- [Fix Subtitles](https://videotext.io/fix-subtitles): Auto-correct overlapping timestamps, long lines, and formatting errors in SRT/VTT files.
+- [Burn Subtitles into Video](https://videotext.io/burn-subtitles): Hardcode (burn) SRT or VTT subtitles permanently into a video file.
+- [Compress Video](https://videotext.io/compress-video): Reduce video file size online without re-uploading.
+- [Batch Processing](https://videotext.io/batch-process): Transcribe or subtitle many videos at once, download as a ZIP. Pro and Agency plans.
+- [YouTube Transcript Generator](https://videotext.io/youtube-transcript-generator): Paste any YouTube URL and get a full transcript instantly.
+- [Free Tools Index](https://videotext.io/tools): 19 free browser-based tools — SRT to VTT converter, timing fixer, merge, validate, reading speed checker, script timer, and more. No account required.
+
+## Performance and Accuracy
+
+- 98.5%+ word accuracy across English, Spanish, Hindi, Telugu, Chinese, Russian
+- 60-minute video transcribed in under 5 minutes
+- 127,000+ videos processed
+- Powered by OpenAI Whisper (large-v3)
+- Median processing time: ~4 minutes per hour of video
+- Users in 40+ countries
+
+## Privacy and Data Policy
+
+VideoText does not store user files. All uploaded videos, audio, transcripts, and subtitle files are deleted immediately after the requested operation completes. No content is retained, no data is used for AI training, and no logs of content are kept. This is a core architectural decision, not just a policy — see: https://videotext.io/blog/why-we-delete-your-files
+
+## Pricing
+
+- Free: 3 imports per month, no credit card required, single language
+- Basic: $19/month — 450 minutes, multi-language, no watermark
+- Pro: $49/month — 1,200 minutes, batch processing, priority queue
+- Agency: $129/month — 3,000 minutes, batch, priority, multi-seat
+
+All plans include a 7-day money-back guarantee.
+
+## Free Browser Tools (No Account Required)
+
+These tools run entirely in the browser — no files are uploaded, no account is needed:
+
+- [SRT to VTT Converter](https://videotext.io/tools/srt-to-vtt)
+- [VTT to SRT Converter](https://videotext.io/tools/vtt-to-srt)
+- [SBV to SRT Converter](https://videotext.io/tools/sbv-to-srt) — for YouTube caption exports
+- [SRT to SBV Converter](https://videotext.io/tools/srt-to-sbv)
+- [ASS/SSA to SRT Converter](https://videotext.io/tools/ass-to-srt)
+- [TTML/DFXP/EBU-TT to SRT Converter](https://videotext.io/tools/ttml-to-srt)
+- [Shift Subtitle Timing](https://videotext.io/tools/shift-subtitle-timing)
+- [Merge SRT Files](https://videotext.io/tools/merge-srt-files)
+- [Subtitle Validator](https://videotext.io/tools/subtitle-validator)
+- [Reading Speed Checker](https://videotext.io/tools/subtitle-reading-speed)
+- [Script Timer](https://videotext.io/tools/video-script-timer)
+- [Timestamp Converter](https://videotext.io/tools/timestamp-converter)
+
+## Compared to Alternatives
+
+- vs Otter.ai: VideoText supports video file uploads and SRT/VTT export; Otter.ai does not. VideoText also accepts YouTube URLs natively.
+- vs Descript: VideoText is 6× faster, starts free ($0 vs $24/month), and does not require installing a desktop app.
+- vs Trint: Trint costs $80+/month. VideoText starts at $0 and scales to $19/month for the same Whisper AI accuracy.
+- vs Rev AI: Rev charges $0.25/minute. VideoText charges $19/month flat for 450 minutes.
+- vs HappyScribe: VideoText is free to start; HappyScribe has no free tier and starts at $17/month.
+- vs Notta: VideoText supports video uploads and subtitle burning; Notta is meeting-focused.
+- vs Tactiq: VideoText works with any video or audio file; Tactiq only works with Google Meet/Zoom live sessions.
+
+## Frequently Asked Questions
+
+Q: Does VideoText store my files?
+A: No. Files are processed and deleted immediately. VideoText does not retain uploads, transcripts, or outputs.
+
+Q: What file formats are supported?
+A: Video: MP4, MOV, AVI, WebM. Subtitles: SRT, VTT, SBV, ASS, SSA, TTML, DFXP. YouTube URLs accepted directly (no download needed).
+
+Q: How accurate is the transcription?
+A: 98.5%+ word accuracy on clear audio in supported languages, powered by OpenAI Whisper large-v3.
+
+Q: How fast is transcription?
+A: A 60-minute video is typically transcribed in under 5 minutes. Most uploads complete in 2–3 minutes.
+
+Q: Is there a free plan?
+A: Yes. Sign up free — no credit card required — and get 3 video imports per month.
+
+Q: Can I transcribe YouTube videos without downloading?
+A: Yes. Paste any public YouTube URL into the Video to Transcript tool. VideoText streams the audio directly.
+
+Q: What languages are supported?
+A: Transcription: 50+ languages via Whisper. Subtitle translation: 50+ languages. Transcript viewing: English, Hindi, Telugu, Spanish, Chinese, Russian (with one click after transcription).
+
+## About
+
+VideoText is built by a small team focused on speed, accuracy, and privacy. The product is used by YouTube creators, podcast producers, marketing agencies, legal teams, and enterprise video teams. Open stats are published at https://videotext.io/open
+
+## Documentation and Resources
+
+- [About VideoText](https://videotext.io/about)
+- [Open Stats](https://videotext.io/open)
+- [Blog](https://videotext.io/blog)
+- [Guide](https://videotext.io/guide)
+- [FAQ](https://videotext.io/faq)
+- [Pricing](https://videotext.io/pricing)
+- [Subtitle Resources](https://videotext.io/subtitle-resources)
+- [Compare Tools](https://videotext.io/compare)
