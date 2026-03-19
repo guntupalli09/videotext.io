@@ -41,6 +41,7 @@ export function trimVideoSegment(options: TrimOptions): Promise<TrimResult> {
         '-t', String(duration),
         '-avoid_negative_ts', 'make_zero',
         '-strict', '-2', // allow Opus in MP4 (experimental in muxer)
+        '-movflags', '+faststart', // ensure moov atom is at the start so ffprobe can read it immediately
       ])
       .output(outputPath)
       .on('stderr', (line: string) => { stderrLines.push(line) })
