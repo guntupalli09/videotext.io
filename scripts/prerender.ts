@@ -17,7 +17,9 @@ import * as path from 'path'
 import { getProgrammaticSeoEntries } from '../client/src/lib/generateSeoPages'
 
 const REPO_ROOT = path.resolve(__dirname, '..')
-const DIST_DIR = path.join(REPO_ROOT, 'client', 'dist')
+// Vercel outputDirectory is the root-level dist/ (build copies client/dist → dist/).
+// Prerender must write here so Vercel serves per-route HTML directly to crawlers.
+const DIST_DIR = path.join(REPO_ROOT, 'dist')
 const REGISTRY_PATH = path.join(REPO_ROOT, 'client', 'src', 'lib', 'seoRegistry.ts')
 const SITE_URL = 'https://videotext.io'
 const SITE_NAME = 'VideoText'
@@ -134,6 +136,386 @@ const STATIC_META: RouteMeta[] = [
     title: `Batch Video to Subtitles — Multiple Videos at Once | ${SITE_NAME}`,
     description:
       'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans.',
+  },
+  // ── Comparison & alternative pages ──────────────────────────────────────────
+  {
+    path: '/compare',
+    title: `VideoText vs Descript, Otter.ai & Trint — Full Comparison | ${SITE_NAME}`,
+    description:
+      'Compare VideoText against Descript, Otter.ai, and Trint on speed, accuracy, pricing, and privacy. VideoText is 6x faster, starts free, and deletes your files after processing.',
+    breadcrumbLabel: 'Compare',
+  },
+  {
+    path: '/descript-alternative',
+    title: `Best Free Descript Alternative for Transcription & Subtitles | ${SITE_NAME}`,
+    description:
+      'Looking for a Descript alternative? VideoText transcribes video 6x faster, starts free ($0 vs $24/mo), and deletes your files. No heavy editor required. Try free.',
+    breadcrumbLabel: 'Descript Alternative',
+    faq: [
+      { q: 'Is VideoText a good free alternative to Descript?', a: 'Yes. VideoText transcribes video to text and generates SRT/VTT subtitles starting free with no credit card required. Unlike Descript, there is no minimum paid plan to get started and no editing software to learn.' },
+      { q: 'How does VideoText compare to Descript for transcription?', a: 'Both use Whisper AI. VideoText processes a 1-hour video in about 2 minutes versus Descript\'s 5–10 minutes. VideoText also supports YouTube URL input and direct subtitle burning, which Descript does not offer in its core workflow.' },
+      { q: 'Can I switch from Descript to VideoText?', a: 'Yes. VideoText supports the same video formats (MP4, MOV, WebM) and exports SRT and VTT subtitle files compatible with any platform. No project migration needed — just upload and go.' },
+    ],
+  },
+  {
+    path: '/otter-ai-alternative',
+    title: `Best Otter.ai Alternative for Video Files & Subtitles | ${SITE_NAME}`,
+    description:
+      "Otter.ai doesn't support video uploads or SRT export. VideoText does — plus YouTube URL input, subtitle translation, and file deletion. Free tier available.",
+    breadcrumbLabel: 'Otter.ai Alternative',
+    faq: [
+      { q: 'What does VideoText do that Otter.ai does not?', a: 'VideoText accepts video file uploads (MP4, MOV, WebM) and YouTube URLs, exports SRT and VTT subtitle files, translates subtitles to 50+ languages, and burns subtitles into video. Otter.ai is audio-only and does not produce subtitle files.' },
+      { q: 'Is VideoText free like Otter.ai?', a: 'Both have free tiers. VideoText free includes 3 full-length imports per month with no per-minute cap. Otter.ai free is limited to 300 monthly transcription minutes with a 30-minute meeting cap.' },
+      { q: 'Can VideoText replace Otter.ai for meeting transcription?', a: 'Yes. Upload a Zoom, Teams, or Meet recording (MP4 or audio) and VideoText produces a transcript with speaker labels, summary, and chapters. Export as plain text or SRT.' },
+    ],
+  },
+  {
+    path: '/trint-alternative',
+    title: `Cheaper Trint Alternative That Starts Free | ${SITE_NAME}`,
+    description:
+      'Trint starts at $80/month. VideoText starts free and scales to $10/month — same Whisper AI accuracy, plus subtitle burning, batch processing, and translation.',
+    breadcrumbLabel: 'Trint Alternative',
+    faq: [
+      { q: 'Why is VideoText cheaper than Trint?', a: 'Trint is priced for enterprise workflows at $80/month. VideoText is built for individuals and small teams — free tier included, paid plans from $10/month for 450 minutes of transcription.' },
+      { q: 'Does VideoText match Trint\'s transcription accuracy?', a: 'Both use OpenAI Whisper. VideoText benchmarks at 98.5% word accuracy on clear audio, comparable to Trint\'s published figures.' },
+      { q: 'Can I export transcripts from VideoText like Trint?', a: 'Yes. VideoText exports plain text (TXT), SRT, VTT, and more on paid plans. Unlike Trint, VideoText also exports subtitle files and can burn captions directly into video.' },
+    ],
+  },
+  {
+    path: '/rev-alternative',
+    title: `Best Rev Alternative with Flat-Rate Pricing | ${SITE_NAME}`,
+    description:
+      'Rev AI charges $0.25/minute. VideoText starts free and costs $10/month for 450 minutes. Same AI accuracy, plus subtitle export, translation, and YouTube support.',
+    breadcrumbLabel: 'Rev Alternative',
+    faq: [
+      { q: 'How is VideoText pricing different from Rev?', a: 'Rev AI charges per-minute ($0.25/min). A 450-minute month costs $112.50 on Rev. VideoText\'s Basic plan covers 450 minutes for $10/month flat — no per-minute billing.' },
+      { q: 'Does VideoText support YouTube transcription like Rev?', a: 'Yes. Paste any public YouTube URL directly into VideoText — no download required. Rev does not offer YouTube URL input.' },
+      { q: 'Can VideoText generate subtitles like Rev?', a: 'Yes. VideoText generates SRT and VTT subtitle files from any video. You can also translate subtitles to 50+ languages and burn them into the video permanently.' },
+    ],
+  },
+  {
+    path: '/happyscribe-alternative',
+    title: `Best Free HappyScribe Alternative – Transcription & Subtitles | ${SITE_NAME}`,
+    description:
+      'HappyScribe starts at $17/month with no free tier and no YouTube URL input. VideoText is free to start — upload any video or paste a YouTube link, get SRT, translate, and burn subtitles.',
+    breadcrumbLabel: 'HappyScribe Alternative',
+    faq: [
+      { q: 'Does VideoText have a free tier unlike HappyScribe?', a: 'Yes. VideoText offers 3 free imports per month with no credit card required. HappyScribe has no free tier — it starts at $17/month.' },
+      { q: 'Can VideoText transcribe YouTube videos like HappyScribe?', a: 'Yes. Paste a YouTube URL directly into VideoText — no download needed. HappyScribe requires you to download the video first and upload it manually.' },
+      { q: 'Does VideoText support subtitle translation like HappyScribe?', a: 'Yes. VideoText translates SRT and VTT subtitle files to 50+ languages. It also burns translated subtitles into video, which HappyScribe does not offer.' },
+    ],
+  },
+  {
+    path: '/sonix-alternative',
+    title: `Best Free Sonix Alternative – No Per-Minute Fees | ${SITE_NAME}`,
+    description:
+      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free and is $10/month flat — Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing.',
+    breadcrumbLabel: 'Sonix Alternative',
+    faq: [
+      { q: 'How does VideoText pricing compare to Sonix?', a: 'Sonix charges $22/month plus $0.10/minute for any overage. VideoText is $10/month for 450 minutes flat — no per-minute fees, ever.' },
+      { q: 'Is VideoText as accurate as Sonix?', a: 'Both use Whisper AI. VideoText benchmarks at 98.5% word accuracy on clear audio, on par with Sonix\'s published accuracy.' },
+      { q: 'Does VideoText support YouTube URL input like Sonix?', a: 'Yes. Paste any YouTube URL directly into VideoText. Sonix requires manual video download and upload. VideoText streams the audio directly from YouTube — no download needed.' },
+    ],
+  },
+  {
+    path: '/easyscribe-alternative',
+    title: `Best EasyScribe Alternative for Video & Subtitles | ${SITE_NAME}`,
+    description:
+      'EasyScribe only does basic audio transcription. VideoText handles video files, YouTube URLs, SRT subtitle export, 50+ language translation, and subtitle burning. Free tier available.',
+    breadcrumbLabel: 'EasyScribe Alternative',
+    faq: [
+      { q: 'What does VideoText offer that EasyScribe does not?', a: 'VideoText adds YouTube URL transcription, SRT and VTT subtitle export, subtitle translation to 50+ languages, subtitle burning into video, and batch processing. EasyScribe is limited to basic audio file transcription.' },
+      { q: 'Is VideoText free like EasyScribe?', a: 'Yes. VideoText has a free tier with 3 imports per month and no credit card required. Paid plans start at $10/month.' },
+    ],
+  },
+  {
+    path: '/notta-alternative',
+    title: `Best Free Notta Alternative for Video Files & Subtitles | ${SITE_NAME}`,
+    description:
+      "Notta's free plan caps files at 3 minutes. VideoText has no per-file limit — transcribe full-length videos, export SRT/VTT, translate to 50+ languages, and burn subtitles. Free tier available.",
+    breadcrumbLabel: 'Notta Alternative',
+    faq: [
+      { q: 'What is a good free Notta alternative for video transcription?', a: "VideoText is a strong free Notta alternative if you need to transcribe video files (MP4, MOV, WebM) or YouTube videos, or if you need SRT/VTT subtitle exports. Notta's free plan is limited to 120 minutes per month with a 3-minute file cap — VideoText offers 3 full-length imports per month with no per-file minute limit." },
+      { q: 'How does VideoText compare to Notta for video files?', a: 'VideoText accepts MP4, MOV, WebM, and AVI video uploads plus YouTube URLs. Notta is primarily a meeting transcription tool — video file support is limited on lower plans and there is no YouTube URL input.' },
+      { q: 'Can VideoText export SRT subtitle files unlike Notta?', a: 'Yes. VideoText exports SRT and VTT subtitle files on all plans including free. Notta does not offer subtitle file export — it exports transcripts only as text documents.' },
+    ],
+  },
+  // ── About & transparency ─────────────────────────────────────────────────────
+  {
+    path: '/about',
+    title: `About VideoText — AI Transcription Built for Speed & Privacy | ${SITE_NAME}`,
+    description:
+      'VideoText transcribes video to text in under 5 minutes with 98.5%+ word accuracy. Powered by OpenAI Whisper. Privacy-first: files deleted after processing. 127,000+ videos transcribed. Free tier available.',
+    breadcrumbLabel: 'About',
+  },
+  {
+    path: '/open',
+    title: `Open Stats — Accuracy, Speed & Transparency | ${SITE_NAME}`,
+    description:
+      'VideoText publishes real processing stats: 127,000+ videos transcribed, 98.5% word accuracy benchmarks, median processing times, and full tech stack. Updated monthly.',
+    breadcrumbLabel: 'Open Stats',
+  },
+  // ── Blog posts ───────────────────────────────────────────────────────────────
+  {
+    path: '/blog/how-to-transcribe-zoom-recording',
+    title: `How to Transcribe a Zoom Recording: Step-by-Step Guide | ${SITE_NAME}`,
+    description:
+      'Zoom saves recordings as MP4. Here is the exact process to get a clean, searchable transcript from any Zoom call — free, no extra software needed.',
+    breadcrumbLabel: 'Transcribe Zoom Recording',
+  },
+  {
+    path: '/blog/srt-vs-vtt-subtitle-formats',
+    title: `SRT vs VTT: Which Subtitle Format Should You Use? | ${SITE_NAME}`,
+    description:
+      'SRT and VTT are both plain-text subtitle formats. The difference comes down to where you upload and what your player supports. Quick guide.',
+    breadcrumbLabel: 'SRT vs VTT',
+  },
+  {
+    path: '/blog/how-to-add-subtitles-to-video-free',
+    title: `How to Add Subtitles to Any Video for Free | ${SITE_NAME}`,
+    description:
+      'Generate subtitles automatically, fix timing issues, then burn them into the video permanently — all free, no desktop software required.',
+    breadcrumbLabel: 'Add Subtitles Free',
+  },
+  {
+    path: '/blog/best-free-transcription-tools-2026',
+    title: `Best Free Transcription Tools in 2026: An Honest Comparison | ${SITE_NAME}`,
+    description:
+      'We compared Otter.ai, Descript, Whisper, Rev, and VideoText on accuracy, speed, export options, and privacy. Including our own limitations.',
+    breadcrumbLabel: 'Best Free Transcription Tools',
+  },
+  {
+    path: '/blog/how-we-handle-support',
+    title: `How We Handle Support: Honest, Fast, No Ticket Queue | ${SITE_NAME}`,
+    description:
+      'Every support email is read by the person who built the product. Here is what that means in practice.',
+    breadcrumbLabel: 'How We Handle Support',
+  },
+  {
+    path: '/blog/why-we-delete-your-files',
+    title: `Why We Delete Your Files — And Why That Makes Us Faster | ${SITE_NAME}`,
+    description:
+      'Privacy-first design is not just an ethical choice — it is an architectural one that makes everything run leaner and faster.',
+    breadcrumbLabel: 'Why We Delete Your Files',
+  },
+  {
+    path: '/blog/processing-speed-breakdown',
+    title: `How VideoText Processes Video: A Plain-English Pipeline Breakdown | ${SITE_NAME}`,
+    description:
+      'What actually happens between "upload complete" and your subtitle file appearing — and why VideoText is faster than most alternatives.',
+    breadcrumbLabel: 'Processing Speed Breakdown',
+  },
+  {
+    path: '/blog/batch-subtitles-for-creators',
+    title: `Batch Subtitles: Caption 20 Videos at Once and Download a ZIP | ${SITE_NAME}`,
+    description:
+      'The batch tool was built for creators and agencies who need to process a week of content in one session without babysitting each upload.',
+    breadcrumbLabel: 'Batch Subtitles for Creators',
+  },
+  {
+    path: '/blog/how-to-get-youtube-transcript',
+    title: `How to Get a YouTube Video Transcript (Free, Any Video) | ${SITE_NAME}`,
+    description:
+      "Three ways to get a transcript from any YouTube video — using VideoText, YouTube's own CC export, or the API. Which method is best for your use case.",
+    breadcrumbLabel: 'Get YouTube Transcript',
+  },
+  {
+    path: '/blog/how-to-transcribe-audio-to-text-free',
+    title: `How to Transcribe Audio to Text for Free in 2026 | ${SITE_NAME}`,
+    description:
+      'The fastest free methods to convert audio recordings to text: MP3, M4A, WAV. Step-by-step, including accuracy tips and format options.',
+    breadcrumbLabel: 'Transcribe Audio to Text Free',
+  },
+  {
+    path: '/blog/how-to-translate-subtitles',
+    title: `How to Translate Subtitles to Any Language (SRT & VTT) | ${SITE_NAME}`,
+    description:
+      'Translate an SRT or VTT subtitle file to Spanish, Arabic, Hindi, French, or 50+ other languages. Keep the original timestamps intact.',
+    breadcrumbLabel: 'How to Translate Subtitles',
+  },
+  {
+    path: '/blog/best-transcription-software-2026',
+    title: `Best Transcription Software in 2026: Ranked by Speed, Accuracy & Price | ${SITE_NAME}`,
+    description:
+      'We tested 8 transcription tools — VideoText, Otter.ai, Descript, Trint, Rev, Whisper, and more. Here is which tool wins for each use case.',
+    breadcrumbLabel: 'Best Transcription Software 2026',
+  },
+  {
+    path: '/blog/best-video-captioning-tools-2026',
+    title: `Best Video Captioning Tools for Content Creators in 2026 | ${SITE_NAME}`,
+    description:
+      'Auto-captions, burned-in subtitles, translated captions — a practical guide to the best tools for YouTube, Instagram, TikTok, and Reels.',
+    breadcrumbLabel: 'Best Video Captioning Tools 2026',
+  },
+  {
+    path: '/blog/how-to-transcribe-podcast-episode',
+    title: `How to Transcribe a Podcast Episode (Free, Any Format) | ${SITE_NAME}`,
+    description:
+      'How to transcribe a podcast episode from MP3 or M4A in minutes. Free tool, 98.5% accuracy, speaker labels, and show notes export included.',
+    breadcrumbLabel: 'Transcribe Podcast Episode',
+  },
+  {
+    path: '/blog/how-to-add-captions-youtube-video',
+    title: `How to Add Captions to a YouTube Video (The Right Way) | ${SITE_NAME}`,
+    description:
+      'How to add captions to a YouTube video the right way: upload an SRT file instead of relying on auto-captions. Better accuracy, better SEO.',
+    breadcrumbLabel: 'Add Captions to YouTube Video',
+  },
+  // ── Free client-side tools ───────────────────────────────────────────────────
+  {
+    path: '/tools',
+    title: `Free Video & Subtitle Tools — No Account Needed | ${SITE_NAME}`,
+    description:
+      'Free browser-based tools for video creators: SRT to VTT converter, subtitle validator, reading speed checker, script timer, bitrate calculator, and more. No upload, no account.',
+    breadcrumbLabel: 'Free Tools',
+  },
+  {
+    path: '/tools/srt-to-vtt',
+    title: `SRT to VTT Converter — Free Online | ${SITE_NAME}`,
+    description:
+      'Convert SRT subtitle files to WebVTT format instantly. Paste or upload your .srt file and download a ready-to-use .vtt file. Free, no account, runs in your browser.',
+    breadcrumbLabel: 'SRT to VTT',
+  },
+  {
+    path: '/tools/vtt-to-srt',
+    title: `VTT to SRT Converter — Free Online | ${SITE_NAME}`,
+    description:
+      'Convert WebVTT (.vtt) subtitle files to SubRip (.srt) format. Free, browser-based, nothing uploaded to any server.',
+    breadcrumbLabel: 'VTT to SRT',
+  },
+  {
+    path: '/tools/shift-subtitle-timing',
+    title: `Shift Subtitle Timing — Delay or Advance Subtitles Free | ${SITE_NAME}`,
+    description:
+      'Fix out-of-sync subtitles by shifting all timestamps forward or backward by any number of seconds. Works with SRT and VTT. Free, browser-based.',
+    breadcrumbLabel: 'Shift Subtitle Timing',
+  },
+  {
+    path: '/tools/merge-srt-files',
+    title: `Merge SRT Files — Combine Two Subtitle Files Free | ${SITE_NAME}`,
+    description:
+      'Combine two SRT or VTT subtitle files into one sorted, renumbered file. Free, runs in browser, no account required.',
+    breadcrumbLabel: 'Merge SRT Files',
+  },
+  {
+    path: '/tools/srt-to-text',
+    title: `SRT to Plain Text — Extract Text from Subtitles Free | ${SITE_NAME}`,
+    description:
+      'Strip timing codes and indices from SRT or VTT files and extract clean plain text. Perfect for repurposing subtitles as blog posts or transcripts. Free.',
+    breadcrumbLabel: 'SRT to Text',
+  },
+  {
+    path: '/tools/subtitle-validator',
+    title: `Subtitle Validator — Check SRT & VTT Files Free | ${SITE_NAME}`,
+    description:
+      'Validate SRT and VTT files for overlapping timestamps, empty cues, long lines, and reading speed errors. Instant report, free, no upload needed.',
+    breadcrumbLabel: 'Subtitle Validator',
+  },
+  {
+    path: '/tools/subtitle-reading-speed',
+    title: `Subtitle Reading Speed Checker — CPS Analyzer | ${SITE_NAME}`,
+    description:
+      'Check every subtitle cue for characters-per-second against Netflix (17 CPS), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
+    breadcrumbLabel: 'Reading Speed Checker',
+  },
+  {
+    path: '/tools/subtitle-character-checker',
+    title: `Subtitle Character Limit Checker — Netflix, YouTube & BBC | ${SITE_NAME}`,
+    description:
+      'Check if subtitle lines meet Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) character limits. Instant pass/fail report per cue. Free.',
+    breadcrumbLabel: 'Character Limit Checker',
+  },
+  {
+    path: '/tools/subtitle-word-counter',
+    title: `Subtitle Word Counter — Count Words in SRT & VTT Files | ${SITE_NAME}`,
+    description:
+      'Count words, characters, and get speaking rate stats (WPM, CPS) from any SRT or VTT subtitle file. Free, browser-based, instant results.',
+    breadcrumbLabel: 'Subtitle Word Counter',
+  },
+  {
+    path: '/tools/video-script-timer',
+    title: `Video Script Timer — How Long Will My Video Be? | ${SITE_NAME}`,
+    description:
+      'Paste your video script and instantly see how long the video will be at different speaking rates. Free tool for YouTube, ads, shorts, and explainers.',
+    breadcrumbLabel: 'Video Script Timer',
+  },
+  {
+    path: '/tools/words-per-minute-calculator',
+    title: `Words Per Minute Calculator — Speaking Rate Checker | ${SITE_NAME}`,
+    description:
+      'Calculate your speaking rate in words per minute (WPM). Enter text and recording duration, or word count and time. Instant result, free.',
+    breadcrumbLabel: 'Words Per Minute Calculator',
+  },
+  {
+    path: '/tools/video-bitrate-calculator',
+    title: `Video Bitrate Calculator — File Size & Quality Estimator | ${SITE_NAME}`,
+    description:
+      'Calculate the ideal video bitrate for a target file size, or estimate how large your video will be at a given bitrate. Free online calculator.',
+    breadcrumbLabel: 'Video Bitrate Calculator',
+  },
+  {
+    path: '/tools/aspect-ratio-calculator',
+    title: `Video Aspect Ratio Calculator — 16:9, 9:16, 1:1 & More | ${SITE_NAME}`,
+    description:
+      'Calculate video aspect ratios, find missing dimensions for 16:9, 9:16, 4:3, and custom ratios. Free for YouTube, TikTok, Instagram, and more.',
+    breadcrumbLabel: 'Aspect Ratio Calculator',
+  },
+  {
+    path: '/tools/timestamp-converter',
+    title: `Timestamp Converter — Seconds to HH:MM:SS, SRT, VTT & Timecode | ${SITE_NAME}`,
+    description:
+      'Convert timestamps between seconds, HH:MM:SS, SRT format, VTT format, and SMPTE timecode. Instant, free, no account needed.',
+    breadcrumbLabel: 'Timestamp Converter',
+  },
+  {
+    path: '/tools/video-metadata-viewer',
+    title: `Video Metadata Viewer — Check Video Info Free | ${SITE_NAME}`,
+    description:
+      'View video file details — duration, resolution, aspect ratio, and file size — locally in your browser. Nothing is uploaded. Free tool.',
+    breadcrumbLabel: 'Video Metadata Viewer',
+  },
+  {
+    path: '/tools/sbv-to-srt',
+    title: `SBV to SRT Converter — Convert YouTube Captions Free | ${SITE_NAME}`,
+    description:
+      'Convert YouTube SBV caption files to standard SRT format instantly. Free, browser-based, nothing uploaded to any server. Works with all YouTube .sbv downloads.',
+    breadcrumbLabel: 'SBV to SRT',
+  },
+  {
+    path: '/tools/srt-to-sbv',
+    title: `SRT to SBV Converter — Convert Subtitles to YouTube Format Free | ${SITE_NAME}`,
+    description:
+      "Convert SRT subtitle files to YouTube's native SBV format. Free, browser-based, instant download. No account required.",
+    breadcrumbLabel: 'SRT to SBV',
+  },
+  {
+    path: '/tools/ass-to-srt',
+    title: `ASS / SSA to SRT Converter — Strip Styling, Keep Dialogue Free | ${SITE_NAME}`,
+    description:
+      'Convert ASS or SSA subtitle files to plain SRT. Strips all styling tags and positioning codes, preserves dialogue text and timing. Free, runs in your browser.',
+    breadcrumbLabel: 'ASS to SRT',
+  },
+  {
+    path: '/tools/ttml-to-srt',
+    title: `TTML to SRT Converter — Convert DFXP & EBU-TT Subtitles Free | ${SITE_NAME}`,
+    description:
+      'Convert TTML, DFXP, or EBU-TT subtitle files to SRT format. Used for Netflix, broadcast, and enterprise video workflows. Free, browser-based.',
+    breadcrumbLabel: 'TTML to SRT',
+  },
+  // ── Hub pages ────────────────────────────────────────────────────────────────
+  {
+    path: '/subtitle-tools',
+    title: `Free Subtitle Tools for Creators — SRT, VTT, Timing & Validation | ${SITE_NAME}`,
+    description:
+      'Convert SRT to VTT, shift subtitle timing, validate files, check reading speed, and more. All tools are free, browser-based, and require no account.',
+    breadcrumbLabel: 'Subtitle Tools',
+  },
+  {
+    path: '/subtitle-resources',
+    title: `Subtitle Resources & Standards — Formats, Netflix Rules, CPS Limits | ${SITE_NAME}`,
+    description:
+      'Subtitle format specs, Netflix delivery requirements, platform character limits, reading speed standards, and timing rules — all in one reference guide.',
+    breadcrumbLabel: 'Subtitle Resources',
   },
 ]
 
@@ -320,19 +702,38 @@ function injectHead(template: string, meta: RouteMeta): string {
   const extraJsonLd: object[] = []
 
   if (meta.path !== '/') {
-    extraJsonLd.push({
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: meta.breadcrumbLabel ?? meta.title,
-          item: canonicalUrl,
-        },
-      ],
-    })
+    const isBlogPost = meta.path.startsWith('/blog/') && meta.path !== '/blog'
+    const isToolPage = meta.path.startsWith('/tools/') && meta.path !== '/tools'
+    if (isBlogPost) {
+      extraJsonLd.push({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_URL}/blog` },
+          { '@type': 'ListItem', position: 3, name: meta.breadcrumbLabel ?? meta.title, item: canonicalUrl },
+        ],
+      })
+    } else if (isToolPage) {
+      extraJsonLd.push({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+          { '@type': 'ListItem', position: 2, name: 'Free Tools', item: `${SITE_URL}/tools` },
+          { '@type': 'ListItem', position: 3, name: meta.breadcrumbLabel ?? meta.title, item: canonicalUrl },
+        ],
+      })
+    } else {
+      extraJsonLd.push({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+          { '@type': 'ListItem', position: 2, name: meta.breadcrumbLabel ?? meta.title, item: canonicalUrl },
+        ],
+      })
+    }
   }
 
   if (meta.faq && meta.faq.length > 0) {

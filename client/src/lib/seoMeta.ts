@@ -181,6 +181,11 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'EasyScribe only does basic audio transcription. VideoText handles video files, YouTube URLs, SRT subtitle export, 50+ language translation, and subtitle burning. Free tier available.',
   },
+  '/notta-alternative': {
+    title: 'Best Free Notta Alternative for Video Files & Subtitles | VideoText',
+    description:
+      "Notta's free plan caps files at 3 minutes. VideoText has no per-file limit — transcribe full-length videos, export SRT/VTT, translate to 50+ languages, and burn subtitles. Free tier available.",
+  },
   '/about': {
     title: 'About VideoText — AI Transcription Built for Speed & Privacy',
     description:
@@ -316,6 +321,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/happyscribe-alternative': [{ name: 'Home', path: '/' }, { name: 'HappyScribe Alternative', path: '/happyscribe-alternative' }],
   '/sonix-alternative': [{ name: 'Home', path: '/' }, { name: 'Sonix Alternative', path: '/sonix-alternative' }],
   '/easyscribe-alternative': [{ name: 'Home', path: '/' }, { name: 'EasyScribe Alternative', path: '/easyscribe-alternative' }],
+  '/notta-alternative': [{ name: 'Home', path: '/' }, { name: 'Notta Alternative', path: '/notta-alternative' }],
   '/open': [{ name: 'Home', path: '/' }, { name: 'Open Stats', path: '/open' }],
   '/blog/best-transcription-software-2026': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Best Transcription Software 2026', path: '/blog/best-transcription-software-2026' }],
   '/blog/best-video-captioning-tools-2026': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Best Video Captioning Tools 2026', path: '/blog/best-video-captioning-tools-2026' }],
