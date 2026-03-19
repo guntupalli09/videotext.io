@@ -151,7 +151,7 @@ function AppSeo() {
     <Seo
       title={meta.title}
       description={meta.description}
-      canonicalPath={is404 ? '/' : pathname}
+      canonicalPath={pathname}
       jsonLd={jsonLd}
       noindex={is404}
       articleMeta={articleMeta}

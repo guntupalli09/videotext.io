@@ -16,6 +16,7 @@
     }
   ],
   "routes": [
+    { "src": "/otter-alternative", "dest": "/otter-ai-alternative", "status": 301 },
     { "handle": "filesystem" },
     { "src": "/((?!.*\\.).*)", "dest": "/index.html" }
   ]

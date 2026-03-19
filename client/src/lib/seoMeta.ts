@@ -72,10 +72,6 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans. Multi-language optional.',
   },
-  '/feedback': {
-    title: 'Feedback — VideoText',
-    description: 'View user feedback submitted from the Tex panel.',
-  },
   '/blog': {
     title: 'Blog — Engineering, Privacy & Product | VideoText',
     description:
@@ -346,7 +342,6 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/tools/srt-to-sbv': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'SRT to SBV', path: '/tools/srt-to-sbv' }],
   '/tools/ass-to-srt': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'ASS to SRT', path: '/tools/ass-to-srt' }],
   '/tools/ttml-to-srt': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'TTML to SRT', path: '/tools/ttml-to-srt' }],
-  '/feedback': [{ name: 'Home', path: '/' }, { name: 'Feedback', path: '/feedback' }],
   '/blog/how-to-transcribe-podcast-episode': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Transcribe Podcast Episode', path: '/blog/how-to-transcribe-podcast-episode' }],
   '/blog/how-to-add-captions-youtube-video': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Add Captions to YouTube Video', path: '/blog/how-to-add-captions-youtube-video' }],
   '/subtitle-tools': [{ name: 'Home', path: '/' }, { name: 'Subtitle Tools', path: '/subtitle-tools' }],
