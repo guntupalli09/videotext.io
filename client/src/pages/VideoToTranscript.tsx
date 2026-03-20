@@ -1759,11 +1759,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 }
               }}
               onProcessAnother={handleProcessAnother}
-              onGenerateSubtitles={() => {
-                if (segmentsForExport?.length) workflow.setSrt(segmentsToSrt(segmentsForExport))
-                if (selectedFile) workflow.setVideo(selectedFile)
-                navigate('/video-to-subtitles', { state: { useWorkflowVideo: true } })
-              }}
+
               onExportSrt={handleExportSrt}
               onExportVtt={handleExportVtt}
               onCopy={handleCopyToClipboard}
@@ -2145,8 +2141,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Transcript</h3>
-                <div className="flex flex-wrap items-center gap-3 mb-4">
-                  <div className="flex-1 min-w-[200px] relative">
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                  <div className="flex-1 min-w-[160px] relative">
                     <input
                       type="text"
                       placeholder="Search in transcript"
@@ -2166,6 +2162,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   )}
                   <button
                     type="button"
+                    onClick={handleCopyToClipboard}
+                    className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
+                  >
+                    Copy
+                  </button>
+                  <button
+                    type="button"
                     onClick={handleExportSrt}
                     className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
                   >
@@ -2177,15 +2180,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
                   >
                     VTT
-                  </button>
-                </div>
-                <div className="flex items-center gap-3 mb-4">
-                  <button
-                    type="button"
-                    onClick={handleCopyToClipboard}
-                    className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
-                  >
-                    Copy
                   </button>
                 </div>
                 <div ref={transcriptScrollRef} className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-[15px] text-gray-700 dark:text-gray-300 leading-[1.75] tracking-[0.01em]">
@@ -2350,35 +2344,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               </div>
             </div>
 
-            {(segmentsForExport?.length ?? 0) > 0 && (
-              <div className="surface-card p-6 mb-8">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                  <Subtitles className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
-                  Generate subtitles from this transcript
-                </h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  Same timestamps, no re-upload.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={handleExportSrt}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-violet-600 text-white hover:bg-violet-700 transition-colors"
-                  >
-                    <FileDown className="h-4 w-4" strokeWidth={1.5} />
-                    Download SRT
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleExportVtt}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
-                  >
-                    <FileDown className="h-4 w-4" strokeWidth={1.5} />
-                    Download VTT
-                  </button>
-                </div>
-              </div>
-            )}
 
             <CrossToolSuggestions
               workflowHint="Your last file is pre-filled on the next tool."

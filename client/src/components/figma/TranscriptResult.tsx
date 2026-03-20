@@ -66,42 +66,47 @@ export function TranscriptResult({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full py-5 sm:py-8 px-1 flex flex-col sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:text-left text-center rounded-2xl bg-white/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 shadow-sm"
+        className="w-full py-4 sm:py-5 px-5 sm:px-6 flex items-center justify-between gap-4 rounded-2xl bg-white/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 shadow-sm"
       >
-        <div className="flex flex-col sm:flex-row items-center sm:items-center gap-3 sm:gap-4 min-w-0 flex-1">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-            className="shrink-0 inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-green-100 dark:bg-green-900/30"
+            className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30"
           >
-            <Check className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 dark:text-green-400" />
+            <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
           </motion.div>
           <div className="min-w-0 flex-1">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">Your file is ready!</h2>
-            <p className="text-gray-600 dark:text-gray-400 truncate max-w-full" title={fileName}>{fileName}</p>
-            <p className="text-xs sm:text-sm text-purple-600 dark:text-purple-400 font-medium mt-1">Processed in {processingTime} ⚡</p>
-            {fileSize && (
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                {fileSize}
-              </p>
-            )}
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white leading-tight">Transcript ready</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-full mt-0.5" title={fileName}>{fileName}</p>
+            <p className="text-xs text-purple-600 dark:text-purple-400 font-medium mt-0.5">Processed in {processingTime} ⚡</p>
+            {fileSize && <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{fileSize}</p>}
           </div>
         </div>
+        {onProcessAnother && (
+          <button
+            type="button"
+            onClick={onProcessAnother}
+            className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors whitespace-nowrap"
+          >
+            + New file
+          </button>
+        )}
       </motion.div>
 
       {onDownload && (
         <motion.button
           type="button"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
           onClick={onDownload}
-          className="w-full py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
+          className="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 text-sm"
         >
-          <Download className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
-          Download
+          <Download className="w-4 h-4 shrink-0" />
+          Download transcript
         </motion.button>
       )}
 
@@ -119,17 +124,6 @@ export function TranscriptResult({
         </motion.div>
       )}
 
-      {onProcessAnother && (
-        <div className="text-center">
-          <button
-            type="button"
-            onClick={onProcessAnother}
-            className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm font-medium transition-colors"
-          >
-            Process another file
-          </button>
-        </div>
-      )}
 
       {onGenerateSubtitles != null && (
         <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-purple-200 dark:border-purple-800">
