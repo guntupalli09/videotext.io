@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, FileDown, Subtitles, Film, Minimize2, Lock, Play, Pause } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, FileDown, Subtitles, Film, Minimize2, Lock, Play, Pause, Volume2, VolumeX } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
@@ -124,6 +124,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [audioIsPlaying, setAudioIsPlaying] = useState(false)
   const [audioDuration, setAudioDuration] = useState(0)
   const [audioObjectUrl, setAudioObjectUrl] = useState<string | null>(null)
+  const [audioVolume, setAudioVolume] = useState(1)
+  const [audioMuted, setAudioMuted] = useState(false)
+  const [audioSpeed, setAudioSpeed] = useState(1)
   const rehydratePollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const activeUploadPollRef = useRef<(() => void) | null>(null)
   const pollConsecutiveNetworkErrorsRef = useRef(0)
@@ -2185,64 +2188,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     Copy
                   </button>
                 </div>
-                {audioObjectUrl && (
-                  <div className="flex items-center gap-3 mb-3 px-3 py-2 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                    <audio
-                      ref={audioRef}
-                      src={audioObjectUrl}
-                      onLoadedMetadata={() => {
-                        const dur = audioRef.current?.duration ?? 0
-                        setAudioDuration(dur)
-                        if (scrubberRef.current) scrubberRef.current.max = String(dur)
-                      }}
-                      onTimeUpdate={() => {
-                        const t = audioRef.current?.currentTime ?? 0
-                        audioPlaybackTimeRef.current = t
-                        // Direct DOM writes — no React re-render
-                        if (scrubberRef.current) scrubberRef.current.value = String(t)
-                        if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
-                        // Only setState when the active segment changes (infrequent)
-                        const segs = result?.segments
-                        if (segs?.length) {
-                          let newIdx = -1
-                          for (let i = segs.length - 1; i >= 0; i--) {
-                            if (t >= segs[i].start) { newIdx = i; break }
-                          }
-                          setActiveSegIdx(prev => prev === newIdx ? prev : newIdx)
-                        }
-                      }}
-                      onPlay={() => setAudioIsPlaying(true)}
-                      onPause={() => setAudioIsPlaying(false)}
-                      onEnded={() => setAudioIsPlaying(false)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => { if (!audioRef.current) return; audioIsPlaying ? audioRef.current.pause() : audioRef.current.play() }}
-                      className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-violet-600 hover:bg-violet-700 text-white transition-colors"
-                    >
-                      {audioIsPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5 ml-0.5" />}
-                    </button>
-                    <input
-                      ref={scrubberRef}
-                      type="range"
-                      min={0}
-                      max={audioDuration || 100}
-                      step={0.1}
-                      defaultValue={0}
-                      onChange={(e) => {
-                        const t = Number(e.target.value)
-                        audioPlaybackTimeRef.current = t
-                        if (audioRef.current) audioRef.current.currentTime = t
-                        if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
-                      }}
-                      className="flex-1 h-1 accent-violet-600 cursor-pointer"
-                    />
-                    <span ref={timeDisplayRef} className="shrink-0 text-xs font-mono text-gray-500 dark:text-gray-400 w-10 text-right">
-                      0:00
-                    </span>
-                  </div>
-                )}
-                <div ref={transcriptScrollRef} className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                <div ref={transcriptScrollRef} className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-[15px] text-gray-700 dark:text-gray-300 leading-[1.75] tracking-[0.01em]">
                   {transcriptEditMode && editableSegments?.length ? (
                     <div className="space-y-3">
                       {editableSegments.map((seg, i) => (
@@ -2260,7 +2206,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   ) : result?.segments?.length && !translationLanguage ? (
                     <div>
                       {segmentParagraphs.map((group, pi) => (
-                        <p key={pi} className="mb-4 leading-relaxed">
+                        <p key={pi} className="mb-5">
                           {group.map(({ seg, globalIndex }) => {
                             const isActive = globalIndex === activeSegIdx
                             return (
@@ -2293,6 +2239,114 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <div className="whitespace-pre-wrap">{displayTranscript || fullTranscript || transcriptPreview || ''}</div>
                   )}
                 </div>
+
+                {/* Audio player — below transcript */}
+                {audioObjectUrl && (
+                  <div className="mt-4 px-4 pt-3 pb-3 bg-gray-100 dark:bg-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <audio
+                      ref={audioRef}
+                      src={audioObjectUrl}
+                      onLoadedMetadata={() => {
+                        const dur = audioRef.current?.duration ?? 0
+                        setAudioDuration(dur)
+                        if (scrubberRef.current) scrubberRef.current.max = String(dur)
+                      }}
+                      onTimeUpdate={() => {
+                        const t = audioRef.current?.currentTime ?? 0
+                        audioPlaybackTimeRef.current = t
+                        if (scrubberRef.current) scrubberRef.current.value = String(t)
+                        if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
+                        const segs = result?.segments
+                        if (segs?.length) {
+                          let newIdx = -1
+                          for (let i = segs.length - 1; i >= 0; i--) {
+                            if (t >= segs[i].start) { newIdx = i; break }
+                          }
+                          setActiveSegIdx(prev => prev === newIdx ? prev : newIdx)
+                        }
+                      }}
+                      onPlay={() => setAudioIsPlaying(true)}
+                      onPause={() => setAudioIsPlaying(false)}
+                      onEnded={() => setAudioIsPlaying(false)}
+                    />
+                    {/* Play + scrubber + time */}
+                    <div className="flex items-center gap-3 mb-2.5">
+                      <button
+                        type="button"
+                        onClick={() => { if (!audioRef.current) return; audioIsPlaying ? audioRef.current.pause() : audioRef.current.play() }}
+                        className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 hover:bg-violet-700 active:scale-95 text-white transition-all"
+                      >
+                        {audioIsPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
+                      </button>
+                      <input
+                        ref={scrubberRef}
+                        type="range"
+                        min={0}
+                        max={audioDuration || 100}
+                        step={0.1}
+                        defaultValue={0}
+                        onChange={(e) => {
+                          const t = Number(e.target.value)
+                          audioPlaybackTimeRef.current = t
+                          if (audioRef.current) audioRef.current.currentTime = t
+                          if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
+                        }}
+                        className="flex-1 h-1.5 accent-violet-600 cursor-pointer"
+                      />
+                      <span ref={timeDisplayRef} className="shrink-0 text-xs font-mono text-gray-500 dark:text-gray-400 w-10 text-right">
+                        0:00
+                      </span>
+                    </div>
+                    {/* Volume + speed */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        title={audioMuted ? 'Unmute' : 'Mute'}
+                        onClick={() => {
+                          const muted = !audioMuted
+                          setAudioMuted(muted)
+                          if (audioRef.current) audioRef.current.muted = muted
+                        }}
+                        className="shrink-0 text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                      >
+                        {audioMuted || audioVolume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                      </button>
+                      <input
+                        type="range"
+                        min={0}
+                        max={1}
+                        step={0.05}
+                        value={audioVolume}
+                        onChange={(e) => {
+                          const v = Number(e.target.value)
+                          setAudioVolume(v)
+                          if (audioRef.current) {
+                            audioRef.current.volume = v
+                            audioRef.current.muted = v === 0
+                          }
+                          if (v > 0 && audioMuted) setAudioMuted(false)
+                        }}
+                        className="w-20 h-1.5 accent-violet-600 cursor-pointer"
+                      />
+                      <div className="ml-auto flex items-center gap-2">
+                        <span className="text-xs text-gray-400 dark:text-gray-500 select-none">Speed</span>
+                        <select
+                          value={audioSpeed}
+                          onChange={(e) => {
+                            const s = Number(e.target.value)
+                            setAudioSpeed(s)
+                            if (audioRef.current) audioRef.current.playbackRate = s
+                          }}
+                          className="text-xs bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1 cursor-pointer focus:outline-none focus:ring-1 focus:ring-violet-500"
+                        >
+                          {[0.25, 0.5, 0.75, 1, 1.5, 2].map(s => (
+                            <option key={s} value={s}>{s}x</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
