@@ -21,7 +21,7 @@ export default function Demo() {
       .then((result) => {
         storeLoginResult(result)
         try {
-          identifyUser(result.userId, { plan: result.plan, email: result.email, demo: true })
+          identifyUser(result.userId, { plan: result.plan, email: result.email })
         } catch {
           // non-blocking
         }
