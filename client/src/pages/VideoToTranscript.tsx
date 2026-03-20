@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, FileDown, Subtitles, Film, Minimize2, Lock, Play, Pause, Volume2, VolumeX } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Subtitles, Film, Minimize2, Lock, Play, Pause, Volume2, VolumeX, Search } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
@@ -1759,11 +1759,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 }
               }}
               onProcessAnother={handleProcessAnother}
-              onGenerateSubtitles={() => {
-                if (segmentsForExport?.length) workflow.setSrt(segmentsToSrt(segmentsForExport))
-                if (selectedFile) workflow.setVideo(selectedFile)
-                navigate('/video-to-subtitles', { state: { useWorkflowVideo: true } })
-              }}
+
               onExportSrt={handleExportSrt}
               onExportVtt={handleExportVtt}
               onCopy={handleCopyToClipboard}
@@ -1775,31 +1771,75 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               showNextSteps={false}
             />
 
+            {/* ── Transcript stats pills ── */}
+            {(() => {
+              const text = displayTranscript || fullTranscript || transcriptPreview || ''
+              const wordCount = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0
+              const segCount = result.segments?.length ?? 0
+              const readMin = wordCount > 0 ? Math.max(1, Math.round(wordCount / 200)) : 0
+              const lastSeg = result.segments?.length ? result.segments[result.segments.length - 1] : null
+              const durSec = lastSeg?.end ?? 0
+              const durStr = durSec > 60 ? `${Math.floor(durSec / 60)}m ${String(Math.floor(durSec % 60)).padStart(2, '0')}s` : durSec > 0 ? `${Math.floor(durSec)}s` : null
+              if (!wordCount) return null
+              const pills = [
+                wordCount > 0 && `${wordCount.toLocaleString()} words`,
+                segCount > 0 && `${segCount} segments`,
+                readMin > 0 && `~${readMin} min read`,
+                durStr,
+              ].filter(Boolean) as string[]
+              return (
+                <div className="flex flex-wrap items-center gap-2 px-1">
+                  {pills.map((label) => (
+                    <span key={label} className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs font-medium text-gray-500 dark:text-gray-400">
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              )
+            })()}
+
             {/* Branch tabs and workspace views */}
             <div className="space-y-4">
               {/* Branch tabs */}
               <div className="rounded-2xl bg-gray-50/90 px-3 py-3 shadow-card" role="tablist" aria-label="Transcript branches">
-                <div className="flex flex-wrap gap-2 items-center justify-start">
-                  {BRANCH_IDS.map((id) => {
-                    const Icon = BRANCH_ICONS[id]
-                    return (
-                      <button
-                        key={id}
-                        type="button"
-                        role="tab"
-                        aria-selected={activeBranch === id}
-                        onClick={() => setActiveBranch(id)}
-                        className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-motion ${
-                          activeBranch === id
-                            ? 'bg-violet-600 text-white shadow-card ring-2 ring-violet-200 ring-offset-2 ring-offset-gray-50'
-                            : 'bg-white/90 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-card ring-1 ring-gray-100'
-                        }`}
-                      >
-                        <Icon className="h-4 w-4 shrink-0" aria-hidden />
-                        {BRANCH_LABELS[id]}
-                      </button>
-                    )
-                  })}
+                <div className="flex overflow-x-auto gap-2 items-center pb-0.5 scrollbar-none" style={{ scrollbarWidth: 'none' }}>
+                  {(() => {
+                    const counts: Partial<Record<BranchId, number>> = {
+                      speakers: getSpeakersData().length,
+                      chapters: getChaptersData().length,
+                      highlights: getHighlightsData().length,
+                      keywords: getKeywordsData().length,
+                    }
+                    return BRANCH_IDS.map((id) => {
+                      const Icon = BRANCH_ICONS[id]
+                      const count = counts[id]
+                      const isActive = activeBranch === id
+                      return (
+                        <button
+                          key={id}
+                          type="button"
+                          role="tab"
+                          aria-selected={isActive}
+                          onClick={() => setActiveBranch(id)}
+                          className={`shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-motion ${
+                            isActive
+                              ? 'bg-violet-600 text-white shadow-card ring-2 ring-violet-200 ring-offset-2 ring-offset-gray-50'
+                              : 'bg-white/90 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-card ring-1 ring-gray-100'
+                          }`}
+                        >
+                          <Icon className="h-4 w-4 shrink-0" aria-hidden />
+                          {BRANCH_LABELS[id]}
+                          {count != null && count > 0 && (
+                            <span className={`inline-flex items-center justify-center min-w-[1.125rem] h-[1.125rem] px-1 rounded-full text-[10px] font-semibold leading-none ${
+                              isActive ? 'bg-white/25 text-white' : 'bg-violet-100 text-violet-700'
+                            }`}>
+                              {count}
+                            </span>
+                          )}
+                        </button>
+                      )
+                    })
+                  })()}
                 </div>
               </div>
 
@@ -2115,20 +2155,35 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 : '2/2 used'
                             const canClick = isPaidPlan || freeCanDownload
                             const label = format === 'json' ? 'JSON' : format === 'csv' ? 'CSV' : format === 'notion' ? 'Notion' : 'Text'
+                            const formatMeta: Record<string, { color: string; dot: string; ext: string }> = {
+                              json: { color: 'bg-amber-50 ring-amber-100', dot: 'bg-amber-400', ext: '.json' },
+                              csv:  { color: 'bg-emerald-50 ring-emerald-100', dot: 'bg-emerald-400', ext: '.csv' },
+                              notion: { color: 'bg-gray-50 ring-gray-100', dot: 'bg-gray-400', ext: '.json' },
+                              text: { color: 'bg-blue-50 ring-blue-100', dot: 'bg-blue-400', ext: '.txt' },
+                            }
+                            const meta = formatMeta[format] ?? { color: 'bg-gray-50 ring-gray-100', dot: 'bg-gray-400', ext: '' }
                             return (
-                              <div key={format} className="rounded-xl bg-gray-50/80 p-4">
+                              <div key={format} className={`rounded-xl ${meta.color} p-4 ring-1`}>
                                 <div className="flex items-center justify-between gap-2 mb-3">
-                                  <span className="text-sm font-medium text-gray-800">{label}</span>
+                                  <div className="flex items-center gap-2">
+                                    <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} aria-hidden />
+                                    <span className="text-sm font-semibold text-gray-800">{label}</span>
+                                    <span className="text-[10px] font-mono text-gray-400">{meta.ext}</span>
+                                  </div>
                                   <button
                                     onClick={handleDownload}
                                     disabled={!canClick}
-                                    className={`flex items-center gap-1.5 text-sm font-medium ${canClick ? 'text-violet-600 hover:text-violet-700' : 'text-gray-400 cursor-not-allowed'}`}
+                                    className={`flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-lg transition-colors ${
+                                      canClick
+                                        ? 'bg-white hover:bg-violet-50 text-violet-600 hover:text-violet-700 ring-1 ring-gray-200'
+                                        : 'text-gray-300 cursor-not-allowed'
+                                    }`}
                                   >
-                                    <Download className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                                    <Download className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
                                     {downloadLabel}
                                   </button>
                                 </div>
-                                <pre className="text-xs text-gray-600 bg-white/80 p-3 rounded-lg max-h-32 overflow-y-auto whitespace-pre-wrap break-words ring-1 ring-gray-100">
+                                <pre className="text-xs text-gray-600 bg-white/70 p-3 rounded-lg max-h-28 overflow-y-auto whitespace-pre-wrap break-words ring-1 ring-white/80">
                                   {preview}
                                 </pre>
                               </div>
@@ -2145,14 +2200,15 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Transcript</h3>
-                <div className="flex flex-wrap items-center gap-3 mb-4">
-                  <div className="flex-1 min-w-[200px] relative">
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                  <div className="flex-1 min-w-[160px] relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     <input
                       type="text"
                       placeholder="Search in transcript"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-3 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                   </div>
                   {isPaidPlan && (
@@ -2166,6 +2222,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   )}
                   <button
                     type="button"
+                    onClick={handleCopyToClipboard}
+                    className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
+                  >
+                    Copy
+                  </button>
+                  <button
+                    type="button"
                     onClick={handleExportSrt}
                     className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
                   >
@@ -2177,15 +2240,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
                   >
                     VTT
-                  </button>
-                </div>
-                <div className="flex items-center gap-3 mb-4">
-                  <button
-                    type="button"
-                    onClick={handleCopyToClipboard}
-                    className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
-                  >
-                    Copy
                   </button>
                 </div>
                 <div ref={transcriptScrollRef} className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-[15px] text-gray-700 dark:text-gray-300 leading-[1.75] tracking-[0.01em]">
@@ -2350,35 +2404,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               </div>
             </div>
 
-            {(segmentsForExport?.length ?? 0) > 0 && (
-              <div className="surface-card p-6 mb-8">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                  <Subtitles className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
-                  Generate subtitles from this transcript
-                </h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  Same timestamps, no re-upload.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={handleExportSrt}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-violet-600 text-white hover:bg-violet-700 transition-colors"
-                  >
-                    <FileDown className="h-4 w-4" strokeWidth={1.5} />
-                    Download SRT
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleExportVtt}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
-                  >
-                    <FileDown className="h-4 w-4" strokeWidth={1.5} />
-                    Download VTT
-                  </button>
-                </div>
-              </div>
-            )}
 
             <CrossToolSuggestions
               workflowHint="Your last file is pre-filled on the next tool."
