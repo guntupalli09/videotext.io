@@ -125,33 +125,6 @@ export function TranscriptResult({
       )}
 
 
-      {onGenerateSubtitles != null && (
-        <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-purple-200 dark:border-purple-800">
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 sm:mb-4">Same timestamps, no re-upload. Or continue workflow above.</p>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-            {onExportSrt && (
-              <button
-                type="button"
-                onClick={onExportSrt}
-                className="flex-1 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                Download SRT
-              </button>
-            )}
-            {onExportVtt && (
-              <button
-                type="button"
-                onClick={onExportVtt}
-                className="flex-1 px-4 py-2.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors flex items-center justify-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                Download VTT
-              </button>
-            )}
-          </div>
-        </div>
-      )}
 
       {showTranscriptCard && (
         <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden min-w-0">
