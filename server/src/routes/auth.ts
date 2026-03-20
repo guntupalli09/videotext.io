@@ -427,5 +427,74 @@ router.post('/reset-password', async (req: Request, res: Response) => {
   }
 })
 
+/** Demo login: returns a JWT for the shared demo account (pro plan). No password required.
+ *  Controlled by DEMO_ENABLED env var (defaults to true). Rate-limited to prevent abuse.
+ */
+const demoRateLimit = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => (req.ip ?? 'unknown'),
+  message: { message: 'Too many demo requests. Please wait a minute.' },
+})
+
+router.post('/demo', demoRateLimit, async (req: Request, res: Response) => {
+  try {
+    const disabled = process.env.DEMO_ENABLED === 'false'
+    if (disabled) {
+      return res.status(404).json({ message: 'Demo not available.' })
+    }
+
+    const demoEmail = (process.env.DEMO_EMAIL || 'demo@videotext.io').toLowerCase().trim()
+    let user = await getUserByEmail(demoEmail)
+
+    if (!user) {
+      // First call: create the demo account with a random password hash (inaccessible via login)
+      const now = new Date()
+      const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+      const randomHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 10)
+      user = {
+        id: crypto.randomUUID(),
+        email: demoEmail,
+        passwordHash: randomHash,
+        plan: 'pro',
+        stripeCustomerId: undefined,
+        subscriptionId: undefined,
+        paymentMethodId: undefined,
+        billingPeriodStart: undefined,
+        billingPeriodEnd: undefined,
+        passwordSetupToken: undefined,
+        passwordSetupExpiresAt: undefined,
+        passwordSetupUsed: false,
+        passwordResetToken: undefined,
+        passwordResetExpiresAt: undefined,
+        usageThisMonth: {
+          totalMinutes: 0,
+          videoCount: 0,
+          batchCount: 0,
+          languageCount: 0,
+          translatedMinutes: 0,
+          importCount: 0,
+          resetDate,
+        },
+        limits: getPlanLimits('pro'),
+        overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
+        createdAt: now,
+        updatedAt: now,
+      } as User
+      await saveUser(user)
+      log.info({ msg: 'Demo user created', email: demoEmail })
+    }
+
+    const jwt = signAuthToken(user)
+    log.info({ msg: 'Demo login', ip: req.ip })
+    return res.json({ token: jwt, userId: user.id, plan: user.plan, email: user.email })
+  } catch (error: any) {
+    log.error({ msg: 'demo login error', error: (error as Error)?.message ?? String(error) })
+    return res.status(500).json({ message: error.message || 'Demo login failed.' })
+  }
+})
+
 export default router
 

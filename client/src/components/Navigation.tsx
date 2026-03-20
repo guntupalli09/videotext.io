@@ -73,6 +73,14 @@ export default function Navigation() {
             {showAuthLinks && (
               <>
                 <Link
+                  to="/demo"
+                  className="text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-motion text-sm font-semibold"
+                  onMouseEnter={() => prefetchRoute('/demo')}
+                  onFocus={() => prefetchRoute('/demo')}
+                >
+                  Try Demo
+                </Link>
+                <Link
                   to="/login"
                   className="text-gray-700 dark:text-gray-200 hover:text-violet-600 dark:hover:text-violet-400 transition-motion text-sm font-medium"
                   onMouseEnter={() => prefetchRoute('/login')}
