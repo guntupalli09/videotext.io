@@ -39,6 +39,7 @@ const BurnSubtitles = lazy(() => import('./pages/BurnSubtitles'))
 const CompressVideo = lazy(() => import('./pages/CompressVideo'))
 const SeoToolPage = lazy(() => import('./pages/SeoToolPage'))
 const FeedbackView = lazy(() => import('./pages/FeedbackView'))
+const SurveyPage = lazy(() => import('./pages/SurveyPage'))
 const FounderDashboard = lazy(() => import('./pages/founder/FounderDashboard'))
 const Changelog = lazy(() => import('./pages/Changelog'))
 const Blog = lazy(() => import('./pages/Blog'))
@@ -361,6 +362,7 @@ function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/faq" element={<Faq />} />
             <Route path="/feedback" element={<FeedbackView />} />
+            <Route path="/survey" element={<SurveyPage />} />
             <Route path="/founder" element={<FounderDashboard />} />
             <Route path="/guide" element={<Guide />} />
             <Route path="/terms" element={<Terms />} />
