@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 
 interface VideoInfo {
   name: string
@@ -132,19 +133,21 @@ export default function VideoMetadataViewer() {
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
         {rows.length > 0 && (
-          <div className="rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden">
-            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600">
-              <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Video information</p>
+          <FreeToolResultGate title="Your video metadata is ready">
+            <div className="rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden">
+              <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Video information</p>
+              </div>
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                {rows.map((row) => (
+                  <div key={row.label} className="flex items-start px-4 py-3 gap-4">
+                    <span className="text-xs text-gray-500 dark:text-gray-400 w-40 shrink-0 pt-0.5">{row.label}</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white break-all">{row.val}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="divide-y divide-gray-100 dark:divide-gray-700">
-              {rows.map((row) => (
-                <div key={row.label} className="flex items-start px-4 py-3 gap-4">
-                  <span className="text-xs text-gray-500 dark:text-gray-400 w-40 shrink-0 pt-0.5">{row.label}</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white break-all">{row.val}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          </FreeToolResultGate>
         )}
       </div>
       <video ref={videoRef} className="hidden" />

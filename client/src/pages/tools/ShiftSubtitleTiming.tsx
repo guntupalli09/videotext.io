@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 import { parseSrt, parseVtt, cuesToSrt, cuesToVtt, shiftCues, detectFormat, downloadText } from '../../lib/subtitleUtils'
 
 export default function ShiftSubtitleTiming() {
@@ -134,14 +135,16 @@ export default function ShiftSubtitleTiming() {
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
         {output && (
-          <div className="space-y-3">
-            <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-3 text-center">
-              <p className="text-sm font-semibold text-green-700 dark:text-green-400">Timing shifted successfully!</p>
+          <FreeToolResultGate title="Timing shifted successfully">
+            <div className="space-y-3">
+              <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-3 text-center">
+                <p className="text-sm font-semibold text-green-700 dark:text-green-400">Timing shifted successfully!</p>
+              </div>
+              <button onClick={handleDownload} className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors">
+                Download shifted file
+              </button>
             </div>
-            <button onClick={handleDownload} className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors">
-              Download shifted file
-            </button>
-          </div>
+          </FreeToolResultGate>
         )}
       </div>
     </FreeToolLayout>

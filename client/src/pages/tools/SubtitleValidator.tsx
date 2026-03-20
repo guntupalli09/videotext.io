@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 import { parseSrt, parseVtt, detectFormat, validateCues, ValidationIssue } from '../../lib/subtitleUtils'
 
 export default function SubtitleValidator() {
@@ -110,6 +111,7 @@ export default function SubtitleValidator() {
 
         {issues !== null && (
           <div className="space-y-3">
+            {/* Summary — always visible */}
             <div className={`rounded-xl p-4 text-center ${isValid ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'}`}>
               <p className={`text-lg font-bold ${isValid ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
                 {isValid ? '✓ No errors found' : `${errors.length} error${errors.length !== 1 ? 's' : ''}, ${warnings.length} warning${warnings.length !== 1 ? 's' : ''}`}
@@ -117,15 +119,18 @@ export default function SubtitleValidator() {
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{cueCount} cues validated</p>
             </div>
 
+            {/* Detailed issue list — gated */}
             {issues.length > 0 && (
-              <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
-                {issues.map((issue, i) => (
-                  <div key={i} className={`flex gap-3 rounded-lg p-3 text-sm ${issue.severity === 'error' ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800' : 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800'}`}>
-                    <span className={`text-xs font-bold uppercase tracking-wide mt-0.5 ${issue.severity === 'error' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>{issue.severity === 'error' ? 'ERR' : 'WARN'}</span>
-                    <span className="text-gray-700 dark:text-gray-300">{issue.message}</span>
-                  </div>
-                ))}
-              </div>
+              <FreeToolResultGate title="Sign up to view the full issue list">
+                <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                  {issues.map((issue, i) => (
+                    <div key={i} className={`flex gap-3 rounded-lg p-3 text-sm ${issue.severity === 'error' ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800' : 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800'}`}>
+                      <span className={`text-xs font-bold uppercase tracking-wide mt-0.5 ${issue.severity === 'error' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>{issue.severity === 'error' ? 'ERR' : 'WARN'}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{issue.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </FreeToolResultGate>
             )}
 
             {!isValid && (

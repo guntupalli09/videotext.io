@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 
 const RATES = {
   slow: { label: 'Slow / Deliberate', wpm: 100, desc: 'Lectures, tutorials, explainers' },
@@ -131,16 +132,18 @@ export default function VideoScriptTimer() {
           </div>
         </div>
         {words > 0 ? (
-          <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-violet-700 p-6 text-center text-white">
-            <p className="text-xs font-semibold uppercase tracking-widest text-violet-200 mb-1">Estimated video length</p>
-            <p className="text-5xl font-display font-bold mb-2">{formatDuration(durationSec)}</p>
-            <p className="text-sm text-violet-200">{ytFormat(durationSec)}</p>
-            <div className="mt-4 pt-4 border-t border-white/20 grid grid-cols-3 gap-2 text-center">
-              {[{ label: 'Words', val: words.toLocaleString() }, { label: 'At WPM', val: wpm }, { label: 'Min/s', val: `${(durationSec / 60).toFixed(1)} min` }].map((s) => (
-                <div key={s.label}><p className="text-lg font-bold">{s.val}</p><p className="text-xs text-violet-200">{s.label}</p></div>
-              ))}
+          <FreeToolResultGate title="Your video length estimate is ready">
+            <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-violet-700 p-6 text-center text-white">
+              <p className="text-xs font-semibold uppercase tracking-widest text-violet-200 mb-1">Estimated video length</p>
+              <p className="text-5xl font-display font-bold mb-2">{formatDuration(durationSec)}</p>
+              <p className="text-sm text-violet-200">{ytFormat(durationSec)}</p>
+              <div className="mt-4 pt-4 border-t border-white/20 grid grid-cols-3 gap-2 text-center">
+                {[{ label: 'Words', val: words.toLocaleString() }, { label: 'At WPM', val: wpm }, { label: 'Min/s', val: `${(durationSec / 60).toFixed(1)} min` }].map((s) => (
+                  <div key={s.label}><p className="text-lg font-bold">{s.val}</p><p className="text-xs text-violet-200">{s.label}</p></div>
+                ))}
+              </div>
             </div>
-          </div>
+          </FreeToolResultGate>
         ) : (
           <div className="rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-600 p-8 text-center">
             <p className="text-3xl font-display font-bold text-gray-300 dark:text-gray-600">—</p>

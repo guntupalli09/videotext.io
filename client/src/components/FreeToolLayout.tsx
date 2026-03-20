@@ -60,7 +60,7 @@ export default function FreeToolLayout({
           )}
           {!hubLink && (
             <span className="inline-block text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400 mb-3">
-              Free Tool — No account needed
+              Free Tool — Sign up free to view &amp; export results
             </span>
           )}
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 dark:text-white leading-tight">

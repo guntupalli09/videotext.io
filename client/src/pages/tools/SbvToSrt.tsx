@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 import { parseSbv, cuesToSrt, downloadText } from '../../lib/subtitleUtils'
 
 export default function SbvToSrt() {
@@ -110,21 +111,23 @@ export default function SbvToSrt() {
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
         {output && (
-          <div className="space-y-3">
-            <div className="rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600">
-                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">SRT Output</span>
-                <button onClick={() => navigator.clipboard.writeText(output)} className="text-xs text-violet-600 hover:text-violet-700 font-medium">Copy</button>
+          <FreeToolResultGate title="Your SRT file is ready">
+            <div className="space-y-3">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600">
+                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">SRT Output</span>
+                  <button onClick={() => navigator.clipboard.writeText(output)} className="text-xs text-violet-600 hover:text-violet-700 font-medium">Copy</button>
+                </div>
+                <pre className="text-xs text-gray-800 dark:text-gray-200 p-4 font-mono overflow-auto max-h-48 whitespace-pre-wrap">{output.slice(0, 600)}{output.length > 600 ? '\n…' : ''}</pre>
               </div>
-              <pre className="text-xs text-gray-800 dark:text-gray-200 p-4 font-mono overflow-auto max-h-48 whitespace-pre-wrap">{output.slice(0, 600)}{output.length > 600 ? '\n…' : ''}</pre>
+              <button
+                onClick={handleDownload}
+                className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors"
+              >
+                Download .srt file
+              </button>
             </div>
-            <button
-              onClick={handleDownload}
-              className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors"
-            >
-              Download .srt file
-            </button>
-          </div>
+          </FreeToolResultGate>
         )}
       </div>
     </FreeToolLayout>
