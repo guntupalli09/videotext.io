@@ -133,7 +133,7 @@ const FEATURE_ROWS: FeatureSection[] = [
         gotranscript: true,
       },
       {
-        label: 'Paste link or upload, done',
+        label: 'Paste link (URL)',
         videotext: 'Coming Soon',
         descript: false,
         otter: false,
@@ -141,6 +141,16 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: false,
         easyscribe: false,
         gotranscript: false,
+      },
+      {
+        label: 'Upload file',
+        videotext: true,
+        descript: true,
+        otter: true,
+        trint: true,
+        turboscribe: true,
+        easyscribe: true,
+        gotranscript: true,
       },
       {
         label: 'Works on mobile',
