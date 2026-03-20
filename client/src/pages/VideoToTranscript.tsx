@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, FileDown, Subtitles, Film, Minimize2, Lock } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, FileDown, Subtitles, Film, Minimize2, Lock, Play, Pause } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
@@ -114,7 +114,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [translationLanguage, setTranslationLanguage] = useState<string | null>(null)
   const [translatedCache, setTranslatedCache] = useState<Record<string, string>>({})
   const transcriptScrollRef = useRef<HTMLDivElement>(null)
-  const segmentRefsRef = useRef<Map<number, HTMLDivElement>>(new Map())
+  const segmentRefsRef = useRef<Map<number, HTMLSpanElement>>(new Map())
+  // Audio playback for transcript sync
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const [audioPlaybackTime, setAudioPlaybackTime] = useState(0)
+  const [audioIsPlaying, setAudioIsPlaying] = useState(false)
+  const [audioDuration, setAudioDuration] = useState(0)
+  const [audioObjectUrl, setAudioObjectUrl] = useState<string | null>(null)
   const rehydratePollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const activeUploadPollRef = useRef<(() => void) | null>(null)
   const pollConsecutiveNetworkErrorsRef = useRef(0)
@@ -209,6 +215,23 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
     setVideoPreviewUrl(null)
   }, [selectedFile])
+
+  // Audio object URL for transcript panel playback (only available in the same session as upload)
+  useEffect(() => {
+    if (selectedFile && status === 'completed') {
+      const url = URL.createObjectURL(selectedFile)
+      setAudioObjectUrl(url)
+      setAudioPlaybackTime(0)
+      setAudioIsPlaying(false)
+      return () => {
+        setAudioObjectUrl(null)
+        URL.revokeObjectURL(url)
+      }
+    }
+    setAudioObjectUrl(null)
+    setAudioPlaybackTime(0)
+    setAudioIsPlaying(false)
+  }, [selectedFile, status])
 
   // Sync editable segments from result (so inline edits are preserved until result changes)
   useEffect(() => {
@@ -1073,6 +1096,42 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 100)
   }, [])
+
+  // Group segments into paragraphs for Turboscribe-style inline display (silence gap > 1.5s = new paragraph)
+  const segmentParagraphs = useMemo(() => {
+    const segs = result?.segments
+    if (!segs?.length) return []
+    const groups: { seg: typeof segs[0]; globalIndex: number }[][] = []
+    let current: { seg: typeof segs[0]; globalIndex: number }[] = []
+    for (let i = 0; i < segs.length; i++) {
+      const seg = segs[i]
+      const prev = segs[i - 1]
+      if (prev && seg.start - prev.end > 1.5 && current.length > 0) {
+        groups.push(current)
+        current = []
+      }
+      current.push({ seg, globalIndex: i })
+    }
+    if (current.length) groups.push(current)
+    return groups
+  }, [result?.segments])
+
+  // Active segment index driven by audio currentTime
+  const activeSegmentIndex = useMemo(() => {
+    const segs = result?.segments
+    if (!segs?.length || !audioObjectUrl) return -1
+    for (let i = segs.length - 1; i >= 0; i--) {
+      if (audioPlaybackTime >= segs[i].start) return i
+    }
+    return -1
+  }, [audioPlaybackTime, audioObjectUrl, result?.segments])
+
+  // Auto-scroll transcript to keep active segment visible during playback
+  useEffect(() => {
+    if (activeSegmentIndex < 0 || !audioIsPlaying) return
+    const el = segmentRefsRef.current.get(activeSegmentIndex)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [activeSegmentIndex, audioIsPlaying])
 
   // Phase 1 – Derived Transcript Utilities (client-side; failures must not affect transcript)
   const getParagraphs = useCallback((text: string): string[] => {
@@ -2129,6 +2188,42 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     Copy
                   </button>
                 </div>
+                {audioObjectUrl && (
+                  <div className="flex items-center gap-3 mb-3 px-3 py-2 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <audio
+                      ref={audioRef}
+                      src={audioObjectUrl}
+                      onLoadedMetadata={() => setAudioDuration(audioRef.current?.duration ?? 0)}
+                      onTimeUpdate={() => setAudioPlaybackTime(audioRef.current?.currentTime ?? 0)}
+                      onPlay={() => setAudioIsPlaying(true)}
+                      onPause={() => setAudioIsPlaying(false)}
+                      onEnded={() => { setAudioIsPlaying(false); setAudioPlaybackTime(0) }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => { if (!audioRef.current) return; audioIsPlaying ? audioRef.current.pause() : audioRef.current.play() }}
+                      className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-violet-600 hover:bg-violet-700 text-white transition-colors"
+                    >
+                      {audioIsPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5 ml-0.5" />}
+                    </button>
+                    <input
+                      type="range"
+                      min={0}
+                      max={audioDuration || 100}
+                      step={0.1}
+                      value={audioPlaybackTime}
+                      onChange={(e) => {
+                        const t = Number(e.target.value)
+                        if (audioRef.current) audioRef.current.currentTime = t
+                        setAudioPlaybackTime(t)
+                      }}
+                      className="flex-1 h-1 accent-violet-600 cursor-pointer"
+                    />
+                    <span className="shrink-0 text-xs font-mono text-gray-500 dark:text-gray-400 w-10 text-right">
+                      {formatTimestamp(audioPlaybackTime)}
+                    </span>
+                  </div>
+                )}
                 <div ref={transcriptScrollRef} className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                   {transcriptEditMode && editableSegments?.length ? (
                     <div className="space-y-3">
@@ -2145,21 +2240,35 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       ))}
                     </div>
                   ) : result?.segments?.length && !translationLanguage ? (
-                    <div className="space-y-3">
-                      {result.segments.map((seg, i) => (
-                        <div
-                          key={i}
-                          ref={(el) => { if (el) segmentRefsRef.current.set(i, el); else segmentRefsRef.current.delete(i) }}
-                          className="flex gap-3 items-start"
-                        >
-                          <span className="shrink-0 text-[11px] text-gray-400 dark:text-gray-500 font-mono mt-0.5 w-10">{formatTimestamp(seg.start)}</span>
-                          <p className="leading-relaxed">
-                            {seg.speaker && (
-                              <span className="font-semibold text-violet-600 dark:text-violet-400 mr-1">{seg.speaker}:</span>
-                            )}
-                            {seg.text}
-                          </p>
-                        </div>
+                    <div>
+                      {segmentParagraphs.map((group, pi) => (
+                        <p key={pi} className="mb-4 leading-relaxed">
+                          {group.map(({ seg, globalIndex }) => {
+                            const isActive = globalIndex === activeSegmentIndex
+                            return (
+                              <span
+                                key={globalIndex}
+                                ref={(el) => { if (el) segmentRefsRef.current.set(globalIndex, el); else segmentRefsRef.current.delete(globalIndex) }}
+                                onClick={() => {
+                                  if (!audioRef.current) return
+                                  audioRef.current.currentTime = seg.start
+                                  audioRef.current.play()
+                                }}
+                                className={audioObjectUrl ? 'cursor-pointer' : ''}
+                              >
+                                <span className={`text-[11px] font-mono mr-1 ${isActive ? 'text-violet-500 dark:text-violet-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                                  ({formatTimestamp(seg.start)})
+                                </span>
+                                <span className={isActive ? 'bg-yellow-200 dark:bg-yellow-900/60 rounded px-0.5 transition-colors' : ''}>
+                                  {seg.speaker && (
+                                    <span className="font-semibold text-violet-600 dark:text-violet-400 mr-1">{seg.speaker}:</span>
+                                  )}
+                                  {seg.text}
+                                </span>{' '}
+                              </span>
+                            )
+                          })}
+                        </p>
                       ))}
                     </div>
                   ) : (
