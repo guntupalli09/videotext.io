@@ -77,6 +77,12 @@ export interface DashboardFeedback {
   createdAt: string
   userId: string | null
   userNameOrEmail: string | null
+  email: string | null
+  topTool: string | null
+  topToolReason: string | null
+  featureRequest: string | null
+  otherFeedback: string | null
+  source: string | null
 }
 
 export interface DashboardUser {
