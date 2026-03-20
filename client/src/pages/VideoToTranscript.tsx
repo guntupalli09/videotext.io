@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, FileDown, Subtitles, Film, Minimize2, Lock, Play, Pause, Volume2, VolumeX } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Subtitles, Film, Minimize2, Lock, Play, Pause, Volume2, VolumeX } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
