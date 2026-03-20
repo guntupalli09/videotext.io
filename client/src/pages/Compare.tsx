@@ -99,7 +99,7 @@ const FEATURE_ROWS: FeatureSection[] = [
       },
       {
         label: 'YouTube URL direct processing',
-        videotext: true,
+        videotext: 'Coming Soon',
         descript: false,
         otter: false,
         trint: false,
@@ -134,7 +134,7 @@ const FEATURE_ROWS: FeatureSection[] = [
       },
       {
         label: 'Paste link or upload, done',
-        videotext: true,
+        videotext: 'Coming Soon',
         descript: false,
         otter: false,
         trint: false,
@@ -278,6 +278,13 @@ const COMPETITOR_KEYS: (keyof Omit<FeatureRow, 'label' | 'highlight' | 'videotex
 ];
 
 function BoolCell({ val, isUs = false }: { val: boolean | string; isUs?: boolean }) {
+  if (val === 'Coming Soon') {
+    return (
+      <span className="inline-block text-[10px] font-semibold bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+        Coming Soon
+      </span>
+    );
+  }
   if (typeof val === 'string') {
     return (
       <span className={`text-[12px] font-semibold ${isUs ? 'text-purple-600 dark:text-purple-400' : 'text-gray-600 dark:text-gray-300'}`}>
