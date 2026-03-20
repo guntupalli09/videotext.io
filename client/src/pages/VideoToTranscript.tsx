@@ -89,6 +89,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [includeChapters, setIncludeChapters] = useState(true)
   const [exportFormats, setExportFormats] = useState<('txt' | 'json' | 'docx' | 'pdf')[]>(['txt'])
   const [speakerDiarization, setSpeakerDiarization] = useState(false)
+  const [diarizationWasRequested, setDiarizationWasRequested] = useState(false)
   const [glossary, setGlossary] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [transcriptEditMode, setTranscriptEditMode] = useState(false)
@@ -585,6 +586,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         speakerDiarization,
         glossary: glossary.trim() || undefined,
       }
+      setDiarizationWasRequested(speakerDiarization)
       setUploadPhase('uploading')
       trackEvent('processing_started', { tool: 'video-to-transcript' })
 
@@ -834,6 +836,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       setPartialSegments([])
       setYoutubeStage(null)
       youtubeStageAtFailureRef.current = null
+      setDiarizationWasRequested(speakerDiarization)
       trackEvent('processing_started', { tool: 'video-to-transcript', source: 'youtube' })
 
       const response: YoutubeUploadResponse = await submitYoutubeUrl(
@@ -1429,6 +1432,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       />
                       <span className="text-sm text-gray-700 dark:text-gray-300">Speaker labels (who said what)</span>
                     </label>
+                    {speakerDiarization && (
+                      <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
+                        Speaker identification adds extra processing time — roughly 1.5× longer than standard transcription (e.g. a 2-hour video takes ~10 min instead of ~4 min).
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -1487,6 +1495,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   checked={speakerDiarization}
                   onChange={(checked) => setSpeakerDiarization(checked)}
                 />
+                {speakerDiarization && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 -mt-1">
+                    Speaker identification adds extra processing time — roughly 1.5× longer than standard transcription (e.g. a 2-hour video takes ~10 min instead of ~4 min).
+                  </p>
+                )}
               </div>
             </div>
           </ProcessingInterface>
@@ -1767,7 +1780,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         return (
                           <div className="rounded-xl bg-gray-50/80 p-4">
                             <p className="text-gray-600 text-sm font-medium mb-1">Speakers</p>
-                            <p className="text-gray-500 text-sm">Enable &quot;Speaker diarization&quot; when processing to see who said what. Otherwise this view stays empty or uses paragraph grouping.</p>
+                            <p className="text-gray-500 text-sm">Check &quot;Speaker labels&quot; before transcribing to see who said what.</p>
                           </div>
                         )
                       }
@@ -1775,8 +1788,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         <>
                           <p className="text-sm text-gray-500 mb-4">
                             {hasMultipleSpeakers
-                              ? 'Labels (Speaker 1, 2, …) come from automatic speaker detection. They are not real names; each label is one distinct voice in the video.'
-                              : 'All segments are shown as one speaker. Enable &quot;Speaker diarization&quot; when you upload to get automatic labels (Speaker 1, 2, …) for different voices.'}
+                              ? 'Speaker labels come from automatic detection. If names were mentioned in the video they are used directly; otherwise speakers are labelled Speaker 1, 2, …'
+                              : diarizationWasRequested
+                                ? 'Speaker identification ran but could not detect multiple speakers — the video may have a single speaker, or the service encountered an issue. Try again if unexpected.'
+                                : 'Check &quot;Speaker labels&quot; before transcribing to get automatic labels for different voices.'}
                           </p>
                           <div className="space-y-4 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto">
                             {data.map((item, i) => (
