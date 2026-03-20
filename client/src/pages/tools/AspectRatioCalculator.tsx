@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 
 function gcd(a: number, b: number): number {
   return b === 0 ? a : gcd(b, a % b)
@@ -99,11 +100,13 @@ export default function AspectRatioCalculator() {
             </div>
 
             {detectedRatio && (
-              <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-5 text-center">
-                <p className="text-4xl font-display font-bold text-violet-700 dark:text-violet-300">{detectedRatio}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">decimal: {decimalRatio}</p>
-                <p className="text-xs text-gray-400 mt-2">{widthIn}×{heightIn} pixels</p>
-              </div>
+              <FreeToolResultGate title="Your aspect ratio result is ready">
+                <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-5 text-center">
+                  <p className="text-4xl font-display font-bold text-violet-700 dark:text-violet-300">{detectedRatio}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">decimal: {decimalRatio}</p>
+                  <p className="text-xs text-gray-400 mt-2">{widthIn}×{heightIn} pixels</p>
+                </div>
+              </FreeToolResultGate>
             )}
           </div>
         ) : (
@@ -138,13 +141,15 @@ export default function AspectRatioCalculator() {
             </div>
 
             {calcResult && (
-              <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-5 text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">{knownDim === 'width' ? 'Height' : 'Width'}</p>
-                <p className="text-4xl font-display font-bold text-violet-700 dark:text-violet-300 mt-1">{calcResult}px</p>
-                <p className="text-xs text-gray-400 mt-2">
-                  {knownDim === 'width' ? `${knownVal} × ${calcResult}` : `${calcResult} × ${knownVal}`} at {ratioW}:{ratioH}
-                </p>
-              </div>
+              <FreeToolResultGate title="Your dimension result is ready">
+                <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-5 text-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{knownDim === 'width' ? 'Height' : 'Width'}</p>
+                  <p className="text-4xl font-display font-bold text-violet-700 dark:text-violet-300 mt-1">{calcResult}px</p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    {knownDim === 'width' ? `${knownVal} × ${calcResult}` : `${calcResult} × ${knownVal}`} at {ratioW}:{ratioH}
+                  </p>
+                </div>
+              </FreeToolResultGate>
             )}
           </div>
         )}

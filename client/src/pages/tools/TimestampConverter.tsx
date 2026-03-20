@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 
 function secToHms(sec: number, separator: ',' | '.' = ',') {
   const h = Math.floor(sec / 3600)
@@ -135,18 +136,20 @@ export default function TimestampConverter() {
 
         {/* Results */}
         {results && (
-          <div className="rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden">
-            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600">Converted formats</p>
-            <div className="divide-y divide-gray-100 dark:divide-gray-700">
-              {rows.map((row) => (
-                <div key={row.label} className="flex items-center justify-between px-4 py-2.5">
-                  <span className="text-xs text-gray-500 dark:text-gray-400 w-48 shrink-0">{row.label}</span>
-                  <span className={`flex-1 text-sm text-gray-900 dark:text-white ${row.mono ? 'font-mono' : ''}`}>{row.val}</span>
-                  <button onClick={() => navigator.clipboard.writeText(row.val)} className="ml-2 text-xs text-violet-500 hover:text-violet-700 font-medium shrink-0">copy</button>
-                </div>
-              ))}
+          <FreeToolResultGate title="Your timestamp conversions are ready">
+            <div className="rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden">
+              <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600">Converted formats</p>
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                {rows.map((row) => (
+                  <div key={row.label} className="flex items-center justify-between px-4 py-2.5">
+                    <span className="text-xs text-gray-500 dark:text-gray-400 w-48 shrink-0">{row.label}</span>
+                    <span className={`flex-1 text-sm text-gray-900 dark:text-white ${row.mono ? 'font-mono' : ''}`}>{row.val}</span>
+                    <button onClick={() => navigator.clipboard.writeText(row.val)} className="ml-2 text-xs text-violet-500 hover:text-violet-700 font-medium shrink-0">copy</button>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          </FreeToolResultGate>
         )}
       </div>
     </FreeToolLayout>

@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 import { parseSrt, parseVtt, cuesToSrt, mergeCues, detectFormat, downloadText } from '../../lib/subtitleUtils'
 
 export default function MergeSrtFiles() {
@@ -111,19 +112,21 @@ export default function MergeSrtFiles() {
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
         {output && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-3 gap-2 text-center">
-              {[{ label: 'File A cues', val: stats.a }, { label: 'File B cues', val: stats.b }, { label: 'Merged total', val: stats.total }].map((s) => (
-                <div key={s.label} className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-3">
-                  <p className="text-xl font-bold text-violet-700 dark:text-violet-300">{s.val}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{s.label}</p>
-                </div>
-              ))}
+          <FreeToolResultGate title="Your merged SRT is ready">
+            <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-2 text-center">
+                {[{ label: 'File A cues', val: stats.a }, { label: 'File B cues', val: stats.b }, { label: 'Merged total', val: stats.total }].map((s) => (
+                  <div key={s.label} className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-3">
+                    <p className="text-xl font-bold text-violet-700 dark:text-violet-300">{s.val}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => downloadText(output, 'merged_subtitles.srt')} className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors">
+                Download merged SRT
+              </button>
             </div>
-            <button onClick={() => downloadText(output, 'merged_subtitles.srt')} className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors">
-              Download merged SRT
-            </button>
-          </div>
+          </FreeToolResultGate>
         )}
       </div>
     </FreeToolLayout>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 
 const RATES = {
   slow: { label: 'Very slow', color: 'text-blue-600', min: 0, max: 100 },
@@ -134,12 +135,14 @@ export default function WordsPerMinute() {
           </div>
         )}
         {result && info && (
-          <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-violet-700 p-6 text-center text-white">
-            <p className="text-xs font-semibold uppercase tracking-widest text-violet-200 mb-1">Your speaking rate</p>
-            <p className="text-6xl font-display font-bold">{result}</p>
-            <p className="text-lg text-violet-200 mt-1">words per minute</p>
-            <p className="mt-3 text-sm bg-white/20 inline-block rounded-full px-4 py-1">{info.label}</p>
-          </div>
+          <FreeToolResultGate title="Your speaking rate is ready">
+            <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-violet-700 p-6 text-center text-white">
+              <p className="text-xs font-semibold uppercase tracking-widest text-violet-200 mb-1">Your speaking rate</p>
+              <p className="text-6xl font-display font-bold">{result}</p>
+              <p className="text-lg text-violet-200 mt-1">words per minute</p>
+              <p className="mt-3 text-sm bg-white/20 inline-block rounded-full px-4 py-1">{info.label}</p>
+            </div>
+          </FreeToolResultGate>
         )}
       </div>
     </FreeToolLayout>

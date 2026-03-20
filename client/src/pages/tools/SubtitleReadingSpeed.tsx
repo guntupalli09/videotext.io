@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 import { parseSrt, parseVtt, detectFormat, parseTimeToMs, stripTags } from '../../lib/subtitleUtils'
 
 interface CueStats {
@@ -126,6 +127,7 @@ export default function SubtitleReadingSpeed() {
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}
         {results !== null && (
           <div className="space-y-3">
+            {/* Summary — always visible */}
             <div className="grid grid-cols-3 gap-2 text-center">
               {[{ label: 'Total cues', val: summary.total }, { label: 'Too fast', val: summary.tooFast, bad: summary.tooFast > 0 }, { label: 'Avg CPS', val: summary.avgCps.toFixed(1) }].map((s) => (
                 <div key={s.label} className={`rounded-xl p-3 ${(s as {bad?: boolean}).bad ? 'bg-red-50 dark:bg-red-900/20' : 'bg-violet-50 dark:bg-violet-900/20'}`}>
@@ -134,15 +136,18 @@ export default function SubtitleReadingSpeed() {
                 </div>
               ))}
             </div>
-            <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
-              {results.map((r) => (
-                <div key={r.index} className={`flex items-start gap-3 rounded-lg border px-3 py-2 text-xs ${statusColor[r.status]}`}>
-                  <span className="font-mono font-bold w-8 shrink-0">#{r.index}</span>
-                  <span className="flex-1 truncate text-gray-700 dark:text-gray-300">{r.text.slice(0, 60)}{r.text.length > 60 ? '…' : ''}</span>
-                  <span className="font-bold shrink-0">{r.cps.toFixed(1)} CPS</span>
-                </div>
-              ))}
-            </div>
+            {/* Per-cue breakdown — gated */}
+            <FreeToolResultGate title="Sign up to see the per-cue CPS breakdown">
+              <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+                {results.map((r) => (
+                  <div key={r.index} className={`flex items-start gap-3 rounded-lg border px-3 py-2 text-xs ${statusColor[r.status]}`}>
+                    <span className="font-mono font-bold w-8 shrink-0">#{r.index}</span>
+                    <span className="flex-1 truncate text-gray-700 dark:text-gray-300">{r.text.slice(0, 60)}{r.text.length > 60 ? '…' : ''}</span>
+                    <span className="font-bold shrink-0">{r.cps.toFixed(1)} CPS</span>
+                  </div>
+                ))}
+              </div>
+            </FreeToolResultGate>
           </div>
         )}
       </div>

@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 import { parseSrt, parseVtt, detectFormat, stripTags } from '../../lib/subtitleUtils'
 
 interface CueCheck {
@@ -150,6 +151,7 @@ export default function SubtitleCharacterChecker() {
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}
         {results !== null && (
           <div className="space-y-3">
+            {/* Summary — always visible */}
             <div className="grid grid-cols-3 gap-2 text-center">
               {[{ label: 'Total cues', val: results.length }, { label: 'Pass', val: passCount }, { label: 'Fail', val: results.length - passCount, bad: results.length - passCount > 0 }].map((s) => (
                 <div key={s.label} className={`rounded-xl p-3 ${(s as {bad?: boolean}).bad ? 'bg-red-50 dark:bg-red-900/20' : 'bg-violet-50 dark:bg-violet-900/20'}`}>
@@ -158,16 +160,19 @@ export default function SubtitleCharacterChecker() {
                 </div>
               ))}
             </div>
+            {/* Failing cues list — gated */}
             {failing.length > 0 && (
-              <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
-                {failing.map((r) => (
-                  <div key={r.index} className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-3 py-2 text-xs">
-                    <p className="font-bold text-red-700 dark:text-red-400 mb-0.5">Cue #{r.index}</p>
-                    <p className="text-gray-700 dark:text-gray-300 truncate">{r.text.slice(0, 80)}</p>
-                    {r.issues.map((issue, i) => <p key={i} className="text-red-500 mt-0.5">{issue}</p>)}
-                  </div>
-                ))}
-              </div>
+              <FreeToolResultGate title="Sign up to see all failing cues">
+                <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
+                  {failing.map((r) => (
+                    <div key={r.index} className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-3 py-2 text-xs">
+                      <p className="font-bold text-red-700 dark:text-red-400 mb-0.5">Cue #{r.index}</p>
+                      <p className="text-gray-700 dark:text-gray-300 truncate">{r.text.slice(0, 80)}</p>
+                      {r.issues.map((issue, i) => <p key={i} className="text-red-500 mt-0.5">{issue}</p>)}
+                    </div>
+                  ))}
+                </div>
+              </FreeToolResultGate>
             )}
           </div>
         )}

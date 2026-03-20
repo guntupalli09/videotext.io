@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import FreeToolResultGate from '../../components/FreeToolResultGate'
 
 const PRESETS = [
   { label: '4K 60fps', width: 3840, height: 2160, fps: 60 },
@@ -112,15 +113,17 @@ export default function VideoBitrateCalculator() {
               </div>
             </div>
             {videoBitrate > 0 && (
-              <div className="grid grid-cols-2 gap-3 mt-2">
-                {[{ label: 'Video bitrate', val: formatBitrate(videoBitrate), note: 'Set this in your encoder' }, { label: 'Total bitrate', val: formatBitrate(totalBitrate), note: `incl. ${audioBitrate} kbps audio` }].map((s) => (
-                  <div key={s.label} className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-4 text-center">
-                    <p className="text-2xl font-bold text-violet-700 dark:text-violet-300">{s.val}</p>
-                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mt-0.5">{s.label}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{s.note}</p>
-                  </div>
-                ))}
-              </div>
+              <FreeToolResultGate title="Your bitrate calculation is ready">
+                <div className="grid grid-cols-2 gap-3 mt-2">
+                  {[{ label: 'Video bitrate', val: formatBitrate(videoBitrate), note: 'Set this in your encoder' }, { label: 'Total bitrate', val: formatBitrate(totalBitrate), note: `incl. ${audioBitrate} kbps audio` }].map((s) => (
+                    <div key={s.label} className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-4 text-center">
+                      <p className="text-2xl font-bold text-violet-700 dark:text-violet-300">{s.val}</p>
+                      <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mt-0.5">{s.label}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{s.note}</p>
+                    </div>
+                  ))}
+                </div>
+              </FreeToolResultGate>
             )}
           </div>
         ) : (
@@ -145,11 +148,13 @@ export default function VideoBitrateCalculator() {
               </div>
             </div>
             {fileSizeB > 0 && (
-              <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-4 text-center mt-2">
-                <p className="text-3xl font-bold text-violet-700 dark:text-violet-300">{formatSize(fileSizeB)}</p>
-                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">Estimated file size</p>
-                <p className="text-xs text-gray-400 mt-0.5">at {formatBitrate(bKbps)} video + {audioBitrate} kbps audio</p>
-              </div>
+              <FreeToolResultGate title="Your file size estimate is ready">
+                <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-4 text-center mt-2">
+                  <p className="text-3xl font-bold text-violet-700 dark:text-violet-300">{formatSize(fileSizeB)}</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">Estimated file size</p>
+                  <p className="text-xs text-gray-400 mt-0.5">at {formatBitrate(bKbps)} video + {audioBitrate} kbps audio</p>
+                </div>
+              </FreeToolResultGate>
             )}
           </div>
         )}
