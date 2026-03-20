@@ -63,6 +63,36 @@ const COMPETITORS = [
     hasHeavyEditor: false,
     deletesFiles: false,
   },
+  {
+    name: 'Notta',
+    slug: 'notta',
+    description: 'AI note-taking and transcription app. Stores all files on servers indefinitely unless manually deleted.',
+    avgProcessingMinutes: 5,
+    pricing: 'From $8.17/mo',
+    requiresAccount: true,
+    hasHeavyEditor: true,
+    deletesFiles: false,
+  },
+  {
+    name: 'Sonix',
+    slug: 'sonix',
+    description: 'AI transcription with built-in editor. Files stored until you delete them manually.',
+    avgProcessingMinutes: 6,
+    pricing: 'From $22/mo',
+    requiresAccount: true,
+    hasHeavyEditor: true,
+    deletesFiles: false,
+  },
+  {
+    name: 'Granola AI',
+    slug: 'granola',
+    description: 'AI meeting notes assistant. Meeting-only — no file upload or URL support.',
+    avgProcessingMinutes: 5,
+    pricing: 'From $18/mo',
+    requiresAccount: true,
+    hasHeavyEditor: false,
+    deletesFiles: false,
+  },
 ];
 
 type FeatureRow = {
@@ -74,6 +104,9 @@ type FeatureRow = {
   turboscribe: boolean | string
   easyscribe: boolean | string
   gotranscript: boolean | string
+  notta: boolean | string
+  sonix: boolean | string
+  granola: boolean | string
   highlight?: boolean
 }
 
@@ -95,6 +128,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: '~5 min',
         easyscribe: '24+ hours',
         gotranscript: '5+ hours',
+        notta: '~10 min',
+        sonix: '~12 min',
+        granola: 'Meetings only',
         highlight: true,
       },
       {
@@ -106,6 +142,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: false,
         easyscribe: false,
         gotranscript: false,
+        notta: true,
+        sonix: false,
+        granola: false,
       },
       {
         label: 'Instant results (no waiting)',
@@ -116,6 +155,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: false,
         easyscribe: false,
         gotranscript: false,
+        notta: false,
+        sonix: false,
+        granola: false,
       },
     ],
   },
@@ -131,6 +173,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: true,
         easyscribe: true,
         gotranscript: true,
+        notta: false,
+        sonix: false,
+        granola: true,
       },
       {
         label: 'Paste link (URL)',
@@ -141,6 +186,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: false,
         easyscribe: false,
         gotranscript: false,
+        notta: true,
+        sonix: false,
+        granola: false,
       },
       {
         label: 'Upload file',
@@ -151,6 +199,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: true,
         easyscribe: true,
         gotranscript: true,
+        notta: true,
+        sonix: true,
+        granola: false,
       },
       {
         label: 'Works on mobile',
@@ -161,6 +212,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: true,
         easyscribe: true,
         gotranscript: true,
+        notta: true,
+        sonix: false,
+        granola: true,
       },
     ],
   },
@@ -176,6 +230,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: '~95%',
         easyscribe: '~99% (human)',
         gotranscript: '~99% (human)',
+        notta: '~92%',
+        sonix: '~95%',
+        granola: '~91%',
       },
       {
         label: '50+ language support',
@@ -186,6 +243,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: true,
         easyscribe: false,
         gotranscript: true,
+        notta: true,
+        sonix: true,
+        granola: false,
       },
       {
         label: 'Speaker detection',
@@ -196,6 +256,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: false,
         easyscribe: true,
         gotranscript: true,
+        notta: true,
+        sonix: true,
+        granola: false,
       },
       {
         label: 'SRT / VTT subtitle export',
@@ -206,6 +269,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: true,
         easyscribe: true,
         gotranscript: true,
+        notta: true,
+        sonix: true,
+        granola: false,
       },
       {
         label: 'TXT, PDF, DOCX, JSON export',
@@ -216,6 +282,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: true,
         easyscribe: false,
         gotranscript: false,
+        notta: true,
+        sonix: true,
+        granola: false,
       },
     ],
   },
@@ -231,6 +300,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: false,
         easyscribe: false,
         gotranscript: false,
+        notta: false,
+        sonix: false,
+        granola: false,
         highlight: true,
       },
       {
@@ -242,6 +314,22 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: false,
         easyscribe: false,
         gotranscript: false,
+        notta: false,
+        sonix: false,
+        granola: false,
+      },
+      {
+        label: 'Data not used for AI training',
+        videotext: true,
+        descript: false,
+        otter: false,
+        trint: false,
+        turboscribe: false,
+        easyscribe: false,
+        gotranscript: false,
+        notta: false,
+        sonix: true,
+        granola: false,
       },
     ],
   },
@@ -257,6 +345,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: true,
         easyscribe: false,
         gotranscript: false,
+        notta: false,
+        sonix: true,
+        granola: true,
       },
       {
         label: 'Starting price',
@@ -267,6 +358,9 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: '$10/mo',
         easyscribe: '$1.25/min',
         gotranscript: '$0.72/min',
+        notta: '$8.17/mo',
+        sonix: '$22/mo',
+        granola: '$18/mo',
         highlight: true,
       },
       {
@@ -278,13 +372,16 @@ const FEATURE_ROWS: FeatureSection[] = [
         turboscribe: false,
         easyscribe: true,
         gotranscript: true,
+        notta: false,
+        sonix: true,
+        granola: false,
       },
     ],
   },
 ];
 
 const COMPETITOR_KEYS: (keyof Omit<FeatureRow, 'label' | 'highlight' | 'videotext'>)[] = [
-  'descript', 'otter', 'trint', 'turboscribe', 'easyscribe', 'gotranscript',
+  'descript', 'otter', 'trint', 'turboscribe', 'easyscribe', 'gotranscript', 'notta', 'sonix', 'granola',
 ];
 
 function BoolCell({ val, isUs = false }: { val: boolean | string; isUs?: boolean }) {
@@ -312,6 +409,7 @@ function SpeedCalculator() {
   const tools = [
     { name: 'VideoText', minsPerHour: 1.5, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-100 dark:bg-purple-500/15' },
     { name: 'Turboscribe', minsPerHour: 2.5, color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-100 dark:bg-gray-800' },
+    { name: 'Notta', minsPerHour: 5, color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-100 dark:bg-gray-800' },
     { name: 'Descript', minsPerHour: 9, color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-100 dark:bg-gray-800' },
     { name: 'Otter.ai', minsPerHour: 11, color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-100 dark:bg-gray-800' },
   ];
@@ -390,7 +488,10 @@ export default function Compare() {
               </span>
             </h1>
             <p className="text-base sm:text-lg text-gray-500 dark:text-white/45 max-w-3xl mx-auto mb-3">
-              Also compared: <span className="font-medium text-gray-700 dark:text-white/60">Turboscribe, Easyscribe & Go Transcript</span>
+              Also compared:{' '}
+              <span className="font-medium text-gray-700 dark:text-white/60">
+                Turboscribe, Easyscribe, Go Transcript, Notta, Sonix & Granola AI
+              </span>
             </p>
             <p className="text-base text-gray-400 dark:text-white/35 max-w-2xl mx-auto mb-8">
               We built VideoText because existing tools were slow, bloated, and expensive. See exactly how we stack up — speed, simplicity, privacy, and price.
@@ -488,7 +589,7 @@ export default function Compare() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Full feature comparison
           </h2>
-          <p className="text-sm text-gray-400 dark:text-white/30 mb-6">Scroll horizontally to see all 6 competitors →</p>
+          <p className="text-sm text-gray-400 dark:text-white/30 mb-6">Scroll horizontally to see all 9 competitors →</p>
 
           <div className="space-y-8">
             {FEATURE_ROWS.map((section) => (
@@ -500,9 +601,9 @@ export default function Compare() {
 
                 <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden transition-colors duration-500">
                   <div className="overflow-x-auto">
-                    <div className="min-w-[760px]">
+                    <div className="min-w-[1000px]">
                       {/* Header row */}
-                      <div className="grid grid-cols-[180px_repeat(7,1fr)] gap-1 bg-gray-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-200 dark:border-white/[0.05] transition-colors duration-500">
+                      <div className="grid grid-cols-[180px_repeat(10,1fr)] gap-1 bg-gray-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-200 dark:border-white/[0.05] transition-colors duration-500">
                         <div className="col-span-1" />
                         <div className="text-center px-1">
                           <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wide">VideoText</span>
@@ -519,7 +620,7 @@ export default function Compare() {
                         {section.features.map((row) => (
                           <div
                             key={row.label}
-                            className={`grid grid-cols-[180px_repeat(7,1fr)] gap-1 px-4 py-3.5 items-center ${row.highlight ? 'bg-purple-50/50 dark:bg-purple-500/[0.04]' : ''} transition-colors duration-500`}
+                            className={`grid grid-cols-[180px_repeat(10,1fr)] gap-1 px-4 py-3.5 items-center ${row.highlight ? 'bg-purple-50/50 dark:bg-purple-500/[0.04]' : ''} transition-colors duration-500`}
                           >
                             <div className="text-sm text-gray-700 dark:text-white/60 pr-2">
                               {row.label}
@@ -555,7 +656,7 @@ export default function Compare() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
             {[
               { icon: Zap, label: 'Fastest', desc: '6–8x faster than AI competitors on 2-hour videos' },
-              { icon: Shield, label: 'Safest', desc: 'Files deleted immediately. We never store your data.' },
+              { icon: Shield, label: 'Safest', desc: 'Files deleted immediately. Zero data stored, ever.' },
               { icon: Star, label: 'Simplest', desc: 'Paste URL or upload. No setup, no editor to learn.' },
               { icon: DollarSign, label: 'Cheapest', desc: 'Start free. Scale at $10/mo locked forever.' },
             ].map((item) => {
