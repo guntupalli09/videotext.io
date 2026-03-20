@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, FileDown, Subtitles, Film, Minimize2, Lock } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, FileDown, Subtitles, Film, Minimize2, Lock, Play, Pause, Volume2, VolumeX } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
@@ -114,7 +114,19 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [translationLanguage, setTranslationLanguage] = useState<string | null>(null)
   const [translatedCache, setTranslatedCache] = useState<Record<string, string>>({})
   const transcriptScrollRef = useRef<HTMLDivElement>(null)
-  const segmentRefsRef = useRef<Map<number, HTMLDivElement>>(new Map())
+  const segmentRefsRef = useRef<Map<number, HTMLSpanElement>>(new Map())
+  // Audio playback for transcript sync
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const audioPlaybackTimeRef = useRef(0)   // updated at timeupdate frequency without triggering re-renders
+  const scrubberRef = useRef<HTMLInputElement>(null)
+  const timeDisplayRef = useRef<HTMLSpanElement>(null)
+  const [activeSegIdx, setActiveSegIdx] = useState(-1)  // re-renders only when segment boundary crosses
+  const [audioIsPlaying, setAudioIsPlaying] = useState(false)
+  const [audioDuration, setAudioDuration] = useState(0)
+  const [audioObjectUrl, setAudioObjectUrl] = useState<string | null>(null)
+  const [audioVolume, setAudioVolume] = useState(1)
+  const [audioMuted, setAudioMuted] = useState(false)
+  const [audioSpeed, setAudioSpeed] = useState(1)
   const rehydratePollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const activeUploadPollRef = useRef<(() => void) | null>(null)
   const pollConsecutiveNetworkErrorsRef = useRef(0)
@@ -209,6 +221,27 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
     setVideoPreviewUrl(null)
   }, [selectedFile])
+
+  // Audio object URL for transcript panel playback (only available in the same session as upload)
+  useEffect(() => {
+    if (selectedFile && status === 'completed') {
+      const url = URL.createObjectURL(selectedFile)
+      setAudioObjectUrl(url)
+      setActiveSegIdx(-1)
+      setAudioIsPlaying(false)
+      audioPlaybackTimeRef.current = 0
+      if (scrubberRef.current) scrubberRef.current.value = '0'
+      if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(0)
+      return () => {
+        setAudioObjectUrl(null)
+        URL.revokeObjectURL(url)
+      }
+    }
+    setAudioObjectUrl(null)
+    setActiveSegIdx(-1)
+    setAudioIsPlaying(false)
+    audioPlaybackTimeRef.current = 0
+  }, [selectedFile, status])
 
   // Sync editable segments from result (so inline edits are preserved until result changes)
   useEffect(() => {
@@ -1073,6 +1106,32 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 100)
   }, [])
+
+  // Group segments into paragraphs for Turboscribe-style inline display (silence gap > 1.5s = new paragraph)
+  const segmentParagraphs = useMemo(() => {
+    const segs = result?.segments
+    if (!segs?.length) return []
+    const groups: { seg: typeof segs[0]; globalIndex: number }[][] = []
+    let current: { seg: typeof segs[0]; globalIndex: number }[] = []
+    for (let i = 0; i < segs.length; i++) {
+      const seg = segs[i]
+      const prev = segs[i - 1]
+      if (prev && seg.start - prev.end > 1.5 && current.length > 0) {
+        groups.push(current)
+        current = []
+      }
+      current.push({ seg, globalIndex: i })
+    }
+    if (current.length) groups.push(current)
+    return groups
+  }, [result?.segments])
+
+  // Auto-scroll transcript to keep active segment visible during playback
+  useEffect(() => {
+    if (activeSegIdx < 0 || !audioIsPlaying) return
+    const el = segmentRefsRef.current.get(activeSegIdx)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [activeSegIdx, audioIsPlaying])
 
   // Phase 1 – Derived Transcript Utilities (client-side; failures must not affect transcript)
   const getParagraphs = useCallback((text: string): string[] => {
@@ -2129,7 +2188,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     Copy
                   </button>
                 </div>
-                <div ref={transcriptScrollRef} className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                <div ref={transcriptScrollRef} className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-[15px] text-gray-700 dark:text-gray-300 leading-[1.75] tracking-[0.01em]">
                   {transcriptEditMode && editableSegments?.length ? (
                     <div className="space-y-3">
                       {editableSegments.map((seg, i) => (
@@ -2145,27 +2204,149 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       ))}
                     </div>
                   ) : result?.segments?.length && !translationLanguage ? (
-                    <div className="space-y-3">
-                      {result.segments.map((seg, i) => (
-                        <div
-                          key={i}
-                          ref={(el) => { if (el) segmentRefsRef.current.set(i, el); else segmentRefsRef.current.delete(i) }}
-                          className="flex gap-3 items-start"
-                        >
-                          <span className="shrink-0 text-[11px] text-gray-400 dark:text-gray-500 font-mono mt-0.5 w-10">{formatTimestamp(seg.start)}</span>
-                          <p className="leading-relaxed">
-                            {seg.speaker && (
-                              <span className="font-semibold text-violet-600 dark:text-violet-400 mr-1">{seg.speaker}:</span>
-                            )}
-                            {seg.text}
-                          </p>
-                        </div>
+                    <div>
+                      {segmentParagraphs.map((group, pi) => (
+                        <p key={pi} className="mb-5">
+                          {group.map(({ seg, globalIndex }) => {
+                            const isActive = globalIndex === activeSegIdx
+                            return (
+                              <span
+                                key={globalIndex}
+                                ref={(el) => { if (el) segmentRefsRef.current.set(globalIndex, el); else segmentRefsRef.current.delete(globalIndex) }}
+                                onClick={() => {
+                                  if (!audioRef.current) return
+                                  audioRef.current.currentTime = seg.start
+                                  audioRef.current.play()
+                                }}
+                                className={audioObjectUrl ? 'cursor-pointer' : ''}
+                              >
+                                <span className={`text-[11px] font-mono mr-1 ${isActive ? 'text-violet-500 dark:text-violet-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                                  ({formatTimestamp(seg.start)})
+                                </span>
+                                <span className={isActive ? 'bg-yellow-200 dark:bg-yellow-900/60 rounded px-0.5 transition-colors' : ''}>
+                                  {seg.speaker && (
+                                    <span className="font-semibold text-violet-600 dark:text-violet-400 mr-1">{seg.speaker}:</span>
+                                  )}
+                                  {seg.text}
+                                </span>{' '}
+                              </span>
+                            )
+                          })}
+                        </p>
                       ))}
                     </div>
                   ) : (
                     <div className="whitespace-pre-wrap">{displayTranscript || fullTranscript || transcriptPreview || ''}</div>
                   )}
                 </div>
+
+                {/* Audio player — below transcript */}
+                {audioObjectUrl && (
+                  <div className="mt-4 px-4 pt-3 pb-3 bg-gray-100 dark:bg-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <audio
+                      ref={audioRef}
+                      src={audioObjectUrl}
+                      onLoadedMetadata={() => {
+                        const dur = audioRef.current?.duration ?? 0
+                        setAudioDuration(dur)
+                        if (scrubberRef.current) scrubberRef.current.max = String(dur)
+                      }}
+                      onTimeUpdate={() => {
+                        const t = audioRef.current?.currentTime ?? 0
+                        audioPlaybackTimeRef.current = t
+                        if (scrubberRef.current) scrubberRef.current.value = String(t)
+                        if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
+                        const segs = result?.segments
+                        if (segs?.length) {
+                          let newIdx = -1
+                          for (let i = segs.length - 1; i >= 0; i--) {
+                            if (t >= segs[i].start) { newIdx = i; break }
+                          }
+                          setActiveSegIdx(prev => prev === newIdx ? prev : newIdx)
+                        }
+                      }}
+                      onPlay={() => setAudioIsPlaying(true)}
+                      onPause={() => setAudioIsPlaying(false)}
+                      onEnded={() => setAudioIsPlaying(false)}
+                    />
+                    {/* Play + scrubber + time */}
+                    <div className="flex items-center gap-3 mb-2.5">
+                      <button
+                        type="button"
+                        onClick={() => { if (!audioRef.current) return; audioIsPlaying ? audioRef.current.pause() : audioRef.current.play() }}
+                        className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 hover:bg-violet-700 active:scale-95 text-white transition-all"
+                      >
+                        {audioIsPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
+                      </button>
+                      <input
+                        ref={scrubberRef}
+                        type="range"
+                        min={0}
+                        max={audioDuration || 100}
+                        step={0.1}
+                        defaultValue={0}
+                        onChange={(e) => {
+                          const t = Number(e.target.value)
+                          audioPlaybackTimeRef.current = t
+                          if (audioRef.current) audioRef.current.currentTime = t
+                          if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
+                        }}
+                        className="flex-1 h-1.5 accent-violet-600 cursor-pointer"
+                      />
+                      <span ref={timeDisplayRef} className="shrink-0 text-xs font-mono text-gray-500 dark:text-gray-400 w-10 text-right">
+                        0:00
+                      </span>
+                    </div>
+                    {/* Volume + speed */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        title={audioMuted ? 'Unmute' : 'Mute'}
+                        onClick={() => {
+                          const muted = !audioMuted
+                          setAudioMuted(muted)
+                          if (audioRef.current) audioRef.current.muted = muted
+                        }}
+                        className="shrink-0 text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                      >
+                        {audioMuted || audioVolume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                      </button>
+                      <input
+                        type="range"
+                        min={0}
+                        max={1}
+                        step={0.05}
+                        value={audioVolume}
+                        onChange={(e) => {
+                          const v = Number(e.target.value)
+                          setAudioVolume(v)
+                          if (audioRef.current) {
+                            audioRef.current.volume = v
+                            audioRef.current.muted = v === 0
+                          }
+                          if (v > 0 && audioMuted) setAudioMuted(false)
+                        }}
+                        className="w-20 h-1.5 accent-violet-600 cursor-pointer"
+                      />
+                      <div className="ml-auto flex items-center gap-2">
+                        <span className="text-xs text-gray-400 dark:text-gray-500 select-none">Speed</span>
+                        <select
+                          value={audioSpeed}
+                          onChange={(e) => {
+                            const s = Number(e.target.value)
+                            setAudioSpeed(s)
+                            if (audioRef.current) audioRef.current.playbackRate = s
+                          }}
+                          className="text-xs bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1 cursor-pointer focus:outline-none focus:ring-1 focus:ring-violet-500"
+                        >
+                          {[0.25, 0.5, 0.75, 1, 1.5, 2].map(s => (
+                            <option key={s} value={s}>{s}x</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
