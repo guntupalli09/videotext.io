@@ -25,7 +25,7 @@ import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJo
 import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
 import { trackEvent } from '../lib/analytics'
 import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
-import { segmentsToSrt, segmentsToVtt, type Segment } from '../lib/srtExport'
+import { segmentsToSrt, segmentsToVtt, formatTimestamp, type Segment } from '../lib/srtExport'
 import toast from 'react-hot-toast'
 import { useWorkflow } from '../contexts/WorkflowContext'
 import { emitToolCompleted } from '../workflow/workflowStore'
@@ -2129,8 +2129,42 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     Copy
                   </button>
                 </div>
-                <div className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {displayTranscript || fullTranscript || transcriptPreview || ''}
+                <div ref={transcriptScrollRef} className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {transcriptEditMode && editableSegments?.length ? (
+                    <div className="space-y-3">
+                      {editableSegments.map((seg, i) => (
+                        <div key={i} className="flex gap-3 items-start">
+                          <span className="shrink-0 text-[11px] text-gray-400 dark:text-gray-500 font-mono mt-2 w-10">{formatTimestamp(seg.start)}</span>
+                          <textarea
+                            className="flex-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded p-1.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                            value={seg.text}
+                            rows={2}
+                            onChange={(e) => setEditableSegments((prev) => prev ? prev.map((s, j) => j === i ? { ...s, text: e.target.value } : s) : prev)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : result?.segments?.length && !translationLanguage ? (
+                    <div className="space-y-3">
+                      {result.segments.map((seg, i) => (
+                        <div
+                          key={i}
+                          ref={(el) => { if (el) segmentRefsRef.current.set(i, el); else segmentRefsRef.current.delete(i) }}
+                          className="flex gap-3 items-start"
+                        >
+                          <span className="shrink-0 text-[11px] text-gray-400 dark:text-gray-500 font-mono mt-0.5 w-10">{formatTimestamp(seg.start)}</span>
+                          <p className="leading-relaxed">
+                            {seg.speaker && (
+                              <span className="font-semibold text-violet-600 dark:text-violet-400 mr-1">{seg.speaker}:</span>
+                            )}
+                            {seg.text}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="whitespace-pre-wrap">{displayTranscript || fullTranscript || transcriptPreview || ''}</div>
+                  )}
                 </div>
               </div>
             </div>
