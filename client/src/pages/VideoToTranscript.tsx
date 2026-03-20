@@ -117,7 +117,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const segmentRefsRef = useRef<Map<number, HTMLSpanElement>>(new Map())
   // Audio playback for transcript sync
   const audioRef = useRef<HTMLAudioElement>(null)
-  const [audioPlaybackTime, setAudioPlaybackTime] = useState(0)
+  const audioPlaybackTimeRef = useRef(0)   // updated at timeupdate frequency without triggering re-renders
+  const scrubberRef = useRef<HTMLInputElement>(null)
+  const timeDisplayRef = useRef<HTMLSpanElement>(null)
+  const [activeSegIdx, setActiveSegIdx] = useState(-1)  // re-renders only when segment boundary crosses
   const [audioIsPlaying, setAudioIsPlaying] = useState(false)
   const [audioDuration, setAudioDuration] = useState(0)
   const [audioObjectUrl, setAudioObjectUrl] = useState<string | null>(null)
@@ -221,16 +224,20 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     if (selectedFile && status === 'completed') {
       const url = URL.createObjectURL(selectedFile)
       setAudioObjectUrl(url)
-      setAudioPlaybackTime(0)
+      setActiveSegIdx(-1)
       setAudioIsPlaying(false)
+      audioPlaybackTimeRef.current = 0
+      if (scrubberRef.current) scrubberRef.current.value = '0'
+      if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(0)
       return () => {
         setAudioObjectUrl(null)
         URL.revokeObjectURL(url)
       }
     }
     setAudioObjectUrl(null)
-    setAudioPlaybackTime(0)
+    setActiveSegIdx(-1)
     setAudioIsPlaying(false)
+    audioPlaybackTimeRef.current = 0
   }, [selectedFile, status])
 
   // Sync editable segments from result (so inline edits are preserved until result changes)
@@ -1116,22 +1123,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     return groups
   }, [result?.segments])
 
-  // Active segment index driven by audio currentTime
-  const activeSegmentIndex = useMemo(() => {
-    const segs = result?.segments
-    if (!segs?.length || !audioObjectUrl) return -1
-    for (let i = segs.length - 1; i >= 0; i--) {
-      if (audioPlaybackTime >= segs[i].start) return i
-    }
-    return -1
-  }, [audioPlaybackTime, audioObjectUrl, result?.segments])
-
   // Auto-scroll transcript to keep active segment visible during playback
   useEffect(() => {
-    if (activeSegmentIndex < 0 || !audioIsPlaying) return
-    const el = segmentRefsRef.current.get(activeSegmentIndex)
+    if (activeSegIdx < 0 || !audioIsPlaying) return
+    const el = segmentRefsRef.current.get(activeSegIdx)
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-  }, [activeSegmentIndex, audioIsPlaying])
+  }, [activeSegIdx, audioIsPlaying])
 
   // Phase 1 – Derived Transcript Utilities (client-side; failures must not affect transcript)
   const getParagraphs = useCallback((text: string): string[] => {
@@ -2193,11 +2190,30 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <audio
                       ref={audioRef}
                       src={audioObjectUrl}
-                      onLoadedMetadata={() => setAudioDuration(audioRef.current?.duration ?? 0)}
-                      onTimeUpdate={() => setAudioPlaybackTime(audioRef.current?.currentTime ?? 0)}
+                      onLoadedMetadata={() => {
+                        const dur = audioRef.current?.duration ?? 0
+                        setAudioDuration(dur)
+                        if (scrubberRef.current) scrubberRef.current.max = String(dur)
+                      }}
+                      onTimeUpdate={() => {
+                        const t = audioRef.current?.currentTime ?? 0
+                        audioPlaybackTimeRef.current = t
+                        // Direct DOM writes — no React re-render
+                        if (scrubberRef.current) scrubberRef.current.value = String(t)
+                        if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
+                        // Only setState when the active segment changes (infrequent)
+                        const segs = result?.segments
+                        if (segs?.length) {
+                          let newIdx = -1
+                          for (let i = segs.length - 1; i >= 0; i--) {
+                            if (t >= segs[i].start) { newIdx = i; break }
+                          }
+                          setActiveSegIdx(prev => prev === newIdx ? prev : newIdx)
+                        }
+                      }}
                       onPlay={() => setAudioIsPlaying(true)}
                       onPause={() => setAudioIsPlaying(false)}
-                      onEnded={() => { setAudioIsPlaying(false); setAudioPlaybackTime(0) }}
+                      onEnded={() => setAudioIsPlaying(false)}
                     />
                     <button
                       type="button"
@@ -2207,20 +2223,22 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       {audioIsPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5 ml-0.5" />}
                     </button>
                     <input
+                      ref={scrubberRef}
                       type="range"
                       min={0}
                       max={audioDuration || 100}
                       step={0.1}
-                      value={audioPlaybackTime}
+                      defaultValue={0}
                       onChange={(e) => {
                         const t = Number(e.target.value)
+                        audioPlaybackTimeRef.current = t
                         if (audioRef.current) audioRef.current.currentTime = t
-                        setAudioPlaybackTime(t)
+                        if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
                       }}
                       className="flex-1 h-1 accent-violet-600 cursor-pointer"
                     />
-                    <span className="shrink-0 text-xs font-mono text-gray-500 dark:text-gray-400 w-10 text-right">
-                      {formatTimestamp(audioPlaybackTime)}
+                    <span ref={timeDisplayRef} className="shrink-0 text-xs font-mono text-gray-500 dark:text-gray-400 w-10 text-right">
+                      0:00
                     </span>
                   </div>
                 )}
@@ -2244,7 +2262,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       {segmentParagraphs.map((group, pi) => (
                         <p key={pi} className="mb-4 leading-relaxed">
                           {group.map(({ seg, globalIndex }) => {
-                            const isActive = globalIndex === activeSegmentIndex
+                            const isActive = globalIndex === activeSegIdx
                             return (
                               <span
                                 key={globalIndex}
