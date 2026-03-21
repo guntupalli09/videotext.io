@@ -2543,7 +2543,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             </div>
 
 
-            <CrossToolSuggestions
+            {/* <CrossToolSuggestions
               workflowHint="Your last file is pre-filled on the next tool."
               suggestions={[
                 { icon: Subtitles, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT', state: { useWorkflowVideo: true } },
@@ -2560,7 +2560,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 },
                 { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
               ]}
-            />
+            /> */}
           </div>
           </>
         )}
