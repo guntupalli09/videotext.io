@@ -15,7 +15,7 @@ export interface DiarizedSegment {
 
 /**
  * Upload audio buffer to Replicate Files API.
- * Returns a temporary URL (valid 24 h) that Replicate models accept as `file_url`.
+ * Returns a temporary URL (valid 24 h) passed as `file` (Path type) so Cog handles auth.
  * This avoids any base64 size limitation and works for arbitrarily large audio files.
  */
 async function uploadAudioToReplicate(audioBuf: Buffer, token: string): Promise<string | null> {
