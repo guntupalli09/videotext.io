@@ -31,19 +31,15 @@ import { useWorkflow } from '../contexts/WorkflowContext'
 import { emitToolCompleted } from '../workflow/workflowStore'
 
 // ─── Phase 1 – Derived Transcript Utilities (client-side only) ─────────────────
-const BRANCH_IDS = ['transcript', 'speakers', 'summary', 'exports'] as const
+const BRANCH_IDS = ['transcript', 'speakers'] as const
 type BranchId = (typeof BRANCH_IDS)[number]
 const BRANCH_LABELS: Record<BranchId, string> = {
   transcript: 'Transcript',
   speakers: 'Speakers',
-  summary: 'Summary',
-  exports: 'Exports',
 }
 const BRANCH_ICONS: Record<BranchId, typeof FileText> = {
   transcript: FileText,
   speakers: Users,
-  summary: ListOrdered,
-  exports: FileCode,
 }
 const FILLER_WORDS = new Set(['um', 'uh', 'like', 'you know', 'basically', 'actually', 'literally', 'so', 'well', 'just', 'really', 'right', 'i mean', 'kind of', 'sort of'])
 const STOPWORDS = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'when', 'where', 'why', 'how'])
@@ -1381,103 +1377,276 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     toast.success('VTT downloaded')
   }
 
+  // Shared TXT download (used by both TranscriptResult and the sidebar Export button)
+  const handleDownloadTxt = async () => {
+    const url = getDownloadUrl()
+    if (!url) return
+    try {
+      const token = getAuthToken()
+      const res = await fetch(url + '?wm=1', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+      const blob = await res.blob()
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = result?.fileName ?? 'transcript.txt'
+      a.click()
+      URL.revokeObjectURL(a.href)
+    } catch {
+      toast.error('Download failed')
+    }
+  }
+
+  // Structured data exports (JSON / CSV / Notion / plain Text)
+  const handleStructuredDownload = (format: 'json' | 'csv' | 'notion' | 'text') => {
+    const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
+    const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
+    if (freeUsedAll) {
+      toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.')
+      return
+    }
+    const schema = getSummarySchema()
+    const speakers = getSpeakersData()
+    const chapters = getChaptersData()
+    const highlights = getHighlightsData()
+    const keywords = getKeywordsData()
+    let content = ''
+    if (format === 'json') {
+      content = JSON.stringify({ summary: schema, speakers, chapters, highlights, keywords, rawPreview: fullTranscript.slice(0, 500) }, null, 2)
+    } else if (format === 'csv') {
+      const rows: string[][] = [['type', 'content'], ['raw_preview', fullTranscript.slice(0, 300).replace(/"/g, '""')]]
+      speakers.forEach((s) => rows.push(['speaker', `"${s.speaker}","${s.text.replace(/"/g, '""')}"`]))
+      content = rows.map((r) => r.join(',')).join('\n')
+    } else if (format === 'notion') {
+      content = JSON.stringify(speakers.map((s) => ({ type: 'paragraph', rich_text: [{ text: { content: `[${s.speaker}] ${s.text}` } }] })), null, 2)
+    } else {
+      content = fullTranscript
+    }
+    const mimeType = format === 'json' ? 'application/json' : 'text/plain'
+    const ext = format === 'json' ? 'json' : format === 'csv' ? 'csv' : 'txt'
+    const finalContent = isPaidPlan ? content : content + FREE_EXPORT_WATERMARK
+    if (!isPaidPlan) setFreeExportsUsed((prev) => prev + 1)
+    const blob = new Blob([finalContent], { type: mimeType })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = `transcript-export.${ext}`
+    a.click()
+    URL.revokeObjectURL(a.href)
+    toast.success(isPaidPlan ? 'Download started' : 'Download started (with watermark)')
+  }
+
   const breadcrumbs = [{ label: 'Video to Transcript', href: '/video-to-transcript' }]
 
-  // ── Right-side insights panel (shown only on completed results) ────────────
-  const insightsSidebar = (status === 'completed' && result) ? (
-    <div className="space-y-4 lg:sticky lg:top-24">
-      {/* Chapters */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-          <BookOpen className="h-4 w-4 text-violet-500" strokeWidth={1.5} />
-          Chapters
-        </h3>
-        {(() => {
-          const chapters = getChaptersData()
-          if (!chapters.length) return (
-            <p className="text-xs text-gray-400 dark:text-gray-500">Enable &quot;Auto-generate chapters&quot; when transcribing to see sections here.</p>
-          )
-          return (
-            <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
-              {chapters.map((ch, i) => (
-                <button key={i} onClick={() => scrollToSegment(ch.segmentIndex)}
-                  className="block w-full text-left px-2.5 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-violet-50 dark:hover:bg-violet-900/20 text-xs text-gray-700 dark:text-gray-300 transition-colors">
-                  {ch.label}
-                </button>
-              ))}
-            </div>
-          )
-        })()}
-      </div>
+  // ── Right-side panel (shown only on completed results) ────────────────────
+  const insightsSidebar = (status === 'completed' && result) ? (() => {
+    // Pre-compute stats for the sidebar
+    const sidebarText = displayTranscript || fullTranscript || transcriptPreview || ''
+    const sidebarWordCount = sidebarText.trim() ? sidebarText.trim().split(/\s+/).filter(Boolean).length : 0
+    const lastSeg = result.segments?.length ? result.segments[result.segments.length - 1] : null
+    const sidebarDurSec = lastSeg?.end ?? 0
+    const sidebarDurStr = sidebarDurSec > 60
+      ? `${Math.floor(sidebarDurSec / 60)}m ${String(Math.floor(sidebarDurSec % 60)).padStart(2, '0')}s`
+      : sidebarDurSec > 0 ? `${Math.floor(sidebarDurSec)}s` : null
 
-      {/* Keywords */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-          <Hash className="h-4 w-4 text-violet-500" strokeWidth={1.5} />
-          Keywords
-        </h3>
-        {(() => {
-          const kw = getKeywordsData()
-          if (!kw.length) return (
-            <p className="text-xs text-gray-400 dark:text-gray-500">Top repeated terms will appear here after transcription.</p>
-          )
-          return (
-            <div className="flex flex-wrap gap-1.5">
-              {kw.map((item, i) => (
-                <button key={i} onClick={() => scrollToSegment(item.segmentIndex)}
-                  className="px-2.5 py-1 rounded-full bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 text-xs hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors">
-                  {item.keyword}
-                  <span className="text-violet-400 ml-1">×{item.count}</span>
-                </button>
-              ))}
-            </div>
-          )
-        })()}
-      </div>
+    return (
+      <div className="space-y-3 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-0.5">
 
-      {/* Highlights */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-violet-500" strokeWidth={1.5} />
-          Highlights
-        </h3>
+        {/* ── Summary ── */}
         {(() => {
-          const items = getHighlightsData()
-          if (!items.length) return (
-            <p className="text-xs text-gray-400 dark:text-gray-500">Key quotes and conclusions extracted from the transcript.</p>
-          )
+          const schema = getSummarySchema()
+          const hasAny = schema.summary || schema.bullets?.length || schema.action_items?.length
           return (
-            <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
-              {items.map((item, i) => (
-                <div key={i} className="text-xs">
-                  <span className="font-semibold text-violet-500 uppercase tracking-wide text-[10px]">{item.type}</span>
-                  <p className="text-gray-600 dark:text-gray-400 mt-0.5 leading-relaxed">{item.text}</p>
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Summary</p>
+              {!hasAny ? (
+                <p className="text-xs text-gray-400 dark:text-gray-500">Enable &quot;Include AI summary&quot; when transcribing to see a summary here.</p>
+              ) : (
+                <div className="space-y-3">
+                  {schema.summary && <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{schema.summary}</p>}
+                  {schema.bullets && schema.bullets.length > 0 && (
+                    <ul className="space-y-1.5">
+                      {schema.bullets.map((b, i) => (
+                        <li key={i} className="flex gap-2 text-sm text-gray-600 dark:text-gray-400">
+                          <span className="text-violet-400 shrink-0 mt-0.5">•</span>
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {schema.action_items && schema.action_items.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-1.5">Action items</p>
+                      <ul className="space-y-1">
+                        {schema.action_items.map((a, i) => (
+                          <li key={i} className="flex gap-2 text-xs text-gray-600 dark:text-gray-400">
+                            <span className="text-emerald-400 shrink-0">✓</span>
+                            <span>{a}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              ))}
+              )}
             </div>
           )
         })()}
-      </div>
 
-      {/* Clean transcript */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-          <Eraser className="h-4 w-4 text-violet-500" strokeWidth={1.5} />
-          Clean transcript
-        </h3>
-        <label className="flex items-center gap-2 mb-3 cursor-pointer">
-          <input type="checkbox" checked={cleanTranscriptEnabled} onChange={(e) => setCleanTranscriptEnabled(e.target.checked)}
-            className="rounded accent-violet-600" />
-          <span className="text-xs text-gray-600 dark:text-gray-400">Remove filler words</span>
-        </label>
-        {cleanTranscriptEnabled && (
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 max-h-40 overflow-y-auto">
-            <p className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{getCleanTranscript() || 'No content.'}</p>
+        {/* ── Stats row ── */}
+        {(sidebarWordCount > 0 || sidebarDurStr) && (
+          <div className="bg-white dark:bg-gray-900 rounded-2xl px-5 py-4 shadow-card border border-gray-100 dark:border-gray-800 flex items-center justify-between gap-4">
+            {sidebarDurStr && (
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">Duration</p>
+                <p className="text-lg font-bold text-gray-800 dark:text-white mt-0.5">{sidebarDurStr}</p>
+              </div>
+            )}
+            {sidebarWordCount > 0 && (
+              <div className="text-right">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">Words</p>
+                <p className="text-lg font-bold text-gray-800 dark:text-white mt-0.5">{sidebarWordCount.toLocaleString()}</p>
+              </div>
+            )}
           </div>
         )}
+
+        {/* ── Export ── */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800 space-y-3">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">Export</p>
+
+          {/* Primary: Download TXT */}
+          <button
+            type="button"
+            onClick={() => void handleDownloadTxt()}
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors shadow-sm"
+          >
+            <Download className="w-4 h-4 shrink-0" />
+            Download transcript
+          </button>
+
+          {/* Quick row: Copy · SRT · VTT */}
+          <div className="grid grid-cols-3 gap-2">
+            {([
+              { label: 'Copy', action: handleCopyToClipboard },
+              { label: 'SRT', action: handleExportSrt },
+              { label: 'VTT', action: handleExportVtt },
+            ] as const).map(({ label, action }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={action}
+                className="py-2 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium border border-gray-200 dark:border-gray-700 transition-colors"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Structured formats: JSON · CSV · Notion */}
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">
+              More formats
+              {!isPaidPlan && <span className="ml-1 text-gray-300 dark:text-gray-600">({freeExportsUsed}/2 free used)</span>}
+            </p>
+            <div className="space-y-1.5">
+              {(['json', 'csv', 'notion'] as const).map((fmt) => {
+                const meta = { json: { label: 'JSON', ext: '.json', dot: 'bg-amber-400' }, csv: { label: 'CSV', ext: '.csv', dot: 'bg-emerald-400' }, notion: { label: 'Notion', ext: '.json', dot: 'bg-gray-400' } }[fmt]
+                const canClick = isPaidPlan || freeExportsUsed < 2
+                return (
+                  <button
+                    key={fmt}
+                    type="button"
+                    onClick={() => handleStructuredDownload(fmt)}
+                    disabled={!canClick}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />
+                      <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">{meta.label}</span>
+                      <span className="text-[10px] font-mono text-gray-400">{meta.ext}</span>
+                    </div>
+                    <Download className="w-3.5 h-3.5 text-gray-400" />
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Chapters ── */}
+        {(() => {
+          const chapters = getChaptersData()
+          if (!chapters.length) return null
+          return (
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Chapters</p>
+              <div className="space-y-1.5">
+                {chapters.map((ch, i) => (
+                  <button key={i} onClick={() => scrollToSegment(ch.segmentIndex)}
+                    className="block w-full text-left px-2.5 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-violet-50 dark:hover:bg-violet-900/20 text-xs text-gray-700 dark:text-gray-300 transition-colors">
+                    {ch.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* ── Keywords ── */}
+        {(() => {
+          const kw = getKeywordsData()
+          if (!kw.length) return null
+          return (
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Keywords</p>
+              <div className="flex flex-wrap gap-1.5">
+                {kw.map((item, i) => (
+                  <button key={i} onClick={() => scrollToSegment(item.segmentIndex)}
+                    className="px-2.5 py-1 rounded-full bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 text-xs hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors">
+                    {item.keyword}<span className="text-violet-400 ml-1">×{item.count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* ── Highlights ── */}
+        {(() => {
+          const items = getHighlightsData()
+          if (!items.length) return null
+          return (
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Highlights</p>
+              <div className="space-y-3">
+                {items.map((item, i) => (
+                  <div key={i}>
+                    <span className="font-semibold text-violet-500 uppercase tracking-wide text-[9px]">{item.type}</span>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 leading-relaxed">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* ── Clean transcript ── */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
+          <label className="flex items-center justify-between cursor-pointer">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">Clean transcript</p>
+            <input type="checkbox" checked={cleanTranscriptEnabled} onChange={(e) => setCleanTranscriptEnabled(e.target.checked)}
+              className="rounded accent-violet-600" />
+          </label>
+          {cleanTranscriptEnabled && (
+            <div className="mt-3 bg-gray-50 dark:bg-gray-800 rounded-xl p-3 max-h-48 overflow-y-auto">
+              <p className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{getCleanTranscript() || 'No content.'}</p>
+            </div>
+          )}
+        </div>
+
       </div>
-    </div>
-  ) : null
+    )
+  })() : null
 
   const layoutProps = {
     breadcrumbs,
@@ -2112,191 +2281,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   </div>
                 )}
 
-              {activeBranch === 'summary' && (
-                  <div className="bg-white rounded-2xl p-6 shadow-card">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <ListOrdered className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
-                      Summary
-                    </h3>
-                    {(() => {
-                      const schema = getSummarySchema()
-                      const hasServer = schema.summary || (schema.bullets && schema.bullets.length > 0)
-                      const hasAny = hasServer || schema.decisions.length || schema.action_items.length || schema.key_points.length
-                      if (!hasAny) {
-                        return (
-                          <div className="rounded-xl bg-gray-50/80 p-4">
-                            <p className="text-gray-600 text-sm font-medium mb-1">Summary</p>
-                            <p className="text-gray-500 text-sm">Enable &quot;Include AI summary&quot; when transcribing to get a paragraph and bullet points.</p>
-                          </div>
-                        )
-                      }
-                      return (
-                        <div className="grid gap-4">
-                          {schema.summary && (
-                            <div>
-                              <h4 className="text-sm font-semibold text-gray-600 mb-2">Overview</h4>
-                              <p className="text-sm text-gray-700">{schema.summary}</p>
-                            </div>
-                          )}
-                          {schema.bullets && schema.bullets.length > 0 && (
-                            <div>
-                              <h4 className="text-sm font-semibold text-gray-600 mb-2">Key points</h4>
-                              <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                                {schema.bullets.map((k, i) => <li key={i}>{k}</li>)}
-                              </ul>
-                            </div>
-                          )}
-                          {schema.action_items && schema.action_items.length > 0 && (
-                            <div>
-                              <h4 className="text-sm font-semibold text-gray-600 mb-2">Action items</h4>
-                              <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                                {schema.action_items.map((a, i) => <li key={i}>{a}</li>)}
-                              </ul>
-                            </div>
-                          )}
-                          {!hasServer && schema.decisions.length > 0 && (
-                            <div>
-                              <h4 className="text-sm font-semibold text-gray-600 mb-2">Decisions</h4>
-                              <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                                {schema.decisions.map((d, i) => <li key={i}>{d}</li>)}
-                              </ul>
-                            </div>
-                          )}
-                          {!hasServer && schema.key_points.length > 0 && schema.key_points !== schema.bullets && (
-                            <div>
-                              <h4 className="text-sm font-semibold text-gray-600 mb-2">Key points</h4>
-                              <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                                {schema.key_points.map((k, i) => <li key={i}>{k}</li>)}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })()}
-                  </div>
-                )}
 
-              {activeBranch === 'exports' && (
-                  <div className="bg-white rounded-2xl p-6 shadow-card">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                      <FileCode className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
-                      Exports
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-4">Download transcript and derived data in your preferred format.</p>
-                    {!fullTranscript ? (
-                      <div className="rounded-xl bg-gray-50/80 p-4">
-                        <p className="text-gray-600 text-sm font-medium mb-1">Exports</p>
-                        <p className="text-gray-500 text-sm">Structured exports (JSON, CSV, Notion, Text) appear here once transcript data is available.</p>
-                      </div>
-                    ) : (
-                      <>
-                        <p className="text-sm text-gray-500 mb-4">
-                          {isPaidPlan
-                            ? 'Full download available.'
-                            : `Free plan: download any 2 exports with watermark (${freeExportsUsed}/2 used). Upgrade for unlimited downloads.`}
-                        </p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {(['json', 'csv', 'notion', 'text'] as const).map((format) => {
-                            const schema = getSummarySchema()
-                            const speakers = getSpeakersData()
-                            const chapters = getChaptersData()
-                            const highlights = getHighlightsData()
-                            const keywords = getKeywordsData()
-                            const buildContent = () => {
-                              if (format === 'json') {
-                                return JSON.stringify({ summary: schema, speakers, chapters, highlights, keywords, rawPreview: fullTranscript.slice(0, 500) }, null, 2)
-                              }
-                              if (format === 'csv') {
-                                const rows = [['type', 'content'], ['raw_preview', fullTranscript.slice(0, 300).replace(/"/g, '""')]]
-                                speakers.forEach((s) => rows.push(['speaker', `"${s.speaker}","${s.text.replace(/"/g, '""')}"`]))
-                                return rows.map((r) => r.join(',')).join('\n')
-                              }
-                              if (format === 'notion') {
-                                return JSON.stringify(speakers.map((s) => ({ type: 'paragraph', rich_text: [{ text: { content: `[${s.speaker}] ${s.text}` } }] })), null, 2)
-                              }
-                              if (format === 'text') {
-                                return fullTranscript
-                              }
-                              return ''
-                            }
-                            const content = buildContent()
-                            const preview = content.slice(0, 400) + (content.length > 400 ? '…' : '')
-                            const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
-                            const freeCanDownload = !isPaidPlan && freeExportsUsed < 2
-                            const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
-                            const mimeType = format === 'json' ? 'application/json' : 'text/plain'
-                            const ext = format === 'json' ? 'json' : format === 'csv' ? 'csv' : 'txt'
-                            const handleDownload = () => {
-                              if (isPaidPlan) {
-                                const blob = new Blob([content], { type: mimeType })
-                                const a = document.createElement('a')
-                                a.href = URL.createObjectURL(blob)
-                                a.download = `transcript-export.${ext}`
-                                a.click()
-                                URL.revokeObjectURL(a.href)
-                                toast.success('Download started')
-                                return
-                              }
-                              if (freeUsedAll) {
-                                toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.')
-                                return
-                              }
-                              const watermarkedContent = content + FREE_EXPORT_WATERMARK
-                              setFreeExportsUsed((prev) => prev + 1)
-                              const blob = new Blob([watermarkedContent], { type: mimeType })
-                              const a = document.createElement('a')
-                              a.href = URL.createObjectURL(blob)
-                              a.download = `transcript-export.${ext}`
-                              a.click()
-                              URL.revokeObjectURL(a.href)
-                              toast.success('Download started (with watermark)')
-                            }
-                            const downloadLabel = isPaidPlan
-                              ? 'Download'
-                              : freeCanDownload
-                                ? 'Download with watermark'
-                                : '2/2 used'
-                            const canClick = isPaidPlan || freeCanDownload
-                            const label = format === 'json' ? 'JSON' : format === 'csv' ? 'CSV' : format === 'notion' ? 'Notion' : 'Text'
-                            const formatMeta: Record<string, { color: string; dot: string; ext: string }> = {
-                              json: { color: 'bg-amber-50 ring-amber-100', dot: 'bg-amber-400', ext: '.json' },
-                              csv:  { color: 'bg-emerald-50 ring-emerald-100', dot: 'bg-emerald-400', ext: '.csv' },
-                              notion: { color: 'bg-gray-50 ring-gray-100', dot: 'bg-gray-400', ext: '.json' },
-                              text: { color: 'bg-blue-50 ring-blue-100', dot: 'bg-blue-400', ext: '.txt' },
-                            }
-                            const meta = formatMeta[format] ?? { color: 'bg-gray-50 ring-gray-100', dot: 'bg-gray-400', ext: '' }
-                            return (
-                              <div key={format} className={`rounded-xl ${meta.color} p-4 ring-1`}>
-                                <div className="flex items-center justify-between gap-2 mb-3">
-                                  <div className="flex items-center gap-2">
-                                    <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} aria-hidden />
-                                    <span className="text-sm font-semibold text-gray-800">{label}</span>
-                                    <span className="text-[10px] font-mono text-gray-400">{meta.ext}</span>
-                                  </div>
-                                  <button
-                                    onClick={handleDownload}
-                                    disabled={!canClick}
-                                    className={`flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-lg transition-colors ${
-                                      canClick
-                                        ? 'bg-white hover:bg-violet-50 text-violet-600 hover:text-violet-700 ring-1 ring-gray-200'
-                                        : 'text-gray-300 cursor-not-allowed'
-                                    }`}
-                                  >
-                                    <Download className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
-                                    {downloadLabel}
-                                  </button>
-                                </div>
-                                <pre className="text-xs text-gray-600 bg-white/70 p-3 rounded-lg max-h-28 overflow-y-auto whitespace-pre-wrap break-words ring-1 ring-white/80">
-                                  {preview}
-                                </pre>
-                              </div>
-                            )
-                          })}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
             </div>
 
             {/* Main transcript workspace panel (last) */}
