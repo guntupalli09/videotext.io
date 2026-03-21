@@ -11,7 +11,7 @@ import { fixSubtitleFile, validateSubtitleFile } from '../services/subtitles'
 import { generateSummary, generateChapters } from '../services/transcriptSummary'
 import { exportTranscriptJson, exportTranscriptDocx, exportTranscriptPdf } from '../services/transcriptExport'
 import { fireWebhook } from '../utils/webhook'
-import { transcribeWithDiarization } from '../services/diarization'
+import { transcribeWithDiarization, resolveSpeakerNames } from '../services/diarization'
 import { convertSubtitleFile } from '../services/subtitleConverter'
 import { burnSubtitles, compressVideo, getVideoDuration, HUNG_JOB_MESSAGE, type CompressProfile } from '../services/ffmpeg'
 import { generateOutputFilename, downloadVideoFromURL, validateVideoDuration } from '../services/video'
@@ -198,6 +198,8 @@ export interface JobData {
     includeChapters?: boolean
     exportFormats?: ('txt' | 'json' | 'docx' | 'pdf')[]
     speakerDiarization?: boolean
+    numSpeakers?: number
+    diarizationLanguage?: string
     glossary?: string
   }
   webhookUrl?: string
@@ -609,11 +611,13 @@ async function processJob(job: import('bull').Job<JobData>) {
 
           if (wantDiarization) {
             await job.progress(22)
-            const diar = await transcribeWithDiarization(videoPath, options?.language, { isAlreadyAudio })
             const glossary = options?.glossary?.trim()
+            const diar = await transcribeWithDiarization(videoPath, options?.diarizationLanguage || options?.language, { isAlreadyAudio, prompt: glossary, numSpeakers: options?.numSpeakers })
             if (diar) {
               fullText = diar.text
-              segments = diar.segments
+              // Resolve raw speaker IDs (e.g. SPEAKER_00) to real names or "Speaker N" labels.
+              // This is a fast GPT-4o-mini call that adds ~2-3 s on top of the diarization wait.
+              segments = await resolveSpeakerNames(diar.segments)
               if (partialWriter && segments.length > 0) {
                 partialWriter.onPartial(segments.slice(0, 2000))
               }

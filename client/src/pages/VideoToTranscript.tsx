@@ -89,6 +89,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [includeChapters, setIncludeChapters] = useState(true)
   const [exportFormats, setExportFormats] = useState<('txt' | 'json' | 'docx' | 'pdf')[]>(['txt'])
   const [speakerDiarization, setSpeakerDiarization] = useState(false)
+  const [diarizationWasRequested, setDiarizationWasRequested] = useState(false)
+  const [numSpeakers, setNumSpeakers] = useState('')
+  const [diarizationLanguage, setDiarizationLanguage] = useState('')
   const [glossary, setGlossary] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [transcriptEditMode, setTranscriptEditMode] = useState(false)
@@ -616,8 +619,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         includeChapters,
         exportFormats: exportFormats.length > 0 ? exportFormats : (['txt'] as const),
         speakerDiarization,
+        numSpeakers: numSpeakers ? Number(numSpeakers) : undefined,
+        diarizationLanguage: diarizationLanguage.trim() || undefined,
         glossary: glossary.trim() || undefined,
       }
+      setDiarizationWasRequested(speakerDiarization)
       setUploadPhase('uploading')
       trackEvent('processing_started', { tool: 'video-to-transcript' })
 
@@ -867,6 +873,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       setPartialSegments([])
       setYoutubeStage(null)
       youtubeStageAtFailureRef.current = null
+      setDiarizationWasRequested(speakerDiarization)
       trackEvent('processing_started', { tool: 'video-to-transcript', source: 'youtube' })
 
       const response: YoutubeUploadResponse = await submitYoutubeUrl(
@@ -876,6 +883,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           includeChapters,
           exportFormats: exportFormats.length > 0 ? exportFormats : ['txt'],
           speakerDiarization,
+          numSpeakers: numSpeakers ? Number(numSpeakers) : undefined,
+          diarizationLanguage: diarizationLanguage.trim() || undefined,
           glossary: glossary.trim() || undefined,
         },
         uploadAbortRef.current.signal
@@ -1080,6 +1089,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setIncludeChapters(true)
     setExportFormats(['txt'])
     setSpeakerDiarization(false)
+    setNumSpeakers('')
+    setDiarizationLanguage('')
     setGlossary('')
     setSearchQuery('')
     setTranscriptEditMode(false)
@@ -1488,6 +1499,37 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       />
                       <span className="text-sm text-gray-700 dark:text-gray-300">Speaker labels (who said what)</span>
                     </label>
+                    {speakerDiarization && (
+                      <>
+                        <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
+                          Speaker identification adds extra processing time — roughly 1.5× longer than standard transcription (e.g. a 2-hour video takes ~10 min instead of ~4 min).
+                        </p>
+                        <div className="flex gap-2 mt-1">
+                          <div className="flex-1">
+                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">No. of speakers <span className="text-gray-400">(optional)</span></label>
+                            <input
+                              type="number"
+                              min={1}
+                              max={50}
+                              value={numSpeakers}
+                              onChange={(e) => setNumSpeakers(e.target.value)}
+                              placeholder="Auto-detect"
+                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Language <span className="text-gray-400">(optional)</span></label>
+                            <input
+                              type="text"
+                              value={diarizationLanguage}
+                              onChange={(e) => setDiarizationLanguage(e.target.value)}
+                              placeholder="Auto-detect (e.g. en)"
+                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -1546,6 +1588,37 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   checked={speakerDiarization}
                   onChange={(checked) => setSpeakerDiarization(checked)}
                 />
+                {speakerDiarization && (
+                  <>
+                    <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 -mt-1">
+                      Speaker identification adds extra processing time — roughly 1.5× longer than standard transcription (e.g. a 2-hour video takes ~10 min instead of ~4 min).
+                    </p>
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">No. of speakers <span className="text-gray-400">(optional)</span></label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={50}
+                          value={numSpeakers}
+                          onChange={(e) => setNumSpeakers(e.target.value)}
+                          placeholder="Auto-detect"
+                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Language <span className="text-gray-400">(optional)</span></label>
+                        <input
+                          type="text"
+                          value={diarizationLanguage}
+                          onChange={(e) => setDiarizationLanguage(e.target.value)}
+                          placeholder="Auto-detect (e.g. en)"
+                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </ProcessingInterface>
@@ -1866,7 +1939,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         return (
                           <div className="rounded-xl bg-gray-50/80 p-4">
                             <p className="text-gray-600 text-sm font-medium mb-1">Speakers</p>
-                            <p className="text-gray-500 text-sm">Enable &quot;Speaker diarization&quot; when processing to see who said what. Otherwise this view stays empty or uses paragraph grouping.</p>
+                            <p className="text-gray-500 text-sm">Check &quot;Speaker labels&quot; before transcribing to see who said what.</p>
                           </div>
                         )
                       }
@@ -1874,8 +1947,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         <>
                           <p className="text-sm text-gray-500 mb-4">
                             {hasMultipleSpeakers
-                              ? 'Labels (Speaker 1, 2, …) come from automatic speaker detection. They are not real names; each label is one distinct voice in the video.'
-                              : 'All segments are shown as one speaker. Enable &quot;Speaker diarization&quot; when you upload to get automatic labels (Speaker 1, 2, …) for different voices.'}
+                              ? 'Speaker labels come from automatic detection. If names were mentioned in the video they are used directly; otherwise speakers are labelled Speaker 1, 2, …'
+                              : diarizationWasRequested
+                                ? 'Speaker identification ran but could not detect multiple speakers — the video may have a single speaker, or the service encountered an issue. Try again if unexpected.'
+                                : 'Check &quot;Speaker labels&quot; before transcribing to get automatic labels for different voices.'}
                           </p>
                           <div className="space-y-4 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto">
                             {data.map((item, i) => (
