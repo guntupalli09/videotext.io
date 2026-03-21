@@ -118,6 +118,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [translatedCache, setTranslatedCache] = useState<Record<string, string>>({})
   const transcriptScrollRef = useRef<HTMLDivElement>(null)
   const segmentRefsRef = useRef<Map<number, HTMLSpanElement>>(new Map())
+  const speakerSegmentRefsRef = useRef<Map<number, HTMLDivElement>>(new Map())
   // Audio playback for transcript sync
   const audioRef = useRef<HTMLAudioElement>(null)
   const audioPlaybackTimeRef = useRef(0)   // updated at timeupdate frequency without triggering re-renders
@@ -1144,6 +1145,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [activeSegIdx, audioIsPlaying])
 
+  // Auto-scroll speakers panel to keep active segment visible during playback
+  useEffect(() => {
+    if (activeSegIdx < 0 || !audioIsPlaying || activeBranch !== 'speakers') return
+    const el = speakerSegmentRefsRef.current.get(activeSegIdx)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [activeSegIdx, audioIsPlaying, activeBranch])
+
   // Phase 1 – Derived Transcript Utilities (client-side; failures must not affect transcript)
   const getParagraphs = useCallback((text: string): string[] => {
     if (!text.trim()) return []
@@ -1153,7 +1161,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const getSpeakersData = useCallback((): { speaker: string; text: string; isDiarized: boolean }[] => {
     if (result?.segments?.length) {
       const rawLabels = result.segments.map((s) => s.speaker?.trim() || 'Speaker')
-      const unique = [...new Set(rawLabels)]
+      const unique = Array.from(new Set(rawLabels)) as string[]
       // Only treat as diarized when we have at least 2 distinct speaker labels from the backend
       const isDiarized = unique.length >= 2
       const labelToFriendly: Record<string, string> = {}
@@ -1931,6 +1939,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
                       <Users className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
                       Who said what
+                      {audioObjectUrl && <span className="ml-auto text-[11px] font-normal text-gray-400">Click any segment to seek</span>}
                     </h3>
                     {(() => {
                       const data = getSpeakersData()
@@ -1943,6 +1952,25 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           </div>
                         )
                       }
+                      // Assign a stable color per unique speaker label
+                      const speakerColors: string[] = [
+                        'border-violet-400 bg-violet-50',
+                        'border-sky-400 bg-sky-50',
+                        'border-emerald-400 bg-emerald-50',
+                        'border-rose-400 bg-rose-50',
+                        'border-amber-400 bg-amber-50',
+                        'border-fuchsia-400 bg-fuchsia-50',
+                      ]
+                      const speakerTextColors: string[] = [
+                        'text-violet-600',
+                        'text-sky-600',
+                        'text-emerald-600',
+                        'text-rose-600',
+                        'text-amber-600',
+                        'text-fuchsia-600',
+                      ]
+                      const uniqueSpeakers = [...new Set(data.map((d) => d.speaker))]
+                      const speakerColorIdx = (name: string) => uniqueSpeakers.indexOf(name) % speakerColors.length
                       return (
                         <>
                           <p className="text-sm text-gray-500 mb-4">
@@ -1952,13 +1980,51 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 ? 'Speaker identification ran but could not detect multiple speakers — the video may have a single speaker, or the service encountered an issue. Try again if unexpected.'
                                 : 'Check &quot;Speaker labels&quot; before transcribing to get automatic labels for different voices.'}
                           </p>
-                          <div className="space-y-4 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto">
-                            {data.map((item, i) => (
-                              <div key={i} className="border-l-2 border-violet-300 pl-3 py-1">
-                                <span className="text-xs font-semibold text-violet-600 uppercase">{item.speaker}</span>
-                                <p className="text-sm text-gray-700 mt-0.5">{item.text}</p>
-                              </div>
-                            ))}
+                          <div className="space-y-2 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto pr-1">
+                            {data.map((item, i) => {
+                              const seg = result?.segments?.[i]
+                              const isActive = i === activeSegIdx
+                              const colorClass = speakerColors[speakerColorIdx(item.speaker)]
+                              const textColorClass = speakerTextColors[speakerColorIdx(item.speaker)]
+                              const ts = seg
+                                ? `${Math.floor(seg.start / 60)}:${String(Math.floor(seg.start % 60)).padStart(2, '0')}`
+                                : null
+                              return (
+                                <div
+                                  key={i}
+                                  ref={(el) => { if (el) speakerSegmentRefsRef.current.set(i, el); else speakerSegmentRefsRef.current.delete(i) }}
+                                  onClick={() => {
+                                    if (!audioRef.current || !seg) return
+                                    audioRef.current.currentTime = seg.start
+                                    audioRef.current.play()
+                                  }}
+                                  className={`flex gap-3 items-start border-l-2 pl-3 py-2 rounded-r-xl transition-all ${
+                                    audioObjectUrl ? 'cursor-pointer' : ''
+                                  } ${
+                                    isActive
+                                      ? `${colorClass} shadow-sm`
+                                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/60'
+                                  }`}
+                                >
+                                  <div className="shrink-0 flex flex-col items-end gap-0.5 pt-0.5 w-16">
+                                    <span className={`text-[11px] font-semibold uppercase truncate ${isActive ? textColorClass : 'text-gray-400'}`}>
+                                      {item.speaker}
+                                    </span>
+                                    {ts && (
+                                      <span className={`text-[10px] font-mono ${isActive ? textColorClass + ' opacity-70' : 'text-gray-300'}`}>
+                                        {ts}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className={`flex-1 text-sm leading-relaxed ${isActive ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
+                                    {isActive && (
+                                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 mr-1.5 mb-0.5 animate-pulse" aria-hidden />
+                                    )}
+                                    {item.text}
+                                  </p>
+                                </div>
+                              )
+                            })}
                           </div>
                         </>
                       )
@@ -2336,7 +2402,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <div>
                       {segmentParagraphs.map((group, pi) => (
                         <p key={pi} className="mb-5">
-                          {group.map(({ seg, globalIndex }) => {
+                          {group.map(({ seg, globalIndex }: { seg: { start: number; end: number; text: string; speaker?: string }; globalIndex: number }) => {
                             const isActive = globalIndex === activeSegIdx
                             return (
                               <span
