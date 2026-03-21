@@ -89,7 +89,8 @@ export async function transcribeWithDiarization(
     const fileUrl = await uploadAudioToReplicate(audioBuf, token)
     if (!fileUrl) return null
 
-    const input: Record<string, unknown> = { file_url: fileUrl }
+    // `file` (Path type) accepts a URL — matches the official API docs example
+    const input: Record<string, unknown> = { file: fileUrl }
     if (language?.trim()) input.language = language.trim()
     if (options?.numSpeakers && options.numSpeakers >= 1 && options.numSpeakers <= 50) input.num_speakers = options.numSpeakers
     // `prompt` acts as a hotwords list in this model — boosts accuracy for proper nouns / jargon
