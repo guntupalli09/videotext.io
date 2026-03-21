@@ -55,8 +55,8 @@ function buildSegments(raw: Array<{ start: unknown; end: unknown; text: unknown;
  * Optional speaker diarization via Replicate (thomasmol/whisper-diarization).
  * Set REPLICATE_API_TOKEN to enable. Returns segments with raw speaker IDs or null on skip/failure.
  *
- * Uses the model-based API endpoint so it always runs the latest published version —
- * no hardcoded version hash that can go stale.
+ * Uses POST /v1/models/{owner}/{name}/predictions so it always runs the latest published
+ * version — no hardcoded version hash that can go stale.
  *
  * Audio is uploaded via the Replicate Files API (auto-expires in 24 h), which removes
  * the previous ~18 MB base64 ceiling and supports videos of any length.
@@ -95,15 +95,15 @@ export async function transcribeWithDiarization(
     // `prompt` acts as a hotwords list in this model — boosts accuracy for proper nouns / jargon
     if (options?.prompt?.trim()) input.prompt = options.prompt.trim().slice(0, 1500)
 
-    // Standard predictions endpoint with model field — works for all public community models
-    const createRes = await fetch('https://api.replicate.com/v1/predictions', {
+    // Model-specific endpoint — runs latest version without a hardcoded version hash
+    const createRes = await fetch('https://api.replicate.com/v1/models/thomasmol/whisper-diarization/predictions', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         'Prefer': 'wait',
       },
-      body: JSON.stringify({ model: 'thomasmol/whisper-diarization', input }),
+      body: JSON.stringify({ input }),
       signal: AbortSignal.timeout(10_000),
     })
 
