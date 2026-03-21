@@ -2327,7 +2327,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <div>
                       {segmentParagraphs.map((group, pi) => (
                         <p key={pi} className="mb-5">
-                          {group.map(({ seg, globalIndex }: { seg: NonNullable<typeof result>['segments'][number] & { start: number; end: number; text: string; speaker?: string }; globalIndex: number }) => {
+                          {group.map(({ seg, globalIndex }: { seg: { start: number; end: number; text: string; speaker?: string }; globalIndex: number }) => {
                             const isActive = globalIndex === activeSegIdx
                             return (
                               <span
