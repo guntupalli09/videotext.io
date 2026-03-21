@@ -31,26 +31,18 @@ import { useWorkflow } from '../contexts/WorkflowContext'
 import { emitToolCompleted } from '../workflow/workflowStore'
 
 // ─── Phase 1 – Derived Transcript Utilities (client-side only) ─────────────────
-const BRANCH_IDS = ['transcript', 'exports', 'speakers', 'summary', 'chapters', 'highlights', 'keywords', 'clean'] as const
+const BRANCH_IDS = ['transcript', 'speakers', 'summary', 'exports'] as const
 type BranchId = (typeof BRANCH_IDS)[number]
 const BRANCH_LABELS: Record<BranchId, string> = {
   transcript: 'Transcript',
   speakers: 'Speakers',
   summary: 'Summary',
-  chapters: 'Chapters',
-  highlights: 'Highlights',
-  keywords: 'Keywords',
-  clean: 'Clean',
   exports: 'Exports',
 }
 const BRANCH_ICONS: Record<BranchId, typeof FileText> = {
   transcript: FileText,
   speakers: Users,
   summary: ListOrdered,
-  chapters: BookOpen,
-  highlights: Sparkles,
-  keywords: Hash,
-  clean: Eraser,
   exports: FileCode,
 }
 const FILLER_WORDS = new Set(['um', 'uh', 'like', 'you know', 'basically', 'actually', 'literally', 'so', 'well', 'just', 'really', 'right', 'i mean', 'kind of', 'sort of'])
@@ -1390,12 +1382,109 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   }
 
   const breadcrumbs = [{ label: 'Video to Transcript', href: '/video-to-transcript' }]
+
+  // ── Right-side insights panel (shown only on completed results) ────────────
+  const insightsSidebar = (status === 'completed' && result) ? (
+    <div className="space-y-4 lg:sticky lg:top-24">
+      {/* Chapters */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <BookOpen className="h-4 w-4 text-violet-500" strokeWidth={1.5} />
+          Chapters
+        </h3>
+        {(() => {
+          const chapters = getChaptersData()
+          if (!chapters.length) return (
+            <p className="text-xs text-gray-400 dark:text-gray-500">Enable &quot;Auto-generate chapters&quot; when transcribing to see sections here.</p>
+          )
+          return (
+            <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+              {chapters.map((ch, i) => (
+                <button key={i} onClick={() => scrollToSegment(ch.segmentIndex)}
+                  className="block w-full text-left px-2.5 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-violet-50 dark:hover:bg-violet-900/20 text-xs text-gray-700 dark:text-gray-300 transition-colors">
+                  {ch.label}
+                </button>
+              ))}
+            </div>
+          )
+        })()}
+      </div>
+
+      {/* Keywords */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <Hash className="h-4 w-4 text-violet-500" strokeWidth={1.5} />
+          Keywords
+        </h3>
+        {(() => {
+          const kw = getKeywordsData()
+          if (!kw.length) return (
+            <p className="text-xs text-gray-400 dark:text-gray-500">Top repeated terms will appear here after transcription.</p>
+          )
+          return (
+            <div className="flex flex-wrap gap-1.5">
+              {kw.map((item, i) => (
+                <button key={i} onClick={() => scrollToSegment(item.segmentIndex)}
+                  className="px-2.5 py-1 rounded-full bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 text-xs hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors">
+                  {item.keyword}
+                  <span className="text-violet-400 ml-1">×{item.count}</span>
+                </button>
+              ))}
+            </div>
+          )
+        })()}
+      </div>
+
+      {/* Highlights */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-violet-500" strokeWidth={1.5} />
+          Highlights
+        </h3>
+        {(() => {
+          const items = getHighlightsData()
+          if (!items.length) return (
+            <p className="text-xs text-gray-400 dark:text-gray-500">Key quotes and conclusions extracted from the transcript.</p>
+          )
+          return (
+            <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+              {items.map((item, i) => (
+                <div key={i} className="text-xs">
+                  <span className="font-semibold text-violet-500 uppercase tracking-wide text-[10px]">{item.type}</span>
+                  <p className="text-gray-600 dark:text-gray-400 mt-0.5 leading-relaxed">{item.text}</p>
+                </div>
+              ))}
+            </div>
+          )
+        })()}
+      </div>
+
+      {/* Clean transcript */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-card border border-gray-100 dark:border-gray-800">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <Eraser className="h-4 w-4 text-violet-500" strokeWidth={1.5} />
+          Clean transcript
+        </h3>
+        <label className="flex items-center gap-2 mb-3 cursor-pointer">
+          <input type="checkbox" checked={cleanTranscriptEnabled} onChange={(e) => setCleanTranscriptEnabled(e.target.checked)}
+            className="rounded accent-violet-600" />
+          <span className="text-xs text-gray-600 dark:text-gray-400">Remove filler words</span>
+        </label>
+        {cleanTranscriptEnabled && (
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 max-h-40 overflow-y-auto">
+            <p className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{getCleanTranscript() || 'No content.'}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  ) : null
+
   const layoutProps = {
     breadcrumbs,
     title: seoH1 ?? 'Video → Transcript',
     subtitle: seoIntro ?? 'Extract spoken text from any video in seconds',
     icon: <FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />,
-    sidebar: null,
+    sidebar: insightsSidebar,
   }
 
   return (
@@ -1881,9 +1970,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   {(() => {
                     const counts: Partial<Record<BranchId, number>> = {
                       speakers: getSpeakersData().length,
-                      chapters: getChaptersData().length,
-                      highlights: getHighlightsData().length,
-                      keywords: getKeywordsData().length,
                     }
                     return BRANCH_IDS.map((id) => {
                       const Icon = BRANCH_ICONS[id]
@@ -2087,124 +2173,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         </div>
                       )
                     })()}
-                  </div>
-                )}
-
-              {activeBranch === 'chapters' && (
-                  <div className="bg-white rounded-2xl p-6 shadow-card">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
-                      Chapters
-                    </h3>
-                    {(() => {
-                      const chapters = getChaptersData()
-                      if (!chapters.length) {
-                        return (
-                          <div className="rounded-xl bg-gray-50/80 p-4">
-                            <p className="text-gray-600 text-sm font-medium mb-1">Chapters</p>
-                            <p className="text-gray-500 text-sm">Section headings derived from transcript paragraphs. Empty when the transcript has no paragraph structure.</p>
-                          </div>
-                        )
-                      }
-                      return (
-                        <div className="space-y-2 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto">
-                          {chapters.map((ch, i) => (
-                            <button
-                              key={i}
-                              onClick={() => scrollToSegment(ch.segmentIndex)}
-                              className="block w-full text-left px-3 py-2 rounded-xl bg-gray-50/80 hover:bg-violet-50/80 text-sm text-gray-800 ring-1 ring-gray-100"
-                            >
-                              {ch.label}
-                            </button>
-                          ))}
-                        </div>
-                      )
-                    })()}
-                  </div>
-                )}
-
-              {activeBranch === 'highlights' && (
-                  <div className="bg-white rounded-2xl p-6 shadow-card">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
-                      Highlights / Key moments
-                    </h3>
-                    {(() => {
-                      const items = getHighlightsData()
-                      if (!items.length) {
-                        return (
-                          <div className="rounded-xl bg-gray-50/80 p-4">
-                            <p className="text-gray-600 text-sm font-medium mb-1">Highlights</p>
-                            <p className="text-gray-500 text-sm">Definitions, conclusions, quotes, and important statements. Empty when no such segments are detected in the transcript.</p>
-                          </div>
-                        )
-                      }
-                      return (
-                        <div className="space-y-3 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto">
-                          {items.map((item, i) => (
-                            <div key={i} className="flex gap-2">
-                              <span className="text-xs font-semibold text-violet-600 shrink-0">{item.type}</span>
-                              <p className="text-sm text-gray-700">{item.text}</p>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    })()}
-                  </div>
-                )}
-
-              {activeBranch === 'keywords' && (
-                  <div className="bg-white rounded-2xl p-6 shadow-card">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <Hash className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
-                      Keywords / Topic index
-                    </h3>
-                    {(() => {
-                      const kw = getKeywordsData()
-                      if (!kw.length) {
-                        return (
-                          <div className="rounded-xl bg-gray-50/80 p-4">
-                            <p className="text-gray-600 text-sm font-medium mb-1">Keywords</p>
-                            <p className="text-gray-500 text-sm">Repeated terms that link to transcript sections. Empty when no word appears often enough to qualify.</p>
-                          </div>
-                        )
-                      }
-                      return (
-                        <div className="flex flex-wrap gap-2">
-                          {kw.map((item, i) => (
-                            <button
-                              key={i}
-                              onClick={() => scrollToSegment(item.segmentIndex)}
-                              className="px-3 py-1.5 rounded-full bg-violet-100 text-violet-800 text-sm hover:bg-violet-200"
-                            >
-                              {item.keyword} ({item.count})
-                            </button>
-                          ))}
-                        </div>
-                      )
-                    })()}
-                  </div>
-                )}
-
-              {activeBranch === 'clean' && (
-                  <div className="bg-white rounded-2xl p-6 shadow-card">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Clean transcript</h3>
-                    <p className="text-sm text-gray-500 mb-4">Filler words removed, casing normalized, paragraph grouping. Original transcript is always preserved in the Transcript branch.</p>
-                    <label className="flex items-center gap-2 mb-4">
-                      <input
-                        type="checkbox"
-                        checked={cleanTranscriptEnabled}
-                        onChange={(e) => setCleanTranscriptEnabled(e.target.checked)}
-                      />
-                      <span className="text-sm">Show cleaned version</span>
-                    </label>
-                    <div className="bg-gray-50 rounded-lg p-4 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto">
-                      {cleanTranscriptEnabled ? (
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{getCleanTranscript() || 'No content.'}</p>
-                      ) : (
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{fullTranscript || 'No transcript.'}</p>
-                      )}
-                    </div>
                   </div>
                 )}
 
