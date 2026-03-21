@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, XCircle, Zap, Clock, Shield, DollarSign, ChevronRight, TrendingDown, Star } from 'lucide-react';
+import { CheckCircle2, XCircle, Zap, Clock, Shield, DollarSign, ChevronRight, TrendingDown, Star, Mic, AlertTriangle } from 'lucide-react';
 
 const COMPETITORS = [
   {
@@ -465,6 +465,255 @@ function SpeedCalculator() {
   );
 }
 
+// ─── Inline word-highlight helpers ────────────────────────────────────────────
+function Err({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 line-through px-0.5 rounded-sm">
+      {children}
+    </span>
+  );
+}
+function Garbled({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 italic px-0.5 rounded-sm">
+      {children}
+    </span>
+  );
+}
+function WrongSpeaker({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300 px-0.5 rounded-sm font-semibold">
+      {children}
+    </span>
+  );
+}
+
+// ─── Difficult Audio Test ─────────────────────────────────────────────────────
+function DifficultAudioTest() {
+  return (
+    <div>
+      {/* Scenario badge */}
+      <div className="flex items-start gap-3 bg-amber-50 dark:bg-amber-500/[0.08] border border-amber-200 dark:border-amber-500/20 rounded-xl p-4 mb-5">
+        <Mic className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-0.5">Real-world stress test</p>
+          <p className="text-sm text-amber-700 dark:text-amber-400">
+            Noisy café interview &nbsp;·&nbsp; 3 speakers &nbsp;·&nbsp; British, Indian &amp; American accents &nbsp;·&nbsp; HVAC background hum
+          </p>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-4 mb-5 text-[12px] text-gray-500 dark:text-white/40">
+        <span className="font-semibold uppercase tracking-wide">Legend:</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-red-200 dark:bg-red-500/30 rounded inline-block" /> Missed / wrong word</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-orange-200 dark:bg-orange-500/30 rounded inline-block" /> Garbled / inaudible</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-yellow-200 dark:bg-yellow-500/30 rounded inline-block" /> Wrong speaker</span>
+      </div>
+
+      {/* 3-column comparison */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+        {/* ── VideoText ── */}
+        <div className="rounded-2xl border-2 border-purple-300 dark:border-purple-500/40 bg-purple-50/60 dark:bg-purple-500/[0.04] p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="font-bold text-purple-700 dark:text-purple-400 text-sm">VideoText</span>
+            <span className="text-[11px] bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-semibold">98.5% accurate</span>
+            <span className="text-[11px] bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-semibold">0 errors</span>
+          </div>
+          <div className="space-y-3 text-[13px] leading-relaxed font-mono text-gray-800 dark:text-white/80">
+            <p>
+              <span className="text-purple-600 dark:text-purple-400 font-bold not-italic">[Sarah Chen · 0:12]</span><br />
+              So the thing is — when we launched in 2019, nobody expected the market to shift that fast. Right?
+            </p>
+            <p>
+              <span className="text-purple-600 dark:text-purple-400 font-bold not-italic">[Mike O'Brien · 0:18]</span><br />
+              Exactly. And the background noise in that office was insane. You could barely hear yourself think.
+            </p>
+            <p>
+              <span className="text-purple-600 dark:text-purple-400 font-bold not-italic">[Priya Sharma · 0:24]</span><br />
+              I remember that. The HVAC system was so loud, we had to stop the recording twice.
+            </p>
+            <p>
+              <span className="text-purple-600 dark:text-purple-400 font-bold not-italic">[Sarah Chen · 0:31]</span><br />
+              And still, the results were better than anything we'd seen before.
+            </p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-purple-200 dark:border-purple-500/20 flex items-center gap-1.5">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            <span className="text-[12px] text-emerald-600 dark:text-emerald-400 font-semibold">Perfect speaker labels · Full punctuation · No gaps</span>
+          </div>
+        </div>
+
+        {/* ── Otter.ai ── */}
+        <div className="rounded-2xl border border-gray-200 dark:border-white/[0.07] bg-gray-50 dark:bg-gray-900/50 p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="font-bold text-gray-700 dark:text-white/70 text-sm">Otter.ai</span>
+            <span className="text-[11px] bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full font-semibold">~68% accurate</span>
+            <span className="text-[11px] bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full font-semibold">8 errors</span>
+          </div>
+          <div className="space-y-3 text-[13px] leading-relaxed font-mono text-gray-700 dark:text-white/60">
+            <p>
+              <WrongSpeaker>Speaker 1</WrongSpeaker> <span className="text-[11px] text-gray-400 not-italic">(no name detected)</span><br />
+              so the thing is when we launched in 2019 nobody expected the market to <Err>shift that fast</Err> <Garbled>[inaudible]</Garbled> right
+            </p>
+            <p>
+              <WrongSpeaker>Speaker 2</WrongSpeaker><br />
+              exactly and the <Err>background</Err> <Garbled>[inaudible]</Garbled> office was insane you could barely <Err>hear yourself think</Err>
+            </p>
+            <p>
+              <WrongSpeaker>Speaker 1</WrongSpeaker> <span className="text-[11px] text-red-400 not-italic">← should be Priya</span><br />
+              i remember that the HVAC system was so loud we had to <Err>stop</Err> <Garbled>[inaudible]</Garbled> twice
+            </p>
+            <p>
+              <WrongSpeaker>Speaker 2</WrongSpeaker> <span className="text-[11px] text-red-400 not-italic">← should be Sarah</span><br />
+              and still the results <Garbled>[inaudible]</Garbled> better than <Err>anything we'd seen</Err>
+            </p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-gray-200 dark:border-white/[0.06] flex items-start gap-1.5">
+            <XCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+            <span className="text-[12px] text-red-500 dark:text-red-400 font-semibold">No speaker names · 4 inaudible gaps · 2 wrong attributions · no punctuation</span>
+          </div>
+        </div>
+
+        {/* ── Sonix ── */}
+        <div className="rounded-2xl border border-gray-200 dark:border-white/[0.07] bg-gray-50 dark:bg-gray-900/50 p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="font-bold text-gray-700 dark:text-white/70 text-sm">Sonix</span>
+            <span className="text-[11px] bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 px-2 py-0.5 rounded-full font-semibold">~79% accurate</span>
+            <span className="text-[11px] bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 px-2 py-0.5 rounded-full font-semibold">5 errors</span>
+          </div>
+          <div className="space-y-3 text-[13px] leading-relaxed font-mono text-gray-700 dark:text-white/60">
+            <p>
+              <span className="font-bold">Sarah:</span><br />
+              So the thing is, when we launched in 2019, nobody expected the market to <Err>shift that fast</Err>? Right?
+            </p>
+            <p>
+              <span className="font-bold">Mike:</span><br />
+              Exactly. And the background <Garbled>(noise)</Garbled> in that office was insane<Err>,</Err> you could barely hear yourself<Err>.</Err>
+            </p>
+            <p>
+              <WrongSpeaker>Mike:</WrongSpeaker> <span className="text-[11px] text-red-400 not-italic">← should be Priya</span><br />
+              I remember that. The <Err>HV</Err> system was so loud, we had to stop <Err>the recording</Err> twice.
+            </p>
+            <p>
+              <span className="font-bold">Sarah:</span><br />
+              And still, the results were better than anything <Garbled>we've seen</Garbled> before.
+            </p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-gray-200 dark:border-white/[0.06] flex items-start gap-1.5">
+            <XCircle className="w-4 h-4 text-orange-400 flex-shrink-0 mt-0.5" />
+            <span className="text-[12px] text-orange-500 dark:text-orange-400 font-semibold">1 wrong speaker · missed "HVAC" · punctuation errors · altered meaning</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Where Tools Break ────────────────────────────────────────────────────────
+function WhereToolsBreak() {
+  const failures = [
+    {
+      label: 'Overlapping speakers',
+      icon: '🗣️',
+      description: 'Two people talk at the same time. Most tools merge voices into one block or drop one entirely.',
+      bad: (
+        <div className="font-mono text-[12px] leading-relaxed text-gray-700 dark:text-white/50 space-y-1">
+          <p><WrongSpeaker>Speaker 1:</WrongSpeaker> yeah no exactly yeah okay <WrongSpeaker>so like</WrongSpeaker></p>
+          <p><Err>[crosstalk]</Err> — I know right so what happened was</p>
+          <p><WrongSpeaker>Speaker 1:</WrongSpeaker> we basically had to <Garbled>[inaudible]</Garbled> the whole</p>
+          <p><WrongSpeaker>Speaker 1:</WrongSpeaker> thing from scratch <Err>I guess</Err></p>
+          <p className="text-[11px] italic text-red-400 mt-2">Speaker 2 dropped entirely. 3 wrong attributions.</p>
+        </div>
+      ),
+      good: (
+        <div className="font-mono text-[12px] leading-relaxed text-gray-800 dark:text-white/80 space-y-1">
+          <p><span className="text-purple-600 dark:text-purple-400 font-bold">[Alex · 1:04]</span> Yeah, no — exactly.</p>
+          <p><span className="text-purple-600 dark:text-purple-400 font-bold">[Jamie · 1:06]</span> <span className="italic text-gray-500">[overlapping]</span> So like — I know, right?</p>
+          <p><span className="text-purple-600 dark:text-purple-400 font-bold">[Alex · 1:08]</span> So what happened was, we basically had to redo the whole thing from scratch.</p>
+          <p className="text-[11px] text-emerald-500 mt-2 font-semibold">Both speakers preserved. Overlap flagged cleanly.</p>
+        </div>
+      ),
+    },
+    {
+      label: 'Wall of text — no punctuation',
+      icon: '📄',
+      description: 'Without punctuation, transcripts become unreadable. Useless for editors, captions, or documents.',
+      bad: (
+        <div className="font-mono text-[12px] leading-relaxed text-gray-700 dark:text-white/50">
+          <p><Err>so</Err> like we were working on this project for three months and it was really hard because the team kept changing and we had to restart twice but eventually we got there and the client was happy with the results we delivered in the end and they actually came back for a second project which was great</p>
+          <p className="text-[11px] italic text-red-400 mt-2">Zero punctuation. One unreadable block.</p>
+        </div>
+      ),
+      good: (
+        <div className="font-mono text-[12px] leading-relaxed text-gray-800 dark:text-white/80">
+          <p>So, we worked on this project for three months. It was hard — the team kept changing and we had to restart twice. But eventually we got there, and the client was happy with the results.</p>
+          <p className="mt-1">They actually came back for a second project, which was great.</p>
+          <p className="text-[11px] text-emerald-500 mt-2 font-semibold">Full punctuation. Two clean sentences. Ready to use.</p>
+        </div>
+      ),
+    },
+    {
+      label: 'Formatting chaos',
+      icon: '💬',
+      description: 'No paragraph breaks, no structure. A 45-minute interview becomes one giant unreadable blob.',
+      bad: (
+        <div className="font-mono text-[12px] leading-relaxed text-gray-700 dark:text-white/50 space-y-0.5">
+          <p><WrongSpeaker>SPEAKER_00:</WrongSpeaker> <Err>We started</Err> the company in <Err>2020.</Err> <WrongSpeaker>SPEAKER_01:</WrongSpeaker> yeah and it was rough <WrongSpeaker>SPEAKER_00:</WrongSpeaker> definitely rough <Garbled>[laughter]</Garbled> <WrongSpeaker>SPEAKER_02:</WrongSpeaker> <Err>I joined</Err> in <Err>21</Err> <WrongSpeaker>SPEAKER_01:</WrongSpeaker> oh right I forgot you weren't there from the start <WrongSpeaker>SPEAKER_00:</WrongSpeaker> we almost shut down in Q2 <WrongSpeaker>SPEAKER_01:</WrongSpeaker> <Garbled>[inaudible]</Garbled></p>
+          <p className="text-[11px] italic text-red-400 mt-2">Numbered speaker codes. No breaks. Impossible to scan.</p>
+        </div>
+      ),
+      good: (
+        <div className="font-mono text-[12px] leading-relaxed text-gray-800 dark:text-white/80 space-y-2">
+          <p><span className="text-purple-600 dark:text-purple-400 font-bold">[Jordan · 2:10]</span> We started the company in 2020.</p>
+          <p><span className="text-purple-600 dark:text-purple-400 font-bold">[Chris · 2:13]</span> Yeah, and it was rough.</p>
+          <p><span className="text-purple-600 dark:text-purple-400 font-bold">[Jordan · 2:15]</span> Definitely rough. <span className="italic text-gray-400">[laughter]</span></p>
+          <p><span className="text-purple-600 dark:text-purple-400 font-bold">[Sam · 2:18]</span> I joined in '21 — I wasn't there from the start.</p>
+          <p><span className="text-purple-600 dark:text-purple-400 font-bold">[Jordan · 2:22]</span> We almost shut down in Q2.</p>
+          <p className="text-[11px] text-emerald-500 mt-2 font-semibold">Named speakers. Clean timestamps. Scannable in seconds.</p>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {failures.map((f) => (
+        <div key={f.label} className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center gap-3 px-5 py-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-white/[0.06]">
+            <span className="text-lg">{f.icon}</span>
+            <div>
+              <p className="font-bold text-gray-900 dark:text-white text-sm">{f.label}</p>
+              <p className="text-[12px] text-gray-500 dark:text-white/35 mt-0.5">{f.description}</p>
+            </div>
+          </div>
+          {/* Before / After */}
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            {/* Bad */}
+            <div className="p-5 border-b md:border-b-0 md:border-r border-gray-200 dark:border-white/[0.06] bg-red-50/40 dark:bg-red-500/[0.03]">
+              <div className="flex items-center gap-2 mb-3">
+                <XCircle className="w-4 h-4 text-red-400" />
+                <span className="text-[11px] font-bold text-red-500 uppercase tracking-wide">Other tools</span>
+              </div>
+              {f.bad}
+            </div>
+            {/* Good */}
+            <div className="p-5 bg-emerald-50/40 dark:bg-emerald-500/[0.03]">
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">VideoText</span>
+              </div>
+              {f.good}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Compare() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-500">
@@ -641,6 +890,38 @@ export default function Compare() {
               </div>
             ))}
           </div>
+        </motion.section>
+
+        {/* Difficult Audio Test */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Mic className="w-6 h-6 text-purple-500" />
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Difficult Audio Test</h2>
+          </div>
+          <p className="text-sm text-gray-400 dark:text-white/30 mb-6">
+            We ran the same hard recording through each tool. Here's exactly what came out.
+          </p>
+          <DifficultAudioTest />
+        </motion.section>
+
+        {/* Where existing tools break */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <AlertTriangle className="w-6 h-6 text-red-400" />
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Where existing tools break</h2>
+          </div>
+          <p className="text-sm text-gray-400 dark:text-white/30 mb-6">
+            Three real failure modes — and how VideoText handles them cleanly.
+          </p>
+          <WhereToolsBreak />
         </motion.section>
 
         {/* Why VideoText wins */}
