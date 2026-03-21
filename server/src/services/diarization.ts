@@ -21,7 +21,7 @@ export interface DiarizedSegment {
 async function uploadAudioToReplicate(audioBuf: Buffer, token: string): Promise<string | null> {
   try {
     const formData = new FormData()
-    const blob = new Blob([audioBuf], { type: 'audio/mpeg' })
+    const blob = new Blob([new Uint8Array(audioBuf)], { type: 'audio/mpeg' })
     formData.append('content', blob, 'audio.mp3')
 
     const res = await fetch('https://api.replicate.com/v1/files', {
