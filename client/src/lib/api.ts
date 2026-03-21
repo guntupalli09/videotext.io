@@ -128,6 +128,8 @@ export interface UploadOptions {
   includeChapters?: boolean
   exportFormats?: ('txt' | 'json' | 'docx' | 'pdf')[]
   speakerDiarization?: boolean
+  numSpeakers?: number
+  diarizationLanguage?: string
   glossary?: string
   webhookUrl?: string
   /** When set, backend treats upload as audio-only and skips server-side extraction (transcript/subtitles only). */
@@ -169,6 +171,8 @@ function buildUploadFormData(file: File, options: UploadOptions): FormData {
   if (options.includeSummary !== undefined) formData.append('includeSummary', String(options.includeSummary))
   if (options.includeChapters !== undefined) formData.append('includeChapters', String(options.includeChapters))
   if (options.speakerDiarization !== undefined) formData.append('speakerDiarization', String(options.speakerDiarization))
+  if (options.numSpeakers !== undefined) formData.append('numSpeakers', String(options.numSpeakers))
+  if (options.diarizationLanguage) formData.append('diarizationLanguage', options.diarizationLanguage)
   if (options.glossary) formData.append('glossary', options.glossary)
   if (options.exportFormats && options.exportFormats.length > 0) {
     formData.append('exportFormats', JSON.stringify(options.exportFormats))
@@ -1538,6 +1542,8 @@ export interface YoutubeUploadOptions {
   includeSummary?: boolean
   includeChapters?: boolean
   speakerDiarization?: boolean
+  numSpeakers?: number
+  diarizationLanguage?: string
   glossary?: string
   exportFormats?: ('txt' | 'json' | 'docx' | 'pdf')[]
   language?: string

@@ -283,6 +283,8 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       includeSummary: options.includeSummary === true || options.includeSummary === 'true',
       includeChapters: options.includeChapters === true || options.includeChapters === 'true',
       speakerDiarization: options.speakerDiarization === true || options.speakerDiarization === 'true',
+      numSpeakers: options.numSpeakers ? Number(options.numSpeakers) : undefined,
+      diarizationLanguage: typeof options.diarizationLanguage === 'string' && options.diarizationLanguage.trim() ? options.diarizationLanguage.trim() : undefined,
       glossary: typeof options.glossary === 'string' && options.glossary.trim() ? options.glossary.trim() : undefined,
       exportFormats,
     }
@@ -1360,6 +1362,8 @@ router.post('/youtube', async (req: Request, res: Response) => {
       includeSummary: options.includeSummary === true || options.includeSummary === 'true',
       includeChapters: options.includeChapters === true || options.includeChapters === 'true',
       speakerDiarization: options.speakerDiarization === true || options.speakerDiarization === 'true',
+      numSpeakers: options.numSpeakers ? Number(options.numSpeakers) : undefined,
+      diarizationLanguage: typeof options.diarizationLanguage === 'string' && options.diarizationLanguage.trim() ? options.diarizationLanguage.trim() : undefined,
       glossary: typeof options.glossary === 'string' && options.glossary.trim() ? options.glossary.trim() : undefined,
       exportFormats,
     }

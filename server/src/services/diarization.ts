@@ -64,7 +64,7 @@ function buildSegments(raw: Array<{ start: unknown; end: unknown; text: unknown;
 export async function transcribeWithDiarization(
   videoPath: string,
   language?: string,
-  options?: { isAlreadyAudio?: boolean; prompt?: string }
+  options?: { isAlreadyAudio?: boolean; prompt?: string; numSpeakers?: number }
 ): Promise<{ text: string; segments: DiarizedSegment[] } | null> {
   const token = process.env.REPLICATE_API_TOKEN
   if (!token?.trim()) return null
@@ -91,6 +91,7 @@ export async function transcribeWithDiarization(
 
     const input: Record<string, unknown> = { file_url: fileUrl }
     if (language?.trim()) input.language = language.trim()
+    if (options?.numSpeakers && options.numSpeakers >= 1 && options.numSpeakers <= 50) input.num_speakers = options.numSpeakers
     // `prompt` acts as a hotwords list in this model — boosts accuracy for proper nouns / jargon
     if (options?.prompt?.trim()) input.prompt = options.prompt.trim().slice(0, 1500)
 

@@ -198,6 +198,8 @@ export interface JobData {
     includeChapters?: boolean
     exportFormats?: ('txt' | 'json' | 'docx' | 'pdf')[]
     speakerDiarization?: boolean
+    numSpeakers?: number
+    diarizationLanguage?: string
     glossary?: string
   }
   webhookUrl?: string
@@ -610,7 +612,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           if (wantDiarization) {
             await job.progress(22)
             const glossary = options?.glossary?.trim()
-            const diar = await transcribeWithDiarization(videoPath, options?.language, { isAlreadyAudio, prompt: glossary })
+            const diar = await transcribeWithDiarization(videoPath, options?.diarizationLanguage || options?.language, { isAlreadyAudio, prompt: glossary, numSpeakers: options?.numSpeakers })
             if (diar) {
               fullText = diar.text
               // Resolve raw speaker IDs (e.g. SPEAKER_00) to real names or "Speaker N" labels.
