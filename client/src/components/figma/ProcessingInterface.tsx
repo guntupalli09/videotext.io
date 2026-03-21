@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, FileVideo, Clock, Loader2 } from 'lucide-react';
+import { X, FileVideo, Clock, Loader2, ChevronDown } from 'lucide-react';
 import { VideoFrameStrip } from './VideoFrameStrip';
 
 interface UploadedFile {
@@ -46,6 +46,7 @@ export function ProcessingInterface({
 }: ProcessingInterfaceProps) {
   const [internalStart, setInternalStart] = useState(trimStartPercent ?? 0);
   const [internalEnd, setInternalEnd] = useState(trimEndPercent ?? 100);
+  const [trimExpanded, setTrimExpanded] = useState(false);
   const videoPlayerRef = useRef<HTMLVideoElement | null>(null);
   const [playbackTime, setPlaybackTime] = useState(0);
   const [durationFromVideo, setDurationFromVideo] = useState<number | null>(null);
@@ -108,9 +109,19 @@ export function ProcessingInterface({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-gray-200 dark:border-gray-800 shadow-sm"
+          className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden"
         >
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 sm:mb-3">Trim video before processing</h3>
+          <button
+            type="button"
+            onClick={() => setTrimExpanded((v) => !v)}
+            className="w-full flex items-center justify-between px-4 sm:px-5 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            <span>Trim video <span className="text-gray-400 font-normal">(optional)</span></span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${trimExpanded ? 'rotate-180' : ''}`} />
+          </button>
+
+          {trimExpanded && (
+          <div className="px-4 sm:px-5 pb-4 sm:pb-5">
           {videoSrc && (
             <>
               <div className="bg-black rounded-lg overflow-hidden mb-2 sm:mb-3 flex items-center justify-center w-full max-w-xl mx-auto max-h-[200px] aspect-video">
@@ -181,6 +192,8 @@ export function ProcessingInterface({
               />
             </div>
           </div>
+          </div>
+          )}
         </motion.div>
       )}
 

@@ -31,7 +31,7 @@ import { useWorkflow } from '../contexts/WorkflowContext'
 import { emitToolCompleted } from '../workflow/workflowStore'
 
 // ─── Phase 1 – Derived Transcript Utilities (client-side only) ─────────────────
-const BRANCH_IDS = ['transcript', 'speakers', 'summary', 'chapters', 'highlights', 'keywords', 'clean', 'exports'] as const
+const BRANCH_IDS = ['transcript', 'exports', 'speakers', 'summary', 'chapters', 'highlights', 'keywords', 'clean'] as const
 type BranchId = (typeof BRANCH_IDS)[number]
 const BRANCH_LABELS: Record<BranchId, string> = {
   transcript: 'Transcript',
@@ -1715,7 +1715,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               liveTranscript={partialSegments.map((s) => (s.speaker ? `${s.speaker}: ` : '') + s.text).join('\n')}
               onCancel={handleCancelUpload}
             />
-            <ResultSkeleton variant="transcript" />
           </div>
         )}
 
@@ -1861,8 +1860,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               if (!wordCount) return null
               const pills = [
                 wordCount > 0 && `${wordCount.toLocaleString()} words`,
-                segCount > 0 && `${segCount} segments`,
-                readMin > 0 && `~${readMin} min read`,
                 durStr,
               ].filter(Boolean) as string[]
               return (
@@ -1922,7 +1919,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               </div>
 
               {/* Workflow link / suggestion */}
-              <div className="min-h-[2.75rem]">
+              <div>
                 <WorkflowChainSuggestion
                   pathname={location.pathname}
                   plan={(localStorage.getItem('plan') || 'free').toLowerCase()}
@@ -2587,7 +2584,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         initialMode={authModalMode}
-        jobDescription="Your transcript is ready!"
+        jobDescription="Don't lose your transcript!"
         onAuthSuccess={async () => {
           const jobId = currentJobId || getPersistedJobId(location.pathname)
           const jobToken = getPersistedJobToken(location.pathname)
