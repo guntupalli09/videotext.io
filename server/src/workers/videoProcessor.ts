@@ -616,8 +616,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             if (diar) {
               fullText = diar.text
               // Resolve raw speaker IDs (e.g. SPEAKER_00) to real names or "Speaker N" labels.
-              // This is a fast GPT-4o-mini call that adds ~2-3 s on top of the diarization wait.
-              segments = await resolveSpeakerNames(diar.segments)
+              segments = resolveSpeakerNames(diar.segments)
               if (partialWriter && segments.length > 0) {
                 partialWriter.onPartial(segments.slice(0, 2000))
               }
