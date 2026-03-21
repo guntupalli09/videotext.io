@@ -31,7 +31,8 @@ async function uploadAudioToReplicate(audioBuf: Buffer, token: string): Promise<
       signal: AbortSignal.timeout(120_000), // 2 min — generous for large files
     })
     if (!res.ok) {
-      log.warn({ msg: 'replicate file upload failed', status: res.status })
+      const body = await res.text()
+      log.warn({ msg: 'replicate file upload failed', status: res.status, body })
       return null
     }
     const data = (await res.json()) as { urls?: { get: string } }
@@ -89,6 +90,10 @@ export async function transcribeWithDiarization(
     const fileUrl = await uploadAudioToReplicate(audioBuf, token)
     if (!fileUrl) return null
 
+    if (!fileUrl.startsWith('https://')) {
+      throw new Error(`Invalid audio URL from Files API: ${fileUrl}`)
+    }
+
     // `file` (Path type) accepts a URL — matches the official API docs example
     const input: Record<string, unknown> = { file: fileUrl }
     if (language?.trim()) input.language = language.trim()
@@ -112,7 +117,8 @@ export async function transcribeWithDiarization(
     })
 
     if (!createRes.ok) {
-      log.warn({ msg: 'replicate prediction create failed', status: createRes.status })
+      const body = await createRes.text()
+      log.warn({ msg: 'replicate prediction create failed', status: createRes.status, body })
       return null
     }
 
