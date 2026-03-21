@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import OpenAI from 'openai'
 import { extractAudio } from './ffmpeg'
 import { getLogger } from '../lib/logger'
 
@@ -198,70 +197,104 @@ function applyFallbackLabels(segments: DiarizedSegment[]): DiarizedSegment[] {
   }))
 }
 
-/**
- * After diarization, attempt to identify real speaker names from the transcript content.
- *
- * Looks for:
- *   - Self-introductions: "I'm Max", "My name is Alex"
- *   - Direct address:     "Thank you, Max", "Alex, what do you think?"
- *   - Third-person refs:  "As Alex mentioned…"
- *
- * Returns segments with real names substituted where found (e.g. "Max", "Alex").
- * Falls back to "Speaker 1", "Speaker 2", … for any speaker whose name cannot be determined.
- *
- * Requires OPENAI_API_KEY. If unavailable or the GPT call fails, falls back gracefully.
- */
-export async function resolveSpeakerNames(segments: DiarizedSegment[]): Promise<DiarizedSegment[]> {
-  const apiKey = process.env.OPENAI_API_KEY
-  if (!apiKey?.trim()) return applyFallbackLabels(segments)
+// Patterns ordered from most explicit to least explicit.
+// Each entry is [regex, captureGroupIndex] where the capture group holds the name.
+const NAME_PATTERNS: Array<[RegExp, number]> = [
+  // Self-introductions — explicit
+  [/\bmy name is ([A-Z][a-z]+)/i, 1],
+  [/\bi(?:'m| am) ([A-Z][a-z]+)/i, 1],
+  [/\bthis is ([A-Z][a-z]+)\b/i, 1],
+  [/\bmy name's ([A-Z][a-z]+)/i, 1],
+  [/\bthey call me ([A-Z][a-z]+)/i, 1],
+  [/\beveryone calls me ([A-Z][a-z]+)/i, 1],
+  [/\bpeople call me ([A-Z][a-z]+)/i, 1],
+  [/\byou can call me ([A-Z][a-z]+)/i, 1],
+  [/\bi go by ([A-Z][a-z]+)/i, 1],
+  // Host/interviewer introducing guest
+  [/\bjoining (?:us|me) (?:today |now )?is ([A-Z][a-z]+)/i, 1],
+  [/\bwelcome[,\s]+([A-Z][a-z]+)\b/i, 1],
+  [/\bintroducing ([A-Z][a-z]+)\b/i, 1],
+  [/\bour (?:guest|speaker) (?:today )?is ([A-Z][a-z]+)/i, 1],
+  [/\bi(?:'d| would) like to (?:introduce|welcome) ([A-Z][a-z]+)/i, 1],
+  [/\bplease welcome ([A-Z][a-z]+)/i, 1],
+  // Direct address — speaker being addressed by another
+  [/^([A-Z][a-z]+)[,!]\s/m, 1],
+  [/\s([A-Z][a-z]+)[,!]\s/m, 1],
+  [/\bthank you[,\s]+([A-Z][a-z]+)\b/i, 1],
+  [/\bthanks[,\s]+([A-Z][a-z]+)\b/i, 1],
+  [/\bover to you[,\s]+([A-Z][a-z]+)/i, 1],
+  [/\bback to you[,\s]+([A-Z][a-z]+)/i, 1],
+  [/\bwhat do you think[,\s]+([A-Z][a-z]+)/i, 1],
+  [/\bwhat(?:'s| is) your (?:take|view|opinion)[,\s]+([A-Z][a-z]+)/i, 1],
+  [/\bgreat point[,\s]+([A-Z][a-z]+)/i, 1],
+  [/\bgood point[,\s]+([A-Z][a-z]+)/i, 1],
+  [/\bexactly[,\s]+([A-Z][a-z]+)/i, 1],
+  [/\bright[,\s]+([A-Z][a-z]+)[?.,]/i, 1],
+  // Third-person references from another speaker
+  [/\bas ([A-Z][a-z]+) (?:said|mentioned|pointed out|noted|explained)/i, 1],
+  [/\baccording to ([A-Z][a-z]+)\b/i, 1],
+  [/\b([A-Z][a-z]+) (?:said|mentioned|pointed out|noted|explained|told us|was saying)/i, 1],
+  [/\b([A-Z][a-z]+)'s (?:point|question|idea|comment|thought)\b/i, 1],
+]
 
+// Common English words that are capitalized and could be falsely matched as names
+const FALSE_POSITIVE_NAMES = new Set([
+  'I', 'The', 'A', 'An', 'And', 'But', 'Or', 'So', 'As', 'At', 'By', 'In', 'Of', 'On',
+  'To', 'Up', 'It', 'He', 'She', 'We', 'You', 'My', 'Hi', 'Hey', 'Oh', 'Ok', 'Okay',
+  'Yes', 'No', 'Not', 'Now', 'Just', 'Very', 'Well', 'Good', 'Great', 'Right', 'Sure',
+  'This', 'That', 'These', 'Those', 'Here', 'There', 'When', 'Where', 'What', 'How',
+  'Who', 'Why', 'All', 'Any', 'Some', 'Our', 'Your', 'Their', 'Its', 'Us', 'Me',
+  'Also', 'Even', 'Still', 'Then', 'Than', 'Both', 'Each', 'Few', 'More', 'Most',
+  'Other', 'Such', 'Into', 'Over', 'After', 'Before', 'Above', 'Below', 'Between',
+  'Today', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+  'January', 'February', 'March', 'April', 'June', 'July', 'August', 'September',
+  'October', 'November', 'December',
+])
+
+function extractNameFromText(text: string): string | null {
+  for (const [pattern, group] of NAME_PATTERNS) {
+    const m = text.match(pattern)
+    if (m) {
+      const candidate = m[group]
+      if (candidate && !FALSE_POSITIVE_NAMES.has(candidate) && candidate.length >= 2) {
+        return candidate
+      }
+    }
+  }
+  return null
+}
+
+/**
+ * Identify real speaker names from transcript content using regex pattern matching.
+ * Scans each speaker's lines for introductions, direct address, and third-person references.
+ * Falls back to "Speaker 1", "Speaker 2", … for any unidentified speaker.
+ */
+export function resolveSpeakerNames(segments: DiarizedSegment[]): DiarizedSegment[] {
   const speakerIds = [...new Set(segments.map((s) => s.speaker?.trim()).filter(Boolean))] as string[]
   if (speakerIds.length === 0) return applyFallbackLabels(segments)
 
-  // Sample the first ~120 segments (enough to catch introductions without burning tokens)
-  const sample = segments
-    .slice(0, 120)
-    .map((s) => `[${s.speaker ?? 'UNKNOWN'}] ${s.text.trim()}`)
-    .join('\n')
-    .slice(0, 4000)
+  const detected: Record<string, string> = {}
 
-  try {
-    const openai = new OpenAI({ apiKey })
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      temperature: 0,
-      max_tokens: 200,
-      messages: [
-        {
-          role: 'system',
-          content:
-            'You identify speaker names from transcript excerpts. ' +
-            'Look for self-introductions ("I\'m Max", "my name is Alex"), ' +
-            'direct address ("Thank you, Max", "Alex, what do you think?"), ' +
-            'and third-person references ("As Alex said"). ' +
-            'Return ONLY a JSON object mapping speaker IDs to first names, ' +
-            'e.g. {"SPEAKER_00":"Max","SPEAKER_01":"Alex"}. ' +
-            'If a speaker cannot be identified, omit them. If no names are found at all, return {}.',
-        },
-        {
-          role: 'user',
-          content: `Speaker IDs present: ${speakerIds.join(', ')}\n\nTranscript excerpt:\n${sample}`,
-        },
-      ],
-    })
+  for (const id of speakerIds) {
+    // Lines said BY this speaker
+    const ownLines = segments.filter((s) => s.speaker?.trim() === id).map((s) => s.text)
+    for (const line of ownLines) {
+      const name = extractNameFromText(line)
+      if (name) { detected[id] = name; break }
+    }
+    if (detected[id]) continue
 
-    const raw = completion.choices[0]?.message?.content?.trim() ?? '{}'
-    // Safely extract JSON even if GPT wraps it in a markdown code block
-    const jsonMatch = raw.match(/\{[\s\S]*\}/)
-    const detected: Record<string, string> = jsonMatch ? JSON.parse(jsonMatch[0]) : {}
-
-    const map = buildSpeakerMap(speakerIds, detected)
-    return segments.map((s) => ({
-      ...s,
-      speaker: s.speaker ? (map[s.speaker.trim()] ?? s.speaker) : undefined,
-    }))
-  } catch (err) {
-    log.warn({ msg: 'speaker name resolution error', error: (err as Error)?.message ?? String(err) })
-    return applyFallbackLabels(segments)
+    // Lines said BY OTHER speakers that may address or mention this speaker
+    const otherLines = segments.filter((s) => s.speaker?.trim() !== id).map((s) => s.text)
+    for (const line of otherLines) {
+      const name = extractNameFromText(line)
+      if (name) { detected[id] = name; break }
+    }
   }
+
+  const map = buildSpeakerMap(speakerIds, detected)
+  return segments.map((s) => ({
+    ...s,
+    speaker: s.speaker ? (map[s.speaker.trim()] ?? s.speaker) : undefined,
+  }))
 }
