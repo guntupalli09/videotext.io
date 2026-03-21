@@ -421,11 +421,11 @@ function App() {
           </SessionErrorBoundary>
         </main>
         <Footer />
-        <WorkflowTracker />
-        <TexErrorBoundary>
+        {/* <WorkflowTracker /> */}
+        {/* <TexErrorBoundary>
           <TexAgent />
-        </TexErrorBoundary>
-        <FeedbackPrompt />
+        </TexErrorBoundary> */}
+        {/* <FeedbackPrompt /> */}
         <Toaster position="top-right" />
       </div>
       </WorkflowProvider>
