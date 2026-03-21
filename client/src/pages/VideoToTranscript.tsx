@@ -1645,7 +1645,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               progress={uploadPhase === 'uploading' ? uploadProgress : progress}
               estimatedTime={youtubeDisplayTitle ? undefined : '30-60 seconds'}
               statusSubtext={queuePosition !== undefined ? `${queuePosition} jobs ahead of you` : undefined}
-              liveTranscript={partialSegments.map((s) => (s.speaker ? `${s.speaker}: ` : '') + s.text).join('\n')}
+              liveTranscript={partialSegments.map((s) => s.text).join('\n')}
               onCancel={handleCancelUpload}
             />
             <ResultSkeleton variant="transcript" />
