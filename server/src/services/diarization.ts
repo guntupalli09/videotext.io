@@ -95,14 +95,15 @@ export async function transcribeWithDiarization(
     // `prompt` acts as a hotwords list in this model — boosts accuracy for proper nouns / jargon
     if (options?.prompt?.trim()) input.prompt = options.prompt.trim().slice(0, 1500)
 
-    // Model-based endpoint: always runs the latest published version, no hardcoded hash required
-    const createRes = await fetch('https://api.replicate.com/v1/models/thomasmol/whisper-diarization/predictions', {
+    // Standard predictions endpoint with model field — works for all public community models
+    const createRes = await fetch('https://api.replicate.com/v1/predictions', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
+        'Prefer': 'wait',
       },
-      body: JSON.stringify({ input }),
+      body: JSON.stringify({ model: 'thomasmol/whisper-diarization', input }),
       signal: AbortSignal.timeout(10_000),
     })
 
