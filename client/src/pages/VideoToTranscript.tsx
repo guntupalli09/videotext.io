@@ -1759,9 +1759,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             <div key={i} className="flex gap-3 items-start">
                               <span className="shrink-0 text-[11px] text-gray-400 dark:text-gray-500 font-mono mt-0.5 w-8">{ts}</span>
                               <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                                {seg.speaker && (
-                                  <span className="font-semibold text-violet-600 dark:text-violet-400 mr-1">{seg.speaker}:</span>
-                                )}
                                 {seg.text}
                               </p>
                             </div>
