@@ -142,8 +142,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             setWarnings(jobStatus.result?.warnings ?? [])
             setShowIssues(true)
             setStatus('idle')
-            const started = processingStartedAtRef.current ?? Date.now()
-            // texJobCompleted(Date.now() - started, 'fix-subtitles')
+            // texJobCompleted(Date.now() - processingStartedAtRef.current, 'fix-subtitles')
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')

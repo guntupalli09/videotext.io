@@ -82,8 +82,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
-  /** Set on job_completed for workflow chain suggestion (UI only). */
-  const [lastJobCompletedToolId, setLastJobCompletedToolId] = useState<string | null>(null)
   const [failedMessage, setFailedMessage] = useState<string | undefined>(undefined)
 
   useEffect(() => {
@@ -564,7 +562,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             trackEvent('processing_completed', { tool: 'video-to-subtitles' })
             // texJobCompleted(processingMs, 'video-to-subtitles')
             setLastProcessingMs(processingMs)
-            setLastJobCompletedToolId('video-to-subtitles')
           } catch {
             // non-blocking
           }

@@ -1,8 +1,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Subtitles, Film, Minimize2, Lock, Play, Pause, Volume2, VolumeX, Search } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Lock, Play, Pause, Volume2, VolumeX, Search } from 'lucide-react'
 import FailedState from '../components/FailedState'
-import CrossToolSuggestions from '../components/CrossToolSuggestions'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
 import JobAuthGateModal from '../components/JobAuthGateModal'
@@ -151,8 +150,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
-  /** Set on job_completed for workflow chain suggestion (UI only). */
-  const [lastJobCompletedToolId, setLastJobCompletedToolId] = useState<string | null>(null)
   /** Contextual failure message (from getFailureMessage); shown in FailedState and Tex. */
   const [failedMessage, setFailedMessage] = useState<string | undefined>(undefined)
 
@@ -738,7 +735,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               trackEvent('processing_completed', { tool: 'video-to-transcript' })
               // texJobCompleted(processingMs, 'video-to-transcript')
               setLastProcessingMs(processingMs)
-              setLastJobCompletedToolId('video-to-transcript')
             } catch {
               // non-blocking
             }
@@ -962,7 +958,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               trackEvent('processing_completed', { tool: 'video-to-transcript', source: 'youtube' })
               // texJobCompleted(processingMs, 'video-to-transcript')
               setLastProcessingMs(processingMs)
-              setLastJobCompletedToolId('video-to-transcript')
             } catch { /* non-blocking */ }
           }
           if (remainingMs > 0) {

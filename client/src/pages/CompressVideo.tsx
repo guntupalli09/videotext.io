@@ -72,7 +72,6 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
   const [usedMinutes, setUsedMinutes] = useState<number | null>(null)
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
-  const [lastJobCompletedToolId, setLastJobCompletedToolId] = useState<string | null>(null)
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
   const [filePreview, setFilePreview] = useState<FilePreviewData | null>(null)
@@ -200,7 +199,6 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
             // emitToolCompleted({ toolId: 'compress-video', pathname: '/compress-video', processingMs })
             incrementUsage('compress-video')
             // texJobCompleted(processingMs, 'compress-video')
-            setLastJobCompletedToolId('compress-video')
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')

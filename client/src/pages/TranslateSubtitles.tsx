@@ -53,7 +53,6 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
   const [usedMinutes, setUsedMinutes] = useState<number | null>(null)
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
-  const [lastJobCompletedToolId, setLastJobCompletedToolId] = useState<string | null>(null)
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
 
@@ -183,7 +182,6 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             }
             incrementUsage('translate-subtitles')
             // texJobCompleted(processingMs, 'translate-subtitles')
-            setLastJobCompletedToolId('translate-subtitles')
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')
