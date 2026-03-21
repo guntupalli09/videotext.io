@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Film } from 'lucide-react'
-import { useWorkflow } from '../contexts/WorkflowContext'
+// import { useWorkflow } from '../contexts/WorkflowContext'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
@@ -19,11 +19,11 @@ import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolli
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
-import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
+// import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 import { Minimize2, FileText, MessageSquare } from 'lucide-react'
-import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
-import { emitToolCompleted } from '../workflow/workflowStore'
+// import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+// import { emitToolCompleted } from '../workflow/workflowStore'
 
 /** Optional SEO overrides for alternate entry points. Do NOT duplicate logic. */
 export type BurnSubtitlesSeoProps = {
@@ -36,30 +36,30 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const { seoH1, seoIntro, faq = [] } = props
   const location = useLocation()
   const navigate = useNavigate()
-  const workflow = useWorkflow()
+  // const workflow = useWorkflow()
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [subtitleFile, setSubtitleFile] = useState<File | null>(null)
   const [videoFromWorkflow, setVideoFromWorkflow] = useState(false)
   const [srtFromWorkflow, setSrtFromWorkflow] = useState(false)
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
 
-  useEffect(() => {
-    const state = location.state as { useWorkflowVideo?: boolean; useWorkflowSrt?: boolean } | undefined
-    if (state?.useWorkflowVideo && workflow.videoFile) {
-      setVideoFile(workflow.videoFile)
-      setVideoFromWorkflow(true)
-    }
-    if (state?.useWorkflowSrt && workflow.srtContent) {
-      const blob = new Blob([workflow.srtContent], { type: 'text/plain;charset=utf-8' })
-      setSubtitleFile(new File([blob], 'subtitles.srt', { type: 'text/plain' }))
-      setSrtFromWorkflow(true)
-    }
-  }, [location.state, workflow.videoFile, workflow.srtContent])
+  // useEffect(() => {
+  //   const state = location.state as { useWorkflowVideo?: boolean; useWorkflowSrt?: boolean } | undefined
+  //   if (state?.useWorkflowVideo && workflow.videoFile) {
+  //     setVideoFile(workflow.videoFile)
+  //     setVideoFromWorkflow(true)
+  //   }
+  //   if (state?.useWorkflowSrt && workflow.srtContent) {
+  //     const blob = new Blob([workflow.srtContent], { type: 'text/plain;charset=utf-8' })
+  //     setSubtitleFile(new File([blob], 'subtitles.srt', { type: 'text/plain' }))
+  //     setSrtFromWorkflow(true)
+  //   }
+  // }, [location.state, workflow.videoFile, workflow.srtContent])
 
   // Keep workflow in sync when result is shown so "Next step" links pre-fill video on the next tool
-  useEffect(() => {
-    if (status === 'completed' && videoFile) workflow.setVideo(videoFile)
-  }, [status, videoFile])
+  // useEffect(() => {
+  //   if (status === 'completed' && videoFile) workflow.setVideo(videoFile)
+  // }, [status, videoFile])
 
   const [trimStart, setTrimStart] = useState<number | null>(null)
   const [trimEnd, setTrimEnd] = useState<number | null>(null)
@@ -121,7 +121,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
     } catch {
       // non-blocking
     }
-    workflow.setVideo(file)
+    // workflow.setVideo(file)
     setVideoFile(file)
     setVideoFromWorkflow(false)
     setTrimStart(null)
@@ -174,7 +174,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
       setProgress(0)
       const startedAt = Date.now()
       processingStartedAtRef.current = startedAt
-      texJobStarted()
+      // texJobStarted()
 
       const response = await uploadDualFilesWithProgress(videoFile, subtitleFile, BACKEND_TOOL_TYPES.BURN_SUBTITLES, {
         trimmedStart: (trimStartSec ?? trimStart) ?? undefined,
@@ -202,14 +202,14 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
             setLastProcessingMs(processingMs)
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback()
-            emitToolCompleted({ toolId: 'burn-subtitles', pathname: '/burn-subtitles', processingMs })
+            // dispatchJobCompletedForFeedback()
+            // emitToolCompleted({ toolId: 'burn-subtitles', pathname: '/burn-subtitles', processingMs })
             incrementUsage('burn-subtitles')
-            texJobCompleted(processingMs, 'burn-subtitles')
+            // texJobCompleted(processingMs, 'burn-subtitles')
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')
-            texJobFailed()
+            // texJobFailed()
             toast.error('Processing failed. Please try again.')
           }
         } catch (error: any) {
@@ -224,7 +224,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
         setStatus('idle')
       } else {
         setStatus('failed')
-        texJobFailed()
+        // texJobFailed()
       }
       toast.error(error.message || 'Upload failed')
     }
@@ -267,7 +267,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
             onFileSelect={handleVideoSelect}
             initialFiles={videoFile ? [videoFile] : null}
             onRemove={() => {
-              if (videoFromWorkflow) workflow.clearVideo()
+              // if (videoFromWorkflow) workflow.clearVideo()
               setVideoFile(null)
               setVideoFromWorkflow(false)
             }}
@@ -289,7 +289,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                 <button
                   type="button"
                   onClick={() => {
-                    if (videoFromWorkflow) workflow.clearVideo()
+                    // if (videoFromWorkflow) workflow.clearVideo()
                     setVideoFile(null)
                     setVideoFromWorkflow(false)
                   }}
@@ -306,7 +306,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                 onFileSelect={handleSubtitleSelect}
                 initialFiles={subtitleFile ? [subtitleFile] : null}
                 onRemove={() => {
-                  if (srtFromWorkflow) workflow.clearSrt()
+                  // if (srtFromWorkflow) workflow.clearSrt()
                   setSubtitleFile(null)
                   setSrtFromWorkflow(false)
                 }}
@@ -327,7 +327,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
               duration: filePreview?.durationSeconds != null ? formatDuration(filePreview.durationSeconds) : undefined,
             }}
             onRemove={() => {
-              if (videoFromWorkflow) workflow.clearVideo()
+              // if (videoFromWorkflow) workflow.clearVideo()
               setVideoFile(null)
               setVideoFromWorkflow(false)
             }}
@@ -344,7 +344,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                 <button
                   type="button"
                   onClick={() => {
-                    if (srtFromWorkflow) workflow.clearSrt()
+                    // if (srtFromWorkflow) workflow.clearSrt()
                     setSubtitleFile(null)
                     setSrtFromWorkflow(false)
                   }}

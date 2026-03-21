@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Minimize2 } from 'lucide-react'
-import { useWorkflow } from '../contexts/WorkflowContext'
+// import { useWorkflow } from '../contexts/WorkflowContext'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
-import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
+// import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
@@ -20,12 +20,12 @@ import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolli
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
-import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
+// import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 import { MessageSquare, Film, FileText } from 'lucide-react'
 import { formatFileSize } from '../lib/utils'
-import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
-import { emitToolCompleted } from '../workflow/workflowStore'
+// import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+// import { emitToolCompleted } from '../workflow/workflowStore'
 
 type CompressionLevel = 'light' | 'medium' | 'heavy'
 type CompressProfile = 'web' | 'mobile' | 'archive'
@@ -41,23 +41,23 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const { seoH1, seoIntro, faq = [] } = props
   const location = useLocation()
   const navigate = useNavigate()
-  const workflow = useWorkflow()
+  // const workflow = useWorkflow()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [fileFromWorkflow, setFileFromWorkflow] = useState(false)
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
 
-  useEffect(() => {
-    const state = location.state as { useWorkflowVideo?: boolean } | undefined
-    if (state?.useWorkflowVideo && workflow.videoFile) {
-      setSelectedFile(workflow.videoFile)
-      setFileFromWorkflow(true)
-    }
-  }, [location.state, workflow.videoFile])
+  // useEffect(() => {
+  //   const state = location.state as { useWorkflowVideo?: boolean } | undefined
+  //   if (state?.useWorkflowVideo && workflow.videoFile) {
+  //     setSelectedFile(workflow.videoFile)
+  //     setFileFromWorkflow(true)
+  //   }
+  // }, [location.state, workflow.videoFile])
 
   // Keep workflow in sync when result is shown so "Next step" links pre-fill the file on the next tool
-  useEffect(() => {
-    if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
-  }, [status, selectedFile])
+  // useEffect(() => {
+  //   if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
+  // }, [status, selectedFile])
 
   const [trimStart, setTrimStart] = useState<number | null>(null)
   const [trimEnd, setTrimEnd] = useState<number | null>(null)
@@ -118,7 +118,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
     } catch {
       // non-blocking
     }
-    workflow.setVideo(file)
+    // workflow.setVideo(file)
     setSelectedFile(file)
     setFileFromWorkflow(false)
     setTrimStart(null)
@@ -168,7 +168,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
       setProgress(0)
       const startedAt = Date.now()
       processingStartedAtRef.current = startedAt
-      texJobStarted()
+      // texJobStarted()
 
       const response = await uploadFileWithProgress(selectedFile, {
         toolType: BACKEND_TOOL_TYPES.COMPRESS_VIDEO,
@@ -196,15 +196,15 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
             setLastProcessingMs(processingMs)
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback()
-            emitToolCompleted({ toolId: 'compress-video', pathname: '/compress-video', processingMs })
+            // dispatchJobCompletedForFeedback()
+            // emitToolCompleted({ toolId: 'compress-video', pathname: '/compress-video', processingMs })
             incrementUsage('compress-video')
-            texJobCompleted(processingMs, 'compress-video')
+            // texJobCompleted(processingMs, 'compress-video')
             setLastJobCompletedToolId('compress-video')
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')
-            texJobFailed()
+            // texJobFailed()
             toast.error('Processing failed. Please try again.')
           }
         } catch (error: any) {
@@ -219,7 +219,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
         setStatus('idle')
       } else {
         setStatus('failed')
-        texJobFailed()
+        // texJobFailed()
       }
       toast.error(error.message || 'Upload failed')
     }
@@ -259,7 +259,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
             onFileSelect={handleFileSelect}
             initialFiles={selectedFile ? [selectedFile] : null}
             onRemove={() => {
-              if (fileFromWorkflow) workflow.clearVideo()
+              // if (fileFromWorkflow) workflow.clearVideo()
               setSelectedFile(null)
               setFileFromWorkflow(false)
             }}
@@ -277,7 +277,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
               duration: filePreview?.durationSeconds != null ? formatDuration(filePreview.durationSeconds) : undefined,
             }}
             onRemove={() => {
-              if (fileFromWorkflow) workflow.clearVideo()
+              // if (fileFromWorkflow) workflow.clearVideo()
               setSelectedFile(null)
               setFileFromWorkflow(false)
             }}
@@ -386,11 +386,11 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
               ]}
             />
             <div className="mt-2 min-h-[2.75rem]">
-            <WorkflowChainSuggestion
+            {/* <WorkflowChainSuggestion
               pathname={location.pathname}
               plan={plan}
               lastJobCompletedToolId={lastJobCompletedToolId}
-            />
+            /> */}
             </div>
 
             <div className="bg-green-50 rounded-xl p-6 border border-green-200">

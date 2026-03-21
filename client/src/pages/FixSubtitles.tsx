@@ -17,11 +17,11 @@ import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolli
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
-import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
+// import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 import { Film, Languages, MessageSquare } from 'lucide-react'
-import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
-import { emitToolCompleted } from '../workflow/workflowStore'
+// import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+// import { emitToolCompleted } from '../workflow/workflowStore'
 
 /** Optional SEO overrides for alternate entry points. Do NOT duplicate logic. */
 export type FixSubtitlesSeoProps = {
@@ -118,7 +118,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       setProgress(0)
       const startedAt = Date.now()
       processingStartedAtRef.current = startedAt
-      texJobStarted()
+      // texJobStarted()
 
       const response = await uploadFileWithProgress(selectedFile, {
         toolType: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
@@ -143,11 +143,11 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             setShowIssues(true)
             setStatus('idle')
             const started = processingStartedAtRef.current ?? Date.now()
-            texJobCompleted(Date.now() - started, 'fix-subtitles')
+            // texJobCompleted(Date.now() - started, 'fix-subtitles')
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')
-            texJobFailed()
+            // texJobFailed()
             toast.error('Analysis failed. Please try again.')
           }
         } catch (error: any) {
@@ -162,7 +162,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
         setStatus('idle')
       } else {
         setStatus('failed')
-        texJobFailed()
+        // texJobFailed()
       }
       toast.error(error.message || 'Upload failed')
     }
@@ -178,7 +178,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       setProgress(0)
       const startedAtFix = Date.now()
       processingStartedAtRef.current = startedAtFix
-      texJobStarted()
+      // texJobStarted()
 
       const response = await uploadFileWithProgress(selectedFile, {
         toolType: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
@@ -206,11 +206,11 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             setLastProcessingMs(processingMs)
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback()
-            emitToolCompleted({ toolId: 'fix-subtitles', pathname: '/fix-subtitles', processingMs })
+            // dispatchJobCompletedForFeedback()
+            // emitToolCompleted({ toolId: 'fix-subtitles', pathname: '/fix-subtitles', processingMs })
             setWarnings(jobStatus.result?.warnings ?? [])
             incrementUsage('fix-subtitles')
-            texJobCompleted(processingMs, 'fix-subtitles')
+            // texJobCompleted(processingMs, 'fix-subtitles')
             if (jobStatus.result?.downloadUrl) {
               try {
                 const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
@@ -223,7 +223,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')
-            texJobFailed()
+            // texJobFailed()
             toast.error('Processing failed. Please try again.')
           }
         } catch (error: any) {
@@ -238,7 +238,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
         setStatus('idle')
       } else {
         setStatus('failed')
-        texJobFailed()
+        // texJobFailed()
       }
       toast.error(error.message || 'Upload failed')
     }

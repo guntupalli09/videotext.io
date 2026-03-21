@@ -8,8 +8,8 @@ import { ProcessingProgress } from '../components/figma/ProcessingProgress'
 import { TranslateResult } from '../components/figma/TranslateResult'
 import { getBatchDownloadUrl, getBatchStatus, uploadBatch } from '../lib/api'
 import { JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
-import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
-import { emitToolCompleted } from '../workflow/workflowStore'
+// import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
+// import { emitToolCompleted } from '../workflow/workflowStore'
 
 interface BatchStatus {
   batchId: string
@@ -49,7 +49,7 @@ export default function BatchProcess(props: BatchProcessSeoProps = {}) {
     try {
       setStatus('processing')
       batchStartedAtRef.current = Date.now()
-      texJobStarted()
+      // texJobStarted()
 
       const json = await uploadBatch(files, 'en', [])
       const batchId = json.batchId
@@ -66,25 +66,25 @@ export default function BatchProcess(props: BatchProcessSeoProps = {}) {
             clearInterval(poll)
             setStatus(statusJson.status === 'failed' ? 'failed' : 'done')
             if (statusJson.status === 'failed') {
-              texJobFailed()
+              // texJobFailed()
             } else {
               const started = batchStartedAtRef.current ?? Date.now()
               const processingMs = Date.now() - started
               setLastProcessingMs(processingMs)
-              emitToolCompleted({ toolId: 'batch-process', pathname: '/batch-process', processingMs })
-              texJobCompleted(processingMs, 'batch-process')
+              // emitToolCompleted({ toolId: 'batch-process', pathname: '/batch-process', processingMs })
+              // texJobCompleted(processingMs, 'batch-process')
             }
           }
         } catch {
           clearInterval(poll)
           setStatus('failed')
-          texJobFailed()
+          // texJobFailed()
         }
       }, JOB_POLL_INTERVAL_MS)
     } catch (e) {
       console.error(e)
       setStatus('failed')
-      texJobFailed()
+      // texJobFailed()
     }
   }
 
