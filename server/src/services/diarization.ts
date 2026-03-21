@@ -15,7 +15,7 @@ export interface DiarizedSegment {
 
 /**
  * Upload audio buffer to Replicate Files API.
- * Returns a temporary URL (valid 24 h) that Replicate models accept as `file_url`.
+ * Returns a temporary URL (valid 24 h) passed as `file` (Path type) so Cog handles auth.
  * This avoids any base64 size limitation and works for arbitrarily large audio files.
  */
 async function uploadAudioToReplicate(audioBuf: Buffer, token: string): Promise<string | null> {
@@ -31,7 +31,8 @@ async function uploadAudioToReplicate(audioBuf: Buffer, token: string): Promise<
       signal: AbortSignal.timeout(120_000), // 2 min — generous for large files
     })
     if (!res.ok) {
-      log.warn({ msg: 'replicate file upload failed', status: res.status })
+      const body = await res.text()
+      log.warn({ msg: 'replicate file upload failed', status: res.status, body })
       return null
     }
     const data = (await res.json()) as { urls?: { get: string } }
@@ -55,8 +56,8 @@ function buildSegments(raw: Array<{ start: unknown; end: unknown; text: unknown;
  * Optional speaker diarization via Replicate (thomasmol/whisper-diarization).
  * Set REPLICATE_API_TOKEN to enable. Returns segments with raw speaker IDs or null on skip/failure.
  *
- * Uses the model-based API endpoint so it always runs the latest published version —
- * no hardcoded version hash that can go stale.
+ * Uses POST /v1/predictions with a pinned version hash as required by the Replicate API
+ * for community models.
  *
  * Audio is uploaded via the Replicate Files API (auto-expires in 24 h), which removes
  * the previous ~18 MB base64 ceiling and supports videos of any length.
@@ -89,26 +90,35 @@ export async function transcribeWithDiarization(
     const fileUrl = await uploadAudioToReplicate(audioBuf, token)
     if (!fileUrl) return null
 
-    const input: Record<string, unknown> = { file_url: fileUrl }
+    if (!fileUrl.startsWith('https://')) {
+      throw new Error(`Invalid audio URL from Files API: ${fileUrl}`)
+    }
+
+    // `file` (Path type) accepts a URL — matches the official API docs example
+    const input: Record<string, unknown> = { file: fileUrl }
     if (language?.trim()) input.language = language.trim()
     if (options?.numSpeakers && options.numSpeakers >= 1 && options.numSpeakers <= 50) input.num_speakers = options.numSpeakers
     // `prompt` acts as a hotwords list in this model — boosts accuracy for proper nouns / jargon
     if (options?.prompt?.trim()) input.prompt = options.prompt.trim().slice(0, 1500)
 
-    // Standard predictions endpoint with model field — works for all public community models
+    // Community models require version in "owner/name:version_id" format; Prefer wait=N (1-60 s)
     const createRes = await fetch('https://api.replicate.com/v1/predictions', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'Prefer': 'wait',
+        'Prefer': 'wait=60',
       },
-      body: JSON.stringify({ model: 'thomasmol/whisper-diarization', input }),
-      signal: AbortSignal.timeout(10_000),
+      body: JSON.stringify({
+        version: 'thomasmol/whisper-diarization:1495a9cddc83b2203b0d8d3516e38b80fd1572ebc4bc5700ac1da56a9b3ed886',
+        input,
+      }),
+      signal: AbortSignal.timeout(70_000), // slightly over the 60 s server wait
     })
 
     if (!createRes.ok) {
-      log.warn({ msg: 'replicate prediction create failed', status: createRes.status })
+      const body = await createRes.text()
+      log.warn({ msg: 'replicate prediction create failed', status: createRes.status, body })
       return null
     }
 
