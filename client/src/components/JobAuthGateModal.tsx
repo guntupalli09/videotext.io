@@ -10,7 +10,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Download, CheckCircle2, ChevronRight } from 'lucide-react'
+import { X, AlertTriangle, ChevronRight } from 'lucide-react'
 import { sendOtp, verifyOtp } from '../lib/api'
 import { completeSignup, login, storeLoginResult } from '../lib/auth'
 import { identifyUser } from '../lib/analytics'
@@ -30,7 +30,7 @@ export default function JobAuthGateModal({
   isOpen,
   onClose,
   onAuthSuccess,
-  jobDescription = 'Your transcript is ready',
+  jobDescription = "Don't lose your transcript!",
   dismissable = false,
   initialMode = 'signup-combo',
 }: JobAuthGateModalProps) {
@@ -154,25 +154,25 @@ export default function JobAuthGateModal({
 
           {/* Header badge */}
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
               <p className="font-bold text-gray-900 dark:text-white text-[15px]" id="auth-gate-title">{jobDescription}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Sign up free or log in to download</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Save your progress — it disappears when you leave</p>
             </div>
           </div>
 
           {/* ── CHOICE ── */}
           {mode === 'choice' && (
             <div className="space-y-3">
-              <div className="p-3.5 rounded-xl bg-purple-50 dark:bg-purple-500/10 border border-purple-200/60 dark:border-purple-500/20">
+              <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200/60 dark:border-amber-500/20">
                 <div className="flex items-center gap-2 mb-2">
-                  <Download className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  <span className="text-sm font-semibold text-purple-800 dark:text-purple-300">Create a free account to:</span>
+                  <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">Create a free account to keep it:</span>
                 </div>
-                <ul className="space-y-1 text-sm text-purple-700 dark:text-purple-400/80 ml-6">
-                  <li>• Download full transcript (TXT, PDF, SRT)</li>
+                <ul className="space-y-1 text-sm text-amber-700 dark:text-amber-400/80 ml-6">
+                  <li>• Save & download transcript (TXT, PDF, SRT)</li>
                   <li>• Get 2 more free imports this month</li>
                   <li>• Access all VideoText tools</li>
                 </ul>

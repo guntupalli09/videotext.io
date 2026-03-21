@@ -86,12 +86,25 @@ export default function PaywallModal({
             <X className="h-6 w-6" strokeWidth={1.5} />
           </button>
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Upgrade to continue</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            {isImportsQuota ? "You've used all 3 free imports" : "You've hit your minute limit"}
+          </h2>
+          <p className="text-gray-600 mb-4">
             {isImportsQuota
-              ? "You've used all 3 free imports this month. They reset on the 1st — or upgrade now for unlimited access."
+              ? "Free plan includes 3 imports/month. Upgrade now to keep going — no waiting for the reset."
               : `You've used ${usedMinutes} of ${availableMinutes} minutes this billing cycle.`}
           </p>
+
+          {/* Usage progress bar */}
+          <div className="mb-6">
+            <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+              <span>{isImportsQuota ? `${usedMinutes} of ${availableMinutes} imports used` : `${usedMinutes} of ${availableMinutes} min used`}</span>
+              <span className="font-medium text-red-500">Limit reached</span>
+            </div>
+            <div className="h-2 w-full rounded-full bg-gray-200 overflow-hidden">
+              <div className="h-full rounded-full bg-red-500 transition-all" style={{ width: '100%' }} />
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
             <button
@@ -106,10 +119,10 @@ export default function PaywallModal({
             <button
               onClick={onUpgrade}
               disabled={!onUpgrade}
-              className="bg-gray-50 border-2 border-gray-200 rounded-xl p-4 text-left hover:border-violet-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-gradient-to-br from-violet-600 to-indigo-600 rounded-xl p-4 text-left hover:from-violet-700 hover:to-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-violet-200"
             >
-              <div className="font-semibold text-gray-800 mb-1">Upgrade your plan</div>
-              <div className="text-sm text-gray-500">More minutes and higher limits</div>
+              <div className="font-semibold text-white mb-1">Upgrade your plan</div>
+              <div className="text-sm text-violet-200">More minutes, no limits</div>
             </button>
           </div>
 

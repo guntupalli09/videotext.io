@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import UserMenu from './UserMenu'
 import { prefetchRoute } from '../lib/prefetch'
 import { isLoggedIn } from '../lib/auth'
+import { getCurrentUsage } from '../lib/api'
 import { useFounderStatus } from '../hooks/useFounderStatus'
 
 const tools = [
@@ -40,16 +41,35 @@ export default function Navigation() {
   const [freeToolsDropdownOpen, setFreeToolsDropdownOpen] = useState(false)
   // Re-render when login state changes so Login/Signup show on all pages when not logged in
   const [showAuthLinks, setShowAuthLinks] = useState(() => !isLoggedIn())
+  const [freeUsage, setFreeUsage] = useState<{ used: number; limit: number } | null>(null)
+
+  function refreshFreeUsage() {
+    if (!isLoggedIn()) { setFreeUsage(null); return }
+    getCurrentUsage({ skipCache: true })
+      .then((data) => {
+        if (data.quotaType === 'imports') {
+          const used = data.used ?? 0
+          const limit = data.limit ?? 3
+          setFreeUsage({ used, limit })
+        } else {
+          setFreeUsage(null)
+        }
+      })
+      .catch(() => setFreeUsage(null))
+  }
+
   useEffect(() => {
     setShowAuthLinks(!isLoggedIn())
+    refreshFreeUsage()
   }, [])
   useEffect(() => {
-    const onLoginOrLogout = () => setShowAuthLinks(!isLoggedIn())
-    window.addEventListener('videotext:plan-updated', onLoginOrLogout)
-    window.addEventListener('videotext:logout', onLoginOrLogout)
+    const onPlanUpdated = () => { setShowAuthLinks(!isLoggedIn()); refreshFreeUsage() }
+    const onLogout = () => { setShowAuthLinks(!isLoggedIn()); refreshFreeUsage() }
+    window.addEventListener('videotext:plan-updated', onPlanUpdated)
+    window.addEventListener('videotext:logout', onLogout)
     return () => {
-      window.removeEventListener('videotext:plan-updated', onLoginOrLogout)
-      window.removeEventListener('videotext:logout', onLoginOrLogout)
+      window.removeEventListener('videotext:plan-updated', onPlanUpdated)
+      window.removeEventListener('videotext:logout', onLogout)
     }
   }, [])
 
@@ -194,6 +214,27 @@ export default function Navigation() {
                 onFocus={() => prefetchRoute('/founder')}
               >
                 Founder
+              </Link>
+            )}
+
+            {/* Free plan usage pill — always visible so free users feel the limit */}
+            {freeUsage && (
+              <Link
+                to="/pricing"
+                onMouseEnter={() => prefetchRoute('/pricing')}
+                className="hidden md:flex items-center gap-2 rounded-full border border-violet-200 dark:border-violet-700 bg-violet-50 dark:bg-violet-900/30 px-3 py-1 hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors"
+                aria-label="Upgrade plan"
+              >
+                <span className="text-xs text-violet-700 dark:text-violet-300 font-medium whitespace-nowrap">
+                  {freeUsage.used}/{freeUsage.limit} imports used
+                </span>
+                <div className="w-12 h-1.5 rounded-full bg-violet-200 dark:bg-violet-800 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-violet-500 transition-all"
+                    style={{ width: `${Math.min(100, (freeUsage.used / freeUsage.limit) * 100)}%` }}
+                  />
+                </div>
+                <span className="text-xs font-semibold text-violet-600 dark:text-violet-400 whitespace-nowrap">Upgrade →</span>
               </Link>
             )}
 
