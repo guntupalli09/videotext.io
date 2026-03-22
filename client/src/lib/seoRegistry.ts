@@ -3710,6 +3710,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Is there a free WhisperType alternative?', a: 'Yes. VideoText offers a free tier with 3 transcriptions per month. WhisperType requires API key costs from OpenAI.' },
     ],
   },
+  {
     path: '/subly-alternative',
     title: 'Subly Alternative – Subtitle Generation Without Per-Credit Pricing | VideoText',
     description: 'VideoText as a Subly alternative. Generate subtitles from any video on a flat plan. SRT, VTT export. Translate to 50+ languages. Burn captions into video. Free tier.',
