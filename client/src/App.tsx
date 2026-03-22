@@ -53,7 +53,14 @@ const RevAlternative = lazy(() => import('./pages/seo/RevAlternativePage'))
 const HappyScribeAlternative = lazy(() => import('./pages/seo/HappyScribeAlternativePage'))
 const SonixAlternative = lazy(() => import('./pages/seo/SonixAlternativePage'))
 const EasyScribeAlternative = lazy(() => import('./pages/seo/EasyScribeAlternativePage'))
+const ZoomAlternative = lazy(() => import('./pages/seo/ZoomAlternativePage'))
+const MicrosoftTeamsAlternative = lazy(() => import('./pages/seo/MicrosoftTeamsAlternativePage'))
+const CapCutAlternative = lazy(() => import('./pages/seo/CapCutAlternativePage'))
 const NottaAlternative = lazy(() => import('./pages/seo/NottaAlternativePage'))
+const PanoptoAlternative = lazy(() => import('./pages/seo/PanoptoAlternativePage'))
+const MacWhisperAlternative = lazy(() => import('./pages/seo/MacWhisperAlternativePage'))
+const DeepgramAlternative = lazy(() => import('./pages/seo/DeepgramAlternativePage'))
+const TactiqAlternative = lazy(() => import('./pages/seo/TactiqAlternativePage'))
 const About = lazy(() => import('./pages/AboutPage'))
 const Open = lazy(() => import('./pages/Open'))
 const NotFound = lazy(() => import('./pages/NotFound'))
@@ -380,7 +387,14 @@ function App() {
             <Route path="/happyscribe-alternative" element={<HappyScribeAlternative />} />
             <Route path="/sonix-alternative" element={<SonixAlternative />} />
             <Route path="/easyscribe-alternative" element={<EasyScribeAlternative />} />
+            <Route path="/zoom-alternative" element={<ZoomAlternative />} />
+            <Route path="/microsoft-teams-alternative" element={<MicrosoftTeamsAlternative />} />
+            <Route path="/capcut-alternative" element={<CapCutAlternative />} />
             <Route path="/notta-alternative" element={<NottaAlternative />} />
+            <Route path="/panopto-alternative" element={<PanoptoAlternative />} />
+            <Route path="/macwhisper-alternative" element={<MacWhisperAlternative />} />
+            <Route path="/deepgram-alternative" element={<DeepgramAlternative />} />
+            <Route path="/tactiq-alternative" element={<TactiqAlternative />} />
             <Route path="/about" element={<About />} />
             <Route path="/open" element={<Open />} />
             <Route path="/voice-recorder" element={<VoiceRecorder />} />

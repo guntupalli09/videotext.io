@@ -36,7 +36,7 @@ function main(): void {
 
   const indexablePaths = getIndexablePaths()
   const expectedUrls = new Set(
-    indexablePaths.map((p) => (p === '/' ? SITE_URL : `${SITE_URL}${p}`))
+    indexablePaths.map((p) => (p === '/' ? `${SITE_URL}/` : `${SITE_URL}${p}`))
   )
 
   const foundSet = new Set(found)
@@ -55,7 +55,7 @@ function main(): void {
   }
 
   for (const url of found) {
-    const pathPart = url === SITE_URL ? '/' : url.slice(SITE_URL.length)
+    const pathPart = (url === SITE_URL || url === `${SITE_URL}/`) ? '/' : url.slice(SITE_URL.length)
     const expectedPath = pathPart || '/'
     if (!indexablePaths.includes(expectedPath)) {
       console.error('[validate-sitemap] Sitemap contains path not in indexable inventory:', url)

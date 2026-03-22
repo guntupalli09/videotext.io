@@ -24,6 +24,20 @@ export const transcriptionTargets = [
   'product demo',
   'tutorial video',
   'marketing video',
+  // Journalism & student targets
+  'press conference',
+  'class recording',
+  'research interview',
+  'news interview',
+  'field recording',
+  'dissertation interview',
+  'focus group recording',
+  // Voice-to-text targets
+  'voice recording',
+  'voice memo',
+  'voice note',
+  'dictation',
+  'voice message',
 ] as const
 
 /** Slug-friendly target (e.g. "youtube video" -> "youtube-video") */

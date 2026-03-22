@@ -18,6 +18,7 @@ export type SeoToolKey =
   | 'burn-subtitles'
   | 'compress-video'
   | 'batch-process'
+  | 'voice-to-text'
 
 export interface SeoRegistryEntry {
   /** Path (e.g. /video-to-text). Must match route path. */
@@ -2183,6 +2184,374 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Is OGG to text conversion free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
     ],
   },
+  // ── Cluster E: Journalist & Student Pages ────────────────────────────────────
+  {
+    path: '/transcription-for-journalists',
+    title: 'Transcription Tool for Journalists – Fast Interview & Press Conference Transcription | VideoText',
+    description:
+      'Transcription software built for journalists. Transcribe interview recordings, press conferences, and field audio to text in seconds. Speaker labels, exact quotes, free tier. Used by reporters, news writers, and freelance journalists.',
+    h1: 'Transcription Tool for Journalists',
+    intro:
+      'Journalists need accurate transcripts fast — for quotes, fact-checking, and story filing. VideoText transcribes interview recordings, press conference audio, phone calls, and field recordings to text in seconds. Get speaker-labeled quotes, searchable full text, and export as TXT or SRT. Works with every format you record in: MP4, MP3, WAV, M4A. Free tier — no credit card.',
+    breadcrumbLabel: 'Transcription for Journalists',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/interview-transcription',
+      '/press-conference-transcription',
+      '/speaker-diarization',
+      '/best-transcription-tool-for-journalists',
+      '/mp3-to-text',
+    ],
+    indexable: true,
+    intentKey: 'transcription-for-journalists',
+    faq: [
+      {
+        q: 'Is VideoText accurate enough for journalism?',
+        a: 'VideoText uses OpenAI Whisper large-v3 with ~97–99% word accuracy on clear speech. For journalism, always verify quotes against the original recording before publishing — AI transcription may mishear proper nouns, names, and technical jargon. The transcript dramatically speeds up review but does not replace a final listen-back.',
+      },
+      {
+        q: 'Can I transcribe a phone interview recording?',
+        a: 'Yes. Upload the recording as MP3, M4A, or WAV. Phone call quality (8kHz) transcribes at lower accuracy than in-person or VOIP recordings. For better results, use a call recording app that captures both sides in higher quality (e.g., Recorder on Android, TapeACall, or Zoom audio).',
+      },
+      {
+        q: 'Does it separate the interviewer and interviewee in the transcript?',
+        a: 'Yes. Open the Speakers branch after transcribing — speech is grouped by speaker turn (Speaker 1, Speaker 2). For two-person interviews this clearly separates Q and A. Rename speakers to real names by editing the labels.',
+      },
+      {
+        q: 'Can I transcribe a press conference recording?',
+        a: 'Yes. Upload your press conference MP4 or audio file. Multi-speaker press conferences work well — the AI labels each speaker turn. For best accuracy with multiple microphones or a room full of questions, use a recording captured from the main PA feed rather than ambient room audio.',
+      },
+      {
+        q: 'Does VideoText delete my files after transcription?',
+        a: 'Yes. Your file is deleted immediately after processing completes. Nothing is stored on our servers — important for sensitive sources and embargoed material.',
+      },
+      {
+        q: 'What file formats do journalists typically use?',
+        a: 'Common formats supported: MP3 (most voice recorders), M4A (iPhone Voice Memos), MP4 (video interviews, Zoom calls), WAV (broadcast-quality field recorders), AAC, OGG, FLAC. No conversion needed before upload.',
+      },
+      {
+        q: 'Is there a deadline-friendly fast turnaround?',
+        a: 'Yes. Most files transcribe in 30–90 seconds for short clips; a 60-minute interview typically finishes in 5–8 minutes. Results stream in real time as each segment completes — you can start reading before the full file is done.',
+      },
+    ],
+  },
+  {
+    path: '/transcription-for-students',
+    title: 'Transcription Tool for Students – Transcribe Lectures, Classes & Interviews Free | VideoText',
+    description:
+      'Free transcription tool for students. Transcribe lecture recordings, class sessions, professor interviews, and study group audio to text. Searchable notes, chapter navigation, keyword index. No credit card.',
+    h1: 'Transcription Tool for Students',
+    intro:
+      'Turn any recorded lecture, class session, or study interview into searchable, shareable notes. Upload your recording (MP4 from Zoom class, MP3 from your recorder, M4A from iPhone) and get a full text transcript in seconds. Use Keywords to index every topic, Chapters to navigate by section, and Translate to study in your native language. Free tier — 3 imports per month, no credit card.',
+    breadcrumbLabel: 'Transcription for Students',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/lecture-transcription',
+      '/keyword-indexed-transcript',
+      '/video-chapters-generator',
+      '/best-transcription-tool-for-students',
+      '/zoom-recording-transcript',
+    ],
+    indexable: true,
+    intentKey: 'transcription-for-students',
+    faq: [
+      {
+        q: 'Is VideoText free for students?',
+        a: 'Yes. The free tier includes 3 imports per month with no credit card required. Most students can transcribe all their key lectures and interviews within the free limit. Sign up for free to start.',
+      },
+      {
+        q: 'Can I transcribe a Zoom lecture recording?',
+        a: 'Yes. Download the Zoom recording as MP4 from the Zoom cloud or your local Zoom folder, then upload it here. Works for any Zoom class, seminar, or office-hours recording.',
+      },
+      {
+        q: 'How do I use the transcript for studying?',
+        a: 'Paste it into Notion, Obsidian, or Google Docs and highlight key concepts. Use the Keywords branch to find every time a term was mentioned. Use Chapters to jump to specific lecture sections. Use Ctrl+F to search for anything the professor said.',
+      },
+      {
+        q: 'Can I transcribe an iPhone lecture recording?',
+        a: 'Yes. iPhone Voice Memos saves as M4A — upload directly, no conversion needed. Screen recordings from an iPad also work as MP4. Most campus recording devices export MP3 or WAV, both supported.',
+      },
+      {
+        q: 'Does it support technical or academic terminology?',
+        a: 'Whisper large-v3 handles most academic vocabulary well. Accuracy is highest for clearly spoken English. For highly specialized jargon or strong accents, review the transcript against the recording for critical terms.',
+      },
+      {
+        q: 'Can I share the transcript with classmates?',
+        a: 'Yes. Download the TXT file and share it via Google Drive, email, or your LMS. The transcript can also be pasted into a collaborative note document.',
+      },
+      {
+        q: 'Does it support non-English lectures?',
+        a: 'Yes. Whisper supports 90+ languages. Set the spoken language before processing for best accuracy. After transcribing, use the Translate branch to get a version in English, Spanish, Hindi, French, Chinese, or Russian.',
+      },
+    ],
+  },
+  {
+    path: '/best-transcription-tool-for-journalists',
+    title: 'Best Transcription Tool for Journalists 2026 – Fast, Accurate, Private | VideoText',
+    description:
+      'Best transcription tool for journalists in 2026. Transcribe interviews, press conferences, and field audio fast. Speaker labels, exact quotes, files deleted after processing. Free tier.',
+    h1: 'Best Transcription Tool for Journalists',
+    intro:
+      'The best transcription tool for journalists combines speed, accuracy, and privacy. VideoText transcribes interview recordings, press conferences, and field audio in seconds using Whisper large-v3. Get speaker-labeled quotes, full-text search, and SRT export — files are deleted immediately after processing. Free tier, no credit card.',
+    breadcrumbLabel: 'Best Transcription Tool for Journalists',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/transcription-for-journalists',
+      '/interview-transcription',
+      '/press-conference-transcription',
+      '/speaker-diarization',
+    ],
+    indexable: true,
+    intentKey: 'best-transcription-tool-for-journalists',
+    faq: [
+      {
+        q: 'What makes a transcription tool good for journalism?',
+        a: 'Key factors: accuracy (Whisper large-v3 ~97–99% on clear speech), speed (30–90 seconds for short clips), speaker separation (Q&A format), privacy (files deleted after processing), and format support (MP3, M4A, WAV, MP4 from any recorder).',
+      },
+      {
+        q: 'Does VideoText keep my interview recordings?',
+        a: 'No. Your file is deleted immediately after transcription completes. No storage, no retention — important for protecting sources and sensitive embargoed content.',
+      },
+      {
+        q: 'Is VideoText free for journalists?',
+        a: 'Yes. Free tier includes 3 imports per month with no credit card. Paid plans start at $19/month for 450 minutes — enough for most active reporters.',
+      },
+    ],
+  },
+  {
+    path: '/best-transcription-tool-for-students',
+    title: 'Best Free Transcription Tool for Students 2026 | VideoText',
+    description:
+      'Best free transcription tool for students in 2026. Transcribe lectures, class recordings, and interviews. Chapters, keywords, translate to your language. No credit card. Free tier.',
+    h1: 'Best Free Transcription Tool for Students',
+    intro:
+      'The best transcription tool for students is free, accurate, and built for lecture recordings. VideoText transcribes class recordings, Zoom lectures, and research interviews with chapter navigation and keyword indexing — all free to start. No credit card, no download.',
+    breadcrumbLabel: 'Best Transcription Tool for Students',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/transcription-for-students',
+      '/lecture-transcription',
+      '/keyword-indexed-transcript',
+      '/video-chapters-generator',
+    ],
+    indexable: true,
+    intentKey: 'best-transcription-tool-for-students',
+    faq: [
+      {
+        q: 'Why do students need a transcription tool?',
+        a: 'Lecture transcripts make studying more efficient: you can search for any term, copy definitions directly into notes, review sections you missed, share notes with classmates, and create summaries without re-listening to the whole recording.',
+      },
+      {
+        q: 'What is the best free transcription tool for students?',
+        a: 'VideoText offers 3 free imports per month with no credit card. Whisper large-v3 accuracy is among the best available. You get chapters, keywords, speaker labels, translation, and TXT/SRT export — all in the free tier.',
+      },
+      {
+        q: 'Is VideoText better than Otter.ai for students?',
+        a: 'VideoText and Otter.ai both offer free tiers. VideoText gives you more export formats (SRT, VTT, JSON), chapter navigation, keyword indexing, and instant translation. Otter.ai offers live recording in its app. For already-recorded lectures and class sessions, VideoText is more feature-complete.',
+      },
+    ],
+  },
+  {
+    path: '/press-conference-transcription',
+    title: 'Press Conference Transcription – Convert Press Conferences to Text | VideoText',
+    description:
+      'Transcribe press conference recordings to text online. Upload video or audio of any press conference and get a full, speaker-labeled transcript in seconds. Free. Used by journalists, PR teams.',
+    h1: 'Press Conference Transcription — Convert Press Conferences to Text',
+    intro:
+      'Transcribe press conference recordings to text quickly and accurately. Upload your press conference video (MP4, MOV) or audio (MP3, WAV) and get a full transcript with speaker labels. Use Speakers to track who said what across multiple officials and journalists, and Summary to extract key announcements. Free tier — perfect for journalists, PR teams, and communications professionals.',
+    breadcrumbLabel: 'Press Conference Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/interview-transcription',
+      '/transcription-for-journalists',
+      '/speaker-diarization',
+      '/mp4-to-text',
+    ],
+    indexable: true,
+    intentKey: 'press-conference-transcription',
+    faq: [
+      {
+        q: 'Can I transcribe a press conference with multiple speakers?',
+        a: 'Yes. After transcribing, the Speakers branch groups speech by speaker turn. Multiple officials, moderators, and journalists asking questions are each assigned a separate speaker label. For recordings from a PA feed or broadcast stream, speaker separation is cleanest.',
+      },
+      {
+        q: 'What formats work for press conference recordings?',
+        a: 'MP4, MOV, AVI, WebM (video) and MP3, WAV, M4A (audio). Broadcast recordings from TV streams, official government YouTube feeds, and recorder files from press pools all work without conversion.',
+      },
+      {
+        q: 'Can I get a summary of the key announcements?',
+        a: 'Yes. The Summary branch automatically extracts key decisions, statements, and action items from the transcript. Useful for generating a quick brief without reading the full transcript.',
+      },
+      {
+        q: 'Is press conference transcription free?',
+        a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try. Paid plans start at $19/month for 450 minutes.',
+      },
+    ],
+  },
+  {
+    path: '/research-interview-transcription',
+    title: 'Research Interview Transcription – Qualitative Research Transcription | VideoText',
+    description:
+      'Transcribe research interviews to text for qualitative analysis. Upload interview recordings and get speaker-labeled, accurate transcripts. Export TXT or SRT. Free tier. Used by researchers, academics, PhD students.',
+    h1: 'Research Interview Transcription — For Qualitative Research',
+    intro:
+      'Transcribe research interviews, focus groups, and fieldwork recordings for qualitative analysis. Upload your audio or video interview and get an accurate, speaker-labeled transcript in seconds. Export as TXT for coding in NVivo, Atlas.ti, or any QDAS software. Free tier — widely used by PhD students, academic researchers, and social scientists.',
+    breadcrumbLabel: 'Research Interview Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/interview-transcription',
+      '/transcription-for-students',
+      '/speaker-diarization',
+      '/qualitative-research-transcription',
+    ],
+    indexable: true,
+    intentKey: 'research-interview-transcription',
+    faq: [
+      {
+        q: 'Can I use VideoText transcripts for qualitative research?',
+        a: 'Yes. Export the transcript as TXT and import it into NVivo, Atlas.ti, MAXQDA, or any qualitative data analysis software (QDAS) for coding. The plain-text output is compatible with all major QDAS tools.',
+      },
+      {
+        q: 'Does it support verbatim transcription?',
+        a: 'The transcript captures all spoken words without paraphrasing. Whisper does not transcribe non-verbal sounds (um, uh) consistently — for fully verbatim transcription that includes every hesitation, review and edit the AI transcript against the recording.',
+      },
+      {
+        q: 'Can I transcribe focus group recordings?',
+        a: 'Yes. Upload the focus group recording. The Speakers branch separates participants by voice turn. For groups larger than 6–8 participants or recordings with significant crosstalk, accuracy of speaker separation decreases — a research-grade recording setup improves results.',
+      },
+      {
+        q: 'Is my interview data kept private?',
+        a: 'Yes. VideoText processes and immediately deletes your file — nothing is stored. Important for research involving human subjects and IRB/ethics board requirements for data minimization.',
+      },
+      {
+        q: 'Is it free for PhD students and academic researchers?',
+        a: 'Yes. Free tier includes 3 imports per month with no credit card. Most dissertation students use the paid tier ($10/month) during intensive fieldwork periods.',
+      },
+    ],
+  },
+  {
+    path: '/qualitative-research-transcription',
+    title: 'Qualitative Research Transcription – Transcribe Interviews for QDAS | VideoText',
+    description:
+      'Transcription for qualitative research. Transcribe interviews, focus groups, and fieldwork audio for NVivo, Atlas.ti, and MAXQDA. Speaker labels. Files deleted after processing. Free tier.',
+    h1: 'Qualitative Research Transcription',
+    intro:
+      'Accurate transcription for qualitative research workflows. Upload research interviews, focus groups, and fieldwork recordings — get a speaker-labeled TXT transcript ready to import into NVivo, Atlas.ti, MAXQDA, or Dedoose. VideoText uses Whisper large-v3 for high accuracy. Files are deleted immediately after processing — meeting data minimization requirements. Free tier.',
+    breadcrumbLabel: 'Qualitative Research Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/research-interview-transcription',
+      '/interview-transcription',
+      '/speaker-diarization',
+      '/transcription-for-students',
+    ],
+    indexable: true,
+    intentKey: 'qualitative-research-transcription',
+    faq: [
+      {
+        q: 'What qualitative analysis software does VideoText output work with?',
+        a: 'The plain TXT transcript imports directly into NVivo, Atlas.ti, MAXQDA, Dedoose, and HyperRESEARCH. The SRT export with timestamps can be used for time-coded analysis. Most QDAS tools accept TXT and can split by speaker turn if the transcript is formatted with speaker labels.',
+      },
+      {
+        q: 'Does the transcript include speaker labels for thematic coding?',
+        a: 'Yes. The Speakers branch produces a transcript segmented by speaker turn (Speaker 1, Speaker 2, etc.), which is the standard format for qualitative interview coding. You can label each speaker with participant pseudonyms before importing into QDAS.',
+      },
+      {
+        q: 'How does VideoText handle data privacy for research participants?',
+        a: 'VideoText processes and immediately deletes your file — no retention, no cloud storage of transcripts. This supports IRB/ethics board data minimization requirements. Your participants\' audio is not stored on any server after processing.',
+      },
+      {
+        q: 'Is VideoText free for academic research?',
+        a: 'Yes. Free tier includes 3 imports per month with no credit card. For intensive fieldwork, the $10/month plan provides 200 minutes and the $19/month plan provides 450 minutes.',
+      },
+    ],
+  },
+  {
+    path: '/journalism-transcription',
+    title: 'Journalism Transcription – Transcribe Interviews & Field Audio | VideoText',
+    description:
+      'Transcription for journalism. Transcribe recorded interviews, press conferences, and field audio to text. Speaker labels, fast turnaround, files deleted after processing. Free tier.',
+    h1: 'Journalism Transcription — Interviews, Press Conferences & Field Audio',
+    intro:
+      'Transcribe journalism recordings — interviews, press conferences, source calls, and field audio — to accurate, speaker-labeled text. VideoText handles every format journalists record in: MP3 from voice recorders, M4A from iPhones, MP4 from cameras and Zoom. Files are deleted immediately after transcription. Free tier with no credit card.',
+    breadcrumbLabel: 'Journalism Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/transcription-for-journalists',
+      '/interview-transcription',
+      '/press-conference-transcription',
+      '/speaker-diarization',
+      '/mp3-to-text',
+    ],
+    indexable: true,
+    intentKey: 'journalism-transcription',
+    faq: [
+      {
+        q: 'What journalism recording formats does VideoText support?',
+        a: 'MP3 (most digital voice recorders), M4A (iPhone Voice Memos), MP4 (Zoom, Teams, Skype video calls), WAV (broadcast field recorders), AAC, FLAC. Upload any of these directly without conversion.',
+      },
+      {
+        q: 'How quickly can I get a transcript for a deadline?',
+        a: 'Most files transcribe in 30–90 seconds for short clips. A 60-minute interview typically finishes in 5–8 minutes. Results stream in real time as segments complete — you can start pulling quotes before the full file is done.',
+      },
+      {
+        q: 'Does it label speakers so I can track quotes?',
+        a: 'Yes. The Speakers branch separates speech by speaker turn. For a two-person interview you get clear Journalist/Source separation. Multi-person press conferences are also labeled by turn.',
+      },
+      {
+        q: 'Are my files and sources protected?',
+        a: 'Yes. VideoText does not store files — your recording is deleted immediately after transcription. No cloud retention, no logs of content. Important for source protection and embargoed material.',
+      },
+      {
+        q: 'Is journalism transcription free?',
+        a: 'Yes. Free tier includes 3 imports per month. Sign up for free to try. No credit card.',
+      },
+    ],
+  },
+  {
+    path: '/academic-transcription',
+    title: 'Academic Transcription – Transcribe Research & Lecture Recordings | VideoText',
+    description:
+      'Academic transcription for students and researchers. Transcribe lectures, research interviews, seminars, and fieldwork audio to text. Chapters, keywords, speaker labels. Free tier.',
+    h1: 'Academic Transcription — Lectures, Research Interviews & Seminars',
+    intro:
+      'Academic transcription for university students, PhD researchers, and educators. Upload lecture recordings, research interviews, seminar discussions, and fieldwork audio — get accurate, speaker-labeled transcripts in seconds. Chapter navigation helps you review by topic; keyword indexing makes every concept searchable. Export TXT for note apps or SRT for accessible video. Free tier.',
+    breadcrumbLabel: 'Academic Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: [
+      '/transcription-for-students',
+      '/lecture-transcription',
+      '/research-interview-transcription',
+      '/keyword-indexed-transcript',
+      '/video-chapters-generator',
+    ],
+    indexable: true,
+    intentKey: 'academic-transcription',
+    faq: [
+      {
+        q: 'What academic recordings can I transcribe?',
+        a: 'Lecture recordings (Zoom, Panopto, Echo360), research interviews, focus groups, seminar discussions, thesis defenses, conference presentations, faculty talks, field recordings, and oral history interviews.',
+      },
+      {
+        q: 'How can I use lecture transcripts for accessibility?',
+        a: 'Under ADA and Section 508, video content in educational settings should include captions or transcripts for deaf and hard-of-hearing students. VideoText generates both — use SRT for captioned video upload or TXT as a standalone transcript document.',
+      },
+      {
+        q: 'Can I search a lecture transcript for specific concepts?',
+        a: 'Yes. The Keywords branch indexes every key term and shows where each appears in the transcript. Use Ctrl+F in the transcript view to search for any word or phrase the lecturer mentioned.',
+      },
+      {
+        q: 'Is academic transcription free for students?',
+        a: 'Yes. Free tier includes 3 imports per month with no credit card. Most students cover their key lectures within the free limit.',
+      },
+      {
+        q: 'What languages does academic transcription support?',
+        a: 'Whisper supports 90+ languages. Set the spoken language before processing. After transcribing, use Translate to get the transcript in English, Spanish, Hindi, French, Chinese, or Russian.',
+      },
+    ],
+  },
+
+  // ── Cluster F: FLAC ───────────────────────────────────────────────────────────
   {
     path: '/flac-to-text',
     title: 'FLAC to Text – Transcribe FLAC Audio Files Online | VideoText',
@@ -2201,42 +2570,1144 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     ],
   },
 
-  // ─── New competitor alternatives ──────────────────────────────────────────
+  // ── Cluster G: Meeting Platform Alternatives ────────────────────────────────
+  {
+    path: '/zoom-alternative',
+    title: 'Best Zoom Transcription Alternative – No Account Lock-In | VideoText',
+    description:
+      "Zoom's built-in transcription requires a paid plan and keeps recordings in Zoom's cloud. VideoText transcribes any Zoom MP4 in minutes — no Zoom account needed. Speaker labels, summary, free tier.",
+    h1: 'Zoom Transcription Alternative',
+    intro:
+      "Zoom's built-in AI Companion transcription is locked to Business/Enterprise plans and keeps your recordings in Zoom's cloud. VideoText is a drop-in replacement: download your Zoom MP4, upload it here, and get a speaker-labeled transcript in minutes — no Zoom account, no cloud lock-in. Files deleted after processing. Free tier.",
+    breadcrumbLabel: 'Zoom Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/zoom-recording-transcript', '/microsoft-teams-alternative', '/webex-alternative', '/meeting-transcript'],
+    indexable: true,
+    intentKey: 'zoom-alternative',
+    faq: [
+      { q: 'Why use VideoText instead of Zoom\'s built-in transcription?', a: 'Zoom AI Companion transcription requires a Business or Enterprise plan ($20+/month per user). VideoText works with any Zoom recording on any plan — download the MP4 and upload it. No Zoom account connection needed. Files are deleted immediately after processing.' },
+      { q: 'Does VideoText give better transcription than Zoom?', a: 'VideoText uses Whisper large-v3 (~97–99% word accuracy on clear speech). Zoom\'s accuracy is comparable but its output is less structured — VideoText adds speaker labels, summary, chapters, and keyword index on top of the raw transcript.' },
+      { q: 'How do I get my Zoom recording to transcribe?', a: 'Cloud recordings: zoom.us → Recordings → Download the MP4. Local recordings: Documents/Zoom folder on your computer. Upload the MP4 to VideoText and get a transcript in 5–8 minutes for a 60-minute call.' },
+      { q: 'Does VideoText store my Zoom recordings?', a: 'No. Your file is deleted immediately after transcription. Zoom stores cloud recordings until you manually delete them — VideoText has zero retention.' },
+      { q: 'Is VideoText free for Zoom transcription?', a: 'Yes. Free tier includes 3 imports per month. No credit card. Paid plans start at $19/month for 450 minutes.' },
+    ],
+  },
+  {
+    path: '/microsoft-teams-alternative',
+    title: 'Microsoft Teams Transcription Alternative – No Copilot License Needed | VideoText',
+    description:
+      "Teams transcription needs Microsoft 365 Copilot ($30/user/month extra). VideoText transcribes any Teams MP4 recording without a Copilot license. Speaker labels, summary, free tier.",
+    h1: 'Microsoft Teams Transcription Alternative',
+    intro:
+      "Microsoft Teams' AI transcription and meeting notes require Microsoft 365 Copilot — an add-on that costs $30/user/month on top of your existing 365 plan. VideoText transcribes any Teams recording without Copilot: download the meeting MP4, upload it here, and get speaker-labeled text in minutes. Free tier, no Microsoft account needed.",
+    breadcrumbLabel: 'Microsoft Teams Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/zoom-alternative', '/webex-alternative', '/meeting-transcript', '/teams-meeting-transcript'],
+    indexable: true,
+    intentKey: 'microsoft-teams-alternative',
+    faq: [
+      { q: 'Do I need Microsoft 365 Copilot to transcribe Teams meetings?', a: 'No — not with VideoText. Download your Teams meeting recording as MP4, upload it here, and get a full speaker-labeled transcript. Copilot costs $30/user/month extra; VideoText starts free.' },
+      { q: 'How do I download a Teams meeting recording?', a: 'In Microsoft Teams: go to the Chat or Channel where the meeting was recorded → find the recording → click the three-dot menu → Download. The file saves as MP4. For OneDrive-stored recordings, open SharePoint/OneDrive, find the recording, and download it.' },
+      { q: 'Does VideoText support Teams recordings with multiple speakers?', a: 'Yes. The Speakers branch separates speech by speaker turn. For Teams calls with multiple participants, each person\'s speech is labeled separately.' },
+      { q: 'Is VideoText cheaper than Microsoft Copilot for transcription?', a: 'Yes. Microsoft 365 Copilot costs $30/user/month per person. VideoText free tier costs $0. Paid plans start at $19/month for the whole team\'s transcription needs.' },
+    ],
+  },
+  {
+    path: '/panopto-alternative',
+    title: 'Best Panopto Alternative for Transcription – Export Captions & Text | VideoText',
+    description:
+      "Panopto's auto-captions are locked inside the platform and hard to export. VideoText transcribes any Panopto video download — full text, SRT export, chapters, keywords. Free tier for students.",
+    h1: 'Panopto Alternative — Transcribe Panopto Videos to Text',
+    intro:
+      "Panopto provides auto-captions inside its viewer, but exporting them as a clean text file or SRT is restricted and often requires admin access. VideoText is a simple alternative: download the Panopto video, upload it here, and get a full transcript with chapters, keywords, and SRT export in minutes. Free tier — widely used by students and educators.",
+    breadcrumbLabel: 'Panopto Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/panopto-transcription', '/lecture-transcription', '/transcription-for-students', '/video-chapters-generator'],
+    indexable: true,
+    intentKey: 'panopto-alternative',
+    faq: [
+      { q: 'Can I transcribe a Panopto lecture video?', a: 'Yes. Download the Panopto video as MP4 (using the Panopto download option or your institution\'s export), upload it to VideoText, and get a full transcript with speaker labels, chapters, and keywords.' },
+      { q: 'How do I download a Panopto video?', a: 'In Panopto: open the video → Settings (gear icon) → Downloads tab → download the MP4. If downloads are disabled by your institution, you can use the Panopto desktop app or request the file from your instructor. Once you have the MP4, upload it to VideoText.' },
+      { q: 'Is VideoText better than Panopto\'s built-in captions?', a: 'VideoText gives you exported text (TXT, SRT) you can paste into notes, share, or use for accessibility compliance. Panopto\'s auto-captions are display-only inside the player — no export, no keyword search across transcripts, no chapter generation.' },
+      { q: 'Is VideoText free for students using Panopto?', a: 'Yes. Free tier includes 3 imports per month — enough for most students to cover their key lecture videos. No credit card required.' },
+    ],
+  },
+  {
+    path: '/panopto-transcription',
+    title: 'Panopto Transcription – Export Panopto Lecture Captions to Text | VideoText',
+    description:
+      'Transcribe Panopto lecture videos to full text. Download the video, upload to VideoText, and get a searchable transcript with chapters and keywords. Free. Used by students and educators.',
+    h1: 'Panopto Transcription — Convert Panopto Videos to Text',
+    intro:
+      "Panopto lecture recordings contain valuable content locked inside a video player. Transcribe them to text for searchable study notes, accessibility captions, or lecture summaries. Download your Panopto video as MP4, upload to VideoText, and get a full AI-powered transcript with chapters and keywords in minutes. Free tier for students.",
+    breadcrumbLabel: 'Panopto Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/panopto-alternative', '/lecture-transcription', '/transcription-for-students', '/keyword-indexed-transcript'],
+    indexable: true,
+    intentKey: 'panopto-transcription',
+    faq: [
+      { q: 'How do I transcribe a Panopto lecture?', a: 'Download the Panopto video as MP4, upload it to VideoText, and get a full transcript in minutes. Use Keywords to index every concept and Chapters to navigate the lecture by topic.' },
+      { q: 'Can I get an SRT caption file from a Panopto video?', a: 'Yes. Upload the Panopto video to VideoText and use the Video to Subtitles tool — download as SRT or VTT. You can upload this SRT file to other platforms or use it for accessibility compliance.' },
+      { q: 'Is Panopto transcription free?', a: 'Yes. Free tier includes 3 imports per month. Sign up for free to try. No credit card.' },
+    ],
+  },
+  {
+    path: '/webex-alternative',
+    title: 'Cisco WebEx Transcription Alternative – No Enterprise Lock-In | VideoText',
+    description:
+      "WebEx's transcription is enterprise-only and keeps recordings in Cisco's cloud. VideoText transcribes any WebEx MP4 recording — speaker labels, summary, SRT export, free tier.",
+    h1: 'WebEx Transcription Alternative',
+    intro:
+      "Cisco WebEx transcription is bundled into enterprise plans and stores recordings in the WebEx cloud. VideoText is a simpler alternative: download your WebEx meeting recording as MP4, upload it here, and get a full speaker-labeled transcript with summary and keyword search. No WebEx account, no enterprise plan required. Files deleted after processing. Free tier.",
+    breadcrumbLabel: 'WebEx Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/webex-transcription', '/zoom-alternative', '/microsoft-teams-alternative', '/meeting-transcript'],
+    indexable: true,
+    intentKey: 'webex-alternative',
+    faq: [
+      { q: 'How do I transcribe a WebEx meeting recording?', a: 'Download the WebEx recording as MP4 from the WebEx site (webex.com → Recordings → Download). Upload the MP4 to VideoText for a full transcript with speaker labels.' },
+      { q: 'Does WebEx have built-in transcription?', a: 'Yes, WebEx Meetings offers AI-generated transcription on certain enterprise plans. It is limited to recordings stored in the WebEx cloud and requires a Webex subscription. VideoText works on any downloaded WebEx MP4 without a Webex account.' },
+      { q: 'Is VideoText free for WebEx transcription?', a: 'Yes. Free tier includes 3 imports per month. No credit card.' },
+    ],
+  },
+  {
+    path: '/webex-transcription',
+    title: 'WebEx Transcription – Transcribe WebEx Meeting Recordings | VideoText',
+    description:
+      'Transcribe WebEx meeting recordings to text. Download the WebEx MP4, upload to VideoText, and get a full speaker-labeled transcript with summary and keyword index. Free tier.',
+    h1: 'WebEx Transcription — Transcribe WebEx Meeting Recordings',
+    intro:
+      'Transcribe Cisco WebEx meeting recordings to searchable text. Download your WebEx meeting as MP4, upload it to VideoText, and get a full transcript with speaker labels, action item summary, and keyword index — no WebEx enterprise plan required. Free tier.',
+    breadcrumbLabel: 'WebEx Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/webex-alternative', '/zoom-recording-transcript', '/meeting-transcript', '/teams-meeting-transcript'],
+    indexable: true,
+    intentKey: 'webex-transcription',
+    faq: [
+      { q: 'How do I transcribe a WebEx recording?', a: 'Go to webex.com → Recordings → find your meeting → click Download to save the MP4. Upload the MP4 to VideoText and get a full transcript in minutes.' },
+      { q: 'Is WebEx transcription free with VideoText?', a: 'Yes. Free tier includes 3 imports per month. No credit card, no WebEx plan required.' },
+    ],
+  },
 
+  // ── Cluster H: AI Meeting Notes Alternatives ────────────────────────────────
   {
     path: '/notta-alternative',
-    title: 'Notta Alternative – Full Video Transcription Without the 3-Minute Cap | VideoText',
-    description: 'VideoText as a Notta alternative. No 3-minute file limit. Transcribe full-length videos, export SRT/VTT subtitles, translate to 50+ languages. Free tier.',
-    h1: 'Notta Alternative — No File Length Limits',
-    intro: 'Looking for a Notta alternative? VideoText transcribes full-length videos without Notta\'s 3-minute free tier cap. Upload any MP4 or paste a YouTube URL and get a full transcript, SRT/VTT subtitle file, speaker labels, and AI summary. Export SRT, VTT, or plain text. Free tier — no credit card.',
+    title: 'Best Notta Alternative – Transcription Without Monthly Limits | VideoText',
+    description:
+      "Notta's free tier limits you to 3 minutes per transcription and 120 minutes/month. VideoText has no per-file time cap on any tier. Upload full-length interviews, lectures, and meetings. Free tier.",
+    h1: 'Notta Alternative — Transcribe Without Per-File Time Caps',
+    intro:
+      "Notta is a popular AI meeting transcription tool, but its free tier caps each transcription at 3 minutes and limits you to 120 minutes per month. VideoText has no per-file time limit — upload a 2-hour interview or a 90-minute lecture on the free tier. Speaker labels, summary, chapters, keyword index. Files deleted after processing. Free tier with 3 full imports per month.",
     breadcrumbLabel: 'Notta Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/video-to-transcript', '/zoom-recording-transcript', '/otter-ai-alternative', '/fireflies-alternative'],
+    relatedSlugs: ['/otter-ai-alternative', '/tactiq-alternative', '/meeting-transcript', '/interview-transcription'],
     indexable: true,
     intentKey: 'notta-alternative',
     faq: [
-      { q: 'What is the main difference between VideoText and Notta?', a: 'Notta is a meeting transcription tool with a real-time recording bot. Its free tier caps each recording at 3 minutes. VideoText is designed for pre-recorded video files — no length cap, with SRT/VTT subtitle export that Notta doesn\'t offer on any plan.' },
-      { q: 'Can VideoText transcribe YouTube videos like Notta can\'t?', a: 'Yes. Paste a YouTube URL directly into VideoText and get a full transcript or subtitle file instantly — no downloading required. Notta requires you to download the video first before uploading.' },
-      { q: 'Does VideoText support SRT subtitle export?', a: 'Yes. VideoText exports SRT and VTT subtitle files with frame-accurate timestamps, ready for Premiere Pro, DaVinci Resolve, YouTube, and Vimeo. Notta only produces plain text transcripts.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month with no per-file minute limit. A 90-minute video counts as one import. Paid plans start at $10/month.' },
+      { q: 'What are Notta\'s limitations compared to VideoText?', a: 'Notta free tier: 3 minutes max per transcription, 120 minutes/month total. VideoText free tier: 3 full-length imports per month with no per-file duration cap. VideoText also gives chapters, keywords, and SRT export on the free tier.' },
+      { q: 'Does VideoText support the same file types as Notta?', a: 'Yes. VideoText supports MP4, MOV, AVI, WebM, MKV (video) and MP3, WAV, M4A, AAC, OGG, FLAC (audio) — all the formats Notta supports, plus more.' },
+      { q: 'Does VideoText transcribe live meetings like Notta?', a: 'VideoText transcribes uploaded files — it does not join live meetings. For recorded meetings (Zoom, Teams, Meet), download the MP4 and upload it. Results are typically ready in 5–8 minutes for a 60-minute call.' },
+      { q: 'Is VideoText free like Notta?', a: 'Yes. Free tier includes 3 imports per month with no credit card. Paid plans start at $10/month.' },
     ],
   },
   {
     path: '/tactiq-alternative',
-    title: 'Tactiq Alternative – Transcribe Recorded Meetings Without a Chrome Extension | VideoText',
-    description: 'VideoText as a Tactiq alternative for meeting transcription. No Chrome extension needed. Upload any Zoom, Teams, or Meet recording. SRT export. Free tier.',
-    h1: 'Tactiq Alternative — Transcribe Meetings Without a Browser Extension',
-    intro: 'Looking for a Tactiq alternative? Tactiq is a Chrome extension that captures live meeting captions — it requires the extension to be installed and the meeting to be in progress. VideoText transcribes recorded meeting files (MP4, MKV, M4A) after the fact, producing a full transcript with speaker labels, AI summary, and SRT/VTT subtitle export. No extension, no live call required.',
+    title: 'Best Tactiq Alternative – Transcribe from File, Not Just Live Calls | VideoText',
+    description:
+      "Tactiq transcribes live Google Meet, Zoom, and Teams calls via browser extension. VideoText transcribes uploaded recordings — past meetings, interviews, lectures. No browser extension needed. Free tier.",
+    h1: 'Tactiq Alternative — Transcribe Recordings, Not Just Live Calls',
+    intro:
+      "Tactiq is a browser extension that transcribes live Google Meet, Zoom, and Teams calls in real time. It requires you to be present during the call — you cannot go back and transcribe a recording you forgot to capture live. VideoText works the other way: upload any past recording (MP4, MP3, etc.) and get a full transcript with speakers, summary, and chapters. No browser extension, no live call required. Free tier.",
     breadcrumbLabel: 'Tactiq Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/zoom-recording-transcript', '/google-meet-transcript', '/teams-meeting-transcript', '/otter-ai-alternative'],
+    relatedSlugs: ['/notta-alternative', '/otter-ai-alternative', '/zoom-recording-transcript', '/meeting-transcript'],
     indexable: true,
     intentKey: 'tactiq-alternative',
     faq: [
-      { q: 'What is the difference between Tactiq and VideoText?', a: 'Tactiq is a live captioning Chrome extension — it captures captions from Google Meet, Zoom, and Teams in real time. VideoText is a post-meeting tool — upload the recording and get a full transcript. VideoText works without any browser extension and doesn\'t require you to be in the meeting.' },
-      { q: 'Can I use VideoText for Google Meet transcription?', a: 'Yes. Export your Google Meet recording as an MP4, upload it to VideoText, and get a full transcript with speaker labels. See our Google Meet Transcript page for a detailed guide.' },
-      { q: 'Does VideoText export to Google Docs or Notion like Tactiq?', a: 'VideoText exports transcripts as TXT, SRT, and VTT files. You can paste the TXT into Google Docs or Notion directly. Direct integrations with those apps are not currently available.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. No Chrome extension required, no credit card.' },
+      { q: 'What is the difference between Tactiq and VideoText?', a: 'Tactiq captures transcription during a live call via browser extension — it cannot transcribe a recording you already have. VideoText transcribes any uploaded file after the fact. If you need to process a past recording, VideoText is the right tool.' },
+      { q: 'Can VideoText transcribe Google Meet recordings like Tactiq covers live meetings?', a: 'Yes. Download your Google Meet recording from Google Drive as MP4, upload it to VideoText, and get a full transcript with speaker labels and summary.' },
+      { q: 'Is VideoText free like Tactiq\'s free plan?', a: 'Yes. Free tier includes 3 imports per month, no credit card. Paid plans start at $10/month flat — no per-minute fees.' },
+    ],
+  },
+  {
+    path: '/krisp-alternative',
+    title: 'Best Krisp Alternative for Meeting Transcription | VideoText',
+    description:
+      "Krisp adds noise cancellation and meeting notes to live calls. VideoText transcribes your recorded meetings offline — no microphone integration, no running background app. Free tier.",
+    h1: 'Krisp Alternative — Offline Meeting Transcription',
+    intro:
+      "Krisp is primarily a noise-cancellation app that added live meeting transcription. It runs as a background audio driver on your computer and processes audio in real time. VideoText is the simpler alternative for transcribing recorded meetings: upload the MP4 or audio file, get a full speaker-labeled transcript in minutes. No software to install, no microphone access required. Files deleted after processing. Free tier.",
+    breadcrumbLabel: 'Krisp Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/notta-alternative', '/granola-alternative', '/meeting-transcript', '/zoom-recording-transcript'],
+    indexable: true,
+    intentKey: 'krisp-alternative',
+    faq: [
+      { q: 'What does Krisp do vs VideoText?', a: 'Krisp focuses on real-time noise cancellation and live meeting notes — it runs during the call. VideoText transcribes completed recordings offline. If you want to process a past meeting without running additional software, VideoText is more direct.' },
+      { q: 'Does VideoText require any software installation?', a: 'No. VideoText runs in the browser — no download, no microphone driver, no background app. Upload your file and get the transcript.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month, no credit card. Krisp\'s free plan limits noise cancellation to 60 minutes/week and meeting notes to 1 hour/week.' },
+    ],
+  },
+  {
+    path: '/granola-alternative',
+    title: 'Best Granola Alternative – Transcribe Without a Mac Background App | VideoText',
+    description:
+      "Granola captures meeting audio via system audio on Mac. VideoText transcribes any recording file — no Mac required, no background app, no system audio access. Free tier.",
+    h1: 'Granola Alternative — Transcribe Without Installing a Mac App',
+    intro:
+      "Granola is a Mac-only AI meeting notes app that listens to your computer's system audio in real time. It only works on Mac, only during live meetings, and requires you to keep it running in the background. VideoText works differently: upload any recording file from any device, and get a full speaker-labeled transcript with summary. Browser-based, no download, works on Mac, Windows, and Linux. Free tier.",
+    breadcrumbLabel: 'Granola Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/krisp-alternative', '/notta-alternative', '/meeting-transcript', '/macwhisper-alternative'],
+    indexable: true,
+    intentKey: 'granola-alternative',
+    faq: [
+      { q: 'Is VideoText available on Windows unlike Granola?', a: 'Yes. VideoText is browser-based and works on any OS. Granola is Mac-only.' },
+      { q: 'Can I transcribe past meetings with VideoText if I didn\'t have Granola running?', a: 'Yes. Upload any past recording (Zoom MP4, Google Meet, Teams, any audio file) and VideoText produces the transcript. No need to have captured it live.' },
+      { q: 'Is VideoText free like Granola?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. Granola has a free tier for up to 25 meetings before requiring payment.' },
+    ],
+  },
+  {
+    path: '/hedy-ai-alternative',
+    title: 'Best Hedy AI Alternative for Meeting Transcription | VideoText',
+    description:
+      'Hedy AI coaches and transcribes live meetings. VideoText transcribes uploaded recordings from any past meeting — no live integration needed. Speaker labels, summary, free tier.',
+    h1: 'Hedy AI Alternative — Transcribe Meeting Recordings',
+    intro:
+      "Hedy AI is a live meeting AI assistant that provides real-time coaching, feedback, and transcription during calls. VideoText handles the other side: upload any recorded meeting file and get a complete, speaker-labeled transcript with summary and keyword search. No live meeting integration required. Free tier.",
+    breadcrumbLabel: 'Hedy AI Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/granola-alternative', '/notta-alternative', '/meeting-transcript', '/speaker-diarization'],
+    indexable: true,
+    intentKey: 'hedy-ai-alternative',
+    faq: [
+      { q: 'What is the difference between Hedy AI and VideoText?', a: 'Hedy AI is a live meeting coaching tool — it helps you in real time during calls. VideoText is for post-call transcription — upload your recording and get a full transcript with speakers and summary.' },
+      { q: 'Can I transcribe a meeting recording that Hedy AI coached?', a: 'Yes. Download your meeting recording as MP4 (from Zoom, Teams, or Google Meet), upload it to VideoText, and get a full speaker-labeled transcript — regardless of what tools were used during the live call.' },
+      { q: 'Does VideoText have real-time coaching features like Hedy AI?', a: 'No. VideoText focuses exclusively on post-recording transcription — it processes uploaded files, not live audio. Hedy AI focuses on real-time coaching during conversations.' },
+      { q: 'What file formats does VideoText accept?', a: 'MP4, MOV, AVI, WebM, MKV (video) and MP3, WAV, M4A, AAC, OGG, FLAC (audio). Any standard recording format from any meeting platform.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+    ],
+  },
+  {
+    path: '/mem-ai-alternative',
+    title: 'Best Mem AI Alternative for Transcription & Meeting Notes | VideoText',
+    description:
+      "Mem AI is an AI knowledge base and note-taking tool with some meeting features. VideoText specializes in fast, accurate transcription with speaker labels and export. Free tier.",
+    h1: 'Mem AI Alternative — Transcription-First Meeting Notes',
+    intro:
+      "Mem AI is an AI-powered knowledge base that integrates with meetings and notes. VideoText focuses specifically on transcription: upload any video or audio recording and get a full, speaker-labeled transcript in minutes. Export to TXT for pasting into Mem or any other note-taking tool. Free tier.",
+    breadcrumbLabel: 'Mem AI Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/notta-alternative', '/granola-alternative', '/meeting-transcript', '/video-summary-generator'],
+    indexable: true,
+    intentKey: 'mem-ai-alternative',
+    faq: [
+      { q: 'Can I use VideoText transcripts in Mem AI?', a: 'Yes. Export your transcript as TXT from VideoText and paste it into Mem. Mem can then use its AI features on top of that text.' },
+      { q: 'What does Mem AI do that VideoText doesn\'t?', a: 'Mem AI is a persistent knowledge base — it stores, links, and searches across all your notes and meeting content over time. VideoText is a transcription tool — it processes individual recordings and outputs text files. They cover complementary workflows: use VideoText to generate the transcript, Mem to store and reference it.' },
+      { q: 'Does VideoText save my transcripts like Mem AI does?', a: 'No — VideoText deletes your file immediately after transcription. Transcripts are not stored on VideoText servers. Download the TXT export and import it into Mem, Notion, or any knowledge base of your choice.' },
+      { q: 'What recordings can I transcribe with VideoText?', a: 'Any video or audio file: meeting recordings, interviews, podcasts, lectures, voice memos. Supported formats: MP4, MOV, MP3, WAV, M4A, and more.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+    ],
+  },
+  {
+    path: '/vomo-alternative',
+    title: 'Best VOMO Alternative – Transcribe Voice Memos Without a Mobile App | VideoText',
+    description:
+      "VOMO transcribes iPhone voice memos through its app. VideoText transcribes any voice memo file uploaded from the browser — no app install, works on any device. Free tier.",
+    h1: 'VOMO Alternative — Transcribe Voice Memos in the Browser',
+    intro:
+      "VOMO is a mobile app that transcribes iPhone voice memos and organizes them with AI summaries. VideoText is the browser-based alternative: export your voice memo as M4A from iPhone, upload it here, and get a full transcript with summary and keywords — no app install, no iOS required. Works on Android M4A files and any voice recorder format. Free tier.",
+    breadcrumbLabel: 'VOMO Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/m4a-to-text', '/audio-to-text', '/mp3-to-text', '/video-summary-generator'],
+    indexable: true,
+    intentKey: 'vomo-alternative',
+    faq: [
+      { q: 'How do I transcribe an iPhone voice memo without VOMO?', a: 'Open the Voice Memos app → tap the recording → tap the three-dot menu → Share → Save to Files. The file saves as M4A. Upload the M4A to VideoText for a full transcript with summary.' },
+      { q: 'Does VideoText work on Android voice memos?', a: 'Yes. Android voice recordings (typically MP3 or M4A) upload directly. No conversion needed.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+    ],
+  },
+  {
+    path: '/glean-alternative',
+    title: 'Best Glean Alternative for Meeting Transcription | VideoText',
+    description:
+      "Glean is an enterprise AI search platform with some meeting transcription features. VideoText provides simple, accurate transcription for any meeting recording — no enterprise setup. Free tier.",
+    h1: 'Glean Alternative — Simple Transcription Without Enterprise Setup',
+    intro:
+      "Glean is an enterprise-grade AI search and knowledge platform that connects to your organization's tools including meetings. It requires IT setup and enterprise pricing. VideoText provides the transcription piece directly: upload any meeting recording and get speaker-labeled text, summary, and keyword search — no enterprise deployment, no IT involvement. Free tier.",
+    breadcrumbLabel: 'Glean Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/meeting-transcript', '/notta-alternative', '/video-summary-generator', '/keyword-indexed-transcript'],
+    indexable: true,
+    intentKey: 'glean-alternative',
+    faq: [
+      { q: 'Does VideoText replace Glean\'s meeting transcription?', a: 'For the transcription use case specifically — yes. VideoText transcribes any uploaded meeting recording with speaker labels, summary, and keyword search. For the enterprise-wide knowledge base and search features, Glean does more.' },
+      { q: 'Is VideoText free unlike Glean?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. Glean is enterprise-priced and requires organizational deployment.' },
+      { q: 'What is Glean used for?', a: 'Glean is an enterprise AI search platform that indexes company-wide content (Slack, Drive, email, meetings, wikis) and lets employees search across all of it. Its meeting transcription is one small feature. VideoText is purpose-built for transcribing individual recordings with speaker labels, summary, and SRT export.' },
+      { q: 'Does VideoText integrate with Slack or Google Drive like Glean?', a: 'No. VideoText is a standalone file transcription tool — upload a file, get a transcript. It does not connect to company apps or index historical content. For individuals who need fast, accurate transcription of specific recordings without enterprise setup, VideoText is the right tool.' },
+      { q: 'Can I search the transcript in VideoText?', a: 'Yes — the Keywords section indexes every significant term in the transcript with timestamps, making it easy to jump to any topic mentioned. For full-text search, download the TXT and search with any text editor.' },
+    ],
+  },
+  {
+    path: '/notability-alternative',
+    title: 'Best Notability Alternative for Lecture Transcription | VideoText',
+    description:
+      "Notability records and links audio to handwritten notes on iPad. VideoText transcribes lecture recordings to full, searchable text — no iPad required, works on any device. Free tier.",
+    h1: 'Notability Alternative — Full Lecture Transcription',
+    intro:
+      "Notability is an iPad note-taking app that records audio synchronized to your handwriting. It does not produce a full searchable text transcript. VideoText does: upload your lecture recording and get complete, searchable text with chapters and keywords. Works from any recorded format on any device — no iPad required. Free tier for students.",
+    breadcrumbLabel: 'Notability Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/transcription-for-students', '/lecture-transcription', '/keyword-indexed-transcript', '/video-chapters-generator'],
+    indexable: true,
+    intentKey: 'notability-alternative',
+    faq: [
+      { q: 'Does Notability produce a full transcript?', a: 'Notability links audio to note timestamps but does not produce a full text transcript of the spoken content. VideoText transcribes the entire audio to searchable text.' },
+      { q: 'Can I transcribe a Notability recording?', a: 'Yes. Export the audio from Notability (tap the note → Share → Export audio as M4A), then upload the M4A to VideoText for a full transcript.' },
+      { q: 'Is VideoText free for students?', a: 'Yes. 3 free imports per month, no credit card.' },
+    ],
+  },
+
+  // ── Cluster I: Local Whisper Apps ────────────────────────────────────────────
+  {
+    path: '/macwhisper-alternative',
+    title: 'Best MacWhisper Alternative – Transcribe Without a Mac App | VideoText',
+    description:
+      'MacWhisper is a Mac-only desktop app for local Whisper transcription. VideoText runs in the browser on any OS — no download, no local GPU needed. Same Whisper accuracy. Free tier.',
+    h1: 'MacWhisper Alternative — Browser-Based Whisper Transcription',
+    intro:
+      'MacWhisper is a polished Mac app that runs Whisper transcription locally on your machine. It requires macOS, enough storage for model files, and time to download Whisper models. VideoText gives you the same Whisper large-v3 accuracy in the browser — no Mac required, no downloads, no local GPU. Upload your file and get the transcript in seconds. Free tier.',
+    breadcrumbLabel: 'MacWhisper Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/superwhisper-alternative', '/whisper-online', '/whisperx-alternative', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'macwhisper-alternative',
+    faq: [
+      { q: 'What is the difference between MacWhisper and VideoText?', a: 'MacWhisper runs Whisper locally on your Mac — your audio never leaves your machine. VideoText processes in the cloud, deletes your file immediately after transcription, and works on any OS in a browser. MacWhisper is better for full local privacy; VideoText is better for convenience and cross-platform use.' },
+      { q: 'Does VideoText use the same Whisper model as MacWhisper?', a: 'VideoText uses Whisper large-v3, which is the highest-accuracy Whisper model. MacWhisper lets you choose between small, medium, and large models — VideoText always uses large-v3.' },
+      { q: 'Does VideoText work on Windows and Linux unlike MacWhisper?', a: 'Yes. VideoText is browser-based and works on any operating system. MacWhisper is Mac-only.' },
+      { q: 'Is VideoText free like MacWhisper?', a: 'VideoText free tier: 3 imports/month, no credit card. MacWhisper has a free tier and a one-time purchase for advanced features.' },
+    ],
+  },
+  {
+    path: '/superwhisper-alternative',
+    title: 'Best Superwhisper Alternative – Transcribe Without a Mac Dictation App | VideoText',
+    description:
+      'Superwhisper is a Mac/iOS dictation app for real-time Whisper transcription. VideoText transcribes uploaded recordings of any length — past interviews, lectures, meetings. Free tier.',
+    h1: 'Superwhisper Alternative — Transcribe Recordings, Not Just Dictation',
+    intro:
+      "Superwhisper is a real-time dictation app for Mac and iOS — it transcribes as you speak. It is designed for dictating text, not for transcribing existing recordings. VideoText handles the other use case: upload any recording file (interview, lecture, meeting) and get a full transcript with speakers, summary, and chapters. Free tier, browser-based. Also covers: Whisper Notes, Gravity Notes, and similar dictation-first Whisper apps.",
+    breadcrumbLabel: 'Superwhisper Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/macwhisper-alternative', '/whisper-online', '/whisperx-alternative', '/audio-to-text'],
+    indexable: true,
+    intentKey: 'superwhisper-alternative',
+    faq: [
+      { q: 'What is Superwhisper used for vs VideoText?', a: 'Superwhisper is for real-time voice dictation — speak into your microphone and it types for you. VideoText transcribes pre-recorded files (interview recordings, lecture videos, meeting recordings). Different use cases.' },
+      { q: 'Can VideoText replace Whisper Notes and Gravity Notes too?', a: 'Yes, for the file transcription use case. Whisper Notes and Gravity Notes are also primarily dictation/memo apps. VideoText handles file-based transcription (existing recordings) on any device.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+    ],
+  },
+  {
+    path: '/whisperx-alternative',
+    title: 'Best WhisperX Alternative – Word-Level Timestamps Without CLI Setup | VideoText',
+    description:
+      'WhisperX is an enhanced Whisper Python package with word-level timestamps and diarization. VideoText provides the same outputs in the browser — no Python, no CLI, no GPU needed. Free tier.',
+    h1: 'WhisperX Alternative — Accurate Transcription Without Python Setup',
+    intro:
+      "WhisperX is an open-source Python package that extends Whisper with word-level forced alignment timestamps and speaker diarization. It requires Python, CUDA-compatible GPU (for fast results), and command-line setup. VideoText provides word-level timestamps, speaker labels, and accurate Whisper large-v3 transcription in the browser — no Python, no GPU, no CLI. Upload your file and get results in minutes. Free tier.",
+    breadcrumbLabel: 'WhisperX Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/macwhisper-alternative', '/whisper-online', '/speaker-diarization', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'whisperx-alternative',
+    faq: [
+      { q: 'What does WhisperX do that standard Whisper doesn\'t?', a: 'WhisperX adds word-level forced alignment (timestamps for every individual word) and speaker diarization using pyannote.audio. VideoText provides speaker diarization and segment-level timestamps without requiring any local setup.' },
+      { q: 'Do I need a GPU to use VideoText like WhisperX?', a: 'No. VideoText runs in the browser — no local hardware required. WhisperX needs a CUDA GPU for reasonable processing speed on long files.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+    ],
+  },
+  {
+    path: '/buzz-alternative',
+    title: 'Best Buzz Transcription App Alternative – Browser-Based Whisper | VideoText',
+    description:
+      'Buzz is a macOS/Linux desktop app for offline Whisper transcription. VideoText gives you Whisper large-v3 accuracy in the browser — no download, no local models, works on any OS. Free tier.',
+    h1: 'Buzz Alternative — Whisper Transcription Without a Desktop App',
+    intro:
+      "Buzz is an open-source desktop app for macOS and Linux that runs Whisper transcription locally. It requires downloading Whisper model files and only runs on Mac or Linux (not Windows). VideoText is the browser-based alternative: same Whisper large-v3 accuracy, works on any OS, no downloads, no local storage of model files. Free tier.",
+    breadcrumbLabel: 'Buzz Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/macwhisper-alternative', '/whisper-online', '/superwhisper-alternative', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'buzz-alternative',
+    faq: [
+      { q: 'Does VideoText work on Windows unlike Buzz?', a: 'Yes. VideoText is browser-based and works on Windows, Mac, and Linux. Buzz supports macOS and Linux only.' },
+      { q: 'Is VideoText free like Buzz?', a: 'Yes. VideoText free tier: 3 imports/month. Buzz is free and open-source but requires local setup and model downloads.' },
+      { q: 'Does VideoText require downloading Whisper model files like Buzz does?', a: 'No. VideoText runs in the cloud — no model downloads, no local storage requirements, no GPU needed. Buzz requires downloading Whisper model files (~150MB–3GB depending on model size) to your local machine.' },
+      { q: 'What extra features does VideoText have over Buzz?', a: 'VideoText adds speaker diarization, auto-generated summary, chapter navigation, keyword indexing, SRT/VTT subtitle export, subtitle translation to 50+ languages, and YouTube URL input. Buzz outputs raw transcript text only.' },
+      { q: 'Is VideoText more accurate than Buzz?', a: 'Both tools can use Whisper large-v3, giving equivalent accuracy (~98.5% WER on clear speech). VideoText always uses large-v3; Buzz lets you choose smaller, faster models at lower accuracy if preferred.' },
+    ],
+  },
+
+  // ── Cluster J: Caption & Video Creation Tools ────────────────────────────────
+  {
+    path: '/capcut-alternative',
+    title: 'Best CapCut Alternative for Captions & Subtitles | VideoText',
+    description:
+      "CapCut auto-captions are designed for TikTok/Reels — styled overlays, not exportable SRT files. VideoText generates accurate SRT/VTT subtitle files you can use anywhere. Free tier.",
+    h1: 'CapCut Alternative — Export Clean SRT Subtitle Files',
+    intro:
+      "CapCut's auto-caption feature adds styled text overlays to your video for TikTok and Reels — they look great in-app but cannot be exported as SRT or VTT files for use on YouTube, Vimeo, or other platforms. VideoText generates clean, timestamped SRT and VTT files you can upload to any video platform, translate to 50+ languages, or burn permanently into your video. Free tier.",
+    breadcrumbLabel: 'CapCut Alternative',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/subtitle-generator', '/srt-generator', '/video-to-srt', '/translate-subtitles'],
+    indexable: true,
+    intentKey: 'capcut-alternative',
+    faq: [
+      { q: 'Why use VideoText instead of CapCut for captions?', a: 'CapCut captions are styled overlays — they cannot be exported as SRT or VTT files. VideoText gives you a proper SRT/VTT subtitle file with accurate timestamps that works on YouTube, Vimeo, Dailymotion, and any other platform.' },
+      { q: 'Can VideoText translate captions like CapCut?', a: 'Yes. VideoText translates subtitles to 50+ languages — more than CapCut supports. The translated SRT preserves all original timestamps.' },
+      { q: 'Can I burn captions into the video with VideoText?', a: 'Yes. Use the Burn Subtitles tool to permanently embed SRT captions into your video. Useful for platforms where external subtitles are not supported.' },
+      { q: 'Is VideoText free like CapCut?', a: 'Yes. Free tier: 3 imports/month, no credit card. Watermark on subtitle files in the free tier, removed on paid plans.' },
+    ],
+  },
+  {
+    path: '/subtitle-edit-alternative',
+    title: 'Best Subtitle Edit Alternative – Browser-Based, No Install | VideoText',
+    description:
+      "Subtitle Edit is a powerful Windows desktop app for editing subtitle files. VideoText generates SRT/VTT subtitles from any video in the browser — no Windows required, no installation. Free tier.",
+    h1: 'Subtitle Edit Alternative — Generate Subtitles Without a Desktop App',
+    intro:
+      "Subtitle Edit is a free Windows desktop application for creating and editing subtitle files. It requires Windows, a local installation, and manual captioning work. VideoText automates the caption generation step: upload your video and get an accurate SRT/VTT subtitle file in minutes with no manual timing work. Then edit the file in Subtitle Edit if needed for fine-tuning. Free tier, browser-based.",
+    breadcrumbLabel: 'Subtitle Edit Alternative',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/srt-generator', '/video-to-srt', '/fix-subtitles', '/subtitle-generator'],
+    indexable: true,
+    intentKey: 'subtitle-edit-alternative',
+    faq: [
+      { q: 'Can VideoText replace Subtitle Edit for generating subtitles?', a: 'For the generation step — yes. VideoText auto-generates accurate SRT/VTT files from any video. Subtitle Edit is a manual editor for fixing timing and text. Use VideoText to generate the initial SRT, then use Subtitle Edit for detailed edits if needed.' },
+      { q: 'Does VideoText work on Mac and Linux unlike Subtitle Edit?', a: 'Yes. VideoText runs in the browser on any OS. Subtitle Edit is Windows-only (though it runs via Wine on Linux).' },
+      { q: 'Is VideoText free like Subtitle Edit?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. Subtitle Edit is free and open source but Windows-only.' },
+    ],
+  },
+  {
+    path: '/vizard-alternative',
+    title: 'Best Vizard Alternative for Video Transcription & Subtitles | VideoText',
+    description:
+      'Vizard is an AI video repurposing tool with auto-subtitles. VideoText focuses on accurate transcription and SRT export for standalone use — speaker labels, translate to 50+ languages, free tier.',
+    h1: 'Vizard Alternative — Transcription and SRT Without Video Editing',
+    intro:
+      "Vizard is an AI video editing platform focused on repurposing long-form video into short clips, with auto-captions built in. If you need accurate transcription and subtitle export without the full video editing workflow, VideoText is more direct: upload any video, get a speaker-labeled transcript and SRT/VTT file in minutes. Translate to 50+ languages, burn captions, export in multiple formats. Free tier.",
+    breadcrumbLabel: 'Vizard Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/subtitle-generator', '/srt-generator', '/translate-subtitles', '/capcut-alternative'],
+    indexable: true,
+    intentKey: 'vizard-alternative',
+    faq: [
+      { q: 'What is the difference between Vizard and VideoText?', a: 'Vizard is a video repurposing platform — it clips long videos into short segments and adds styled captions for social media. VideoText is a transcription and subtitle tool — it gives you the raw transcript text and SRT files for use anywhere.' },
+      { q: 'Does VideoText export SRT files like Vizard?', a: 'Yes. VideoText exports SRT and VTT subtitle files with accurate timestamps. These files work on YouTube, Vimeo, and any video platform.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+    ],
+  },
+  {
+    path: '/invideo-alternative',
+    title: 'Best InVideo AI Alternative for Subtitles & Transcription | VideoText',
+    description:
+      'InVideo AI generates videos with auto-captions. VideoText transcribes your existing videos to text and SRT — no video regeneration needed. Speaker labels, translate, free tier.',
+    h1: 'InVideo AI Alternative — Transcribe Existing Videos',
+    intro:
+      'InVideo AI creates AI-generated videos with captions built in. If you already have a video and need accurate subtitles or a transcript — not a new AI-generated video — VideoText is more direct. Upload your existing video, get a transcript with speaker labels and a downloadable SRT file. Translate to 50+ languages. Free tier.',
+    breadcrumbLabel: 'InVideo Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/subtitle-generator', '/translate-subtitles', '/capcut-alternative', '/vizard-alternative'],
+    indexable: true,
+    intentKey: 'invideo-alternative',
+    faq: [
+      { q: 'Can VideoText transcribe videos created in InVideo?', a: 'Yes. Export your InVideo video as MP4 and upload it to VideoText for a full transcript and SRT subtitle file.' },
+      { q: 'Is VideoText free unlike InVideo?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card.' },
+      { q: 'What is InVideo AI used for?', a: 'InVideo AI is a text-to-video and video creation platform — it generates videos from scripts, blog posts, or prompts. VideoText does the reverse: it converts existing videos to text transcripts and SRT subtitle files.' },
+      { q: 'Can I get subtitle files from InVideo videos using VideoText?', a: 'Yes. Export your InVideo video as MP4, upload it to VideoText, and get an SRT or VTT subtitle file with accurate timestamps. Translate the SRT to 50+ languages for multi-language distribution.' },
+      { q: 'Does VideoText support all video formats?', a: 'Yes. VideoText accepts MP4, MOV, AVI, WebM, MKV, and all major audio formats (MP3, WAV, M4A, FLAC, OGG).' },
+    ],
+  },
+  {
+    path: '/fliki-alternative',
+    title: 'Best Fliki Alternative for Video Transcription & Subtitles | VideoText',
+    description:
+      'Fliki converts text and audio to video with AI voices. VideoText does the reverse: transcribes existing videos to text and SRT. Speaker labels, chapters, translate, free tier.',
+    h1: 'Fliki Alternative — Transcribe Videos to Text',
+    intro:
+      'Fliki is a text-to-video and audio-to-video AI tool — it creates videos from scripts or audio. VideoText does the reverse: convert any existing video to text. Upload your video and get a transcript with speaker labels, keyword index, and SRT subtitle files. Free tier.',
+    breadcrumbLabel: 'Fliki Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/video-to-transcript', '/subtitle-generator', '/translate-subtitles', '/invideo-alternative'],
+    indexable: true,
+    intentKey: 'fliki-alternative',
+    faq: [
+      { q: 'Does VideoText do the opposite of Fliki?', a: 'Yes. Fliki converts text/audio to video. VideoText converts video/audio to text and SRT. They cover complementary workflows.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Can I use VideoText-generated SRT files in Fliki?', a: 'Yes. Generate an SRT from your source audio/video in VideoText, then import the SRT file into Fliki\'s subtitle or caption workflow for your video project.' },
+      { q: 'Does VideoText support the same languages as Fliki?', a: 'VideoText transcribes in 90+ languages and translates subtitles to 50+ languages. Fliki supports multiple languages for TTS voice generation — the two tools serve different language workflows (transcription vs. speech synthesis).' },
+      { q: 'What can VideoText transcribe?', a: 'Any audio or video file: MP4, MOV, AVI, WebM, MKV, MP3, WAV, M4A, AAC, OGG, FLAC. Also accepts YouTube URLs directly — no download needed for YouTube videos.' },
+    ],
+  },
+
+  // ── Cluster K: Native Platform Tools ────────────────────────────────────────
+  {
+    path: '/microsoft-word-transcription-alternative',
+    title: 'Best Microsoft Word Transcription Alternative – Faster, More Features | VideoText',
+    description:
+      "Word's Transcribe feature requires Microsoft 365 subscription and limits you to 5 hours/month. VideoText is faster, has no monthly cap per import, adds speaker labels and chapters. Free tier.",
+    h1: 'Microsoft Word Transcription Alternative',
+    intro:
+      "Microsoft Word has a built-in Transcribe feature that uploads audio to Microsoft servers and returns a transcript inside Word. It requires a Microsoft 365 subscription, caps transcription at 5 hours per month, and only accepts audio files (no video). VideoText transcribes audio and video files with no per-file cap, adds speaker labels, summary, chapters, and keyword index — and exports to TXT, SRT, and VTT. Free tier, no Microsoft account needed.",
+    breadcrumbLabel: 'Microsoft Word Transcription Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/microsoft-teams-alternative', '/audio-to-text', '/mp3-to-text', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'microsoft-word-transcription-alternative',
+    faq: [
+      { q: 'What are the limitations of Word\'s Transcribe feature?', a: 'Word Transcribe requires Microsoft 365 (paid), only accepts audio files (not video), limits you to 5 hours of transcription per month, and only works inside Word online. VideoText accepts video and audio, has no per-file cap, and works in any browser.' },
+      { q: 'Is VideoText faster than Word\'s transcription?', a: 'Yes. VideoText typically delivers results in 30–90 seconds for short files. Word Transcribe uploads to Microsoft servers and can take longer, especially for longer recordings.' },
+      { q: 'Does VideoText require a Microsoft 365 subscription?', a: 'No. VideoText is independent of Microsoft. Free tier: 3 imports/month, no credit card.' },
+    ],
+  },
+  {
+    path: '/google-docs-voice-typing-alternative',
+    title: 'Best Google Docs Voice Typing Alternative – Transcribe Files, Not Just Live | VideoText',
+    description:
+      "Google Docs voice typing captures live speech — it can't transcribe a recording file. VideoText transcribes any existing audio or video file in minutes. Speaker labels, SRT export, free tier.",
+    h1: 'Google Docs Voice Typing Alternative — Transcribe Recording Files',
+    intro:
+      "Google Docs voice typing transcribes speech in real time as you speak into your microphone. It cannot process an existing recording file — you would have to play the audio through your speakers while Google Docs listens, which degrades quality significantly. VideoText transcribes any audio or video file directly: upload the file, get accurate text with speaker labels and timestamps. Free tier.",
+    breadcrumbLabel: 'Google Docs Voice Typing Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/audio-to-text', '/mp3-to-text', '/video-to-transcript', '/microsoft-word-transcription-alternative'],
+    indexable: true,
+    intentKey: 'google-docs-voice-typing-alternative',
+    faq: [
+      { q: 'Why can\'t I just play audio and use Google Docs voice typing?', a: 'Playing audio through speakers while Google Docs listens works poorly — it picks up room echo, background noise, and only captures audio your microphone hears. VideoText processes the file directly for much higher accuracy.' },
+      { q: 'Does VideoText work with Google Drive files?', a: 'Yes — download the file from Google Drive, upload it to VideoText. Most Google Meet recordings are stored in Drive as MP4.' },
+      { q: 'Is VideoText free like Google Docs?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. No Google account required.' },
+    ],
+  },
+  {
+    path: '/youtube-auto-captions-alternative',
+    title: 'Best YouTube Auto-Captions Alternative – Accurate Subtitles Before Upload | VideoText',
+    description:
+      "YouTube auto-captions appear after upload and can't be downloaded as SRT. VideoText generates accurate SRT files before you upload — correct captions from the start. Free tier.",
+    h1: 'YouTube Auto-Captions Alternative — Accurate SRT Before Upload',
+    intro:
+      "YouTube's auto-captions are generated after you upload a video, can take hours to appear, have lower accuracy than Whisper (especially for accents and technical content), and cannot be downloaded as SRT files. VideoText lets you generate accurate SRT captions before uploading to YouTube — upload your video, get a corrected SRT, then upload the SRT directly to YouTube Studio for instant, accurate captions. Free tier.",
+    breadcrumbLabel: 'YouTube Auto-Captions Alternative',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/srt-generator', '/video-to-srt', '/subtitle-generator', '/youtube-to-transcript'],
+    indexable: true,
+    intentKey: 'youtube-auto-captions-alternative',
+    faq: [
+      { q: 'Why are YouTube auto-captions inaccurate?', a: 'YouTube uses its own speech recognition model which performs worse than Whisper large-v3, especially for accented speech, technical vocabulary, proper nouns, and non-English content. VideoText uses Whisper large-v3 for significantly higher accuracy.' },
+      { q: 'How do I upload a VideoText SRT to YouTube?', a: 'In YouTube Studio → open your video → Subtitles → Add → Upload file → upload the SRT from VideoText. The captions appear immediately with the timestamps from the SRT.' },
+      { q: 'Can I download YouTube auto-captions as SRT?', a: 'YouTube does not allow direct SRT download of auto-generated captions. You have to use third-party tools to extract them. VideoText generates an SRT directly from your video file before you upload.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+    ],
+  },
+
+  // ── Cluster L: API / Developer Transcription Alternatives ────────────────────
+  {
+    path: '/deepgram-alternative',
+    title: 'Best Deepgram Alternative – Transcription Without API Setup | VideoText',
+    description:
+      "Deepgram is an API-first speech-to-text service for developers. VideoText is the no-code alternative: upload files in the browser, get transcripts instantly. No API keys, no code. Free tier.",
+    h1: 'Deepgram Alternative — Transcription Without Writing Code',
+    intro:
+      "Deepgram is a developer-focused speech-to-text API. It requires API key setup, REST calls, and custom code to use. VideoText delivers the same high-accuracy transcription in the browser — no API, no code, no developer setup. Upload your file, get a transcript with speaker labels, summary, and SRT export. If you are a developer looking for a Deepgram alternative with a UI, VideoText is the answer. Free tier.",
+    breadcrumbLabel: 'Deepgram Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/assembly-ai-alternative', '/speechmatics-alternative', '/whisper-online', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'deepgram-alternative',
+    faq: [
+      { q: 'What is the difference between Deepgram and VideoText?', a: 'Deepgram is a speech-to-text API for developers — you integrate it into your application with code. VideoText is a web app — upload a file, get a transcript, no code needed. VideoText uses Whisper large-v3 for transcription.' },
+      { q: 'Is VideoText free unlike Deepgram?', a: 'VideoText free tier: 3 imports/month, no credit card. Deepgram has a free tier of $200 in credits (~45 hours), but requires API key setup and developer knowledge to use.' },
+      { q: 'Can VideoText match Deepgram\'s accuracy?', a: 'VideoText uses Whisper large-v3 (~97–99% WER on clear speech). Deepgram Nova-2 is comparable. For non-English content, Whisper generally outperforms Deepgram on lower-resource languages.' },
+    ],
+  },
+  {
+    path: '/speechmatics-alternative',
+    title: 'Best Speechmatics Alternative – Enterprise Accuracy Without Enterprise Contracts | VideoText',
+    description:
+      "Speechmatics is an enterprise speech API with complex pricing. VideoText gives you high-accuracy Whisper transcription in the browser — no API, no contract, no enterprise setup. Free tier.",
+    h1: 'Speechmatics Alternative — High-Accuracy Transcription Without Enterprise Setup',
+    intro:
+      "Speechmatics is an enterprise-grade speech recognition API known for high accuracy across languages. It requires API integration, enterprise pricing negotiation, and developer setup. VideoText provides comparable accuracy using Whisper large-v3 in a browser upload interface — no API, no contract, no code. Free tier, works for individuals and small teams immediately.",
+    breadcrumbLabel: 'Speechmatics Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/deepgram-alternative', '/assembly-ai-alternative', '/whisper-online', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'speechmatics-alternative',
+    faq: [
+      { q: 'What does Speechmatics do that VideoText doesn\'t?', a: 'Speechmatics provides a real-time streaming API for custom integrations, enterprise SLAs, and dedicated deployments. VideoText is a file-based web tool — better for individuals, small teams, and one-off transcription jobs without enterprise infrastructure.' },
+      { q: 'Is VideoText free unlike Speechmatics?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. Speechmatics requires enterprise pricing and a contract for full access.' },
+    ],
+  },
+  {
+    path: '/elevenlabs-alternative',
+    title: 'Best ElevenLabs Transcription Alternative – Full Transcript Features | VideoText',
+    description:
+      "ElevenLabs added speech-to-text alongside its TTS products. VideoText specializes in transcription — speaker labels, summary, chapters, SRT export, translate. Free tier.",
+    h1: 'ElevenLabs Transcription Alternative',
+    intro:
+      "ElevenLabs is primarily a text-to-speech and voice cloning platform that recently added speech-to-text transcription. Its transcription feature is built for developers integrating into AI pipelines — not for end users who want speaker labels, summaries, chapters, and SRT files. VideoText provides all of these on top of Whisper large-v3 accuracy. Free tier, no developer setup needed.",
+    breadcrumbLabel: 'ElevenLabs Transcription Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/deepgram-alternative', '/assembly-ai-alternative', '/whisper-online', '/speaker-diarization'],
+    indexable: true,
+    intentKey: 'elevenlabs-alternative',
+    faq: [
+      { q: 'Does ElevenLabs do transcription?', a: 'ElevenLabs added a Speech to Text API in 2024. It is primarily aimed at developers building AI pipelines. VideoText is the end-user alternative: upload a file, get a transcript with speakers, summary, chapters, and SRT export — no code.' },
+      { q: 'Is VideoText free unlike ElevenLabs?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. ElevenLabs requires an account and charges per character/minute for their API.' },
+    ],
+  },
+
+  // ── Cluster M: Niche Transcription Services ──────────────────────────────────
+  {
+    path: '/genio-alternative',
+    title: 'Best Genio Alternative for Video Transcription | VideoText',
+    description:
+      'Looking for a Genio alternative? VideoText transcribes video and audio files with Whisper large-v3, adds speaker labels, summary, chapters, and SRT export. Free tier, no credit card.',
+    h1: 'Genio Alternative — Fast AI Video Transcription',
+    intro:
+      'VideoText is a strong Genio alternative for video and audio transcription. Upload any video (MP4, MOV, WebM) or audio (MP3, WAV, M4A) and get an accurate Whisper large-v3 transcript with speaker labels, summary, keyword index, and SRT export. Free tier, files deleted after processing.',
+    breadcrumbLabel: 'Genio Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/video-to-transcript', '/subtitle-generator', '/turboscribe-alternative', '/notta-alternative'],
+    indexable: true,
+    intentKey: 'genio-alternative',
+    faq: [
+      { q: 'What does VideoText offer as a Genio alternative?', a: 'Whisper large-v3 accuracy, speaker labels, summary, chapters, keyword index, SRT/VTT/TXT export, YouTube URL input, translate to 50+ languages, and files deleted after processing.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'How accurate is VideoText compared to Genio?', a: 'VideoText uses Whisper large-v3 which achieves ~98.5% word accuracy on clear speech — the highest accuracy open-source model available. It supports 90+ source languages.' },
+      { q: 'Does VideoText support batch processing like Genio?', a: 'Yes. The Batch Process tool lets you upload multiple files at once and process them in parallel. Download all transcripts as a ZIP archive.' },
+      { q: 'How long does VideoText take to transcribe a file?', a: 'Typically 30–90 seconds for files under 10 minutes, and 5–8 minutes for a 60-minute recording. Results are delivered as soon as processing completes.' },
+    ],
+  },
+  {
+    path: '/scribe-alternative',
+    title: 'Best Scribe Alternative for Meeting & Interview Transcription | VideoText',
+    description:
+      'VideoText is a Scribe alternative for audio and video transcription. Accurate, fast, speaker labels, SRT export, free tier. No credit card required.',
+    h1: 'Scribe Alternative — AI Transcription with Speaker Labels',
+    intro:
+      'Looking for a Scribe alternative? VideoText transcribes meetings, interviews, and recordings with Whisper large-v3 accuracy. Get speaker-labeled text, summary, chapters, and SRT export. Free tier, files deleted after processing.',
+    breadcrumbLabel: 'Scribe Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/video-to-transcript', '/interview-transcription', '/meeting-transcript', '/turboscribe-alternative'],
+    indexable: true,
+    intentKey: 'scribe-alternative',
+    faq: [
+      { q: 'Is VideoText a good Scribe alternative?', a: 'Yes. VideoText offers Whisper large-v3 transcription, speaker diarization, summary, chapters, keyword index, and SRT/VTT/TXT export — all free to start.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'What file formats does VideoText support?', a: 'VideoText accepts MP4, MOV, AVI, WebM, MKV (video) and MP3, WAV, M4A, AAC, OGG, FLAC (audio). It also transcribes directly from YouTube URLs without downloading.' },
+      { q: 'Does VideoText identify different speakers like Scribe does?', a: 'Yes. Speaker diarization is included on all VideoText plans — each speaker\'s turns are automatically labeled in the transcript.' },
+      { q: 'How does VideoText accuracy compare to transcription services like Scribe?', a: 'VideoText uses Whisper large-v3 (~98.5% WER on clear speech). For clear, professionally recorded audio this is equivalent to human transcription at a fraction of the cost and in minutes rather than hours.' },
+    ],
+  },
+  {
+    path: '/spreaker-alternative',
+    title: 'Best Spreaker Alternative for Podcast Transcription | VideoText',
+    description:
+      'Spreaker is a podcast hosting platform with basic transcription. VideoText transcribes your podcast episodes with full speaker labels, summary, chapters, and SRT export. Free tier.',
+    h1: 'Spreaker Alternative — Full Podcast Transcription',
+    intro:
+      "Spreaker provides podcast hosting with basic auto-transcription. If you need more — speaker-separated show notes, keyword-indexed transcripts, SRT caption files for your video podcast, or translations — VideoText covers it. Export your podcast episode as MP3 or MP4, upload it here, and get a complete transcript. Free tier.",
+    breadcrumbLabel: 'Spreaker Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/podcast-transcript', '/podcast-transcription', '/speaker-diarization', '/audio-to-text'],
+    indexable: true,
+    intentKey: 'spreaker-alternative',
+    faq: [
+      { q: 'Can I transcribe my Spreaker podcast episodes with VideoText?', a: 'Yes. Download your episode as MP3 from Spreaker and upload it to VideoText. You get a full transcript with speaker labels, summary, chapters, and downloadable TXT/SRT.' },
+      { q: 'Is VideoText free for podcast transcription?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Does Spreaker include podcast transcription?', a: 'Spreaker offers basic auto-transcription on some plans, but it is limited to display inside the platform — no full-text export, no chapter generation, no SRT output. VideoText gives you a complete transcript with all export options.' },
+      { q: 'Can I use VideoText to generate show notes for Spreaker episodes?', a: 'Yes. Upload your episode to VideoText — the Summary branch generates a concise summary of the episode content which you can use directly as show notes. Chapters identify the main topics discussed.' },
+      { q: 'Can I get SRT subtitle files for my podcast video on Spreaker?', a: 'Yes. Upload your podcast video or audio to VideoText and download an SRT file. This is useful for creating accessible podcast video content on YouTube or embedding captions on your website.' },
+    ],
+  },
+  {
+    path: '/headliner-alternative',
+    title: 'Best Headliner (Eddy) Alternative for Podcast Transcription | VideoText',
+    description:
+      'Headliner creates podcast audiograms with auto-transcription. VideoText transcribes podcast episodes to full text with speaker labels, show notes summary, and SRT export. Free tier.',
+    h1: 'Headliner (Eddy) Alternative — Full Podcast Transcription',
+    intro:
+      "Headliner (now Eddy) is a podcast audiogram and marketing tool that includes basic transcription. VideoText focuses on the transcription workflow: upload your episode, get a full speaker-labeled transcript, auto-generated show notes (via Summary), and SRT captions for your video podcast. No video template required. Free tier.",
+    breadcrumbLabel: 'Headliner Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/podcast-transcript', '/podcast-transcription', '/spreaker-alternative', '/speaker-diarization'],
+    indexable: true,
+    intentKey: 'headliner-alternative',
+    faq: [
+      { q: 'Does VideoText replace Headliner for podcast transcription?', a: 'For the transcription use case — yes. VideoText gives you a full transcript, speaker labels, show notes (Summary branch), and SRT files. Headliner focuses on creating audiogram clips for social media.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Does Headliner (Eddy) include transcription?', a: 'Headliner includes basic transcription primarily to power its audiogram clip selection feature — not as a standalone transcript product. VideoText provides the full transcript as a downloadable TXT, SRT, and VTT file.' },
+      { q: 'Can I generate podcast show notes with VideoText like Headliner suggests clips?', a: 'Yes. Upload your podcast episode to VideoText. The Summary branch generates a concise episode summary for show notes. Chapters identify main topics with timestamps for your podcast description.' },
+      { q: 'Can VideoText produce subtitles for video podcasts?', a: 'Yes. Upload your video podcast episode (MP4) to VideoText, generate an SRT file, and upload it to YouTube. This gives your video podcast accurate captions significantly better than YouTube auto-captions.' },
+    ],
+  },
+  {
+    path: '/ditto-transcripts-alternative',
+    title: 'Best Ditto Transcripts Alternative – AI Transcription Instead of Human Services | VideoText',
+    description:
+      'Ditto Transcripts is a human transcription service charging per minute. VideoText delivers AI transcription in minutes for free — Whisper large-v3 accuracy, speaker labels, SRT export.',
+    h1: 'Ditto Transcripts Alternative — AI Transcription in Minutes',
+    intro:
+      "Ditto Transcripts is a human transcription service that delivers 99% accurate transcripts but charges per minute and takes hours to days for turnaround. VideoText delivers Whisper large-v3 AI transcription in minutes — free tier, no per-minute pricing, instant results. For non-sensitive, time-sensitive transcription, VideoText is significantly faster and cheaper.",
+    breadcrumbLabel: 'Ditto Transcripts Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/interview-transcription', '/research-interview-transcription', '/transcription-for-journalists', '/audio-to-text'],
+    indexable: true,
+    intentKey: 'ditto-transcripts-alternative',
+    faq: [
+      { q: 'Is AI transcription accurate enough vs Ditto\'s human transcription?', a: 'VideoText uses Whisper large-v3 (~97–99% WER on clear speech). Human transcription achieves ~99%. For most use cases — journalism, research, meeting notes — the difference is minimal on clear audio. For legal, medical, or verbatim-required transcription, human services like Ditto remain better.' },
+      { q: 'Is VideoText faster than Ditto Transcripts?', a: 'Much faster. Ditto Transcripts turnaround is typically same-day to 3 days. VideoText delivers results in 2–8 minutes depending on file length.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card. No per-minute fees.' },
+    ],
+  },
+  {
+    path: '/allscribe-alternative',
+    title: 'Best Allscribe Alternative for AI Video Transcription | VideoText',
+    description:
+      'Looking for an Allscribe alternative? VideoText transcribes video and audio with Whisper large-v3 — speaker labels, SRT export, translate to 50+ languages. Free tier, no credit card.',
+    h1: 'Allscribe Alternative — AI Transcription with More Export Options',
+    intro:
+      'VideoText is a full-featured Allscribe alternative. Transcribe any video or audio file with Whisper large-v3 accuracy. Get speaker labels, summary, chapters, keyword index, and export as TXT, SRT, or VTT. Translate to 50+ languages. Files deleted after processing. Free tier.',
+    breadcrumbLabel: 'Allscribe Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/video-to-transcript', '/turboscribe-alternative', '/easyscribe-alternative', '/audio-to-text'],
+    indexable: true,
+    intentKey: 'allscribe-alternative',
+    faq: [
+      { q: 'What does VideoText offer over Allscribe?', a: 'Speaker diarization, auto-generated summary, chapter navigation, keyword indexing, SRT/VTT subtitle export, translation to 50+ languages, YouTube URL input, and instant file deletion after processing.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'How accurate is VideoText compared to Allscribe?', a: 'VideoText uses Whisper large-v3 (~98.5% WER on clear speech). This is comparable to the best available AI transcription engines and significantly more accurate than older Whisper variants.' },
+      { q: 'Does VideoText support batch transcription like Allscribe?', a: 'Yes. The Batch Process tool lets you upload and process multiple files simultaneously. All transcripts download as a ZIP archive.' },
+      { q: 'How quickly does VideoText process files?', a: 'Typically 30–90 seconds for short files and 5–8 minutes for hour-long recordings. Files are processed on dedicated GPU infrastructure.' },
+    ],
+  },
+
+  // ── Cluster N: Video & Converter Alternatives ────────────────────────────────
+  {
+    path: '/videoProc-alternative',
+    title: 'Best VideoProc Converter Alternative for Transcription | VideoText',
+    description:
+      "VideoProc Converter AI includes basic speech-to-text as part of video conversion. VideoText specializes in accurate transcription — speaker labels, SRT export, translate to 50+ languages. Free tier.",
+    h1: 'VideoProc Alternative — Dedicated Transcription for Your Videos',
+    intro:
+      "VideoProc Converter AI is a desktop video processing suite that includes basic speech-to-text conversion. For accurate transcription with speaker labels, summary, chapters, and SRT export, VideoText is the dedicated alternative. Upload your video in the browser — no software install — and get a complete transcript in minutes. Free tier.",
+    breadcrumbLabel: 'VideoProc Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/video-to-transcript', '/mp4-to-text', '/subtitle-generator', '/movavi-alternative'],
+    indexable: true,
+    intentKey: 'videoproc-alternative',
+    faq: [
+      { q: 'Does VideoProc Converter do transcription?', a: 'VideoProc includes a basic speech-to-text feature but it is not its primary function. VideoText is purpose-built for transcription with speaker diarization, chapters, keyword index, and multi-language export.' },
+      { q: 'Is VideoText browser-based unlike VideoProc?', a: 'Yes. VideoText runs in the browser on any OS. VideoProc requires a desktop installation on Windows or Mac.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+    ],
+  },
+  {
+    path: '/movavi-alternative',
+    title: 'Best Movavi Video Converter Alternative for Transcription | VideoText',
+    description:
+      'Movavi is a video converter with basic subtitle tools. VideoText transcribes video to text with Whisper AI — accurate SRT generation, translate to 50+ languages, speaker labels. Free tier.',
+    h1: 'Movavi Alternative — AI Transcription and Subtitle Generation',
+    intro:
+      "Movavi is a desktop video editor and converter that includes subtitle editing tools but requires manual subtitle creation. VideoText automates subtitle generation: upload your video and get a Whisper-accurate SRT or VTT file in minutes with no manual timing work. Translate to 50+ languages. Burn captions into video. Free tier.",
+    breadcrumbLabel: 'Movavi Alternative',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/subtitle-generator', '/srt-generator', '/video-to-srt', '/subtitle-edit-alternative'],
+    indexable: true,
+    intentKey: 'movavi-alternative',
+    faq: [
+      { q: 'Does Movavi auto-generate subtitles?', a: 'Movavi includes a subtitle editor but requires manual text entry and timing. VideoText automatically generates timed subtitles from your video\'s speech using Whisper AI.' },
+      { q: 'Is VideoText browser-based unlike Movavi?', a: 'Yes. VideoText runs in any browser on any OS. Movavi requires desktop installation.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+    ],
+  },
+  {
+    path: '/vocallab-alternative',
+    title: 'Best Vocallab.io Alternative for AI Transcription | VideoText',
+    description:
+      'Looking for a Vocallab.io alternative? VideoText transcribes video and audio with Whisper large-v3 — speaker labels, SRT export, translate, free tier. No credit card.',
+    h1: 'Vocallab Alternative — Transcription with More Features',
+    intro:
+      'VideoText is a comprehensive Vocallab.io alternative. Upload any video or audio file and get a speaker-labeled transcript with summary, chapters, keyword index, and SRT/VTT export. Translate to 50+ languages. Files deleted after processing. Free tier.',
+    breadcrumbLabel: 'Vocallab Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/video-to-transcript', '/turboscribe-alternative', '/notta-alternative', '/audio-to-text'],
+    indexable: true,
+    intentKey: 'vocallab-alternative',
+    faq: [
+      { q: 'Is VideoText better than Vocallab.io?', a: 'VideoText offers Whisper large-v3 transcription, speaker diarization, auto-summary, chapter navigation, keyword indexing, SRT/VTT/TXT export, translation to 50+ languages, and YouTube URL input. Files are deleted immediately after processing.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'What file formats does VideoText accept vs Vocallab?', a: 'VideoText accepts all major video (MP4, MOV, AVI, WebM, MKV) and audio formats (MP3, WAV, M4A, AAC, OGG, FLAC). It also takes YouTube URLs directly — no separate download step needed.' },
+      { q: 'Does VideoText delete my files after transcription?', a: 'Yes. Your file is deleted immediately after the transcript is generated. Nothing is stored on VideoText servers. Download your transcript and it is yours to keep.' },
+      { q: 'Does VideoText support speaker separation?', a: 'Yes. Speaker diarization is included on all plans — the transcript separates speech by speaker turn, labeled Speaker 1, Speaker 2, etc. Rename speakers to real names after transcription.' },
+    ],
+  },
+  {
+    path: '/skribo-alternative',
+    title: 'Best Skribo.xyz Alternative for Browser Transcription | VideoText',
+    description:
+      'Looking for a Skribo alternative? VideoText transcribes video and audio in the browser with Whisper large-v3 — speaker labels, SRT export, translate to 50+ languages. Free tier.',
+    h1: 'Skribo Alternative — Full-Featured Browser Transcription',
+    intro:
+      'VideoText is a fully featured Skribo.xyz alternative. Upload any video or audio file and get a speaker-labeled Whisper transcript with summary, chapters, keyword index, and SRT/VTT export. Translate to 50+ languages. Free tier, no credit card.',
+    breadcrumbLabel: 'Skribo Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/video-to-transcript', '/audio-to-text', '/turboscribe-alternative', '/easyscribe-alternative'],
+    indexable: true,
+    intentKey: 'skribo-alternative',
+    faq: [
+      { q: 'Why choose VideoText over Skribo?', a: 'VideoText offers Whisper large-v3 accuracy, speaker diarization, summary, chapters, keywords, multi-format export, and translation — all in a single browser-based tool with a free tier and no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Does VideoText support the same languages as Skribo?', a: 'VideoText transcribes in 90+ languages using Whisper\'s multilingual model and translates to 50+ languages. It covers all major world languages including English, Spanish, French, German, Portuguese, Japanese, Chinese, Arabic, and more.' },
+      { q: 'What video formats can I upload to VideoText?', a: 'MP4, MOV, AVI, WebM, MKV, and all major audio formats (MP3, WAV, M4A, AAC, OGG, FLAC). You can also paste a YouTube URL to transcribe directly without uploading.' },
+      { q: 'How long does VideoText take to process a file?', a: 'Typically 30–90 seconds for short files and 5–8 minutes for hour-long recordings. Processing speed does not depend on your local device hardware.' },
+    ],
+  },
+  {
+    path: '/whisper-notes-alternative',
+    title: 'Best Whisper Notes Alternative – Transcribe Files in the Browser | VideoText',
+    description:
+      'Whisper Notes is a Mac/iOS dictation app. VideoText transcribes existing recording files in the browser — any OS, no install, same Whisper accuracy. Speaker labels, SRT export, free tier.',
+    h1: 'Whisper Notes Alternative — Transcribe Any Recording File',
+    intro:
+      'Whisper Notes is an iOS and macOS app for real-time Whisper dictation — it transcribes as you speak. VideoText handles the file transcription use case: upload any existing recording (interview, lecture, meeting) in the browser and get a full transcript with speaker labels and SRT export. No app install, works on any OS. Free tier.',
+    breadcrumbLabel: 'Whisper Notes Alternative',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/superwhisper-alternative', '/macwhisper-alternative', '/whisper-online', '/audio-to-text'],
+    indexable: true,
+    intentKey: 'whisper-notes-alternative',
+    faq: [
+      { q: 'What is Whisper Notes used for vs VideoText?', a: 'Whisper Notes is a real-time dictation app for Apple devices. VideoText transcribes pre-recorded files uploaded from any device or OS.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Can Whisper Notes transcribe existing audio or video recordings?', a: 'Whisper Notes is primarily a dictation app — it captures live voice input. For transcribing existing recording files (interviews, lectures, meetings), you need to export the audio file and process it elsewhere. VideoText handles existing files directly — upload and get a full transcript in minutes.' },
+      { q: 'Does VideoText work on iPhone like Whisper Notes?', a: 'VideoText is a web app that works in mobile browsers including Safari on iPhone. For voice memo files from iPhone, export as M4A from the Voice Memos app and upload to VideoText.' },
+      { q: 'What can VideoText transcribe that Whisper Notes cannot?', a: 'VideoText transcribes video files (MP4, MOV), YouTube URLs, podcast recordings, meeting recordings, and any audio file. Whisper Notes is limited to dictation from microphone input on Apple devices.' },
+    ],
+  },
+
+  // ── Voice-to-Text: Core Landing Pages ────────────────────────────────────────
+  {
+    path: '/voice-to-text',
+    title: 'Voice to Text – Free Online Voice Recorder & Transcriber | VideoText',
+    description: 'Voice to text online. Hit record, speak, and get a transcript in seconds. No app, no signup for the free tier. Powered by AI. Works in any browser.',
+    h1: 'Voice to Text Online',
+    intro: 'Record your voice directly in the browser and get an accurate text transcript instantly. Click the microphone, speak for up to 5 minutes, and VideoText transcribes your voice with AI. No app download, no software to install — works on any device. Free tier included.',
+    breadcrumbLabel: 'Voice to Text',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/speech-to-text', '/voice-recorder-online', '/dictation-tool', '/voice-memo-to-text', '/otter-ai-alternative', '/dragon-dictate-alternative'],
+    indexable: true,
+    intentKey: 'voice-to-text',
+    faq: [
+      { q: 'How does voice to text work?', a: 'Click the microphone button and allow browser microphone access. Speak clearly for up to 5 minutes. When you stop recording, VideoText uploads the audio to our AI transcription engine powered by Whisper and delivers a clean text transcript within seconds.' },
+      { q: 'Is voice to text free?', a: 'Yes. The free tier includes 3 recordings per month with no credit card required. Paid plans start at $19/month for more minutes.' },
+      { q: 'What is the best voice to text tool?', a: 'VideoText offers browser-based voice recording with AI transcription powered by Whisper. Unlike Otter.ai or Dragon Dictate, VideoText works entirely in the browser with no app installation and no subscription required for basic use.' },
+      { q: 'How accurate is voice to text?', a: 'VideoText uses Whisper large-v3, achieving 95–98% accuracy for clear English speech. Accuracy improves when speaking clearly in a quiet environment. For technical vocabulary, accents, or multiple speakers, accuracy remains high due to Whisper\'s large training corpus.' },
+      { q: 'Can I use voice to text on my phone?', a: 'Yes. VideoText works in mobile browsers including Safari on iPhone and Chrome on Android. Open the site, tap the microphone, and speak. Your transcript downloads or copies directly to clipboard.' },
+      { q: 'How long can I record?', a: 'The voice recorder captures up to 5 minutes per recording. For longer recordings, use the video/audio upload tool which handles files up to 90 minutes.' },
+      { q: 'Does voice to text work offline?', a: 'No. VideoText requires an internet connection to send audio to our Whisper-powered transcription servers. For offline use, desktop apps like WhisperType or MacWhisper process audio locally.' },
+    ],
+  },
+  {
+    path: '/speech-to-text',
+    title: 'Speech to Text – Free Online Converter | VideoText',
+    description: 'Speech to text converter online. Record from your microphone or upload audio. AI-powered accuracy. No app. Free tier.',
+    h1: 'Speech to Text Converter',
+    intro: 'Convert speech to text instantly in your browser. Record from your microphone or upload an existing audio or video file. VideoText uses Whisper AI for high-accuracy transcription across 90+ languages. Free tier — no credit card required.',
+    breadcrumbLabel: 'Speech to Text',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/voice-to-text-online', '/audio-to-text', '/online-voice-recorder', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'speech-to-text',
+    faq: [
+      { q: 'What is speech to text?', a: 'Speech to text (also called voice recognition or dictation) converts spoken words into written text automatically using AI. Modern speech-to-text tools like VideoText use Whisper neural networks that achieve near-human accuracy on clear audio.' },
+      { q: 'How accurate is speech to text online?', a: 'VideoText uses OpenAI Whisper large-v3, which achieves 3–5% word error rate on clear English audio. It outperforms Google Speech-to-Text on accented speech and technical vocabulary.' },
+      { q: 'What languages does speech to text support?', a: 'VideoText supports 90+ languages automatically. Whisper detects the spoken language automatically, or you can specify the language for improved accuracy.' },
+      { q: 'Can I do speech to text on iPhone or Android?', a: 'Yes. VideoText is a web app that works in Safari (iPhone) and Chrome (Android). No app installation needed.' },
+      { q: 'What is the difference between speech to text and transcription?', a: 'Speech to text typically refers to real-time or live dictation — converting speech as you speak. Transcription refers to converting pre-recorded audio or video files to text. VideoText does both: record live from microphone, or upload existing files.' },
+    ],
+  },
+  {
+    path: '/voice-to-text-online',
+    title: 'Voice to Text Online – Free Browser-Based Transcription | VideoText',
+    description: 'Free online voice to text. Record in your browser, get a text transcript instantly. No download. Works on Chrome, Firefox, Safari.',
+    h1: 'Voice to Text Online — Free',
+    intro: 'Turn your voice into text online without downloading any software. Open VideoText in any browser, click the microphone, and speak. The AI transcribes your recording and delivers editable text you can copy or download. Works on desktop and mobile. Free.',
+    breadcrumbLabel: 'Voice to Text Online',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/free-voice-to-text', '/speech-to-text', '/online-voice-recorder', '/speechnotes-alternative'],
+    indexable: true,
+    intentKey: 'voice-to-text-online',
+    faq: [
+      { q: 'Which browsers support online voice to text?', a: 'VideoText works in Chrome, Firefox, Edge, and Safari. Microphone access requires HTTPS (all VideoText pages use HTTPS). On iPhone, use Safari. On Android, use Chrome.' },
+      { q: 'Do I need to install anything for voice to text online?', a: 'No. VideoText runs entirely in your browser. Click the microphone button, allow microphone access when prompted, and start speaking. No plugins, extensions, or software needed.' },
+      { q: 'Is online voice to text secure?', a: 'Yes. Your audio is encrypted in transit (HTTPS/TLS) and processed by our AI servers. VideoText does not retain or store your recordings after transcription completes.' },
+    ],
+  },
+  {
+    path: '/online-voice-recorder',
+    title: 'Online Voice Recorder – Record & Transcribe in Browser | VideoText',
+    description: 'Free online voice recorder with AI transcription. Record from your microphone, get accurate text in seconds. No app needed. Free tier.',
+    h1: 'Online Voice Recorder',
+    intro: 'Record your voice online and get a transcript instantly — all in your browser. VideoText\'s online voice recorder captures audio from your microphone, uploads it for AI transcription, and delivers clean text in seconds. No software to install. Free tier.',
+    breadcrumbLabel: 'Online Voice Recorder',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/voice-recorder-online', '/free-voice-to-text', '/speak-to-text', '/voice-memo-to-text'],
+    indexable: true,
+    intentKey: 'online-voice-recorder',
+    faq: [
+      { q: 'How do I record voice online?', a: 'Go to VideoText, click the microphone button, allow browser microphone access, and speak. The recorder captures your voice for up to 5 minutes. Click stop and your transcript appears within seconds.' },
+      { q: 'Can I record voice online for free?', a: 'Yes. VideoText offers 3 free voice recordings per month with no credit card required.' },
+      { q: 'What happens to my recording after transcription?', a: 'VideoText processes your recording and deletes it after transcription. Your audio is not stored or used for any other purpose.' },
+      { q: 'Can I download the recording?', a: 'VideoText focuses on the text transcript output, which you can copy or download as TXT. The audio recording itself is processed server-side and not returned as a download.' },
+    ],
+  },
+  {
+    path: '/voice-recorder-online',
+    title: 'Voice Recorder Online – Free, No Download | VideoText',
+    description: 'Voice recorder online. Record and transcribe instantly. Free. No app. Works in any browser on desktop or mobile.',
+    h1: 'Voice Recorder Online',
+    intro: 'Use our free online voice recorder to capture and transcribe speech directly in your browser. Click the microphone, speak, and download your transcript. Works on all devices. No download or signup required for the free tier.',
+    breadcrumbLabel: 'Voice Recorder Online',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/online-voice-recorder', '/voice-to-text', '/free-voice-to-text', '/voice-to-text-online'],
+    indexable: true,
+    intentKey: 'voice-recorder-online',
+    faq: [
+      { q: 'Is there a time limit for the online voice recorder?', a: 'The voice recorder captures up to 5 minutes per session. For longer audio, upload an existing recording file which handles up to 90 minutes.' },
+      { q: 'Does the voice recorder online work on mobile?', a: 'Yes. Open VideoText in your mobile browser, tap the microphone, and allow microphone access. Works on iPhone Safari and Android Chrome.' },
+    ],
+  },
+  {
+    path: '/free-voice-to-text',
+    title: 'Free Voice to Text – No Signup, No App | VideoText',
+    description: 'Free voice to text online. Record from your browser. No subscription. No credit card. AI transcription powered by Whisper.',
+    h1: 'Free Voice to Text',
+    intro: 'Get accurate voice-to-text transcription for free. Record from your browser microphone or upload an existing voice file. VideoText\'s free tier includes 3 recordings per month with no credit card. Powered by Whisper AI.',
+    breadcrumbLabel: 'Free Voice to Text',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/voice-to-text-online', '/online-voice-recorder', '/speechnotes-alternative', '/speechtexter-alternative'],
+    indexable: true,
+    intentKey: 'free-voice-to-text',
+    faq: [
+      { q: 'Is voice to text really free?', a: 'Yes. VideoText offers 3 free voice recordings per month with no credit card required. Create an account to track your usage. Upgrade to paid plans ($19/month) for more minutes.' },
+      { q: 'What is the best free voice to text tool?', a: 'VideoText offers high-accuracy Whisper AI transcription for free, with no watermarks, no forced login, and no usage spying. Alternatives like Otter.ai, Speechnotes, and SpeechTexter offer free tiers but with lower accuracy or intrusive prompts.' },
+      { q: 'Does free voice to text store my data?', a: 'VideoText processes and deletes your recordings. We do not store or sell your audio data.' },
+    ],
+  },
+  {
+    path: '/speak-to-text',
+    title: 'Speak to Text – Instant AI Transcription | VideoText',
+    description: 'Speak to text online. Click, speak, get text. AI-powered. Free tier. No app. Works in browser.',
+    h1: 'Speak to Text',
+    intro: 'Speak directly into your browser and get accurate text output instantly. VideoText converts your voice to text using Whisper AI — just click the microphone, speak, and your transcript appears. Perfect for notes, emails, documents, and more.',
+    breadcrumbLabel: 'Speak to Text',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/dictation-tool', '/microphone-to-text', '/free-voice-to-text'],
+    indexable: true,
+    intentKey: 'speak-to-text',
+    faq: [
+      { q: 'How do I speak to text on a computer?', a: 'Open VideoText in your browser, click the microphone button, and speak clearly. Your voice is transcribed to text within seconds. Works on Windows, Mac, Linux, and Chromebook — any computer with a microphone and browser.' },
+      { q: 'Is speaking to text faster than typing?', a: 'Most people speak 3–4x faster than they type. Voice-to-text tools like VideoText can transcribe speech faster than real-time, making them significantly faster for first drafts, notes, and documentation.' },
+    ],
+  },
+  {
+    path: '/microphone-to-text',
+    title: 'Microphone to Text – Browser-Based Voice Transcription | VideoText',
+    description: 'Convert microphone input to text instantly. Click, record, transcribe. Free. No software. Works in any browser.',
+    h1: 'Microphone to Text',
+    intro: 'Convert your microphone input to text using AI transcription. VideoText captures audio from your browser microphone, processes it with Whisper AI, and delivers clean readable text in seconds. No software, no app — works entirely online.',
+    breadcrumbLabel: 'Microphone to Text',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/speak-to-text', '/online-voice-recorder', '/voice-to-text-online'],
+    indexable: true,
+    intentKey: 'microphone-to-text',
+    faq: [
+      { q: 'How do I convert microphone to text?', a: 'Open VideoText, click the red microphone button, and allow browser microphone access when prompted. Speak into your microphone and click stop. Your speech is transcribed to text and displayed instantly.' },
+      { q: 'What microphone works best for voice to text?', a: 'Any microphone works — built-in laptop mic, USB microphone, headset, or external recorder. For best accuracy, use a headset microphone or external USB mic in a quiet environment to reduce background noise.' },
+    ],
+  },
+  {
+    path: '/dictation-tool',
+    title: 'Dictation Tool – Free Online Dictation Software | VideoText',
+    description: 'Free online dictation tool. Speak and get text instantly. AI-powered. No download. Better than Dragon Dictate for casual use.',
+    h1: 'Free Online Dictation Tool',
+    intro: 'Dictate to your browser and get accurate text output. VideoText is a free online dictation tool that uses Whisper AI to convert speech to text. No expensive software like Dragon Dictate to install — just open the browser, speak, and copy your text.',
+    breadcrumbLabel: 'Dictation Tool',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/speak-to-text', '/dragon-dictate-alternative', '/dictation-io-alternative', '/speechnotes-alternative'],
+    indexable: true,
+    intentKey: 'dictation-tool',
+    faq: [
+      { q: 'What is an online dictation tool?', a: 'An online dictation tool lets you speak into your computer\'s microphone and converts your voice to text automatically — no keyboard typing needed. VideoText is a free browser-based dictation tool that uses Whisper AI for high accuracy.' },
+      { q: 'How is VideoText different from Dragon Dictate?', a: 'Dragon Dictate (Dragon NaturallySpeaking) is a desktop software costing $150–$600 that requires installation and voice training. VideoText works entirely in the browser, requires no installation, no training, and is free for basic use — making it the best Dragon alternative for most users.' },
+      { q: 'Can I use dictation for writing documents?', a: 'Yes. Dictate into VideoText, copy the transcript, and paste into Google Docs, Word, Notion, or any text editor. VideoText is ideal for first drafts, notes, emails, and long-form content.' },
+      { q: 'Is online dictation accurate?', a: 'VideoText uses Whisper large-v3, one of the most accurate speech recognition models available. For clear speech in a quiet environment, accuracy is typically 95–98%.' },
+    ],
+  },
+  {
+    path: '/voice-memo-to-text',
+    title: 'Voice Memo to Text – Convert iPhone & Android Voice Notes | VideoText',
+    description: 'Convert voice memos to text. Upload iPhone Voice Memos, Android recordings, WhatsApp audio. AI transcription. Free tier.',
+    h1: 'Voice Memo to Text',
+    intro: 'Convert voice memos to text instantly. Upload your iPhone Voice Memos, Android voice recordings, or WhatsApp audio messages to VideoText and get a full text transcript. Supports M4A, MP3, WAV, and other audio formats. Free tier.',
+    breadcrumbLabel: 'Voice Memo to Text',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/audio-to-text', '/voice-to-text', '/voice-notes-to-text', '/m4a-to-text', '/vomo-alternative'],
+    indexable: true,
+    intentKey: 'voice-memo-to-text',
+    faq: [
+      { q: 'How do I convert iPhone Voice Memos to text?', a: 'Open the Voice Memos app on iPhone, tap the memo, tap the three-dot menu, and share as a file. Upload the M4A file to VideoText and get a full text transcript in seconds.' },
+      { q: 'Can I transcribe WhatsApp voice messages?', a: 'Yes. Save the WhatsApp voice message as an audio file (tap and hold → Save) and upload to VideoText. Supports the OGG format used by WhatsApp.' },
+      { q: 'What formats are supported for voice memo transcription?', a: 'VideoText supports M4A, MP3, WAV, OGG, FLAC, AAC, and video formats containing audio (MP4, MOV, WebM). All common voice memo formats are accepted.' },
+      { q: 'How long can voice memos be?', a: 'VideoText handles voice memos up to 90 minutes. Free tier includes 3 transcriptions per month.' },
+    ],
+  },
+  {
+    path: '/voice-notes-to-text',
+    title: 'Voice Notes to Text – Transcribe Voice Notes Online | VideoText',
+    description: 'Transcribe voice notes to text. Upload audio or record live. AI accuracy. Free. No app needed.',
+    h1: 'Voice Notes to Text',
+    intro: 'Transcribe voice notes to text quickly and accurately. VideoText converts voice notes from any app or device — iPhone Voice Memos, Android recordings, Notion Audio, VOMO, or live microphone input — to clean readable text. Free tier.',
+    breadcrumbLabel: 'Voice Notes to Text',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-memo-to-text', '/voice-to-text', '/audio-to-text', '/vomo-alternative', '/whisper-notes-alternative'],
+    indexable: true,
+    intentKey: 'voice-notes-to-text',
+    faq: [
+      { q: 'How do I convert voice notes to text?', a: 'Export your voice note as an audio file (M4A, MP3, WAV) and upload to VideoText. Or record directly in the browser with the voice recorder. Your transcript is ready in seconds.' },
+      { q: 'Can I transcribe voice notes from any app?', a: 'Yes. VideoText accepts audio from any app that can export or share audio files — including Apple Voice Memos, VOMO, Otter.ai recordings, Android Voice Recorder, Samsung Voice Recorder, and more.' },
+    ],
+  },
+  {
+    path: '/voice-to-text-converter',
+    title: 'Voice to Text Converter – Online, Free, Accurate | VideoText',
+    description: 'Voice to text converter online. Record or upload audio and convert to text. AI-powered Whisper transcription. Free tier.',
+    h1: 'Voice to Text Converter',
+    intro: 'Convert voice recordings to text with AI precision. VideoText\'s voice-to-text converter accepts live recordings from your microphone or uploaded audio files and produces an accurate, downloadable text transcript. Free tier included.',
+    breadcrumbLabel: 'Voice to Text Converter',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/speech-to-text', '/audio-to-text', '/online-voice-recorder'],
+    indexable: true,
+    intentKey: 'voice-to-text-converter',
+    faq: [
+      { q: 'What is a voice to text converter?', a: 'A voice to text converter is a tool that converts spoken audio into written text. VideoText uses Whisper AI — one of the best speech recognition models available — to convert voice recordings and live microphone input to accurate text.' },
+      { q: 'What file formats does the converter accept?', a: 'VideoText accepts MP4, MOV, AVI, WebM, MKV, MP3, WAV, M4A, AAC, OGG, and FLAC files for transcription.' },
+    ],
+  },
+
+  // ── Voice-to-Text: Competitor Alternatives ────────────────────────────────────
+  {
+    path: '/dragon-dictate-alternative',
+    title: 'Dragon Dictate Alternative – Free Online Dictation | VideoText',
+    description: 'Dragon Dictate (Dragon NaturallySpeaking) alternative. Free browser-based dictation. No $600 software. AI accuracy. Works on any OS.',
+    h1: 'Dragon Dictate Alternative',
+    intro: 'Looking for a Dragon Dictate alternative? VideoText offers free browser-based voice-to-text transcription powered by Whisper AI — no $150–$600 software to buy, no installation, no voice training required. Works on Windows, Mac, Linux, and Chromebook.',
+    breadcrumbLabel: 'Dragon Dictate Alternative',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/dictation-tool', '/voice-to-text', '/speak-to-text', '/speechnotes-alternative', '/dictation-io-alternative'],
+    indexable: true,
+    intentKey: 'dragon-dictate-alternative',
+    faq: [
+      { q: 'How does VideoText compare to Dragon NaturallySpeaking?', a: 'Dragon NaturallySpeaking (Dragon Dictate) is a $150–$600 desktop software requiring Windows or Mac installation and extensive voice training. VideoText is free, browser-based, requires no installation, no training, and achieves comparable accuracy on most speech using Whisper large-v3.' },
+      { q: 'Is there a free alternative to Dragon Dictate?', a: 'Yes. VideoText provides free browser-based dictation with AI accuracy. Other free alternatives include Speechnotes (Chrome extension), SpeechTexter, and Google Docs Voice Typing — but VideoText offers the best Whisper-powered accuracy without ads or a Chrome extension requirement.' },
+      { q: 'Does VideoText work on Mac like Dragon for Mac?', a: 'Yes. VideoText is browser-based and works on any OS including Mac, Windows, Linux, and Chromebook. Dragon Dictate for Mac was discontinued in 2023, leaving many Mac users looking for alternatives.' },
+      { q: 'Can I use VideoText for professional dictation like Dragon?', a: 'VideoText is ideal for notes, first drafts, emails, and meeting summaries. For medical transcription requiring specialized vocabulary (Dragon Medical), a specialized medical tool may still be preferable — but for general professional dictation, VideoText is a capable free alternative.' },
+      { q: 'How accurate is VideoText vs Dragon Dictate?', a: 'Both use advanced AI speech recognition. Dragon uses Nuance\'s proprietary models with user voice training. VideoText uses Whisper large-v3, which achieves 3–5% word error rate on clear English speech without any training, and often outperforms Dragon on accented speech and technical vocabulary.' },
+    ],
+  },
+  {
+    path: '/speechify-alternative',
+    title: 'Speechify Alternative – Free Voice to Text | VideoText',
+    description: 'Speechify alternative for voice to text. Free browser-based AI transcription. Record or upload. No subscription required.',
+    h1: 'Speechify Alternative',
+    intro: 'VideoText is a free alternative to Speechify for voice recording and transcription. While Speechify focuses on text-to-speech (reading content aloud), VideoText does the opposite — converting your voice recordings to text using Whisper AI. No subscription required for basic use.',
+    breadcrumbLabel: 'Speechify Alternative',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/dictation-tool', '/dragon-dictate-alternative', '/otter-ai-alternative'],
+    indexable: true,
+    intentKey: 'speechify-alternative',
+    faq: [
+      { q: 'What is the difference between Speechify and VideoText?', a: 'Speechify is a text-to-speech tool that reads documents aloud. VideoText is a speech-to-text tool that converts voice recordings to text. If you\'re looking to transcribe voice recordings, VideoText is the right tool.' },
+      { q: 'Does VideoText have a free plan like Speechify?', a: 'Yes. VideoText offers 3 free transcriptions per month with no credit card. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Can I use VideoText to transcribe voice memos like Speechify?', a: 'Yes. Upload voice memos (M4A, MP3, WAV) or record directly in the browser. VideoText produces accurate text transcripts you can copy or download.' },
+    ],
+  },
+  {
+    path: '/speechnotes-alternative',
+    title: 'Speechnotes Alternative – Free Voice to Text Online | VideoText',
+    description: 'Speechnotes alternative. Free online voice to text — no Chrome extension required. Works in any browser. AI accuracy. No ads.',
+    h1: 'Speechnotes Alternative',
+    intro: 'Looking for a Speechnotes alternative? VideoText offers free browser-based voice-to-text without requiring a Chrome extension. Record in any browser — Chrome, Firefox, Safari, Edge — and get accurate AI transcription powered by Whisper. No ads, no extension required.',
+    breadcrumbLabel: 'Speechnotes Alternative',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/free-voice-to-text', '/voice-to-text-online', '/speechtexter-alternative', '/dictation-io-alternative'],
+    indexable: true,
+    intentKey: 'speechnotes-alternative',
+    faq: [
+      { q: 'How is VideoText different from Speechnotes?', a: 'Speechnotes relies on the Chrome Web Speech API for transcription, which uses Google\'s real-time recognition. VideoText records audio and processes it through Whisper large-v3, which is significantly more accurate — especially for accents, technical vocabulary, and non-English speech.' },
+      { q: 'Does VideoText require a Chrome extension like Speechnotes?', a: 'No. VideoText is a web app that works natively in Chrome, Firefox, Safari, and Edge without any extension. Speechnotes\' Chrome extension approach limits it to Chrome and Chromium-based browsers.' },
+      { q: 'Is VideoText free like Speechnotes?', a: 'Yes. VideoText\'s free tier includes 3 transcriptions per month. Unlike Speechnotes, VideoText has no ads and no paywalls for core features.' },
+    ],
+  },
+  {
+    path: '/speechtexter-alternative',
+    title: 'SpeechTexter Alternative – More Accurate Voice to Text | VideoText',
+    description: 'SpeechTexter alternative. Higher accuracy AI voice to text. Works in any browser. No account for free tier. Powered by Whisper.',
+    h1: 'SpeechTexter Alternative',
+    intro: 'VideoText is a more accurate SpeechTexter alternative. While SpeechTexter uses the Web Speech API with limited accuracy, VideoText uses Whisper large-v3 for higher-quality transcription. Works in any browser. Free tier available.',
+    breadcrumbLabel: 'SpeechTexter Alternative',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/free-voice-to-text', '/speechnotes-alternative', '/dictation-io-alternative'],
+    indexable: true,
+    intentKey: 'speechtexter-alternative',
+    faq: [
+      { q: 'How does VideoText compare to SpeechTexter accuracy?', a: 'SpeechTexter uses browser-native Web Speech API which achieves around 85–90% accuracy. VideoText uses Whisper large-v3 which achieves 95–98% accuracy on clear speech — a significant improvement especially for names, technical terms, and non-standard pronunciation.' },
+      { q: 'Is there a better free alternative to SpeechTexter?', a: 'VideoText offers higher accuracy (Whisper vs Web Speech API), works in all browsers (not just Chrome), and requires no account for basic use — making it a superior free alternative to SpeechTexter for most users.' },
+    ],
+  },
+  {
+    path: '/dictation-io-alternative',
+    title: 'Dictation.io Alternative – Free Browser Dictation | VideoText',
+    description: 'Dictation.io alternative. Browser-based voice to text with higher AI accuracy. No account required. Free. Powered by Whisper.',
+    h1: 'Dictation.io Alternative',
+    intro: 'Looking for a dictation.io alternative? VideoText offers browser-based voice-to-text with Whisper AI accuracy — no Chrome requirement, higher accuracy than Web Speech API, and no ads. Free tier available.',
+    breadcrumbLabel: 'Dictation.io Alternative',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/dictation-tool', '/voice-to-text', '/free-voice-to-text', '/speechnotes-alternative', '/speechtexter-alternative'],
+    indexable: true,
+    intentKey: 'dictation-io-alternative',
+    faq: [
+      { q: 'What is dictation.io and how does VideoText compare?', a: 'Dictation.io is a free browser-based dictation tool using the Web Speech API. VideoText uses Whisper large-v3, achieving significantly higher accuracy — especially for non-English languages, accents, and technical vocabulary.' },
+      { q: 'Is VideoText free like dictation.io?', a: 'Yes. VideoText offers a free tier with 3 transcriptions per month, no credit card required.' },
+    ],
+  },
+  {
+    path: '/whispertype-alternative',
+    title: 'WhisperType Alternative – Browser-Based Voice to Text | VideoText',
+    description: 'WhisperType alternative. Browser-based voice to text powered by Whisper AI. No app install. Works on Windows, Mac, Linux. Free tier.',
+    h1: 'WhisperType Alternative',
+    intro: 'VideoText is a browser-based alternative to WhisperType. While WhisperType is a macOS/Windows desktop app for Whisper-powered dictation, VideoText delivers the same Whisper AI accuracy in any browser — no installation, no API key required, free tier included.',
+    breadcrumbLabel: 'WhisperType Alternative',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/voice-to-text', '/dictation-tool', '/superwhisper-alternative', '/macwhisper-alternative', '/whisper-notes-alternative'],
+    indexable: true,
+    intentKey: 'whispertype-alternative',
+    faq: [
+      { q: 'How does VideoText compare to WhisperType?', a: 'WhisperType is a desktop dictation app that runs Whisper AI locally on macOS or Windows. VideoText is browser-based — no installation, no API key, works on any OS. Both use Whisper for accuracy.' },
+      { q: 'Is there a free WhisperType alternative?', a: 'Yes. VideoText offers a free tier with 3 transcriptions per month. WhisperType requires API key costs from OpenAI.' },
     ],
   },
   {
@@ -2509,11 +3980,15 @@ const CORE_TOOL_LABELS: Record<string, string> = {
   '/burn-subtitles': 'Burn Subtitles',
   '/compress-video': 'Compress Video',
   '/batch-process': 'Batch Process',
+  '/voice-recorder': 'Voice to Text',
 }
 
 /** Popular tool paths for Footer (core + selected SEO). Single source for footer links. */
 const POPULAR_FOOTER_PATHS: string[] = [
   '/video-to-transcript',
+  '/voice-recorder',
+  '/voice-to-text',
+  '/speech-to-text',
   '/youtube-to-transcript',
   '/youtube-transcript-generator',
   '/video-to-text-converter',
