@@ -573,21 +573,24 @@ export async function transcribeVideoVerbose(
   const tempDir = path.dirname(videoPath)
   const audioPath = isAlreadyAudio ? videoPath : path.join(tempDir, `audio-${Date.now()}.mp3`)
   let cleanupWav: string | undefined
+  let whisperWavPath: string | undefined
   try {
     let extractAudioMs: number | undefined
     let pathToUse = audioPath
-    let filenameToUse = path.basename(audioPath) && path.extname(audioPath) ? path.basename(audioPath) : 'audio.mp3'
     if (!isAlreadyAudio) {
       const t0 = Date.now()
       await extractAudio(videoPath, audioPath)
       extractAudioMs = Date.now() - t0
       const ensured = await ensureAudioForWhisper(videoPath, audioPath)
       pathToUse = ensured.path
-      filenameToUse = ensured.filename
       cleanupWav = ensured.cleanupWav
     }
+    // Always convert to WAV before sending to Whisper — same as transcribeChunkVerbose.
+    // Some MP3 encodings pass the size check but Whisper returns 400 for them.
+    whisperWavPath = path.join(tempDir, `whisper_${Date.now()}_audio.wav`)
+    await convertAudioToWav(pathToUse, whisperWavPath)
     const whisperStart = Date.now()
-    const audioFile = await readAudioAsFile(pathToUse, filenameToUse)
+    const audioFile = await readAudioAsFile(whisperWavPath, 'audio.wav')
     const transcription = await openai.audio.transcriptions.create({
       file: audioFile,
       model: 'whisper-1',
@@ -609,6 +612,7 @@ export async function transcribeVideoVerbose(
       try { fs.unlinkSync(audioPath) } catch { /* ignore */ }
       if (cleanupWav) try { fs.unlinkSync(cleanupWav) } catch { /* ignore */ }
     }
+    try { fs.unlinkSync(whisperWavPath) } catch { /* ignore */ }
     const text = typeof transcription.text === 'string' ? transcription.text : ''
     const segments: WhisperSegment[] = (transcription.segments || []).map((s) => ({
       start: Number(s.start),
@@ -625,6 +629,7 @@ export async function transcribeVideoVerbose(
       try { if (fs.existsSync(audioPath)) fs.unlinkSync(audioPath) } catch { /* ignore */ }
       if (cleanupWav) try { fs.unlinkSync(cleanupWav) } catch { /* ignore */ }
     }
+    if (whisperWavPath) try { if (fs.existsSync(whisperWavPath)) fs.unlinkSync(whisperWavPath) } catch { /* ignore */ }
     throw error
   }
 }

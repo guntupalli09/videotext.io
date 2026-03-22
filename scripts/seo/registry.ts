@@ -148,6 +148,12 @@ export const CORE_PATHS: string[] = [
   '/how-to-create-srt-file',
   '/how-to-add-subtitles-to-mp4',
   '/srt-to-word',
+  // Core product pages
+  '/about',
+  '/compare',
+  '/open',
+  '/changelog',
+  '/guide',
 ]
 
 /** Programmatic-only paths (from targets × intents). Submit after core. */

@@ -8,7 +8,7 @@ import { getSessionDetails, setupPassword } from './lib/billing'
 import { invalidateUsageCache } from './lib/api'
 import Footer from './components/Footer'
 import Seo from './components/Seo'
-import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd } from './lib/seoMeta'
+import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd, getSoftwareApplicationJsonLd, getHowToJsonLd, BLOG_POST_DATES } from './lib/seoMeta'
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
 import OfflineBanner from './components/OfflineBanner'
@@ -39,6 +39,7 @@ const BurnSubtitles = lazy(() => import('./pages/BurnSubtitles'))
 const CompressVideo = lazy(() => import('./pages/CompressVideo'))
 const SeoToolPage = lazy(() => import('./pages/SeoToolPage'))
 const FeedbackView = lazy(() => import('./pages/FeedbackView'))
+const SurveyPage = lazy(() => import('./pages/SurveyPage'))
 const FounderDashboard = lazy(() => import('./pages/founder/FounderDashboard'))
 const Changelog = lazy(() => import('./pages/Changelog'))
 const Blog = lazy(() => import('./pages/Blog'))
@@ -51,6 +52,7 @@ const HappyScribeAlternative = lazy(() => import('./pages/seo/HappyScribeAlterna
 const SonixAlternative = lazy(() => import('./pages/seo/SonixAlternativePage'))
 const EasyScribeAlternative = lazy(() => import('./pages/seo/EasyScribeAlternativePage'))
 const NottaAlternative = lazy(() => import('./pages/seo/NottaAlternativePage'))
+const About = lazy(() => import('./pages/AboutPage'))
 const Open = lazy(() => import('./pages/Open'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 // Free tools — client-side only, zero server dependency
@@ -109,20 +111,35 @@ function AppSeo() {
   const isBlogPost = pathname.startsWith('/blog/') && pathname !== '/blog'
   const breadcrumb = ROUTE_BREADCRUMB[pathname]
   const seoEntry = getSeoEntry(pathname)
+
+  // Blog post schemas + og:article meta
+  const blogPostDates = isBlogPost ? BLOG_POST_DATES[pathname] : undefined
+  const articleMeta = blogPostDates
+    ? { publishedTime: `${blogPostDates.datePublished}T00:00:00Z`, modifiedTime: `${blogPostDates.dateModified}T00:00:00Z` }
+    : undefined
   const blogPostingSchema = isBlogPost ? getBlogPostingJsonLd(pathname, meta.title, meta.description) : null
-  const jsonLd = is404
-    ? undefined
-    : isHome
-      ? [getOrganizationJsonLd(), getWebApplicationJsonLd()]
-      : pathname === '/faq'
-        ? [getFaqJsonLd()]
-        : isBlogPost
-          ? [breadcrumb && getBreadcrumbJsonLd(pathname, breadcrumb), blogPostingSchema].filter(Boolean) as object[]
-          : breadcrumb
-            ? seoEntry?.faq?.length
-              ? [getBreadcrumbJsonLd(pathname, breadcrumb), getFaqJsonLdFromItems(seoEntry.faq)]
-              : [getBreadcrumbJsonLd(pathname, breadcrumb)]
-            : undefined
+
+  // SoftwareApplication schema for paid tool pages
+  const softwareAppSchema = getSoftwareApplicationJsonLd(pathname)
+
+  // HowTo schema for how-to pages
+  const howToSchema = getHowToJsonLd(pathname)
+
+  const buildJsonLd = (): object[] | undefined => {
+    if (is404) return undefined
+    const schemas: object[] = []
+    if (isHome) return [getOrganizationJsonLd(), getWebApplicationJsonLd()]
+    if (pathname === '/faq') return [getFaqJsonLd()]
+    if (breadcrumb) schemas.push(getBreadcrumbJsonLd(pathname, breadcrumb))
+    if (isBlogPost && blogPostingSchema) schemas.push(blogPostingSchema)
+    if (softwareAppSchema) schemas.push(softwareAppSchema)
+    if (howToSchema) schemas.push(howToSchema)
+    if (!isBlogPost && seoEntry?.faq?.length) schemas.push(getFaqJsonLdFromItems(seoEntry.faq))
+    return schemas.length ? schemas : undefined
+  }
+
+  const jsonLd = buildJsonLd()
+
   useEffect(() => {
     try {
       capturePageview(pathname) // feeds Web analytics dashboard (visitors, page views, sessions)
@@ -135,9 +152,10 @@ function AppSeo() {
     <Seo
       title={meta.title}
       description={meta.description}
-      canonicalPath={is404 ? '/' : pathname}
+      canonicalPath={pathname}
       jsonLd={jsonLd}
       noindex={is404}
+      articleMeta={articleMeta}
     />
   )
 }
@@ -344,6 +362,7 @@ function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/faq" element={<Faq />} />
             <Route path="/feedback" element={<FeedbackView />} />
+            <Route path="/survey" element={<SurveyPage />} />
             <Route path="/founder" element={<FounderDashboard />} />
             <Route path="/guide" element={<Guide />} />
             <Route path="/terms" element={<Terms />} />
@@ -359,6 +378,7 @@ function App() {
             <Route path="/sonix-alternative" element={<SonixAlternative />} />
             <Route path="/easyscribe-alternative" element={<EasyScribeAlternative />} />
             <Route path="/notta-alternative" element={<NottaAlternative />} />
+            <Route path="/about" element={<About />} />
             <Route path="/open" element={<Open />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />

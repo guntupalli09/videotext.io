@@ -1498,13 +1498,20 @@ export async function getCurrentUsage(options?: { skipCache?: boolean }): Promis
   }
 }
 
-/** Submit feedback from Tex panel (post-job). Optional toolId, stars 1–5, comment, userNameOrEmail (free users), planAtSubmit. */
+/** Submit feedback from Tex panel (post-job) or shareable survey page. */
 export async function submitFeedback(payload: {
   toolId?: string
   stars?: number
   comment?: string
   userNameOrEmail?: string
   planAtSubmit?: string
+  // Survey-specific fields
+  email?: string
+  topTool?: string
+  topToolReason?: string
+  featureRequest?: string
+  otherFeedback?: string
+  source?: 'in-app' | 'survey'
 }): Promise<void> {
   const response = await api('/api/feedback', {
     method: 'POST',
@@ -1522,6 +1529,12 @@ export interface FeedbackItem {
   userId: string | null
   userNameOrEmail: string | null
   planAtSubmit: string | null
+  email: string | null
+  topTool: string | null
+  topToolReason: string | null
+  featureRequest: string | null
+  otherFeedback: string | null
+  source: string | null
   createdAt: string
 }
 

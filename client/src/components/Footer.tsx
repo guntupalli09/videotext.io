@@ -23,6 +23,7 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Links</h3>
             <ul className="space-y-2 text-sm">
               <li><Link to="/" className="hover:text-white transition-colors">All tools</Link></li>
+              <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
               <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
               <li><Link to="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
               <li><Link to="/guide" className="hover:text-white transition-colors">Guide</Link></li>

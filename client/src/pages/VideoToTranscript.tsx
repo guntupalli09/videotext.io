@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, FileDown, Subtitles, Film, Minimize2, Lock } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Subtitles, Film, Minimize2, Lock, Play, Pause, Volume2, VolumeX, Search } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
@@ -25,7 +25,7 @@ import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJo
 import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
 import { trackEvent } from '../lib/analytics'
 import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
-import { segmentsToSrt, segmentsToVtt, type Segment } from '../lib/srtExport'
+import { segmentsToSrt, segmentsToVtt, formatTimestamp, type Segment } from '../lib/srtExport'
 import toast from 'react-hot-toast'
 import { useWorkflow } from '../contexts/WorkflowContext'
 import { emitToolCompleted } from '../workflow/workflowStore'
@@ -117,7 +117,20 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [translationLanguage, setTranslationLanguage] = useState<string | null>(null)
   const [translatedCache, setTranslatedCache] = useState<Record<string, string>>({})
   const transcriptScrollRef = useRef<HTMLDivElement>(null)
-  const segmentRefsRef = useRef<Map<number, HTMLDivElement>>(new Map())
+  const segmentRefsRef = useRef<Map<number, HTMLSpanElement>>(new Map())
+  const speakerSegmentRefsRef = useRef<Map<number, HTMLDivElement>>(new Map())
+  // Audio playback for transcript sync
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const audioPlaybackTimeRef = useRef(0)   // updated at timeupdate frequency without triggering re-renders
+  const scrubberRef = useRef<HTMLInputElement>(null)
+  const timeDisplayRef = useRef<HTMLSpanElement>(null)
+  const [activeSegIdx, setActiveSegIdx] = useState(-1)  // re-renders only when segment boundary crosses
+  const [audioIsPlaying, setAudioIsPlaying] = useState(false)
+  const [audioDuration, setAudioDuration] = useState(0)
+  const [audioObjectUrl, setAudioObjectUrl] = useState<string | null>(null)
+  const [audioVolume, setAudioVolume] = useState(1)
+  const [audioMuted, setAudioMuted] = useState(false)
+  const [audioSpeed, setAudioSpeed] = useState(1)
   const rehydratePollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const activeUploadPollRef = useRef<(() => void) | null>(null)
   const pollConsecutiveNetworkErrorsRef = useRef(0)
@@ -212,6 +225,27 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
     setVideoPreviewUrl(null)
   }, [selectedFile])
+
+  // Audio object URL for transcript panel playback (only available in the same session as upload)
+  useEffect(() => {
+    if (selectedFile && status === 'completed') {
+      const url = URL.createObjectURL(selectedFile)
+      setAudioObjectUrl(url)
+      setActiveSegIdx(-1)
+      setAudioIsPlaying(false)
+      audioPlaybackTimeRef.current = 0
+      if (scrubberRef.current) scrubberRef.current.value = '0'
+      if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(0)
+      return () => {
+        setAudioObjectUrl(null)
+        URL.revokeObjectURL(url)
+      }
+    }
+    setAudioObjectUrl(null)
+    setActiveSegIdx(-1)
+    setAudioIsPlaying(false)
+    audioPlaybackTimeRef.current = 0
+  }, [selectedFile, status])
 
   // Sync editable segments from result (so inline edits are preserved until result changes)
   useEffect(() => {
@@ -1087,6 +1121,39 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }, 100)
   }, [])
 
+  // Group segments into paragraphs for Turboscribe-style inline display (silence gap > 1.5s = new paragraph)
+  const segmentParagraphs = useMemo(() => {
+    const segs = result?.segments
+    if (!segs?.length) return []
+    const groups: { seg: typeof segs[0]; globalIndex: number }[][] = []
+    let current: { seg: typeof segs[0]; globalIndex: number }[] = []
+    for (let i = 0; i < segs.length; i++) {
+      const seg = segs[i]
+      const prev = segs[i - 1]
+      if (prev && seg.start - prev.end > 1.5 && current.length > 0) {
+        groups.push(current)
+        current = []
+      }
+      current.push({ seg, globalIndex: i })
+    }
+    if (current.length) groups.push(current)
+    return groups
+  }, [result?.segments])
+
+  // Auto-scroll transcript to keep active segment visible during playback
+  useEffect(() => {
+    if (activeSegIdx < 0 || !audioIsPlaying) return
+    const el = segmentRefsRef.current.get(activeSegIdx)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [activeSegIdx, audioIsPlaying])
+
+  // Auto-scroll speakers panel to keep active segment visible during playback
+  useEffect(() => {
+    if (activeSegIdx < 0 || !audioIsPlaying || activeBranch !== 'speakers') return
+    const el = speakerSegmentRefsRef.current.get(activeSegIdx)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [activeSegIdx, audioIsPlaying, activeBranch])
+
   // Phase 1 – Derived Transcript Utilities (client-side; failures must not affect transcript)
   const getParagraphs = useCallback((text: string): string[] => {
     if (!text.trim()) return []
@@ -1096,7 +1163,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const getSpeakersData = useCallback((): { speaker: string; text: string; isDiarized: boolean }[] => {
     if (result?.segments?.length) {
       const rawLabels = result.segments.map((s) => s.speaker?.trim() || 'Speaker')
-      const unique = [...new Set(rawLabels)]
+      const unique = Array.from(new Set(rawLabels)) as string[]
       // Only treat as diarized when we have at least 2 distinct speaker labels from the backend
       const isDiarized = unique.length >= 2
       const labelToFriendly: Record<string, string> = {}
@@ -1772,11 +1839,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 }
               }}
               onProcessAnother={handleProcessAnother}
-              onGenerateSubtitles={() => {
-                if (segmentsForExport?.length) workflow.setSrt(segmentsToSrt(segmentsForExport))
-                if (selectedFile) workflow.setVideo(selectedFile)
-                navigate('/video-to-subtitles', { state: { useWorkflowVideo: true } })
-              }}
+
               onExportSrt={handleExportSrt}
               onExportVtt={handleExportVtt}
               onCopy={handleCopyToClipboard}
@@ -1788,31 +1851,75 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               showNextSteps={false}
             />
 
+            {/* ── Transcript stats pills ── */}
+            {(() => {
+              const text = displayTranscript || fullTranscript || transcriptPreview || ''
+              const wordCount = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0
+              const segCount = result.segments?.length ?? 0
+              const readMin = wordCount > 0 ? Math.max(1, Math.round(wordCount / 200)) : 0
+              const lastSeg = result.segments?.length ? result.segments[result.segments.length - 1] : null
+              const durSec = lastSeg?.end ?? 0
+              const durStr = durSec > 60 ? `${Math.floor(durSec / 60)}m ${String(Math.floor(durSec % 60)).padStart(2, '0')}s` : durSec > 0 ? `${Math.floor(durSec)}s` : null
+              if (!wordCount) return null
+              const pills = [
+                wordCount > 0 && `${wordCount.toLocaleString()} words`,
+                segCount > 0 && `${segCount} segments`,
+                readMin > 0 && `~${readMin} min read`,
+                durStr,
+              ].filter(Boolean) as string[]
+              return (
+                <div className="flex flex-wrap items-center gap-2 px-1">
+                  {pills.map((label) => (
+                    <span key={label} className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs font-medium text-gray-500 dark:text-gray-400">
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              )
+            })()}
+
             {/* Branch tabs and workspace views */}
             <div className="space-y-4">
               {/* Branch tabs */}
               <div className="rounded-2xl bg-gray-50/90 px-3 py-3 shadow-card" role="tablist" aria-label="Transcript branches">
-                <div className="flex flex-wrap gap-2 items-center justify-start">
-                  {BRANCH_IDS.map((id) => {
-                    const Icon = BRANCH_ICONS[id]
-                    return (
-                      <button
-                        key={id}
-                        type="button"
-                        role="tab"
-                        aria-selected={activeBranch === id}
-                        onClick={() => setActiveBranch(id)}
-                        className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-motion ${
-                          activeBranch === id
-                            ? 'bg-violet-600 text-white shadow-card ring-2 ring-violet-200 ring-offset-2 ring-offset-gray-50'
-                            : 'bg-white/90 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-card ring-1 ring-gray-100'
-                        }`}
-                      >
-                        <Icon className="h-4 w-4 shrink-0" aria-hidden />
-                        {BRANCH_LABELS[id]}
-                      </button>
-                    )
-                  })}
+                <div className="flex overflow-x-auto gap-2 items-center pb-0.5 scrollbar-none" style={{ scrollbarWidth: 'none' }}>
+                  {(() => {
+                    const counts: Partial<Record<BranchId, number>> = {
+                      speakers: getSpeakersData().length,
+                      chapters: getChaptersData().length,
+                      highlights: getHighlightsData().length,
+                      keywords: getKeywordsData().length,
+                    }
+                    return BRANCH_IDS.map((id) => {
+                      const Icon = BRANCH_ICONS[id]
+                      const count = counts[id]
+                      const isActive = activeBranch === id
+                      return (
+                        <button
+                          key={id}
+                          type="button"
+                          role="tab"
+                          aria-selected={isActive}
+                          onClick={() => setActiveBranch(id)}
+                          className={`shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-motion ${
+                            isActive
+                              ? 'bg-violet-600 text-white shadow-card ring-2 ring-violet-200 ring-offset-2 ring-offset-gray-50'
+                              : 'bg-white/90 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-card ring-1 ring-gray-100'
+                          }`}
+                        >
+                          <Icon className="h-4 w-4 shrink-0" aria-hidden />
+                          {BRANCH_LABELS[id]}
+                          {count != null && count > 0 && (
+                            <span className={`inline-flex items-center justify-center min-w-[1.125rem] h-[1.125rem] px-1 rounded-full text-[10px] font-semibold leading-none ${
+                              isActive ? 'bg-white/25 text-white' : 'bg-violet-100 text-violet-700'
+                            }`}>
+                              {count}
+                            </span>
+                          )}
+                        </button>
+                      )
+                    })
+                  })()}
                 </div>
               </div>
 
@@ -1831,6 +1938,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
                       <Users className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
                       Who said what
+                      {audioObjectUrl && <span className="ml-auto text-[11px] font-normal text-gray-400">Click any segment to seek</span>}
                     </h3>
                     {(() => {
                       const data = getSpeakersData()
@@ -1843,6 +1951,25 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           </div>
                         )
                       }
+                      // Assign a stable color per unique speaker label
+                      const speakerColors: string[] = [
+                        'border-violet-400 bg-violet-50',
+                        'border-sky-400 bg-sky-50',
+                        'border-emerald-400 bg-emerald-50',
+                        'border-rose-400 bg-rose-50',
+                        'border-amber-400 bg-amber-50',
+                        'border-fuchsia-400 bg-fuchsia-50',
+                      ]
+                      const speakerTextColors: string[] = [
+                        'text-violet-600',
+                        'text-sky-600',
+                        'text-emerald-600',
+                        'text-rose-600',
+                        'text-amber-600',
+                        'text-fuchsia-600',
+                      ]
+                      const uniqueSpeakers = [...new Set(data.map((d) => d.speaker))]
+                      const speakerColorIdx = (name: string) => uniqueSpeakers.indexOf(name) % speakerColors.length
                       return (
                         <>
                           <p className="text-sm text-gray-500 mb-4">
@@ -1852,13 +1979,51 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 ? 'Speaker identification ran but could not detect multiple speakers — the video may have a single speaker, or the service encountered an issue. Try again if unexpected.'
                                 : 'Check &quot;Speaker labels&quot; before transcribing to get automatic labels for different voices.'}
                           </p>
-                          <div className="space-y-4 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto">
-                            {data.map((item, i) => (
-                              <div key={i} className="border-l-2 border-violet-300 pl-3 py-1">
-                                <span className="text-xs font-semibold text-violet-600 uppercase">{item.speaker}</span>
-                                <p className="text-sm text-gray-700 mt-0.5">{item.text}</p>
-                              </div>
-                            ))}
+                          <div className="space-y-2 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto pr-1">
+                            {data.map((item, i) => {
+                              const seg = result?.segments?.[i]
+                              const isActive = i === activeSegIdx
+                              const colorClass = speakerColors[speakerColorIdx(item.speaker)]
+                              const textColorClass = speakerTextColors[speakerColorIdx(item.speaker)]
+                              const ts = seg
+                                ? `${Math.floor(seg.start / 60)}:${String(Math.floor(seg.start % 60)).padStart(2, '0')}`
+                                : null
+                              return (
+                                <div
+                                  key={i}
+                                  ref={(el) => { if (el) speakerSegmentRefsRef.current.set(i, el); else speakerSegmentRefsRef.current.delete(i) }}
+                                  onClick={() => {
+                                    if (!audioRef.current || !seg) return
+                                    audioRef.current.currentTime = seg.start
+                                    audioRef.current.play()
+                                  }}
+                                  className={`flex gap-3 items-start border-l-2 pl-3 py-2 rounded-r-xl transition-all ${
+                                    audioObjectUrl ? 'cursor-pointer' : ''
+                                  } ${
+                                    isActive
+                                      ? `${colorClass} shadow-sm`
+                                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/60'
+                                  }`}
+                                >
+                                  <div className="shrink-0 flex flex-col items-end gap-0.5 pt-0.5 w-16">
+                                    <span className={`text-[11px] font-semibold uppercase truncate ${isActive ? textColorClass : 'text-gray-400'}`}>
+                                      {item.speaker}
+                                    </span>
+                                    {ts && (
+                                      <span className={`text-[10px] font-mono ${isActive ? textColorClass + ' opacity-70' : 'text-gray-300'}`}>
+                                        {ts}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className={`flex-1 text-sm leading-relaxed ${isActive ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
+                                    {isActive && (
+                                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 mr-1.5 mb-0.5 animate-pulse" aria-hidden />
+                                    )}
+                                    {item.text}
+                                  </p>
+                                </div>
+                              )
+                            })}
                           </div>
                         </>
                       )
@@ -2130,20 +2295,35 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 : '2/2 used'
                             const canClick = isPaidPlan || freeCanDownload
                             const label = format === 'json' ? 'JSON' : format === 'csv' ? 'CSV' : format === 'notion' ? 'Notion' : 'Text'
+                            const formatMeta: Record<string, { color: string; dot: string; ext: string }> = {
+                              json: { color: 'bg-amber-50 ring-amber-100', dot: 'bg-amber-400', ext: '.json' },
+                              csv:  { color: 'bg-emerald-50 ring-emerald-100', dot: 'bg-emerald-400', ext: '.csv' },
+                              notion: { color: 'bg-gray-50 ring-gray-100', dot: 'bg-gray-400', ext: '.json' },
+                              text: { color: 'bg-blue-50 ring-blue-100', dot: 'bg-blue-400', ext: '.txt' },
+                            }
+                            const meta = formatMeta[format] ?? { color: 'bg-gray-50 ring-gray-100', dot: 'bg-gray-400', ext: '' }
                             return (
-                              <div key={format} className="rounded-xl bg-gray-50/80 p-4">
+                              <div key={format} className={`rounded-xl ${meta.color} p-4 ring-1`}>
                                 <div className="flex items-center justify-between gap-2 mb-3">
-                                  <span className="text-sm font-medium text-gray-800">{label}</span>
+                                  <div className="flex items-center gap-2">
+                                    <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} aria-hidden />
+                                    <span className="text-sm font-semibold text-gray-800">{label}</span>
+                                    <span className="text-[10px] font-mono text-gray-400">{meta.ext}</span>
+                                  </div>
                                   <button
                                     onClick={handleDownload}
                                     disabled={!canClick}
-                                    className={`flex items-center gap-1.5 text-sm font-medium ${canClick ? 'text-violet-600 hover:text-violet-700' : 'text-gray-400 cursor-not-allowed'}`}
+                                    className={`flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-lg transition-colors ${
+                                      canClick
+                                        ? 'bg-white hover:bg-violet-50 text-violet-600 hover:text-violet-700 ring-1 ring-gray-200'
+                                        : 'text-gray-300 cursor-not-allowed'
+                                    }`}
                                   >
-                                    <Download className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                                    <Download className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
                                     {downloadLabel}
                                   </button>
                                 </div>
-                                <pre className="text-xs text-gray-600 bg-white/80 p-3 rounded-lg max-h-32 overflow-y-auto whitespace-pre-wrap break-words ring-1 ring-gray-100">
+                                <pre className="text-xs text-gray-600 bg-white/70 p-3 rounded-lg max-h-28 overflow-y-auto whitespace-pre-wrap break-words ring-1 ring-white/80">
                                   {preview}
                                 </pre>
                               </div>
@@ -2160,14 +2340,15 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Transcript</h3>
-                <div className="flex flex-wrap items-center gap-3 mb-4">
-                  <div className="flex-1 min-w-[200px] relative">
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                  <div className="flex-1 min-w-[160px] relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     <input
                       type="text"
                       placeholder="Search in transcript"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-3 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                   </div>
                   {isPaidPlan && (
@@ -2179,6 +2360,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       {transcriptEditMode ? 'Done' : 'Edit'}
                     </button>
                   )}
+                  <button
+                    type="button"
+                    onClick={handleCopyToClipboard}
+                    className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
+                  >
+                    Copy
+                  </button>
                   <button
                     type="button"
                     onClick={handleExportSrt}
@@ -2194,54 +2382,165 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     VTT
                   </button>
                 </div>
-                <div className="flex items-center gap-3 mb-4">
-                  <button
-                    type="button"
-                    onClick={handleCopyToClipboard}
-                    className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
-                  >
-                    Copy
-                  </button>
+                <div ref={transcriptScrollRef} className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-[15px] text-gray-700 dark:text-gray-300 leading-[1.75] tracking-[0.01em]">
+                  {transcriptEditMode && editableSegments?.length ? (
+                    <div className="space-y-3">
+                      {editableSegments.map((seg, i) => (
+                        <div key={i} className="flex gap-3 items-start">
+                          <span className="shrink-0 text-[11px] text-gray-400 dark:text-gray-500 font-mono mt-2 w-10">{formatTimestamp(seg.start)}</span>
+                          <textarea
+                            className="flex-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded p-1.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                            value={seg.text}
+                            rows={2}
+                            onChange={(e) => setEditableSegments((prev) => prev ? prev.map((s, j) => j === i ? { ...s, text: e.target.value } : s) : prev)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : result?.segments?.length && !translationLanguage ? (
+                    <div>
+                      {segmentParagraphs.map((group, pi) => (
+                        <p key={pi} className="mb-5">
+                          {group.map(({ seg, globalIndex }: { seg: { start: number; end: number; text: string; speaker?: string }; globalIndex: number }) => {
+                            const isActive = globalIndex === activeSegIdx
+                            return (
+                              <span
+                                key={globalIndex}
+                                ref={(el) => { if (el) segmentRefsRef.current.set(globalIndex, el); else segmentRefsRef.current.delete(globalIndex) }}
+                                onClick={() => {
+                                  if (!audioRef.current) return
+                                  audioRef.current.currentTime = seg.start
+                                  audioRef.current.play()
+                                }}
+                                className={audioObjectUrl ? 'cursor-pointer' : ''}
+                              >
+                                <span className={`text-[11px] font-mono mr-1 ${isActive ? 'text-violet-500 dark:text-violet-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                                  ({formatTimestamp(seg.start)})
+                                </span>
+                                <span className={isActive ? 'bg-yellow-200 dark:bg-yellow-900/60 rounded px-0.5 transition-colors' : ''}>
+                                  {seg.text}
+                                </span>{' '}
+                              </span>
+                            )
+                          })}
+                        </p>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="whitespace-pre-wrap">{displayTranscript || fullTranscript || transcriptPreview || ''}</div>
+                  )}
                 </div>
-                <div className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {translationLanguage && translatedCache[translationLanguage] != null
-                    ? translatedCache[translationLanguage]
-                    : segmentsForExport && segmentsForExport.length > 0
-                      ? segmentsForExport.map((s) => s.text).join('\n\n')
-                      : (fullTranscript || transcriptPreview || '')}
-                </div>
+
+                {/* Audio player — below transcript */}
+                {audioObjectUrl && (
+                  <div className="mt-4 px-4 pt-3 pb-3 bg-gray-100 dark:bg-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <audio
+                      ref={audioRef}
+                      src={audioObjectUrl}
+                      onLoadedMetadata={() => {
+                        const dur = audioRef.current?.duration ?? 0
+                        setAudioDuration(dur)
+                        if (scrubberRef.current) scrubberRef.current.max = String(dur)
+                      }}
+                      onTimeUpdate={() => {
+                        const t = audioRef.current?.currentTime ?? 0
+                        audioPlaybackTimeRef.current = t
+                        if (scrubberRef.current) scrubberRef.current.value = String(t)
+                        if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
+                        const segs = result?.segments
+                        if (segs?.length) {
+                          let newIdx = -1
+                          for (let i = segs.length - 1; i >= 0; i--) {
+                            if (t >= segs[i].start) { newIdx = i; break }
+                          }
+                          setActiveSegIdx(prev => prev === newIdx ? prev : newIdx)
+                        }
+                      }}
+                      onPlay={() => setAudioIsPlaying(true)}
+                      onPause={() => setAudioIsPlaying(false)}
+                      onEnded={() => setAudioIsPlaying(false)}
+                    />
+                    {/* Play + scrubber + time */}
+                    <div className="flex items-center gap-3 mb-2.5">
+                      <button
+                        type="button"
+                        onClick={() => { if (!audioRef.current) return; audioIsPlaying ? audioRef.current.pause() : audioRef.current.play() }}
+                        className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 hover:bg-violet-700 active:scale-95 text-white transition-all"
+                      >
+                        {audioIsPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
+                      </button>
+                      <input
+                        ref={scrubberRef}
+                        type="range"
+                        min={0}
+                        max={audioDuration || 100}
+                        step={0.1}
+                        defaultValue={0}
+                        onChange={(e) => {
+                          const t = Number(e.target.value)
+                          audioPlaybackTimeRef.current = t
+                          if (audioRef.current) audioRef.current.currentTime = t
+                          if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
+                        }}
+                        className="flex-1 h-1.5 accent-violet-600 cursor-pointer"
+                      />
+                      <span ref={timeDisplayRef} className="shrink-0 text-xs font-mono text-gray-500 dark:text-gray-400 w-10 text-right">
+                        0:00
+                      </span>
+                    </div>
+                    {/* Volume + speed */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        title={audioMuted ? 'Unmute' : 'Mute'}
+                        onClick={() => {
+                          const muted = !audioMuted
+                          setAudioMuted(muted)
+                          if (audioRef.current) audioRef.current.muted = muted
+                        }}
+                        className="shrink-0 text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                      >
+                        {audioMuted || audioVolume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                      </button>
+                      <input
+                        type="range"
+                        min={0}
+                        max={1}
+                        step={0.05}
+                        value={audioVolume}
+                        onChange={(e) => {
+                          const v = Number(e.target.value)
+                          setAudioVolume(v)
+                          if (audioRef.current) {
+                            audioRef.current.volume = v
+                            audioRef.current.muted = v === 0
+                          }
+                          if (v > 0 && audioMuted) setAudioMuted(false)
+                        }}
+                        className="w-20 h-1.5 accent-violet-600 cursor-pointer"
+                      />
+                      <div className="ml-auto flex items-center gap-2">
+                        <span className="text-xs text-gray-400 dark:text-gray-500 select-none">Speed</span>
+                        <select
+                          value={audioSpeed}
+                          onChange={(e) => {
+                            const s = Number(e.target.value)
+                            setAudioSpeed(s)
+                            if (audioRef.current) audioRef.current.playbackRate = s
+                          }}
+                          className="text-xs bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1 cursor-pointer focus:outline-none focus:ring-1 focus:ring-violet-500"
+                        >
+                          {[0.25, 0.5, 0.75, 1, 1.5, 2].map(s => (
+                            <option key={s} value={s}>{s}x</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            {(segmentsForExport?.length ?? 0) > 0 && (
-              <div className="surface-card p-6 mb-8">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                  <Subtitles className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
-                  Generate subtitles from this transcript
-                </h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  Same timestamps, no re-upload.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={handleExportSrt}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-violet-600 text-white hover:bg-violet-700 transition-colors"
-                  >
-                    <FileDown className="h-4 w-4" strokeWidth={1.5} />
-                    Download SRT
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleExportVtt}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
-                  >
-                    <FileDown className="h-4 w-4" strokeWidth={1.5} />
-                    Download VTT
-                  </button>
-                </div>
-              </div>
-            )}
 
             <CrossToolSuggestions
               workflowHint="Your last file is pre-filled on the next tool."
