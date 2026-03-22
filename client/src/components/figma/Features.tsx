@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Zap,
   Lock,
+  Mic,
 } from 'lucide-react';
 import { trackEvent } from '../../lib/analytics';
 
@@ -36,6 +37,24 @@ const SPOTLIGHT_TOOLS = [
     ],
   },
   // YouTube URL feature temporarily hidden — coming soon
+  {
+    id: 'voice-recorder',
+    badge: 'New',
+    badgeColor: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
+    icon: Mic,
+    name: 'Voice → Text',
+    tagline: 'Speak naturally. Get an accurate transcript instantly.',
+    description: 'Record up to 1 hour directly in your browser — no app, no upload. AI transcribes with 98.5% accuracy across 99 languages. Copy or download in one click.',
+    bullets: ['Noise suppression built-in', '99 languages auto-detected', 'Up to 1 hour recording'],
+    gradient: 'from-violet-500 to-purple-600',
+    glowColor: 'bg-violet-500/10 dark:bg-violet-500/5',
+    href: '/voice-recorder',
+    outputPreview: [
+      { time: '00:03', text: 'Welcome everyone, today we are going to cover...' },
+      { time: '00:11', text: 'The key insight that changed how I approach this is...' },
+      { time: '00:24', text: 'Let me break it down into three simple steps for you.' },
+    ],
+  },
 ];
 
 // Secondary tools — compact cards
@@ -250,7 +269,7 @@ export function Features() {
             <span className="block text-gray-400 dark:text-white/30 transition-colors duration-500">Nothing you don't.</span>
           </h2>
           <p className="text-lg text-gray-500 dark:text-white/40 max-w-xl mx-auto transition-colors duration-500">
-            Seven purpose-built tools that cover every stage of the video captioning workflow. No bloated editor. No learning curve.
+            Eight purpose-built tools that cover every stage of the video captioning workflow. No bloated editor. No learning curve.
           </p>
         </motion.div>
 
