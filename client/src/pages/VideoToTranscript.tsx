@@ -1006,7 +1006,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const textToCopy =
       translationLanguage && translatedCache[translationLanguage] != null
         ? translatedCache[translationLanguage]
-        : (displayTranscript || fullTranscript || '').trim()
+        : segmentsForExport && segmentsForExport.length > 0
+          ? segmentsForExport.map((s) => s.text).join('\n\n').trim()
+          : (fullTranscript || '').trim()
     if (!textToCopy) return
     try {
       await navigator.clipboard.writeText(textToCopy)
@@ -2202,7 +2204,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   </button>
                 </div>
                 <div className="max-h-[480px] overflow-y-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {displayTranscript || fullTranscript || transcriptPreview || ''}
+                  {translationLanguage && translatedCache[translationLanguage] != null
+                    ? translatedCache[translationLanguage]
+                    : segmentsForExport && segmentsForExport.length > 0
+                      ? segmentsForExport.map((s) => s.text).join('\n\n')
+                      : (fullTranscript || transcriptPreview || '')}
                 </div>
               </div>
             </div>
