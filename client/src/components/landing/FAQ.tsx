@@ -5,6 +5,14 @@ import { Link } from 'react-router-dom';
 
 const FAQS = [
   {
+    q: 'What is Voice to Text and do I need an account?',
+    a: 'Voice to Text lets you record directly in your browser — tap the mic, speak, and get a transcript. No file, no upload, no app to install. You do not need an account to try it. Just open the tool and start recording.',
+  },
+  {
+    q: 'How long can I record with Voice to Text?',
+    a: 'Up to 1 hour per recording on all plans. The recorder automatically stops at 60 minutes. For most use cases — interviews, lectures, meetings, voice notes — that is more than enough. Hit stop whenever you are done and your transcript is ready in seconds.',
+  },
+  {
     q: 'Is my video data safe?',
     a: 'Yes. Your files are processed and immediately deleted after transcription is complete. We never store your content, share it with third parties, or use it to train AI models. Your work stays yours.',
   },
@@ -34,7 +42,7 @@ const FAQS = [
   },
   {
     q: 'Can I export to different formats?',
-    a: 'Yes. Transcripts export as TXT, JSON, DOCX, and PDF. Subtitles export as SRT and VTT. You can also burn subtitles directly into your video file using the Burn Subtitles tool.',
+    a: 'Yes. Transcripts export as TXT, JSON, DOCX, and PDF. Subtitles export as SRT and VTT. Voice recordings produce a plain-text transcript you can copy or download as a .txt instantly. You can also burn subtitles directly into your video file using the Burn Subtitles tool.',
   },
 ];
 
