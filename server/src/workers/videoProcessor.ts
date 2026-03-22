@@ -11,7 +11,7 @@ import { fixSubtitleFile, validateSubtitleFile } from '../services/subtitles'
 import { generateSummary, generateChapters } from '../services/transcriptSummary'
 import { exportTranscriptJson, exportTranscriptDocx, exportTranscriptPdf } from '../services/transcriptExport'
 import { fireWebhook } from '../utils/webhook'
-import { transcribeWithDiarization } from '../services/diarization'
+import { transcribeWithDiarization, resolveSpeakerNames } from '../services/diarization'
 import { convertSubtitleFile } from '../services/subtitleConverter'
 import { burnSubtitles, compressVideo, getVideoDuration, HUNG_JOB_MESSAGE, type CompressProfile } from '../services/ffmpeg'
 import { generateOutputFilename, downloadVideoFromURL, validateVideoDuration } from '../services/video'
@@ -44,6 +44,8 @@ import {
   updateJobStarted,
   updateJobCompleted,
   updateJobFailed,
+  updateJobDurationAndCosts,
+  calcWhisperCostMicros,
 } from '../lib/jobAnalytics'
 import { withJobContext, getLogger } from '../lib/logger'
 import { initSentry, captureJobError } from '../lib/sentry'
@@ -196,6 +198,8 @@ export interface JobData {
     includeChapters?: boolean
     exportFormats?: ('txt' | 'json' | 'docx' | 'pdf')[]
     speakerDiarization?: boolean
+    numSpeakers?: number
+    diarizationLanguage?: string
     glossary?: string
   }
   webhookUrl?: string
@@ -607,11 +611,12 @@ async function processJob(job: import('bull').Job<JobData>) {
 
           if (wantDiarization) {
             await job.progress(22)
-            const diar = await transcribeWithDiarization(videoPath, options?.language, { isAlreadyAudio })
             const glossary = options?.glossary?.trim()
+            const diar = await transcribeWithDiarization(videoPath, options?.diarizationLanguage || options?.language, { isAlreadyAudio, prompt: glossary, numSpeakers: options?.numSpeakers })
             if (diar) {
               fullText = diar.text
-              segments = diar.segments
+              // Resolve raw speaker IDs (e.g. SPEAKER_00) to real names or "Speaker N" labels.
+              segments = resolveSpeakerNames(diar.segments)
               if (partialWriter && segments.length > 0) {
                 partialWriter.onPartial(segments.slice(0, 2000))
               }
@@ -868,6 +873,15 @@ async function processJob(job: import('bull').Job<JobData>) {
             }
           }
 
+          // Fire-and-forget: record video duration + Whisper cost on the Job row
+          if (processedSeconds > 0) {
+            updateJobDurationAndCosts(
+              String(jobId),
+              processedSeconds,
+              calcWhisperCostMicros(processedSeconds)
+            ).catch(() => {})
+          }
+
           if (firstPartialEmittedAt && totalVideoDurationSec != null) {
             const ttfwMs = firstPartialEmittedAt - processingStartMs
             log.info({
@@ -1088,6 +1102,15 @@ async function processJob(job: import('bull').Job<JobData>) {
               } else {
                 await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1 })
               }
+            }
+
+            // Fire-and-forget: record video duration + Whisper cost on the Job row
+            if (processedSecondsSub > 0) {
+              updateJobDurationAndCosts(
+                String(jobId),
+                processedSecondsSub,
+                calcWhisperCostMicros(processedSecondsSub)
+              ).catch(() => {})
             }
 
             if (partialWriter && redis) {

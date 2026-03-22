@@ -77,6 +77,12 @@ export interface DashboardFeedback {
   createdAt: string
   userId: string | null
   userNameOrEmail: string | null
+  email: string | null
+  topTool: string | null
+  topToolReason: string | null
+  featureRequest: string | null
+  otherFeedback: string | null
+  source: string | null
 }
 
 export interface DashboardUser {
@@ -166,6 +172,13 @@ export interface DashboardToolPerf {
   totalMinutes: number | null
 }
 
+export interface DashboardCostMetrics {
+  jobsWithCost: number
+  avgWhisperCostUsd: number | null
+  totalWhisperCostUsd: number | null
+  avgDurationSec: number | null
+}
+
 export interface DashboardData {
   snapshot: DashboardSnapshot
   revenue: DashboardRevenue
@@ -182,6 +195,29 @@ export interface DashboardData {
   feedbackByTool: DashboardFeedbackByTool[]
   starDistribution: DashboardStarDist[]
   toolPerf: DashboardToolPerf[]
+  costMetrics: DashboardCostMetrics | null
+}
+
+// ── API Credits types ─────────────────────────────────────────────────────────
+
+export interface OpenAiCredits {
+  totalGrantedUsd: number | null
+  totalUsedUsd: number | null
+  totalAvailableUsd: number | null
+  error?: string
+}
+
+export interface ResendUsage {
+  plan: string
+  monthlyLimit: number
+  usedThisMonth: number
+  remaining: number
+}
+
+export interface ApiCreditsData {
+  openai: OpenAiCredits
+  resend: ResendUsage
+  refreshedAt: string
 }
 
 export type FetchDashboardResult =
@@ -206,6 +242,19 @@ export async function fetchFounderDashboard(): Promise<FetchDashboardResult> {
 export async function fetchServerHealth(): Promise<DashboardServerHealth | null> {
   try {
     const res = await api('/api/admin/server-health')
+    if (!res.ok) return null
+    return res.json()
+  } catch {
+    return null
+  }
+}
+
+// ── API Credits API ───────────────────────────────────────────────────────────
+
+export async function fetchApiCredits(forceRefresh = false): Promise<ApiCreditsData | null> {
+  try {
+    const url = forceRefresh ? '/api/admin/api-credits?refresh=1' : '/api/admin/api-credits'
+    const res = await api(url)
     if (!res.ok) return null
     return res.json()
   } catch {

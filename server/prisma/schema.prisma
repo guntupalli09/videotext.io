@@ -55,6 +55,11 @@ model Job {
   failureReason    String?
   planAtRun        String?
 
+  // AI cost tracking (stored in micro-dollars, i.e. 1 = $0.000001, so $0.006/min = 6000 per minute)
+  // Using cents (1 = $0.01) for simplicity: whisper $0.006/min → 1 cent per ~1.67 min
+  whisperCostMicros   Int?  // cost in micro-dollars ($1 = 1,000,000)
+  totalAiCostMicros   Int?  // total AI cost (whisper + any LLM) in micro-dollars
+
   createdAt        DateTime @default(now())
 
   @@index([userId])
@@ -155,14 +160,21 @@ model StripeEventLog {
   @@index([processedAt])
 }
 
-// User feedback from Tex panel (post-job completion). No auth required to submit.
+// User feedback from Tex panel (post-job completion) or public survey link. No auth required to submit.
 model Feedback {
   id              String   @id @default(cuid())
   toolId          String?  // e.g. video-to-transcript, video-to-subtitles (where stars were collected)
   stars           Int?     // 1-5
-  comment         String   @default("")
+  comment         String   @default("")  // "How can we improve?"
   userId          String?  // if logged in
   userNameOrEmail String?  // for free users: name or email when they share it
   planAtSubmit    String?  // free | basic | pro | agency at time of feedback
+  // Survey-specific fields (from shareable /survey page)
+  email           String?  // explicit email collected from survey form
+  topTool         String?  // "What tool impressed you the most?"
+  topToolReason   String?  // "Why?"
+  featureRequest  String?  // "Any feature in your mind that would ease your workflow?"
+  otherFeedback   String?  // "Anything else in your mind?"
+  source          String?  // 'in-app' | 'survey'
   createdAt       DateTime @default(now())
 }

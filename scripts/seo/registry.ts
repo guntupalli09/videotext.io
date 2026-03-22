@@ -123,6 +123,11 @@ export const CORE_PATHS: string[] = [
   '/zubtitle-alternative',
   '/adobe-premiere-captions-alternative',
   '/assembly-ai-alternative',
+  '/notta-alternative',
+  '/tactiq-alternative',
+  '/subly-alternative',
+  '/meetgeek-alternative',
+  '/maestra-alternative',
   // Cluster D — Audio formats
   '/mp3-to-text',
   '/wav-to-text',
@@ -132,7 +137,24 @@ export const CORE_PATHS: string[] = [
   '/aac-to-text',
   '/ogg-to-text',
   '/flac-to-text',
-  // Cluster E — Journalist & Student pages
+  // Cluster E — Subtitle editor & landing pages
+  '/subtitle-editor',
+  '/online-subtitle-editor',
+  '/capcut-captions',
+  '/sdh-subtitles',
+  '/open-captions-vs-closed-captions',
+  '/video-accessibility',
+  '/ada-video-captions',
+  '/how-to-create-srt-file',
+  '/how-to-add-subtitles-to-mp4',
+  '/srt-to-word',
+  // Core product pages
+  '/about',
+  '/compare',
+  '/open',
+  '/changelog',
+  '/guide',
+  // Cluster F — Journalist & Student pages
   '/transcription-for-journalists',
   '/transcription-for-students',
   '/best-transcription-tool-for-journalists',
@@ -158,7 +180,7 @@ export const CORE_PATHS: string[] = [
   '/capcut-alternative',
   '/macwhisper-alternative',
   '/deepgram-alternative',
-  // Cluster H — Voice-to-Text (new tool: browser-based voice recorder → Whisper transcription)
+  // Cluster H — Voice-to-Text (browser-based voice recorder → Whisper transcription)
   '/voice-recorder',
   '/voice-to-text',
   '/speech-to-text',
@@ -179,7 +201,7 @@ export const CORE_PATHS: string[] = [
   '/speechtexter-alternative',
   '/dictation-io-alternative',
   '/whispertype-alternative',
-  // Remaining voice/competitor alternatives are in sitemap2 via seoRegistry
+  // Remaining alternatives are in sitemap2 via seoRegistry
 ]
 
 /** Programmatic-only paths (from targets × intents). Submit after core. */

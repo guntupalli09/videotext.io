@@ -128,6 +128,8 @@ export interface UploadOptions {
   includeChapters?: boolean
   exportFormats?: ('txt' | 'json' | 'docx' | 'pdf')[]
   speakerDiarization?: boolean
+  numSpeakers?: number
+  diarizationLanguage?: string
   glossary?: string
   webhookUrl?: string
   /** When set, backend treats upload as audio-only and skips server-side extraction (transcript/subtitles only). */
@@ -169,6 +171,8 @@ function buildUploadFormData(file: File, options: UploadOptions): FormData {
   if (options.includeSummary !== undefined) formData.append('includeSummary', String(options.includeSummary))
   if (options.includeChapters !== undefined) formData.append('includeChapters', String(options.includeChapters))
   if (options.speakerDiarization !== undefined) formData.append('speakerDiarization', String(options.speakerDiarization))
+  if (options.numSpeakers !== undefined) formData.append('numSpeakers', String(options.numSpeakers))
+  if (options.diarizationLanguage) formData.append('diarizationLanguage', options.diarizationLanguage)
   if (options.glossary) formData.append('glossary', options.glossary)
   if (options.exportFormats && options.exportFormats.length > 0) {
     formData.append('exportFormats', JSON.stringify(options.exportFormats))
@@ -1494,13 +1498,20 @@ export async function getCurrentUsage(options?: { skipCache?: boolean }): Promis
   }
 }
 
-/** Submit feedback from Tex panel (post-job). Optional toolId, stars 1–5, comment, userNameOrEmail (free users), planAtSubmit. */
+/** Submit feedback from Tex panel (post-job) or shareable survey page. */
 export async function submitFeedback(payload: {
   toolId?: string
   stars?: number
   comment?: string
   userNameOrEmail?: string
   planAtSubmit?: string
+  // Survey-specific fields
+  email?: string
+  topTool?: string
+  topToolReason?: string
+  featureRequest?: string
+  otherFeedback?: string
+  source?: 'in-app' | 'survey'
 }): Promise<void> {
   const response = await api('/api/feedback', {
     method: 'POST',
@@ -1518,6 +1529,12 @@ export interface FeedbackItem {
   userId: string | null
   userNameOrEmail: string | null
   planAtSubmit: string | null
+  email: string | null
+  topTool: string | null
+  topToolReason: string | null
+  featureRequest: string | null
+  otherFeedback: string | null
+  source: string | null
   createdAt: string
 }
 
@@ -1538,6 +1555,8 @@ export interface YoutubeUploadOptions {
   includeSummary?: boolean
   includeChapters?: boolean
   speakerDiarization?: boolean
+  numSpeakers?: number
+  diarizationLanguage?: string
   glossary?: string
   exportFormats?: ('txt' | 'json' | 'docx' | 'pdf')[]
   language?: string

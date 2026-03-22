@@ -16,42 +16,54 @@ const feedbackPostLimit = rateLimit({
 
 const FEEDBACK_VIEWER_SECRET = process.env.FEEDBACK_VIEWER_SECRET || ''
 
-/** POST /api/feedback — store feedback from Tex panel. No auth required. */
+const VALID_PLANS = /^(free|basic|pro|agency|founding_workflow)$/i
+
+function sanitize(v: unknown, maxLen = 2000): string | null {
+  if (typeof v !== 'string') return null
+  const s = v.trim().slice(0, maxLen)
+  return s || null
+}
+
+/** POST /api/feedback — store feedback (in-app Tex panel or shareable survey). No auth required. */
 router.post('/', feedbackPostLimit, async (req: Request, res: Response) => {
   try {
-    const body = req.body as {
-      toolId?: string
-      stars?: number
-      comment?: string
-      userNameOrEmail?: string
-      planAtSubmit?: string
-    }
-    const toolId =
-      typeof body.toolId === 'string' && body.toolId.trim() ? body.toolId.trim() : null
+    const body = req.body as Record<string, unknown>
+
+    const toolId = sanitize(body.toolId, 200)
     let stars: number | null = null
     if (typeof body.stars === 'number' && body.stars >= 1 && body.stars <= 5) {
       stars = Math.round(body.stars)
     }
-    const comment =
-      typeof body.comment === 'string' ? body.comment.slice(0, 2000).trim() : ''
+    const comment = sanitize(body.comment) ?? ''
     const userId = getEffectiveUserId(req) || null
-    const userNameOrEmail =
-      typeof body.userNameOrEmail === 'string'
-        ? body.userNameOrEmail.slice(0, 500).trim() || null
-        : null
+    const userNameOrEmail = sanitize(body.userNameOrEmail, 500)
     const planAtSubmit =
-      typeof body.planAtSubmit === 'string' && /^(free|basic|pro|agency|founding_workflow)$/i.test(body.planAtSubmit)
+      typeof body.planAtSubmit === 'string' && VALID_PLANS.test(body.planAtSubmit)
         ? body.planAtSubmit.toLowerCase()
         : null
+
+    // Survey-specific fields
+    const email = sanitize(body.email, 500)
+    const topTool = sanitize(body.topTool, 300)
+    const topToolReason = sanitize(body.topToolReason)
+    const featureRequest = sanitize(body.featureRequest)
+    const otherFeedback = sanitize(body.otherFeedback)
+    const source = body.source === 'survey' ? 'survey' : 'in-app'
 
     await prisma.feedback.create({
       data: {
         toolId,
         stars,
-        comment: comment || '',
+        comment,
         userId,
         userNameOrEmail,
         planAtSubmit,
+        email,
+        topTool,
+        topToolReason,
+        featureRequest,
+        otherFeedback,
+        source,
       },
     })
     return res.status(201).json({ ok: true })

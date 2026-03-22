@@ -23,6 +23,7 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Links</h3>
             <ul className="space-y-2 text-sm">
               <li><Link to="/" className="hover:text-white transition-colors">All tools</Link></li>
+              <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
               <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
               <li><Link to="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
               <li><Link to="/guide" className="hover:text-white transition-colors">Guide</Link></li>
@@ -40,6 +41,12 @@ export default function Footer() {
               <li><Link to="/otter-ai-alternative" className="hover:text-white transition-colors">Otter.ai alternative</Link></li>
               <li><Link to="/trint-alternative" className="hover:text-white transition-colors">Trint alternative</Link></li>
               <li><Link to="/rev-alternative" className="hover:text-white transition-colors">Rev alternative</Link></li>
+              <li><Link to="/happyscribe-alternative" className="hover:text-white transition-colors">HappyScribe alternative</Link></li>
+              <li><Link to="/sonix-alternative" className="hover:text-white transition-colors">Sonix alternative</Link></li>
+              <li><Link to="/easyscribe-alternative" className="hover:text-white transition-colors">EasyScribe alternative</Link></li>
+              <li><Link to="/notta-alternative" className="hover:text-white transition-colors">Notta alternative</Link></li>
+              <li><Link to="/tactiq-alternative" className="hover:text-white transition-colors">Tactiq alternative</Link></li>
+              <li><Link to="/subly-alternative" className="hover:text-white transition-colors">Subly alternative</Link></li>
             </ul>
           </div>
           {/* Popular tools: from registry (core + selected SEO paths). */}

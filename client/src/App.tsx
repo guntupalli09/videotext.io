@@ -8,15 +8,15 @@ import { getSessionDetails, setupPassword } from './lib/billing'
 import { invalidateUsageCache } from './lib/api'
 import Footer from './components/Footer'
 import Seo from './components/Seo'
-import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd } from './lib/seoMeta'
+import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd, getSoftwareApplicationJsonLd, getHowToJsonLd, BLOG_POST_DATES } from './lib/seoMeta'
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
 import OfflineBanner from './components/OfflineBanner'
-import { WorkflowProvider } from './contexts/WorkflowContext'
-import { WorkflowTracker } from './components/workflow/WorkflowTracker'
-import { TexAgent } from './components/TexAgent'
-import TexErrorBoundary from './components/TexAgent/TexErrorBoundary'
-import FeedbackPrompt from './components/FeedbackPrompt'
+// import { WorkflowProvider } from './contexts/WorkflowContext'
+// import { WorkflowTracker } from './components/workflow/WorkflowTracker'
+// import { TexAgent } from './components/TexAgent'
+// import TexErrorBoundary from './components/TexAgent/TexErrorBoundary'
+// import FeedbackPrompt from './components/FeedbackPrompt'
 
 // Lazy-load pages for fast initial load on any device; each route loads only when visited.
 const Home = lazy(() => import('./pages/Home'))
@@ -30,6 +30,7 @@ const Privacy = lazy(() => import('./pages/Privacy'))
 const Faq = lazy(() => import('./pages/Faq'))
 const Guide = lazy(() => import('./pages/Guide'))
 const Terms = lazy(() => import('./pages/Terms'))
+const VoiceRecorder = lazy(() => import('./pages/VoiceRecorder'))
 const VideoToTranscript = lazy(() => import('./pages/VideoToTranscript'))
 const VideoToSubtitles = lazy(() => import('./pages/VideoToSubtitles'))
 const BatchProcess = lazy(() => import('./pages/BatchProcess'))
@@ -39,6 +40,7 @@ const BurnSubtitles = lazy(() => import('./pages/BurnSubtitles'))
 const CompressVideo = lazy(() => import('./pages/CompressVideo'))
 const SeoToolPage = lazy(() => import('./pages/SeoToolPage'))
 const FeedbackView = lazy(() => import('./pages/FeedbackView'))
+const SurveyPage = lazy(() => import('./pages/SurveyPage'))
 const FounderDashboard = lazy(() => import('./pages/founder/FounderDashboard'))
 const Changelog = lazy(() => import('./pages/Changelog'))
 const Blog = lazy(() => import('./pages/Blog'))
@@ -58,9 +60,33 @@ const PanoptoAlternative = lazy(() => import('./pages/seo/PanoptoAlternativePage
 const MacWhisperAlternative = lazy(() => import('./pages/seo/MacWhisperAlternativePage'))
 const DeepgramAlternative = lazy(() => import('./pages/seo/DeepgramAlternativePage'))
 const TactiqAlternative = lazy(() => import('./pages/seo/TactiqAlternativePage'))
-const VoiceRecorder = lazy(() => import('./pages/VoiceRecorder'))
+const About = lazy(() => import('./pages/AboutPage'))
 const Open = lazy(() => import('./pages/Open'))
 const NotFound = lazy(() => import('./pages/NotFound'))
+// Free tools — client-side only, zero server dependency
+const FreeToolsIndex = lazy(() => import('./pages/tools/FreeToolsIndex'))
+const SrtToVtt = lazy(() => import('./pages/tools/SrtToVtt'))
+const VttToSrt = lazy(() => import('./pages/tools/VttToSrt'))
+const ShiftSubtitleTiming = lazy(() => import('./pages/tools/ShiftSubtitleTiming'))
+const MergeSrtFiles = lazy(() => import('./pages/tools/MergeSrtFiles'))
+const SrtToText = lazy(() => import('./pages/tools/SrtToText'))
+const SubtitleValidator = lazy(() => import('./pages/tools/SubtitleValidator'))
+const SubtitleReadingSpeed = lazy(() => import('./pages/tools/SubtitleReadingSpeed'))
+const SubtitleCharacterChecker = lazy(() => import('./pages/tools/SubtitleCharacterChecker'))
+const SubtitleWordCounter = lazy(() => import('./pages/tools/SubtitleWordCounter'))
+const VideoScriptTimer = lazy(() => import('./pages/tools/VideoScriptTimer'))
+const WordsPerMinute = lazy(() => import('./pages/tools/WordsPerMinute'))
+const VideoBitrateCalculator = lazy(() => import('./pages/tools/VideoBitrateCalculator'))
+const AspectRatioCalculator = lazy(() => import('./pages/tools/AspectRatioCalculator'))
+const TimestampConverter = lazy(() => import('./pages/tools/TimestampConverter'))
+const VideoMetadataViewer = lazy(() => import('./pages/tools/VideoMetadataViewer'))
+const SubtitleToolsHub = lazy(() => import('./pages/tools/SubtitleToolsHub'))
+const SubtitleResources = lazy(() => import('./pages/SubtitleResources'))
+// Format converter tools — client-side only, zero server dependency
+const SbvToSrt = lazy(() => import('./pages/tools/SbvToSrt'))
+const SrtToSbv = lazy(() => import('./pages/tools/SrtToSbv'))
+const AssToSrt = lazy(() => import('./pages/tools/AssToSrt'))
+const TtmlToSrt = lazy(() => import('./pages/tools/TtmlToSrt'))
 
 /** Minimal loading fallback for route chunks — fast, accessible, no layout shift. */
 function RouteFallback() {
@@ -90,19 +116,38 @@ function AppSeo() {
   }
   const isHome = pathname === '/'
   const is404 = !hasRoute
+  const isBlogPost = pathname.startsWith('/blog/') && pathname !== '/blog'
   const breadcrumb = ROUTE_BREADCRUMB[pathname]
   const seoEntry = getSeoEntry(pathname)
-  const jsonLd = is404
-    ? undefined
-    : isHome
-      ? [getOrganizationJsonLd(), getWebApplicationJsonLd()]
-      : pathname === '/faq'
-        ? [getFaqJsonLd()]
-        : breadcrumb
-          ? seoEntry?.faq?.length
-            ? [getBreadcrumbJsonLd(pathname, breadcrumb), getFaqJsonLdFromItems(seoEntry.faq)]
-            : [getBreadcrumbJsonLd(pathname, breadcrumb)]
-          : undefined
+
+  // Blog post schemas + og:article meta
+  const blogPostDates = isBlogPost ? BLOG_POST_DATES[pathname] : undefined
+  const articleMeta = blogPostDates
+    ? { publishedTime: `${blogPostDates.datePublished}T00:00:00Z`, modifiedTime: `${blogPostDates.dateModified}T00:00:00Z` }
+    : undefined
+  const blogPostingSchema = isBlogPost ? getBlogPostingJsonLd(pathname, meta.title, meta.description) : null
+
+  // SoftwareApplication schema for paid tool pages
+  const softwareAppSchema = getSoftwareApplicationJsonLd(pathname)
+
+  // HowTo schema for how-to pages
+  const howToSchema = getHowToJsonLd(pathname)
+
+  const buildJsonLd = (): object[] | undefined => {
+    if (is404) return undefined
+    const schemas: object[] = []
+    if (isHome) return [getOrganizationJsonLd(), getWebApplicationJsonLd()]
+    if (pathname === '/faq') return [getFaqJsonLd()]
+    if (breadcrumb) schemas.push(getBreadcrumbJsonLd(pathname, breadcrumb))
+    if (isBlogPost && blogPostingSchema) schemas.push(blogPostingSchema)
+    if (softwareAppSchema) schemas.push(softwareAppSchema)
+    if (howToSchema) schemas.push(howToSchema)
+    if (!isBlogPost && seoEntry?.faq?.length) schemas.push(getFaqJsonLdFromItems(seoEntry.faq))
+    return schemas.length ? schemas : undefined
+  }
+
+  const jsonLd = buildJsonLd()
+
   useEffect(() => {
     try {
       capturePageview(pathname) // feeds Web analytics dashboard (visitors, page views, sessions)
@@ -115,9 +160,10 @@ function AppSeo() {
     <Seo
       title={meta.title}
       description={meta.description}
-      canonicalPath={is404 ? '/' : pathname}
+      canonicalPath={pathname}
       jsonLd={jsonLd}
       noindex={is404}
+      articleMeta={articleMeta}
     />
   )
 }
@@ -298,7 +344,7 @@ function ImpersonationHandler() {
 function App() {
   return (
     <BrowserRouter>
-      <WorkflowProvider>
+      {/* <WorkflowProvider> */}
       <AppSeo />
       <PostCheckoutHandler />
       <ImpersonationHandler />
@@ -324,6 +370,7 @@ function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/faq" element={<Faq />} />
             <Route path="/feedback" element={<FeedbackView />} />
+            <Route path="/survey" element={<SurveyPage />} />
             <Route path="/founder" element={<FounderDashboard />} />
             <Route path="/guide" element={<Guide />} />
             <Route path="/terms" element={<Terms />} />
@@ -346,6 +393,7 @@ function App() {
             <Route path="/macwhisper-alternative" element={<MacWhisperAlternative />} />
             <Route path="/deepgram-alternative" element={<DeepgramAlternative />} />
             <Route path="/tactiq-alternative" element={<TactiqAlternative />} />
+            <Route path="/about" element={<About />} />
             <Route path="/open" element={<Open />} />
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />
@@ -359,6 +407,29 @@ function App() {
             {getAllSeoPaths().map((path) => (
               <Route key={path} path={path} element={<SeoToolPage />} />
             ))}
+            {/* Free tools — client-side only, no server calls */}
+            <Route path="/tools" element={<FreeToolsIndex />} />
+            <Route path="/tools/srt-to-vtt" element={<SrtToVtt />} />
+            <Route path="/tools/vtt-to-srt" element={<VttToSrt />} />
+            <Route path="/tools/shift-subtitle-timing" element={<ShiftSubtitleTiming />} />
+            <Route path="/tools/merge-srt-files" element={<MergeSrtFiles />} />
+            <Route path="/tools/srt-to-text" element={<SrtToText />} />
+            <Route path="/tools/subtitle-validator" element={<SubtitleValidator />} />
+            <Route path="/tools/subtitle-reading-speed" element={<SubtitleReadingSpeed />} />
+            <Route path="/tools/subtitle-character-checker" element={<SubtitleCharacterChecker />} />
+            <Route path="/tools/subtitle-word-counter" element={<SubtitleWordCounter />} />
+            <Route path="/tools/video-script-timer" element={<VideoScriptTimer />} />
+            <Route path="/tools/words-per-minute-calculator" element={<WordsPerMinute />} />
+            <Route path="/tools/video-bitrate-calculator" element={<VideoBitrateCalculator />} />
+            <Route path="/tools/aspect-ratio-calculator" element={<AspectRatioCalculator />} />
+            <Route path="/tools/timestamp-converter" element={<TimestampConverter />} />
+            <Route path="/tools/video-metadata-viewer" element={<VideoMetadataViewer />} />
+            <Route path="/subtitle-tools" element={<SubtitleToolsHub />} />
+            <Route path="/subtitle-resources" element={<SubtitleResources />} />
+            <Route path="/tools/sbv-to-srt" element={<SbvToSrt />} />
+            <Route path="/tools/srt-to-sbv" element={<SrtToSbv />} />
+            <Route path="/tools/ass-to-srt" element={<AssToSrt />} />
+            <Route path="/tools/ttml-to-srt" element={<TtmlToSrt />} />
             <Route path="*" element={<NotFound />} />
             </Route>
               </Routes>
@@ -366,14 +437,14 @@ function App() {
           </SessionErrorBoundary>
         </main>
         <Footer />
-        <WorkflowTracker />
-        <TexErrorBoundary>
+        {/* <WorkflowTracker /> */}
+        {/* <TexErrorBoundary>
           <TexAgent />
-        </TexErrorBoundary>
-        <FeedbackPrompt />
+        </TexErrorBoundary> */}
+        {/* <FeedbackPrompt /> */}
         <Toaster position="top-right" />
       </div>
-      </WorkflowProvider>
+      {/* </WorkflowProvider> */}
     </BrowserRouter>
   )
 }

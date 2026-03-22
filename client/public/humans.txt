@@ -1,0 +1,21 @@
+/* TEAM */
+Product: VideoText
+Site: https://videotext.io
+Twitter: @videotextio
+LinkedIn: https://www.linkedin.com/company/videotext-io
+
+/* PRODUCT */
+VideoText — AI-powered video transcription, subtitle generation, and translation.
+Powered by OpenAI Whisper. Privacy-first: files deleted after processing.
+98.5%+ word accuracy. 60-minute video transcribed in under 5 minutes.
+Free tier: 3 imports/month, no credit card required.
+
+/* TECHNOLOGY */
+AI Engine: OpenAI Whisper large-v3
+Frontend: React, TypeScript, Vite, Tailwind CSS
+Infrastructure: Privacy-first cloud processing — zero data retention
+
+/* SITE */
+Last update: 2026/03
+Standards: HTML5, CSS3, WCAG 2.1 AA
+Components: React, react-router-dom, react-helmet-async
