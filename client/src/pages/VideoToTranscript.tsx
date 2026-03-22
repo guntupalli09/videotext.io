@@ -1040,7 +1040,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const textToCopy =
       translationLanguage && translatedCache[translationLanguage] != null
         ? translatedCache[translationLanguage]
-        : (displayTranscript || fullTranscript || '').trim()
+        : segmentsForExport && segmentsForExport.length > 0
+          ? segmentsForExport.map((s) => s.text).join('\n\n').trim()
+          : (fullTranscript || '').trim()
     if (!textToCopy) return
     try {
       await navigator.clipboard.writeText(textToCopy)
@@ -1712,7 +1714,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               progress={uploadPhase === 'uploading' ? uploadProgress : progress}
               estimatedTime={youtubeDisplayTitle ? undefined : '30-60 seconds'}
               statusSubtext={queuePosition !== undefined ? `${queuePosition} jobs ahead of you` : undefined}
-              liveTranscript={partialSegments.map((s) => (s.speaker ? `${s.speaker}: ` : '') + s.text).join('\n')}
+              liveTranscript={partialSegments.map((s) => s.text).join('\n')}
               onCancel={handleCancelUpload}
             />
             <ResultSkeleton variant="transcript" />
@@ -2416,9 +2418,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   ({formatTimestamp(seg.start)})
                                 </span>
                                 <span className={isActive ? 'bg-yellow-200 dark:bg-yellow-900/60 rounded px-0.5 transition-colors' : ''}>
-                                  {seg.speaker && (
-                                    <span className="font-semibold text-violet-600 dark:text-violet-400 mr-1">{seg.speaker}:</span>
-                                  )}
                                   {seg.text}
                                 </span>{' '}
                               </span>
