@@ -119,7 +119,7 @@ export default function VoiceRecorder() {
       let freq: Uint8Array | null = null
 
       if (analyser && isRec) {
-        freq = new Uint8Array(analyser.frequencyBinCount) as Uint8Array<ArrayBuffer>
+        freq = new Uint8Array(new ArrayBuffer(analyser.frequencyBinCount))
         analyser.getByteFrequencyData(freq)
       }
 
