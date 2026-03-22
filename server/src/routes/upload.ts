@@ -402,7 +402,7 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       await insertJobRecord({
         id: String(job.id),
         userId,
-        toolType,
+        toolType: inputType === 'audio' ? 'voice-to-transcript' : toolType,
         planAtRun: plan,
         fileSizeBytes: file.size,
       })
@@ -919,7 +919,7 @@ router.post('/complete', async (req: Request, res: Response) => {
         await insertJobRecord({
           id: String(job.id),
           userId: meta.userId!,
-          toolType: meta.toolType,
+          toolType: isChunkedAudioOnly ? 'voice-to-transcript' : meta.toolType,
           planAtRun: meta.plan,
           fileSizeBytes: fileSize,
         })

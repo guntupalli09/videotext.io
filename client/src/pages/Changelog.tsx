@@ -23,6 +23,18 @@ const TAG_LABELS: Record<ChangelogEntry['tag'], string> = {
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: 'March 22, 2026',
+    version: 'v1.11',
+    tag: 'new',
+    items: [
+      'Voice to Text: record directly in your browser — no file, no upload, no account needed. Up to 1 hour per session on all plans.',
+      'Noise suppression, echo cancellation, and auto-gain applied automatically at capture time.',
+      '99 languages auto-detected; same Whisper AI accuracy (98.5%) as all other transcription tools.',
+      'Voice jobs now tracked separately in the Founder Dashboard (voice-to-transcript toolType) for clean analytics.',
+      'Voice to Text added to the Features section on the home page, Guide, FAQ, Blog, Compare, and Changelog.',
+    ],
+  },
+  {
     date: 'March 10, 2026',
     version: 'v1.10',
     tag: 'new',

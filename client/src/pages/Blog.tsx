@@ -13,6 +13,58 @@ interface BlogPost {
 
 const POSTS: BlogPost[] = [
   {
+    slug: 'voice-to-text-free-in-browser',
+    date: 'March 22, 2026',
+    title: 'Voice to text in your browser — free, no app, no upload',
+    summary: 'The fastest way to turn speech into text: open a tab, hit record, speak. No file to prepare, no account needed. Here is how it works and when to use it.',
+    tag: 'New feature',
+    readTime: '4 min read',
+    content: (
+      <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p>
+          Every other transcription tool asks you to record audio somewhere else first, save a file, then upload it. That is three extra steps before you even start. Voice to Text removes all of them. You open a tab, click a button, and speak. The transcript appears when you stop.
+        </p>
+        <p>
+          No account required. No file to prepare. No app to install.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">How it works</h3>
+        <p>
+          Your browser already has a microphone API. We use it directly — Chrome, Firefox, Safari, and Edge all support it. When you click the mic button, your browser asks for microphone permission (once), then starts recording compressed audio locally. The waveform shows your audio is being captured. When you stop, the audio uploads and our AI (OpenAI Whisper) transcribes it. Results come back in seconds, not minutes.
+        </p>
+        <p>
+          For a 5-minute recording, expect the transcript in under 15 seconds. For 30 minutes, under 90 seconds.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">When to use Voice to Text instead of video upload</h3>
+        <ul className="list-disc pl-5 space-y-2">
+          <li><strong>Live interviews and calls</strong> — You are in the moment. You do not want to worry about screen recording or exporting. Just record from the browser.</li>
+          <li><strong>Voice notes</strong> — Faster than typing. Speak your thoughts, get a text draft, paste it wherever you need.</li>
+          <li><strong>Lectures and workshops</strong> — Open the tool on your laptop, hit record at the start, stop at the end. Full transcript waiting for you.</li>
+          <li><strong>Quick meetings</strong> — For a one-hour team sync where you don't have a video recording, this is the fastest way to get written notes.</li>
+          <li><strong>Any time you don't have a video file</strong> — If you're starting from scratch, recording directly is always faster than creating a file first.</li>
+        </ul>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Tips for best accuracy</h3>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>Use a quiet room or a headset — background noise is filtered but still affects accuracy.</li>
+          <li>Speak at a normal, steady pace. Whispering or rushing lowers confidence.</li>
+          <li>Say punctuation cues if you need them ("period", "new paragraph") — Whisper sometimes picks these up naturally.</li>
+          <li>Accents are handled well. Whisper is trained across hundreds of languages and accent variations.</li>
+        </ul>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Up to 1 hour per session</h3>
+        <p>
+          The recorder supports up to 60 minutes per session on all plans. Hit stop whenever you're done — you don't have to use the full hour. The transcript covers everything from start to stop.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Privacy</h3>
+        <p>
+          The audio is sent to our server for transcription and then immediately deleted. We never store your recordings or transcripts. Nothing is retained after your session ends.
+        </p>
+        <p>
+          Try it now — no signup needed:{' '}
+          <a href="/voice-recorder" className="text-purple-600 dark:text-purple-400 hover:underline font-medium">Voice to Text →</a>
+        </p>
+      </div>
+    ),
+  },
+  {
     slug: 'how-to-transcribe-zoom-recording',
     date: 'March 7, 2026',
     title: 'How to transcribe a Zoom recording: step-by-step guide',
