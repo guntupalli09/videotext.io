@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getCurrentUsage } from '../lib/api'
+import { isDemo } from '../lib/auth'
 
 function useUsage(refreshTrigger?: string | number) {
   const [usage, setUsage] = useState<{
@@ -58,7 +59,7 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
     return () => window.removeEventListener('videotext:plan-updated', refetchFresh)
   }, [refetchFresh])
 
-  if (!usage) return null
+  if (!usage || isDemo()) return null
 
   const { quotaType, remaining, totalPlanMinutes, usedPercent } = usage
 

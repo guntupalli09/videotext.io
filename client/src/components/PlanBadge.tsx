@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getCurrentUsage } from '../lib/api'
+import { isDemo } from '../lib/auth'
 
 const PLAN_LABELS: Record<string, string> = {
   free: 'Free plan',
@@ -35,7 +36,7 @@ export default function PlanBadge() {
     return () => window.removeEventListener('videotext:plan-updated', fetchPlan)
   }, [fetchPlan])
 
-  if (!plan) return null
+  if (!plan || isDemo()) return null
 
   const label = PLAN_LABELS[plan] || PLAN_LABELS.free
   const style = PLAN_STYLES[plan] || PLAN_STYLES.free

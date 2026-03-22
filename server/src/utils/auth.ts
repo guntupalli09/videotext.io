@@ -42,13 +42,15 @@ export interface AuthPayload {
   userId: string
   stripeCustomerId?: string
   plan: PlanType
+  isDemo?: boolean
 }
 
-export function signAuthToken(user: User): string {
+export function signAuthToken(user: User, options?: { isDemo?: boolean }): string {
   const payload: AuthPayload = {
     userId: user.id,
     stripeCustomerId: user.stripeCustomerId,
     plan: user.plan,
+    ...(options?.isDemo && { isDemo: true }),
   }
 
   return jwt.sign(payload, JWT_SECRET, {
