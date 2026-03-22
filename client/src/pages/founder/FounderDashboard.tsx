@@ -32,6 +32,7 @@ const PLAN_COLORS: Record<string, string> = {
 
 const TOOL_COLORS_BAR: Record<string, string> = {
   'video-to-transcript': '#7c3aed',
+  'voice-to-transcript': '#f43f5e',
   'video-to-subtitles': '#2563eb',
   'translate-subtitles': '#db2777',
   'fix-subtitles': '#059669',

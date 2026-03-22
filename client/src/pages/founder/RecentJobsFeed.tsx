@@ -2,6 +2,7 @@ import type { DashboardJob } from '../../lib/founderDashboard'
 
 const TOOL_LABELS: Record<string, string> = {
   'video-to-transcript': 'Transcript',
+  'voice-to-transcript': 'Voice',
   'video-to-subtitles': 'Subtitles',
   'translate-subtitles': 'Translate',
   'fix-subtitles': 'Fix SRT',
@@ -12,6 +13,7 @@ const TOOL_LABELS: Record<string, string> = {
 
 const TOOL_COLORS: Record<string, string> = {
   'video-to-transcript': 'text-violet-400',
+  'voice-to-transcript': 'text-rose-400',
   'video-to-subtitles': 'text-blue-400',
   'translate-subtitles': 'text-pink-400',
   'fix-subtitles': 'text-emerald-400',
