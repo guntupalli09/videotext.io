@@ -119,7 +119,9 @@ export default function VoiceRecorder() {
       let freq: Uint8Array | null = null
 
       if (analyser && isRec) {
-        freq = new Uint8Array(new ArrayBuffer(analyser.frequencyBinCount))
+        freq = new Uint8Array(analyser.frequencyBinCount)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore — Uint8Array<ArrayBufferLike> vs Uint8Array<ArrayBuffer> TS lib mismatch; runtime-correct
         analyser.getByteFrequencyData(freq)
       }
 
