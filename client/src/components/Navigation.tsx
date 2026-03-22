@@ -7,6 +7,7 @@ import { isLoggedIn } from '../lib/auth'
 import { useFounderStatus } from '../hooks/useFounderStatus'
 
 const tools = [
+  { name: 'Voice → Text 🎙️', path: '/voice-recorder' },
   { name: 'Video → Transcript', path: '/video-to-transcript' },
   { name: 'Video → Subtitles', path: '/video-to-subtitles' },
   { name: 'Translate Subtitles', path: '/translate-subtitles' },
