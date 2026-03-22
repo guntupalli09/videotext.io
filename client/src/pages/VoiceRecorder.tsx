@@ -19,8 +19,8 @@ import {
   uploadFileWithProgress,
   subscribeJobStatus,
   BACKEND_TOOL_TYPES,
-  getAbsoluteDownloadUrl,
 } from '../lib/api'
+import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 
@@ -119,7 +119,7 @@ export default function VoiceRecorder() {
       let freq: Uint8Array | null = null
 
       if (analyser && isRec) {
-        freq = new Uint8Array(analyser.frequencyBinCount)
+        freq = new Uint8Array(analyser.frequencyBinCount) as Uint8Array<ArrayBuffer>
         analyser.getByteFrequencyData(freq)
       }
 
@@ -262,7 +262,7 @@ export default function VoiceRecorder() {
 
       setPhase('recording')
       runWaveform() // restart waveform in recording mode
-      trackEvent('voice_recording_started', {})
+      trackEvent('processing_started', { tool: 'voice-recorder' })
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
       if (/permission|denied/i.test(msg)) {
@@ -334,7 +334,8 @@ export default function VoiceRecorder() {
             }
             setTranscript(text)
             setPhase('result')
-            trackEvent('voice_recording_completed', {
+            trackEvent('processing_completed', {
+              tool: 'voice-recorder',
               words: text.trim().split(/\s+/).filter(Boolean).length,
             })
             toast.success('Transcript ready!')
