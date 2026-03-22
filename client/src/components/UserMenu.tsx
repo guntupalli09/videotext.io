@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { getCurrentUsage } from '../lib/api'
 import { createBillingPortalSession } from '../lib/billing'
 import { useTheme } from '../lib/theme'
-import { isLoggedIn, logout } from '../lib/auth'
+import { isLoggedIn, logout, isDemo } from '../lib/auth'
 import { useFounderStatus } from '../hooks/useFounderStatus'
 
 const tools = [
@@ -146,8 +146,8 @@ export default function UserMenu() {
                 </div>
 
                 <div data-user-menu-body className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-6">
-                {/* Account email (paid plans) — only when logged in */}
-                {isLoggedIn() && usage?.email && (
+                {/* Account email (paid plans) — only when logged in and not a demo session */}
+                {isLoggedIn() && !isDemo() && usage?.email && (
                   <div className="rounded-xl bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 p-3">
                     <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Account</p>
                     <p className="mt-1 text-sm text-gray-900 dark:text-white break-all">{usage.email}</p>
@@ -155,8 +155,8 @@ export default function UserMenu() {
                   </div>
                 )}
 
-                {/* Quota left — only when logged in; imports for free, minutes for paid */}
-                {!isLoggedIn() ? null : usage ? (
+                {/* Quota left — hidden for demo sessions; imports for free, minutes for paid */}
+                {!isLoggedIn() || isDemo() ? null : usage ? (
                   <div className="rounded-xl bg-violet-100 dark:bg-violet-900/40 border border-violet-200 dark:border-violet-800 p-4">
                     <div className="flex items-center gap-2 text-violet-800 dark:text-violet-200 text-sm font-medium">
                       <Clock className="w-4 h-4 shrink-0" />
@@ -175,7 +175,8 @@ export default function UserMenu() {
                   </div>
                 )}
 
-                {/* Subscription management / upgrade */}
+                {/* Subscription management / upgrade — hidden for demo sessions */}
+                {!isDemo() && (
                 <div>
                   {isPaidPlan ? (
                     <button
@@ -200,6 +201,7 @@ export default function UserMenu() {
                     </Link>
                   ) : null}
                 </div>
+                )}
 
                 {!loading && isFounder && (
                   <Link

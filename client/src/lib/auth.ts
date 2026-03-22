@@ -6,10 +6,17 @@ const AUTH_TOKEN_KEY = 'authToken'
 const USER_ID_KEY = 'userId'
 const PLAN_KEY = 'plan'
 const USER_EMAIL_KEY = 'userEmail'
+const IS_DEMO_KEY = 'isDemo'
 const WORKFLOW_STORAGE_KEY = 'videotext:workflow'
 
 export function isLoggedIn(): boolean {
   return !!getAuthToken()
+}
+
+/** Returns true when the current session was started via the /demo route. */
+export function isDemo(): boolean {
+  if (typeof localStorage === 'undefined') return false
+  return localStorage.getItem(IS_DEMO_KEY) === 'true'
 }
 
 /** Clear session (logout). Clears auth, identity, and any persisted job/workflow data so results are not shown after reload. */
@@ -19,6 +26,7 @@ export function logout(): void {
   localStorage.removeItem(USER_ID_KEY)
   localStorage.removeItem(PLAN_KEY)
   localStorage.removeItem(USER_EMAIL_KEY)
+  localStorage.removeItem(IS_DEMO_KEY)
   invalidateUsageCache()
   clearAllPersistedJobs()
   clearCachedFounderStatus()
@@ -63,12 +71,17 @@ export async function login(email: string, password: string): Promise<{ token: s
 }
 
 /** Store login result in localStorage so the app shows the user's plan and API requests use the token. */
-export function storeLoginResult(result: { token: string; userId: string; plan: string; email: string }): void {
+export function storeLoginResult(result: { token: string; userId: string; plan: string; email: string; isDemo?: boolean }): void {
   if (typeof localStorage === 'undefined') return
   localStorage.setItem(AUTH_TOKEN_KEY, result.token)
   localStorage.setItem(USER_ID_KEY, result.userId)
   localStorage.setItem(PLAN_KEY, result.plan.toLowerCase())
   localStorage.setItem(USER_EMAIL_KEY, result.email)
+  if (result.isDemo) {
+    localStorage.setItem(IS_DEMO_KEY, 'true')
+  } else {
+    localStorage.removeItem(IS_DEMO_KEY)
+  }
   invalidateUsageCache()
   window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
 }

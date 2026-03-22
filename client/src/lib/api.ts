@@ -1614,7 +1614,7 @@ export function isYoutubeUrl(url: string): boolean {
 export const TRANSCRIPT_TRANSLATION_LANGUAGES = ['English', 'Hindi', 'Telugu', 'Spanish', 'Chinese', 'Russian'] as const
 
 /** Log in as the shared demo account (pro plan). No email or password required. */
-export async function getDemoToken(): Promise<{ token: string; userId: string; plan: string; email: string }> {
+export async function getDemoToken(): Promise<{ token: string; userId: string; plan: string; email: string; isDemo: boolean }> {
   const response = await api('/api/auth/demo', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1625,7 +1625,7 @@ export async function getDemoToken(): Promise<{ token: string; userId: string; p
   }
   const data = await response.json()
   if (!data.token || !data.userId) throw new Error('Invalid demo response')
-  return { token: data.token, userId: data.userId, plan: data.plan, email: data.email }
+  return { token: data.token, userId: data.userId, plan: data.plan, email: data.email, isDemo: true }
 }
 
 /** Claim a guest job after signup/login. Associates the job with the authenticated user and increments their importCount. Best-effort — failures are non-blocking. */

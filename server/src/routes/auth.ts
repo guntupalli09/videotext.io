@@ -446,50 +446,54 @@ router.post('/demo', demoRateLimit, async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Demo not available.' })
     }
 
-    const demoEmail = (process.env.DEMO_EMAIL || 'demo@videotext.io').toLowerCase().trim()
-    let user = await getUserByEmail(demoEmail)
+    // Each demo visitor gets their own ephemeral session user so usage never bleeds
+    // between visitors and the minute counter never blocks anyone.
+    const sessionId = crypto.randomUUID()
+    const demoEmailDomain = (process.env.DEMO_EMAIL || 'demo@videotext.io').split('@')[1] || 'videotext.io'
+    const demoEmail = `demo-${sessionId}@${demoEmailDomain}`
 
-    if (!user) {
-      // First call: create the demo account with a random password hash (inaccessible via login)
-      const now = new Date()
-      const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
-      const randomHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 10)
-      user = {
-        id: crypto.randomUUID(),
-        email: demoEmail,
-        passwordHash: randomHash,
-        plan: 'pro',
-        stripeCustomerId: undefined,
-        subscriptionId: undefined,
-        paymentMethodId: undefined,
-        billingPeriodStart: undefined,
-        billingPeriodEnd: undefined,
-        passwordSetupToken: undefined,
-        passwordSetupExpiresAt: undefined,
-        passwordSetupUsed: false,
-        passwordResetToken: undefined,
-        passwordResetExpiresAt: undefined,
-        usageThisMonth: {
-          totalMinutes: 0,
-          videoCount: 0,
-          batchCount: 0,
-          languageCount: 0,
-          translatedMinutes: 0,
-          importCount: 0,
-          resetDate,
-        },
-        limits: getPlanLimits('pro'),
-        overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
-        createdAt: now,
-        updatedAt: now,
-      } as User
-      await saveUser(user)
-      log.info({ msg: 'Demo user created', email: demoEmail })
+    const now = new Date()
+    // Reset date far in the future so the session user never hits a monthly reset
+    const resetDate = new Date(now.getFullYear() + 1, 0, 1)
+    const randomHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 10)
+    const demoLimits = {
+      ...getPlanLimits('pro'),
+      minutesPerMonth: 9999, // effectively unlimited for a demo session
     }
+    const user = {
+      id: crypto.randomUUID(),
+      email: demoEmail,
+      passwordHash: randomHash,
+      plan: 'pro' as const,
+      stripeCustomerId: undefined,
+      subscriptionId: undefined,
+      paymentMethodId: undefined,
+      billingPeriodStart: undefined,
+      billingPeriodEnd: undefined,
+      passwordSetupToken: undefined,
+      passwordSetupExpiresAt: undefined,
+      passwordSetupUsed: false,
+      passwordResetToken: undefined,
+      passwordResetExpiresAt: undefined,
+      usageThisMonth: {
+        totalMinutes: 0,
+        videoCount: 0,
+        batchCount: 0,
+        languageCount: 0,
+        translatedMinutes: 0,
+        importCount: 0,
+        resetDate,
+      },
+      limits: demoLimits,
+      overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
+      createdAt: now,
+      updatedAt: now,
+    } as User
+    await saveUser(user)
+    log.info({ msg: 'Demo session created', ip: req.ip })
 
-    const jwt = signAuthToken(user)
-    log.info({ msg: 'Demo login', ip: req.ip })
-    return res.json({ token: jwt, userId: user.id, plan: user.plan, email: user.email })
+    const token = signAuthToken(user, { isDemo: true })
+    return res.json({ token, userId: user.id, plan: user.plan, email: user.email, isDemo: true })
   } catch (error: any) {
     log.error({ msg: 'demo login error', error: (error as Error)?.message ?? String(error) })
     return res.status(500).json({ message: error.message || 'Demo login failed.' })

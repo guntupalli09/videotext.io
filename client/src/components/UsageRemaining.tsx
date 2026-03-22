@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react'
 import { getCurrentUsage } from '../lib/api'
+import { isDemo } from '../lib/auth'
 
 export default function UsageRemaining() {
   const [remaining, setRemaining] = useState<number | null>(null)
@@ -39,7 +40,7 @@ export default function UsageRemaining() {
     }
   }, [])
 
-  if (plan !== 'free' || remaining === null) return null
+  if (plan !== 'free' || remaining === null || isDemo()) return null
 
   return (
     <p className="text-xs text-gray-500 dark:text-gray-400 mt-2" aria-live="polite">
