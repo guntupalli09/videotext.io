@@ -30,6 +30,7 @@ const Privacy = lazy(() => import('./pages/Privacy'))
 const Faq = lazy(() => import('./pages/Faq'))
 const Guide = lazy(() => import('./pages/Guide'))
 const Terms = lazy(() => import('./pages/Terms'))
+const VoiceRecorder = lazy(() => import('./pages/VoiceRecorder'))
 const VideoToTranscript = lazy(() => import('./pages/VideoToTranscript'))
 const VideoToSubtitles = lazy(() => import('./pages/VideoToSubtitles'))
 const BatchProcess = lazy(() => import('./pages/BatchProcess'))
@@ -380,6 +381,7 @@ function App() {
             <Route path="/notta-alternative" element={<NottaAlternative />} />
             <Route path="/about" element={<About />} />
             <Route path="/open" element={<Open />} />
+            <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
             <Route path="/batch-process" element={<BatchProcess />} />

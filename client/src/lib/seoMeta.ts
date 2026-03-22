@@ -37,6 +37,11 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       "Terms of use for VideoText. We don't store your data; see our Privacy Policy for details. Billing via Stripe. Use the service in accordance with these terms.",
   },
+  '/voice-recorder': {
+    title: 'Voice to Text — Free Voice Recorder & Instant Transcription | VideoText',
+    description:
+      'Record your voice and get an accurate transcript in seconds. Free online voice-to-text with AI noise suppression, 99 language support, and instant .txt export. No account needed.',
+  },
   '/video-to-transcript': {
     title: 'Video to Transcript — Free AI Transcription & Translation',
     description:
@@ -303,6 +308,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
 
 /** Static breadcrumb items (non-SEO-registry routes). */
 const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> = {
+  '/voice-recorder': [{ name: 'Home', path: '/' }, { name: 'Voice Recorder', path: '/voice-recorder' }],
   '/pricing': [{ name: 'Home', path: '/' }, { name: 'Pricing', path: '/pricing' }],
   '/faq': [{ name: 'Home', path: '/' }, { name: 'FAQ', path: '/faq' }],
   '/guide': [{ name: 'Home', path: '/' }, { name: 'Guide', path: '/guide' }],
