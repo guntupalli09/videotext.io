@@ -29,7 +29,7 @@ type Phase = 'idle' | 'requesting' | 'recording' | 'uploading' | 'processing' | 
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const NUM_BARS = 48
-const MAX_RECORD_SECS = 300 // 5 min cap
+const MAX_RECORD_SECS = 3600 // 1 hour cap
 
 function formatTime(s: number): string {
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
@@ -474,7 +474,7 @@ export default function VoiceRecorder() {
                     {phase === 'requesting' ? 'Requesting microphone…' : 'Tap to start recording'}
                   </p>
                   <p className="text-sm text-gray-400 dark:text-gray-500">
-                    Up to 5 minutes · All languages detected automatically
+                    Up to 1 hour · All languages detected automatically
                   </p>
                 </div>
 
