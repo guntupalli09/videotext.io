@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2 } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
-import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
+// import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
 import LanguageSelector from '../components/LanguageSelector'
 import { ToolLayout } from '../components/figma/ToolLayout'
@@ -25,11 +25,11 @@ import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
 import { createCheckoutSession } from '../lib/billing'
 import { trackEvent } from '../lib/analytics'
-import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
+// import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
-import { useWorkflow } from '../contexts/WorkflowContext'
-import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
-import { emitToolCompleted } from '../workflow/workflowStore'
+// import { useWorkflow } from '../contexts/WorkflowContext'
+// import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+// import { emitToolCompleted } from '../workflow/workflowStore'
 
 /** Optional SEO overrides for alternate entry points (e.g. /mp4-to-srt, /subtitle-generator). Do NOT duplicate logic. */
 export type VideoToSubtitlesSeoProps = {
@@ -82,8 +82,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
-  /** Set on job_completed for workflow chain suggestion (UI only). */
-  const [lastJobCompletedToolId, setLastJobCompletedToolId] = useState<string | null>(null)
   const [failedMessage, setFailedMessage] = useState<string | undefined>(undefined)
 
   useEffect(() => {
@@ -167,8 +165,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           setPartialSegments([])
           setStatus('completed')
           setResult(jobStatus.result ?? null)
-          dispatchJobCompletedForFeedback()
-          emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
+          // dispatchJobCompletedForFeedback()
+          // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
           setUploadPhase('processing')
           setUploadProgress(100)
           if (jobStatus.result?.downloadUrl) {
@@ -223,8 +221,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               rehydratePollRef.current = null
               setStatus('completed')
               setResult(s.result ?? null)
-              dispatchJobCompletedForFeedback()
-              emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
+              // dispatchJobCompletedForFeedback()
+              // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
               if (s.result?.downloadUrl) {
                 try {
                   const res = await fetch(getAbsoluteDownloadUrl(s.result.downloadUrl))
@@ -315,20 +313,20 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [uploadPhase])
 
-  const workflow = useWorkflow()
+  // const workflow = useWorkflow()
 
-  useEffect(() => {
-    const state = location.state as { useWorkflowVideo?: boolean } | undefined
-    if (state?.useWorkflowVideo && workflow.videoFile) {
-      setSelectedFile(workflow.videoFile)
-      setFileFromWorkflow(true)
-    }
-  }, [location.state, workflow.videoFile])
+  // useEffect(() => {
+  //   const state = location.state as { useWorkflowVideo?: boolean } | undefined
+  //   if (state?.useWorkflowVideo && workflow.videoFile) {
+  //     setSelectedFile(workflow.videoFile)
+  //     setFileFromWorkflow(true)
+  //   }
+  // }, [location.state, workflow.videoFile])
 
   // Keep workflow in sync when result is shown so "Next step" links pre-fill the file on the next tool
-  useEffect(() => {
-    if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
-  }, [status, selectedFile])
+  // useEffect(() => {
+  //   if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
+  // }, [status, selectedFile])
 
   const handleFileSelect = (file: File) => {
     try {
@@ -339,7 +337,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     } catch {
       // non-blocking
     }
-    workflow.setVideo(file)
+    // workflow.setVideo(file)
     setSelectedFile(file)
     setFileFromWorkflow(false)
     setTrimStart(null)
@@ -502,7 +500,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       const startedAt = Date.now()
       setProcessingStartedAt(startedAt)
       processingStartedAtRef.current = startedAt
-      texJobStarted()
+      // texJobStarted()
 
       const jobToken = response.jobToken
       const handleJobStatus = (jobStatus: import('../lib/api').JobStatus) => {
@@ -528,10 +526,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           jobStartedTrackedRef.current = null
           setStatus('completed')
           setResult(jobStatus.result ?? null)
-          dispatchJobCompletedForFeedback()
+          // dispatchJobCompletedForFeedback()
           const started = processingStartedAtRef.current ?? Date.now()
           const processingMs = Date.now() - started
-          emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })
+          // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })
           if (jobStatus.result?.downloadUrl) {
             try {
               fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
@@ -562,9 +560,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               processing_time_ms: processingMs,
             })
             trackEvent('processing_completed', { tool: 'video-to-subtitles' })
-            texJobCompleted(processingMs, 'video-to-subtitles')
+            // texJobCompleted(processingMs, 'video-to-subtitles')
             setLastProcessingMs(processingMs)
-            setLastJobCompletedToolId('video-to-subtitles')
           } catch {
             // non-blocking
           }
@@ -584,7 +581,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           })
           setFailedMessage(msg)
           setStatus('failed')
-          texJobFailed(msg)
+          // texJobFailed(msg)
           toast.error('Processing failed. Please try again.')
         } else if (jobStatus.status === 'processing' && jobStatus.partialVersion != null && jobStatus.partialVersion > lastPartialVersionRef.current) {
           lastPartialVersionRef.current = jobStatus.partialVersion
@@ -638,7 +635,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         })
         setFailedMessage(msg)
         setStatus('failed')
-        texJobFailed(msg)
+        // texJobFailed(msg)
       }
       toast.error(getUserFacingMessage(error))
     }
@@ -744,7 +741,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             onFileSelect={handleFileSelect}
             initialFiles={selectedFile ? [selectedFile] : null}
             onRemove={() => {
-              if (fileFromWorkflow) workflow.clearVideo()
+              // if (fileFromWorkflow) workflow.clearVideo()
               setSelectedFile(null)
               setFileFromWorkflow(false)
             }}
@@ -760,7 +757,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               duration: filePreview?.durationSeconds != null ? formatDuration(filePreview.durationSeconds) : undefined,
             }}
             onRemove={() => {
-              if (fileFromWorkflow) workflow.clearVideo()
+              // if (fileFromWorkflow) workflow.clearVideo()
               setSelectedFile(null)
               setFileFromWorkflow(false)
             }}
@@ -911,11 +908,11 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               relatedTools={[]}
             />
             <div className="mt-2 min-h-[2.75rem]">
-            <WorkflowChainSuggestion
+            {/* <WorkflowChainSuggestion
               pathname={location.pathname}
               plan={plan}
               lastJobCompletedToolId={lastJobCompletedToolId}
-            />
+            /> */}
             </div>
 
             {subtitleRows.length > 0 && (

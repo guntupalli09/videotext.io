@@ -1,9 +1,8 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Subtitles, Film, Minimize2, Lock, Play, Pause, Volume2, VolumeX, Search } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Lock, Play, Pause, Volume2, VolumeX, Search } from 'lucide-react'
 import FailedState from '../components/FailedState'
-import CrossToolSuggestions from '../components/CrossToolSuggestions'
-import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
+// import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import { isLoggedIn } from '../lib/auth'
@@ -22,13 +21,13 @@ import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/fil
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
-import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+// import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
 import { trackEvent } from '../lib/analytics'
-import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
+// import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import { segmentsToSrt, segmentsToVtt, formatTimestamp, type Segment } from '../lib/srtExport'
 import toast from 'react-hot-toast'
-import { useWorkflow } from '../contexts/WorkflowContext'
-import { emitToolCompleted } from '../workflow/workflowStore'
+// import { useWorkflow } from '../contexts/WorkflowContext'
+// import { emitToolCompleted } from '../workflow/workflowStore'
 
 // ─── Phase 1 – Derived Transcript Utilities (client-side only) ─────────────────
 const BRANCH_IDS = ['transcript', 'speakers', 'summary', 'chapters', 'highlights', 'keywords', 'clean', 'exports'] as const
@@ -151,8 +150,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
-  /** Set on job_completed for workflow chain suggestion (UI only). */
-  const [lastJobCompletedToolId, setLastJobCompletedToolId] = useState<string | null>(null)
   /** Contextual failure message (from getFailureMessage); shown in FailedState and Tex. */
   const [failedMessage, setFailedMessage] = useState<string | undefined>(undefined)
 
@@ -327,8 +324,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           setPartialSegments([])
           setStatus('completed')
           setResult(jobStatus.result ?? null)
-          dispatchJobCompletedForFeedback()
-          emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
+          // dispatchJobCompletedForFeedback()
+          // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
           setUploadPhase('processing')
           setUploadProgress(100)
           const res = jobStatus.result
@@ -395,8 +392,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               setPartialSegments([])
               setStatus('completed')
               setResult(s.result ?? null)
-              dispatchJobCompletedForFeedback()
-              emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
+              // dispatchJobCompletedForFeedback()
+              // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
               if (s.result?.segments?.length) {
                 const textFromSegments = s.result.segments.map((seg: { text: string }) => seg.text).join('\n\n')
                 setFullTranscript(textFromSegments)
@@ -484,20 +481,20 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [uploadPhase])
 
-  const workflow = useWorkflow()
+  // const workflow = useWorkflow()
 
-  useEffect(() => {
-    const state = location.state as { useWorkflowVideo?: boolean } | undefined
-    if (state?.useWorkflowVideo && workflow.videoFile) {
-      setSelectedFile(workflow.videoFile)
-      setFileFromWorkflow(true)
-    }
-  }, [location.state, workflow.videoFile])
+  // useEffect(() => {
+  //   const state = location.state as { useWorkflowVideo?: boolean } | undefined
+  //   if (state?.useWorkflowVideo && workflow.videoFile) {
+  //     setSelectedFile(workflow.videoFile)
+  //     setFileFromWorkflow(true)
+  //   }
+  // }, [location.state, workflow.videoFile])
 
   // Keep workflow in sync when result is shown so "Next step" links pre-fill the file on the next tool
-  useEffect(() => {
-    if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
-  }, [status, selectedFile])
+  // useEffect(() => {
+  //   if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
+  // }, [status, selectedFile])
 
   // Show auth gate immediately when job completes and user is not logged in.
   // Users can see live partial transcription during processing but results are gated.
@@ -516,7 +513,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     } catch {
       // non-blocking
     }
-    workflow.setVideo(file)
+    // workflow.setVideo(file)
     setSelectedFile(file)
     setFileFromWorkflow(false)
     setTrimStart(null)
@@ -658,7 +655,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       const startedAt = Date.now()
       setProcessingStartedAt(startedAt)
       processingStartedAtRef.current = startedAt
-      texJobStarted()
+      // texJobStarted()
 
       // Status updates: first poll immediately, then SSE (with polling fallback) for lower latency.
       const jobToken = response.jobToken
@@ -693,10 +690,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             setPartialSegments([])
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback()
+            // dispatchJobCompletedForFeedback()
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
-            emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
+            // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
             if (res?.segments?.length) {
               const textFromSegments = res.segments.map((s: { text: string }) => s.text).join('\n\n')
               setFullTranscript(textFromSegments)
@@ -736,9 +733,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 processing_time_ms: processingMs,
               })
               trackEvent('processing_completed', { tool: 'video-to-transcript' })
-              texJobCompleted(processingMs, 'video-to-transcript')
+              // texJobCompleted(processingMs, 'video-to-transcript')
               setLastProcessingMs(processingMs)
-              setLastJobCompletedToolId('video-to-transcript')
             } catch {
               // non-blocking
             }
@@ -764,7 +760,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           })
           setFailedMessage(msg)
           setStatus('failed')
-          texJobFailed(msg)
+          // texJobFailed(msg)
           toast.error('Processing failed. Please try again.')
         } else if (jobStatus.status === 'processing' && jobStatus.partialVersion != null && jobStatus.partialVersion > lastPartialVersionRef.current) {
           lastPartialVersionRef.current = jobStatus.partialVersion
@@ -822,7 +818,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         })
         setFailedMessage(msg)
         setStatus('failed')
-        texJobFailed(msg)
+        // texJobFailed(msg)
       }
       toast.error(getUserFacingMessage(error))
     }
@@ -902,7 +898,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       const startedAt = Date.now()
       setProcessingStartedAt(startedAt)
       processingStartedAtRef.current = startedAt
-      texJobStarted()
+      // texJobStarted()
 
       const jobToken = response.jobToken
       const handleJobStatus = (jobStatus: import('../lib/api').JobStatus) => {
@@ -933,10 +929,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             setPartialSegments([])
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback()
+            // dispatchJobCompletedForFeedback()
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
-            emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
+            // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
             if (res?.segments?.length) {
               const text = res.segments.map((s: { text: string }) => s.text).join('\n\n')
               setFullTranscript(text)
@@ -960,9 +956,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             try {
               trackEvent('job_completed', { job_id: response.jobId, tool_type: 'youtube-to-transcript', processing_time_ms: processingMs })
               trackEvent('processing_completed', { tool: 'video-to-transcript', source: 'youtube' })
-              texJobCompleted(processingMs, 'video-to-transcript')
+              // texJobCompleted(processingMs, 'video-to-transcript')
               setLastProcessingMs(processingMs)
-              setLastJobCompletedToolId('video-to-transcript')
             } catch { /* non-blocking */ }
           }
           if (remainingMs > 0) {
@@ -982,7 +977,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               : getFailureMessage({})
           setFailedMessage(msg)
           setStatus('failed')
-          texJobFailed(msg)
+          // texJobFailed(msg)
           toast.error(stageAtFailure === 'downloading_audio' || stageAtFailure === 'fetching_captions'
             ? 'YouTube processing failed. See details below.'
             : 'Processing failed. Please try again.')
@@ -1030,7 +1025,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         const msg = getFailureMessage({ isNetworkError: isNetworkError(error) })
         setFailedMessage(msg)
         setStatus('failed')
-        texJobFailed(msg)
+        // texJobFailed(msg)
       }
       toast.error(getUserFacingMessage(error))
     }
@@ -1414,7 +1409,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 onFileSelect={handleFileSelect}
                 initialFiles={selectedFile ? [selectedFile] : null}
                 onRemove={() => {
-                  if (fileFromWorkflow) workflow.clearVideo()
+                  // if (fileFromWorkflow) workflow.clearVideo()
                   setSelectedFile(null)
                   setFileFromWorkflow(false)
                 }}
@@ -1568,7 +1563,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               duration: filePreview?.durationSeconds != null ? formatDuration(filePreview.durationSeconds) : undefined,
             }}
             onRemove={() => {
-              if (fileFromWorkflow) workflow.clearVideo()
+              // if (fileFromWorkflow) workflow.clearVideo()
               setSelectedFile(null)
               setFileFromWorkflow(false)
             }}
@@ -1925,11 +1920,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
               {/* Workflow link / suggestion */}
               <div className="min-h-[2.75rem]">
-                <WorkflowChainSuggestion
+                {/* <WorkflowChainSuggestion
                   pathname={location.pathname}
                   plan={(localStorage.getItem('plan') || 'free').toLowerCase()}
                   lastJobCompletedToolId={lastJobCompletedToolId}
-                />
+                /> */}
               </div>
 
               {/* Active branch views */}
@@ -2542,7 +2537,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             </div>
 
 
-            <CrossToolSuggestions
+            {/* <CrossToolSuggestions
               workflowHint="Your last file is pre-filled on the next tool."
               suggestions={[
                 { icon: Subtitles, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT', state: { useWorkflowVideo: true } },
@@ -2553,13 +2548,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   description: 'Burn captions (video + SRT pre-filled)',
                   state: { useWorkflowVideo: true, useWorkflowSrt: true },
                   onBeforeNavigate: () => {
-                    if (segmentsForExport?.length) workflow.setSrt(segmentsToSrt(segmentsForExport))
-                    if (selectedFile) workflow.setVideo(selectedFile)
+                    // if (segmentsForExport?.length) workflow.setSrt(segmentsToSrt(segmentsForExport))
+                    // if (selectedFile) workflow.setVideo(selectedFile)
                   },
                 },
                 { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
               ]}
-            />
+            /> */}
           </div>
           </>
         )}

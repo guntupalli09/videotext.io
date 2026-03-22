@@ -12,11 +12,11 @@ import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJs
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
 import OfflineBanner from './components/OfflineBanner'
-import { WorkflowProvider } from './contexts/WorkflowContext'
-import { WorkflowTracker } from './components/workflow/WorkflowTracker'
-import { TexAgent } from './components/TexAgent'
-import TexErrorBoundary from './components/TexAgent/TexErrorBoundary'
-import FeedbackPrompt from './components/FeedbackPrompt'
+// import { WorkflowProvider } from './contexts/WorkflowContext'
+// import { WorkflowTracker } from './components/workflow/WorkflowTracker'
+// import { TexAgent } from './components/TexAgent'
+// import TexErrorBoundary from './components/TexAgent/TexErrorBoundary'
+// import FeedbackPrompt from './components/FeedbackPrompt'
 
 // Lazy-load pages for fast initial load on any device; each route loads only when visited.
 const Home = lazy(() => import('./pages/Home'))
@@ -337,7 +337,7 @@ function ImpersonationHandler() {
 function App() {
   return (
     <BrowserRouter>
-      <WorkflowProvider>
+      {/* <WorkflowProvider> */}
       <AppSeo />
       <PostCheckoutHandler />
       <ImpersonationHandler />
@@ -423,14 +423,14 @@ function App() {
           </SessionErrorBoundary>
         </main>
         <Footer />
-        <WorkflowTracker />
-        <TexErrorBoundary>
+        {/* <WorkflowTracker /> */}
+        {/* <TexErrorBoundary>
           <TexAgent />
-        </TexErrorBoundary>
-        <FeedbackPrompt />
+        </TexErrorBoundary> */}
+        {/* <FeedbackPrompt /> */}
         <Toaster position="top-right" />
       </div>
-      </WorkflowProvider>
+      {/* </WorkflowProvider> */}
     </BrowserRouter>
   )
 }

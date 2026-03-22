@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Languages } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
-import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
+// import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
@@ -19,11 +19,11 @@ import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolli
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
-import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
+// import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 import { Film, Wrench, MessageSquare } from 'lucide-react'
-import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
-import { emitToolCompleted } from '../workflow/workflowStore'
+// import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+// import { emitToolCompleted } from '../workflow/workflowStore'
 
 type Tab = 'upload' | 'paste'
 
@@ -53,7 +53,6 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
   const [usedMinutes, setUsedMinutes] = useState<number | null>(null)
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
-  const [lastJobCompletedToolId, setLastJobCompletedToolId] = useState<string | null>(null)
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
 
@@ -131,7 +130,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       setProgress(0)
       const startedAt = Date.now()
       processingStartedAtRef.current = startedAt
-      texJobStarted()
+      // texJobStarted()
 
       let response
 
@@ -170,8 +169,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             setLastProcessingMs(processingMs)
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback()
-            emitToolCompleted({ toolId: 'translate-subtitles', pathname: '/translate-subtitles', processingMs })
+            // dispatchJobCompletedForFeedback()
+            // emitToolCompleted({ toolId: 'translate-subtitles', pathname: '/translate-subtitles', processingMs })
             if (jobStatus.result?.downloadUrl) {
               try {
                 const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
@@ -182,12 +181,11 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
               }
             }
             incrementUsage('translate-subtitles')
-            texJobCompleted(processingMs, 'translate-subtitles')
-            setLastJobCompletedToolId('translate-subtitles')
+            // texJobCompleted(processingMs, 'translate-subtitles')
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')
-            texJobFailed()
+            // texJobFailed()
             toast.error('Processing failed. Please try again.')
           }
         } catch (error: any) {
@@ -202,7 +200,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
         setStatus('idle')
       } else {
         setStatus('failed')
-        texJobFailed()
+        // texJobFailed()
       }
       toast.error(error.message || 'Upload failed')
     }
@@ -352,11 +350,11 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
               ]}
             />
             <div className="mt-2 min-h-[2.75rem]">
-            <WorkflowChainSuggestion
+            {/* <WorkflowChainSuggestion
               pathname={location.pathname}
               plan={plan}
               lastJobCompletedToolId={lastJobCompletedToolId}
-            />
+            /> */}
             </div>
 
             {result.consistencyIssues && result.consistencyIssues.length > 0 && (
