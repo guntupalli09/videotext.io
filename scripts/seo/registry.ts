@@ -158,7 +158,28 @@ export const CORE_PATHS: string[] = [
   '/capcut-alternative',
   '/macwhisper-alternative',
   '/deepgram-alternative',
-  // Remaining new competitor alternatives are in sitemap2 via seoRegistry
+  // Cluster H — Voice-to-Text (new tool: browser-based voice recorder → Whisper transcription)
+  '/voice-recorder',
+  '/voice-to-text',
+  '/speech-to-text',
+  '/voice-to-text-online',
+  '/online-voice-recorder',
+  '/voice-recorder-online',
+  '/free-voice-to-text',
+  '/speak-to-text',
+  '/microphone-to-text',
+  '/dictation-tool',
+  '/voice-memo-to-text',
+  '/voice-notes-to-text',
+  '/voice-to-text-converter',
+  // Cluster H — Voice competitors (high-volume alternative pages)
+  '/dragon-dictate-alternative',
+  '/speechify-alternative',
+  '/speechnotes-alternative',
+  '/speechtexter-alternative',
+  '/dictation-io-alternative',
+  '/whispertype-alternative',
+  // Remaining voice/competitor alternatives are in sitemap2 via seoRegistry
 ]
 
 /** Programmatic-only paths (from targets × intents). Submit after core. */

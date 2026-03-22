@@ -58,6 +58,7 @@ const PanoptoAlternative = lazy(() => import('./pages/seo/PanoptoAlternativePage
 const MacWhisperAlternative = lazy(() => import('./pages/seo/MacWhisperAlternativePage'))
 const DeepgramAlternative = lazy(() => import('./pages/seo/DeepgramAlternativePage'))
 const TactiqAlternative = lazy(() => import('./pages/seo/TactiqAlternativePage'))
+const VoiceRecorder = lazy(() => import('./pages/VoiceRecorder'))
 const Open = lazy(() => import('./pages/Open'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
@@ -346,6 +347,7 @@ function App() {
             <Route path="/deepgram-alternative" element={<DeepgramAlternative />} />
             <Route path="/tactiq-alternative" element={<TactiqAlternative />} />
             <Route path="/open" element={<Open />} />
+            <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
             <Route path="/batch-process" element={<BatchProcess />} />
