@@ -16,7 +16,6 @@ import OfflineBanner from './components/OfflineBanner'
 // import { WorkflowTracker } from './components/workflow/WorkflowTracker'
 // import { TexAgent } from './components/TexAgent'
 // import TexErrorBoundary from './components/TexAgent/TexErrorBoundary'
-import FeedbackPrompt from './components/FeedbackPrompt'
 import FeedbackOrchestrator from './components/feedbackSystem/FeedbackOrchestrator'
 import { trackAppEvent } from './lib/feedbackEvents'
 import { getLifetimeSessionCount, getSessionId, isNewSession, clearNewSessionFlag } from './lib/sessionTracking'
@@ -467,7 +466,6 @@ function App() {
         {/* <TexErrorBoundary>
           <TexAgent />
         </TexErrorBoundary> */}
-        <FeedbackPrompt />
         <FeedbackOrchestrator />
         <Toaster position="top-right" />
       </div>

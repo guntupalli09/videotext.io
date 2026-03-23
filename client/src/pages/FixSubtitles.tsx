@@ -20,7 +20,6 @@ import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 import { Film, Languages, MessageSquare } from 'lucide-react'
-import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
 import { trackAppEvent } from '../lib/feedbackEvents'
 // import { emitToolCompleted } from '../workflow/workflowStore'
 
@@ -206,7 +205,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             setLastProcessingMs(processingMs)
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback('fix-subtitles'); trackAppEvent('transcription_completed', { toolId: 'fix-subtitles' })
+            trackAppEvent('transcription_completed', { toolId: 'fix-subtitles' })
             // emitToolCompleted({ toolId: 'fix-subtitles', pathname: '/fix-subtitles', processingMs })
             setWarnings(jobStatus.result?.warnings ?? [])
             incrementUsage('fix-subtitles')
