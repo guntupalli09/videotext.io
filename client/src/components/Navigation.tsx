@@ -84,7 +84,7 @@ export default function Navigation() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-full left-0 mt-2 w-[480px] bg-gray-900 border border-white/[0.08] rounded-2xl shadow-2xl py-4 grid grid-cols-2 gap-0"
+                    className="absolute top-full right-0 mt-2 w-[480px] bg-gray-900 border border-white/[0.08] rounded-2xl shadow-2xl py-4 grid grid-cols-2 gap-0"
                   >
                     {/* AI Tools column */}
                     <div className="px-4 border-r border-white/[0.06]">
