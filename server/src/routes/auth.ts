@@ -10,6 +10,7 @@ import { getPlanAndEmailForStripeCustomer } from '../services/stripe'
 import { getPlanLimits } from '../utils/limits'
 import { getLogger } from '../lib/logger'
 import { incrementResendCounter } from '../lib/apiCreditsCache'
+import { prisma } from '../db'
 
 const log = getLogger('api')
 
@@ -448,9 +449,14 @@ router.post('/demo', demoRateLimit, async (req: Request, res: Response) => {
 
     // Each demo visitor gets their own ephemeral session user so usage never bleeds
     // between visitors and the minute counter never blocks anyone.
-    const sessionId = crypto.randomUUID()
+    // Assign a sequential number (demo-user-001, 002, …) so logs and the founder
+    // dashboard show readable identifiers instead of random UUIDs.
     const demoEmailDomain = (process.env.DEMO_EMAIL || 'demo@videotext.io').split('@')[1] || 'videotext.io'
-    const demoEmail = `demo-${sessionId}@${demoEmailDomain}`
+    const existingCount = await prisma.user.count({
+      where: { email: { startsWith: 'demo-user-', mode: 'insensitive' } },
+    })
+    const seqNum = String(existingCount + 1).padStart(3, '0')
+    const demoEmail = `demo-user-${seqNum}@${demoEmailDomain}`
 
     const now = new Date()
     // Reset date far in the future so the session user never hits a monthly reset
@@ -490,7 +496,7 @@ router.post('/demo', demoRateLimit, async (req: Request, res: Response) => {
       updatedAt: now,
     } as User
     await saveUser(user)
-    log.info({ msg: 'Demo session created', ip: req.ip })
+    log.info({ msg: 'Demo session created', user: demoEmail, ip: req.ip })
 
     const token = signAuthToken(user, { isDemo: true })
     return res.json({ token, userId: user.id, plan: user.plan, email: user.email, isDemo: true })
