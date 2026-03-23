@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import {
   Play,
-  ChevronRight,
   Shield,
   Globe,
   CheckCircle2,
