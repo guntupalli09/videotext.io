@@ -156,9 +156,7 @@ export function Hero() {
         <div className="flex justify-center mb-4">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/25 backdrop-blur-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
-            <span className="text-[11px] text-white/40">Tired of slowness?</span>
-            <span className="text-[11px] text-white/25">·········</span>
-            <span className="text-[11px] font-semibold text-violet-300 tracking-wide">6× faster transcription</span>
+            <span className="text-[11px] font-semibold text-violet-300 tracking-wide">5× faster processing</span>
           </div>
         </div>
 
