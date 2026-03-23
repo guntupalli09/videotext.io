@@ -9,8 +9,6 @@ import {
   Package,
   FolderSync,
   ChevronRight,
-  Zap,
-  Lock,
   Mic,
   CheckCircle2,
   ArrowRight,
