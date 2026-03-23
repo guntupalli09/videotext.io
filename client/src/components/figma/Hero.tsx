@@ -1,5 +1,4 @@
 import { useRef, useMemo, useState, useEffect } from 'react';
-import { isLoggedIn } from '../../lib/auth';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import {
@@ -11,7 +10,6 @@ import {
   CheckCircle2,
   ChevronRight,
   Shield,
-  Zap,
   Globe,
   ArrowDown,
 } from 'lucide-react';
@@ -269,17 +267,6 @@ function ProductDemo() {
 
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
-  const [showFreeMicrocopy, setShowFreeMicrocopy] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      setShowFreeMicrocopy(true);
-      return;
-    }
-    const plan = (localStorage.getItem('plan') || 'free').toLowerCase();
-    const isPaid = ['basic', 'pro', 'agency', 'founding_workflow'].includes(plan);
-    setShowFreeMicrocopy(!isPaid);
-  }, []);
 
   const { scrollYProgress } = useScroll({
     target: ref,

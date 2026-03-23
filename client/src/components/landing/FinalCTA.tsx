@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Lock, Zap, Shield, Globe, CheckCircle2 } from 'lucide-react';
+import { ChevronRight, Zap, Shield, Globe, CheckCircle2 } from 'lucide-react';
 
 export function FinalCTA() {
   return (
