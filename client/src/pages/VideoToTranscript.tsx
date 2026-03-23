@@ -491,6 +491,15 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   //   }
   // }, [location.state, workflow.videoFile])
 
+  // Pick up a file dropped on the landing page hero dropzone
+  useEffect(() => {
+    const w = window as Window & { __videotextPendingFile?: File }
+    if (w.__videotextPendingFile) {
+      setSelectedFile(w.__videotextPendingFile)
+      delete w.__videotextPendingFile
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   // Keep workflow in sync when result is shown so "Next step" links pre-fill the file on the next tool
   // useEffect(() => {
   //   if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)

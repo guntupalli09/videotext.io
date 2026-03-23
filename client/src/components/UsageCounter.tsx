@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getCurrentUsage } from '../lib/api'
 import { isDemo } from '../lib/auth'
+import { Zap } from 'lucide-react'
 
 function useUsage(refreshTrigger?: string | number) {
   const [usage, setUsage] = useState<{
@@ -50,7 +52,11 @@ function useUsage(refreshTrigger?: string | number) {
   return { usage, refetchFresh }
 }
 
-/** When refreshTrigger changes (e.g. status becomes 'completed'), usage is refetched so remaining quota stays accurate. */
+/**
+ * TurboScribe-style usage bar.
+ * Shows "X of 3 transcriptions used" with a progress bar + "Go Unlimited" CTA.
+ * Designed to be placed at the top of any tool page.
+ */
 export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: string | number }) {
   const { usage, refetchFresh } = useUsage(refreshTrigger)
 
@@ -61,25 +67,93 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
 
   if (!usage || isDemo()) return null
 
-  const { quotaType, remaining, totalPlanMinutes, usedPercent } = usage
+  const { quotaType, remaining, used, limit, usedPercent } = usage
 
-  return (
-    <div className="bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-1.5 inline-flex items-center space-x-3">
-      <span className="text-sm text-gray-600 dark:text-gray-300">
-        {quotaType === 'imports'
-          ? remaining === 0
-            ? "You've used all 3 imports. Upgrade to use the tool."
-            : `${remaining} of 3 imports remaining`
-          : `${remaining} min remaining this month`}
-      </span>
-      {totalPlanMinutes > 0 && (
-        <div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+  // For minutes quota — compact display, not the main featured bar
+  if (quotaType === 'minutes') {
+    const isLow = usedPercent >= 80
+    return (
+      <div className={`rounded-xl px-4 py-2.5 flex items-center gap-3 border transition-colors ${
+        isLow
+          ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20'
+          : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+      }`}>
+        <span className={`text-sm font-medium ${isLow ? 'text-amber-700 dark:text-amber-400' : 'text-gray-600 dark:text-gray-300'}`}>
+          {remaining} min remaining
+        </span>
+        <div className="w-20 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 flex-shrink-0">
           <div
-            className="bg-primary rounded-full h-2 transition-all duration-300"
+            className={`rounded-full h-1.5 transition-all duration-500 ${isLow ? 'bg-amber-500' : 'bg-violet-600'}`}
             style={{ width: `${usedPercent}%` }}
           />
         </div>
-      )}
+        {isLow && (
+          <Link
+            to="/pricing"
+            className="ml-auto text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap"
+          >
+            Upgrade →
+          </Link>
+        )}
+      </div>
+    )
+  }
+
+  // ── Free tier imports quota — TurboScribe-style prominent bar ──
+  const isExhausted = remaining === 0
+  const filledDots = Math.min(used, limit)
+
+  return (
+    <div className={`rounded-xl border transition-colors overflow-hidden ${
+      isExhausted
+        ? 'bg-red-50 dark:bg-red-500/[0.08] border-red-200 dark:border-red-500/20'
+        : 'bg-gray-900 dark:bg-gray-900 border-gray-700 dark:border-gray-700'
+    }`}>
+      {/* Top: usage label + dots */}
+      <div className={`px-4 pt-3.5 pb-2 ${isExhausted ? '' : ''}`}>
+        <div className="flex items-center justify-between mb-2.5">
+          <p className={`text-sm font-semibold ${
+            isExhausted ? 'text-red-700 dark:text-red-400' : 'text-gray-300'
+          }`}>
+            {isExhausted
+              ? "You've used all 3 free transcriptions"
+              : `${used} of ${limit} free transcriptions used`}
+          </p>
+          <div className="flex gap-1.5">
+            {Array.from({ length: limit }).map((_, i) => (
+              <div
+                key={i}
+                className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                  i < filledDots
+                    ? isExhausted ? 'bg-red-400' : 'bg-violet-500'
+                    : 'bg-gray-600'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div className="w-full h-1.5 rounded-full bg-gray-700 overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${
+              isExhausted ? 'bg-red-500' : 'bg-gradient-to-r from-violet-500 to-indigo-500'
+            }`}
+            style={{ width: `${usedPercent}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Bottom: Go Unlimited CTA */}
+      <Link
+        to="/pricing"
+        className="flex items-center justify-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-500 transition-colors group"
+      >
+        <Zap className="w-3.5 h-3.5 text-white" />
+        <span className="text-sm font-bold text-white tracking-wide uppercase">
+          Go Unlimited
+        </span>
+      </Link>
     </div>
   )
 }

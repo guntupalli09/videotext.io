@@ -9,17 +9,175 @@ import { UseCases } from '../components/landing/UseCases';
 import { FAQ } from '../components/landing/FAQ';
 import { FinalCTA } from '../components/landing/FinalCTA';
 import { CompetitorSection } from '../components/landing/CompetitorSection';
+import { CheckCircle2, ArrowRight, Zap, Shield, Clock } from 'lucide-react';
 
-// Page flow (Descript-inspired conversion order):
-// 1. Hero — hook + product demo
-// 2. Features — what you get (tools showcase)
-// 3. Use Cases — ICP targeting (YouTubers / Podcasters / Agencies)
-// 4. How It Works — de-risk the signup (simple 3 steps)
-// 5. Testimonials — social proof at the decision point
-// 6. Pricing — friction-free plans
-// 7. FAQ — objection handling
-// 8. Final CTA — dark, bold closing section
-// Footer rendered globally by App.tsx
+// Conversion order (psychologically optimised):
+// 1. Hero — 3-second clarity + CTA
+// 2. Features — full toolkit showcase
+// 3. Use Cases — ICP targeting
+// 4. How It Works — dark, de-risk the signup
+// 5. Testimonials — social proof
+// 6. Competitor — speed piggybacking
+// 7. Pricing — frictionless plans
+// 8. FAQ — objection handling
+// 9. Free Tools — non-converter catchment
+// 10. Final CTA — dark, bold close
+
+function TrustBar() {
+  const items = [
+    { icon: Zap, text: '6× faster than Descript', highlight: true },
+    { icon: CheckCircle2, text: '98.5% accuracy' },
+    { icon: Shield, text: 'Files deleted immediately' },
+    { icon: Clock, text: '< 3 min for a 2hr video' },
+  ];
+  return (
+    <div className="bg-white dark:bg-gray-950 border-y border-gray-100 dark:border-white/[0.05] transition-colors duration-500">
+      <div className="max-w-5xl mx-auto px-6 py-4 flex flex-wrap items-center justify-center gap-6">
+        {items.map((item, i) => {
+          const Icon = item.icon;
+          return (
+            <div key={i} className="flex items-center gap-2 text-sm">
+              <Icon
+                className={`w-4 h-4 flex-shrink-0 ${item.highlight ? 'text-violet-600 dark:text-violet-400' : 'text-gray-400 dark:text-white/30'}`}
+              />
+              <span
+                className={`font-medium transition-colors duration-500 ${item.highlight ? 'text-violet-700 dark:text-violet-400' : 'text-gray-500 dark:text-white/40'}`}
+              >
+                {item.text}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const PLANS = [
+  {
+    name: 'Free',
+    price: '$0',
+    detail: '3 free imports',
+    cta: null,
+    note: 'No card needed',
+    popular: false,
+  },
+  {
+    name: 'Basic',
+    price: '$19',
+    period: '/mo',
+    detail: '450 min / month',
+    cta: 'Get started',
+    popular: false,
+  },
+  {
+    name: 'Pro',
+    price: '$49',
+    period: '/mo',
+    detail: '1,200 min / month',
+    cta: 'Get started',
+    popular: true,
+    badge: 'Most popular',
+  },
+  {
+    name: 'Agency',
+    price: '$129',
+    period: '/mo',
+    detail: '3,000 min / month',
+    cta: 'Get started',
+    popular: false,
+  },
+];
+
+function PricingSection() {
+  return (
+    <section id="pricing" className="relative py-12 bg-gray-950 transition-colors duration-500 overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-violet-600/[0.08] rounded-full blur-[140px]" />
+      </div>
+
+      <div className="relative max-w-5xl mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-6"
+        >
+          <p className="text-sm font-bold text-violet-400 uppercase tracking-widest mb-3">Pricing</p>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-3 font-display">
+            Start free. Scale when ready.
+          </h2>
+          {!isLoggedIn() && (
+            <p className="text-white/50 text-[15px]">No credit card required to try.</p>
+          )}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.1, duration: 0.6 }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto"
+        >
+          {PLANS.map((plan) => (
+            <Link
+              key={plan.name}
+              to="/pricing"
+              className={`group relative rounded-2xl p-6 text-left transition-all duration-200 ${
+                plan.popular
+                  ? 'bg-gradient-to-b from-violet-600 to-indigo-700 text-white shadow-2xl shadow-violet-500/30 ring-1 ring-violet-400/30'
+                  : 'bg-white/[0.04] text-white hover:bg-white/[0.07] border border-white/[0.08] hover:border-white/[0.15]'
+              }`}
+            >
+              {plan.popular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="text-[10px] font-bold text-white bg-gradient-to-r from-amber-400 to-orange-400 px-3 py-1 rounded-full shadow-lg">
+                    {plan.badge}
+                  </span>
+                </div>
+              )}
+
+              <p className="font-bold text-lg mb-1">{plan.name}</p>
+              <p className="text-3xl font-extrabold mb-1">
+                {plan.price}
+                {plan.period && (
+                  <span className="text-sm font-normal opacity-60">{plan.period}</span>
+                )}
+              </p>
+              <p className={`text-[13px] mb-4 ${plan.popular ? 'text-white/75' : 'text-white/45'}`}>
+                {plan.detail}
+              </p>
+
+              {plan.cta ? (
+                <div
+                  className={`inline-flex items-center gap-1.5 text-sm font-bold group-hover:gap-2.5 transition-all ${
+                    plan.popular ? 'text-white' : 'text-violet-400 group-hover:text-violet-300'
+                  }`}
+                >
+                  {plan.cta}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </div>
+              ) : (
+                <p className="text-[11px] opacity-50 font-medium">{plan.note}</p>
+              )}
+            </Link>
+          ))}
+        </motion.div>
+
+        <p className="text-center mt-8">
+          <Link
+            to="/pricing"
+            className="text-white/50 hover:text-white/80 font-medium underline underline-offset-2 text-sm transition-colors"
+          >
+            See full pricing & feature comparison →
+          </Link>
+        </p>
+      </div>
+    </section>
+  );
+}
 
 export default function Home() {
   return (
@@ -27,115 +185,50 @@ export default function Home() {
       {/* 1 — Hero */}
       <Hero />
 
+      {/* Trust bar — instant credibility after hero */}
+      <TrustBar />
+
       {/* 2 — Features / toolkit */}
       <Features />
 
       {/* 3 — Use cases / ICP targeting */}
       <UseCases />
 
-      {/* 4 — How it works */}
+      {/* 4 — How it works (dark) */}
       <HowItWorks />
 
       {/* 5 — Testimonials */}
       <Testimonials />
 
-      {/* 5.5 — Competitor comparison / speed piggybacking */}
+      {/* 6 — Competitor comparison / speed proof */}
       <CompetitorSection />
 
-      {/* 6 — Pricing */}
-      <section id="pricing" className="bg-gradient-to-br from-purple-700 via-violet-700 to-indigo-800 dark:from-violet-900 dark:via-purple-900 dark:to-indigo-950 py-20 transition-colors duration-500">
-        <div className="max-w-5xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12"
-          >
-            <p className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-3">Pricing</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-              Start free. Scale when you're ready.
-            </h2>
-            {!isLoggedIn() && (
-              <p className="text-white/70 text-[15px]">No credit card required to try.</p>
-            )}
-          </motion.div>
+      {/* 7 — Pricing (dark) */}
+      <PricingSection />
 
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
-          >
-            {[
-              { name: 'Free', price: '$0', detail: '3 free imports', cta: null, note: 'No card needed' },
-              { name: 'Basic', price: '$19', detail: '450 min / mo', cta: 'Choose', note: null },
-              { name: 'Pro', price: '$49', detail: '1,200 min / mo', cta: 'Choose', popular: true, note: 'Best value' },
-              { name: 'Agency', price: '$129', detail: '3,000 min / mo', cta: 'Choose', note: null },
-            ].map((plan) => (
-              <Link
-                key={plan.name}
-                to="/pricing"
-                className={`group rounded-2xl p-5 text-left transition-all duration-200 ${
-                  plan.popular
-                    ? 'bg-white text-violet-900 shadow-2xl shadow-white/10 ring-2 ring-white/40 hover:ring-white/60'
-                    : 'bg-white/10 text-white hover:bg-white/[0.18] backdrop-blur-sm border border-white/10'
-                }`}
-              >
-                {plan.popular && (
-                  <span className="text-[10px] font-bold text-violet-500 uppercase tracking-widest block mb-1">{plan.note}</span>
-                )}
-                <p className="font-bold text-lg">{plan.name}</p>
-                <p className="text-2xl font-extrabold mt-1">
-                  {plan.price}
-                  <span className="text-sm font-normal opacity-60">/mo</span>
-                </p>
-                <p className="text-[13px] opacity-80 mt-1">{plan.detail}</p>
-                {plan.cta && (
-                  <span className={`inline-flex items-center gap-1 mt-4 text-sm font-semibold group-hover:gap-2 transition-all ${plan.popular ? 'text-violet-600' : 'text-white/80'}`}>
-                    {plan.cta} <span className="text-base">→</span>
-                  </span>
-                )}
-                {!plan.cta && plan.note && !plan.popular && (
-                  <p className="text-[11px] mt-3 opacity-50">{plan.note}</p>
-                )}
-              </Link>
-            ))}
-          </motion.div>
-
-          <p className="text-center mt-8">
-            <Link
-              to="/pricing"
-              className="text-white/75 hover:text-white font-medium underline underline-offset-2 text-sm transition-colors"
-            >
-              See full pricing & feature comparison →
-            </Link>
-          </p>
-        </div>
-      </section>
-
-      {/* 7 — FAQ */}
+      {/* 8 — FAQ */}
       <FAQ />
 
-      {/* 7.5 — Free Tools cluster — catches non-converters, passes homepage authority into tool pages */}
-      <section className="bg-gray-50 dark:bg-gray-900/60 border-y border-gray-100 dark:border-gray-800 py-16">
+      {/* 9 — Free Tools cluster */}
+      <section className="bg-gray-50 dark:bg-gray-900/60 border-y border-gray-100 dark:border-gray-800 py-8 transition-colors duration-500">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Free — no account needed</p>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">
+                Free — no account needed
+              </p>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white font-display transition-colors duration-500">
                 Free subtitle &amp; video tools
               </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md transition-colors duration-500">
                 Convert, validate, fix, and analyse subtitle files instantly in your browser. Nothing uploaded, nothing stored.
               </p>
             </div>
             <Link
               to="/subtitle-tools"
-              className="text-sm font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 whitespace-nowrap transition-colors hidden sm:block"
+              className="text-sm font-bold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 whitespace-nowrap transition-colors hidden sm:flex items-center gap-1"
             >
-              View all 19 tools →
+              View all 19 tools <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
@@ -151,11 +244,11 @@ export default function Home() {
               <Link
                 key={tool.path}
                 to={tool.path}
-                className="group flex items-start gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-sm transition-all"
+                className="group flex items-start gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-md transition-all duration-200"
               >
                 <span className="text-xl leading-none mt-0.5 select-none">{tool.icon}</span>
                 <div>
-                  <p className="font-semibold text-sm text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors">
+                  <p className="font-bold text-sm text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors">
                     {tool.label}
                   </p>
                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{tool.desc}</p>
@@ -167,13 +260,13 @@ export default function Home() {
           <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
             <Link
               to="/subtitle-tools"
-              className="sm:hidden text-sm font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400"
+              className="sm:hidden text-sm font-bold text-violet-600 hover:text-violet-700 dark:text-violet-400 flex items-center gap-1"
             >
-              View all 19 free tools →
+              View all 19 free tools <ArrowRight className="w-3.5 h-3.5" />
             </Link>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
+            <p className="text-xs text-gray-400 dark:text-gray-500 transition-colors duration-500">
               Need AI-powered subtitles?{' '}
-              <Link to="/video-to-subtitles" className="text-violet-600 dark:text-violet-400 hover:underline font-medium">
+              <Link to="/video-to-subtitles" className="text-violet-600 dark:text-violet-400 hover:underline font-bold">
                 Generate them automatically →
               </Link>
             </p>
@@ -181,7 +274,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 8 — Final CTA */}
+      {/* 10 — Final CTA */}
       <FinalCTA />
     </div>
   );

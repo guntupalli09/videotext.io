@@ -405,7 +405,7 @@ export default function VoiceRecorder() {
     <ToolLayout
       breadcrumbs={[{ label: 'Voice Recorder', href: '/voice-recorder' }]}
       title="Voice to Text"
-      subtitle="Speak naturally. Get an accurate transcript in seconds."
+      subtitle="Record in any of 99 languages — speaker detection, noise suppression, no signup needed."
       icon={<Mic className="w-5 h-5 text-violet-600" />}
       tags={['Free', 'Noise Suppressed', '99 Languages']}
     >

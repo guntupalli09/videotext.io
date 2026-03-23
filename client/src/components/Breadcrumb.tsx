@@ -4,6 +4,7 @@ import { ROUTE_BREADCRUMB } from '../lib/seoMeta'
 
 /** Paths that use ToolLayout and render their own breadcrumb — hide global bar to avoid duplicate. */
 const TOOL_LAYOUT_PATHS = [
+  '/voice-recorder',
   '/video-to-transcript',
   '/video-to-subtitles',
   '/batch-process',

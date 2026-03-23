@@ -95,7 +95,7 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
 
 export function FAQ() {
   return (
-    <section className="py-24 bg-white dark:bg-gray-950 transition-colors duration-500">
+    <section className="py-12 bg-white dark:bg-gray-950 transition-colors duration-500">
       <div className="max-w-3xl mx-auto px-6">
 
         <motion.div
