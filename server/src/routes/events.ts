@@ -7,6 +7,7 @@
 
 import express, { Request, Response } from 'express'
 import rateLimit from 'express-rate-limit'
+import { Prisma } from '@prisma/client'
 import { prisma } from '../db'
 import { getEffectiveUserId } from '../utils/auth'
 
@@ -47,7 +48,7 @@ router.post('/', eventsLimit, async (req: Request, res: Response) => {
         : {}
 
     await prisma.eventLog.create({
-      data: { eventName, userId, sessionId, metadata },
+      data: { eventName, userId, sessionId, metadata: metadata as unknown as Prisma.InputJsonValue },
     })
 
     // Update UserMetrics asynchronously for authenticated users
