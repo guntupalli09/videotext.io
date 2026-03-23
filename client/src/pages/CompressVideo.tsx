@@ -24,7 +24,8 @@ import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 import { MessageSquare, Film, FileText } from 'lucide-react'
 import { formatFileSize } from '../lib/utils'
-// import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+import { trackAppEvent } from '../lib/feedbackEvents'
 // import { emitToolCompleted } from '../workflow/workflowStore'
 
 type CompressionLevel = 'light' | 'medium' | 'heavy'
@@ -195,7 +196,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
             setLastProcessingMs(processingMs)
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            // dispatchJobCompletedForFeedback()
+            dispatchJobCompletedForFeedback('compress-video'); trackAppEvent('transcription_completed', { toolId: 'compress-video' })
             // emitToolCompleted({ toolId: 'compress-video', pathname: '/compress-video', processingMs })
             incrementUsage('compress-video')
             // texJobCompleted(processingMs, 'compress-video')
@@ -363,6 +364,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
                         a.download = result?.fileName || 'compressed.mp4'
                         a.click()
                         URL.revokeObjectURL(a.href)
+                        trackAppEvent('export_clicked', { toolId: 'compress-video' })
                         setFreeExportsUsed((prev) => prev + 1)
                         toast.success('Download started')
                       } catch {

@@ -160,6 +160,56 @@ model StripeEventLog {
   @@index([processedAt])
 }
 
+// ─── Behavioral event tracking for funnel analytics and feedback triggers ────
+model EventLog {
+  id          String   @id @default(cuid())
+  eventName   String   // upload_started | transcription_completed | result_viewed | export_clicked | session_returned
+  userId      String?
+  sessionId   String
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now())
+
+  @@index([eventName, createdAt])
+  @@index([userId, createdAt])
+  @@index([sessionId])
+}
+
+// ─── Structured feedback from contextual triggers (A–E) ──────────────────────
+model FeedbackEvent {
+  id          String   @id @default(cuid())
+  userId      String?
+  sessionId   String
+  triggerType String   // result | export | dropoff | pmf | competitor
+  rating      String?  // e.g. "Perfect", "Good but needs tweaks", "Very disappointed"
+  category    String?  // e.g. "Accuracy", "Speed", "Speaker labels"
+  freeText    String   @default("")
+  userScore   Int?     // denormalized user engagement score at submission time
+  dismissed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([triggerType, createdAt])
+  @@index([userId])
+  @@index([category])
+  @@index([createdAt])
+}
+
+// ─── Computed user engagement metrics for scoring and segmentation ────────────
+model UserMetrics {
+  userId          String   @id
+  totalSessions   Int      @default(0)
+  totalExports    Int      @default(0)
+  hasReturned     Boolean  @default(false)
+  isPaying        Boolean  @default(false)
+  userScore       Int      @default(0)
+  segment         String   @default("explorer") // explorer | activated | power_user | paying
+  pmfShown        Boolean  @default(false)
+  competitorShown Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
+
+  @@index([segment])
+  @@index([userScore])
+}
+
 // User feedback from Tex panel (post-job completion) or public survey link. No auth required to submit.
 model Feedback {
   id              String   @id @default(cuid())

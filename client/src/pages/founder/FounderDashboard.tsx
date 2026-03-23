@@ -21,6 +21,7 @@ import PerToolMetrics from './PerToolMetrics'
 import ApiCreditsPanel from './ApiCreditsPanel'
 import EmailUsagePanel from './EmailUsagePanel'
 import CostMetrics from './CostMetrics'
+import FeedbackSystemPanel from './FeedbackSystemPanel'
 
 const PLAN_COLORS: Record<string, string> = {
   free: 'text-zinc-400',
@@ -262,9 +263,15 @@ export default function FounderDashboard() {
           <RecentJobsFeed jobs={data.recentJobs ?? []} />
         </section>
 
-        {/* Feedback */}
+        {/* Feedback System v2 — funnel, segmentation, PMF, feature engine */}
         <section>
-          <SectionTitle id="feedback">Feedback</SectionTitle>
+          <SectionTitle id="feedback-system">Feedback System</SectionTitle>
+          <FeedbackSystemPanel />
+        </section>
+
+        {/* Feedback legacy — star ratings and survey responses */}
+        <section>
+          <SectionTitle id="feedback">Star Ratings &amp; Survey</SectionTitle>
           <div className="space-y-4">
             <FeedbackAnalytics
               feedback={data.feedback ?? []}
