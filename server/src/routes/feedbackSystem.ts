@@ -11,7 +11,15 @@ import rateLimit from 'express-rate-limit'
 import { prisma } from '../db'
 import { getEffectiveUserId, getAuthFromRequest } from '../utils/auth'
 import { getUser } from '../models/User'
-import { computeFunnelMetrics, computeFeatureEngine, computeSegmentBreakdown, getUsersWhoReportedIssue } from '../services/feedbackEngine'
+import {
+  computeFunnelMetrics,
+  computeFeatureEngine,
+  computeSegmentBreakdown,
+  computeDecisionEngine,
+  computeTopIssueClusters,
+  computeSegmentIssues,
+  getUsersWhoReportedIssue,
+} from '../services/feedbackEngine'
 
 const router = express.Router()
 
@@ -99,10 +107,13 @@ router.get('/analytics', async (req: Request, res: Response) => {
   if (!founderId) return res as Response
 
   try {
-    const [funnel, features, segments] = await Promise.all([
+    const [funnel, features, segments, decisionEngine, issueClusters, segmentIssues] = await Promise.all([
       computeFunnelMetrics(),
       computeFeatureEngine(),
       computeSegmentBreakdown(),
+      computeDecisionEngine(),
+      computeTopIssueClusters(),
+      computeSegmentIssues(),
     ])
 
     // Recent trigger breakdowns
@@ -122,9 +133,12 @@ router.get('/analytics', async (req: Request, res: Response) => {
     ])
 
     return res.json({
+      decisionEngine,
       funnel,
       features,
       segments,
+      issueClusters,
+      segmentIssues,
       triggerBreakdown: recentByTrigger.map((r) => ({
         triggerType: r.triggerType,
         count: r._count.id,
