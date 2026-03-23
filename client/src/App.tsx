@@ -19,7 +19,8 @@ import OfflineBanner from './components/OfflineBanner'
 import FeedbackPrompt from './components/FeedbackPrompt'
 import FeedbackOrchestrator from './components/feedbackSystem/FeedbackOrchestrator'
 import { trackAppEvent } from './lib/feedbackEvents'
-import { getLifetimeSessionCount, getSessionId } from './lib/sessionTracking'
+import { getLifetimeSessionCount, getSessionId, isNewSession, clearNewSessionFlag } from './lib/sessionTracking'
+import { incrementSessionsSinceFeedback } from './hooks/useFeedbackFrequency'
 
 // Lazy-load pages for fast initial load on any device; each route loads only when visited.
 const Home = lazy(() => import('./pages/Home'))
@@ -347,9 +348,16 @@ function ImpersonationHandler() {
 
 function SessionTracker() {
   useEffect(() => {
-    // Initialise session ID (creates one if it doesn't exist yet)
+    // Initialise session (may resume via grace period or create fresh)
     getSessionId()
-    // Fire session_returned for users who have been here before
+
+    // Starvation counter: only incremented on a genuinely new session
+    if (isNewSession()) {
+      incrementSessionsSinceFeedback()
+      clearNewSessionFlag()
+    }
+
+    // Fire session_returned for returning users
     if (getLifetimeSessionCount() >= 2) {
       trackAppEvent('session_returned')
     }
