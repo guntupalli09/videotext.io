@@ -134,13 +134,6 @@ export default function Login() {
             )}
           </p>
 
-          {!fromGuestJob && (
-            <div className="relative mb-6">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200 dark:border-gray-700" /></div>
-              <div className="relative flex justify-center"><span className="px-3 text-xs text-gray-400 bg-gray-50 dark:bg-gray-950">or log in with your account</span></div>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">
