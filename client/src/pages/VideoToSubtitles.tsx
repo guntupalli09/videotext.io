@@ -28,7 +28,7 @@ import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 // import { useWorkflow } from '../contexts/WorkflowContext'
-// import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
 // import { emitToolCompleted } from '../workflow/workflowStore'
 
 /** Optional SEO overrides for alternate entry points (e.g. /mp4-to-srt, /subtitle-generator). Do NOT duplicate logic. */
@@ -165,7 +165,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           setPartialSegments([])
           setStatus('completed')
           setResult(jobStatus.result ?? null)
-          // dispatchJobCompletedForFeedback()
+          dispatchJobCompletedForFeedback('video-to-subtitles')
           // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
           setUploadPhase('processing')
           setUploadProgress(100)
@@ -221,7 +221,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               rehydratePollRef.current = null
               setStatus('completed')
               setResult(s.result ?? null)
-              // dispatchJobCompletedForFeedback()
+              dispatchJobCompletedForFeedback('video-to-subtitles')
               // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
               if (s.result?.downloadUrl) {
                 try {
@@ -526,7 +526,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           jobStartedTrackedRef.current = null
           setStatus('completed')
           setResult(jobStatus.result ?? null)
-          // dispatchJobCompletedForFeedback()
+          dispatchJobCompletedForFeedback('video-to-subtitles')
           const started = processingStartedAtRef.current ?? Date.now()
           const processingMs = Date.now() - started
           // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })

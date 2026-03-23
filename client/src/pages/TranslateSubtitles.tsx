@@ -22,7 +22,7 @@ import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 import { Film, Wrench, MessageSquare } from 'lucide-react'
-// import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
 // import { emitToolCompleted } from '../workflow/workflowStore'
 
 type Tab = 'upload' | 'paste'
@@ -169,7 +169,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             setLastProcessingMs(processingMs)
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            // dispatchJobCompletedForFeedback()
+            dispatchJobCompletedForFeedback('translate-subtitles')
             // emitToolCompleted({ toolId: 'translate-subtitles', pathname: '/translate-subtitles', processingMs })
             if (jobStatus.result?.downloadUrl) {
               try {
