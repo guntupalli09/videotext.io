@@ -10,6 +10,7 @@ import rateLimit from 'express-rate-limit'
 import uploadRoutes, { handleUploadChunk } from './routes/upload'
 import jobRoutes from './routes/jobs'
 import downloadRoutes from './routes/download'
+import audioRoutes from './routes/audio'
 import usageRoutes from './routes/usage'
 import batchRoutes from './routes/batch'
 import billingRoutes from './routes/billing'
@@ -213,6 +214,7 @@ app.use('/api/translate-transcript', apiKeyAuth)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/job', jobRoutes)
 app.use('/api/download', downloadRoutes)
+app.use('/api/audio', audioRoutes)
 app.use('/api/usage', usageRoutes)
 app.use('/api/batch', batchRoutes)
 app.use('/api/billing', billingRoutes)

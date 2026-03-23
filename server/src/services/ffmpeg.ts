@@ -116,6 +116,43 @@ export function extractAudio(
 }
 
 /**
+ * Extract audio for browser playback as AAC in an M4A container.
+ * Produces a file that plays on every browser (Chrome, Safari, Firefox, Edge) regardless of
+ * the original format or codec (WebM/VP9, AVI, MOV, MKV, AC3, DTS, Opus, …).
+ * Output: 44.1 kHz stereo AAC @ 128 kbps with faststart (seeking works immediately).
+ * Never throws — callers should .catch() and treat null as "player unavailable".
+ */
+export function extractAudioForPlayback(videoPath: string, outputPath: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const stderrLines: string[] = []
+    const cmd = ffmpeg(videoPath)
+      .inputOptions(getGpuInputOptions())
+      .outputOptions([
+        '-threads', FFMPEG_THREADS,
+        '-vn',
+        '-acodec', 'aac',
+        '-ar', '44100',
+        '-ac', '2',
+        '-b:a', '128k',
+        '-movflags', '+faststart',
+      ])
+      .on('stderr', (line: string) => { stderrLines.push(line) })
+      .on('end', () => {
+        hung.clear()
+        resolve(outputPath)
+      })
+      .on('error', (err: Error) => {
+        hung.clear()
+        const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
+        const msg = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
+        reject(new Error(msg))
+      })
+    const hung = setupHungProtection(cmd, reject)
+    cmd.save(outputPath)
+  })
+}
+
+/**
  * Extract audio to 16 kHz mono WAV (PCM). Use when MP3 extraction is empty/small due to unsupported codec.
  * Whisper accepts WAV; this decode path often works for AC3/DTS and other codecs that fail with libmp3lame.
  */
