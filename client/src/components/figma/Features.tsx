@@ -246,7 +246,7 @@ function SecondaryCard({ tool, index }: { tool: (typeof SECONDARY_TOOLS)[0]; ind
 
 export function Features() {
   return (
-    <section id="tools" className="py-24 bg-white dark:bg-gray-950 transition-colors duration-500">
+    <section id="tools" className="py-12 bg-white dark:bg-gray-950 transition-colors duration-500">
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Section header */}
@@ -255,7 +255,7 @@ export function Features() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-6"
         >
           <p className="text-sm font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest mb-3 transition-colors duration-500">
             The full toolkit

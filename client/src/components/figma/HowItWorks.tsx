@@ -50,7 +50,7 @@ export function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="relative py-24 px-6 bg-gray-950 transition-colors duration-500 overflow-hidden"
+      className="relative py-12 px-6 bg-gray-950 transition-colors duration-500 overflow-hidden"
     >
       {/* Background dot grid */}
       <div

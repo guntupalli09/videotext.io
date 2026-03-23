@@ -158,7 +158,7 @@ export function Hero() {
         <div className="absolute top-[35%] right-[5%] w-[350px] h-[350px] bg-indigo-600/[0.07] rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-20 sm:pt-24 pb-10">
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-16 sm:pt-20 pb-8">
 
         {/* Speed badge */}
         <div className="flex justify-center mb-4">
@@ -171,7 +171,7 @@ export function Hero() {
         </div>
 
         {/* H1 */}
-        <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-3">
+        <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5">
           Clean transcripts from
           <span className="block mt-1 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
             anything you record.
@@ -179,7 +179,7 @@ export function Hero() {
         </h1>
 
         {/* Sub-headline */}
-        <p className="text-center text-[16px] sm:text-[17px] text-white/50 max-w-lg mx-auto leading-relaxed mb-6">
+        <p className="text-center text-[16px] sm:text-[17px] text-white/50 max-w-lg mx-auto leading-relaxed mb-8">
           Upload a video or speak directly — get export-ready text{' '}
           <span className="text-violet-300 font-medium">instantly.</span>
         </p>

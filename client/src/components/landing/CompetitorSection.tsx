@@ -91,7 +91,7 @@ export function CompetitorSection() {
   const speedMultiple = Math.round(COMPETITORS[0].slowMinutes / VIDEOTEXT_MINUTES);
 
   return (
-    <section className="py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 overflow-hidden">
+    <section className="py-12 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
 
         {/* Header */}
@@ -126,7 +126,7 @@ export function CompetitorSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 sm:p-8 mb-12 transition-colors duration-500"
+          className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 sm:p-8 mb-6 transition-colors duration-500"
         >
           <div className="flex items-center gap-2 mb-6">
             <Clock className="w-4 h-4 text-gray-500 dark:text-gray-400" />

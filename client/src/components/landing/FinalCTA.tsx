@@ -4,7 +4,7 @@ import { ChevronRight, Zap, Shield, Globe, CheckCircle2 } from 'lucide-react';
 
 export function FinalCTA() {
   return (
-    <section className="relative py-32 overflow-hidden bg-gray-950">
+    <section className="relative py-16 overflow-hidden bg-gray-950">
       {/* Background */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-950/80 via-gray-950 to-indigo-950/80" />

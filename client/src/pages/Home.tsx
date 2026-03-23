@@ -91,7 +91,7 @@ const PLANS = [
 
 function PricingSection() {
   return (
-    <section id="pricing" className="relative py-24 bg-gray-950 transition-colors duration-500 overflow-hidden">
+    <section id="pricing" className="relative py-12 bg-gray-950 transition-colors duration-500 overflow-hidden">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-violet-600/[0.08] rounded-full blur-[140px]" />
@@ -103,7 +103,7 @@ function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-6"
         >
           <p className="text-sm font-bold text-violet-400 uppercase tracking-widest mb-3">Pricing</p>
           <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-3 font-display">
@@ -210,9 +210,9 @@ export default function Home() {
       <FAQ />
 
       {/* 9 — Free Tools cluster */}
-      <section className="bg-gray-50 dark:bg-gray-900/60 border-y border-gray-100 dark:border-gray-800 py-16 transition-colors duration-500">
+      <section className="bg-gray-50 dark:bg-gray-900/60 border-y border-gray-100 dark:border-gray-800 py-8 transition-colors duration-500">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">
                 Free — no account needed
