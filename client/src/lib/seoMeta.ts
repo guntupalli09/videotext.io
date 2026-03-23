@@ -304,6 +304,10 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: 'Subtitle Resources & Standards — Formats, Netflix Rules, CPS Limits | VideoText',
     description: 'Subtitle format specs, Netflix delivery requirements, platform character limits, reading speed standards, and timing rules — all in one reference guide.',
   },
+  '/blog/video-transcription-accuracy-whisper': {
+    title: "Whisper AI Transcription Accuracy: What to Expect in 2026 | VideoText",
+    description: "Real benchmark data on Whisper AI transcription accuracy by language, audio quality, and speaker count. Know what to expect before you process your video.",
+  },
 }
 
 /** Static breadcrumb items (non-SEO-registry routes). */
