@@ -1,64 +1,16 @@
-import { useRef, useMemo, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useRef, useState, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import {
   Play,
-  Mic,
-  FileText,
-  Subtitles,
-  Languages,
-  CheckCircle2,
   ChevronRight,
   Shield,
   Globe,
+  CheckCircle2,
   ArrowDown,
+  Upload,
 } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
-
-function useTypingEffect(text: string, speed = 28, delay = 0) {
-  const [displayed, setDisplayed] = useState('');
-  const [started, setStarted] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setStarted(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-  useEffect(() => {
-    if (!started) return;
-    let i = 0;
-    const iv = setInterval(() => {
-      setDisplayed(text.slice(0, i + 1));
-      i++;
-      if (i >= text.length) clearInterval(iv);
-    }, speed);
-    return () => clearInterval(iv);
-  }, [text, speed, started]);
-  return displayed;
-}
-
-function WaveformBars({ count = 26 }: { count?: number }) {
-  const bars = useMemo(
-    () =>
-      Array.from({ length: count }).map(() => ({
-        h1: 3 + Math.random() * 14,
-        h2: 2 + Math.random() * 16,
-        h3: 3 + Math.random() * 14,
-        dur: 0.7 + Math.random() * 0.55,
-      })),
-    [count]
-  );
-  return (
-    <div className="flex items-end gap-[2px] h-5">
-      {bars.map((b, i) => (
-        <motion.div
-          key={i}
-          className="w-[2px] rounded-full bg-violet-400/50"
-          animate={{ height: [`${b.h1}px`, `${b.h2}px`, `${b.h3}px`] }}
-          transition={{ duration: b.dur, repeat: Infinity, ease: 'easeInOut', delay: i * 0.028 }}
-        />
-      ))}
-    </div>
-  );
-}
 
 const CREATOR_AVATARS = [
   'https://i.pravatar.cc/80?img=12',
@@ -68,197 +20,99 @@ const CREATOR_AVATARS = [
   'https://i.pravatar.cc/80?img=56',
 ];
 
-function ProductDemo() {
-  const line1 = useTypingEffect(
-    'Hey everyone, welcome back to the channel. Today I want to share something that completely changed my editing workflow...',
-    26,
-    2000
-  );
-  const line2 = useTypingEffect(
-    'Instead of spending hours manually typing captions, I just drop my video and the AI handles everything.',
-    26,
-    6200
-  );
-  const fullLine1 =
-    'Hey everyone, welcome back to the channel. Today I want to share something that completely changed my editing workflow...';
+const ACCEPTED = [
+  'video/mp4', 'video/quicktime', 'video/webm', 'video/x-matroska',
+  'video/x-msvideo', 'video/mpeg', 'video/ogg', 'video/3gpp',
+  'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/webm', 'audio/mp4',
+  'audio/flac', 'audio/aac',
+];
+
+function HeroDropzone() {
+  const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const handleFile = useCallback((file: File) => {
+    (window as Window & { __videotextPendingFile?: File }).__videotextPendingFile = file;
+    navigate('/video-to-transcript');
+  }, [navigate]);
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFile(file);
+  }, [handleFile]);
+
+  const onDragOver = (e: React.DragEvent) => { e.preventDefault(); setDragging(true); };
+  const onDragLeave = () => setDragging(false);
+
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFile(file);
+  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 36, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay: 1.05, duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
-      className="w-full max-w-3xl mx-auto"
+      initial={{ opacity: 0, y: 28 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.85, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="w-full max-w-xl mx-auto"
     >
-      {/* Browser chrome */}
-      <div className="rounded-t-2xl border border-b-0 border-white/[0.08] bg-white/[0.03] px-4 py-2.5 flex items-center gap-3">
-        <div className="flex gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-          <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
-        </div>
-        <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06]">
-            <img src="/logo.svg" alt="" className="w-3 h-3 opacity-40" />
-            <span className="text-[10px] text-white/30 font-mono">videotext.io/transcript</span>
-          </div>
-        </div>
-      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={ACCEPTED.join(',')}
+        className="hidden"
+        onChange={onInputChange}
+      />
 
-      {/* Panel body */}
-      <div className="rounded-b-2xl border border-white/[0.08] bg-gray-900/90 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/60">
-        <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.05]">
-          {/* Left: video */}
-          <div className="p-4 sm:p-5">
-            <div className="aspect-video rounded-xl bg-gray-800 border border-white/[0.05] overflow-hidden relative flex items-center justify-center">
-              <ImageWithFallback
-                src="https://images.unsplash.com/photo-1604272986062-67ef7145f0ef?w=400&q=80"
-                alt="Creator recording"
-                width={400}
-                height={225}
-                className="w-full h-full object-cover opacity-75"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-              {/* Subtitle overlay */}
-              <motion.div
-                className="absolute bottom-3 left-3 right-3"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 3.2, duration: 0.5 }}
-              >
-                <div className="bg-black/80 backdrop-blur-sm rounded-lg px-3 py-1.5 text-center">
-                  <span className="text-[11px] text-white/90">...completely changed my workflow</span>
-                </div>
-              </motion.div>
-              {/* Play button */}
-              <motion.div
-                className="absolute inset-0 flex items-center justify-center"
-                animate={{ opacity: [0.7, 0.35, 0.7] }}
-                transition={{ duration: 2.8, repeat: Infinity }}
-              >
-                <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20">
-                  <Play className="w-4 h-4 text-white ml-0.5" />
-                </div>
-              </motion.div>
-              {/* Processing badge */}
-              <motion.div
-                className="absolute top-2.5 right-2.5"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.3 }}
-              >
-                <div className="flex items-center gap-1 bg-violet-600/90 backdrop-blur-sm rounded-md px-2 py-1">
-                  <motion.div
-                    className="w-1.5 h-1.5 rounded-full bg-white"
-                    animate={{ opacity: [1, 0.3, 1] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  />
-                  <span className="text-[9px] text-white font-medium">Transcribing</span>
-                </div>
-              </motion.div>
-            </div>
-            {/* Waveform */}
-            <div className="mt-3 flex items-center gap-2">
-              <motion.div
-                className="w-5 h-5 rounded-md bg-violet-500/20 flex items-center justify-center flex-shrink-0"
-                animate={{ scale: [1, 1.12, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                <Mic className="w-2.5 h-2.5 text-violet-400" />
-              </motion.div>
-              <div className="flex-1">
-                <WaveformBars count={30} />
-              </div>
-              <span className="text-[9px] font-mono text-white/20 flex-shrink-0">04:32</span>
-            </div>
-          </div>
-
-          {/* Right: transcript */}
-          <div className="p-4 sm:p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <FileText className="w-3.5 h-3.5 text-violet-400/60" />
-              <span className="text-[11px] font-semibold text-white/50">Transcript</span>
-              <motion.div
-                className="ml-auto flex items-center gap-1.5"
-                animate={{ opacity: [1, 0.4, 1] }}
-                transition={{ duration: 1.4, repeat: Infinity }}
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                <span className="text-[9px] text-emerald-400 font-medium">Live</span>
-              </motion.div>
-            </div>
-            <div className="space-y-3 text-[12px] text-white/60 leading-relaxed min-h-[110px]">
-              <div className="flex gap-2">
-                <span className="text-[9px] font-mono text-violet-400/40 mt-0.5 shrink-0 w-8">00:00</span>
-                <p>
-                  {line1}
-                  {line1.length < fullLine1.length && (
-                    <motion.span
-                      className="inline-block w-[1.5px] h-3.5 bg-violet-400 ml-0.5 align-middle"
-                      animate={{ opacity: [1, 0] }}
-                      transition={{ duration: 0.5, repeat: Infinity }}
-                    />
-                  )}
-                </p>
-              </div>
-              {line1.length >= fullLine1.length && (
-                <motion.div
-                  className="flex gap-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <span className="text-[9px] font-mono text-violet-400/40 mt-0.5 shrink-0 w-8">00:08</span>
-                  <p>
-                    {line2}
-                    <motion.span
-                      className="inline-block w-[1.5px] h-3.5 bg-violet-400 ml-0.5 align-middle"
-                      animate={{ opacity: [1, 0] }}
-                      transition={{ duration: 0.5, repeat: Infinity }}
-                    />
-                  </p>
-                </motion.div>
-              )}
-            </div>
-            {/* Export options */}
-            <motion.div
-              className="mt-4 pt-3 border-t border-white/[0.05]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 3.0, duration: 0.5 }}
-            >
-              <p className="text-[10px] text-white/25 mb-2 font-medium uppercase tracking-wide">Export as</p>
-              <div className="flex flex-wrap gap-1.5">
-                {[
-                  { label: 'SRT', icon: Subtitles, color: 'text-blue-400' },
-                  { label: 'TXT', icon: FileText, color: 'text-gray-400' },
-                  { label: 'Translate', icon: Languages, color: 'text-pink-400' },
-                ].map((f) => (
-                  <div
-                    key={f.label}
-                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/[0.04] border border-white/[0.05] text-[9px] font-medium text-white/35"
-                  >
-                    <f.icon className={`w-2.5 h-2.5 ${f.color}`} />
-                    {f.label}
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="Drop a video or audio file here, or click to browse"
+        onClick={() => inputRef.current?.click()}
+        onKeyDown={(e) => e.key === 'Enter' && inputRef.current?.click()}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        className={`
+          relative cursor-pointer rounded-2xl border-2 border-dashed px-8 py-12
+          flex flex-col items-center gap-4 transition-all duration-200 select-none
+          ${dragging
+            ? 'border-violet-400 bg-violet-500/10 scale-[1.015]'
+            : 'border-white/20 bg-white/[0.03] hover:border-violet-400/60 hover:bg-violet-500/[0.06]'
+          }
+        `}
+      >
+        {/* Icon */}
+        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors ${
+          dragging ? 'bg-violet-500/20' : 'bg-white/[0.05]'
+        }`}>
+          {dragging
+            ? <Upload className="w-7 h-7 text-violet-400" />
+            : <span className="text-4xl" aria-hidden>🎬</span>
+          }
         </div>
 
-        {/* Bottom metrics bar */}
-        <div className="px-5 py-3 border-t border-white/[0.05] bg-white/[0.015] flex flex-wrap items-center justify-between gap-3">
-          {[
-            { value: '2M+', label: 'min transcribed' },
-            { value: '98.5%', label: 'accuracy' },
-            { value: '50+', label: 'languages' },
-            { value: '< 3min', label: 'for 2hr video' },
-          ].map((s) => (
-            <div key={s.label} className="flex items-baseline gap-1.5">
-              <span className="text-sm font-bold text-white/75">{s.value}</span>
-              <span className="text-[10px] text-white/30">{s.label}</span>
-            </div>
-          ))}
+        {/* Text */}
+        <div className="text-center">
+          <p className="text-white font-bold text-lg leading-snug">
+            {dragging ? 'Release to upload' : 'Drop a video file here'}
+          </p>
+          <p className="text-white/40 text-sm mt-1">
+            MP4, MOV, WebM, MKV — or click to browse
+          </p>
+        </div>
+
+        {/* Trust micro-copy */}
+        <div className="flex items-center gap-3 text-[11px] text-white/25 mt-1">
+          <span className="flex items-center gap-1">
+            <Shield className="w-3 h-3 text-emerald-500/60" />
+            No signup required
+          </span>
+          <span className="w-px h-3 bg-white/10" />
+          <span>Files deleted after processing</span>
         </div>
       </div>
     </motion.div>
@@ -298,7 +152,7 @@ export function Hero() {
           <div className="absolute top-[35%] right-[5%] w-[350px] h-[350px] bg-indigo-600/[0.07] rounded-full blur-[100px]" />
         </div>
 
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-28 sm:pt-32 pb-8">
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-28 sm:pt-32 pb-16">
 
           {/* Speed badge */}
           <motion.div
@@ -321,7 +175,7 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* H1 — clear, fast comprehension */}
+          {/* H1 */}
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -339,38 +193,27 @@ export function Hero() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45, duration: 0.6 }}
-            className="text-center text-[17px] sm:text-[18px] text-white/50 max-w-lg mx-auto leading-relaxed mb-8"
+            className="text-center text-[17px] sm:text-[18px] text-white/50 max-w-lg mx-auto leading-relaxed mb-10"
           >
-            AI transcription that's 6× faster than the competition — with 98.5% accuracy and{' '}
-            <span className="text-white/75 font-medium">files deleted the moment processing ends.</span>
+            Drop your video. Get a speaker-separated, export-ready transcript — instantly.
           </motion.p>
 
-          {/* Primary CTA */}
+          {/* ── HERO DROPZONE ── */}
+          <HeroDropzone />
+
+          {/* Secondary CTA */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1, duration: 0.5 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-7"
           >
-            <Link to="/video-to-transcript">
-              <motion.span
-                whileHover={{ y: -2, scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                className="group relative inline-flex items-center gap-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-bold shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 transition-all overflow-hidden text-[15px]"
-              >
-                <span className="absolute inset-0 bg-white/[0.08] opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span className="relative flex items-center gap-2">
-                  Start Free — No Card Needed
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                </span>
-              </motion.span>
-            </Link>
             <Link
               to="/guide"
-              className="flex items-center gap-2 px-5 py-4 text-white/45 hover:text-white/75 transition-colors text-sm font-medium"
+              className="flex items-center gap-2 px-5 py-3 text-white/40 hover:text-white/65 transition-colors text-sm font-medium"
             >
-              <div className="w-7 h-7 rounded-full border border-white/15 flex items-center justify-center bg-white/[0.04]">
-                <Play className="w-3 h-3 ml-0.5" />
+              <div className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center bg-white/[0.04]">
+                <Play className="w-2.5 h-2.5 ml-0.5" />
               </div>
               See how it works
             </Link>
@@ -380,8 +223,8 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.75, duration: 0.5 }}
-            className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-10 text-[12px] text-white/35"
+            transition={{ delay: 1.2, duration: 0.5 }}
+            className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-8 text-[12px] text-white/35"
           >
             <span className="flex items-center gap-1.5">
               <Shield className="w-3.5 h-3.5 text-emerald-500" />
@@ -403,35 +246,24 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.9, duration: 0.5 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-12"
+            transition={{ delay: 1.3, duration: 0.5 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mt-8"
           >
             <div className="flex items-center gap-2.5">
               <div className="flex items-center -space-x-2">
                 {CREATOR_AVATARS.map((src, i) => (
-                  <motion.div
+                  <ImageWithFallback
                     key={i}
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.95 + i * 0.06, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <ImageWithFallback
-                      src={src}
-                      alt=""
-                      width={28}
-                      height={28}
-                      className="w-7 h-7 rounded-full border-2 border-gray-950 object-cover"
-                    />
-                  </motion.div>
+                    src={src}
+                    alt=""
+                    width={28}
+                    height={28}
+                    className="w-7 h-7 rounded-full border-2 border-gray-950 object-cover"
+                  />
                 ))}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 1.25, duration: 0.3 }}
-                  className="w-7 h-7 rounded-full border-2 border-gray-950 bg-violet-500/25 flex items-center justify-center"
-                >
+                <div className="w-7 h-7 rounded-full border-2 border-gray-950 bg-violet-500/25 flex items-center justify-center">
                   <span className="text-[8px] font-bold text-violet-300">2K+</span>
-                </motion.div>
+                </div>
               </div>
               <p className="text-[12px] text-white/35">
                 <span className="text-white/65 font-semibold">2,000+ creators</span> trust VideoText
@@ -450,15 +282,12 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* Product demo */}
-          <ProductDemo />
-
           {/* Scroll cue */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 2.6, duration: 0.8 }}
-            className="flex justify-center mt-10"
+            transition={{ delay: 1.6, duration: 0.8 }}
+            className="flex justify-center mt-12"
           >
             <motion.div
               animate={{ y: [0, 6, 0] }}
@@ -471,7 +300,7 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* Bottom fade to next section */}
+        {/* Bottom fade */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-950 to-transparent z-[8]" />
       </motion.section>
     </div>
