@@ -16,7 +16,10 @@ import OfflineBanner from './components/OfflineBanner'
 // import { WorkflowTracker } from './components/workflow/WorkflowTracker'
 // import { TexAgent } from './components/TexAgent'
 // import TexErrorBoundary from './components/TexAgent/TexErrorBoundary'
-// import FeedbackPrompt from './components/FeedbackPrompt'
+import FeedbackPrompt from './components/FeedbackPrompt'
+import FeedbackOrchestrator from './components/feedbackSystem/FeedbackOrchestrator'
+import { trackAppEvent } from './lib/feedbackEvents'
+import { getLifetimeSessionCount, getSessionId } from './lib/sessionTracking'
 
 // Lazy-load pages for fast initial load on any device; each route loads only when visited.
 const Home = lazy(() => import('./pages/Home'))
@@ -342,11 +345,24 @@ function ImpersonationHandler() {
   return null
 }
 
+function SessionTracker() {
+  useEffect(() => {
+    // Initialise session ID (creates one if it doesn't exist yet)
+    getSessionId()
+    // Fire session_returned for users who have been here before
+    if (getLifetimeSessionCount() >= 2) {
+      trackAppEvent('session_returned')
+    }
+  }, []) // once per mount
+  return null
+}
+
 function App() {
   return (
     <BrowserRouter>
       {/* <WorkflowProvider> */}
       <AppSeo />
+      <SessionTracker />
       <PostCheckoutHandler />
       <ImpersonationHandler />
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-violet-600 focus:text-white focus:rounded-lg">
@@ -443,7 +459,8 @@ function App() {
         {/* <TexErrorBoundary>
           <TexAgent />
         </TexErrorBoundary> */}
-        {/* <FeedbackPrompt /> */}
+        <FeedbackPrompt />
+        <FeedbackOrchestrator />
         <Toaster position="top-right" />
       </div>
       {/* </WorkflowProvider> */}

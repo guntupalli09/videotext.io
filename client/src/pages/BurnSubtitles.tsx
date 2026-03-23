@@ -23,6 +23,7 @@ import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 import { Minimize2, FileText, MessageSquare } from 'lucide-react'
 import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+import { trackAppEvent } from '../lib/feedbackEvents'
 // import { emitToolCompleted } from '../workflow/workflowStore'
 
 /** Optional SEO overrides for alternate entry points. Do NOT duplicate logic. */
@@ -202,7 +203,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
             setLastProcessingMs(processingMs)
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback('burn-subtitles')
+            dispatchJobCompletedForFeedback('burn-subtitles'); trackAppEvent('transcription_completed', { toolId: 'burn-subtitles' })
             // emitToolCompleted({ toolId: 'burn-subtitles', pathname: '/burn-subtitles', processingMs })
             incrementUsage('burn-subtitles')
             // texJobCompleted(processingMs, 'burn-subtitles')

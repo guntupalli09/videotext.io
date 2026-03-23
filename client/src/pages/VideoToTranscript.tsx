@@ -22,6 +22,7 @@ import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolli
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
 import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+import { trackAppEvent } from '../lib/feedbackEvents'
 import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import { segmentsToSrt, segmentsToVtt, formatTimestamp, type Segment } from '../lib/srtExport'
@@ -324,7 +325,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           setPartialSegments([])
           setStatus('completed')
           setResult(jobStatus.result ?? null)
-          dispatchJobCompletedForFeedback('video-to-transcript')
+          dispatchJobCompletedForFeedback('video-to-transcript'); trackAppEvent('transcription_completed', { toolId: 'video-to-transcript' })
           // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
           setUploadPhase('processing')
           setUploadProgress(100)
@@ -392,7 +393,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               setPartialSegments([])
               setStatus('completed')
               setResult(s.result ?? null)
-              dispatchJobCompletedForFeedback('video-to-transcript')
+              dispatchJobCompletedForFeedback('video-to-transcript'); trackAppEvent('transcription_completed', { toolId: 'video-to-transcript' })
               // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
               if (s.result?.segments?.length) {
                 const textFromSegments = s.result.segments.map((seg: { text: string }) => seg.text).join('\n\n')
@@ -699,7 +700,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             setPartialSegments([])
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback('video-to-transcript')
+            dispatchJobCompletedForFeedback('video-to-transcript'); trackAppEvent('transcription_completed', { toolId: 'video-to-transcript' })
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
             // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
@@ -938,7 +939,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             setPartialSegments([])
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback('video-to-transcript')
+            dispatchJobCompletedForFeedback('video-to-transcript'); trackAppEvent('transcription_completed', { toolId: 'video-to-transcript' })
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
             // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
@@ -1358,6 +1359,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const segmentsForExport = editableSegments && editableSegments.length > 0 ? editableSegments : (result?.segments ?? null)
 
   const handleExportSrt = () => {
+    trackAppEvent('export_clicked', { toolId: 'video-to-transcript', format: 'srt' })
     if (!segmentsForExport?.length) {
       toast.error('Enable summary or chapters to get timestamps, then export SRT.')
       return

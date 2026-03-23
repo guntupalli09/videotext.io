@@ -24,6 +24,8 @@ import { requestIdMiddleware } from './middleware/requestId'
 import { getLogger } from './lib/logger'
 import healthRoutes from './routes/health'
 import feedbackRoutes from './routes/feedback'
+import eventsRoutes from './routes/events'
+import feedbackSystemRoutes from './routes/feedbackSystem'
 import adminDashboardRoutes, { clearDashboardCache } from './routes/adminDashboard'
 import adminSupportRoutes, { runAlertChecks, maybeSendDailyDigest } from './routes/adminSupport'
 import { runRecompute } from './services/recomputeMetrics'
@@ -217,6 +219,9 @@ app.use('/api/billing', billingRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/translate-transcript', translateTranscriptRoutes)
 app.use('/api/feedback', feedbackRoutes)
+app.use('/api/events', eventsRoutes)
+app.use('/api/feedback', feedbackSystemRoutes)
+app.use('/api/admin/feedback', feedbackSystemRoutes)
 app.use('/api/admin', adminDashboardRoutes)
 app.use('/api/admin', adminSupportRoutes)
 
