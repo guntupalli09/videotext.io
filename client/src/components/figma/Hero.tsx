@@ -174,7 +174,7 @@ export function Hero() {
         {/* H1 */}
         <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5">
           Clean transcripts from
-          <span className="block mt-1 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+          <span className="block mt-3 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
             anything you record.
           </span>
         </h1>
