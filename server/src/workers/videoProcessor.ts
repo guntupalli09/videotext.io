@@ -13,7 +13,7 @@ import { exportTranscriptJson, exportTranscriptDocx, exportTranscriptPdf } from 
 import { fireWebhook } from '../utils/webhook'
 import { transcribeWithDiarization, resolveSpeakerNames } from '../services/diarization'
 import { convertSubtitleFile } from '../services/subtitleConverter'
-import { burnSubtitles, compressVideo, getVideoDuration, HUNG_JOB_MESSAGE, type CompressProfile } from '../services/ffmpeg'
+import { burnSubtitles, compressVideo, getVideoDuration, HUNG_JOB_MESSAGE, extractAudioForPlayback, type CompressProfile } from '../services/ffmpeg'
 import { generateOutputFilename, downloadVideoFromURL, validateVideoDuration } from '../services/video'
 import { validateFileType, validateFileSize } from '../utils/fileValidation'
 import { trimVideoSegment } from '../services/trimming'
@@ -546,6 +546,8 @@ async function processJob(job: import('bull').Job<JobData>) {
           let fullText: string
           let segments: { start: number; end: number; text: string; speaker?: string }[] = []
           const processingStartMs = Date.now()
+          // Resolved inside the else-branch once videoPath is known; null for captions-only jobs
+          let audioExtractionPromise: Promise<string | null> = Promise.resolve(null)
 
           if (data.precomputedTranscript) {
             fullText = data.precomputedTranscript.fullText
@@ -585,6 +587,17 @@ async function processJob(job: import('bull').Job<JobData>) {
             data.trimmedStart !== undefined && data.trimmedEnd !== undefined
               ? Math.max(0, data.trimmedEnd - data.trimmedStart)
               : durationCheck.duration || 0
+
+          // Kick off AAC extraction in parallel with transcription — never blocks the job.
+          // Produces a universally browser-compatible audio file for the in-app player.
+          const audioFilename = generateOutputFilename(data.originalName || 'video', '_audio', '.m4a')
+          const audioOutputPath = path.join(tempDir, audioFilename)
+          audioExtractionPromise = extractAudioForPlayback(videoPath, audioOutputPath)
+            .then(() => `/api/audio/${audioFilename}`)
+            .catch((err: Error) => {
+              log.warn({ msg: 'audio_extraction_for_playback_failed', error: err.message, jobId: String(jobId) })
+              return null
+            })
 
           const needVerbose = includeSummary || includeChapters || exportFormats.includes('json')
           const wantDiarization = options?.speakerDiarization === true
@@ -725,6 +738,9 @@ async function processJob(job: import('bull').Job<JobData>) {
             /* keep fullText unchanged on error */
           }
 
+          // Await the parallel audio extraction started above (almost always already done by now)
+          const playbackAudioUrl = await audioExtractionPromise
+
           const fileReceivedToTranscriptionFinishedMs = Date.now() - processingStartMs
           log.info({
             msg: 'processing_timing',
@@ -856,6 +872,8 @@ async function processJob(job: import('bull').Job<JobData>) {
             processingMs: fileReceivedToTranscriptionFinishedMs,
             videoDurationSeconds: processedSeconds,
             ...(STREAM_PROGRESS && { streamProgress: true }),
+            // Server-transcoded AAC audio for the in-app player (null when extraction failed)
+            ...(playbackAudioUrl && { audioUrl: playbackAudioUrl }),
           }
 
           const outputPath = path.join(tempDir, primaryFileName)

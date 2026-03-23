@@ -82,6 +82,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     segments?: { start: number; end: number; text: string; speaker?: string }[]
     summary?: { summary: string; bullets: string[]; actionItems?: string[] }
     chapters?: { title: string; startTime: number; endTime?: number }[]
+    audioUrl?: string
   } | null>(null)
   const [transcriptPreview, setTranscriptPreview] = useState('')
   const [fullTranscript, setFullTranscript] = useState('')
@@ -224,11 +225,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setVideoPreviewUrl(null)
   }, [selectedFile])
 
-  // Audio object URL for transcript panel playback (only available in the same session as upload)
+  // Audio for transcript panel playback — use server-transcoded AAC so every browser and
+  // every input format (WebM, AVI, MOV, MKV, AC3, DTS, …) works, including Safari.
   useEffect(() => {
-    if (selectedFile && status === 'completed') {
-      const url = URL.createObjectURL(selectedFile)
-      setAudioObjectUrl(url)
+    if (status === 'completed' && result?.audioUrl) {
+      setAudioObjectUrl(result.audioUrl)
       setActiveSegIdx(-1)
       setAudioIsPlaying(false)
       audioPlaybackTimeRef.current = 0
@@ -236,14 +237,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(0)
       return () => {
         setAudioObjectUrl(null)
-        URL.revokeObjectURL(url)
       }
     }
     setAudioObjectUrl(null)
     setActiveSegIdx(-1)
     setAudioIsPlaying(false)
     audioPlaybackTimeRef.current = 0
-  }, [selectedFile, status])
+  }, [result?.audioUrl, status])
 
   // Sync editable segments from result (so inline edits are preserved until result changes)
   useEffect(() => {
