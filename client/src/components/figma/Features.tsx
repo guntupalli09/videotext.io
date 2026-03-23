@@ -9,8 +9,6 @@ import {
   Package,
   FolderSync,
   ChevronRight,
-  Zap,
-  Lock,
   Mic,
   CheckCircle2,
   ArrowRight,
@@ -109,11 +107,6 @@ const SECONDARY_TOOLS = [
   },
 ];
 
-const TRUST_PILLS = [
-  { icon: Zap, label: 'Fastest workflow', desc: '6× faster than Descript, Otter, Trint' },
-  { icon: Package, label: 'All-in-one', desc: 'Every caption workflow in one place' },
-  { icon: Lock, label: 'Privacy-first', desc: 'Files deleted immediately after processing' },
-];
 
 function SpotlightCard({ tool, index }: { tool: (typeof SPOTLIGHT_TOOLS)[0]; index: number }) {
   const Icon = tool.icon;
@@ -267,35 +260,6 @@ export function Features() {
           <p className="text-lg text-gray-500 dark:text-white/40 max-w-xl mx-auto transition-colors duration-500">
             Eight purpose-built tools covering every stage of the video captioning pipeline. No bloated editor. No learning curve.
           </p>
-        </motion.div>
-
-        {/* Trust pills */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex flex-wrap justify-center gap-3 mb-14"
-        >
-          {TRUST_PILLS.map((w) => {
-            const Icon = w.icon;
-            return (
-              <div
-                key={w.label}
-                className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-gray-50 dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.06] shadow-sm transition-colors duration-500"
-              >
-                <div className="w-6 h-6 rounded-full bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0 transition-colors duration-500">
-                  <Icon className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
-                </div>
-                <span className="text-[13px] font-semibold text-gray-800 dark:text-white/80 transition-colors duration-500">
-                  {w.label}
-                </span>
-                <span className="hidden sm:inline text-[12px] text-gray-400 dark:text-white/30 transition-colors duration-500">
-                  — {w.desc}
-                </span>
-              </div>
-            );
-          })}
         </motion.div>
 
         {/* Spotlight tools — 2 large cards */}
