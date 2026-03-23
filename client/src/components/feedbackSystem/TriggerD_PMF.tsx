@@ -10,7 +10,7 @@
 
 import { useState } from 'react'
 import FeedbackSheet, {
-  SheetTitle, SheetSubtitle, OptionButton, SubmitButton, SkipButton, ThankYouState,
+  SheetTitle, SheetSubtitle, SubmitButton, SkipButton, ThankYouState,
 } from './FeedbackSheet'
 import { submitStructuredFeedback } from '../../lib/feedbackEvents'
 
