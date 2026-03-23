@@ -23,12 +23,12 @@ const OPTIONS = [
   {
     label: '😕  Somewhat disappointed',
     value: 'Somewhat disappointed',
-    desc: 'It's useful but I'd find an alternative',
+    desc: "It's useful but I'd find an alternative",
   },
   {
     label: '😐  Not disappointed',
     value: 'Not disappointed',
-    desc: 'It's not essential to my workflow',
+    desc: "It's not essential to my workflow",
   },
 ]
 
