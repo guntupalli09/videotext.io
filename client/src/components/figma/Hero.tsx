@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import {
   Play,
+  Mic,
   Shield,
   Globe,
   CheckCircle2,
   ArrowDown,
   Upload,
+  ChevronRight,
 } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
 
@@ -114,6 +116,37 @@ function HeroDropzone() {
           <span>Files deleted after processing</span>
         </div>
       </div>
+
+      {/* Divider */}
+      <div className="flex items-center gap-3 my-4">
+        <div className="flex-1 h-px bg-white/[0.07]" />
+        <span className="text-[11px] text-white/25 font-medium tracking-wider uppercase">or</span>
+        <div className="flex-1 h-px bg-white/[0.07]" />
+      </div>
+
+      {/* Record option */}
+      <Link
+        to="/voice-recorder"
+        className="group flex items-center gap-4 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:border-violet-500/40 hover:bg-violet-500/[0.06] px-5 py-4 transition-all duration-200"
+      >
+        {/* Mic icon */}
+        <div className="w-10 h-10 rounded-xl bg-violet-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-500/25 transition-colors">
+          <Mic className="w-5 h-5 text-violet-400" />
+        </div>
+
+        {/* Text */}
+        <div className="flex-1 min-w-0">
+          <p className="text-white font-semibold text-[14px] leading-tight">
+            Record to get a transcript
+          </p>
+          <p className="text-white/35 text-[12px] mt-0.5">
+            Record directly in your browser — no upload needed
+          </p>
+        </div>
+
+        {/* Arrow */}
+        <ChevronRight className="w-4 h-4 text-white/25 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+      </Link>
     </motion.div>
   );
 }
