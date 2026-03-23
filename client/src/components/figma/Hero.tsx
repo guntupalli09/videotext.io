@@ -199,11 +199,9 @@ export function Hero() {
                 animate={{ opacity: [1, 0.4, 1] }}
                 transition={{ duration: 1.4, repeat: Infinity }}
               />
-              <span className="text-[11px] font-semibold text-violet-300 tracking-wide">6× faster than Descript</span>
-              <span className="w-px h-3 bg-violet-500/30" />
-              <span className="text-[11px] text-white/40">98.5% accuracy</span>
-              <span className="w-px h-3 bg-violet-500/30" />
-              <span className="text-[11px] text-white/40">Zero data retention</span>
+              <span className="text-[11px] text-white/40">Tired of slowness?</span>
+              <span className="text-[11px] text-white/25">·········</span>
+              <span className="text-[11px] font-semibold text-violet-300 tracking-wide">6× faster transcription</span>
             </div>
           </motion.div>
 
@@ -214,9 +212,9 @@ export function Hero() {
             transition={{ delay: 0.25, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="text-center font-display text-5xl sm:text-6xl md:text-[4.25rem] lg:text-[5rem] font-extrabold tracking-tight text-white leading-[1.04] mb-5"
           >
-            Video to Text.
+            Clean transcripts from
             <span className="block mt-1 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-              In Minutes.
+              anything you record.
             </span>
           </motion.h1>
 
@@ -227,7 +225,8 @@ export function Hero() {
             transition={{ delay: 0.45, duration: 0.6 }}
             className="text-center text-[17px] sm:text-[18px] text-white/50 max-w-lg mx-auto leading-relaxed mb-10"
           >
-            Drop your video. Get a speaker-separated, export-ready transcript — instantly.
+            Upload a video or speak directly — get export-ready text{' '}
+            <span className="text-violet-300 font-medium">instantly.</span>
           </motion.p>
 
           {/* ── HERO DROPZONE ── */}
@@ -259,18 +258,23 @@ export function Hero() {
             className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-8 text-[12px] text-white/35"
           >
             <span className="flex items-center gap-1.5">
-              <Shield className="w-3.5 h-3.5 text-emerald-500" />
-              Files deleted immediately
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+              No signup required
             </span>
             <span className="hidden sm:block w-px h-3 bg-white/10" />
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-violet-400" />
-              No credit card required
+              Frictionless
             </span>
             <span className="hidden sm:block w-px h-3 bg-white/10" />
             <span className="flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5 text-blue-400" />
-              50+ languages
+              <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
+              98.5% accuracy
+            </span>
+            <span className="hidden sm:block w-px h-3 bg-white/10" />
+            <span className="flex items-center gap-1.5">
+              <Shield className="w-3.5 h-3.5 text-emerald-400" />
+              Zero data retention
             </span>
           </motion.div>
 
