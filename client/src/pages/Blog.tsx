@@ -13,6 +13,58 @@ interface BlogPost {
 
 const POSTS: BlogPost[] = [
   {
+    slug: 'voice-to-text-free-in-browser',
+    date: 'March 22, 2026',
+    title: 'Voice to text in your browser — free, no app, no upload',
+    summary: 'The fastest way to turn speech into text: open a tab, hit record, speak. No file to prepare, no account needed. Here is how it works and when to use it.',
+    tag: 'New feature',
+    readTime: '4 min read',
+    content: (
+      <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p>
+          Every other transcription tool asks you to record audio somewhere else first, save a file, then upload it. That is three extra steps before you even start. Voice to Text removes all of them. You open a tab, click a button, and speak. The transcript appears when you stop.
+        </p>
+        <p>
+          No account required. No file to prepare. No app to install.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">How it works</h3>
+        <p>
+          Your browser already has a microphone API. We use it directly — Chrome, Firefox, Safari, and Edge all support it. When you click the mic button, your browser asks for microphone permission (once), then starts recording compressed audio locally. The waveform shows your audio is being captured. When you stop, the audio uploads and our AI (OpenAI Whisper) transcribes it. Results come back in seconds, not minutes.
+        </p>
+        <p>
+          For a 5-minute recording, expect the transcript in under 15 seconds. For 30 minutes, under 90 seconds.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">When to use Voice to Text instead of video upload</h3>
+        <ul className="list-disc pl-5 space-y-2">
+          <li><strong>Live interviews and calls</strong> — You are in the moment. You do not want to worry about screen recording or exporting. Just record from the browser.</li>
+          <li><strong>Voice notes</strong> — Faster than typing. Speak your thoughts, get a text draft, paste it wherever you need.</li>
+          <li><strong>Lectures and workshops</strong> — Open the tool on your laptop, hit record at the start, stop at the end. Full transcript waiting for you.</li>
+          <li><strong>Quick meetings</strong> — For a one-hour team sync where you don't have a video recording, this is the fastest way to get written notes.</li>
+          <li><strong>Any time you don't have a video file</strong> — If you're starting from scratch, recording directly is always faster than creating a file first.</li>
+        </ul>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Tips for best accuracy</h3>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>Use a quiet room or a headset — background noise is filtered but still affects accuracy.</li>
+          <li>Speak at a normal, steady pace. Whispering or rushing lowers confidence.</li>
+          <li>Say punctuation cues if you need them ("period", "new paragraph") — Whisper sometimes picks these up naturally.</li>
+          <li>Accents are handled well. Whisper is trained across hundreds of languages and accent variations.</li>
+        </ul>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Up to 1 hour per session</h3>
+        <p>
+          The recorder supports up to 60 minutes per session on all plans. Hit stop whenever you're done — you don't have to use the full hour. The transcript covers everything from start to stop.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Privacy</h3>
+        <p>
+          The audio is sent to our server for transcription and then immediately deleted. We never store your recordings or transcripts. Nothing is retained after your session ends.
+        </p>
+        <p>
+          Try it now — no signup needed:{' '}
+          <a href="/voice-recorder" className="text-purple-600 dark:text-purple-400 hover:underline font-medium">Voice to Text →</a>
+        </p>
+      </div>
+    ),
+  },
+  {
     slug: 'how-to-transcribe-zoom-recording',
     date: 'March 7, 2026',
     title: 'How to transcribe a Zoom recording: step-by-step guide',
@@ -822,6 +874,274 @@ Today we are covering subtitle formats.`}
         <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Plan availability</h3>
         <p>
           Batch processing requires a Pro, Creator Pro, or Agency plan. Pro supports up to 20 videos per batch with a 60-minute total duration. Agency supports up to 100 videos with a 300-minute total. Creator Pro matches Pro limits at $10/month for early users.
+        </p>
+      </div>
+    ),
+  },
+  {
+    slug: 'best-transcription-tools-for-journalists',
+    date: 'March 18, 2026',
+    title: 'Best transcription tools for journalists in 2026',
+    summary:
+      'Journalists need accurate transcripts fast — for quotes, fact-checking, and story filing. Here are the tools that actually hold up under deadline pressure.',
+    tag: 'Roundup',
+    readTime: '7 min read',
+    content: (
+      <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p>
+          Transcribing interviews is one of the most time-consuming parts of journalism. A 30-minute phone call can take 90 minutes to transcribe manually. The right tool cuts that to minutes — and gives you searchable text you can quote directly.
+        </p>
+        <p>
+          Here are the tools journalists actually use in 2026, with honest notes on where each one falls short.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">1. VideoText — best for accuracy and privacy</h3>
+        <p>
+          VideoText uses OpenAI Whisper large-v3 for transcription — one of the most accurate speech models available. It handles MP3s from digital voice recorders, M4As from iPhone Voice Memos, and MP4s from Zoom or Teams calls.
+        </p>
+        <p>
+          What makes it good for journalism: files are deleted immediately after processing. No cloud retention, no storage of sensitive source recordings. Speaker labels separate interviewer and interviewee. Results stream in real time — a 60-minute interview transcribes in 5–8 minutes.
+        </p>
+        <p>
+          Free tier: 3 imports per month. Paid plans start at $19/month for 450 minutes. No per-minute fees.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">2. Otter.ai — best for live recording in the field</h3>
+        <p>
+          Otter.ai records and transcribes in real time through its mobile app. Useful for press conferences or town halls where you want a live transcript appearing as people speak. Free tier is generous (300 minutes/month). Accuracy is slightly lower than Whisper on recorded audio.
+        </p>
+        <p>
+          Downside: Otter stores your recordings on their servers by default. If source protection matters, review your data settings carefully.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">3. Trint — best for broadcast journalists</h3>
+        <p>
+          Trint is built for newsrooms. It has an interactive editor where you can click any word to play from that point, and it supports team collaboration. Pricing starts at $80/month per seat, making it more suited to staff reporters at larger outlets than freelancers.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">4. Sonix — best for multilingual coverage</h3>
+        <p>
+          Sonix supports 35+ languages and has a clean editor for correcting transcripts. It charges $22/month plus $0.10/minute overage — costs add up quickly for long interviews. No free tier, just a 30-minute trial.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">5. Rev — best for human transcription</h3>
+        <p>
+          Rev offers human transcriptionists at $1.50/minute with ~99% accuracy and turnaround in a few hours. Much slower than AI tools and expensive for long recordings, but the right choice for sensitive long-form investigations where you need absolutely verified text.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">What to look for as a journalist</h3>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>Accuracy on phone recordings</strong> — phone audio is lower quality than in-person. Test your tool on a real phone call.</li>
+          <li><strong>Speaker separation</strong> — you need to know who said what, especially in multi-source interviews.</li>
+          <li><strong>Privacy policy</strong> — check whether recordings are stored and for how long. Source protection matters.</li>
+          <li><strong>Speed</strong> — on deadline, you need a transcript in minutes, not hours.</li>
+          <li><strong>Format support</strong> — voice recorders export MP3; iPhones export M4A; Zoom exports MP4. Your tool needs to handle all three.</li>
+        </ul>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Bottom line</h3>
+        <p>
+          For most journalists — especially freelancers and reporters at smaller outlets — VideoText is the fastest option with the clearest privacy policy. Otter.ai is better for live recording. Trint and Rev make sense for newsrooms with larger budgets or long-form investigations.
+        </p>
+        <p>
+          Start with the free tier on VideoText or Otter.ai and test on a real interview recording before committing to a paid plan.
+        </p>
+      </div>
+    ),
+  },
+  {
+    slug: 'best-transcription-tools-for-students',
+    date: 'March 18, 2026',
+    title: 'Best free transcription tools for students in 2026',
+    summary:
+      'Transcribing lecture recordings and research interviews takes hours manually. These tools cut it to minutes — and most have a free tier that covers everything a student needs.',
+    tag: 'Roundup',
+    readTime: '6 min read',
+    content: (
+      <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p>
+          Students record lectures, seminars, research interviews, and study groups. Turning those recordings into searchable, shareable notes used to mean hours of manual typing. AI transcription now does it in minutes — and most tools have a free tier.
+        </p>
+        <p>
+          Here are the best options in 2026, with honest notes on what each is actually good for.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">1. VideoText — best for lecture and interview recordings</h3>
+        <p>
+          VideoText gives you a full transcript from any video or audio file — including Zoom lecture recordings (MP4), iPhone Voice Memos (M4A), and digital voice recorder files (MP3). Three free imports per month, no credit card.
+        </p>
+        <p>
+          What makes it useful for studying: the Keywords branch indexes every topic mentioned in the lecture so you can jump to exactly where the professor discussed a concept. The Chapters branch breaks the recording into navigable sections. The Translate branch lets you read the transcript in your native language if English is not your first language.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">2. Otter.ai — best for live note-taking in class</h3>
+        <p>
+          Otter.ai has a mobile app that records and transcribes in real time. If you attend in-person lectures and want a live transcript appearing as the professor speaks, Otter is the best option. The free plan gives 300 minutes per month.
+        </p>
+        <p>
+          Downside: Otter stores your recordings on their servers. The web interface for reviewing recordings is less clean than VideoText's transcript viewer.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">3. Whisper (local) — best for full privacy</h3>
+        <p>
+          OpenAI Whisper is available as a free open-source tool you run on your own computer. Nothing leaves your device. Requires Python and command-line comfort — not suited for everyone, but ideal for students transcribing sensitive research interview data.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">4. Google Docs voice typing — best for budget constraints</h3>
+        <p>
+          Google Docs includes a free voice typing feature that can transcribe audio played through your speakers in real time. Results are rough — accuracy is below dedicated AI tools — but it costs nothing and requires no signup beyond a Google account.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">How to use a transcript for studying</h3>
+        <ol className="list-decimal pl-5 space-y-1">
+          <li>Upload your lecture recording to VideoText and get the transcript.</li>
+          <li>Paste it into Notion, Obsidian, or Google Docs.</li>
+          <li>Use Ctrl+F to search for any term you need to review.</li>
+          <li>Use the Keywords branch to find where specific concepts appear in the recording.</li>
+          <li>Use Chapters to jump to specific sections without replaying the whole file.</li>
+          <li>Copy key definitions and explanations directly into your notes.</li>
+        </ol>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Tips for better transcription accuracy</h3>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Record as close to the speaker as possible — room acoustics reduce accuracy.</li>
+          <li>Set the spoken language in the tool before processing for non-English lectures.</li>
+          <li>If the professor has a strong accent or uses heavy jargon, review key technical terms in the transcript.</li>
+          <li>For iPhone recordings, M4A from Voice Memos transcribes well without any conversion.</li>
+        </ul>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Bottom line</h3>
+        <p>
+          For recorded lectures and research interviews, VideoText is the strongest free option. For live in-class transcription, Otter.ai is better. For research requiring full data privacy, use local Whisper.
+        </p>
+        <p>
+          Start with the free tiers — most students can cover their key lectures without paying anything.
+        </p>
+      </div>
+    ),
+  },
+  {
+    slug: 'how-to-transcribe-interview-recording',
+    date: 'March 18, 2026',
+    title: 'How to transcribe an interview recording (step-by-step)',
+    summary:
+      'Whether you recorded a phone call, Zoom interview, or in-person meeting, here is the exact process to get a clean, speaker-labeled transcript in minutes.',
+    tag: 'Guide',
+    readTime: '5 min read',
+    content: (
+      <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p>
+          Transcribing an interview recording manually takes roughly three to four times the length of the recording. A 30-minute interview becomes two hours of typing. AI transcription cuts that to 5–8 minutes with accuracy high enough for journalistic quotes and research analysis.
+        </p>
+        <p>
+          Here is the complete process.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 1: Get your recording file</h3>
+        <p>
+          Different recording setups produce different file types:
+        </p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>iPhone Voice Memos</strong> — exports as M4A. Tap the recording → Share → Save to Files.</li>
+          <li><strong>Digital voice recorder</strong> — transfers as MP3 via USB or memory card.</li>
+          <li><strong>Zoom call</strong> — download as MP4 from Zoom cloud recordings or from Documents/Zoom locally.</li>
+          <li><strong>Phone call recording app</strong> (TapeACall, Google Recorder) — exports as MP3 or M4A.</li>
+          <li><strong>In-person recording on Android</strong> — saves as MP3 or AAC in the Voice Recorder app.</li>
+        </ul>
+        <p>
+          All of these formats work directly with VideoText — no conversion needed.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 2: Upload to VideoText</h3>
+        <p>
+          Go to <strong>Video to Transcript</strong>. Drag your recording into the upload zone or click to browse. Select the spoken language if it is not English — this significantly improves accuracy for non-English interviews.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 3: Wait for transcription</h3>
+        <p>
+          A 30-minute interview typically transcribes in 3–6 minutes. The transcript builds in real time — you can start reading before the full file is done.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 4: Use the Speakers branch for Q&A format</h3>
+        <p>
+          Click <strong>Speakers</strong> to see the transcript organized by speaker turn. The AI labels each person as Speaker 1, Speaker 2, etc. For a two-person interview, this clearly separates interviewer questions from interviewee answers.
+        </p>
+        <p>
+          You cannot rename the speaker labels within VideoText, but you can copy the speaker-labeled text and do a find-and-replace in any text editor: replace "Speaker 1" with the interviewer's name, "Speaker 2" with the source's name.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 5: Review and verify quotes</h3>
+        <p>
+          Always verify direct quotes against the original recording before publishing or submitting research. AI transcription is highly accurate but will occasionally mishear:
+        </p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Proper nouns, names, and places</li>
+          <li>Industry-specific jargon and acronyms</li>
+          <li>Words spoken quietly or over background noise</li>
+          <li>Overlapping speech from multiple people</li>
+        </ul>
+        <p>
+          Use the transcript to identify the time-coded location of each quote, then play from that timestamp in your audio player to confirm. This is faster than listening through the whole recording.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 6: Export</h3>
+        <p>
+          Download the transcript as TXT for direct pasting into your article or research document. The SRT export includes timestamps and is useful if you want to sync the transcript to a video version of the interview.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Legal note</h3>
+        <p>
+          Recording laws vary by jurisdiction. In the US, one-party consent states allow recording with only your own consent; two-party (all-party) consent states require all participants to agree. Always check local recording laws and inform interview subjects where required. VideoText deletes your file immediately after transcription — nothing is stored on its servers.
+        </p>
+      </div>
+    ),
+  },
+  {
+    slug: 'how-to-transcribe-lecture-recording',
+    date: 'March 18, 2026',
+    title: 'How to transcribe a lecture recording for better study notes',
+    summary:
+      'Lecture recordings are hard to study from. A searchable transcript changes that — here is how to get one in minutes from any recording format.',
+    tag: 'Guide',
+    readTime: '5 min read',
+    content: (
+      <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p>
+          Listening back to a lecture recording is slow. You cannot search it, highlight it, or copy a definition from it. A transcript solves all of that. Here is how to get one from any lecture recording — Zoom, iPhone, digital recorder, or screen capture.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 1: Get your lecture recording file</h3>
+        <p>
+          Depending on how you recorded the lecture:
+        </p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>Zoom class recording</strong> — download as MP4 from Zoom cloud or Documents/Zoom folder locally.</li>
+          <li><strong>iPhone Voice Memos</strong> — tap the recording → Share → Save to Files. File is M4A.</li>
+          <li><strong>Digital voice recorder</strong> — connect via USB, copy the MP3 to your computer.</li>
+          <li><strong>Panopto or Echo360</strong> — download the lecture as MP4 from the university portal.</li>
+          <li><strong>Screen recording (Mac)</strong> — saved as MOV in your Movies folder or wherever you specified.</li>
+          <li><strong>Google Meet recording</strong> — check Google Drive. Download as MP4.</li>
+        </ul>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 2: Upload to VideoText</h3>
+        <p>
+          Go to <strong>Video to Transcript</strong>. Drag the file into the upload zone. Set the spoken language if it is not English. Click Transcribe.
+        </p>
+        <p>
+          No account is needed for the first three imports.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 3: Wait for the transcript</h3>
+        <p>
+          A 60-minute lecture typically transcribes in 5–8 minutes. A 20-minute lecture takes about 2 minutes. You see the transcript build in real time.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 4: Use Keywords and Chapters for studying</h3>
+        <p>
+          Once the transcript is ready, two branches are especially useful for studying:
+        </p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>Keywords</strong> — shows every key concept indexed by where it appears in the transcript. If you missed something about "mitochondria" or "the French Revolution," jump directly to that section.</li>
+          <li><strong>Chapters</strong> — breaks the lecture into navigable sections based on topic shifts. Useful for reviewing specific parts of a long lecture without re-watching everything.</li>
+        </ul>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 5: Move the transcript into your notes app</h3>
+        <p>
+          Copy the full transcript and paste it into Notion, Obsidian, Google Docs, or any note-taking app. Once it is there:
+        </p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Use Ctrl+F to find any concept or term the professor mentioned.</li>
+          <li>Highlight definitions directly in the text.</li>
+          <li>Share it with classmates for collaborative note comparison.</li>
+          <li>Paste sections into flashcard tools like Anki.</li>
+        </ul>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 6: Translate if needed</h3>
+        <p>
+          If the lecture was in English but you study better in your native language, click <strong>Translate</strong> after transcribing. VideoText supports English, Spanish, Hindi, French, Chinese, and Russian translations — available immediately after transcription.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Tips for better accuracy</h3>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Record as close to the professor as possible — distant room audio reduces accuracy.</li>
+          <li>If using a phone recorder, place it on the front desk, not in your pocket.</li>
+          <li>Set the spoken language correctly before transcribing for non-English lectures.</li>
+          <li>Review technical terms specific to your field — AI may misspell discipline-specific words.</li>
+        </ul>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">How much does it cost?</h3>
+        <p>
+          The free tier includes 3 imports per month — enough for most students to transcribe their key lectures each month. Sign up for free to start. No credit card required.
         </p>
       </div>
     ),

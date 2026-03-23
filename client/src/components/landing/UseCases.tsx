@@ -58,7 +58,7 @@ const USE_CASES = [
 
 export function UseCases() {
   return (
-    <section className="py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-500">
+    <section className="py-12 bg-gray-50 dark:bg-gray-900 transition-colors duration-500">
       <div className="max-w-7xl mx-auto px-6">
 
         <motion.div

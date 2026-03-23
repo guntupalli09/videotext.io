@@ -19,6 +19,7 @@ const FixSubtitles = lazy(() => import('./FixSubtitles'))
 const BurnSubtitles = lazy(() => import('./BurnSubtitles'))
 const CompressVideo = lazy(() => import('./CompressVideo'))
 const BatchProcess = lazy(() => import('./BatchProcess'))
+const VoiceRecorder = lazy(() => import('./VoiceRecorder'))
 
 const TOOL_MAP: Record<SeoToolKey, React.LazyExoticComponent<React.ComponentType<any>>> = {
   'video-to-transcript': VideoToTranscript,
@@ -28,6 +29,7 @@ const TOOL_MAP: Record<SeoToolKey, React.LazyExoticComponent<React.ComponentType
   'burn-subtitles': BurnSubtitles,
   'compress-video': CompressVideo,
   'batch-process': BatchProcess,
+  'voice-to-text': VoiceRecorder,
 }
 
 function RouteFallback() {

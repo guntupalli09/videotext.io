@@ -12,11 +12,11 @@ import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJs
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
 import OfflineBanner from './components/OfflineBanner'
-import { WorkflowProvider } from './contexts/WorkflowContext'
-import { WorkflowTracker } from './components/workflow/WorkflowTracker'
-import { TexAgent } from './components/TexAgent'
-import TexErrorBoundary from './components/TexAgent/TexErrorBoundary'
-import FeedbackPrompt from './components/FeedbackPrompt'
+// import { WorkflowProvider } from './contexts/WorkflowContext'
+// import { WorkflowTracker } from './components/workflow/WorkflowTracker'
+// import { TexAgent } from './components/TexAgent'
+// import TexErrorBoundary from './components/TexAgent/TexErrorBoundary'
+// import FeedbackPrompt from './components/FeedbackPrompt'
 
 // Lazy-load pages for fast initial load on any device; each route loads only when visited.
 const Home = lazy(() => import('./pages/Home'))
@@ -31,6 +31,7 @@ const Privacy = lazy(() => import('./pages/Privacy'))
 const Faq = lazy(() => import('./pages/Faq'))
 const Guide = lazy(() => import('./pages/Guide'))
 const Terms = lazy(() => import('./pages/Terms'))
+const VoiceRecorder = lazy(() => import('./pages/VoiceRecorder'))
 const VideoToTranscript = lazy(() => import('./pages/VideoToTranscript'))
 const VideoToSubtitles = lazy(() => import('./pages/VideoToSubtitles'))
 const BatchProcess = lazy(() => import('./pages/BatchProcess'))
@@ -52,7 +53,14 @@ const RevAlternative = lazy(() => import('./pages/seo/RevAlternativePage'))
 const HappyScribeAlternative = lazy(() => import('./pages/seo/HappyScribeAlternativePage'))
 const SonixAlternative = lazy(() => import('./pages/seo/SonixAlternativePage'))
 const EasyScribeAlternative = lazy(() => import('./pages/seo/EasyScribeAlternativePage'))
+const ZoomAlternative = lazy(() => import('./pages/seo/ZoomAlternativePage'))
+const MicrosoftTeamsAlternative = lazy(() => import('./pages/seo/MicrosoftTeamsAlternativePage'))
+const CapCutAlternative = lazy(() => import('./pages/seo/CapCutAlternativePage'))
 const NottaAlternative = lazy(() => import('./pages/seo/NottaAlternativePage'))
+const PanoptoAlternative = lazy(() => import('./pages/seo/PanoptoAlternativePage'))
+const MacWhisperAlternative = lazy(() => import('./pages/seo/MacWhisperAlternativePage'))
+const DeepgramAlternative = lazy(() => import('./pages/seo/DeepgramAlternativePage'))
+const TactiqAlternative = lazy(() => import('./pages/seo/TactiqAlternativePage'))
 const About = lazy(() => import('./pages/AboutPage'))
 const Open = lazy(() => import('./pages/Open'))
 const NotFound = lazy(() => import('./pages/NotFound'))
@@ -337,7 +345,7 @@ function ImpersonationHandler() {
 function App() {
   return (
     <BrowserRouter>
-      <WorkflowProvider>
+      {/* <WorkflowProvider> */}
       <AppSeo />
       <PostCheckoutHandler />
       <ImpersonationHandler />
@@ -379,9 +387,17 @@ function App() {
             <Route path="/happyscribe-alternative" element={<HappyScribeAlternative />} />
             <Route path="/sonix-alternative" element={<SonixAlternative />} />
             <Route path="/easyscribe-alternative" element={<EasyScribeAlternative />} />
+            <Route path="/zoom-alternative" element={<ZoomAlternative />} />
+            <Route path="/microsoft-teams-alternative" element={<MicrosoftTeamsAlternative />} />
+            <Route path="/capcut-alternative" element={<CapCutAlternative />} />
             <Route path="/notta-alternative" element={<NottaAlternative />} />
+            <Route path="/panopto-alternative" element={<PanoptoAlternative />} />
+            <Route path="/macwhisper-alternative" element={<MacWhisperAlternative />} />
+            <Route path="/deepgram-alternative" element={<DeepgramAlternative />} />
+            <Route path="/tactiq-alternative" element={<TactiqAlternative />} />
             <Route path="/about" element={<About />} />
             <Route path="/open" element={<Open />} />
+            <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
             <Route path="/batch-process" element={<BatchProcess />} />
@@ -423,14 +439,14 @@ function App() {
           </SessionErrorBoundary>
         </main>
         <Footer />
-        <WorkflowTracker />
-        <TexErrorBoundary>
+        {/* <WorkflowTracker /> */}
+        {/* <TexErrorBoundary>
           <TexAgent />
-        </TexErrorBoundary>
-        <FeedbackPrompt />
+        </TexErrorBoundary> */}
+        {/* <FeedbackPrompt /> */}
         <Toaster position="top-right" />
       </div>
-      </WorkflowProvider>
+      {/* </WorkflowProvider> */}
     </BrowserRouter>
   )
 }

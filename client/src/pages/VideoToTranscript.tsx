@@ -1,9 +1,8 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Subtitles, Film, Minimize2, Lock, Play, Pause, Volume2, VolumeX, Search } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Lock, Play, Pause, Volume2, VolumeX, Search } from 'lucide-react'
 import FailedState from '../components/FailedState'
-import CrossToolSuggestions from '../components/CrossToolSuggestions'
-import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
+// import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import { isLoggedIn } from '../lib/auth'
@@ -22,13 +21,13 @@ import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/fil
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
-import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
+// import { dispatchJobCompletedForFeedback } from '../components/FeedbackPrompt'
 import { trackEvent } from '../lib/analytics'
-import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
+// import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import { segmentsToSrt, segmentsToVtt, formatTimestamp, type Segment } from '../lib/srtExport'
 import toast from 'react-hot-toast'
-import { useWorkflow } from '../contexts/WorkflowContext'
-import { emitToolCompleted } from '../workflow/workflowStore'
+// import { useWorkflow } from '../contexts/WorkflowContext'
+// import { emitToolCompleted } from '../workflow/workflowStore'
 
 // ─── Phase 1 – Derived Transcript Utilities (client-side only) ─────────────────
 const BRANCH_IDS = ['transcript', 'speakers', 'summary', 'chapters', 'highlights', 'keywords', 'clean', 'exports'] as const
@@ -89,6 +88,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [includeChapters, setIncludeChapters] = useState(true)
   const [exportFormats, setExportFormats] = useState<('txt' | 'json' | 'docx' | 'pdf')[]>(['txt'])
   const [speakerDiarization, setSpeakerDiarization] = useState(false)
+  const [diarizationWasRequested, setDiarizationWasRequested] = useState(false)
+  const [numSpeakers, setNumSpeakers] = useState('')
+  const [diarizationLanguage, setDiarizationLanguage] = useState('')
   const [glossary, setGlossary] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [transcriptEditMode, setTranscriptEditMode] = useState(false)
@@ -115,6 +117,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [translatedCache, setTranslatedCache] = useState<Record<string, string>>({})
   const transcriptScrollRef = useRef<HTMLDivElement>(null)
   const segmentRefsRef = useRef<Map<number, HTMLSpanElement>>(new Map())
+  const speakerSegmentRefsRef = useRef<Map<number, HTMLDivElement>>(new Map())
   // Audio playback for transcript sync
   const audioRef = useRef<HTMLAudioElement>(null)
   const audioPlaybackTimeRef = useRef(0)   // updated at timeupdate frequency without triggering re-renders
@@ -147,8 +150,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
-  /** Set on job_completed for workflow chain suggestion (UI only). */
-  const [lastJobCompletedToolId, setLastJobCompletedToolId] = useState<string | null>(null)
   /** Contextual failure message (from getFailureMessage); shown in FailedState and Tex. */
   const [failedMessage, setFailedMessage] = useState<string | undefined>(undefined)
 
@@ -323,8 +324,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           setPartialSegments([])
           setStatus('completed')
           setResult(jobStatus.result ?? null)
-          dispatchJobCompletedForFeedback()
-          emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
+          // dispatchJobCompletedForFeedback()
+          // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
           setUploadPhase('processing')
           setUploadProgress(100)
           const res = jobStatus.result
@@ -391,8 +392,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               setPartialSegments([])
               setStatus('completed')
               setResult(s.result ?? null)
-              dispatchJobCompletedForFeedback()
-              emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
+              // dispatchJobCompletedForFeedback()
+              // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
               if (s.result?.segments?.length) {
                 const textFromSegments = s.result.segments.map((seg: { text: string }) => seg.text).join('\n\n')
                 setFullTranscript(textFromSegments)
@@ -480,20 +481,29 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [uploadPhase])
 
-  const workflow = useWorkflow()
+  // const workflow = useWorkflow()
 
+  // useEffect(() => {
+  //   const state = location.state as { useWorkflowVideo?: boolean } | undefined
+  //   if (state?.useWorkflowVideo && workflow.videoFile) {
+  //     setSelectedFile(workflow.videoFile)
+  //     setFileFromWorkflow(true)
+  //   }
+  // }, [location.state, workflow.videoFile])
+
+  // Pick up a file dropped on the landing page hero dropzone
   useEffect(() => {
-    const state = location.state as { useWorkflowVideo?: boolean } | undefined
-    if (state?.useWorkflowVideo && workflow.videoFile) {
-      setSelectedFile(workflow.videoFile)
-      setFileFromWorkflow(true)
+    const w = window as Window & { __videotextPendingFile?: File }
+    if (w.__videotextPendingFile) {
+      setSelectedFile(w.__videotextPendingFile)
+      delete w.__videotextPendingFile
     }
-  }, [location.state, workflow.videoFile])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keep workflow in sync when result is shown so "Next step" links pre-fill the file on the next tool
-  useEffect(() => {
-    if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
-  }, [status, selectedFile])
+  // useEffect(() => {
+  //   if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
+  // }, [status, selectedFile])
 
   // Show auth gate immediately when job completes and user is not logged in.
   // Users can see live partial transcription during processing but results are gated.
@@ -512,7 +522,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     } catch {
       // non-blocking
     }
-    workflow.setVideo(file)
+    // workflow.setVideo(file)
     setSelectedFile(file)
     setFileFromWorkflow(false)
     setTrimStart(null)
@@ -616,8 +626,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         includeChapters,
         exportFormats: exportFormats.length > 0 ? exportFormats : (['txt'] as const),
         speakerDiarization,
+        numSpeakers: numSpeakers ? Number(numSpeakers) : undefined,
+        diarizationLanguage: diarizationLanguage.trim() || undefined,
         glossary: glossary.trim() || undefined,
       }
+      setDiarizationWasRequested(speakerDiarization)
       setUploadPhase('uploading')
       trackEvent('processing_started', { tool: 'video-to-transcript' })
 
@@ -651,7 +664,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       const startedAt = Date.now()
       setProcessingStartedAt(startedAt)
       processingStartedAtRef.current = startedAt
-      texJobStarted()
+      // texJobStarted()
 
       // Status updates: first poll immediately, then SSE (with polling fallback) for lower latency.
       const jobToken = response.jobToken
@@ -686,10 +699,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             setPartialSegments([])
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback()
+            // dispatchJobCompletedForFeedback()
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
-            emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
+            // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
             if (res?.segments?.length) {
               const textFromSegments = res.segments.map((s: { text: string }) => s.text).join('\n\n')
               setFullTranscript(textFromSegments)
@@ -729,9 +742,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 processing_time_ms: processingMs,
               })
               trackEvent('processing_completed', { tool: 'video-to-transcript' })
-              texJobCompleted(processingMs, 'video-to-transcript')
+              // texJobCompleted(processingMs, 'video-to-transcript')
               setLastProcessingMs(processingMs)
-              setLastJobCompletedToolId('video-to-transcript')
             } catch {
               // non-blocking
             }
@@ -757,7 +769,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           })
           setFailedMessage(msg)
           setStatus('failed')
-          texJobFailed(msg)
+          // texJobFailed(msg)
           toast.error('Processing failed. Please try again.')
         } else if (jobStatus.status === 'processing' && jobStatus.partialVersion != null && jobStatus.partialVersion > lastPartialVersionRef.current) {
           lastPartialVersionRef.current = jobStatus.partialVersion
@@ -815,7 +827,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         })
         setFailedMessage(msg)
         setStatus('failed')
-        texJobFailed(msg)
+        // texJobFailed(msg)
       }
       toast.error(getUserFacingMessage(error))
     }
@@ -867,6 +879,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       setPartialSegments([])
       setYoutubeStage(null)
       youtubeStageAtFailureRef.current = null
+      setDiarizationWasRequested(speakerDiarization)
       trackEvent('processing_started', { tool: 'video-to-transcript', source: 'youtube' })
 
       const response: YoutubeUploadResponse = await submitYoutubeUrl(
@@ -876,6 +889,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           includeChapters,
           exportFormats: exportFormats.length > 0 ? exportFormats : ['txt'],
           speakerDiarization,
+          numSpeakers: numSpeakers ? Number(numSpeakers) : undefined,
+          diarizationLanguage: diarizationLanguage.trim() || undefined,
           glossary: glossary.trim() || undefined,
         },
         uploadAbortRef.current.signal
@@ -892,7 +907,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       const startedAt = Date.now()
       setProcessingStartedAt(startedAt)
       processingStartedAtRef.current = startedAt
-      texJobStarted()
+      // texJobStarted()
 
       const jobToken = response.jobToken
       const handleJobStatus = (jobStatus: import('../lib/api').JobStatus) => {
@@ -923,10 +938,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             setPartialSegments([])
             setStatus('completed')
             setResult(jobStatus.result ?? null)
-            dispatchJobCompletedForFeedback()
+            // dispatchJobCompletedForFeedback()
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
-            emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
+            // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
             if (res?.segments?.length) {
               const text = res.segments.map((s: { text: string }) => s.text).join('\n\n')
               setFullTranscript(text)
@@ -950,9 +965,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             try {
               trackEvent('job_completed', { job_id: response.jobId, tool_type: 'youtube-to-transcript', processing_time_ms: processingMs })
               trackEvent('processing_completed', { tool: 'video-to-transcript', source: 'youtube' })
-              texJobCompleted(processingMs, 'video-to-transcript')
+              // texJobCompleted(processingMs, 'video-to-transcript')
               setLastProcessingMs(processingMs)
-              setLastJobCompletedToolId('video-to-transcript')
             } catch { /* non-blocking */ }
           }
           if (remainingMs > 0) {
@@ -972,7 +986,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               : getFailureMessage({})
           setFailedMessage(msg)
           setStatus('failed')
-          texJobFailed(msg)
+          // texJobFailed(msg)
           toast.error(stageAtFailure === 'downloading_audio' || stageAtFailure === 'fetching_captions'
             ? 'YouTube processing failed. See details below.'
             : 'Processing failed. Please try again.')
@@ -1020,7 +1034,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         const msg = getFailureMessage({ isNetworkError: isNetworkError(error) })
         setFailedMessage(msg)
         setStatus('failed')
-        texJobFailed(msg)
+        // texJobFailed(msg)
       }
       toast.error(getUserFacingMessage(error))
     }
@@ -1030,7 +1044,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const textToCopy =
       translationLanguage && translatedCache[translationLanguage] != null
         ? translatedCache[translationLanguage]
-        : (displayTranscript || fullTranscript || '').trim()
+        : segmentsForExport && segmentsForExport.length > 0
+          ? segmentsForExport.map((s) => s.text).join('\n\n').trim()
+          : (fullTranscript || '').trim()
     if (!textToCopy) return
     try {
       await navigator.clipboard.writeText(textToCopy)
@@ -1080,6 +1096,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setIncludeChapters(true)
     setExportFormats(['txt'])
     setSpeakerDiarization(false)
+    setNumSpeakers('')
+    setDiarizationLanguage('')
     setGlossary('')
     setSearchQuery('')
     setTranscriptEditMode(false)
@@ -1133,6 +1151,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [activeSegIdx, audioIsPlaying])
 
+  // Auto-scroll speakers panel to keep active segment visible during playback
+  useEffect(() => {
+    if (activeSegIdx < 0 || !audioIsPlaying || activeBranch !== 'speakers') return
+    const el = speakerSegmentRefsRef.current.get(activeSegIdx)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [activeSegIdx, audioIsPlaying, activeBranch])
+
   // Phase 1 – Derived Transcript Utilities (client-side; failures must not affect transcript)
   const getParagraphs = useCallback((text: string): string[] => {
     if (!text.trim()) return []
@@ -1142,7 +1167,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const getSpeakersData = useCallback((): { speaker: string; text: string; isDiarized: boolean }[] => {
     if (result?.segments?.length) {
       const rawLabels = result.segments.map((s) => s.speaker?.trim() || 'Speaker')
-      const unique = [...new Set(rawLabels)]
+      const unique = Array.from(new Set(rawLabels)) as string[]
       // Only treat as diarized when we have at least 2 distinct speaker labels from the backend
       const isDiarized = unique.length >= 2
       const labelToFriendly: Record<string, string> = {}
@@ -1393,7 +1418,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 onFileSelect={handleFileSelect}
                 initialFiles={selectedFile ? [selectedFile] : null}
                 onRemove={() => {
-                  if (fileFromWorkflow) workflow.clearVideo()
+                  // if (fileFromWorkflow) workflow.clearVideo()
                   setSelectedFile(null)
                   setFileFromWorkflow(false)
                 }}
@@ -1488,6 +1513,37 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       />
                       <span className="text-sm text-gray-700 dark:text-gray-300">Speaker labels (who said what)</span>
                     </label>
+                    {speakerDiarization && (
+                      <>
+                        <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
+                          Speaker identification adds extra processing time — roughly 1.5× longer than standard transcription (e.g. a 2-hour video takes ~10 min instead of ~4 min).
+                        </p>
+                        <div className="flex gap-2 mt-1">
+                          <div className="flex-1">
+                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">No. of speakers <span className="text-gray-400">(optional)</span></label>
+                            <input
+                              type="number"
+                              min={1}
+                              max={50}
+                              value={numSpeakers}
+                              onChange={(e) => setNumSpeakers(e.target.value)}
+                              placeholder="Auto-detect"
+                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Language <span className="text-gray-400">(optional)</span></label>
+                            <input
+                              type="text"
+                              value={diarizationLanguage}
+                              onChange={(e) => setDiarizationLanguage(e.target.value)}
+                              placeholder="Auto-detect (e.g. en)"
+                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -1516,7 +1572,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               duration: filePreview?.durationSeconds != null ? formatDuration(filePreview.durationSeconds) : undefined,
             }}
             onRemove={() => {
-              if (fileFromWorkflow) workflow.clearVideo()
+              // if (fileFromWorkflow) workflow.clearVideo()
               setSelectedFile(null)
               setFileFromWorkflow(false)
             }}
@@ -1546,6 +1602,37 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   checked={speakerDiarization}
                   onChange={(checked) => setSpeakerDiarization(checked)}
                 />
+                {speakerDiarization && (
+                  <>
+                    <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 -mt-1">
+                      Speaker identification adds extra processing time — roughly 1.5× longer than standard transcription (e.g. a 2-hour video takes ~10 min instead of ~4 min).
+                    </p>
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">No. of speakers <span className="text-gray-400">(optional)</span></label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={50}
+                          value={numSpeakers}
+                          onChange={(e) => setNumSpeakers(e.target.value)}
+                          placeholder="Auto-detect"
+                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Language <span className="text-gray-400">(optional)</span></label>
+                        <input
+                          type="text"
+                          value={diarizationLanguage}
+                          onChange={(e) => setDiarizationLanguage(e.target.value)}
+                          placeholder="Auto-detect (e.g. en)"
+                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </ProcessingInterface>
@@ -1631,7 +1718,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               progress={uploadPhase === 'uploading' ? uploadProgress : progress}
               estimatedTime={youtubeDisplayTitle ? undefined : '30-60 seconds'}
               statusSubtext={queuePosition !== undefined ? `${queuePosition} jobs ahead of you` : undefined}
-              liveTranscript={partialSegments.map((s) => (s.speaker ? `${s.speaker}: ` : '') + s.text).join('\n')}
+              liveTranscript={partialSegments.map((s) => s.text).join('\n')}
               onCancel={handleCancelUpload}
             />
             <ResultSkeleton variant="transcript" />
@@ -1678,9 +1765,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             <div key={i} className="flex gap-3 items-start">
                               <span className="shrink-0 text-[11px] text-gray-400 dark:text-gray-500 font-mono mt-0.5 w-8">{ts}</span>
                               <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                                {seg.speaker && (
-                                  <span className="font-semibold text-violet-600 dark:text-violet-400 mr-1">{seg.speaker}:</span>
-                                )}
                                 {seg.text}
                               </p>
                             </div>
@@ -1845,11 +1929,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
               {/* Workflow link / suggestion */}
               <div className="min-h-[2.75rem]">
-                <WorkflowChainSuggestion
+                {/* <WorkflowChainSuggestion
                   pathname={location.pathname}
                   plan={(localStorage.getItem('plan') || 'free').toLowerCase()}
                   lastJobCompletedToolId={lastJobCompletedToolId}
-                />
+                /> */}
               </div>
 
               {/* Active branch views */}
@@ -1858,6 +1942,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
                       <Users className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
                       Who said what
+                      {audioObjectUrl && <span className="ml-auto text-[11px] font-normal text-gray-400">Click any segment to seek</span>}
                     </h3>
                     {(() => {
                       const data = getSpeakersData()
@@ -1866,24 +1951,83 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         return (
                           <div className="rounded-xl bg-gray-50/80 p-4">
                             <p className="text-gray-600 text-sm font-medium mb-1">Speakers</p>
-                            <p className="text-gray-500 text-sm">Enable &quot;Speaker diarization&quot; when processing to see who said what. Otherwise this view stays empty or uses paragraph grouping.</p>
+                            <p className="text-gray-500 text-sm">Check &quot;Speaker labels&quot; before transcribing to see who said what.</p>
                           </div>
                         )
                       }
+                      // Assign a stable color per unique speaker label
+                      const speakerColors: string[] = [
+                        'border-violet-400 bg-violet-50',
+                        'border-sky-400 bg-sky-50',
+                        'border-emerald-400 bg-emerald-50',
+                        'border-rose-400 bg-rose-50',
+                        'border-amber-400 bg-amber-50',
+                        'border-fuchsia-400 bg-fuchsia-50',
+                      ]
+                      const speakerTextColors: string[] = [
+                        'text-violet-600',
+                        'text-sky-600',
+                        'text-emerald-600',
+                        'text-rose-600',
+                        'text-amber-600',
+                        'text-fuchsia-600',
+                      ]
+                      const uniqueSpeakers = [...new Set(data.map((d) => d.speaker))]
+                      const speakerColorIdx = (name: string) => uniqueSpeakers.indexOf(name) % speakerColors.length
                       return (
                         <>
                           <p className="text-sm text-gray-500 mb-4">
                             {hasMultipleSpeakers
-                              ? 'Labels (Speaker 1, 2, …) come from automatic speaker detection. They are not real names; each label is one distinct voice in the video.'
-                              : 'All segments are shown as one speaker. Enable &quot;Speaker diarization&quot; when you upload to get automatic labels (Speaker 1, 2, …) for different voices.'}
+                              ? 'Speaker labels come from automatic detection. If names were mentioned in the video they are used directly; otherwise speakers are labelled Speaker 1, 2, …'
+                              : diarizationWasRequested
+                                ? 'Speaker identification ran but could not detect multiple speakers — the video may have a single speaker, or the service encountered an issue. Try again if unexpected.'
+                                : 'Check &quot;Speaker labels&quot; before transcribing to get automatic labels for different voices.'}
                           </p>
-                          <div className="space-y-4 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto">
-                            {data.map((item, i) => (
-                              <div key={i} className="border-l-2 border-violet-300 pl-3 py-1">
-                                <span className="text-xs font-semibold text-violet-600 uppercase">{item.speaker}</span>
-                                <p className="text-sm text-gray-700 mt-0.5">{item.text}</p>
-                              </div>
-                            ))}
+                          <div className="space-y-2 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto pr-1">
+                            {data.map((item, i) => {
+                              const seg = result?.segments?.[i]
+                              const isActive = i === activeSegIdx
+                              const colorClass = speakerColors[speakerColorIdx(item.speaker)]
+                              const textColorClass = speakerTextColors[speakerColorIdx(item.speaker)]
+                              const ts = seg
+                                ? `${Math.floor(seg.start / 60)}:${String(Math.floor(seg.start % 60)).padStart(2, '0')}`
+                                : null
+                              return (
+                                <div
+                                  key={i}
+                                  ref={(el) => { if (el) speakerSegmentRefsRef.current.set(i, el); else speakerSegmentRefsRef.current.delete(i) }}
+                                  onClick={() => {
+                                    if (!audioRef.current || !seg) return
+                                    audioRef.current.currentTime = seg.start
+                                    audioRef.current.play()
+                                  }}
+                                  className={`flex gap-3 items-start border-l-2 pl-3 py-2 rounded-r-xl transition-all ${
+                                    audioObjectUrl ? 'cursor-pointer' : ''
+                                  } ${
+                                    isActive
+                                      ? `${colorClass} shadow-sm`
+                                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/60'
+                                  }`}
+                                >
+                                  <div className="shrink-0 flex flex-col items-end gap-0.5 pt-0.5 w-16">
+                                    <span className={`text-[11px] font-semibold uppercase truncate ${isActive ? textColorClass : 'text-gray-400'}`}>
+                                      {item.speaker}
+                                    </span>
+                                    {ts && (
+                                      <span className={`text-[10px] font-mono ${isActive ? textColorClass + ' opacity-70' : 'text-gray-300'}`}>
+                                        {ts}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className={`flex-1 text-sm leading-relaxed ${isActive ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
+                                    {isActive && (
+                                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 mr-1.5 mb-0.5 animate-pulse" aria-hidden />
+                                    )}
+                                    {item.text}
+                                  </p>
+                                </div>
+                              )
+                            })}
                           </div>
                         </>
                       )
@@ -2261,7 +2405,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <div>
                       {segmentParagraphs.map((group, pi) => (
                         <p key={pi} className="mb-5">
-                          {group.map(({ seg, globalIndex }) => {
+                          {group.map(({ seg, globalIndex }: { seg: { start: number; end: number; text: string; speaker?: string }; globalIndex: number }) => {
                             const isActive = globalIndex === activeSegIdx
                             return (
                               <span
@@ -2278,9 +2422,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   ({formatTimestamp(seg.start)})
                                 </span>
                                 <span className={isActive ? 'bg-yellow-200 dark:bg-yellow-900/60 rounded px-0.5 transition-colors' : ''}>
-                                  {seg.speaker && (
-                                    <span className="font-semibold text-violet-600 dark:text-violet-400 mr-1">{seg.speaker}:</span>
-                                  )}
                                   {seg.text}
                                 </span>{' '}
                               </span>
@@ -2405,7 +2546,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             </div>
 
 
-            <CrossToolSuggestions
+            {/* <CrossToolSuggestions
               workflowHint="Your last file is pre-filled on the next tool."
               suggestions={[
                 { icon: Subtitles, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT', state: { useWorkflowVideo: true } },
@@ -2416,13 +2557,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   description: 'Burn captions (video + SRT pre-filled)',
                   state: { useWorkflowVideo: true, useWorkflowSrt: true },
                   onBeforeNavigate: () => {
-                    if (segmentsForExport?.length) workflow.setSrt(segmentsToSrt(segmentsForExport))
-                    if (selectedFile) workflow.setVideo(selectedFile)
+                    // if (segmentsForExport?.length) workflow.setSrt(segmentsToSrt(segmentsForExport))
+                    // if (selectedFile) workflow.setVideo(selectedFile)
                   },
                 },
                 { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
               ]}
-            />
+            /> */}
           </div>
           </>
         )}

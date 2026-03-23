@@ -154,6 +154,54 @@ export const CORE_PATHS: string[] = [
   '/open',
   '/changelog',
   '/guide',
+  // Cluster F — Journalist & Student pages
+  '/transcription-for-journalists',
+  '/transcription-for-students',
+  '/best-transcription-tool-for-journalists',
+  '/best-transcription-tool-for-students',
+  '/press-conference-transcription',
+  '/research-interview-transcription',
+  '/qualitative-research-transcription',
+  '/journalism-transcription',
+  '/academic-transcription',
+  // Blog posts for journalist & student audiences
+  '/blog/best-transcription-tools-for-journalists',
+  '/blog/best-transcription-tools-for-students',
+  '/blog/how-to-transcribe-interview-recording',
+  '/blog/how-to-transcribe-lecture-recording',
+  // Cluster G — High-volume meeting platform alternatives (custom comparison pages)
+  '/zoom-alternative',
+  '/microsoft-teams-alternative',
+  '/panopto-alternative',
+  '/panopto-transcription',
+  '/webex-alternative',
+  '/notta-alternative',
+  '/tactiq-alternative',
+  '/capcut-alternative',
+  '/macwhisper-alternative',
+  '/deepgram-alternative',
+  // Cluster H — Voice-to-Text (browser-based voice recorder → Whisper transcription)
+  '/voice-recorder',
+  '/voice-to-text',
+  '/speech-to-text',
+  '/voice-to-text-online',
+  '/online-voice-recorder',
+  '/voice-recorder-online',
+  '/free-voice-to-text',
+  '/speak-to-text',
+  '/microphone-to-text',
+  '/dictation-tool',
+  '/voice-memo-to-text',
+  '/voice-notes-to-text',
+  '/voice-to-text-converter',
+  // Cluster H — Voice competitors (high-volume alternative pages)
+  '/dragon-dictate-alternative',
+  '/speechify-alternative',
+  '/speechnotes-alternative',
+  '/speechtexter-alternative',
+  '/dictation-io-alternative',
+  '/whispertype-alternative',
+  // Remaining alternatives are in sitemap2 via seoRegistry
 ]
 
 /** Programmatic-only paths (from targets × intents). Submit after core. */
@@ -161,13 +209,14 @@ export function getProgrammaticPaths(): string[] {
   return getProgrammaticSeoEntries().map((e) => e.path)
 }
 
-/** Paths for sitemap 2: programmatic + remaining manual (not in core). */
+/** Paths for sitemap 2: programmatic + remaining manual (not in core). No duplicates with core. */
 export function getSitemap2Paths(): string[] {
   const coreSet = new Set(CORE_PATHS)
   const registry = getIndexableSeoPathsFromRegistry()
   const programmatic = getProgrammaticPaths()
   const otherManual = registry.filter((p) => !coreSet.has(p))
-  return [...new Set([...otherManual, ...programmatic])]
+  const otherProgrammatic = programmatic.filter((p) => !coreSet.has(p))
+  return [...new Set([...otherManual, ...otherProgrammatic])]
 }
 
 /** All routes (for validation). No duplicates. */

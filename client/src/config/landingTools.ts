@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { FileText, MessageSquare, Languages, Wrench, Flame, Package, FolderSync } from 'lucide-react';
+import { FileText, MessageSquare, Languages, Wrench, Flame, Package, FolderSync, Mic } from 'lucide-react';
 
 export interface LandingToolConfig {
   id: string;
@@ -12,6 +12,15 @@ export interface LandingToolConfig {
 }
 
 export const LANDING_TOOLS: LandingToolConfig[] = [
+  {
+    id: 'voice-recorder',
+    name: 'Voice → Text',
+    description: 'Record in your browser — no file, no upload. Transcript in seconds.',
+    icon: Mic,
+    gradientFrom: 'from-violet-600',
+    gradientTo: 'to-purple-600',
+    href: '/voice-recorder',
+  },
   {
     id: 'video-to-transcript',
     name: 'Video → Transcript',

@@ -7,12 +7,14 @@ import {
   Film,
   Minimize2,
   FolderPlus,
+  Mic,
   CheckCircle,
   ArrowRight,
   BookOpen,
 } from 'lucide-react'
 
 const TOOL_ICONS = {
+  'Voice → Text': Mic,
   'Video → Transcript': FileText,
   'Video → Subtitles': MessageSquare,
   'Translate Subtitles': Languages,
@@ -36,6 +38,7 @@ interface ToolGuide {
 
 /** URL-safe id for in-page anchors. */
 const TOOL_SLUGS: Record<ToolKey, string> = {
+  'Voice → Text': 'voice-recorder',
   'Video → Transcript': 'video-to-transcript',
   'Video → Subtitles': 'video-to-subtitles',
   'Translate Subtitles': 'translate-subtitles',
@@ -46,6 +49,33 @@ const TOOL_SLUGS: Record<ToolKey, string> = {
 }
 
 const TOOL_GUIDES: ToolGuide[] = [
+  {
+    key: 'Voice → Text',
+    path: '/voice-recorder',
+    title: 'Voice → Text',
+    shortDesc: 'Record your voice directly in the browser and get an accurate transcript in seconds. No file, no upload, no account required to try.',
+    howTo: [
+      'Open the Voice to Text tool — no account or app needed.',
+      'Click the microphone button and allow browser microphone access when prompted.',
+      'Speak naturally. The waveform confirms your mic is working. Background noise is filtered automatically.',
+      'Click the red stop button when done (or the recorder stops automatically at 60 minutes).',
+      'Your audio uploads in the background and the transcript appears within seconds.',
+      'Copy the transcript to clipboard or download as a .txt file.',
+      'Click "Record another" to start a new session.',
+    ],
+    expected: [
+      { label: 'Input', detail: 'Your microphone — no file upload needed. Works on Chrome, Firefox, Safari, and Edge.' },
+      { label: 'Max duration', detail: 'Up to 1 hour per recording on all plans.' },
+      { label: 'Audio quality', detail: 'Noise suppression, echo cancellation, and auto gain are applied automatically. Quieter environments produce more accurate transcripts.' },
+    ],
+    features: [
+      'Zero friction — works on free plan, no account needed to try.',
+      'Real-time waveform so you can see your mic is active.',
+      'Noise suppression and echo cancellation built in.',
+      '99 languages auto-detected — speak in any language.',
+      'Copy or download transcript with one click.',
+    ],
+  },
   {
     key: 'Video → Transcript',
     path: '/video-to-transcript',
@@ -241,6 +271,7 @@ export default function Guide() {
         {/* Quick persona guides */}
         <div className="mb-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
+            { who: 'Voice notes', want: 'Record any idea or meeting in browser, get transcript instantly', path: '#voice-recorder' },
             { who: 'YouTubers', want: 'Transcript + multi-language subtitles burned into video', path: '#video-to-transcript' },
             { who: 'Podcast editors', want: 'Transcript with speaker labels, chapters, summary', path: '#video-to-transcript' },
             { who: 'Social media creators', want: 'Subtitles burned in for silent autoplay on Instagram/TikTok', path: '#burn-subtitles' },
@@ -262,6 +293,14 @@ export default function Guide() {
             Use &quot;Next step&quot; on each tool to continue with the same file (no re-upload).
           </p>
           <div className="grid gap-4 sm:grid-cols-1">
+            <div className="rounded-lg bg-white/80 border border-violet-100/80 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 mb-1.5">Voice notes / interviews</p>
+              <p className="text-sm text-gray-700">
+                <Link to="/voice-recorder" className="text-violet-600 hover:text-violet-700 font-medium">Record</Link>
+                <span className="text-gray-400 mx-1">→</span>
+                Copy or download .txt
+              </p>
+            </div>
             <div className="rounded-lg bg-white/80 border border-violet-100/80 p-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 mb-1.5">YouTubers</p>
               <p className="text-sm text-gray-700">
