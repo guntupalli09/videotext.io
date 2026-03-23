@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { login, storeLoginResult } from '../lib/auth'
 import { identifyUser } from '../lib/analytics'
 import { motion } from 'framer-motion'
-import { FileText, Youtube, Zap, ChevronRight, PlayCircle } from 'lucide-react'
+import { FileText, Youtube, Zap, ChevronRight } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -133,17 +133,6 @@ export default function Login() {
               </Link>
             )}
           </p>
-
-          {/* Demo CTA — shown when not coming from a guest job */}
-          {!fromGuestJob && (
-            <Link
-              to="/demo"
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border-2 border-violet-400 dark:border-violet-500 bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300 font-semibold text-[15px] hover:bg-violet-100 dark:hover:bg-violet-500/20 transition-colors mb-6"
-            >
-              <PlayCircle className="w-4 h-4" />
-              Try the demo — no sign-up needed
-            </Link>
-          )}
 
           {!fromGuestJob && (
             <div className="relative mb-6">
