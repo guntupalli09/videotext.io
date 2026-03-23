@@ -319,15 +319,6 @@ export default function UserMenu() {
                   {!isLoggedIn() && (
                     <>
                       <Link
-                        to="/demo"
-                        className="mt-3 block rounded-xl bg-violet-600 hover:bg-violet-700 text-white px-4 py-3 text-center font-semibold transition-colors"
-                        onClick={() => setOpen(false)}
-                        onMouseEnter={() => prefetchRoute('/demo')}
-                        onFocus={() => prefetchRoute('/demo')}
-                      >
-                        Try Demo — No Sign-up
-                      </Link>
-                      <Link
                         to="/login"
                         className="mt-2 block rounded-xl px-4 py-3 text-center font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30 border border-violet-300 dark:border-violet-700"
                         onClick={() => setOpen(false)}
