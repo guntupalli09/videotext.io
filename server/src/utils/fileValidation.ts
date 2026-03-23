@@ -4,13 +4,40 @@ import { getLogger } from '../lib/logger'
 const validationLog = getLogger('api')
 
 const ALLOWED_MIME_TYPES = [
+  // Video
   'video/mp4',
-  'video/quicktime',
-  'video/x-msvideo',
+  'video/quicktime',       // .mov
+  'video/x-msvideo',      // .avi
   'video/webm',
+  'video/x-matroska',     // .mkv
+  'video/mpeg',           // .mpeg / .mpg
+  'video/ogg',            // .ogv
+  'video/3gpp',           // .3gp
+  'video/3gpp2',          // .3g2
+  'video/x-flv',          // .flv
+  'video/x-ms-wmv',       // .wmv
+  'video/mp2t',           // .ts
+  'video/x-m4v',          // .m4v
+  // Audio
+  'audio/mpeg',           // .mp3
+  'audio/wav',
+  'audio/x-wav',
+  'audio/ogg',
+  'audio/webm',
+  'audio/mp4',            // .m4a / .aac in mp4
+  'audio/x-m4a',
+  'audio/flac',
+  'audio/x-flac',
+  'audio/aac',
+  'audio/x-aac',
 ]
 
-const ALLOWED_VIDEO_EXT = ['.mp4', '.mov', '.avi', '.webm']
+const ALLOWED_VIDEO_EXT = [
+  '.mp4', '.mov', '.avi', '.webm', '.mkv',
+  '.mpeg', '.mpg', '.ogv', '.3gp', '.3g2',
+  '.flv', '.wmv', '.ts', '.m4v',
+  '.mp3', '.wav', '.ogg', '.m4a', '.flac', '.aac',
+]
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
 
@@ -36,14 +63,14 @@ export async function validateFileType(filePath: string, originalFilename?: stri
       if (originalFilename && hasAllowedVideoExtension(originalFilename)) {
         return null
       }
-      return 'Please upload MP4, MOV, AVI, or WEBM'
+      return 'Please upload a supported video or audio file (MP4, MOV, MKV, AVI, WebM, MP3, WAV, etc.)'
     }
 
     if (!ALLOWED_MIME_TYPES.includes(fileType.mime)) {
       if (originalFilename && hasAllowedVideoExtension(originalFilename)) {
         return null
       }
-      return 'Please upload MP4, MOV, AVI, or WEBM'
+      return 'Please upload a supported video or audio file (MP4, MOV, MKV, AVI, WebM, MP3, WAV, etc.)'
     }
 
     return null
@@ -52,7 +79,7 @@ export async function validateFileType(filePath: string, originalFilename?: stri
     if (originalFilename && hasAllowedVideoExtension(originalFilename)) {
       return null
     }
-    return 'Please upload MP4, MOV, AVI, or WEBM'
+    return 'Please upload a supported video or audio file (MP4, MOV, MKV, AVI, WebM, MP3, WAV, etc.)'
   }
 }
 

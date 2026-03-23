@@ -94,7 +94,7 @@ function HeroDropzone() {
             {dragging ? 'Release to upload' : 'Drop a video file here'}
           </p>
           <p className="text-white/40 text-sm mt-0.5">
-            MP4, MOV, WebM, MKV — or click to browse
+            MP4, MOV, MKV, AVI, WebM, MP3, WAV &amp; more — or click to browse
           </p>
         </div>
 
