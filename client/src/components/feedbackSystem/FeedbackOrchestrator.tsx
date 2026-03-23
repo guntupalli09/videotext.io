@@ -1,21 +1,25 @@
 /**
- * FeedbackOrchestrator — The central controller for all feedback triggers.
+ * FeedbackOrchestrator — Central controller for all 5 feedback triggers.
  *
  * Mount once in App.tsx. Listens to CustomEvents fired by tool pages
  * and applies all frequency/sampling rules before showing a trigger.
  *
- * Event listeners (window CustomEvents):
- *   vt:evt:transcription_completed  { detail.metadata.toolId? }
- *   vt:evt:result_viewed            { detail.metadata.toolId? }
- *   vt:evt:export_clicked
- *   vt:evt:session_returned
+ * HARD RULES enforced here:
+ *  1. Only ONE A/B/C per session — enforced by canShow* guards
+ *  2. Export overrides everything — cancels pending A timer; closes active A/C
+ *  3. C is fallback only — never fires if A already fired this mount
+ *  4. D never same session as B/E — enforced by markBehavioralShownThisSession
+ *  5. E requires export in a PREVIOUS session — checked via hasEverExported()
+ *     captured BEFORE marking the current export
+ *  6. D requires at least one prior export — checked via hasEverExported()
  *
- * Also handles:
- *   - Trigger A: 5s delay after result_viewed, first time only
- *   - Trigger B: on export_clicked, first time only
- *   - Trigger C: 45s idle on result page, 30% of users only
- *   - Trigger D: on session_returned with 2+ sessions, once ever
- *   - Trigger E: on export_clicked if activated, once ever (not same session as D)
+ * Event flow:
+ *   result_viewed       → [5s] Trigger A (if eligible)
+ *   45s idle on result  → Trigger C (fallback, 30% sample, only if A not fired)
+ *   export_clicked      → Trigger B (first export ever) or E (returning exporter)
+ *                         Cancels A timer; closes any open A/C
+ *   session_returned    → [3–5s] Trigger D (PMF, 2+ sessions, exported before)
+ *                         Cancelled if export fires before delay elapses
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react'
@@ -28,7 +32,7 @@ import { useIdleDetection } from '../../hooks/useIdleDetection'
 import {
   canShowTriggerA, canShowTriggerB, canShowTriggerC, canShowTriggerD, canShowTriggerE,
   markTriggerAShown, markTriggerBShown, markTriggerCShown, markTriggerDShown, markTriggerEShown,
-  hasExportedThisSession, markExportedThisSession,
+  hasEverExported, markEverExported, markExportedThisSession,
 } from '../../hooks/useFeedbackFrequency'
 import { getLifetimeSessionCount } from '../../lib/sessionTracking'
 
@@ -37,73 +41,83 @@ type ActiveTrigger = 'A' | 'B' | 'C' | 'D' | 'E' | null
 export default function FeedbackOrchestrator() {
   const [active, setActive] = useState<ActiveTrigger>(null)
   const [toolName, setToolName] = useState<string | undefined>()
-  const [dropoffReason, setDropoffReason] = useState<'idle' | 'leaving'>('idle')
+  const [dropoffReason] = useState<'idle' | 'leaving'>('idle')
 
-  // Track whether we're on a "results page" for idle detection (Trigger C)
   const [onResultsPage, setOnResultsPage] = useState(false)
-  const hasExportedRef = useRef(false)
 
-  const show = useCallback((trigger: ActiveTrigger) => {
-    // Only one trigger at a time
-    if (active !== null) return
-    setActive(trigger)
-  }, [active])
+  // Refs that survive re-renders without causing them
+  const hasExportedRef = useRef(false)      // exported this session
+  const triggerAFiredRef = useRef(false)    // A fired this mount — C must not fire
+  const aTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const dTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const close = useCallback(() => setActive(null), [])
 
-  // ── Listen to app events ──────────────────────────────────────────────────
+  // ── Listen to app events ────────────────────────────────────────────────────
 
   useEffect(() => {
-    const onTranscriptionCompleted = (e: Event) => {
+    // ── transcription_completed / result_viewed ──
+    const onResultReady = (e: Event) => {
       const detail = (e as CustomEvent).detail as { metadata?: { toolId?: string } }
-      const tName = detail?.metadata?.toolId ?? undefined
-      setToolName(tName)
-      setOnResultsPage(true)
-    }
-
-    const onResultViewed = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { metadata?: { toolId?: string } }
-      const tName = detail?.metadata?.toolId ?? undefined
-      setToolName(tName)
+      setToolName(detail?.metadata?.toolId ?? undefined)
       setOnResultsPage(true)
 
-      // Trigger A — delay 5s
+      // Trigger A — 5s delay, cancelled if user exports first
       if (canShowTriggerA()) {
-        const timer = setTimeout(() => {
+        aTimerRef.current = setTimeout(() => {
+          aTimerRef.current = null
+          // Re-check: user might have exported within the 5s window
           if (canShowTriggerA() && !hasExportedRef.current) {
             markTriggerAShown()
+            triggerAFiredRef.current = true
             setActive('A')
           }
         }, 5_000)
-        return () => clearTimeout(timer)
       }
     }
 
+    // ── export_clicked ── highest priority; overrides A/C ──
     const onExportClicked = () => {
+      // 1. Cancel pending A timer — export wins
+      if (aTimerRef.current) {
+        clearTimeout(aTimerRef.current)
+        aTimerRef.current = null
+      }
+      // 2. Cancel pending D timer — B/E wins over PMF in same session
+      if (dTimerRef.current) {
+        clearTimeout(dTimerRef.current)
+        dTimerRef.current = null
+      }
+
       setOnResultsPage(false)
+
+      // Capture "exported before this click" BEFORE marking
+      const exportedBefore = hasEverExported()
       markExportedThisSession()
+      markEverExported()
       hasExportedRef.current = true
 
-      // Trigger B — fires immediately on first export
-      if (canShowTriggerB()) {
+      // Determine export trigger (B = first ever, E = returning exporter)
+      // Use setActive directly to force-close any open A or C
+      if (!exportedBefore && canShowTriggerB()) {
         markTriggerBShown()
-        show('B')
+        setActive('B')
         return
       }
-
-      // Trigger E — competitor survey for activated users, not in same session as PMF
-      if (canShowTriggerE() && hasExportedThisSession()) {
+      if (exportedBefore && canShowTriggerE()) {
         markTriggerEShown()
-        show('E')
+        setActive('E')
       }
     }
 
+    // ── session_returned ──
     const onSessionReturned = () => {
       const sessionCount = getLifetimeSessionCount()
-      // Trigger D — PMF after 2+ sessions
-      if (sessionCount >= 2 && canShowTriggerD()) {
-        // Delay slightly so page settles
-        setTimeout(() => {
+      // D: 2+ sessions, exported before, not shown in same session as B/E
+      if (sessionCount >= 2 && hasEverExported() && canShowTriggerD()) {
+        dTimerRef.current = setTimeout(() => {
+          dTimerRef.current = null
+          // Re-check: user might have exported (triggering B/E) during delay
           if (canShowTriggerD()) {
             markTriggerDShown()
             setActive('D')
@@ -112,58 +126,46 @@ export default function FeedbackOrchestrator() {
       }
     }
 
-    window.addEventListener('vt:evt:transcription_completed', onTranscriptionCompleted)
-    window.addEventListener('vt:evt:result_viewed', onResultViewed)
+    window.addEventListener('vt:evt:transcription_completed', onResultReady)
+    window.addEventListener('vt:evt:result_viewed', onResultReady)
     window.addEventListener('vt:evt:export_clicked', onExportClicked)
     window.addEventListener('vt:evt:session_returned', onSessionReturned)
 
     return () => {
-      window.removeEventListener('vt:evt:transcription_completed', onTranscriptionCompleted)
-      window.removeEventListener('vt:evt:result_viewed', onResultViewed)
+      window.removeEventListener('vt:evt:transcription_completed', onResultReady)
+      window.removeEventListener('vt:evt:result_viewed', onResultReady)
       window.removeEventListener('vt:evt:export_clicked', onExportClicked)
       window.removeEventListener('vt:evt:session_returned', onSessionReturned)
+      // Clean up any pending timers on unmount
+      if (aTimerRef.current) clearTimeout(aTimerRef.current)
+      if (dTimerRef.current) clearTimeout(dTimerRef.current)
     }
-  }, [show])
+  }, [])
 
-  // ── Trigger C — idle detection on results page ────────────────────────────
+  // ── Trigger C — idle fallback on results page ────────────────────────────
 
   const handleIdle = useCallback(() => {
     if (!onResultsPage) return
-    if (!hasExportedRef.current && canShowTriggerC()) {
+    if (triggerAFiredRef.current) return     // C is fallback — skip if A fired
+    if (hasExportedRef.current) return       // exported — no drop-off to measure
+    if (canShowTriggerC()) {
       markTriggerCShown()
-      setDropoffReason('idle')
       setActive('C')
     }
   }, [onResultsPage])
 
+  // Idle detection only armed when on results page and nothing is showing
   useIdleDetection(45_000, handleIdle, onResultsPage && active === null)
 
-  // ── Render triggers ───────────────────────────────────────────────────────
+  // ── Render triggers ─────────────────────────────────────────────────────────
 
   return (
     <>
-      <TriggerA_Result
-        isOpen={active === 'A'}
-        toolName={toolName}
-        onClose={close}
-      />
-      <TriggerB_Export
-        isOpen={active === 'B'}
-        onClose={close}
-      />
-      <TriggerC_Dropoff
-        isOpen={active === 'C'}
-        reason={dropoffReason}
-        onClose={close}
-      />
-      <TriggerD_PMF
-        isOpen={active === 'D'}
-        onClose={close}
-      />
-      <TriggerE_Competitor
-        isOpen={active === 'E'}
-        onClose={close}
-      />
+      <TriggerA_Result isOpen={active === 'A'} toolName={toolName} onClose={close} />
+      <TriggerB_Export isOpen={active === 'B'} onClose={close} />
+      <TriggerC_Dropoff isOpen={active === 'C'} reason={dropoffReason} onClose={close} />
+      <TriggerD_PMF isOpen={active === 'D'} onClose={close} />
+      <TriggerE_Competitor isOpen={active === 'E'} onClose={close} />
     </>
   )
 }
