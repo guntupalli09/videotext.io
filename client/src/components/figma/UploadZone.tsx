@@ -22,7 +22,7 @@ interface UploadZoneProps {
 
 export function UploadZone({
   maxSize = '10 GB',
-  acceptedFormats = ['MP4', 'MOV', 'AVI', 'WEBM', 'MKV'],
+  acceptedFormats = ['MP4', 'MOV', 'MKV', 'AVI', 'WebM', 'MPEG', 'M4V', 'FLV', 'WMV', '3GP', 'MP3', 'WAV', 'M4A', 'FLAC', 'AAC'],
   acceptAttribute = 'video/*,audio/*',
   onFileSelect,
   multiple = false,

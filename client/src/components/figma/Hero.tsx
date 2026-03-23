@@ -94,8 +94,9 @@ function HeroDropzone() {
             {dragging ? 'Release to upload' : 'Drop a video file here'}
           </p>
           <p className="text-white/40 text-sm mt-0.5">
-            MP4, MOV, MKV, AVI, WebM, MP3, WAV &amp; more — or click to browse
+            MP4, MOV, MKV, AVI, WebM, MPEG, M4V, FLV, WMV, 3GP · MP3, WAV, M4A, FLAC, AAC
           </p>
+          <p className="text-white/25 text-xs">or click to browse</p>
         </div>
 
         {/* Trust micro-copy */}
