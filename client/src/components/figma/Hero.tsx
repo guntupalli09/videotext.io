@@ -99,15 +99,6 @@ function HeroDropzone() {
           <p className="text-white/25 text-xs">or click to browse</p>
         </div>
 
-        {/* Trust micro-copy */}
-        <div className="flex items-center gap-3 text-[11px] text-white/25">
-          <span className="flex items-center gap-1">
-            <Shield className="w-3 h-3 text-emerald-500/60" />
-            No signup required
-          </span>
-          <span className="w-px h-3 bg-white/10" />
-          <span>Files deleted after processing</span>
-        </div>
       </div>
 
       {/* Divider */}
