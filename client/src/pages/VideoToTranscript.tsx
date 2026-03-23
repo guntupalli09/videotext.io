@@ -2001,7 +2001,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   onClick={() => {
                                     if (!audioRef.current || !seg) return
                                     audioRef.current.currentTime = seg.start
-                                    audioRef.current.play()
+                                    audioRef.current.play().catch(() => {})
                                   }}
                                   className={`flex gap-3 items-start border-l-2 pl-3 py-2 rounded-r-xl transition-all ${
                                     audioObjectUrl ? 'cursor-pointer' : ''
@@ -2416,7 +2416,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 onClick={() => {
                                   if (!audioRef.current) return
                                   audioRef.current.currentTime = seg.start
-                                  audioRef.current.play()
+                                  audioRef.current.play().catch(() => {})
                                 }}
                                 className={audioObjectUrl ? 'cursor-pointer' : ''}
                               >
@@ -2470,7 +2470,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <div className="flex items-center gap-3 mb-2.5">
                       <button
                         type="button"
-                        onClick={() => { if (!audioRef.current) return; audioIsPlaying ? audioRef.current.pause() : audioRef.current.play() }}
+                        onClick={() => { if (!audioRef.current) return; audioIsPlaying ? audioRef.current.pause() : audioRef.current.play().catch(() => {}) }}
                         className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 hover:bg-violet-700 active:scale-95 text-white transition-all"
                       >
                         {audioIsPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
