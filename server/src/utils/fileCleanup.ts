@@ -50,9 +50,21 @@ async function cleanupFiles(redis?: Redis) {
   }
 
   // Fetch the set of paths currently in use by active jobs.
-  // If Redis is unavailable this returns an empty set; files are then protected
-  // only by the age threshold (still safe with the raised 90-min emergency limit).
-  const activeFilePaths = redis ? await getActiveFilePaths(redis) : new Set<string>()
+  // getActiveFilePaths returns null when Redis is unavailable.  In that case we
+  // skip the deletion pass entirely: fail-closed is safer than fail-open here
+  // because an empty set would cause the cron to delete files from live jobs.
+  // Cost: at most one 15-minute cycle without cleanup during a Redis outage.
+  let activeFilePaths: Set<string>
+  if (redis) {
+    const result = await getActiveFilePaths(redis)
+    if (result === null) {
+      cleanupLog.warn({ msg: '[FileCleanup] Skipping cycle: Redis unavailable, cannot verify active files' })
+      return
+    }
+    activeFilePaths = result
+  } else {
+    activeFilePaths = new Set<string>()
+  }
 
   const entries = fs.readdirSync(tempDir)
   const now = Date.now()

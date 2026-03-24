@@ -48,12 +48,14 @@ export async function deregisterActiveFiles(
 }
 
 /**
- * Return a Set of every absolute file path currently registered as in-use.
- * Used by the cleanup cron to skip protected files.
- * Returns an empty Set if Redis is unavailable (fail-open: cron falls back to
- * time-based protection only, which is still safe with the raised threshold).
+ * Return a Set of every absolute file path currently registered as in-use,
+ * or `null` if Redis is unavailable.
+ *
+ * Callers MUST treat `null` as "skip this operation" — not as "nothing is
+ * active".  Returning an empty set when Redis is down would re-introduce the
+ * same failure class the registry was designed to prevent.
  */
-export async function getActiveFilePaths(redis: Redis): Promise<Set<string>> {
+export async function getActiveFilePaths(redis: Redis): Promise<Set<string> | null> {
   try {
     const keys = await redis.keys(`${KEY_PREFIX}*`)
     if (!keys.length) return new Set()
@@ -70,6 +72,7 @@ export async function getActiveFilePaths(redis: Redis): Promise<Set<string>> {
     }
     return paths
   } catch {
-    return new Set()
+    // Redis unavailable — signal to callers to skip rather than fail open
+    return null
   }
 }
