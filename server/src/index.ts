@@ -19,6 +19,7 @@ import translateTranscriptRoutes from './routes/translateTranscript'
 import { stripeWebhookHandler } from './routes/stripeWebhook'
 import { startWorker, getTotalQueueCount, fileQueue, priorityQueue } from './workers/videoProcessor'
 import { startFileCleanup } from './utils/fileCleanup'
+import { createRedisClient } from './utils/redis'
 import { apiKeyAuth } from './utils/apiKey'
 import { flushAnalytics } from './utils/analytics'
 import { requestIdMiddleware } from './middleware/requestId'
@@ -261,8 +262,10 @@ const server = app.listen(PORT, () => {
     log.info({ msg: 'Background worker started' })
   }
 
-  // Start file cleanup cron
-  startFileCleanup()
+  // Start file cleanup cron — pass a Redis client so it can check the active-file registry
+  // before deleting anything.  A dedicated client avoids contending with Bull's connections.
+  const cleanupRedis = process.env.REDIS_URL ? createRedisClient('client') : undefined
+  startFileCleanup(cleanupRedis)
   log.info({ msg: 'File cleanup cron started' })
 
   // Alert checks: infra-critical checks (redis/db/worker/stuck) run every 60s;

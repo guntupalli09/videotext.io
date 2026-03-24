@@ -594,7 +594,7 @@ export function burnSubtitles(
       new Promise((res, rej) => {
         log.debug({ msg: 'About to run ffprobe (size)', path: p })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- fluent-ffmpeg doesn't type static .ffprobe
-        ;(ffmpeg as any).ffprobe(p, (err: Error | null, metadata: any) => {
+        ;(ffmpeg as any).ffprobe(p, ['-probesize', '100M', '-analyzeduration', '100M'], (err: Error | null, metadata: any) => {
           if (err) {
             log.error({ msg: 'ffprobe failed', error: (err as Error)?.message ?? String(err) })
             return rej(err)
@@ -800,7 +800,7 @@ export function getVideoDuration(videoPath: string): Promise<number> {
     }
 
     log.debug({ msg: 'About to run ffprobe', videoPath })
-    ffmpeg.ffprobe(videoPath, (err: Error | null, metadata: FfprobeData) => {
+    ffmpeg.ffprobe(videoPath, ['-probesize', '100M', '-analyzeduration', '100M'], (err: Error | null, metadata: FfprobeData) => {
       if (err) {
         log.error({ msg: 'ffprobe failed', videoPath, error: (err as Error)?.message ?? String(err) })
         reject(new Error(`Failed to probe video: ${err.message}`))
@@ -832,7 +832,7 @@ export function getVideoMetadata(videoPath: string): Promise<{ width: number; he
       reject(new Error(`Video file not found: ${videoPath}`))
       return
     }
-    ffmpeg.ffprobe(videoPath, (err: Error | null, metadata: FfprobeData) => {
+    ffmpeg.ffprobe(videoPath, ['-probesize', '100M', '-analyzeduration', '100M'], (err: Error | null, metadata: FfprobeData) => {
       if (err) return reject(err)
       const v = (metadata?.streams || []).find((s: any) => s.codec_type === 'video')
       const width = Number(v?.width) || 0

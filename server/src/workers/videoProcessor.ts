@@ -33,6 +33,7 @@ import type { SubtitleEntry } from '../utils/srtParser'
 import { createPartialWriter, deleteJobPartial } from '../utils/jobPartial'
 import { setJobSummary } from '../utils/jobSummary'
 import { waitForFileStable } from '../utils/fileStable'
+import { registerActiveFiles, deregisterActiveFiles } from '../utils/activeFiles'
 import { DEFER_SUMMARY, PROCESSING_V2, STREAM_PROGRESS, WORKER_CONCURRENCY_V2, YOUTUBE_QUEUE_SEPARATION } from '../utils/featureFlags'
 import { MAX_GLOBAL_WORKERS, PAID_TIER_RESERVATION_QUEUE_THRESHOLD } from '../utils/queueConfig'
 import {
@@ -437,6 +438,20 @@ async function processJob(job: import('bull').Job<JobData>) {
     const redis = (job as any).queue?.client as import('ioredis').Redis | undefined
     let partialWriter: ReturnType<typeof createPartialWriter> | null = null
 
+    // Register every input file immediately so the cleanup cron never deletes them
+    // while the job is in flight.  Deregistered (and deleted) in the finally block.
+    // filePath2 is used by burn-subtitles (video + subtitle).
+    const inputPaths = [data.filePath, (data as any).filePath2].filter((p): p is string => !!p)
+    if (redis && inputPaths.length) {
+      registerActiveFiles(redis, jobId, inputPaths).catch(() => {})
+    }
+    // Trim outputs — collected here so we can register + delete them in finally.
+    // Each case that calls trimVideoSegment pushes the result path here and
+    // re-registers so the cleanup cron sees the trim file as protected.
+    const trimmedPaths: string[] = []
+    // Tracks whether all processing succeeded so we can safely delete the input file.
+    let jobSucceeded = false
+
     // Instrument progress so every update is logged; Bull persists progress for status endpoint
     const progressFn = job.progress.bind(job)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- undocumented Bull internals
@@ -461,6 +476,7 @@ async function processJob(job: import('bull').Job<JobData>) {
       switch (toolType) {
         case 'cached-result': {
           await job.progress(100)
+          jobSucceeded = true
           return data.cachedResult
         }
         case 'youtube-to-transcript': {
@@ -575,6 +591,8 @@ async function processJob(job: import('bull').Job<JobData>) {
               endTime: data.trimmedEnd,
             })
             videoPath = trimResult.outputPath
+            trimmedPaths.push(videoPath)
+            if (redis) registerActiveFiles(redis, jobId, [...inputPaths, ...trimmedPaths]).catch(() => {})
           }
 
           // Validate duration (works for both video and audio via ffprobe)
@@ -944,6 +962,8 @@ async function processJob(job: import('bull').Job<JobData>) {
               endTime: data.trimmedEnd,
             })
             videoPath = trimResult.outputPath
+            trimmedPaths.push(videoPath)
+            if (redis) registerActiveFiles(redis, jobId, [...inputPaths, ...trimmedPaths]).catch(() => {})
           }
 
           // Validate duration (works for both video and audio)
@@ -1329,6 +1349,8 @@ async function processJob(job: import('bull').Job<JobData>) {
               endTime: data.trimmedEnd,
             })
             videoPath = trimResult.outputPath
+            trimmedPaths.push(videoPath)
+            if (redis) registerActiveFiles(redis, jobId, [...inputPaths, ...trimmedPaths]).catch(() => {})
           }
 
           // Burn subtitles
@@ -1392,6 +1414,8 @@ async function processJob(job: import('bull').Job<JobData>) {
               endTime: data.trimmedEnd,
             })
             videoPath = trimResult.outputPath
+            trimmedPaths.push(videoPath)
+            if (redis) registerActiveFiles(redis, jobId, [...inputPaths, ...trimmedPaths]).catch(() => {})
           }
 
           // Phase 1B: profile (web/mobile/archive) for resolution + CRF; else legacy compressionLevel
@@ -1444,6 +1468,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           throw new Error(`Unknown tool type: ${toolType}`)
       }
 
+      jobSucceeded = true
       await job.progress(100)
       return result
     } catch (error: any) {
@@ -1457,6 +1482,17 @@ async function processJob(job: import('bull').Job<JobData>) {
       if (partialWriter) await partialWriter.closeAndFlush().catch(() => {})
       // Clean up stage key on success
       if (redis) deleteJobStage(redis, jobId)
+      // Remove from active-file registry so the cleanup cron can reclaim disk
+      if (redis) deregisterActiveFiles(redis, jobId).catch(() => {})
+      // Delete input and trim-output files immediately on success — output files
+      // are intentionally kept for download and rely on the 2.5 hr cron.
+      // On failure we leave files intact so Bull can retry the job with the
+      // same data.filePath (retries would fail if we deleted the input).
+      if (jobSucceeded) {
+        for (const p of [...inputPaths, ...trimmedPaths]) {
+          try { if (p && fs.existsSync(p)) fs.unlinkSync(p) } catch { /* non-blocking */ }
+        }
+      }
     }
   }
 
