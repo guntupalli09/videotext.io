@@ -6,14 +6,14 @@ import fs from 'fs'
 import { v4 as uuidv4 } from 'uuid'
 import { fileQueue, addJobToQueue, getJobById, getTotalQueueCount as getQueueCountFromWorker, JobData } from '../workers/videoProcessor'
 import { validateFileType, validateFileSize, validateSubtitleFile } from '../utils/fileValidation'
-import { enforceLanguageLimits, enforceUsageLimits, getDailySoftCapConcurrency, getJobPriority, getMaxDailyImports, getPlanLimits } from '../utils/limits'
+import { enforceLanguageLimits, enforceUsageLimits, getDailySoftCapConcurrency, getJobPriority, getMaxDailyImports, getPlanLimits, applySystemLoadGuard } from '../utils/limits'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import { getUser, saveUser, PlanType, User } from '../models/User'
 import { hashFile, checkDuplicateProcessing } from '../services/duplicate'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
 import { sanitizeFilename } from '../utils/sanitizeFilename'
 import { assertPathWithinDir } from '../utils/assertPathWithinDir'
-import { isQueueAtHardLimit, isQueueAtSoftLimit } from '../utils/queueConfig'
+import { isQueueAtHardLimit, isQueueAtSoftLimit, getSystemConcurrencyMultiplier } from '../utils/queueConfig'
 import { checkAndRecordUpload } from '../utils/uploadRateLimit'
 import { trackJobCreated } from '../utils/analytics'
 import { insertJobRecord } from '../lib/jobAnalytics'
@@ -188,7 +188,11 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
 
     const activeJobs = await fileQueue.getJobs(['active', 'waiting', 'delayed'])
     const activeForUser = activeJobs.filter((j) => (j.data as JobData)?.userId === userId)
-    if (activeForUser.length >= limits.maxConcurrentJobs) {
+    // Enforce plan-aware soft-cap concurrency (e.g. Pro drops 4→2→1 after 90/180 daily min)
+    // then apply the global system load multiplier so spikes degrade gracefully.
+    const planConcurrency = getDailySoftCapConcurrency(plan, user?.usageThisMonth?.dailyMinutesToday ?? 0)
+    const effectiveConcurrency = applySystemLoadGuard(planConcurrency, getSystemConcurrencyMultiplier(queueCount))
+    if (activeForUser.length >= effectiveConcurrency) {
       return res.status(429).json({ message: 'MAX_CONCURRENT_JOBS_REACHED' })
     }
 
@@ -523,7 +527,9 @@ router.post('/dual', upload.fields([
 
     const activeJobs = await fileQueue.getJobs(['active', 'waiting', 'delayed'])
     const activeForUser = activeJobs.filter((j) => (j.data as JobData)?.userId === userId)
-    if (activeForUser.length >= burnLimits.maxConcurrentJobs) {
+    const burnPlanConcurrency = getDailySoftCapConcurrency(plan, burnUser?.usageThisMonth?.dailyMinutesToday ?? 0)
+    const burnEffectiveConcurrency = applySystemLoadGuard(burnPlanConcurrency, getSystemConcurrencyMultiplier(queueCount))
+    if (activeForUser.length >= burnEffectiveConcurrency) {
       return res.status(429).json({ message: 'MAX_CONCURRENT_JOBS_REACHED' })
     }
 
@@ -1253,7 +1259,9 @@ router.post('/youtube', async (req: Request, res: Response) => {
     // ── Concurrent job cap ────────────────────────────────────────────────────
     const activeJobs = await fileQueue.getJobs(['active', 'waiting', 'delayed'])
     const activeForUser = activeJobs.filter((j) => (j.data as JobData)?.userId === userId)
-    if (activeForUser.length >= limits.maxConcurrentJobs) {
+    const ytPlanConcurrency = getDailySoftCapConcurrency(plan, user?.usageThisMonth?.dailyMinutesToday ?? 0)
+    const ytEffectiveConcurrency = applySystemLoadGuard(ytPlanConcurrency, getSystemConcurrencyMultiplier(queueCount))
+    if (activeForUser.length >= ytEffectiveConcurrency) {
       return res.status(429).json({ message: 'MAX_CONCURRENT_JOBS_REACHED' })
     }
 
