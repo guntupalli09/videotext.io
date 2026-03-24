@@ -8,7 +8,7 @@ import { fileQueue, addJobToQueue, getJobById, getTotalQueueCount as getQueueCou
 import { validateFileType, validateFileSize, validateSubtitleFile } from '../utils/fileValidation'
 import { enforceLanguageLimits, enforceUsageLimits, getDailySoftCapConcurrency, getJobPriority, getMaxDailyImports, getPlanLimits, applySystemLoadGuard } from '../utils/limits'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
-import { getUser, saveUser, PlanType, User } from '../models/User'
+import { getUser, saveUser, PlanType, User, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
 import { hashFile, checkDuplicateProcessing } from '../services/duplicate'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
 import { sanitizeFilename } from '../utils/sanitizeFilename'
@@ -174,7 +174,8 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       }
       const dailyImportReset = resetDailyImportIfNeeded(user, now)
       const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
-      if (dailyImportReset || dailyMinutesReset) await saveUser(user)
+      if (dailyImportReset) await atomicResetDailyImportIfNeeded(user.id, now, user.usageThisMonth.importCountTodayResetDate!)
+      if (dailyMinutesReset) await atomicResetDailyMinutesIfNeeded(user.id, now, user.usageThisMonth.dailyMinutesTodayResetDate!)
     }
 
     // Free plan: 3 imports per day (resets at midnight UTC)
@@ -515,7 +516,8 @@ router.post('/dual', upload.fields([
       }
       const dailyImportReset = resetDailyImportIfNeeded(burnUser, now)
       const dailyMinutesReset = resetDailyMinutesIfNeeded(burnUser, now)
-      if (dailyImportReset || dailyMinutesReset) await saveUser(burnUser)
+      if (dailyImportReset) await atomicResetDailyImportIfNeeded(burnUser.id, now, burnUser.usageThisMonth.importCountTodayResetDate!)
+      if (dailyMinutesReset) await atomicResetDailyMinutesIfNeeded(burnUser.id, now, burnUser.usageThisMonth.dailyMinutesTodayResetDate!)
     }
 
     const burnDailyCap = getMaxDailyImports(burnUser.plan)
@@ -920,7 +922,8 @@ router.post('/complete', async (req: Request, res: Response) => {
       if (user) {
         const dailyImportReset = resetDailyImportIfNeeded(user, now)
         const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
-        if (dailyImportReset || dailyMinutesReset) await saveUser(user)
+        if (dailyImportReset && !meta.userId!.startsWith('guest_')) await atomicResetDailyImportIfNeeded(user.id, now, user.usageThisMonth.importCountTodayResetDate!)
+        if (dailyMinutesReset && !meta.userId!.startsWith('guest_')) await atomicResetDailyMinutesIfNeeded(user.id, now, user.usageThisMonth.dailyMinutesTodayResetDate!)
         const chunkDailyCap = getMaxDailyImports(user.plan)
         if (chunkDailyCap !== null && (user.usageThisMonth.importCountToday ?? 0) >= chunkDailyCap) {
           throw Object.assign(new Error("You've used today's 3 free imports. They reset at midnight — or upgrade to Pro."), { statusCode: 403 })
@@ -1247,7 +1250,8 @@ router.post('/youtube', async (req: Request, res: Response) => {
       }
       const dailyImportReset = resetDailyImportIfNeeded(user, now)
       const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
-      if (dailyImportReset || dailyMinutesReset) await saveUser(user)
+      if (dailyImportReset) await atomicResetDailyImportIfNeeded(user.id, now, user.usageThisMonth.importCountTodayResetDate!)
+      if (dailyMinutesReset) await atomicResetDailyMinutesIfNeeded(user.id, now, user.usageThisMonth.dailyMinutesTodayResetDate!)
     }
 
     // ── Import count check (free plan: 3 imports/day, resets at midnight UTC) ─

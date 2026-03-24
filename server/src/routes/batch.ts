@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { getVideoDuration } from '../services/ffmpeg'
 import { validateFileSize, validateFileType } from '../utils/fileValidation'
 import { BatchJob, saveBatch, getBatchById } from '../models/BatchJob'
-import { getUser, saveUser, PlanType, User } from '../models/User'
+import { getUser, saveUser, PlanType, User, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
 import { getPlanLimits, enforceBatchLimits, enforceUsageLimits, getDailySoftCapConcurrency, getJobPriority, getMaxDailyImports } from '../utils/limits'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import { addJobToQueue, getTotalQueueCount } from '../workers/videoProcessor'
@@ -115,7 +115,8 @@ async function getOrCreateDemoUser(req: Request): Promise<User> {
     }
     const dailyImportReset = resetDailyImportIfNeeded(user, now)
     const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
-    if (dailyImportReset || dailyMinutesReset) await saveUser(user)
+    if (dailyImportReset) await atomicResetDailyImportIfNeeded(user.id, now, user.usageThisMonth.importCountTodayResetDate!)
+    if (dailyMinutesReset) await atomicResetDailyMinutesIfNeeded(user.id, now, user.usageThisMonth.dailyMinutesTodayResetDate!)
   }
 
   return user

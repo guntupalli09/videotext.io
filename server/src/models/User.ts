@@ -248,3 +248,53 @@ export async function incrementUserUsage(
     WHERE id = ${userId}
   `
 }
+
+/**
+ * Atomically reset the daily import counter only if the stored reset date is still in the past.
+ * Prevents the race where two concurrent requests do in-memory reset + saveUser and one
+ * overwrites the other's atomic increments.
+ */
+export async function atomicResetDailyImportIfNeeded(
+  userId: string,
+  now: Date,
+  newResetDate: Date
+): Promise<void> {
+  await prisma.$executeRaw`
+    UPDATE "User"
+    SET
+      "usageThisMonth" = "usageThisMonth" || jsonb_build_object(
+        'importCountToday',          0,
+        'importCountTodayResetDate', ${newResetDate.toISOString()}::text
+      ),
+      "updatedAt" = NOW()
+    WHERE id = ${userId}
+      AND (
+        "usageThisMonth"->>'importCountTodayResetDate' IS NULL
+        OR ("usageThisMonth"->>'importCountTodayResetDate')::timestamptz <= ${now}
+      )
+  `
+}
+
+/**
+ * Atomically reset the daily minutes counter only if the stored reset date is still in the past.
+ */
+export async function atomicResetDailyMinutesIfNeeded(
+  userId: string,
+  now: Date,
+  newResetDate: Date
+): Promise<void> {
+  await prisma.$executeRaw`
+    UPDATE "User"
+    SET
+      "usageThisMonth" = "usageThisMonth" || jsonb_build_object(
+        'dailyMinutesToday',          0,
+        'dailyMinutesTodayResetDate', ${newResetDate.toISOString()}::text
+      ),
+      "updatedAt" = NOW()
+    WHERE id = ${userId}
+      AND (
+        "usageThisMonth"->>'dailyMinutesTodayResetDate' IS NULL
+        OR ("usageThisMonth"->>'dailyMinutesTodayResetDate')::timestamptz <= ${now}
+      )
+  `
+}

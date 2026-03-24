@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express'
-import { getUser, saveUser, User, PlanType } from '../models/User'
+import { getUser, saveUser, User, PlanType, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
 import { getPlanLimits, getJobPriority, isProSoftCapActive } from '../utils/limits'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
@@ -163,7 +163,8 @@ async function getOrCreateDemoUser(req: Request): Promise<User | null> {
     } else {
       const dailyImportReset = resetDailyImportIfNeeded(user, now)
       const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
-      if (dailyImportReset || dailyMinutesReset) await saveUser(user)
+      if (dailyImportReset) await atomicResetDailyImportIfNeeded(user.id, now, user.usageThisMonth.importCountTodayResetDate!)
+      if (dailyMinutesReset) await atomicResetDailyMinutesIfNeeded(user.id, now, user.usageThisMonth.dailyMinutesTodayResetDate!)
     }
   }
 

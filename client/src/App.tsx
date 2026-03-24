@@ -243,7 +243,7 @@ function PostCheckoutHandler() {
           setTimeout(() => run(retries - 1), 2000)
         } else {
           setActivating(false)
-          toast.error('Could not confirm your plan. Refresh the page or visit Pricing.')
+          toast.error('Your plan is activating — if this persists, refresh the page or check Pricing.')
         }
       }
     }
