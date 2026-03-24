@@ -833,6 +833,22 @@ router.post('/complete', async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'No chunks found' })
     }
 
+    // Pre-flight disk check: require at least 3× the declared file size in free space.
+    // This covers: assembled file + extracted audio + audio chunks without running out mid-write.
+    // 3× is conservative but safe; 20GB files need ~60GB headroom which is expected on Agency plans.
+    try {
+      const diskStat = fs.statfsSync(tempDir)
+      const freeBytesNow = diskStat.bfree * diskStat.bsize
+      const needed = (meta.totalSize ?? 0) * 3
+      if (needed > 0 && freeBytesNow < needed) {
+        completingUploads.delete(uploadId)
+        uploadLog.warn({ msg: '[upload/complete] disk pre-flight failed', freeMb: Math.round(freeBytesNow / 1024 / 1024), neededMb: Math.round(needed / 1024 / 1024) })
+        return res.status(503).json({ message: 'Server storage is temporarily full. Please try again in a few minutes.' })
+      }
+    } catch {
+      // statfsSync not available on all platforms — skip the check rather than blocking the upload
+    }
+
     const totalChunks = Math.min(meta.totalChunks, MAX_CHUNKS)
     const totalSizeBytes = meta.totalSize
     const safeFilename = sanitizeFilename(meta.filename)
