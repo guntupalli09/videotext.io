@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import { X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { trackEvent } from '../lib/analytics'
 
 export type PaywallReason =
   | 'FREE_DAILY_LIMIT_REACHED'
@@ -56,6 +58,10 @@ function getContent(reason?: PaywallReason, resetDate?: string) {
 }
 
 export default function PaywallModal({ isOpen, onClose, reason, onUpgrade, resetDate }: PaywallModalProps) {
+  useEffect(() => {
+    if (isOpen) trackEvent('paywall_shown', { reason })
+  }, [isOpen, reason])
+
   if (!isOpen) return null
 
   const { title, body, cta, secondary } = getContent(reason, resetDate)

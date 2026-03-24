@@ -215,6 +215,8 @@ export interface JobData {
   youtubeFallbackToAudio?: boolean
   /** Pre-computed transcript from YouTube captions; skips Whisper. */
   precomputedTranscript?: { fullText: string; segments: { start: number; end: number; text: string }[] }
+  /** Set to true after usage is counted; persisted to Redis via job.update() to prevent double-counting on retry. */
+  usageIncremented?: boolean
 }
 
 async function getOrCreateUserForJob(userId: string, plan: PlanType) {
@@ -901,7 +903,8 @@ async function processJob(job: import('bull').Job<JobData>) {
           }
 
           const minutes = secondsToMinutes(processedSeconds)
-          if (userId) {
+          if (userId && !job.data.usageIncremented) {
+            await job.update({ ...job.data, usageIncremented: true })
             if (plan === 'free') {
               await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
             } else {
@@ -1056,7 +1059,8 @@ async function processJob(job: import('bull').Job<JobData>) {
                 : durationCheck.duration || 0
             const baseMinutes = secondsToMinutes(processedSeconds)
             const translatedMinutes = calculateTranslationMinutes(processedSeconds, additionalLangs.length)
-            if (userId) {
+            if (userId && !job.data.usageIncremented) {
+              await job.update({ ...job.data, usageIncremented: true })
               if (plan === 'free') {
                 await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
               } else {
@@ -1136,7 +1140,8 @@ async function processJob(job: import('bull').Job<JobData>) {
 
             // Metering (minutes or import count for free)
             const minutes = secondsToMinutes(processedSecondsSub)
-            if (userId) {
+            if (userId && !job.data.usageIncremented) {
+              await job.update({ ...job.data, usageIncremented: true })
               if (plan === 'free') {
                 await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
               } else {
@@ -1217,7 +1222,8 @@ async function processJob(job: import('bull').Job<JobData>) {
             const plan = (data.plan || 'free') as PlanType
             const processedSeconds = trimmedDuration > 0 ? trimmedDuration : await getVideoDuration(videoPath)
             const minutes = secondsToMinutes(processedSeconds)
-            if (userId) {
+            if (userId && !job.data.usageIncremented) {
+              await job.update({ ...job.data, usageIncremented: true })
               if (plan === 'free') {
                 await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
               } else {
@@ -1391,7 +1397,8 @@ async function processJob(job: import('bull').Job<JobData>) {
               ? Math.max(0, data.trimmedEnd - data.trimmedStart)
               : durationCheck.duration || 0
           const minutes = secondsToMinutes(processedSeconds)
-          if (userId) {
+          if (userId && !job.data.usageIncremented) {
+            await job.update({ ...job.data, usageIncremented: true })
             if (plan === 'free') {
               await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
             } else {
@@ -1456,7 +1463,8 @@ async function processJob(job: import('bull').Job<JobData>) {
               ? Math.max(0, data.trimmedEnd - data.trimmedStart)
               : durationCheck.duration || 0
           const minutes = secondsToMinutes(processedSeconds)
-          if (userId) {
+          if (userId && !job.data.usageIncremented) {
+            await job.update({ ...job.data, usageIncremented: true })
             if (plan === 'free') {
               await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
             } else {

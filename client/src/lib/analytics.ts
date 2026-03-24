@@ -103,6 +103,8 @@ export type AnalyticsEvent =
   | 'processing_started'
   | 'processing_completed'
   | 'payment_completed'
+  | 'soft_cap_shown'
+  | 'daily_cap_hit'
 
 export function trackEvent(event: AnalyticsEvent, props?: Record<string, unknown>): void {
   if (import.meta.env.DEV) {

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getCurrentUsage } from '../lib/api'
 import { isDemo } from '../lib/auth'
+import { trackEvent } from '../lib/analytics'
 import { Zap } from 'lucide-react'
 
 function useUsage(refreshTrigger?: string | number) {
@@ -74,12 +75,26 @@ function useUsage(refreshTrigger?: string | number) {
  */
 export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: string | number }) {
   const { usage, refetchFresh } = useUsage(refreshTrigger)
-  const [softCapDismissed, setSoftCapDismissed] = useState(false)
+  const [softCapDismissed, setSoftCapDismissed] = useState(
+    () => sessionStorage.getItem('softCapDismissed') === '1'
+  )
 
   useEffect(() => {
     window.addEventListener('videotext:plan-updated', refetchFresh)
     return () => window.removeEventListener('videotext:plan-updated', refetchFresh)
   }, [refetchFresh])
+
+  useEffect(() => {
+    if (usage?.quotaType === 'unlimited' && usage.softCapActive && !softCapDismissed) {
+      trackEvent('soft_cap_shown')
+    }
+  }, [usage?.quotaType, usage?.softCapActive, softCapDismissed])
+
+  useEffect(() => {
+    if (usage?.quotaType === 'imports' && usage.remaining === 0) {
+      trackEvent('daily_cap_hit')
+    }
+  }, [usage?.quotaType, usage?.remaining])
 
   if (!usage || isDemo()) return null
 
@@ -101,7 +116,7 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
         </Link>
         <button
           type="button"
-          onClick={() => setSoftCapDismissed(true)}
+          onClick={() => { sessionStorage.setItem('softCapDismissed', '1'); setSoftCapDismissed(true) }}
           className="text-amber-400 hover:text-amber-600 dark:hover:text-amber-300 text-xs ml-1"
           aria-label="Dismiss"
         >
