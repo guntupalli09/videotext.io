@@ -22,6 +22,7 @@ function CheckIcon({ className = '' }: { className?: string }) {
 export default function Pricing() {
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
   const [usageResetDate, setUsageResetDate] = useState<string | null>(null)
+  const [subscriptionCancelingAt, setSubscriptionCancelingAt] = useState<string | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
   const [directCheckoutLoading, setDirectCheckoutLoading] = useState(false)
   const [checkoutEmail, setCheckoutEmail] = useState('')
@@ -39,6 +40,7 @@ export default function Pricing() {
       .then((data) => {
         setCurrentPlan((data.plan || 'free').toLowerCase())
         setUsageResetDate(data.resetDate ?? data.billingPeriodEnd ?? null)
+        setSubscriptionCancelingAt((data as { subscriptionCancelingAt?: string | null }).subscriptionCancelingAt ?? null)
       })
       .catch(() => {
         setCurrentPlan((localStorage.getItem('plan') || 'free').toLowerCase())
@@ -188,14 +190,14 @@ export default function Pricing() {
             <button
               type="button"
               onClick={() => setAnnual(false)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${!annual ? ‘bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm’ : ‘text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300’}`}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${!annual ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
             >
               Monthly
             </button>
             <button
               type="button"
               onClick={() => setAnnual(true)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${annual ? ‘bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm’ : ‘text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300’}`}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${annual ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
             >
               Annual <span className="text-emerald-600 dark:text-emerald-400 font-semibold">–50%</span>
             </button>
@@ -203,9 +205,16 @@ export default function Pricing() {
 
           {isPaidPlan && (
             <div className="mt-6 flex flex-col items-center gap-2">
-              {usageResetDate && (
+              {subscriptionCancelingAt && (
+                <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-4 py-3 text-sm text-amber-800 dark:text-amber-300 max-w-sm text-center">
+                  Your subscription is set to cancel — you keep full access until{' '}
+                  <strong>{new Date(subscriptionCancelingAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</strong>,
+                  then revert to Free. To keep your plan, reactivate below.
+                </div>
+              )}
+              {!subscriptionCancelingAt && usageResetDate && (
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Your plan resets on {new Date(usageResetDate).toLocaleDateString(undefined, { month: ‘short’, day: ‘numeric’, year: ‘numeric’ })}
+                  Your plan resets on {new Date(usageResetDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                 </p>
               )}
               <button
@@ -214,7 +223,7 @@ export default function Pricing() {
                 disabled={portalLoading}
                 className="inline-flex items-center gap-2 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 text-white px-5 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
               >
-                {portalLoading ? ‘Opening…’ : ‘Manage subscription’}
+                {portalLoading ? 'Opening…' : 'Manage subscription'}
               </button>
             </div>
           )}
@@ -224,8 +233,8 @@ export default function Pricing() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-stretch">
 
           {/* FREE */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-8 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan(‘free’) ? ‘border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30’ : ‘border-gray-200/80 dark:border-gray-600’}`}>
-            {isCurrentPlan(‘free’) && (
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-8 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan('free') ? 'border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30' : 'border-gray-200/80 dark:border-gray-600'}`}>
+            {isCurrentPlan('free') && (
               <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-card whitespace-nowrap">
                 Current Plan
               </span>
@@ -245,21 +254,21 @@ export default function Pricing() {
               disabled
               className="mt-6 w-full py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-medium text-sm cursor-not-allowed"
             >
-              {isCurrentPlan(‘free’) ? ‘Current Plan’ : ‘Free — no signup needed’}
+              {isCurrentPlan('free') ? 'Current Plan' : 'Free — no signup needed'}
             </button>
           </div>
 
           {/* PRO — highlighted, Best Value */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border-2 shadow-card-elevated p-6 sm:p-8 min-h-[420px] sm:scale-[1.03] z-10 transition-motion ${isCurrentPlan(‘pro’) ? ‘border-violet-500 dark:border-violet-400 ring-2 ring-violet-500/30 shadow-violet-500/20’ : ‘border-violet-500 dark:border-violet-400 shadow-violet-500/20’}`}>
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border-2 shadow-card-elevated p-6 sm:p-8 min-h-[420px] sm:scale-[1.03] z-10 transition-motion ${isCurrentPlan('pro') ? 'border-violet-500 dark:border-violet-400 ring-2 ring-violet-500/30 shadow-violet-500/20' : 'border-violet-500 dark:border-violet-400 shadow-violet-500/20'}`}>
             <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-card whitespace-nowrap">
-              {isCurrentPlan(‘pro’) ? ‘Current Plan’ : ‘Best Value’}
+              {isCurrentPlan('pro') ? 'Current Plan' : 'Best Value'}
             </span>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-1">Pro</h3>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-gray-900 dark:text-white">{annual ? ‘$10’ : ‘$20’}</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">/ mo{annual ? ‘ billed annually’ : ‘’}</span>
+              <span className="text-3xl font-bold text-gray-900 dark:text-white">{annual ? '$10' : '$20'}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">/ mo{annual ? ' billed annually' : ''}</span>
             </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Everything professionals need. Nothing they don’t.</p>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Everything professionals need. Nothing they don't.</p>
             <ul className="mt-6 space-y-3 flex-1">
               <li className={bulletRow}><CheckIcon /><span>No fixed limits — built for real workloads</span></li>
               <li className={bulletRow}><CheckIcon /><span>Full transcript + subtitles + AI summary</span></li>
@@ -270,18 +279,18 @@ export default function Pricing() {
             </ul>
             <div className="mt-6">
               <button
-                onClick={() => isCurrentPlan(‘pro’) ? handleManageSubscription() : handleSubscribe(‘pro’, annual)}
-                disabled={(isCurrentPlan(‘pro’) && portalLoading) || directCheckoutLoading}
+                onClick={() => isCurrentPlan('pro') ? handleManageSubscription() : handleSubscribe('pro', annual)}
+                disabled={(isCurrentPlan('pro') && portalLoading) || directCheckoutLoading}
                 className="w-full py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-semibold text-sm shadow-card-elevated shadow-primary/25 transition-motion disabled:opacity-60"
               >
-                {isCurrentPlan(‘pro’) ? (portalLoading ? ‘Opening…’ : ‘Manage subscription’) : directCheckoutLoading ? ‘Redirecting…’ : annual ? ‘Start Pro — $10/mo’ : ‘Start Pro — $20/mo’}
+                {isCurrentPlan('pro') ? (portalLoading ? 'Opening…' : 'Manage subscription') : directCheckoutLoading ? 'Redirecting…' : annual ? 'Start Pro — $10/mo' : 'Start Pro — $20/mo'}
               </button>
             </div>
           </div>
 
           {/* BUSINESS — de-emphasized, right */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-7 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan(‘business’) ? ‘border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30’ : ‘border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500’}`}>
-            {isCurrentPlan(‘business’) && (
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-7 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan('business') ? 'border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`}>
+            {isCurrentPlan('business') && (
               <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-card whitespace-nowrap">
                 Current Plan
               </span>
@@ -301,11 +310,11 @@ export default function Pricing() {
             </ul>
             <div className="mt-6">
               <button
-                onClick={() => isCurrentPlan(‘business’) ? handleManageSubscription() : handleSubscribe(‘business’, false)}
-                disabled={(isCurrentPlan(‘business’) && portalLoading) || directCheckoutLoading}
+                onClick={() => isCurrentPlan('business') ? handleManageSubscription() : handleSubscribe('business', false)}
+                disabled={(isCurrentPlan('business') && portalLoading) || directCheckoutLoading}
                 className="w-full py-3 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white font-medium text-sm transition-colors disabled:opacity-60"
               >
-                {isCurrentPlan(‘business’) ? (portalLoading ? ‘Opening…’ : ‘Manage subscription’) : directCheckoutLoading ? ‘Redirecting…’ : ‘Start Business — $49/mo’}
+                {isCurrentPlan('business') ? (portalLoading ? 'Opening…' : 'Manage subscription') : directCheckoutLoading ? 'Redirecting…' : 'Start Business — $49/mo'}
               </button>
             </div>
           </div>
@@ -324,13 +333,13 @@ export default function Pricing() {
             </span>
             <span className="flex items-center gap-1.5">
               <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-              We don’t store your files
+              We don't store your files
             </span>
           </div>
           {/* Grandfathered plan link */}
-          {(isCurrentPlan(‘basic’) || isCurrentPlan(‘agency’) || isCurrentPlan(‘founding_workflow’)) && (
+          {(isCurrentPlan('basic') || isCurrentPlan('agency') || isCurrentPlan('founding_workflow')) && (
             <p className="text-xs text-gray-400 dark:text-gray-500">
-              Already on Basic, Agency, or Creator Pro?{‘ ‘}
+              Already on Basic, Agency, or Creator Pro?{' '}
               <button
                 type="button"
                 onClick={handleManageSubscription}
@@ -349,7 +358,7 @@ export default function Pricing() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated max-w-sm w-full p-6">
             <h2 id="email-prompt-title" className="text-lg font-semibold text-gray-900 dark:text-white">Enter your email</h2>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              We’ll send a verification code to this email so you can manage your plan and get receipts.
+              We'll send a verification code to this email so you can manage your plan and get receipts.
             </p>
             <div className="mt-4">
               <input
@@ -389,7 +398,7 @@ export default function Pricing() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated max-w-sm w-full p-6">
             <h2 id="otp-title" className="text-lg font-semibold text-gray-900 dark:text-white">Verify your email</h2>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              We’ll send a 6-digit code to <strong>{otpModal.email}</strong> so you can manage your plan and get receipts.
+              We'll send a 6-digit code to <strong>{otpModal.email}</strong> so you can manage your plan and get receipts.
             </p>
             {!otpSent ? (
               <div className="mt-4 space-y-3">

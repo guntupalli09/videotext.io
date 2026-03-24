@@ -679,6 +679,118 @@ router.post('/support/restrict', async (req: Request, res: Response): Promise<Re
   }
 })
 
+// ── Route: per-user detail view for support ───────────────────────────────────
+//
+// GET /api/admin/user/:userId
+// Returns full user record + last 20 jobs + usage details including soft-cap state.
+// The "blind in support" fix: everything needed to diagnose "I got throttled" in one call.
+
+router.get('/user/:userId', async (req: Request, res: Response): Promise<Response> => {
+  try {
+    if (!await requireFounder(req, res)) return res as Response
+    const { userId } = req.params
+    if (!userId) return res.status(400).json({ message: 'userId required' })
+
+    const user = await getUser(userId)
+    if (!user) return res.status(404).json({ message: 'User not found' })
+
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+
+    const [jobCountRow, recentJobs, softCapTriggerCount, failureBreakdown] = await Promise.all([
+      prisma.$queryRaw<[{ count: bigint; completed: bigint; failed: bigint }]>`
+        SELECT
+          COUNT(*)::bigint as count,
+          COUNT(*) FILTER (WHERE status = 'completed')::bigint as completed,
+          COUNT(*) FILTER (WHERE status = 'failed')::bigint as failed
+        FROM "Job" WHERE "userId" = ${user.id}
+      `,
+      // Last 20 jobs with full detail
+      prisma.$queryRaw<{
+        id: string; toolType: string; status: string; createdAt: Date; completedAt: Date | null;
+        processingMs: number | null; videoDurationSec: number | null; failureReason: string | null;
+        planAtRun: string | null; fileSizeBytes: bigint | null;
+      }[]>`
+        SELECT id, "toolType", status, "createdAt", "completedAt", "processingMs",
+          "videoDurationSec", "failureReason", "planAtRun", "fileSizeBytes"
+        FROM "Job" WHERE "userId" = ${user.id}
+        ORDER BY "createdAt" DESC LIMIT 20
+      `,
+      // Count jobs in last 30d where soft cap would have been active (>= 90 daily minutes)
+      // Used as a proxy for soft-cap trigger frequency
+      prisma.$queryRaw<[{ count: bigint }]>`
+        SELECT COUNT(DISTINCT DATE("createdAt"))::bigint as count
+        FROM "Job"
+        WHERE "userId" = ${user.id}
+          AND "createdAt" >= ${thirtyDaysAgo}
+          AND status = 'completed'
+          AND "videoDurationSec" IS NOT NULL
+          AND "videoDurationSec" >= 5400
+      `,
+      prisma.$queryRaw<{ reason: string; count: bigint }[]>`
+        SELECT COALESCE("failureReason", 'unknown') as reason, COUNT(*)::bigint as count
+        FROM "Job"
+        WHERE "userId" = ${user.id} AND status = 'failed'
+        GROUP BY "failureReason" ORDER BY count DESC LIMIT 10
+      `,
+    ])
+
+    const totals = jobCountRow?.[0]
+    const now = new Date()
+    const usage = user.usageThisMonth
+    const softCapActive = user.plan === 'pro' && (usage.dailyMinutesToday ?? 0) >= 90
+
+    return res.json({
+      id: user.id,
+      email: user.email,
+      plan: user.plan,
+      role: user.role ?? 'user',
+      suspended: user.suspended ?? false,
+      restrictionNote: user.restrictionNote ?? null,
+      stripeCustomerId: user.stripeCustomerId ?? null,
+      subscriptionId: user.subscriptionId ?? null,
+      billingPeriodStart: user.billingPeriodStart?.toISOString() ?? null,
+      billingPeriodEnd: user.billingPeriodEnd?.toISOString() ?? null,
+      subscriptionCancelingAt: usage.subscriptionCancelingAt?.toISOString() ?? null,
+      createdAt: user.createdAt.toISOString(),
+      lastActiveAt: user.lastActiveAt?.toISOString() ?? null,
+      usage: {
+        totalMinutes: usage.totalMinutes,
+        videoCount: usage.videoCount,
+        dailyMinutesToday: usage.dailyMinutesToday ?? 0,
+        dailyMinutesTodayResetDate: (usage.dailyMinutesTodayResetDate ?? now).toISOString(),
+        importCountToday: usage.importCountToday ?? 0,
+        importCountTodayResetDate: (usage.importCountTodayResetDate ?? now).toISOString(),
+        resetDate: usage.resetDate.toISOString(),
+        softCapActive,
+        daysWithHeavyUsageLast30d: Number(softCapTriggerCount?.[0]?.count ?? 0),
+      },
+      limits: user.limits,
+      overagesThisMonth: user.overagesThisMonth,
+      jobStats: {
+        total: Number(totals?.count ?? 0),
+        completed: Number(totals?.completed ?? 0),
+        failed: Number(totals?.failed ?? 0),
+      },
+      failureBreakdown: (failureBreakdown ?? []).map((r) => ({ reason: r.reason, count: Number(r.count) })),
+      recentJobs: (recentJobs ?? []).map((j) => ({
+        id: j.id,
+        toolType: j.toolType,
+        status: j.status,
+        createdAt: j.createdAt.toISOString(),
+        completedAt: j.completedAt?.toISOString() ?? null,
+        processingMs: j.processingMs,
+        videoDurationSec: j.videoDurationSec,
+        fileSizeMb: j.fileSizeBytes != null ? Math.round(Number(j.fileSizeBytes) / 1024 / 1024 * 10) / 10 : null,
+        failureReason: j.failureReason,
+        planAtRun: j.planAtRun,
+      })),
+    })
+  } catch (err) {
+    log.error({ msg: 'admin/user/:userId error', error: (err as Error)?.message ?? String(err) })
+    return res.status(500).json({ message: 'Internal server error' })
+  }
+})
+
 // Revoke access: suspend + downgrade to free + clear subscription fields.
 router.post('/support/revoke', async (req: Request, res: Response): Promise<Response> => {
   try {

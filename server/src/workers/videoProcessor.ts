@@ -40,6 +40,7 @@ import {
   trackProcessingStarted,
   trackProcessingFinished,
   trackProcessingFailed,
+  trackFirstPaidJobCompleted,
 } from '../utils/analytics'
 import {
   updateJobStarted,
@@ -53,6 +54,21 @@ import { initSentry, captureJobError } from '../lib/sentry'
 import { pushLogEntry } from '../lib/logRing'
 import { streamYoutubeAudioToFile, fetchYoutubeCaptions, validateCaptionQuality } from '../services/youtube'
 import { v4 as uuidv4 } from 'uuid'
+
+/**
+ * Fires 'first_paid_job_completed' analytics event exactly once per user.
+ * Called before incrementUserUsage so we can check videoCount === 0.
+ * No-op for free users or if videoCount > 0 already.
+ */
+async function maybeTrackFirstPaidJob(userId: string, plan: PlanType, toolType: string, jobId: string | number): Promise<void> {
+  if (plan === 'free') return
+  try {
+    const snapshot = await getUser(userId)
+    if (snapshot && (snapshot.usageThisMonth.videoCount ?? 0) === 0) {
+      trackFirstPaidJobCompleted({ user_id: userId, plan, tool_type: toolType, job_id: String(jobId) })
+    }
+  } catch { /* non-blocking */ }
+}
 
 /** Inline stage helpers — write directly to Redis so no cross-file import is required. */
 const JOB_STAGE_TTL = 3600
@@ -904,6 +920,7 @@ async function processJob(job: import('bull').Job<JobData>) {
 
           const minutes = secondsToMinutes(processedSeconds)
           if (userId && !job.data.usageIncremented) {
+            await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'video-to-transcript', jobId)
             await job.update({ ...job.data, usageIncremented: true })
             if (plan === 'free') {
               await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
@@ -1060,6 +1077,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             const baseMinutes = secondsToMinutes(processedSeconds)
             const translatedMinutes = calculateTranslationMinutes(processedSeconds, additionalLangs.length)
             if (userId && !job.data.usageIncremented) {
+              await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'subtitles', jobId)
               await job.update({ ...job.data, usageIncremented: true })
               if (plan === 'free') {
                 await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
@@ -1141,6 +1159,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             // Metering (minutes or import count for free)
             const minutes = secondsToMinutes(processedSecondsSub)
             if (userId && !job.data.usageIncremented) {
+              await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'subtitles', jobId)
               await job.update({ ...job.data, usageIncremented: true })
               if (plan === 'free') {
                 await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
@@ -1223,6 +1242,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             const processedSeconds = trimmedDuration > 0 ? trimmedDuration : await getVideoDuration(videoPath)
             const minutes = secondsToMinutes(processedSeconds)
             if (userId && !job.data.usageIncremented) {
+              await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'batch', jobId)
               await job.update({ ...job.data, usageIncremented: true })
               if (plan === 'free') {
                 await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
@@ -1398,6 +1418,7 @@ async function processJob(job: import('bull').Job<JobData>) {
               : durationCheck.duration || 0
           const minutes = secondsToMinutes(processedSeconds)
           if (userId && !job.data.usageIncremented) {
+            await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'video-tool', jobId)
             await job.update({ ...job.data, usageIncremented: true })
             if (plan === 'free') {
               await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
@@ -1464,6 +1485,7 @@ async function processJob(job: import('bull').Job<JobData>) {
               : durationCheck.duration || 0
           const minutes = secondsToMinutes(processedSeconds)
           if (userId && !job.data.usageIncremented) {
+            await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'video-tool', jobId)
             await job.update({ ...job.data, usageIncremented: true })
             if (plan === 'free') {
               await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })

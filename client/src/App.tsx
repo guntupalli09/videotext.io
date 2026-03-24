@@ -4,7 +4,7 @@ import { trackEvent, identifyUser, capturePageview } from './lib/analytics'
 import { Toaster, toast } from 'react-hot-toast'
 import Navigation from './components/Navigation'
 import Breadcrumb from './components/Breadcrumb'
-import { getSessionDetails, setupPassword } from './lib/billing'
+import { getSessionDetails, getSessionStatus, setupPassword } from './lib/billing'
 import { invalidateUsageCache } from './lib/api'
 import Footer from './components/Footer'
 import Seo from './components/Seo'
@@ -178,6 +178,7 @@ function PostCheckoutHandler() {
   const navigate = useNavigate()
   const handled = useRef(false)
   const cancelled = useRef(false)
+  const [activating, setActivating] = useState(false)
   const [setPasswordPending, setSetPasswordPending] = useState<{ token: string; plan: string } | null>(null)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -191,7 +192,25 @@ function PostCheckoutHandler() {
     if (!paymentSuccess || !sessionId || handled.current) return
 
     cancelled.current = false
-    const run = async (retries = 2) => {
+    setActivating(true)
+
+    // Poll session-status up to 4 times (10s total) to confirm subscription activated.
+    // This protects against webhook delays: user pays → Stripe returns → we verify active.
+    const pollStatus = async (attempt = 0): Promise<boolean> => {
+      try {
+        const status = await getSessionStatus(sessionId)
+        if (status.subscriptionActive) return true
+        if (attempt < 4) {
+          await new Promise(r => setTimeout(r, 2500))
+          return pollStatus(attempt + 1)
+        }
+        return false
+      } catch {
+        return attempt < 4 ? (await new Promise<boolean>(r => setTimeout(() => r(pollStatus(attempt + 1)), 2500))) : false
+      }
+    }
+
+    const run = async (retries = 3) => {
       try {
         const data = await getSessionDetails(sessionId)
         if (cancelled.current) return
@@ -199,19 +218,19 @@ function PostCheckoutHandler() {
         localStorage.setItem('plan', data.plan.toLowerCase())
         if (data.email) localStorage.setItem('userEmail', data.email)
         if (data.token) localStorage.setItem('authToken', data.token)
-        try {
-          invalidateUsageCache()
-        } catch {
-          // non-blocking
-        }
+        try { invalidateUsageCache() } catch { /* non-blocking */ }
         handled.current = true
         window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
         try {
           identifyUser(data.userId, { plan: data.plan.toLowerCase(), email: data.email })
           trackEvent('plan_upgraded', { plan: data.plan.toLowerCase() })
-        } catch {
-          // non-blocking
-        }
+        } catch { /* non-blocking */ }
+
+        // Secondary subscription-active verification — gives up gracefully after polling
+        await pollStatus()
+
+        if (cancelled.current) return
+        setActivating(false)
         if (data.passwordSetupToken) {
           setSetPasswordPending({ token: data.passwordSetupToken, plan: data.plan })
         } else {
@@ -223,12 +242,13 @@ function PostCheckoutHandler() {
         if (retries > 0) {
           setTimeout(() => run(retries - 1), 2000)
         } else {
-          toast.error('Could not load your plan. Refresh the page or go to Pricing.')
+          setActivating(false)
+          toast.error('Could not confirm your plan. Refresh the page or visit Pricing.')
         }
       }
     }
     run()
-    return () => { cancelled.current = true }
+    return () => { cancelled.current = true; setActivating(false) }
   }, [search, pathname, navigate])
 
   const finishCheckout = (showWelcomeToast = false) => {
@@ -269,6 +289,18 @@ function PostCheckoutHandler() {
 
   const handleSkip = () => {
     finishCheckout(true)
+  }
+
+  if (activating) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="status" aria-live="polite">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated max-w-sm w-full p-8 text-center">
+          <div className="mx-auto w-10 h-10 rounded-full border-4 border-violet-200 border-t-violet-600 animate-spin mb-4" />
+          <p className="text-base font-semibold text-gray-900 dark:text-white">Payment received — activating your plan…</p>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">This takes just a moment.</p>
+        </div>
+      </div>
+    )
   }
 
   if (setPasswordPending) {

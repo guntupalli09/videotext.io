@@ -228,11 +228,13 @@ router.get('/current', async (req: Request, res: Response) => {
     const softCapActive = isProSoftCapActive(plan, usage.dailyMinutesToday ?? 0)
     const billingPeriodEnd = user!.billingPeriodEnd
     const resetDate = billingPeriodEnd ?? user!.usageThisMonth.resetDate
+    const subscriptionCancelingAt = usage.subscriptionCancelingAt
     res.json({
       plan,
       email: displayEmail,
       quotaType: 'unlimited',
       softCapActive,
+      subscriptionCancelingAt: subscriptionCancelingAt?.toISOString() ?? null,
       limits: {
         maxLanguages: limits.maxLanguages,
         batchEnabled: limits.batchEnabled,

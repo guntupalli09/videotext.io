@@ -358,5 +358,44 @@ router.get('/session-details', async (req: Request, res: Response) => {
   }
 })
 
+/**
+ * GET /api/billing/session-status?session_id=...
+ * Secondary verification after checkout: confirms the Stripe subscription is active.
+ * Called by the client after session-details succeeds, as a belt-and-suspenders check
+ * that the subscription activated (not just that payment was captured).
+ */
+router.get('/session-status', async (req: Request, res: Response) => {
+  try {
+    const sessionId = (req.query.session_id as string) || ''
+    if (!sessionId) {
+      return res.status(400).json({ message: 'session_id is required' })
+    }
+
+    const session = await stripe.checkout.sessions.retrieve(sessionId)
+
+    // Payment not yet confirmed
+    if (session.payment_status !== 'paid' && session.status !== 'complete') {
+      return res.json({ subscriptionActive: false, plan: session.metadata?.plan ?? 'free' })
+    }
+
+    let subscriptionActive = false
+    if (typeof session.subscription === 'string') {
+      const sub = await stripe.subscriptions.retrieve(session.subscription) as { status: string }
+      subscriptionActive = sub.status === 'active' || sub.status === 'trialing'
+    } else {
+      // one-time payment — treat as active once paid
+      subscriptionActive = session.payment_status === 'paid'
+    }
+
+    const plan = session.metadata?.plan ?? 'pro'
+    const email = session.customer_details?.email ?? undefined
+
+    return res.json({ subscriptionActive, plan, email })
+  } catch (error: any) {
+    log.error({ msg: 'Stripe session-status error', error: (error as Error)?.message ?? String(error) })
+    return res.status(500).json({ message: error.message || 'Failed to check session status' })
+  }
+})
+
 export default router
 

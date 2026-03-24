@@ -92,6 +92,24 @@ export async function getSessionDetails(
   return response.json()
 }
 
+/**
+ * Secondary check after session-details: confirms the Stripe subscription activated.
+ * Polls this after getSessionDetails succeeds to prevent showing Pro before it's real.
+ */
+export async function getSessionStatus(
+  sessionId: string
+): Promise<{ subscriptionActive: boolean; plan: string }> {
+  const response = await api(
+    `/api/billing/session-status?session_id=${encodeURIComponent(sessionId)}`,
+    { timeout: 15_000 }
+  )
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ message: 'Failed to check status' }))
+    throw new Error(err.message || 'Failed to check session status')
+  }
+  return response.json()
+}
+
 /** One-time setup password after checkout (token from session-details). */
 export async function setupPassword(token: string, password: string): Promise<void> {
   const response = await api('/api/auth/setup-password', {

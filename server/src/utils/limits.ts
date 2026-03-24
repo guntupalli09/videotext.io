@@ -128,6 +128,16 @@ export function isProSoftCapActive(plan: PlanType, dailyMinutesToday: number): b
 }
 
 /**
+ * Applies the system-wide load multiplier to an already-computed plan concurrency.
+ * Called at the upload gate so spikes (Reddit/ProductHunt) degrade gracefully
+ * without rejecting jobs — users just queue slightly longer.
+ * Result is always at least 1.
+ */
+export function applySystemLoadGuard(planConcurrency: number, systemMultiplier: number): number {
+  return Math.max(1, Math.floor(planConcurrency * systemMultiplier))
+}
+
+/**
  * Returns the max daily imports for a plan.
  * Free = 3. All paid plans = null (no hard cap).
  */

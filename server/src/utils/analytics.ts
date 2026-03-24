@@ -115,3 +115,22 @@ export function trackProcessingFailed(params: {
     ...(params.error_message && { error_message: params.error_message }),
   })
 }
+
+/**
+ * Fired once per paid user when they complete their first job after upgrading.
+ * Enables the PostHog funnel: plan_upgraded → first_paid_job_completed.
+ * Used to identify users who paid but never activated (churn-risk nudge).
+ */
+export function trackFirstPaidJobCompleted(params: {
+  user_id: string
+  plan: string
+  tool_type: string
+  job_id: string
+}): void {
+  capture('first_paid_job_completed', params.user_id, {
+    user_id: params.user_id,
+    plan: params.plan,
+    tool_type: params.tool_type,
+    job_id: params.job_id,
+  })
+}

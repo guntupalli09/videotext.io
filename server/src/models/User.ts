@@ -15,6 +15,8 @@ export interface UsageThisMonth {
   importCountTodayResetDate: Date
   dailyMinutesToday: number
   dailyMinutesTodayResetDate: Date
+  /** Set when user cancels mid-cycle (cancel_at_period_end). Access continues until this date. */
+  subscriptionCancelingAt?: Date
 }
 
 export interface PlanLimits {
@@ -98,6 +100,7 @@ function rowToUser(row: DbUser): User {
       importCountTodayResetDate: usage?.importCountTodayResetDate ? new Date(usage.importCountTodayResetDate as string) : new Date(),
       dailyMinutesToday: Number(usage?.dailyMinutesToday ?? 0),
       dailyMinutesTodayResetDate: usage?.dailyMinutesTodayResetDate ? new Date(usage.dailyMinutesTodayResetDate as string) : new Date(),
+      subscriptionCancelingAt: usage?.subscriptionCancelingAt ? new Date(usage.subscriptionCancelingAt as string) : undefined,
     },
     limits: limits as PlanLimits,
     overagesThisMonth: (overages ?? { minutes: 0, languages: 0, batches: 0, totalCharge: 0 }) as OveragesThisMonth,
@@ -142,6 +145,9 @@ function userToDb(user: User) {
       dailyMinutesTodayResetDate: user.usageThisMonth.dailyMinutesTodayResetDate instanceof Date
         ? user.usageThisMonth.dailyMinutesTodayResetDate.toISOString()
         : user.usageThisMonth.dailyMinutesTodayResetDate,
+      subscriptionCancelingAt: user.usageThisMonth.subscriptionCancelingAt instanceof Date
+        ? user.usageThisMonth.subscriptionCancelingAt.toISOString()
+        : (user.usageThisMonth.subscriptionCancelingAt ?? null),
       suspended: user.suspended ?? false,
       restrictionNote: user.restrictionNote ?? null,
     },
