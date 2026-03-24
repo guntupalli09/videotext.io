@@ -752,7 +752,6 @@ router.post('/init', async (req: Request, res: Response) => {
       uploadId,
       totalChunks,
       totalSizeBytes: totalSize,
-      earlyEnqueueThreshold: EARLY_ENQUEUE_THRESHOLD_BYTES,
     })
 
     return res.json({ uploadId })
@@ -778,7 +777,6 @@ export async function handleUploadChunk(req: Request, res: Response): Promise<vo
     uploadLog.info({
       msg: 'chunk_upload_state',
       uploadId,
-      earlyEnqueued: meta?.earlyEnqueued ?? false,
       metaExists: !!meta,
     })
     if (!meta) {
