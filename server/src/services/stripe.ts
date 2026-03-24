@@ -6,10 +6,7 @@ const log = getLogger('api')
 const REQUIRED_STRIPE_VARS = [
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
-  'STRIPE_PRICE_BASIC',
   'STRIPE_PRICE_PRO',
-  'STRIPE_PRICE_AGENCY',
-  'STRIPE_PRICE_OVERAGE',
 ] as const
 
 /**
@@ -37,53 +34,47 @@ export const stripe = new Stripe(stripeSecretKey!, {
   apiVersion: '2026-01-28.clover',
 })
 
-export type BillingPlan = 'basic' | 'pro' | 'agency' | 'founding_workflow'
+export type BillingPlan = 'basic' | 'pro' | 'agency' | 'founding_workflow' | 'business'
 
 export interface StripePriceConfig {
-  basicPriceId: string
   proPriceId: string
-  agencyPriceId: string
+  businessPriceId?: string
+  proAnnualPriceId?: string
+  // Grandfathered plan price IDs (optional — only needed for webhook handling of old subscribers)
+  basicPriceId?: string
+  agencyPriceId?: string
   foundingWorkflowPriceId?: string
   basicAnnualPriceId?: string
-  proAnnualPriceId?: string
   agencyAnnualPriceId?: string
-  overagePriceId: string
 }
 
 export function getStripePriceConfig(): StripePriceConfig {
-  const basicPriceId = process.env.STRIPE_PRICE_BASIC
   const proPriceId = process.env.STRIPE_PRICE_PRO
-  const agencyPriceId = process.env.STRIPE_PRICE_AGENCY
-  const overagePriceId = process.env.STRIPE_PRICE_OVERAGE
-  const foundingWorkflowPriceId = process.env.STRIPE_PRICE_FOUNDING_WORKFLOW_MONTHLY
-  const basicAnnualPriceId = process.env.STRIPE_PRICE_BASIC_ANNUAL
-  const proAnnualPriceId = process.env.STRIPE_PRICE_PRO_ANNUAL
-  const agencyAnnualPriceId = process.env.STRIPE_PRICE_AGENCY_ANNUAL
-
-  if (!basicPriceId || !proPriceId || !agencyPriceId || !overagePriceId) {
-    throw new Error(
-      'Stripe price IDs are not fully configured. Expected STRIPE_PRICE_BASIC, STRIPE_PRICE_PRO, STRIPE_PRICE_AGENCY, STRIPE_PRICE_OVERAGE.'
-    )
+  if (!proPriceId) {
+    throw new Error('Stripe price IDs are not fully configured. Expected STRIPE_PRICE_PRO.')
   }
 
   return {
-    basicPriceId,
     proPriceId,
-    agencyPriceId,
-    foundingWorkflowPriceId: foundingWorkflowPriceId || undefined,
-    basicAnnualPriceId,
-    proAnnualPriceId,
-    agencyAnnualPriceId,
-    overagePriceId,
+    businessPriceId: process.env.STRIPE_PRICE_BUSINESS || undefined,
+    proAnnualPriceId: process.env.STRIPE_PRICE_PRO_ANNUAL || undefined,
+    // Grandfathered
+    basicPriceId: process.env.STRIPE_PRICE_BASIC || undefined,
+    agencyPriceId: process.env.STRIPE_PRICE_AGENCY || undefined,
+    foundingWorkflowPriceId: process.env.STRIPE_PRICE_FOUNDING_WORKFLOW_MONTHLY || undefined,
+    basicAnnualPriceId: process.env.STRIPE_PRICE_BASIC_ANNUAL || undefined,
+    agencyAnnualPriceId: process.env.STRIPE_PRICE_AGENCY_ANNUAL || undefined,
   }
 }
 
 export function getPlanFromPriceId(priceId: string): BillingPlan | null {
   try {
     const config = getStripePriceConfig()
-    if (priceId === config.basicPriceId || priceId === config.basicAnnualPriceId) return 'basic'
-    if (priceId === config.proPriceId || priceId === config.proAnnualPriceId) return 'pro'
-    if (priceId === config.agencyPriceId || priceId === config.agencyAnnualPriceId) return 'agency'
+    if (priceId === config.proPriceId || (config.proAnnualPriceId && priceId === config.proAnnualPriceId)) return 'pro'
+    if (config.businessPriceId && priceId === config.businessPriceId) return 'business'
+    // Grandfathered plans
+    if (config.basicPriceId && (priceId === config.basicPriceId || priceId === config.basicAnnualPriceId)) return 'basic'
+    if (config.agencyPriceId && (priceId === config.agencyPriceId || priceId === config.agencyAnnualPriceId)) return 'agency'
     if (config.foundingWorkflowPriceId && priceId === config.foundingWorkflowPriceId) return 'founding_workflow'
     return null
   } catch {

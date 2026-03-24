@@ -51,10 +51,9 @@ export default function UsageDisplay({ refreshTrigger }: { refreshTrigger?: stri
   if (!data) return null
 
   const plan = (data.plan || 'free').toLowerCase()
-  const isFree = plan === 'free'
 
-  // Free plan: no separate block (PlanBadge + UsageCounter show plan and imports); no "Resets" for free.
-  if (isFree) return null
+  // Free, Pro, Business: no separate minutes block (UsageCounter handles display)
+  if (plan === 'free' || plan === 'pro' || plan === 'business') return null
 
   const totalAvailableMinutes = data.limits.minutesPerMonth + data.overages.minutes
   const usedPercent =

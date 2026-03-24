@@ -1,6 +1,6 @@
 import { api } from './api'
 
-export type BillingPlan = 'basic' | 'pro' | 'agency' | 'founding_workflow'
+export type BillingPlan = 'basic' | 'pro' | 'agency' | 'founding_workflow' | 'business'
 
 export interface CheckoutParams {
   mode: 'subscription' | 'payment'

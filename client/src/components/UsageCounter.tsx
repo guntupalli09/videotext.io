@@ -6,24 +6,36 @@ import { Zap } from 'lucide-react'
 
 function useUsage(refreshTrigger?: string | number) {
   const [usage, setUsage] = useState<{
-    quotaType: 'imports' | 'minutes'
+    quotaType: 'imports' | 'minutes' | 'unlimited'
+    softCapActive?: boolean
     remaining: number
     totalPlanMinutes: number
     usedPercent: number
     limit: number
     used: number
+    resetDate?: string
   } | null>(null)
 
   const fetchUsage = useCallback((skipCache = false) => {
     getCurrentUsage({ skipCache: skipCache || refreshTrigger === 'completed' })
       .then((data) => {
-        const quotaType = data.quotaType === 'imports' ? 'imports' : 'minutes'
-        if (quotaType === 'imports') {
-          const used = data.used ?? data.usage?.importCount ?? 0
+        const quotaType = data.quotaType === 'imports' ? 'imports' : data.quotaType === 'unlimited' ? 'unlimited' : 'minutes'
+        if (quotaType === 'unlimited') {
+          setUsage({
+            quotaType: 'unlimited',
+            softCapActive: data.softCapActive ?? false,
+            remaining: 0,
+            totalPlanMinutes: 0,
+            usedPercent: 0,
+            limit: 0,
+            used: 0,
+          })
+        } else if (quotaType === 'imports') {
+          const used = data.used ?? data.usage?.importCountToday ?? data.usage?.importCount ?? 0
           const limit = data.limit ?? 3
           const remaining = Math.max(0, (data.remaining ?? limit - used))
           const usedPercent = limit === 0 ? 0 : Math.min(100, Math.round((used / limit) * 100))
-          setUsage({ quotaType, remaining, totalPlanMinutes: limit, usedPercent, limit, used })
+          setUsage({ quotaType, remaining, totalPlanMinutes: limit, usedPercent, limit, used, resetDate: data.resetDate })
         } else {
           const totalPlanMinutes = data.limits.minutesPerMonth + data.overages.minutes
           const remaining = data.usage.remaining
@@ -53,12 +65,16 @@ function useUsage(refreshTrigger?: string | number) {
 }
 
 /**
- * TurboScribe-style usage bar.
- * Shows "X of 3 transcriptions used" with a progress bar + "Go Unlimited" CTA.
- * Designed to be placed at the top of any tool page.
+ * Usage bar for the tool page header.
+ * - Free: shows "X of 3 daily imports used" with progress dots and Go Unlimited CTA.
+ * - Pro (not degraded): returns null (no bar).
+ * - Pro (soft cap active): shows quiet inline upgrade banner.
+ * - Business: returns null.
+ * - Grandfathered (minutes): shows compact minutes bar.
  */
 export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: string | number }) {
   const { usage, refetchFresh } = useUsage(refreshTrigger)
+  const [softCapDismissed, setSoftCapDismissed] = useState(false)
 
   useEffect(() => {
     window.addEventListener('videotext:plan-updated', refetchFresh)
@@ -69,7 +85,33 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
 
   const { quotaType, remaining, used, limit, usedPercent } = usage
 
-  // For minutes quota — compact display, not the main featured bar
+  // Pro/Business unlimited — no bar unless degraded
+  if (quotaType === 'unlimited') {
+    if (!usage.softCapActive || softCapDismissed) return null
+    return (
+      <div className="rounded-xl px-4 py-2.5 flex items-center gap-3 border bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20">
+        <span className="text-sm text-amber-700 dark:text-amber-400 flex-1">
+          You're processing at high volume today. Business gives consistently faster processing.
+        </span>
+        <Link
+          to="/pricing"
+          className="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap"
+        >
+          Learn more →
+        </Link>
+        <button
+          type="button"
+          onClick={() => setSoftCapDismissed(true)}
+          className="text-amber-400 hover:text-amber-600 dark:hover:text-amber-300 text-xs ml-1"
+          aria-label="Dismiss"
+        >
+          ✕
+        </button>
+      </div>
+    )
+  }
+
+  // Grandfathered minutes quota — compact display
   if (quotaType === 'minutes') {
     const isLow = usedPercent >= 80
     return (
@@ -99,9 +141,12 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
     )
   }
 
-  // ── Free tier imports quota — TurboScribe-style prominent bar ──
+  // Free tier — daily imports bar
   const isExhausted = remaining === 0
   const filledDots = Math.min(used, limit)
+  const resetLabel = usage.resetDate
+    ? new Date(usage.resetDate).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
+    : 'midnight'
 
   return (
     <div className={`rounded-xl border transition-colors overflow-hidden ${
@@ -109,15 +154,14 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
         ? 'bg-red-50 dark:bg-red-500/[0.08] border-red-200 dark:border-red-500/20'
         : 'bg-gray-900 dark:bg-gray-900 border-gray-700 dark:border-gray-700'
     }`}>
-      {/* Top: usage label + dots */}
-      <div className={`px-4 pt-3.5 pb-2 ${isExhausted ? '' : ''}`}>
+      <div className="px-4 pt-3.5 pb-2">
         <div className="flex items-center justify-between mb-2.5">
           <p className={`text-sm font-semibold ${
             isExhausted ? 'text-red-700 dark:text-red-400' : 'text-gray-300'
           }`}>
             {isExhausted
-              ? "You've used all 3 free transcriptions"
-              : `${used} of ${limit} free transcriptions used`}
+              ? `All 3 free imports used today — resets at ${resetLabel}`
+              : `${used} of ${limit} daily imports used`}
           </p>
           <div className="flex gap-1.5">
             {Array.from({ length: limit }).map((_, i) => (
@@ -133,7 +177,6 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
           </div>
         </div>
 
-        {/* Progress bar */}
         <div className="w-full h-1.5 rounded-full bg-gray-700 overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-500 ${
@@ -144,7 +187,6 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
         </div>
       </div>
 
-      {/* Bottom: Go Unlimited CTA */}
       <Link
         to="/pricing"
         className="flex items-center justify-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-500 transition-colors group"

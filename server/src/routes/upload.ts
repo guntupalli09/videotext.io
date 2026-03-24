@@ -6,8 +6,8 @@ import fs from 'fs'
 import { v4 as uuidv4 } from 'uuid'
 import { fileQueue, addJobToQueue, getJobById, getTotalQueueCount as getQueueCountFromWorker, JobData } from '../workers/videoProcessor'
 import { validateFileType, validateFileSize, validateSubtitleFile } from '../utils/fileValidation'
-import { enforceLanguageLimits, enforceUsageLimits, getJobPriority, getPlanLimits } from '../utils/limits'
-import { resetUserUsageIfNeeded } from '../utils/usageReset'
+import { enforceLanguageLimits, enforceUsageLimits, getDailySoftCapConcurrency, getJobPriority, getMaxDailyImports, getPlanLimits } from '../utils/limits'
+import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import { getUser, saveUser, PlanType, User } from '../models/User'
 import { hashFile, checkDuplicateProcessing } from '../services/duplicate'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
@@ -109,7 +109,7 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
     const rateLimitKey = userId
     let user = await getUser(userId)
     const plan: PlanType =
-      auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow')
+      auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow' || auth.plan === 'business')
         ? auth.plan
         : user?.stripeCustomerId
           ? user.plan
@@ -150,6 +150,10 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
           translatedMinutes: 0,
           importCount: 0,
           resetDate,
+          importCountToday: 0,
+          importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+          dailyMinutesToday: 0,
+          dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
         },
         limits,
         overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
@@ -168,16 +172,18 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       if (resetUserUsageIfNeeded(user, now)) {
         await saveUser(user)
       }
+      const dailyImportReset = resetDailyImportIfNeeded(user, now)
+      const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
+      if (dailyImportReset || dailyMinutesReset) await saveUser(user)
     }
 
-    // Free plan: 3 imports per month (not minute-based)
-    if (user.plan === 'free') {
-      if ((user.usageThisMonth.importCount ?? 0) >= 3) {
-        if (req.file) {
-          try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
-        }
-        return res.status(403).json({ message: 'Free plan allows 3 imports per month.' })
+    // Free plan: 3 imports per day (resets at midnight UTC)
+    const dailyCap = getMaxDailyImports(user.plan)
+    if (dailyCap !== null && (user.usageThisMonth.importCountToday ?? 0) >= dailyCap) {
+      if (req.file) {
+        try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
       }
+      return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
     }
 
     const activeJobs = await fileQueue.getJobs(['active', 'waiting', 'delayed'])
@@ -479,7 +485,13 @@ router.post('/dual', upload.fields([
         stripeCustomerId: undefined,
         subscriptionId: undefined,
         paymentMethodId: undefined,
-        usageThisMonth: { totalMinutes: 0, videoCount: 0, batchCount: 0, languageCount: 0, translatedMinutes: 0, importCount: 0, resetDate },
+        usageThisMonth: {
+          totalMinutes: 0, videoCount: 0, batchCount: 0, languageCount: 0, translatedMinutes: 0, importCount: 0, resetDate,
+          importCountToday: 0,
+          importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+          dailyMinutesToday: 0,
+          dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        },
         limits: burnLimits,
         overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
         createdAt: now,
@@ -497,14 +509,16 @@ router.post('/dual', upload.fields([
       if (resetUserUsageIfNeeded(burnUser, now)) {
         await saveUser(burnUser)
       }
+      const dailyImportReset = resetDailyImportIfNeeded(burnUser, now)
+      const dailyMinutesReset = resetDailyMinutesIfNeeded(burnUser, now)
+      if (dailyImportReset || dailyMinutesReset) await saveUser(burnUser)
     }
 
-    if (burnUser.plan === 'free') {
-      if ((burnUser.usageThisMonth.importCount ?? 0) >= 3) {
-        fs.unlinkSync(videoFile.path)
-        fs.unlinkSync(subtitleFile.path)
-        return res.status(403).json({ message: 'Free plan allows 3 imports per month.' })
-      }
+    const burnDailyCap = getMaxDailyImports(burnUser.plan)
+    if (burnDailyCap !== null && (burnUser.usageThisMonth.importCountToday ?? 0) >= burnDailyCap) {
+      fs.unlinkSync(videoFile.path)
+      fs.unlinkSync(subtitleFile.path)
+      return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
     }
 
     const activeJobs = await fileQueue.getJobs(['active', 'waiting', 'delayed'])
@@ -884,6 +898,10 @@ router.post('/complete', async (req: Request, res: Response) => {
             translatedMinutes: 0,
             importCount: 0,
             resetDate,
+            importCountToday: 0,
+            importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+            dailyMinutesToday: 0,
+            dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
           },
           limits,
           overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
@@ -893,8 +911,14 @@ router.post('/complete', async (req: Request, res: Response) => {
         // Guest users are ephemeral — skip DB write to avoid stripeCustomerId unique constraint issues
         if (!meta.userId!.startsWith('guest_')) await saveUser(user)
       }
-      if (user && user.plan === 'free' && (user.usageThisMonth.importCount ?? 0) >= 3) {
-        throw Object.assign(new Error('Free plan allows 3 imports per month.'), { statusCode: 403 })
+      if (user) {
+        const dailyImportReset = resetDailyImportIfNeeded(user, now)
+        const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
+        if (dailyImportReset || dailyMinutesReset) await saveUser(user)
+        const chunkDailyCap = getMaxDailyImports(user.plan)
+        if (chunkDailyCap !== null && (user.usageThisMonth.importCountToday ?? 0) >= chunkDailyCap) {
+          throw Object.assign(new Error("You've used today's 3 free imports. They reset at midnight — or upgrade to Pro."), { statusCode: 403 })
+        }
       }
       const fileSize = fs.statSync(outPath).size
       const planLimit = getPlanLimits(meta.plan).maxFileSize
@@ -1124,7 +1148,7 @@ router.post('/youtube', async (req: Request, res: Response) => {
     const auth = getAuthFromRequest(req)
     let user = await getUser(userId)
     const plan: PlanType =
-      auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow')
+      auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow' || auth.plan === 'business')
         ? auth.plan
         : user?.stripeCustomerId
           ? user.plan
@@ -1193,6 +1217,10 @@ router.post('/youtube', async (req: Request, res: Response) => {
           translatedMinutes: 0,
           importCount: 0,
           resetDate,
+          importCountToday: 0,
+          importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+          dailyMinutesToday: 0,
+          dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
         },
         limits,
         overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
@@ -1211,13 +1239,15 @@ router.post('/youtube', async (req: Request, res: Response) => {
       if (resetUserUsageIfNeeded(user, now)) {
         await saveUser(user)
       }
+      const dailyImportReset = resetDailyImportIfNeeded(user, now)
+      const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
+      if (dailyImportReset || dailyMinutesReset) await saveUser(user)
     }
 
-    // ── Import count check (free plan: 3 imports/month) ───────────────────────
-    if (user.plan === 'free') {
-      if ((user.usageThisMonth.importCount ?? 0) >= 3) {
-        return res.status(403).json({ message: 'Free plan allows 3 imports per month.' })
-      }
+    // ── Import count check (free plan: 3 imports/day, resets at midnight UTC) ─
+    const ytDailyCap = getMaxDailyImports(user.plan)
+    if (ytDailyCap !== null && (user.usageThisMonth.importCountToday ?? 0) >= ytDailyCap) {
+      return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
     }
 
     // ── Concurrent job cap ────────────────────────────────────────────────────

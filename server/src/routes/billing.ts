@@ -96,20 +96,32 @@ router.post('/checkout', async (req: Request, res: Response) => {
 
       const annual = req.body.annual === true
       let priceId: string
-      if (plan === 'founding_workflow') {
+      if (plan === 'business') {
+        if (!prices.businessPriceId) {
+          return res.status(400).json({ message: 'Business plan is not available.' })
+        }
+        priceId = prices.businessPriceId
+      } else if (plan === 'pro') {
+        priceId = annual && prices.proAnnualPriceId ? prices.proAnnualPriceId : prices.proPriceId
+      } else if (plan === 'founding_workflow') {
         if (!prices.foundingWorkflowPriceId) {
           return res.status(400).json({ message: 'Founding Workflow plan is not available.' })
         }
         priceId = prices.foundingWorkflowPriceId
       } else if (plan === 'basic') {
+        if (!prices.basicPriceId) {
+          return res.status(400).json({ message: 'Basic plan is no longer available. Upgrade to Pro instead.' })
+        }
         priceId = annual && prices.basicAnnualPriceId ? prices.basicAnnualPriceId : prices.basicPriceId
-      } else if (plan === 'pro') {
-        priceId = annual && prices.proAnnualPriceId ? prices.proAnnualPriceId : prices.proPriceId
       } else {
+        // agency (grandfathered)
+        if (!prices.agencyPriceId) {
+          return res.status(400).json({ message: 'Agency plan is no longer available. Upgrade to Business instead.' })
+        }
         priceId = annual && prices.agencyAnnualPriceId ? prices.agencyAnnualPriceId : prices.agencyPriceId
       }
 
-      // Promo codes only for Basic and Pro (30/50/70/100% off for early testers)
+      // Promo codes for Pro (30/50/70/100% off for early testers)
       const promoId =
         (plan === 'basic' || plan === 'pro') && promotionCode
           ? getStripePromotionCodeId(promotionCode)
@@ -150,26 +162,9 @@ router.post('/checkout', async (req: Request, res: Response) => {
     }
 
     if (mode === 'payment') {
-      // Phase 2.5: One-time overage 100 minutes = $5
-      const session = await stripe.checkout.sessions.create({
-        mode: 'payment',
-        customer: stripeCustomerId || undefined,
-        customer_email: !stripeCustomerId && email ? email : undefined,
-        line_items: [
-          {
-            price: prices.overagePriceId,
-            quantity: 1,
-          },
-        ],
-        success_url: successUrl,
-        cancel_url: cancelUrl,
-        metadata: {
-          purchaseType: 'overage',
-          returnToPath: normalizedPath,
-        },
+      return res.status(410).json({
+        message: 'Overage purchases are no longer available. Upgrade to Pro for unlimited processing.',
       })
-
-      return res.json({ url: session.url })
     }
 
     return res.status(400).json({ message: 'Invalid mode' })
@@ -203,7 +198,7 @@ router.post('/portal', async (req: Request, res: Response) => {
 
     // Stripe Billing Portal requires an existing Stripe customer (created at checkout).
     let customerId = user.stripeCustomerId || (user.id && user.id.startsWith('cus_') ? user.id : null)
-    if (!customerId && user.email && (user.plan === 'basic' || user.plan === 'pro' || user.plan === 'agency' || user.plan === 'founding_workflow')) {
+    if (!customerId && user.email && (user.plan === 'basic' || user.plan === 'pro' || user.plan === 'agency' || user.plan === 'founding_workflow' || user.plan === 'business')) {
       const found = await findStripeCustomerIdByEmail(user.email)
       if (found) {
         user.stripeCustomerId = found
@@ -262,7 +257,7 @@ router.get('/session-details', async (req: Request, res: Response) => {
           existingByEmail.stripeCustomerId = customerId
           // Apply the purchased plan so the user's account reflects the upgrade
           const planFromMeta = session.metadata?.plan as PlanType | undefined
-          if (planFromMeta === 'basic' || planFromMeta === 'pro' || planFromMeta === 'agency' || planFromMeta === 'founding_workflow') {
+          if (planFromMeta === 'basic' || planFromMeta === 'pro' || planFromMeta === 'agency' || planFromMeta === 'founding_workflow' || planFromMeta === 'business') {
             existingByEmail.plan = planFromMeta
             existingByEmail.limits = getPlanLimits(planFromMeta)
           }

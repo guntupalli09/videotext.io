@@ -32,6 +32,7 @@ export default function Pricing() {
   const [otpCode, setOtpCode] = useState('')
   const [otpLoading, setOtpLoading] = useState(false)
   const [otpError, setOtpError] = useState<string | null>(null)
+  const [annual, setAnnual] = useState(false)
 
   const refreshCurrentPlan = useCallback(() => {
     getCurrentUsage({ skipCache: true })
@@ -55,7 +56,7 @@ export default function Pricing() {
     return () => window.removeEventListener('videotext:plan-updated', onPlanUpdated)
   }, [refreshCurrentPlan])
 
-  const isPaidPlan = currentPlan === 'basic' || currentPlan === 'pro' || currentPlan === 'agency' || currentPlan === 'founding_workflow'
+  const isPaidPlan = currentPlan === 'basic' || currentPlan === 'pro' || currentPlan === 'agency' || currentPlan === 'founding_workflow' || currentPlan === 'business'
 
   const isCurrentPlan = (plan: string) => (currentPlan || 'free').toLowerCase() === plan.toLowerCase()
 
@@ -173,23 +174,38 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen py-16 sm:py-24 bg-gradient-to-b from-gray-50/90 to-gray-50 dark:from-gray-900 dark:to-gray-800/80">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="text-center mb-14 sm:mb-16">
-          <div className="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 px-3 py-1.5 rounded-full text-sm font-medium border border-emerald-100 dark:border-emerald-800/50 mb-6">
-            <span>🔒</span>
-            <span>We don’t store your data. Your files are processed and deleted.</span>
-          </div>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header className="text-center mb-10 sm:mb-12">
           <h1 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
-            Pricing
+            One subscription. Your entire video workflow.
           </h1>
-          <p className="mt-3 text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-            Features and outcomes first. Upgrade when you need more.
+          <p className="mt-3 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Transcript · Subtitles · AI Summaries · Chapters · Keywords · Speaker Labels — one upload.
           </p>
+
+          {/* Annual / monthly toggle */}
+          <div className="mt-6 inline-flex items-center gap-3 bg-gray-100 dark:bg-gray-700/60 rounded-full px-2 py-1.5">
+            <button
+              type="button"
+              onClick={() => setAnnual(false)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${!annual ? ‘bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm’ : ‘text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300’}`}
+            >
+              Monthly
+            </button>
+            <button
+              type="button"
+              onClick={() => setAnnual(true)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${annual ? ‘bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm’ : ‘text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300’}`}
+            >
+              Annual <span className="text-emerald-600 dark:text-emerald-400 font-semibold">–50%</span>
+            </button>
+          </div>
+
           {isPaidPlan && (
             <div className="mt-6 flex flex-col items-center gap-2">
               {usageResetDate && (
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Your plan resets on {new Date(usageResetDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                  Your plan resets on {new Date(usageResetDate).toLocaleDateString(undefined, { month: ‘short’, day: ‘numeric’, year: ‘numeric’ })}
                 </p>
               )}
               <button
@@ -198,179 +214,105 @@ export default function Pricing() {
                 disabled={portalLoading}
                 className="inline-flex items-center gap-2 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 text-white px-5 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
               >
-                {portalLoading ? 'Opening…' : 'Manage subscription'}
+                {portalLoading ? ‘Opening…’ : ‘Manage subscription’}
               </button>
             </div>
           )}
         </header>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8 items-stretch">
-          {/* CREATOR PRO — $10/month early-adopter plan */}
-          <div className={`flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-8 min-h-[420px] hover:shadow-card-elevated transition-motion relative ${isCurrentPlan('founding_workflow') ? 'border-purple-500 dark:border-purple-400 ring-2 ring-purple-500/30 shadow-purple-500/10' : 'border-purple-300/80 dark:border-purple-500/50 shadow-purple-500/10 hover:shadow-purple-500/15'}`}>
-            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-card whitespace-nowrap">
-              {isCurrentPlan('founding_workflow') ? 'Current Plan' : 'Early Access'}
-            </span>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-1">Creator Pro</h3>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">$10</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">/ month — locked in forever</span>
-            </div>
-            <p className="mt-2 text-sm text-amber-600 dark:text-amber-400 font-medium">First 20 users only — spots running out</p>
-            <ul className="mt-6 space-y-3 flex-1">
-              <li className={bulletRow}><CheckIcon /><span>600 minutes per month</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Batch processing enabled</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Up to 120 min per video</span></li>
-              <li className={bulletRow}><CheckIcon /><span>3–5 languages</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Priority queue</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Shape the roadmap directly</span></li>
-            </ul>
-            <button
-              type="button"
-              className="mt-6 w-full py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors disabled:opacity-60"
-              onClick={() => handleSubscribe('founding_workflow', false)}
-              disabled={directCheckoutLoading}
-            >
-              {directCheckoutLoading ? 'Redirecting…' : isCurrentPlan('founding_workflow') ? 'Current Plan' : 'Join Creator Pro'}
-            </button>
-          </div>
+        {/* 3-column pricing grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-stretch">
 
-          {/* FREE — $0 */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-8 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan('free') ? 'border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30' : 'border-gray-200/80 dark:border-gray-600'}`}>
-            {isCurrentPlan('free') && (
+          {/* FREE */}
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-8 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan(‘free’) ? ‘border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30’ : ‘border-gray-200/80 dark:border-gray-600’}`}>
+            {isCurrentPlan(‘free’) && (
               <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-card whitespace-nowrap">
                 Current Plan
               </span>
             )}
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">Free</h3>
-              <span className="text-2xl font-bold text-gray-800 dark:text-white">$0</span>
+            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">Free</h3>
+            <div className="mt-2 flex items-baseline gap-1">
+              <span className="text-3xl font-bold text-gray-900 dark:text-white">$0</span>
             </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Sign up for free: 3 imports / month</p>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">3 imports per day · resets daily</p>
             <ul className="mt-6 space-y-3 flex-1">
-              <li className={bulletRow}><CheckIcon /><span>Video → Transcript & Subtitles</span></li>
-              <li className={bulletRow}><CheckIcon /><span>1 language · Watermarked</span></li>
+              <li className={bulletRow}><CheckIcon /><span>All 19 subtitle tools — always free</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Transcript &amp; subtitles (SRT, VTT, SBV)</span></li>
               <li className={bulletRow}><CheckIcon /><span>Up to 30 min per video</span></li>
+              <li className={bulletRow}><CheckIcon /><span>1 language · Watermarked exports</span></li>
             </ul>
             <button
               disabled
               className="mt-6 w-full py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-medium text-sm cursor-not-allowed"
             >
-              {isCurrentPlan('free') ? 'Current Plan' : 'Free tier'}
+              {isCurrentPlan(‘free’) ? ‘Current Plan’ : ‘Free — no signup needed’}
             </button>
           </div>
 
-          {/* BASIC — $19 */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-8 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan('basic') ? 'border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30 hover:border-violet-400' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`}>
-            {isCurrentPlan('basic') && (
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-card whitespace-nowrap">
-                Current Plan
-              </span>
-            )}
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-1">Basic</h3>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">$19</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">/ month</span>
-            </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">For individuals · 450 min/month</p>
-            <ul className="mt-6 space-y-3 flex-1">
-              <li className={bulletRow}><CheckIcon /><span>No watermark · 2 languages</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Subtitle editing</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Up to 45 min per video</span></li>
-            </ul>
-            <div className="mt-6 space-y-1">
-              <button
-                onClick={() => isCurrentPlan('basic') ? handleManageSubscription() : handleSubscribe('basic', false)}
-                disabled={(isCurrentPlan('basic') && portalLoading) || directCheckoutLoading}
-                className="w-full py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors disabled:opacity-60"
-              >
-                {isCurrentPlan('basic') ? (portalLoading ? 'Opening…' : 'Manage subscription') : directCheckoutLoading ? 'Redirecting…' : 'Choose Basic'}
-              </button>
-              <button
-                onClick={() => handleSubscribe('basic', true)}
-                disabled={directCheckoutLoading}
-                className="w-full py-1 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium disabled:opacity-60"
-              >
-                Save 20% with annual
-              </button>
-            </div>
-          </div>
-
-          {/* PRO — $49 — primary CTA */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border-2 shadow-card-elevated p-6 sm:p-8 min-h-[420px] lg:scale-[1.03] z-10 transition-motion ${isCurrentPlan('pro') ? 'border-violet-500 dark:border-violet-400 ring-2 ring-violet-500/30 shadow-violet-500/20 hover:shadow-violet-500/25' : 'border-violet-500 dark:border-violet-400 shadow-violet-500/20 hover:shadow-card-elevated hover:shadow-violet-500/25'}`}>
+          {/* PRO — highlighted, Best Value */}
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border-2 shadow-card-elevated p-6 sm:p-8 min-h-[420px] sm:scale-[1.03] z-10 transition-motion ${isCurrentPlan(‘pro’) ? ‘border-violet-500 dark:border-violet-400 ring-2 ring-violet-500/30 shadow-violet-500/20’ : ‘border-violet-500 dark:border-violet-400 shadow-violet-500/20’}`}>
             <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-card whitespace-nowrap">
-              {isCurrentPlan('pro') ? 'Current Plan' : 'Most Popular'}
+              {isCurrentPlan(‘pro’) ? ‘Current Plan’ : ‘Best Value’}
             </span>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-1">Pro</h3>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">$49</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">/ month</span>
+              <span className="text-3xl font-bold text-gray-900 dark:text-white">{annual ? ‘$10’ : ‘$20’}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">/ mo{annual ? ‘ billed annually’ : ‘’}</span>
             </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">For creators · 1,200 min · Batch</p>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Everything professionals need. Nothing they don’t.</p>
             <ul className="mt-6 space-y-3 flex-1">
-              <li className={bulletRow}><CheckIcon /><span>Batch processing · 5 languages</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Long-form · Priority queue</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Up to 120 min per video</span></li>
+              <li className={bulletRow}><CheckIcon /><span>No fixed limits — built for real workloads</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Full transcript + subtitles + AI summary</span></li>
+              <li className={bulletRow}><CheckIcon /><span>AI chapters, keywords &amp; speaker labels</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Batch processing — 20 videos at once</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Up to 2 hours per video · 5 languages</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Priority queue · No watermark</span></li>
             </ul>
-            <div className="mt-6 space-y-1">
+            <div className="mt-6">
               <button
-                onClick={() => isCurrentPlan('pro') ? handleManageSubscription() : handleSubscribe('pro', false)}
-                disabled={(isCurrentPlan('pro') && portalLoading) || directCheckoutLoading}
+                onClick={() => isCurrentPlan(‘pro’) ? handleManageSubscription() : handleSubscribe(‘pro’, annual)}
+                disabled={(isCurrentPlan(‘pro’) && portalLoading) || directCheckoutLoading}
                 className="w-full py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-semibold text-sm shadow-card-elevated shadow-primary/25 transition-motion disabled:opacity-60"
               >
-                {isCurrentPlan('pro') ? (portalLoading ? 'Opening…' : 'Manage subscription') : directCheckoutLoading ? 'Redirecting…' : 'Choose Pro'}
-              </button>
-              <button
-                onClick={() => handleSubscribe('pro', true)}
-                disabled={directCheckoutLoading}
-                className="w-full py-1 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium disabled:opacity-60"
-              >
-                Save 20% with annual
+                {isCurrentPlan(‘pro’) ? (portalLoading ? ‘Opening…’ : ‘Manage subscription’) : directCheckoutLoading ? ‘Redirecting…’ : annual ? ‘Start Pro — $10/mo’ : ‘Start Pro — $20/mo’}
               </button>
             </div>
           </div>
 
-          {/* AGENCY — $129 */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-8 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan('agency') ? 'border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30 hover:border-violet-400' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`}>
-            {isCurrentPlan('agency') && (
+          {/* BUSINESS — de-emphasized, right */}
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-7 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan(‘business’) ? ‘border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30’ : ‘border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500’}`}>
+            {isCurrentPlan(‘business’) && (
               <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-card whitespace-nowrap">
                 Current Plan
               </span>
             )}
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-1">Agency</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mt-1">Business</h3>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">$129</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">/ month</span>
+              <span className="text-3xl font-bold text-gray-900 dark:text-white">$49</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">/ mo</span>
             </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">For teams · 3,000 min · Commercial</p>
-            <ul className="mt-6 space-y-3 flex-1">
-              <li className={bulletRow}><CheckIcon /><span>Heavy batch · ZIP exports</span></li>
-              <li className={bulletRow}><CheckIcon /><span>10 languages · Commercial use</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Up to 240 min per video</span></li>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">For teams &amp; agencies. Dedicated resources, zero throttling.</p>
+            <ul className="mt-6 space-y-3 flex-1 text-sm">
+              <li className={bulletRow}><CheckIcon /><span>Everything in Pro</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Up to 4 hours per video</span></li>
+              <li className={bulletRow}><CheckIcon /><span>100-video batches · 10 languages</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Dedicated highest-priority queue</span></li>
+              <li className={bulletRow}><CheckIcon /><span>Zero throttling — 8 concurrent jobs</span></li>
             </ul>
-            <div className="mt-6 space-y-1">
+            <div className="mt-6">
               <button
-                onClick={() => isCurrentPlan('agency') ? handleManageSubscription() : handleSubscribe('agency', false)}
-                disabled={(isCurrentPlan('agency') && portalLoading) || directCheckoutLoading}
-                className="w-full py-3.5 rounded-xl bg-primary-hover hover:bg-violet-800 dark:hover:bg-violet-700 text-white font-semibold text-sm border-2 border-primary/50 transition-colors disabled:opacity-60"
+                onClick={() => isCurrentPlan(‘business’) ? handleManageSubscription() : handleSubscribe(‘business’, false)}
+                disabled={(isCurrentPlan(‘business’) && portalLoading) || directCheckoutLoading}
+                className="w-full py-3 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white font-medium text-sm transition-colors disabled:opacity-60"
               >
-                {isCurrentPlan('agency') ? (portalLoading ? 'Opening…' : 'Manage subscription') : directCheckoutLoading ? 'Redirecting…' : 'Choose Agency'}
-              </button>
-              <button
-                onClick={() => handleSubscribe('agency', true)}
-                disabled={directCheckoutLoading}
-                className="w-full py-1 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium disabled:opacity-60"
-              >
-                Save 20% with annual
+                {isCurrentPlan(‘business’) ? (portalLoading ? ‘Opening…’ : ‘Manage subscription’) : directCheckoutLoading ? ‘Redirecting…’ : ‘Start Business — $49/mo’}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Overage footer + trust signals */}
-        <div className="mt-14 pt-10 border-t border-gray-200 dark:border-gray-600 text-center space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-            Overage: 100 minutes = $5
-          </p>
+        {/* Footer trust signals */}
+        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 text-center space-y-4">
           <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500 dark:text-gray-400">
             <span className="flex items-center gap-1.5">
               <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
@@ -378,17 +320,26 @@ export default function Pricing() {
             </span>
             <span className="flex items-center gap-1.5">
               <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-              Failed jobs don't use your minutes
-            </span>
-            <span className="flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
               Cancel any time
             </span>
             <span className="flex items-center gap-1.5">
               <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-              We don't store your files
+              We don’t store your files
             </span>
           </div>
+          {/* Grandfathered plan link */}
+          {(isCurrentPlan(‘basic’) || isCurrentPlan(‘agency’) || isCurrentPlan(‘founding_workflow’)) && (
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              Already on Basic, Agency, or Creator Pro?{‘ ‘}
+              <button
+                type="button"
+                onClick={handleManageSubscription}
+                className="underline hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                Manage your plan →
+              </button>
+            </p>
+          )}
         </div>
       </div>
 

@@ -129,16 +129,10 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
 
   // Activate subscription plan
   if (purchaseType === 'subscription' && planFromMetadata) {
-    if (planFromMetadata === 'basic' || planFromMetadata === 'pro' || planFromMetadata === 'agency' || planFromMetadata === 'founding_workflow') {
+    if (planFromMetadata === 'basic' || planFromMetadata === 'pro' || planFromMetadata === 'agency' || planFromMetadata === 'founding_workflow' || planFromMetadata === 'business') {
       user.plan = planFromMetadata
       user.limits = getPlanLimits(planFromMetadata)
     }
-  }
-
-  // Phase 2.5: One-time overage 100 minutes = $5
-  if (purchaseType === 'overage') {
-    user.overagesThisMonth.minutes += 100
-    user.overagesThisMonth.totalCharge += 5
   }
 
   // Generate password setup token for new paid users (only if not already set by session-details)

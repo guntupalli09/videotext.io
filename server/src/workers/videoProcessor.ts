@@ -903,9 +903,9 @@ async function processJob(job: import('bull').Job<JobData>) {
           const minutes = secondsToMinutes(processedSeconds)
           if (userId) {
             if (plan === 'free') {
-              await incrementUserUsage(userId, { importCount: 1 })
+              await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
             } else {
-              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1 })
+              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1, importCountToday: 1, dailyMinutesToday: minutes })
             }
           }
 
@@ -1058,13 +1058,15 @@ async function processJob(job: import('bull').Job<JobData>) {
             const translatedMinutes = calculateTranslationMinutes(processedSeconds, additionalLangs.length)
             if (userId) {
               if (plan === 'free') {
-                await incrementUserUsage(userId, { importCount: 1 })
+                await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
               } else {
                 await incrementUserUsage(userId, {
                   totalMinutes: baseMinutes + translatedMinutes,
                   translatedMinutes,
                   languageCount: additionalLangs.length,
                   videoCount: 1,
+                  importCountToday: 1,
+                  dailyMinutesToday: baseMinutes + translatedMinutes,
                 })
               }
             }
@@ -1136,9 +1138,9 @@ async function processJob(job: import('bull').Job<JobData>) {
             const minutes = secondsToMinutes(processedSecondsSub)
             if (userId) {
               if (plan === 'free') {
-                await incrementUserUsage(userId, { importCount: 1 })
+                await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
               } else {
-                await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1 })
+                await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1, importCountToday: 1, dailyMinutesToday: minutes })
               }
             }
 
@@ -1217,9 +1219,9 @@ async function processJob(job: import('bull').Job<JobData>) {
             const minutes = secondsToMinutes(processedSeconds)
             if (userId) {
               if (plan === 'free') {
-                await incrementUserUsage(userId, { importCount: 1 })
+                await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
               } else {
-                await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1 })
+                await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1, importCountToday: 1, dailyMinutesToday: minutes })
               }
             }
 
@@ -1391,9 +1393,9 @@ async function processJob(job: import('bull').Job<JobData>) {
           const minutes = secondsToMinutes(processedSeconds)
           if (userId) {
             if (plan === 'free') {
-              await incrementUserUsage(userId, { importCount: 1 })
+              await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
             } else {
-              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1 })
+              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1, importCountToday: 1, dailyMinutesToday: minutes })
             }
           }
           break
@@ -1456,9 +1458,9 @@ async function processJob(job: import('bull').Job<JobData>) {
           const minutes = secondsToMinutes(processedSeconds)
           if (userId) {
             if (plan === 'free') {
-              await incrementUserUsage(userId, { importCount: 1 })
+              await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
             } else {
-              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1 })
+              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1, importCountToday: 1, dailyMinutesToday: minutes })
             }
           }
           break

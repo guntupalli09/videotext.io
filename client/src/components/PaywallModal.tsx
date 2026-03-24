@@ -1,66 +1,64 @@
-import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getCurrentUsage } from '../lib/api'
+import { Link } from 'react-router-dom'
+
+export type PaywallReason =
+  | 'FREE_DAILY_LIMIT_REACHED'
+  | 'VIDEO_TOO_LONG'
+  | 'BATCH_NOT_AVAILABLE'
+  | 'MULTI_LANGUAGE_NOT_AVAILABLE'
 
 interface PaywallModalProps {
   isOpen: boolean
   onClose: () => void
-  usedMinutes?: number
-  availableMinutes?: number
-  onBuyOverage?: () => void
+  reason?: PaywallReason
   onUpgrade?: () => void
+  /** ISO string for midnight UTC reset (free plan) */
+  resetDate?: string
 }
 
-export default function PaywallModal({
-  isOpen,
-  onClose,
-  usedMinutes: propUsed,
-  availableMinutes: propAvailable,
-  onBuyOverage,
-  onUpgrade,
-}: PaywallModalProps) {
-  const [usage, setUsage] = useState<{ used: number; available: number } | null>(null)
+function getContent(reason?: PaywallReason, resetDate?: string) {
+  const resetLabel = resetDate
+    ? new Date(resetDate).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' })
+    : 'midnight'
 
-  const [quotaType, setQuotaType] = useState<'imports' | 'minutes'>('minutes')
-  useEffect(() => {
-    if (!isOpen) return
-    let cancelled = false
-    getCurrentUsage()
-      .then((data) => {
-        if (cancelled) return
-        const isImports = data.quotaType === 'imports'
-        setQuotaType(isImports ? 'imports' : 'minutes')
-        if (isImports) {
-          const used = data.used ?? data.usage?.importCount ?? 0
-          const limit = data.limit ?? 3
-          setUsage({ used, available: limit })
-        } else {
-          const available = data.limits.minutesPerMonth + data.overages.minutes
-          setUsage({
-            used: data.usage.totalMinutes,
-            available,
-          })
-        }
-      })
-      .catch(() => {
-        if (cancelled) return
-        setUsage({
-          used: propUsed ?? 0,
-          available: propAvailable ?? 0,
-        })
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [isOpen, propUsed, propAvailable])
+  switch (reason) {
+    case 'VIDEO_TOO_LONG':
+      return {
+        title: 'Video too long for free plan',
+        body: 'Free supports up to 30 minutes. Pro supports up to 2 hours.',
+        cta: 'Upgrade to Pro',
+        secondary: null,
+      }
+    case 'BATCH_NOT_AVAILABLE':
+      return {
+        title: 'Batch processing is a Pro feature',
+        body: 'Upload up to 20 videos at once with Pro. Pro also includes speaker labels, AI summaries, and 5 languages.',
+        cta: 'Upgrade to Pro',
+        secondary: null,
+      }
+    case 'MULTI_LANGUAGE_NOT_AVAILABLE':
+      return {
+        title: 'Multiple languages require Pro',
+        body: 'Pro supports 5 languages with speaker diarization, AI summaries, and batch processing.',
+        cta: 'Upgrade to Pro',
+        secondary: null,
+      }
+    case 'FREE_DAILY_LIMIT_REACHED':
+    default:
+      return {
+        title: "You've used today's 3 free imports",
+        body: 'Pro includes batch processing, speaker labels, AI summaries, chapters, keywords, and 5 languages — no fixed limits.',
+        cta: 'Upgrade to Pro — $10/mo annual',
+        secondary: `Resets at ${resetLabel} if you'd like to wait.`,
+      }
+  }
+}
 
-  const usedMinutes = usage?.used ?? propUsed ?? 0
-  const availableMinutes = usage?.available ?? propAvailable ?? 0
-
+export default function PaywallModal({ isOpen, onClose, reason, onUpgrade, resetDate }: PaywallModalProps) {
   if (!isOpen) return null
 
-  const isImportsQuota = quotaType === 'imports'
+  const { title, body, cta, secondary } = getContent(reason, resetDate)
 
   return (
     <AnimatePresence>
@@ -77,47 +75,29 @@ export default function PaywallModal({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative bg-white rounded-2xl p-8 max-w-lg w-full"
+          className="relative bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full shadow-xl"
         >
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
-            <X className="h-6 w-6" strokeWidth={1.5} />
+            <X className="h-5 w-5" strokeWidth={1.5} />
           </button>
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Upgrade to continue</h2>
-          <p className="text-gray-600 mb-6">
-            {isImportsQuota
-              ? "You've used all 3 free imports this month. They reset on the 1st — or upgrade now for unlimited access."
-              : `You've used ${usedMinutes} of ${availableMinutes} minutes this billing cycle.`}
-          </p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{title}</h2>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">{body}</p>
 
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <button
-              onClick={onBuyOverage}
-              disabled={!onBuyOverage || isImportsQuota}
-              className="bg-gray-50 border-2 border-gray-200 rounded-xl p-4 text-left hover:border-violet-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <div className="font-semibold text-gray-800 mb-1">Buy 100 more minutes</div>
-              <div className="text-sm text-gray-500">$3 one-time, applies this cycle</div>
-            </button>
+          <Link
+            to="/pricing"
+            onClick={onUpgrade ?? onClose}
+            className="block w-full py-3.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm text-center transition-colors shadow-sm"
+          >
+            {cta}
+          </Link>
 
-            <button
-              onClick={onUpgrade}
-              disabled={!onUpgrade}
-              className="bg-gray-50 border-2 border-gray-200 rounded-xl p-4 text-left hover:border-violet-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <div className="font-semibold text-gray-800 mb-1">Upgrade your plan</div>
-              <div className="text-sm text-gray-500">More minutes and higher limits</div>
-            </button>
-          </div>
-
-          <p className="text-xs text-gray-400 text-center">
-            {isImportsQuota
-              ? 'Free plan includes 3 imports per month, resetting on the 1st. Upgrade for unlimited usage.'
-              : 'Or wait until the next billing cycle when your minutes reset.'}
-          </p>
+          {secondary && (
+            <p className="mt-3 text-xs text-gray-400 dark:text-gray-500 text-center">{secondary}</p>
+          )}
         </motion.div>
       </div>
     </AnimatePresence>

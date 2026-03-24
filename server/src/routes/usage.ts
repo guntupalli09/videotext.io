@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express'
 import { getUser, saveUser, User, PlanType } from '../models/User'
-import { getPlanLimits, getJobPriority } from '../utils/limits'
+import { getPlanLimits, getJobPriority, isProSoftCapActive } from '../utils/limits'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
-import { resetUserUsageIfNeeded } from '../utils/usageReset'
+import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import {
   getPlanAndEmailForStripeCustomer,
   getSubscriptionPeriodEnd,
@@ -54,6 +54,10 @@ async function getOrCreateDemoUser(req: Request): Promise<User | null> {
           translatedMinutes: 0,
           importCount: 0,
           resetDate: billingPeriodEnd ?? resetDate,
+          importCountToday: 0,
+          importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+          dailyMinutesToday: 0,
+          dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
         },
         limits: getPlanLimits(stripeData.plan),
         overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
@@ -66,7 +70,7 @@ async function getOrCreateDemoUser(req: Request): Promise<User | null> {
 
   // Paid plans: from auth, or from existing Stripe-backed user; unauthenticated without Stripe = free (abuse-proof)
   const derivedPlan: PlanType =
-    auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow')
+    auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow' || auth.plan === 'business')
       ? auth.plan
       : user?.stripeCustomerId
         ? user.plan
@@ -93,6 +97,10 @@ async function getOrCreateDemoUser(req: Request): Promise<User | null> {
         translatedMinutes: 0,
         importCount: 0,
         resetDate,
+        importCountToday: 0,
+        importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        dailyMinutesToday: 0,
+        dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
       },
       limits,
       overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
@@ -102,7 +110,7 @@ async function getOrCreateDemoUser(req: Request): Promise<User | null> {
 
     await saveUser(user)
   } else {
-    // Keep user plan/limits in sync with request (free, basic, pro, agency) so minute balance is correct
+    // Keep user plan/limits in sync with request (free, basic, pro, agency, business) so minute balance is correct
     if (user.plan !== derivedPlan) {
       user.plan = derivedPlan
       user.limits = getPlanLimits(derivedPlan)
@@ -142,12 +150,20 @@ async function getOrCreateDemoUser(req: Request): Promise<User | null> {
         translatedMinutes: 0,
         importCount: 0,
         resetDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
+        importCountToday: 0,
+        importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        dailyMinutesToday: 0,
+        dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
       }
       user.overagesThisMonth = { minutes: 0, languages: 0, batches: 0, totalCharge: 0 }
       user.updatedAt = now
       await saveUser(user)
     } else if (resetUserUsageIfNeeded(user, now)) {
       await saveUser(user)
+    } else {
+      const dailyImportReset = resetDailyImportIfNeeded(user, now)
+      const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
+      if (dailyImportReset || dailyMinutesReset) await saveUser(user)
     }
   }
 
@@ -158,6 +174,7 @@ router.get('/current', async (req: Request, res: Response) => {
   const user = await getOrCreateDemoUser(req)
   const plan = user?.plan ?? 'free'
   const limits = user?.limits ?? getPlanLimits(plan)
+  const now = new Date()
   const usage = user?.usageThisMonth ?? {
     totalMinutes: 0,
     videoCount: 0,
@@ -165,7 +182,11 @@ router.get('/current', async (req: Request, res: Response) => {
     languageCount: 0,
     translatedMinutes: 0,
     importCount: 0,
-    resetDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
+    resetDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
+    importCountToday: 0,
+    importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+    dailyMinutesToday: 0,
+    dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
   }
   const overages = user?.overagesThisMonth ?? { minutes: 0, languages: 0, batches: 0, totalCharge: 0 }
   const displayEmail =
@@ -174,29 +195,27 @@ router.get('/current', async (req: Request, res: Response) => {
       : undefined
 
   if (plan === 'free') {
-    const importCount = usage.importCount ?? 0
+    const importCountToday = usage.importCountToday ?? 0
     const limit = 3
+    const todayResetDate = usage.importCountTodayResetDate ?? new Date(now.getTime() + 24 * 60 * 60 * 1000)
     res.json({
       plan: 'free',
       quotaType: 'imports',
-      used: importCount,
+      used: importCountToday,
       limit,
-      remaining: Math.max(0, limit - importCount),
-      resetDate: usage.resetDate.toISOString(),
+      remaining: Math.max(0, limit - importCountToday),
+      resetDate: todayResetDate.toISOString(),
       email: displayEmail,
       limits: {
-        minutesPerMonth: limits.minutesPerMonth,
         maxLanguages: limits.maxLanguages,
         batchEnabled: limits.batchEnabled,
         maxFileSize: limits.maxFileSize,
         maxVideoDuration: limits.maxVideoDuration,
       },
       usage: {
-        totalMinutes: usage.totalMinutes,
-        remaining: 0,
         videoCount: usage.videoCount,
         batchCount: usage.batchCount,
-        importCount,
+        importCountToday,
       },
       overages: { minutes: 0, charge: 0 },
       queuePriority: getJobPriority(plan),
@@ -204,9 +223,39 @@ router.get('/current', async (req: Request, res: Response) => {
     return
   }
 
+  // Pro and Business: unlimited framing, soft cap signal only
+  if (plan === 'pro' || plan === 'business') {
+    const softCapActive = isProSoftCapActive(plan, usage.dailyMinutesToday ?? 0)
+    const billingPeriodEnd = user!.billingPeriodEnd
+    const resetDate = billingPeriodEnd ?? user!.usageThisMonth.resetDate
+    res.json({
+      plan,
+      email: displayEmail,
+      quotaType: 'unlimited',
+      softCapActive,
+      limits: {
+        maxLanguages: limits.maxLanguages,
+        batchEnabled: limits.batchEnabled,
+        maxFileSize: limits.maxFileSize,
+        maxVideoDuration: limits.maxVideoDuration,
+        batchMaxVideos: limits.batchMaxVideos,
+        maxConcurrentJobs: limits.maxConcurrentJobs,
+      },
+      usage: {
+        videoCount: usage.videoCount,
+        batchCount: usage.batchCount,
+      },
+      overages: { minutes: 0, charge: 0 },
+      resetDate: resetDate.toISOString(),
+      billingPeriodEnd: billingPeriodEnd?.toISOString() ?? null,
+      queuePriority: getJobPriority(plan),
+    })
+    return
+  }
+
+  // Grandfathered plans (basic, agency, founding_workflow): keep minutes-based response unchanged
   const availableMinutes = limits.minutesPerMonth + overages.minutes
   const remaining = Math.max(0, availableMinutes - usage.totalMinutes)
-  // Per-user billing period (when they subscribed); never use a shared default
   const billingPeriodEnd = user!.billingPeriodEnd
   const resetDate = billingPeriodEnd ?? user!.usageThisMonth.resetDate
   res.json({
