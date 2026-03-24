@@ -71,8 +71,14 @@ export interface VerboseTranscriptionResult {
   language?: string
 }
 
-/** Min bytes for an audio file to be sent to Whisper (avoids "format not supported" for empty/corrupt extraction). */
-const MIN_AUDIO_BYTES = 256
+/**
+ * Min bytes for an audio file to be sent to Whisper.
+ * WAV at 16 kHz 16-bit mono = 32 000 bytes/s + 44-byte header.
+ * 0.1 s (Whisper minimum) ≈ 3 244 bytes. 4 096 gives a safe margin above that.
+ * Also used by ensureAudioForWhisper to decide whether to fall back to WAV extraction;
+ * a sub-4 KB MP3 almost always means failed extraction, not a legitimately tiny clip.
+ */
+const MIN_AUDIO_BYTES = 4096
 
 const EXTRACT_EMPTY_MSG =
   'The extracted audio is empty or too short. The source file may have no audio track or an unsupported codec.'
@@ -112,8 +118,13 @@ async function ensureAudioForWhisper(
   return { path: wavPath, filename: 'audio.wav', cleanupWav: wavPath }
 }
 
-/** Minimum bytes for a chunk file to be worth sending to Whisper (avoids ffmpeg "Invalid argument" on near-empty last segments). */
-const MIN_CHUNK_BYTES = 1024
+/**
+ * Minimum bytes for a chunk MP3 file before it is worth WAV-converting and sending to Whisper.
+ * At our extraction settings (16 kHz mono, q:a 5 ≈ 40–80 kbps):
+ *   0.1 s ≈ 500–1 000 bytes  →  MIN_CHUNK_BYTES = 1 024 was right at the Whisper limit.
+ * 4 096 bytes guarantees ≥ 0.4 s at 80 kbps (well above Whisper's 0.1 s minimum).
+ */
+const MIN_CHUNK_BYTES = 4096
 
 /** Transcribe a single audio chunk with Whisper; return segments with time offset applied. Chunk is converted to WAV so API always gets a supported format. */
 async function transcribeChunkVerbose(
