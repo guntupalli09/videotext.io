@@ -1,12 +1,12 @@
 import fs from 'fs'
 
 const DEFAULT_POLL_MS = 100
-const DEFAULT_MAX_WAIT_MS = 10_000
+const DEFAULT_MAX_WAIT_MS = 120_000
 
 /**
  * Wait until the file at filePath has not changed size for stableMs.
- * Polls every pollMs; gives up after maxWaitMs.
- * Prevents worker from reading a file that is still being written (e.g. after early enqueue).
+ * Polls every pollMs; throws after maxWaitMs (default 120s) — never silently proceeds
+ * on a file that is still being written.
  */
 export async function waitForFileStable(
   filePath: string,
@@ -36,5 +36,5 @@ export async function waitForFileStable(
     }
     await new Promise((r) => setTimeout(r, pollMs))
   }
-  // Timeout: proceed anyway to avoid blocking forever; worker may still succeed if file is complete
+  throw new Error(`File did not stabilize within ${maxWaitMs}ms: ${filePath}`)
 }

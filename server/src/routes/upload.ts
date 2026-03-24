@@ -35,8 +35,6 @@ if (!fs.existsSync(tempDir)) {
 }
 
 const MAX_CHUNKS = 2000
-/** Early enqueue once this many bytes written (avoid waiting for full stream finish). */
-const EARLY_ENQUEUE_THRESHOLD_BYTES = 10 * 1024 * 1024 // 10MB
 
 // Chunked upload metadata (uploadId -> { ... }). Not deleted until /complete finishes successfully.
 const chunkUploadMeta = new Map<string, {
@@ -47,8 +45,6 @@ const chunkUploadMeta = new Map<string, {
   totalSize: number
   toolType: string
   options: Record<string, unknown>
-  /** Set when early enqueue has run; chunk handler still accepts chunks. */
-  earlyEnqueued?: boolean
   /** Creation time — used to prune abandoned uploads. */
   createdAt: number
 }>()
@@ -851,9 +847,6 @@ router.post('/complete', async (req: Request, res: Response) => {
     const maxFileSize = getPlanLimits(meta.plan).maxFileSize
     const declaredTotal = meta.totalSize
 
-    let yetEnqueued = false
-    let earlyJobResult: { jobId: string; jobToken?: string } | null = null
-
     async function doEnqueueJob(): Promise<{ job: Awaited<ReturnType<typeof addJobToQueue>>; fileSize: number }> {
       if (!meta) throw new Error('Upload session not found')
       let user = meta.userId ? await getUser(meta.userId) : null
@@ -979,10 +972,8 @@ router.post('/complete', async (req: Request, res: Response) => {
     timings.tValidationEnd = Date.now()
     timings.tAssemblyStart = Date.now()
       try {
-        let bytesWritten = 0
         for (let i = 0; i < totalChunks; i++) {
           const chunkPath = path.join(dir, `chunk_${i}`)
-          const chunkSize = fs.statSync(chunkPath).size
           await new Promise<void>((resolve, reject) => {
             const src = fs.createReadStream(chunkPath)
             src.on('error', reject)
@@ -990,40 +981,6 @@ router.post('/complete', async (req: Request, res: Response) => {
             src.pipe(out, { end: false })
           })
           await fs.promises.unlink(chunkPath)
-          bytesWritten += chunkSize
-          if (bytesWritten >= EARLY_ENQUEUE_THRESHOLD_BYTES && !yetEnqueued) {
-            try {
-              const { job, fileSize } = await doEnqueueJob()
-              yetEnqueued = true
-              meta.earlyEnqueued = true
-              earlyJobResult = { jobId: String(job.id), jobToken: (job.data as JobData)?.jobToken }
-              uploadLog.info({
-                msg: 'upload_early_enqueue',
-                uploadId,
-                early_enqueue: true,
-                bytes_at_enqueue: bytesWritten,
-                enqueue_delay_ms_from_start: Date.now() - tStart,
-              })
-              try {
-                trackJobCreated({
-                  job_id: String(job.id),
-                  user_id: meta.userId ?? undefined,
-                  tool_type: meta.toolType,
-                  file_size_bytes: fileSize,
-                  plan: meta.plan,
-                })
-              } catch {
-                // non-blocking
-              }
-            } catch (e: any) {
-              if (e?.statusCode === 400) {
-                out.destroy()
-                try { fs.unlinkSync(outPath) } catch { /* ignore */ }
-                return res.status(400).json({ message: e?.message || 'File exceeds plan limit. Upgrade for larger files.' })
-              }
-              throw e
-            }
-          }
         }
       } catch (err: any) {
         out.destroy()
@@ -1055,38 +1012,6 @@ router.post('/complete', async (req: Request, res: Response) => {
         const buf = fs.readFileSync(chunkPath)
         out.write(buf)
         fs.unlinkSync(chunkPath)
-        if (totalSizeSoFar >= EARLY_ENQUEUE_THRESHOLD_BYTES && !yetEnqueued) {
-          try {
-            const { job, fileSize } = await doEnqueueJob()
-            yetEnqueued = true
-            meta.earlyEnqueued = true
-            earlyJobResult = { jobId: String(job.id), jobToken: (job.data as JobData)?.jobToken }
-            uploadLog.info({
-              msg: 'upload_early_enqueue',
-              uploadId,
-              early_enqueue: true,
-              bytes_at_enqueue: totalSizeSoFar,
-              enqueue_delay_ms_from_start: Date.now() - tStart,
-            })
-            try {
-              trackJobCreated({
-                job_id: String(job.id),
-                user_id: meta.userId ?? undefined,
-                tool_type: meta.toolType,
-                file_size_bytes: fileSize,
-                plan: meta.plan,
-              })
-            } catch {
-              // non-blocking
-            }
-          } catch (e: any) {
-            if (e?.statusCode === 400) {
-              out.destroy()
-              return res.status(400).json({ message: e?.message || 'File exceeds plan limit. Upgrade for larger files.' })
-            }
-            throw e
-          }
-        }
       }
     timings.tValidationEnd = Date.now()
     timings.tAssemblyStart = timings.tValidationStart
@@ -1097,24 +1022,6 @@ router.post('/complete', async (req: Request, res: Response) => {
       completingUploads.delete(uploadId!)
       if (res.headersSent) return
       try { fs.unlinkSync(outPath) } catch { /* ignore */ }
-      if (yetEnqueued && earlyJobResult) {
-        getJobById(earlyJobResult.jobId)
-          .then((job) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- undocumented Bull API
-            if (job && typeof (job as any).moveToFailed === 'function') {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- undocumented Bull API
-              return (job as any).moveToFailed(err)
-            }
-          })
-          .catch(() => { /* best-effort */ })
-        uploadLog.error({ msg: '[upload/complete] 500', error: err?.message || String(err), stack: err?.stack })
-        res.status(500).json({
-          message: err?.message || 'Upload complete failed',
-          jobId: earlyJobResult.jobId,
-          jobToken: earlyJobResult.jobToken,
-        })
-        return
-      }
       uploadLog.error({ msg: '[upload/complete] 500', error: err?.message || String(err), stack: err?.stack })
       res.status(500).json({ message: err?.message || 'Upload complete failed' })
     }
@@ -1126,27 +1033,6 @@ router.post('/complete', async (req: Request, res: Response) => {
       if (res.headersSent) return
       try {
         try { fs.rmdirSync(dir) } catch { /* ignore if not empty or missing */ }
-        if (yetEnqueued && earlyJobResult) {
-          timings.tBeforeResponse = Date.now()
-          chunkUploadMeta.delete(uploadId!)
-          uploadLog.info({
-            msg: 'upload_complete_timing',
-            uploadId,
-            totalChunks,
-            totalSizeBytes,
-            validation_ms: timings.tValidationEnd - timings.tValidationStart,
-            assembly_ms: timings.tAssemblyEnd - timings.tAssemblyStart,
-            stream_finish_wait_ms: timings.tFinishEnter - timings.tOutEnd,
-            enqueue_ms: 0,
-            total_complete_route_ms: timings.tBeforeResponse - timings.tStart,
-            early_enqueue: true,
-          })
-          return res.status(202).json({
-            jobId: earlyJobResult.jobId,
-            status: 'queued',
-            jobToken: earlyJobResult.jobToken,
-          })
-        }
         timings.tBeforeEnqueue = Date.now()
         const { job, fileSize } = await doEnqueueJob()
         timings.tAfterEnqueue = Date.now()
