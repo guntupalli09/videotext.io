@@ -420,6 +420,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       const isImports = usageData.quotaType === 'imports'
       const totalAvailable = isImports ? (usageData.limit ?? 3) : (usageData.limits.minutesPerMonth + usageData.overages.minutes)
       const used = isImports ? (usageData.used ?? usageData.usage?.importCount ?? 0) : usageData.usage.totalMinutes
+      setAvailableMinutes(totalAvailable)
       const atOrOverLimit = isImports ? used >= (usageData.limit ?? 3) : (totalAvailable > 0 && used >= totalAvailable)
       if (atOrOverLimit) {
         setShowPaywall(true)

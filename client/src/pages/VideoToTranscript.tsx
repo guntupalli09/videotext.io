@@ -347,7 +347,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             .then((data) => {
               const isImports = data.quotaType === 'imports'
               const total = isImports ? (data.limit ?? 3) : (data.limits.minutesPerMonth + data.overages.minutes)
-              const used = isImports ? (data.used ?? data.usage?.importCount ?? 0) : data.usage.totalMinutes
               setAvailableMinutes(total)
             })
             .catch(() => {})
@@ -411,7 +410,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 .then((data) => {
                   const isImports = data.quotaType === 'imports'
                   const total = isImports ? (data.limit ?? 3) : (data.limits.minutesPerMonth + data.overages.minutes)
-                  const used = isImports ? (data.used ?? data.usage?.importCount ?? 0) : data.usage.totalMinutes
                   setAvailableMinutes(total)
                 })
                 .catch(() => {})
@@ -723,7 +721,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 .then((data) => {
                   const isImports = data.quotaType === 'imports'
                   const total = isImports ? (data.limit ?? 3) : (data.limits.minutesPerMonth + data.overages.minutes)
-                  const used = isImports ? (data.used ?? data.usage?.importCount ?? 0) : data.usage.totalMinutes
                   setAvailableMinutes(total)
                 })
                 .catch(() => {})
@@ -952,7 +949,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               .then((data) => {
                 const ii = data.quotaType === 'imports'
                 const total = ii ? (data.limit ?? 3) : (data.limits.minutesPerMonth + data.overages.minutes)
-                const u = ii ? (data.used ?? data.usage?.importCount ?? 0) : data.usage.totalMinutes
                 setAvailableMinutes(total)
               }).catch(() => {})
             try {
