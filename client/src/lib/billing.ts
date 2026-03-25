@@ -1,6 +1,6 @@
 import { api } from './api'
 
-export type BillingPlan = 'basic' | 'pro' | 'agency' | 'founding_workflow'
+export type BillingPlan = 'basic' | 'pro' | 'agency' | 'founding_workflow' | 'business'
 
 export interface CheckoutParams {
   mode: 'subscription' | 'payment'
@@ -89,6 +89,24 @@ export async function getSessionDetails(
     throw new Error(err.message || 'Failed to get session')
   }
 
+  return response.json()
+}
+
+/**
+ * Secondary check after session-details: confirms the Stripe subscription activated.
+ * Polls this after getSessionDetails succeeds to prevent showing Pro before it's real.
+ */
+export async function getSessionStatus(
+  sessionId: string
+): Promise<{ subscriptionActive: boolean; plan: string }> {
+  const response = await api(
+    `/api/billing/session-status?session_id=${encodeURIComponent(sessionId)}`,
+    { timeout: 15_000 }
+  )
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ message: 'Failed to check status' }))
+    throw new Error(err.message || 'Failed to check session status')
+  }
   return response.json()
 }
 

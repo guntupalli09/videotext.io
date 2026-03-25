@@ -70,7 +70,7 @@ export default function SrtToSbv() {
         { label: 'SBV to SRT Converter', path: '/tools/sbv-to-srt', desc: 'Convert YouTube SBV back to standard SRT' },
         { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert SRT to WebVTT for web players' },
         { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate SRT/VTT from any video with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 50+ languages' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
         { label: 'YouTube Transcript Generator', path: '/youtube-transcript-generator', desc: 'Get full transcript from any YouTube video' },
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct timing, overlaps & long lines' },
       ]}

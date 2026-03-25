@@ -77,7 +77,7 @@ export default function SbvToSrt() {
         { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert SRT to WebVTT for web players' },
         { label: 'VTT to SRT Converter', path: '/tools/vtt-to-srt', desc: 'Convert WebVTT back to SubRip format' },
         { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate SRT/VTT from any video with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 50+ languages' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
         { label: 'YouTube Transcript Generator', path: '/youtube-transcript-generator', desc: 'Get full transcript from any YouTube video' },
       ]}
     >

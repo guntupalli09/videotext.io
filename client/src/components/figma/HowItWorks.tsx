@@ -19,7 +19,7 @@ const steps = [
     icon: Cpu,
     title: 'AI transcribes',
     description:
-      'Whisper AI processes your audio — timestamps, speaker detection, and 50+ language support included.',
+      'Whisper AI processes your audio — timestamps, speaker detection, and 99 language support included.',
     color: 'from-blue-500 to-cyan-600',
     shadowColor: 'shadow-blue-500/30',
     glow: 'bg-blue-500/10',

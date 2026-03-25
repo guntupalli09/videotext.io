@@ -6,7 +6,7 @@ import path from 'path'
 import fs from 'fs'
 import archiver from 'archiver'
 import { transcribeVideo, transcribeVideoVerbose } from '../services/transcription'
-import { translateSubtitleFile, detectLanguageConsistency } from '../services/translation'
+import { translateSubtitleFile, detectLanguageConsistency, translatePreservingLines } from '../services/translation'
 import { fixSubtitleFile, validateSubtitleFile } from '../services/subtitles'
 import { generateSummary, generateChapters } from '../services/transcriptSummary'
 import { exportTranscriptJson, exportTranscriptDocx, exportTranscriptPdf } from '../services/transcriptExport'
@@ -40,6 +40,7 @@ import {
   trackProcessingStarted,
   trackProcessingFinished,
   trackProcessingFailed,
+  trackFirstPaidJobCompleted,
 } from '../utils/analytics'
 import {
   updateJobStarted,
@@ -53,6 +54,21 @@ import { initSentry, captureJobError } from '../lib/sentry'
 import { pushLogEntry } from '../lib/logRing'
 import { streamYoutubeAudioToFile, fetchYoutubeCaptions, validateCaptionQuality } from '../services/youtube'
 import { v4 as uuidv4 } from 'uuid'
+
+/**
+ * Fires 'first_paid_job_completed' analytics event exactly once per user.
+ * Called before incrementUserUsage so we can check videoCount === 0.
+ * No-op for free users or if videoCount > 0 already.
+ */
+async function maybeTrackFirstPaidJob(userId: string, plan: PlanType, toolType: string, jobId: string | number): Promise<void> {
+  if (plan === 'free') return
+  try {
+    const snapshot = await getUser(userId)
+    if (snapshot && (snapshot.usageThisMonth.videoCount ?? 0) === 0) {
+      trackFirstPaidJobCompleted({ user_id: userId, plan, tool_type: toolType, job_id: String(jobId) })
+    }
+  } catch { /* non-blocking */ }
+}
 
 /** Inline stage helpers — write directly to Redis so no cross-file import is required. */
 const JOB_STAGE_TTL = 3600
@@ -215,6 +231,8 @@ export interface JobData {
   youtubeFallbackToAudio?: boolean
   /** Pre-computed transcript from YouTube captions; skips Whisper. */
   precomputedTranscript?: { fullText: string; segments: { start: number; end: number; text: string }[] }
+  /** Set to true after usage is counted; persisted to Redis via job.update() to prevent double-counting on retry. */
+  usageIncremented?: boolean
 }
 
 async function getOrCreateUserForJob(userId: string, plan: PlanType) {
@@ -901,11 +919,13 @@ async function processJob(job: import('bull').Job<JobData>) {
           }
 
           const minutes = secondsToMinutes(processedSeconds)
-          if (userId) {
+          if (userId && !job.data.usageIncremented) {
+            await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'video-to-transcript', jobId)
+            await job.update({ ...job.data, usageIncremented: true })
             if (plan === 'free') {
-              await incrementUserUsage(userId, { importCount: 1 })
+              await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
             } else {
-              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1 })
+              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1, importCountToday: 1, dailyMinutesToday: minutes })
             }
           }
 
@@ -1056,15 +1076,19 @@ async function processJob(job: import('bull').Job<JobData>) {
                 : durationCheck.duration || 0
             const baseMinutes = secondsToMinutes(processedSeconds)
             const translatedMinutes = calculateTranslationMinutes(processedSeconds, additionalLangs.length)
-            if (userId) {
+            if (userId && !job.data.usageIncremented) {
+              await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'subtitles', jobId)
+              await job.update({ ...job.data, usageIncremented: true })
               if (plan === 'free') {
-                await incrementUserUsage(userId, { importCount: 1 })
+                await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
               } else {
                 await incrementUserUsage(userId, {
                   totalMinutes: baseMinutes + translatedMinutes,
                   translatedMinutes,
                   languageCount: additionalLangs.length,
                   videoCount: 1,
+                  importCountToday: 1,
+                  dailyMinutesToday: baseMinutes + translatedMinutes,
                 })
               }
             }
@@ -1134,11 +1158,13 @@ async function processJob(job: import('bull').Job<JobData>) {
 
             // Metering (minutes or import count for free)
             const minutes = secondsToMinutes(processedSecondsSub)
-            if (userId) {
+            if (userId && !job.data.usageIncremented) {
+              await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'subtitles', jobId)
+              await job.update({ ...job.data, usageIncremented: true })
               if (plan === 'free') {
-                await incrementUserUsage(userId, { importCount: 1 })
+                await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
               } else {
-                await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1 })
+                await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1, importCountToday: 1, dailyMinutesToday: minutes })
               }
             }
 
@@ -1215,11 +1241,13 @@ async function processJob(job: import('bull').Job<JobData>) {
             const plan = (data.plan || 'free') as PlanType
             const processedSeconds = trimmedDuration > 0 ? trimmedDuration : await getVideoDuration(videoPath)
             const minutes = secondsToMinutes(processedSeconds)
-            if (userId) {
+            if (userId && !job.data.usageIncremented) {
+              await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'batch', jobId)
+              await job.update({ ...job.data, usageIncremented: true })
               if (plan === 'free') {
-                await incrementUserUsage(userId, { importCount: 1 })
+                await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
               } else {
-                await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1 })
+                await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1, importCountToday: 1, dailyMinutesToday: minutes })
               }
             }
 
@@ -1255,33 +1283,47 @@ async function processJob(job: import('bull').Job<JobData>) {
 
         case 'translate-subtitles': {
           await job.progress(20)
-          const translated = await translateSubtitleFile(
-            data.filePath!,
-            options?.targetLanguage || 'arabic'
-          )
+          const targetLang = options?.targetLanguage || 'Spanish'
+          const langSlug = targetLang.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 14)
+          const filePath = data.filePath!
+          const isTxtFile = filePath.toLowerCase().endsWith('.txt')
 
-          // Save translated file
-          await job.progress(70)
-          const langCode = options?.targetLanguage === 'hindi' ? 'hi' : 'ar'
-          const ext = translated.format === 'srt' ? '.srt' : '.vtt'
-          const outputFilename = generateOutputFilename(data.originalName || 'subtitles', `_${langCode}`, ext)
-          const outputPath = path.join(tempDir, outputFilename)
-          await fs.promises.writeFile(outputPath, translated.content, 'utf-8')
+          if (isTxtFile) {
+            // Plain-text translation: preserve exact line structure
+            const raw = await fs.promises.readFile(filePath, 'utf-8')
+            const translatedText = await translatePreservingLines(raw, targetLang)
+            await job.progress(85)
+            const outputFilename = generateOutputFilename(data.originalName || 'translation', `_${langSlug}`, '.txt')
+            const outputPath = path.join(tempDir, outputFilename)
+            await fs.promises.writeFile(outputPath, translatedText, 'utf-8')
+            result = {
+              downloadUrl: `/api/download/${outputFilename}`,
+              fileName: outputFilename,
+            }
+          } else {
+            // SRT / VTT: timestamps are never touched — only text fields translated
+            const translated = await translateSubtitleFile(filePath, targetLang)
+            await job.progress(70)
+            const ext = translated.format === 'srt' ? '.srt' : '.vtt'
+            const outputFilename = generateOutputFilename(data.originalName || 'subtitles', `_${langSlug}`, ext)
+            const outputPath = path.join(tempDir, outputFilename)
+            await fs.promises.writeFile(outputPath, translated.content, 'utf-8')
 
-          let consistencyIssues: { line: number; issueType: string }[] = []
-          try {
-            const format = detectSubtitleFormat(outputPath)
-            const entries = format === 'srt' ? parseSRT(outputPath) : parseVTT(outputPath)
-            const check = detectLanguageConsistency(entries, options?.targetLanguage || 'arabic')
-            consistencyIssues = check.issues
-          } catch {
-            // Phase 1B: derived check must not block job
-          }
+            let consistencyIssues: { line: number; issueType: string }[] = []
+            try {
+              const format = detectSubtitleFormat(outputPath)
+              const entries = format === 'srt' ? parseSRT(outputPath) : parseVTT(outputPath)
+              const check = detectLanguageConsistency(entries, targetLang)
+              consistencyIssues = check.issues
+            } catch {
+              // Phase 1B: derived check must not block job
+            }
 
-          result = {
-            downloadUrl: `/api/download/${outputFilename}`,
-            fileName: outputFilename,
-            consistencyIssues: consistencyIssues.length > 0 ? consistencyIssues : undefined,
+            result = {
+              downloadUrl: `/api/download/${outputFilename}`,
+              fileName: outputFilename,
+              consistencyIssues: consistencyIssues.length > 0 ? consistencyIssues : undefined,
+            }
           }
           break
         }
@@ -1389,11 +1431,13 @@ async function processJob(job: import('bull').Job<JobData>) {
               ? Math.max(0, data.trimmedEnd - data.trimmedStart)
               : durationCheck.duration || 0
           const minutes = secondsToMinutes(processedSeconds)
-          if (userId) {
+          if (userId && !job.data.usageIncremented) {
+            await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'video-tool', jobId)
+            await job.update({ ...job.data, usageIncremented: true })
             if (plan === 'free') {
-              await incrementUserUsage(userId, { importCount: 1 })
+              await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
             } else {
-              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1 })
+              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1, importCountToday: 1, dailyMinutesToday: minutes })
             }
           }
           break
@@ -1454,11 +1498,13 @@ async function processJob(job: import('bull').Job<JobData>) {
               ? Math.max(0, data.trimmedEnd - data.trimmedStart)
               : durationCheck.duration || 0
           const minutes = secondsToMinutes(processedSeconds)
-          if (userId) {
+          if (userId && !job.data.usageIncremented) {
+            await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'video-tool', jobId)
+            await job.update({ ...job.data, usageIncremented: true })
             if (plan === 'free') {
-              await incrementUserUsage(userId, { importCount: 1 })
+              await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
             } else {
-              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1 })
+              await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1, importCountToday: 1, dailyMinutesToday: minutes })
             }
           }
           break

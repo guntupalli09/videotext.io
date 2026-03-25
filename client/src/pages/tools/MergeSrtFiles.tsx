@@ -90,7 +90,7 @@ export default function MergeSrtFiles() {
         { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert merged SRT output to VTT' },
         { label: 'Subtitle Word Counter', path: '/tools/subtitle-word-counter', desc: 'Count words in the merged file' },
         { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate subtitles from video with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate the merged file to 50+ languages' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate the merged file to 70+ languages' },
       ]}
     >
       <div className="space-y-4">

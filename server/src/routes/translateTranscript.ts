@@ -1,13 +1,11 @@
 import express, { Request, Response } from 'express'
 import rateLimit from 'express-rate-limit'
-import { translateTranscriptText, TRANSCRIPT_TRANSLATION_LANGUAGES } from '../services/translation'
+import { translateTranscriptText } from '../services/translation'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
 import { getLogger } from '../lib/logger'
 
 const log = getLogger('api')
 const router = express.Router()
-
-const ALLOWED_LANGUAGES = new Set(TRANSCRIPT_TRANSLATION_LANGUAGES)
 
 const translateLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -30,14 +28,9 @@ router.post('/', translateLimiter, async (req: Request, res: Response) => {
     if (typeof text !== 'string' || !text.trim()) {
       return res.status(400).json({ message: 'Missing or invalid text' })
     }
-    if (typeof targetLanguage !== 'string' || !targetLanguage.trim()) {
+    const lang = (typeof targetLanguage === 'string' ? targetLanguage : '').trim()
+    if (!lang) {
       return res.status(400).json({ message: 'Missing or invalid targetLanguage' })
-    }
-    const lang = targetLanguage.trim()
-    if (!ALLOWED_LANGUAGES.has(lang as (typeof TRANSCRIPT_TRANSLATION_LANGUAGES)[number])) {
-      return res.status(400).json({
-        message: `Unsupported language. Use one of: ${TRANSCRIPT_TRANSLATION_LANGUAGES.join(', ')}`,
-      })
     }
     const translated = await translateTranscriptText(text, lang)
     return res.json({ translatedText: translated })

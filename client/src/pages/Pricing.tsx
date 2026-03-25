@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
+import { motion } from 'framer-motion'
+import { Youtube, Mic, Building2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { createCheckoutSession, createBillingPortalSession } from '../lib/billing'
 import { trackEvent } from '../lib/analytics'
@@ -11,9 +13,9 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email || '').trim())
 }
 
-function CheckIcon({ className = '' }: { className?: string }) {
+function Check() {
   return (
-    <svg className={`w-4 h-4 shrink-0 text-emerald-500 ${className}`} fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+    <svg className="w-4 h-4 shrink-0 text-violet-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
     </svg>
   )
@@ -22,6 +24,7 @@ function CheckIcon({ className = '' }: { className?: string }) {
 export default function Pricing() {
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
   const [usageResetDate, setUsageResetDate] = useState<string | null>(null)
+  const [subscriptionCancelingAt, setSubscriptionCancelingAt] = useState<string | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
   const [directCheckoutLoading, setDirectCheckoutLoading] = useState(false)
   const [checkoutEmail, setCheckoutEmail] = useState('')
@@ -32,12 +35,14 @@ export default function Pricing() {
   const [otpCode, setOtpCode] = useState('')
   const [otpLoading, setOtpLoading] = useState(false)
   const [otpError, setOtpError] = useState<string | null>(null)
+  const [annual, setAnnual] = useState(true) // default to annual (best value)
 
   const refreshCurrentPlan = useCallback(() => {
     getCurrentUsage({ skipCache: true })
       .then((data) => {
         setCurrentPlan((data.plan || 'free').toLowerCase())
         setUsageResetDate(data.resetDate ?? data.billingPeriodEnd ?? null)
+        setSubscriptionCancelingAt((data as { subscriptionCancelingAt?: string | null }).subscriptionCancelingAt ?? null)
       })
       .catch(() => {
         setCurrentPlan((localStorage.getItem('plan') || 'free').toLowerCase())
@@ -45,9 +50,7 @@ export default function Pricing() {
       })
   }, [])
 
-  useEffect(() => {
-    refreshCurrentPlan()
-  }, [refreshCurrentPlan])
+  useEffect(() => { refreshCurrentPlan() }, [refreshCurrentPlan])
 
   useEffect(() => {
     const onPlanUpdated = () => refreshCurrentPlan()
@@ -55,8 +58,7 @@ export default function Pricing() {
     return () => window.removeEventListener('videotext:plan-updated', onPlanUpdated)
   }, [refreshCurrentPlan])
 
-  const isPaidPlan = currentPlan === 'basic' || currentPlan === 'pro' || currentPlan === 'agency' || currentPlan === 'founding_workflow'
-
+  const isPaidPlan = currentPlan === 'basic' || currentPlan === 'pro' || currentPlan === 'agency' || currentPlan === 'founding_workflow' || currentPlan === 'business'
   const isCurrentPlan = (plan: string) => (currentPlan || 'free').toLowerCase() === plan.toLowerCase()
 
   async function handleManageSubscription() {
@@ -72,33 +74,22 @@ export default function Pricing() {
     }
   }
 
-  async function handleSubscribe(plan: BillingPlan, annual = false) {
-    try {
-      trackEvent('plan_clicked', { plan, annual })
-    } catch {
-      // non-blocking
-    }
+  async function handleSubscribe(plan: BillingPlan, isAnnual = false) {
+    try { trackEvent('plan_clicked', { plan, annual: isAnnual }) } catch { /* non-blocking */ }
 
-    // Logged-in users already have a verified account — go straight to Stripe checkout
     if (isLoggedIn()) {
       setDirectCheckoutLoading(true)
       try {
         const { url } = await createCheckoutSession({
-          mode: 'subscription',
-          plan,
-          annual,
-          returnToPath: '/pricing',
-          frontendOrigin: window.location.origin,
+          mode: 'subscription', plan, annual: isAnnual,
+          returnToPath: '/pricing', frontendOrigin: window.location.origin,
         })
-        trackEvent('payment_completed', { type: 'subscription_checkout_started', plan, annual })
+        trackEvent('payment_completed', { type: 'subscription_checkout_started', plan, annual: isAnnual })
         window.location.href = url
       } catch (e: any) {
-        // Session expired: clear stale token and reload so the user can log back in
         const msg: string = e.message || ''
         if (msg.includes('session has expired') || msg.includes('log out and log back in')) {
-          logout()
-          window.location.reload()
-          return
+          logout(); window.location.reload(); return
         }
         alert(msg || 'Failed to start checkout. Please try again.')
       } finally {
@@ -107,89 +98,90 @@ export default function Pricing() {
       return
     }
 
-    setEmailPrompt({ plan, annual })
+    setEmailPrompt({ plan, annual: isAnnual })
     setEmailInput(checkoutEmail)
   }
 
   function handleEmailPromptContinue() {
     const email = emailInput.trim().toLowerCase()
-    if (!email || !isValidEmail(email)) return
-    if (!emailPrompt) return
+    if (!email || !isValidEmail(email) || !emailPrompt) return
     setCheckoutEmail(email)
     setOtpModal({ email, plan: emailPrompt.plan, annual: emailPrompt.annual })
     setEmailPrompt(null)
-    setOtpSent(false)
-    setOtpCode('')
-    setOtpError(null)
+    setOtpSent(false); setOtpCode(''); setOtpError(null)
   }
 
   async function handleSendOtp() {
-    if (!otpModal) return
-    if (!isValidEmail(otpModal.email)) {
-      setOtpError('Please enter a valid email address.')
-      return
-    }
-    setOtpLoading(true)
-    setOtpError(null)
-    try {
-      await sendOtp(otpModal.email)
-      setOtpSent(true)
-    } catch (e: any) {
-      setOtpError(e.message || 'Failed to send code')
-    } finally {
-      setOtpLoading(false)
-    }
+    if (!otpModal || !isValidEmail(otpModal.email)) { setOtpError('Please enter a valid email address.'); return }
+    setOtpLoading(true); setOtpError(null)
+    try { await sendOtp(otpModal.email); setOtpSent(true) }
+    catch (e: any) { setOtpError(e.message || 'Failed to send code') }
+    finally { setOtpLoading(false) }
   }
 
   async function handleVerifyAndCheckout() {
     if (!otpModal || !otpCode.trim()) return
-    setOtpLoading(true)
-    setOtpError(null)
+    setOtpLoading(true); setOtpError(null)
     try {
       const { token } = await verifyOtp(otpModal.email, otpCode.trim())
       const { url } = await createCheckoutSession({
-        mode: 'subscription',
-        plan: otpModal.plan,
-        annual: otpModal.annual,
-        returnToPath: '/',
-        frontendOrigin: window.location.origin,
-        email: otpModal.email,
-        emailVerificationToken: token,
+        mode: 'subscription', plan: otpModal.plan, annual: otpModal.annual,
+        returnToPath: '/', frontendOrigin: window.location.origin,
+        email: otpModal.email, emailVerificationToken: token,
       })
-      trackEvent('payment_completed', {
-        type: 'subscription_checkout_started',
-        plan: otpModal.plan,
-        annual: otpModal.annual,
-      })
+      trackEvent('payment_completed', { type: 'subscription_checkout_started', plan: otpModal.plan, annual: otpModal.annual })
       window.location.href = url
-    } catch (e: any) {
-      setOtpError(e.message || 'Verification failed')
-    } finally {
-      setOtpLoading(false)
-    }
+    } catch (e: any) { setOtpError(e.message || 'Verification failed') }
+    finally { setOtpLoading(false) }
   }
 
-  const bulletRow = 'flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400'
+  const row = 'flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300'
 
   return (
-    <div className="min-h-screen py-16 sm:py-24 bg-gradient-to-b from-gray-50/90 to-gray-50 dark:from-gray-900 dark:to-gray-800/80">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="text-center mb-14 sm:mb-16">
-          <div className="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 px-3 py-1.5 rounded-full text-sm font-medium border border-emerald-100 dark:border-emerald-800/50 mb-6">
-            <span>🔒</span>
-            <span>We don’t store your data. Your files are processed and deleted.</span>
-          </div>
-          <h1 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
-            Pricing
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 py-20 sm:py-28">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+
+        {/* Header */}
+        <div className="text-center mb-12">
+          <p className="text-sm font-medium text-violet-600 dark:text-violet-400 mb-3 tracking-wide uppercase">Pricing</p>
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white tracking-tight">
+            Start processing in seconds
           </h1>
-          <p className="mt-3 text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-            Features and outcomes first. Upgrade when you need more.
+          <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">
+            Transcript · Subtitles · AI Chapters · Keywords · Speaker Labels — one upload.
           </p>
+
+          {/* Annual / Monthly toggle */}
+          <div className="mt-8 inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-full p-1">
+            <button
+              type="button"
+              onClick={() => setAnnual(false)}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${!annual ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            >
+              Monthly
+            </button>
+            <button
+              type="button"
+              onClick={() => setAnnual(true)}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${annual ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            >
+              Annual
+              <span className="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 text-xs font-semibold px-2 py-0.5 rounded-full">–50%</span>
+            </button>
+          </div>
+
           {isPaidPlan && (
             <div className="mt-6 flex flex-col items-center gap-2">
-              {usageResetDate && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Your plan resets on {new Date(usageResetDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+              {subscriptionCancelingAt && (
+                <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-4 py-3 text-sm text-amber-800 dark:text-amber-300 max-w-sm text-center">
+                  Canceling on{' '}
+                  <strong>{new Date(subscriptionCancelingAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</strong>.
+                  Reactivate below to keep your plan.
+                </div>
+              )}
+              {!subscriptionCancelingAt && usageResetDate && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Renews {new Date(usageResetDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                 </p>
               )}
               <button
@@ -202,204 +194,220 @@ export default function Pricing() {
               </button>
             </div>
           )}
-        </header>
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8 items-stretch">
-          {/* CREATOR PRO — $10/month early-adopter plan */}
-          <div className={`flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-8 min-h-[420px] hover:shadow-card-elevated transition-motion relative ${isCurrentPlan('founding_workflow') ? 'border-purple-500 dark:border-purple-400 ring-2 ring-purple-500/30 shadow-purple-500/10' : 'border-purple-300/80 dark:border-purple-500/50 shadow-purple-500/10 hover:shadow-purple-500/15'}`}>
-            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-card whitespace-nowrap">
-              {isCurrentPlan('founding_workflow') ? 'Current Plan' : 'Early Access'}
-            </span>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-1">Creator Pro</h3>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">$10</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">/ month — locked in forever</span>
-            </div>
-            <p className="mt-2 text-sm text-amber-600 dark:text-amber-400 font-medium">First 20 users only — spots running out</p>
-            <ul className="mt-6 space-y-3 flex-1">
-              <li className={bulletRow}><CheckIcon /><span>600 minutes per month</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Batch processing enabled</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Up to 120 min per video</span></li>
-              <li className={bulletRow}><CheckIcon /><span>3–5 languages</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Priority queue</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Shape the roadmap directly</span></li>
-            </ul>
-            <button
-              type="button"
-              className="mt-6 w-full py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors disabled:opacity-60"
-              onClick={() => handleSubscribe('founding_workflow', false)}
-              disabled={directCheckoutLoading}
-            >
-              {directCheckoutLoading ? 'Redirecting…' : isCurrentPlan('founding_workflow') ? 'Current Plan' : 'Join Creator Pro'}
-            </button>
-          </div>
+        {/* 2-column grid: Free + Pro */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
 
-          {/* FREE — $0 */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-8 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan('free') ? 'border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30' : 'border-gray-200/80 dark:border-gray-600'}`}>
+          {/* FREE */}
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('free') ? 'border-violet-300 dark:border-violet-600 ring-2 ring-violet-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
             {isCurrentPlan('free') && (
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-card whitespace-nowrap">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
                 Current Plan
               </span>
             )}
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">Free</h3>
-              <span className="text-2xl font-bold text-gray-800 dark:text-white">$0</span>
+            <div className="mb-5">
+              <h3 className="text-base font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Free</h3>
+              <div className="mt-2 flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-gray-900 dark:text-white">$0</span>
+              </div>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Try it today — no credit card</p>
             </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Sign up for free: 3 imports / month</p>
-            <ul className="mt-6 space-y-3 flex-1">
-              <li className={bulletRow}><CheckIcon /><span>Video → Transcript & Subtitles</span></li>
-              <li className={bulletRow}><CheckIcon /><span>1 language · Watermarked</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Up to 30 min per video</span></li>
+
+            <ul className="space-y-3 flex-1 mb-7">
+              <li className={row}><Check /><span>3 imports per day</span></li>
+              <li className={row}><Check /><span>Transcript &amp; subtitles (SRT)</span></li>
+              <li className={row}><Check /><span>Videos up to 30 minutes</span></li>
+              <li className={row}>
+                <svg className="w-4 h-4 shrink-0 text-gray-300 dark:text-gray-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <span className="text-gray-400 dark:text-gray-500">Watermark on exports</span>
+              </li>
             </ul>
+
             <button
               disabled
-              className="mt-6 w-full py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-medium text-sm cursor-not-allowed"
+              className="w-full py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-medium text-sm cursor-not-allowed"
             >
-              {isCurrentPlan('free') ? 'Current Plan' : 'Free tier'}
+              {isCurrentPlan('free') ? 'Current plan' : 'Free — no signup'}
             </button>
           </div>
 
-          {/* BASIC — $19 */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-8 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan('basic') ? 'border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30 hover:border-violet-400' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`}>
-            {isCurrentPlan('basic') && (
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-card whitespace-nowrap">
-                Current Plan
-              </span>
-            )}
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-1">Basic</h3>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">$19</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">/ month</span>
-            </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">For individuals · 450 min/month</p>
-            <ul className="mt-6 space-y-3 flex-1">
-              <li className={bulletRow}><CheckIcon /><span>No watermark · 2 languages</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Subtitle editing</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Up to 45 min per video</span></li>
-            </ul>
-            <div className="mt-6 space-y-1">
-              <button
-                onClick={() => isCurrentPlan('basic') ? handleManageSubscription() : handleSubscribe('basic', false)}
-                disabled={(isCurrentPlan('basic') && portalLoading) || directCheckoutLoading}
-                className="w-full py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors disabled:opacity-60"
-              >
-                {isCurrentPlan('basic') ? (portalLoading ? 'Opening…' : 'Manage subscription') : directCheckoutLoading ? 'Redirecting…' : 'Choose Basic'}
-              </button>
-              <button
-                onClick={() => handleSubscribe('basic', true)}
-                disabled={directCheckoutLoading}
-                className="w-full py-1 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium disabled:opacity-60"
-              >
-                Save 20% with annual
-              </button>
-            </div>
-          </div>
-
-          {/* PRO — $49 — primary CTA */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border-2 shadow-card-elevated p-6 sm:p-8 min-h-[420px] lg:scale-[1.03] z-10 transition-motion ${isCurrentPlan('pro') ? 'border-violet-500 dark:border-violet-400 ring-2 ring-violet-500/30 shadow-violet-500/20 hover:shadow-violet-500/25' : 'border-violet-500 dark:border-violet-400 shadow-violet-500/20 hover:shadow-card-elevated hover:shadow-violet-500/25'}`}>
-            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-card whitespace-nowrap">
+          {/* PRO */}
+          <div className={`relative flex flex-col bg-gray-900 dark:bg-white rounded-2xl p-7 shadow-xl shadow-violet-500/10 ring-2 ${isCurrentPlan('pro') ? 'ring-violet-400' : 'ring-violet-500'}`}>
+            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
               {isCurrentPlan('pro') ? 'Current Plan' : 'Most Popular'}
             </span>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-1">Pro</h3>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">$49</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">/ month</span>
+
+            <div className="mb-5">
+              <h3 className="text-base font-semibold text-violet-400 dark:text-violet-600 uppercase tracking-wide">Pro</h3>
+              <div className="mt-2 flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-white dark:text-gray-900">{annual ? '$10' : '$20'}</span>
+                <span className="text-sm text-gray-400 dark:text-gray-500">/ mo{annual ? ', billed annually' : ''}</span>
+              </div>
+              {annual && (
+                <p className="mt-1 text-xs text-emerald-400 dark:text-emerald-600 font-medium">Save $120/year vs monthly</p>
+              )}
+              <p className="mt-2 text-sm text-gray-300 dark:text-gray-600">Built for real workloads</p>
             </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">For creators · 1,200 min · Batch</p>
-            <ul className="mt-6 space-y-3 flex-1">
-              <li className={bulletRow}><CheckIcon /><span>Batch processing · 5 languages</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Long-form · Priority queue</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Up to 120 min per video</span></li>
+
+            <ul className="space-y-3 flex-1 mb-7">
+              {[
+                'No watermark',
+                'Up to 2 hours per video',
+                'AI summary, chapters & speaker labels',
+                'Translation in 70+ languages',
+                'Batch process multiple videos at once',
+                'Faster processing & queue priority',
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-100 dark:text-gray-800">
+                  <svg className="w-4 h-4 shrink-0 text-violet-400 dark:text-violet-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>{f}</span>
+                </li>
+              ))}
             </ul>
-            <div className="mt-6 space-y-1">
-              <button
-                onClick={() => isCurrentPlan('pro') ? handleManageSubscription() : handleSubscribe('pro', false)}
-                disabled={(isCurrentPlan('pro') && portalLoading) || directCheckoutLoading}
-                className="w-full py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-semibold text-sm shadow-card-elevated shadow-primary/25 transition-motion disabled:opacity-60"
-              >
-                {isCurrentPlan('pro') ? (portalLoading ? 'Opening…' : 'Manage subscription') : directCheckoutLoading ? 'Redirecting…' : 'Choose Pro'}
-              </button>
-              <button
-                onClick={() => handleSubscribe('pro', true)}
-                disabled={directCheckoutLoading}
-                className="w-full py-1 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium disabled:opacity-60"
-              >
-                Save 20% with annual
-              </button>
-            </div>
+
+            <button
+              onClick={() => isCurrentPlan('pro') ? handleManageSubscription() : handleSubscribe('pro', annual)}
+              disabled={(isCurrentPlan('pro') && portalLoading) || directCheckoutLoading}
+              className="w-full py-3.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm shadow-lg shadow-violet-900/40 transition-colors disabled:opacity-60"
+            >
+              {isCurrentPlan('pro')
+                ? (portalLoading ? 'Opening…' : 'Manage subscription')
+                : directCheckoutLoading ? 'Redirecting…'
+                : annual ? 'Start Pro — $10/mo' : 'Start Pro — $20/mo'}
+            </button>
           </div>
 
-          {/* AGENCY — $129 */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-card p-6 sm:p-8 min-h-[420px] hover:shadow-card-elevated transition-motion ${isCurrentPlan('agency') ? 'border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/30 hover:border-violet-400' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`}>
-            {isCurrentPlan('agency') && (
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-card whitespace-nowrap">
-                Current Plan
-              </span>
+          {/*
+          BUSINESS — commented out until we have traction
+
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-sm p-7 ${isCurrentPlan('business') ? 'border-violet-400 ring-2 ring-violet-500/30' : 'border-gray-200 dark:border-gray-700'}`}>
+            {isCurrentPlan('business') && (
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">Current Plan</span>
             )}
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-1">Agency</h3>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">$129</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">/ month</span>
+            <div className="mb-5">
+              <h3 className="text-base font-semibold text-gray-500 uppercase tracking-wide">Business</h3>
+              <div className="mt-2 flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-gray-900 dark:text-white">$49</span>
+                <span className="text-sm text-gray-500">/ mo</span>
+              </div>
+              <p className="mt-2 text-sm text-gray-500">Teams &amp; agencies. Zero throttling.</p>
             </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">For teams · 3,000 min · Commercial</p>
-            <ul className="mt-6 space-y-3 flex-1">
-              <li className={bulletRow}><CheckIcon /><span>Heavy batch · ZIP exports</span></li>
-              <li className={bulletRow}><CheckIcon /><span>10 languages · Commercial use</span></li>
-              <li className={bulletRow}><CheckIcon /><span>Up to 240 min per video</span></li>
+            <ul className="space-y-3 flex-1 mb-7 text-sm text-gray-700 dark:text-gray-300">
+              <li>Everything in Pro</li>
+              <li>Up to 4 hours per video</li>
+              <li>100-video batches · 10 languages</li>
+              <li>8 concurrent jobs · Dedicated queue</li>
             </ul>
-            <div className="mt-6 space-y-1">
-              <button
-                onClick={() => isCurrentPlan('agency') ? handleManageSubscription() : handleSubscribe('agency', false)}
-                disabled={(isCurrentPlan('agency') && portalLoading) || directCheckoutLoading}
-                className="w-full py-3.5 rounded-xl bg-primary-hover hover:bg-violet-800 dark:hover:bg-violet-700 text-white font-semibold text-sm border-2 border-primary/50 transition-colors disabled:opacity-60"
+            <button
+              onClick={() => isCurrentPlan('business') ? handleManageSubscription() : handleSubscribe('business', false)}
+              disabled={(isCurrentPlan('business') && portalLoading) || directCheckoutLoading}
+              className="w-full py-3 rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm transition-colors disabled:opacity-60"
+            >
+              {isCurrentPlan('business') ? (portalLoading ? 'Opening…' : 'Manage subscription') : 'Start Business — $49/mo'}
+            </button>
+          </div>
+          */}
+
+        </div>
+
+        {/* Testimonials */}
+        <div className="mt-20">
+          <p className="text-center text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-10">
+            What people are saying
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              {
+                quote: 'I used to spend 3 hours per video on captions. Now I drop the file, grab a coffee, and the transcript is waiting. Accuracy with accented speech is genuinely better than anything else I\'ve tried.',
+                name: 'Marcus Chen', role: 'YouTube Creator', meta: '480K subscribers',
+                avatar: 'https://i.pravatar.cc/80?img=11',
+                Platform: Youtube, platformColor: 'text-red-500',
+                result: 'Saves 3 hrs/video', resultBg: 'bg-red-500/10 text-red-500 border border-red-500/20',
+              },
+              {
+                quote: 'We produce 24 episodes a month across three shows. Batch processing handles the entire queue at once — transcripts, show notes, chapters, everything automated. It replaced a part-time contractor.',
+                name: 'Sarah Okonkwo', role: 'Podcast Producer', meta: 'The Growth Lab Network',
+                avatar: 'https://i.pravatar.cc/80?img=47',
+                Platform: Mic, platformColor: 'text-violet-500',
+                result: 'Replaced a contractor', resultBg: 'bg-violet-500/10 text-violet-500 border border-violet-500/20',
+              },
+              {
+                quote: 'We caption video ads for 12 clients every week. Drop the file, captions done, sent to client. No downloads, no drama, no back-and-forth.',
+                name: 'James Rivera', role: 'Founder', meta: 'Apex Media Agency',
+                avatar: 'https://i.pravatar.cc/80?img=33',
+                Platform: Building2, platformColor: 'text-blue-500',
+                result: '12 clients served', resultBg: 'bg-blue-500/10 text-blue-500 border border-blue-500/20',
+              },
+            ].map((t, i) => (
+              <motion.div
+                key={t.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 flex flex-col"
               >
-                {isCurrentPlan('agency') ? (portalLoading ? 'Opening…' : 'Manage subscription') : directCheckoutLoading ? 'Redirecting…' : 'Choose Agency'}
-              </button>
-              <button
-                onClick={() => handleSubscribe('agency', true)}
-                disabled={directCheckoutLoading}
-                className="w-full py-1 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium disabled:opacity-60"
-              >
-                Save 20% with annual
-              </button>
-            </div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex gap-0.5">
+                    {[0,1,2,3,4].map((s) => (
+                      <svg key={s} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <t.Platform className={`w-4 h-4 ${t.platformColor}`} />
+                </div>
+                <blockquote className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed flex-1 mb-4">
+                  "{t.quote}"
+                </blockquote>
+                <span className={`inline-flex self-start text-[11px] font-bold px-2.5 py-1 rounded-full mb-4 ${t.resultBg}`}>
+                  {t.result}
+                </span>
+                <div className="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                  <img src={t.avatar} alt={t.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{t.name}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{t.role} · {t.meta}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
 
-        {/* Overage footer + trust signals */}
-        <div className="mt-14 pt-10 border-t border-gray-200 dark:border-gray-600 text-center space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-            Overage: 100 minutes = $5
-          </p>
-          <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500 dark:text-gray-400">
-            <span className="flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-              7-day money-back guarantee
+        {/* Trust signals */}
+        <div className="mt-10 flex flex-wrap justify-center gap-6 text-sm text-gray-400 dark:text-gray-500">
+          {['7-day money-back guarantee', 'Cancel any time', 'We don\'t store your files'].map((s) => (
+            <span key={s} className="flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              {s}
             </span>
-            <span className="flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-              Failed jobs don't use your minutes
-            </span>
-            <span className="flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-              Cancel any time
-            </span>
-            <span className="flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-              We don't store your files
-            </span>
-          </div>
+          ))}
         </div>
+
+        {(isCurrentPlan('basic') || isCurrentPlan('agency') || isCurrentPlan('founding_workflow')) && (
+          <p className="mt-6 text-center text-xs text-gray-400 dark:text-gray-500">
+            On a legacy plan?{' '}
+            <button type="button" onClick={handleManageSubscription} className="underline hover:text-gray-600 dark:hover:text-gray-300">
+              Manage your plan →
+            </button>
+          </p>
+        )}
       </div>
 
-      {/* Email prompt modal — shown when user clicks a plan */}
+      {/* Email prompt modal */}
       {emailPrompt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="email-prompt-title">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated max-w-sm w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-sm w-full p-6">
             <h2 id="email-prompt-title" className="text-lg font-semibold text-gray-900 dark:text-white">Enter your email</h2>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              We’ll send a verification code to this email so you can manage your plan and get receipts.
-            </p>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">We'll send a verification code so you can manage your plan and get receipts.</p>
             <div className="mt-4">
               <input
                 type="email"
@@ -407,38 +415,24 @@ export default function Pricing() {
                 onChange={(e) => setEmailInput(e.target.value)}
                 placeholder="you@example.com"
                 className="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2.5 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                aria-label="Email for checkout"
                 onKeyDown={(e) => e.key === 'Enter' && handleEmailPromptContinue()}
               />
             </div>
-            <div className="mt-6 flex gap-2">
-              <button
-                type="button"
-                onClick={handleEmailPromptContinue}
-                disabled={!emailInput.trim() || !isValidEmail(emailInput)}
-                className="flex-1 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Continue
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmailPrompt(null)}
-                className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                Cancel
-              </button>
+            <div className="mt-4 flex gap-2">
+              <button type="button" onClick={handleEmailPromptContinue} disabled={!emailInput.trim() || !isValidEmail(emailInput)} className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-50 transition-colors">Continue</button>
+              <button type="button" onClick={() => setEmailPrompt(null)} className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Cancel</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* OTP verification modal for subscription */}
+      {/* OTP verification modal */}
       {otpModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="otp-title">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated max-w-sm w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-sm w-full p-6">
             <h2 id="otp-title" className="text-lg font-semibold text-gray-900 dark:text-white">Verify your email</h2>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              We’ll send a 6-digit code to <strong>{otpModal.email}</strong> so you can manage your plan and get receipts.
+              We'll send a 6-digit code to <strong>{otpModal.email}</strong>.
             </p>
             {!otpSent ? (
               <div className="mt-4 space-y-3">
@@ -446,26 +440,13 @@ export default function Pricing() {
                   <p className="text-sm text-red-600 dark:text-red-400">
                     {otpError}
                     {otpError.includes('Account already exists') && (
-                      <> <Link to="/login" className="underline font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700">Log in</Link></>
+                      <> <Link to="/login" className="underline font-medium text-violet-600 hover:text-violet-700">Log in</Link></>
                     )}
                   </p>
                 )}
                 <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={handleSendOtp}
-                    disabled={otpLoading}
-                    className="flex-1 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-medium disabled:opacity-60"
-                  >
-                    {otpLoading ? 'Sending…' : 'Send code'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOtpModal(null)}
-                    className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    Cancel
-                  </button>
+                  <button type="button" onClick={handleSendOtp} disabled={otpLoading} className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-60">{otpLoading ? 'Sending…' : 'Send code'}</button>
+                  <button type="button" onClick={() => setOtpModal(null)} className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Cancel</button>
                 </div>
               </div>
             ) : (
@@ -478,33 +459,19 @@ export default function Pricing() {
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                   placeholder="000000"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-center text-lg tracking-widest focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                  aria-label="Verification code"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-center text-lg tracking-widest focus:ring-2 focus:ring-violet-500 focus:border-violet-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
                 {otpError && (
                   <p className="text-sm text-red-600 dark:text-red-400">
                     {otpError}
                     {otpError.includes('Account already exists') && (
-                      <> <Link to="/login" className="underline font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700">Log in</Link></>
+                      <> <Link to="/login" className="underline font-medium text-violet-600 hover:text-violet-700">Log in</Link></>
                     )}
                   </p>
                 )}
                 <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={handleVerifyAndCheckout}
-                    disabled={otpLoading || otpCode.length !== 6}
-                    className="flex-1 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-medium disabled:opacity-60"
-                  >
-                    {otpLoading ? 'Redirecting…' : 'Verify and continue to checkout'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOtpModal(null)}
-                    className="px-4 py-2.5 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
+                  <button type="button" onClick={handleVerifyAndCheckout} disabled={otpLoading || otpCode.length !== 6} className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-60">{otpLoading ? 'Redirecting…' : 'Verify and continue'}</button>
+                  <button type="button" onClick={() => setOtpModal(null)} className="px-4 py-2.5 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">Cancel</button>
                 </div>
               </div>
             )}

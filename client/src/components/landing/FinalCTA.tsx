@@ -88,7 +88,7 @@ export function FinalCTA() {
             <div className="w-px h-4 bg-white/10 hidden sm:block" />
             <div className="flex items-center gap-1.5">
               <Globe className="w-3.5 h-3.5 text-blue-400" />
-              50+ languages
+              70+ languages
             </div>
           </div>
         </motion.div>

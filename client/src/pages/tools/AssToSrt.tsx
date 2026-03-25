@@ -81,7 +81,7 @@ export default function AssToSrt() {
         { label: 'SBV to SRT Converter', path: '/tools/sbv-to-srt', desc: 'Convert YouTube SBV captions to SRT' },
         { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check your converted SRT for errors' },
         { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate SRT/VTT from any video with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 50+ languages' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
       ]}
     >
       <div className="space-y-4">

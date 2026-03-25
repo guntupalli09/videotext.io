@@ -30,14 +30,14 @@ export function getPlanLimits(plan: PlanType): PlanLimits {
       }
     case 'pro':
       return {
-        minutesPerMonth: 1200,
+        minutesPerMonth: 99999, // bypasses minute enforcement; daily soft cap via getDailySoftCapConcurrency
         maxVideoDuration: 120,
         maxFileSize: 10 * 1024 * 1024 * 1024, // 10 GB
-        maxConcurrentJobs: 2,
+        maxConcurrentJobs: 4,
         maxLanguages: 5,
         batchEnabled: true,
         batchMaxVideos: 20,
-        batchMaxDuration: 60,
+        batchMaxDuration: 120,
         batchMaxPerDay: 999,
       }
     case 'agency':
@@ -64,6 +64,18 @@ export function getPlanLimits(plan: PlanType): PlanLimits {
         batchMaxDuration: 60,
         batchMaxPerDay: 999,
       }
+    case 'business':
+      return {
+        minutesPerMonth: 99999,
+        maxVideoDuration: 240,
+        maxFileSize: 20 * 1024 * 1024 * 1024, // 20 GB
+        maxConcurrentJobs: 8,
+        maxLanguages: 10,
+        batchEnabled: true,
+        batchMaxVideos: 100,
+        batchMaxDuration: 240,
+        batchMaxPerDay: 999,
+      }
     default:
       return getPlanLimits('free')
   }
@@ -77,6 +89,7 @@ export function getMaxJobRuntimeMinutes(plan: PlanType): number {
     pro: 30,
     agency: 45,
     founding_workflow: 30,
+    business: 60,
   }
   return runtimes[plan] ?? 10
 }
@@ -88,8 +101,49 @@ export function getJobPriority(plan: PlanType): number {
     pro: 10,
     agency: 20,
     founding_workflow: 10,
+    business: 30,
   }
   return priorities[plan] ?? 1
+}
+
+/**
+ * Returns the effective concurrent job limit for a Pro user based on
+ * cumulative video minutes processed today. Business always returns 8.
+ * Free / grandfathered plans return 1.
+ * Jobs are NEVER rejected — this only sets concurrency (queue priority).
+ */
+export function getDailySoftCapConcurrency(plan: PlanType, dailyMinutesToday: number): number {
+  if (plan === 'business') return 8
+  if (plan === 'pro') {
+    if (dailyMinutesToday < 90) return 4
+    if (dailyMinutesToday < 180) return 2
+    return 1
+  }
+  return 1
+}
+
+/** Returns true when a Pro user should see the soft-cap upgrade banner. */
+export function isProSoftCapActive(plan: PlanType, dailyMinutesToday: number): boolean {
+  return plan === 'pro' && dailyMinutesToday >= 90
+}
+
+/**
+ * Applies the system-wide load multiplier to an already-computed plan concurrency.
+ * Called at the upload gate so spikes (Reddit/ProductHunt) degrade gracefully
+ * without rejecting jobs — users just queue slightly longer.
+ * Result is always at least 1.
+ */
+export function applySystemLoadGuard(planConcurrency: number, systemMultiplier: number): number {
+  return Math.max(1, Math.floor(planConcurrency * systemMultiplier))
+}
+
+/**
+ * Returns the max daily imports for a plan.
+ * Free = 3. All paid plans = null (no hard cap).
+ */
+export function getMaxDailyImports(plan: PlanType): number | null {
+  if (plan === 'free') return 3
+  return null
 }
 
 export async function enforceUsageLimits(
@@ -100,6 +154,11 @@ export async function enforceUsageLimits(
   overage: boolean
   overageMinutes?: number
 }> {
+  // Pro and Business are never blocked by minute limits
+  if (user.plan === 'pro' || user.plan === 'business') {
+    return { allowed: true, overage: false }
+  }
+
   const projected = (user.usageThisMonth.totalMinutes ?? 0) + requestedMinutes
 
   if (projected > user.limits.minutesPerMonth) {

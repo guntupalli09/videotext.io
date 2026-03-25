@@ -86,7 +86,7 @@ export default function SubtitleWordCounter() {
         { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Detailed CPS per-cue analysis' },
         { label: 'Video Script Timer', path: '/tools/video-script-timer', desc: 'Estimate video length from word count' },
         { label: 'Video to Transcript', path: '/video-to-transcript', desc: 'AI transcript with full word data' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT to 50+ languages' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT to 70+ languages' },
         { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check file for errors before counting' },
       ]}
     >

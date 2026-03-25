@@ -57,7 +57,7 @@ const FEATURE_COMPARISON = [
     trint: true,
   },
   {
-    feature: '50+ language support',
+    feature: '99 language support',
     videotext: true,
     descript: false,
     otter: true,

@@ -1,7 +1,7 @@
 import { prisma } from '../db'
 import type { Prisma, User as DbUser } from '@prisma/client'
 
-export type PlanType = 'free' | 'basic' | 'pro' | 'agency' | 'founding_workflow'
+export type PlanType = 'free' | 'basic' | 'pro' | 'agency' | 'founding_workflow' | 'business'
 
 export interface UsageThisMonth {
   totalMinutes: number
@@ -11,6 +11,12 @@ export interface UsageThisMonth {
   translatedMinutes: number
   importCount: number
   resetDate: Date
+  importCountToday: number
+  importCountTodayResetDate: Date
+  dailyMinutesToday: number
+  dailyMinutesTodayResetDate: Date
+  /** Set when user cancels mid-cycle (cancel_at_period_end). Access continues until this date. */
+  subscriptionCancelingAt?: Date
 }
 
 export interface PlanLimits {
@@ -90,6 +96,11 @@ function rowToUser(row: DbUser): User {
       translatedMinutes: Number(usage?.translatedMinutes ?? 0),
       importCount: Number(usage?.importCount ?? 0),
       resetDate: usage?.resetDate ? new Date(usage.resetDate as string) : new Date(),
+      importCountToday: Number(usage?.importCountToday ?? 0),
+      importCountTodayResetDate: usage?.importCountTodayResetDate ? new Date(usage.importCountTodayResetDate as string) : new Date(),
+      dailyMinutesToday: Number(usage?.dailyMinutesToday ?? 0),
+      dailyMinutesTodayResetDate: usage?.dailyMinutesTodayResetDate ? new Date(usage.dailyMinutesTodayResetDate as string) : new Date(),
+      subscriptionCancelingAt: usage?.subscriptionCancelingAt ? new Date(usage.subscriptionCancelingAt as string) : undefined,
     },
     limits: limits as PlanLimits,
     overagesThisMonth: (overages ?? { minutes: 0, languages: 0, batches: 0, totalCharge: 0 }) as OveragesThisMonth,
@@ -128,6 +139,15 @@ function userToDb(user: User) {
       resetDate: user.usageThisMonth.resetDate instanceof Date
         ? user.usageThisMonth.resetDate.toISOString()
         : user.usageThisMonth.resetDate,
+      importCountTodayResetDate: user.usageThisMonth.importCountTodayResetDate instanceof Date
+        ? user.usageThisMonth.importCountTodayResetDate.toISOString()
+        : user.usageThisMonth.importCountTodayResetDate,
+      dailyMinutesTodayResetDate: user.usageThisMonth.dailyMinutesTodayResetDate instanceof Date
+        ? user.usageThisMonth.dailyMinutesTodayResetDate.toISOString()
+        : user.usageThisMonth.dailyMinutesTodayResetDate,
+      subscriptionCancelingAt: user.usageThisMonth.subscriptionCancelingAt instanceof Date
+        ? user.usageThisMonth.subscriptionCancelingAt.toISOString()
+        : (user.usageThisMonth.subscriptionCancelingAt ?? null),
       suspended: user.suspended ?? false,
       restrictionNote: user.restrictionNote ?? null,
     },
@@ -198,6 +218,8 @@ export async function incrementUserUsage(
     translatedMinutes?: number
     languageCount?: number
     importCount?: number
+    importCountToday?: number
+    dailyMinutesToday?: number
   }
 ): Promise<void> {
   const {
@@ -206,19 +228,73 @@ export async function incrementUserUsage(
     translatedMinutes = 0,
     languageCount = 0,
     importCount = 0,
+    importCountToday = 0,
+    dailyMinutesToday = 0,
   } = delta
 
   await prisma.$executeRaw`
     UPDATE "User"
     SET
       "usageThisMonth" = "usageThisMonth" || jsonb_build_object(
-        'totalMinutes',      coalesce(("usageThisMonth"->>'totalMinutes')::numeric,      0) + ${totalMinutes},
-        'videoCount',        coalesce(("usageThisMonth"->>'videoCount')::int,            0) + ${videoCount},
-        'translatedMinutes', coalesce(("usageThisMonth"->>'translatedMinutes')::numeric, 0) + ${translatedMinutes},
-        'languageCount',     coalesce(("usageThisMonth"->>'languageCount')::int,         0) + ${languageCount},
-        'importCount',       coalesce(("usageThisMonth"->>'importCount')::int,           0) + ${importCount}
+        'totalMinutes',        coalesce(("usageThisMonth"->>'totalMinutes')::numeric,        0) + ${totalMinutes},
+        'videoCount',          coalesce(("usageThisMonth"->>'videoCount')::int,              0) + ${videoCount},
+        'translatedMinutes',   coalesce(("usageThisMonth"->>'translatedMinutes')::numeric,   0) + ${translatedMinutes},
+        'languageCount',       coalesce(("usageThisMonth"->>'languageCount')::int,           0) + ${languageCount},
+        'importCount',         coalesce(("usageThisMonth"->>'importCount')::int,             0) + ${importCount},
+        'importCountToday',    coalesce(("usageThisMonth"->>'importCountToday')::int,        0) + ${importCountToday},
+        'dailyMinutesToday',   coalesce(("usageThisMonth"->>'dailyMinutesToday')::numeric,   0) + ${dailyMinutesToday}
       ),
       "updatedAt" = NOW()
     WHERE id = ${userId}
+  `
+}
+
+/**
+ * Atomically reset the daily import counter only if the stored reset date is still in the past.
+ * Prevents the race where two concurrent requests do in-memory reset + saveUser and one
+ * overwrites the other's atomic increments.
+ */
+export async function atomicResetDailyImportIfNeeded(
+  userId: string,
+  now: Date,
+  newResetDate: Date
+): Promise<void> {
+  await prisma.$executeRaw`
+    UPDATE "User"
+    SET
+      "usageThisMonth" = "usageThisMonth" || jsonb_build_object(
+        'importCountToday',          0,
+        'importCountTodayResetDate', ${newResetDate.toISOString()}::text
+      ),
+      "updatedAt" = NOW()
+    WHERE id = ${userId}
+      AND (
+        "usageThisMonth"->>'importCountTodayResetDate' IS NULL
+        OR ("usageThisMonth"->>'importCountTodayResetDate')::timestamptz <= ${now}
+      )
+  `
+}
+
+/**
+ * Atomically reset the daily minutes counter only if the stored reset date is still in the past.
+ */
+export async function atomicResetDailyMinutesIfNeeded(
+  userId: string,
+  now: Date,
+  newResetDate: Date
+): Promise<void> {
+  await prisma.$executeRaw`
+    UPDATE "User"
+    SET
+      "usageThisMonth" = "usageThisMonth" || jsonb_build_object(
+        'dailyMinutesToday',          0,
+        'dailyMinutesTodayResetDate', ${newResetDate.toISOString()}::text
+      ),
+      "updatedAt" = NOW()
+    WHERE id = ${userId}
+      AND (
+        "usageThisMonth"->>'dailyMinutesTodayResetDate' IS NULL
+        OR ("usageThisMonth"->>'dailyMinutesTodayResetDate')::timestamptz <= ${now}
+      )
   `
 }

@@ -639,7 +639,7 @@ Today we are covering subtitle formats.`}
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {[
-                ['VideoText', '✓', '✓', '✓ 50+ languages'],
+                ['VideoText', '✓', '✓', '✓ 70+ languages'],
                 ['CapCut', '✓', '✓', '✓ limited'],
                 ['Descript', '✓', '✗', '✗'],
                 ['Otter.ai', '✗', '✗', '✗'],
@@ -808,7 +808,7 @@ Today we are covering subtitle formats.`}
         </p>
         <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 2: Translate using VideoText</h3>
         <p>
-          Go to <strong>Translate Subtitles</strong>. Upload your SRT or VTT file. Choose the target language from the dropdown — VideoText supports 50+ languages including:
+          Go to <strong>Translate Subtitles</strong>. Upload your SRT or VTT file. Choose the target language from the dropdown — VideoText supports 70+ languages including:
         </p>
         <ul className="list-disc pl-5 space-y-1">
           <li>Spanish, French, German, Italian, Portuguese</li>
@@ -1239,12 +1239,6 @@ export default function Blog() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 sm:py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        {!activePost && (
-          <Link to="/" className="text-sm text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-medium mb-6 inline-block">
-            ← Back to home
-          </Link>
-        )}
-
         {activePost ? (
           <PostView post={activePost} />
         ) : (

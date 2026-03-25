@@ -1436,8 +1436,9 @@ export async function completeSignup(verificationToken: string, password: string
 export interface UsageData {
   plan: string
   email?: string
-  /** When 'imports', free plan: used/limit/remaining are import-based. When 'minutes' or absent, paid: minute-based. */
-  quotaType?: 'imports' | 'minutes'
+  /** 'imports' = free plan; 'unlimited' = pro/business; 'minutes' = grandfathered paid. */
+  quotaType?: 'imports' | 'minutes' | 'unlimited'
+  softCapActive?: boolean
   used?: number
   limit?: number
   remaining?: number
@@ -1454,6 +1455,7 @@ export interface UsageData {
     videoCount: number
     batchCount: number
     importCount?: number
+    importCountToday?: number
   }
   overages: {
     minutes: number

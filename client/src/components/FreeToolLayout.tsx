@@ -32,7 +32,7 @@ interface FreeToolLayoutProps {
 const defaultRelated = [
   { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate SRT/VTT from any video with AI' },
   { label: 'Video to Transcript', path: '/video-to-transcript', desc: 'Full transcript with speakers & chapters' },
-  { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 50+ languages' },
+  { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
   { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct timing, overlaps & grammar' },
 ]
 

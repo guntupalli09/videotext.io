@@ -6,9 +6,9 @@ import { v4 as uuidv4 } from 'uuid'
 import { getVideoDuration } from '../services/ffmpeg'
 import { validateFileSize, validateFileType } from '../utils/fileValidation'
 import { BatchJob, saveBatch, getBatchById } from '../models/BatchJob'
-import { getUser, saveUser, PlanType, User } from '../models/User'
-import { getPlanLimits, enforceBatchLimits, enforceUsageLimits, getJobPriority } from '../utils/limits'
-import { resetUserUsageIfNeeded } from '../utils/usageReset'
+import { getUser, saveUser, PlanType, User, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
+import { getPlanLimits, enforceBatchLimits, enforceUsageLimits, getDailySoftCapConcurrency, getJobPriority, getMaxDailyImports } from '../utils/limits'
+import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import { addJobToQueue, getTotalQueueCount } from '../workers/videoProcessor'
 import { insertJobRecord } from '../lib/jobAnalytics'
 import { RequestWithId } from '../middleware/requestId'
@@ -57,7 +57,7 @@ async function getOrCreateDemoUser(req: Request): Promise<User> {
   }
   let user = await getUser(userId)
   const derivedPlan: PlanType =
-    auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow')
+    auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow' || auth.plan === 'business')
       ? auth.plan
       : user?.stripeCustomerId
         ? user.plan
@@ -85,6 +85,10 @@ async function getOrCreateDemoUser(req: Request): Promise<User> {
         translatedMinutes: 0,
         importCount: 0,
         resetDate,
+        importCountToday: 0,
+        importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        dailyMinutesToday: 0,
+        dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
       },
       limits,
       overagesThisMonth: {
@@ -109,6 +113,10 @@ async function getOrCreateDemoUser(req: Request): Promise<User> {
     if (resetUserUsageIfNeeded(user, now)) {
       await saveUser(user)
     }
+    const dailyImportReset = resetDailyImportIfNeeded(user, now)
+    const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
+    if (dailyImportReset) await atomicResetDailyImportIfNeeded(user.id, now, user.usageThisMonth.importCountTodayResetDate!)
+    if (dailyMinutesReset) await atomicResetDailyMinutesIfNeeded(user.id, now, user.usageThisMonth.dailyMinutesTodayResetDate!)
   }
 
   return user
@@ -199,16 +207,17 @@ router.post(
         return res.status(statusCode).json({ message: batchCheck.reason })
       }
 
-      // Free plan: 3 imports per month (batch not available for free, but guard anyway)
-      if (user.plan === 'free') {
-        const importCount = user.usageThisMonth.importCount ?? 0
-        if (importCount >= 3) {
+      // Free plan: 3 imports per day (resets midnight UTC; batch not available for free anyway)
+      const batchDailyCap = getMaxDailyImports(user.plan)
+      if (batchDailyCap !== null) {
+        const importCountToday = user.usageThisMonth.importCountToday ?? 0
+        if (importCountToday >= batchDailyCap) {
           for (const v of videoMeta) fs.unlinkSync(v.path)
-          return res.status(403).json({ message: 'Free plan allows 3 imports per month.' })
+          return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
         }
-        if (importCount + videoMeta.length > 3) {
+        if (importCountToday + videoMeta.length > batchDailyCap) {
           for (const v of videoMeta) fs.unlinkSync(v.path)
-          return res.status(403).json({ message: 'Free plan allows 3 imports per month.' })
+          return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
         }
       }
 

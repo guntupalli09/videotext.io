@@ -78,7 +78,7 @@ export default function SrtToVtt() {
         { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check your SRT/VTT for errors before converting' },
         { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine two subtitle files into one' },
         { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate SRT/VTT from any video with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 50+ languages' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct timing, overlaps & long lines' },
       ]}
     >

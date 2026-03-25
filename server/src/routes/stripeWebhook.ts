@@ -129,16 +129,10 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
 
   // Activate subscription plan
   if (purchaseType === 'subscription' && planFromMetadata) {
-    if (planFromMetadata === 'basic' || planFromMetadata === 'pro' || planFromMetadata === 'agency' || planFromMetadata === 'founding_workflow') {
+    if (planFromMetadata === 'basic' || planFromMetadata === 'pro' || planFromMetadata === 'agency' || planFromMetadata === 'founding_workflow' || planFromMetadata === 'business') {
       user.plan = planFromMetadata
       user.limits = getPlanLimits(planFromMetadata)
     }
-  }
-
-  // Phase 2.5: One-time overage 100 minutes = $5
-  if (purchaseType === 'overage') {
-    user.overagesThisMonth.minutes += 100
-    user.overagesThisMonth.totalCharge += 5
   }
 
   // Generate password setup token for new paid users (only if not already set by session-details)
@@ -248,6 +242,44 @@ async function handleInvoicePaymentSucceeded(event: Stripe.Event): Promise<void>
   }
 }
 
+/**
+ * Fires when a subscription is changed (e.g. user cancels via portal → cancel_at_period_end=true).
+ * We store the cancellation date so the UI can show "Access until [date]" without instant downgrade.
+ * The actual downgrade to Free happens in usage.ts when billingPeriodEnd passes.
+ */
+async function handleCustomerSubscriptionUpdated(event: Stripe.Event): Promise<void> {
+  const subscription = event.data.object as Stripe.Subscription & {
+    cancel_at_period_end?: boolean
+    cancel_at?: number | null
+    current_period_end?: number
+  }
+  const stripeCustomerId = (subscription.customer as string) || ''
+  if (!stripeCustomerId) return
+
+  const user = await getUserByStripeCustomerId(stripeCustomerId)
+  if (!user) return
+
+  if (subscription.cancel_at_period_end) {
+    // User cancelled — keep plan active until period end, record the cancellation date
+    const cancelAt =
+      (subscription.cancel_at ?? subscription.current_period_end ?? Math.floor(Date.now() / 1000)) * 1000
+    user.usageThisMonth = {
+      ...user.usageThisMonth,
+      subscriptionCancelingAt: new Date(cancelAt),
+    }
+    user.updatedAt = new Date()
+    await saveUser(user)
+  } else if (user.usageThisMonth.subscriptionCancelingAt) {
+    // Cancellation was reversed (e.g. user re-subscribed) — clear the flag
+    user.usageThisMonth = {
+      ...user.usageThisMonth,
+      subscriptionCancelingAt: undefined,
+    }
+    user.updatedAt = new Date()
+    await saveUser(user)
+  }
+}
+
 async function handleCustomerSubscriptionDeleted(event: Stripe.Event): Promise<void> {
   const subscription = event.data.object as Stripe.Subscription & {
     current_period_end?: number
@@ -332,6 +364,9 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
         break
       case 'invoice.payment_succeeded':
         await handleInvoicePaymentSucceeded(event)
+        break
+      case 'customer.subscription.updated':
+        await handleCustomerSubscriptionUpdated(event)
         break
       case 'customer.subscription.deleted':
         await handleCustomerSubscriptionDeleted(event)

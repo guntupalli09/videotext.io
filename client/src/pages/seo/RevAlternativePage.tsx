@@ -12,7 +12,7 @@ const COMPARE_ROWS = [
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'Files deleted after processing', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: true },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Burn subtitles into video', videotext: true, competitor: false },
   { label: 'Batch process multiple videos', videotext: true, competitor: false },
   { label: 'Flat monthly pricing', videotext: true, competitor: false },

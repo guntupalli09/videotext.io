@@ -34,6 +34,7 @@ import { runRecompute } from './services/recomputeMetrics'
 import { pushLogEntry } from './lib/logRing'
 import { purgeOldStripeEvents } from './models/StripeEventLog'
 import { refreshApiCredits } from './lib/apiCreditsCache'
+import { createMagicLinkToken } from './routes/auth'
 
 const log = getLogger('api')
 
@@ -308,6 +309,100 @@ const server = app.listen(PORT, () => {
       .then(() => log.info({ msg: 'API credits 3h refresh done' }))
       .catch((err) => log.warn({ msg: 'API credits refresh failed', error: (err as Error)?.message }))
   }, 3 * 60 * 60 * 1000)
+
+  // Daily quota reset email — fires once per day at 9 AM CST (15:00 UTC)
+  // Sends free-plan users a magic-login email so they can open the tool in one click.
+  let lastDailyEmailDate = ''
+  setInterval(async () => {
+    try {
+      const now = new Date()
+      // CST = UTC-6 (no DST adjustment needed — close enough for a daily email)
+      const cstHour = (now.getUTCHours() - 6 + 24) % 24
+      if (cstHour !== 9) return
+      const todayKey = now.toISOString().slice(0, 10)
+      if (lastDailyEmailDate === todayKey) return
+      lastDailyEmailDate = todayKey
+
+      const resendKey = process.env.RESEND_API_KEY
+      const fromEmail = process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>'
+      const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
+
+      if (!resendKey) {
+        log.info({ msg: 'Daily email skipped — RESEND_API_KEY not set' })
+        return
+      }
+
+      // Fetch all free-plan users with a real email (exclude demo accounts)
+      const freeUsers = await prisma.user.findMany({
+        where: {
+          plan: 'free',
+          email: { not: { startsWith: 'demo-user-' }, contains: '@' },
+        },
+        select: { id: true, email: true },
+      })
+
+      log.info({ msg: 'Daily quota email — sending', count: freeUsers.length })
+      let sent = 0
+      for (const u of freeUsers) {
+        try {
+          const token = await createMagicLinkToken(u.id)
+          const openLink = `${baseUrl}/magic-login?token=${token}&next=/video-to-transcript`
+          const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0f0f0f;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f0f;padding:40px 20px">
+    <tr><td align="center">
+      <table width="480" cellpadding="0" cellspacing="0" style="background:#1a1a2e;border-radius:16px;overflow:hidden;border:1px solid #2d2d4e">
+        <tr>
+          <td style="padding:40px 40px 24px;text-align:center">
+            <div style="width:56px;height:56px;background:#7c3aed;border-radius:50%;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;line-height:56px;font-size:28px">🎬</div>
+            <h1 style="margin:0 0 8px;color:#ffffff;font-size:28px;font-weight:700;line-height:1.2">3 New Transcriptions<br>Available</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 40px 32px">
+            <p style="margin:0 0 16px;color:#a0a0c0;font-size:15px;line-height:1.6">Hey!</p>
+            <p style="margin:0 0 16px;color:#a0a0c0;font-size:15px;line-height:1.6">Your 3 free daily transcriptions have reset. Upload a video and get your transcript, subtitles, or captions in minutes.</p>
+            <p style="margin:0 0 32px;color:#a0a0c0;font-size:15px;line-height:1.6">Click below — you'll be logged in instantly, no password needed.</p>
+            <a href="${openLink}" style="display:block;background:#7c3aed;color:#ffffff;text-decoration:none;text-align:center;padding:16px 32px;border-radius:10px;font-size:15px;font-weight:700;letter-spacing:0.5px">OPEN NOW</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:24px 40px;border-top:1px solid #2d2d4e;text-align:center">
+            <p style="margin:0 0 8px;color:#606080;font-size:12px">Want unlimited transcriptions with no watermark?</p>
+            <a href="${baseUrl}/pricing" style="color:#7c3aed;font-size:12px;text-decoration:none;font-weight:600">Upgrade to Pro → $10/mo annual</a>
+            <p style="margin:16px 0 0;color:#404060;font-size:11px">VideoText.io · <a href="${baseUrl}/unsubscribe?email=${encodeURIComponent(u.email)}" style="color:#404060">unsubscribe</a></p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+          const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
+            body: JSON.stringify({
+              from: fromEmail,
+              to: [u.email],
+              subject: 'Your 3 free daily transcriptions have arrived! 🎬',
+              html,
+            }),
+            signal: AbortSignal.timeout(8000),
+          })
+          if (res.ok) sent++
+          else log.warn({ msg: 'Daily email send failed', email: u.email, status: res.status })
+        } catch (e) {
+          log.warn({ msg: 'Daily email error', email: u.email, error: (e as Error)?.message })
+        }
+      }
+      log.info({ msg: 'Daily quota emails sent', sent, total: freeUsers.length })
+    } catch (e) {
+      log.warn({ msg: 'Daily email cron error', error: (e as Error)?.message })
+    }
+  }, 60 * 1000) // check every minute
 
   // Optional heap memory monitoring — set MEMORY_DEBUG=1 to enable
   if (process.env.MEMORY_DEBUG === '1') {

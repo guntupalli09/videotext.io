@@ -14,7 +14,7 @@ const COMPARE_ROWS = [
   { label: 'Works on any video/audio format', videotext: true, competitor: false },
   { label: 'YouTube URL → transcript', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Burn captions into video', videotext: true, competitor: false },
   { label: 'Speaker labels', videotext: true, competitor: true },
   { label: 'Auto-generated chapters', videotext: true, competitor: false },
@@ -152,7 +152,7 @@ export default function TactiqAlternativePage() {
           {[
             { icon: Zap, title: 'Works on past recordings', body: 'Tactiq requires you to be live in the meeting. VideoText processes any recording you already have — even meetings from years ago.' },
             { icon: DollarSign, title: 'No browser extension needed', body: 'VideoText runs as a web app — no extension install, no microphone permissions, no calendar access. Upload a file and get your transcript.' },
-            { icon: Shield, title: 'SRT, translation, and video captions', body: 'VideoText exports SRT subtitle files, translates to 50+ languages, and burns captions into video. Tactiq outputs meeting text only.' },
+            { icon: Shield, title: 'SRT, translation, and video captions', body: 'VideoText exports SRT subtitle files, translates to 70+ languages, and burns captions into video. Tactiq outputs meeting text only.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center mb-3">

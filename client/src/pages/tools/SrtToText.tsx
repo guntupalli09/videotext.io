@@ -94,7 +94,7 @@ export default function SrtToText() {
         { label: 'Video to Transcript', path: '/video-to-transcript', desc: 'AI transcript with speakers, chapters & summary' },
         { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert between subtitle formats' },
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Clean up timing and text before extraction' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT to 50+ languages' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT to 70+ languages' },
         { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Validate file before extraction' },
       ]}
     >

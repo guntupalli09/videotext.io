@@ -25,7 +25,7 @@ const SPOTLIGHT_TOOLS = [
     tagline: 'From video to words at machine speed.',
     description:
       'Upload any video and get a clean, timestamped transcript. AI-powered with 98.5% accuracy. Export as TXT, PDF, DOCX, or JSON.',
-    bullets: ['Speaker detection & labels', 'Auto chapters & summary', '50+ languages supported'],
+    bullets: ['Speaker detection & labels', 'Auto chapters & summary', '99 languages supported', 'Translation to 70+ languages'],
     gradient: 'from-violet-500 to-indigo-600',
     glowColor: 'rgba(139,92,246,0.08)',
     href: '/video-to-transcript',
@@ -44,7 +44,7 @@ const SPOTLIGHT_TOOLS = [
     tagline: 'Speak naturally. Get an accurate transcript instantly.',
     description:
       'Record up to 1 hour directly in your browser — no app, no upload. AI transcribes with 98.5% accuracy across 99 languages. Copy or download in one click.',
-    bullets: ['Noise suppression built-in', '99 languages auto-detected', 'Up to 1 hour recording'],
+    bullets: ['Noise suppression built-in', '99 languages auto-detected', 'Up to 1 hour recording', 'Translation to 70+ languages'],
     gradient: 'from-purple-500 to-violet-600',
     glowColor: 'rgba(168,85,247,0.08)',
     href: '/voice-recorder',

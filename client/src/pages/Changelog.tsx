@@ -23,6 +23,25 @@ const TAG_LABELS: Record<ChangelogEntry['tag'], string> = {
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: 'March 25, 2026',
+    version: 'v1.12',
+    tag: 'new',
+    items: [
+      'Pricing redesign: clear Free vs Pro tiers. Free = 3 imports/month, transcript + subtitles, watermark. Pro = all AI features, batch, translation, no watermark.',
+      'AI Summary (Pro): auto-generated bullet-point key takeaways and action items from every transcript.',
+      'AI Chapters (Pro): auto-generated timestamped section headings — navigate long recordings like YouTube chapters.',
+      'Speaker diarization gated to Pro with named speaker labels (who said what, timestamped).',
+      '"Also translate to" checkbox (Pro): check before uploading to get a full translation of the transcript alongside the original — includes timestamped segments and speaker labels.',
+      'Translated segments in Exports tab: dedicated SRT export cards for both original and translated transcript.',
+      'Batch mode (Pro): drop multiple files on the Video to Transcript page — processes in parallel, download as ZIP.',
+      'Voice Recorder Pro differentiation: translation and AI features gated to Pro with clear upgrade paths.',
+      'Stronger watermark on Free plan subtitle exports.',
+      'Removed Highlights, Keywords, and Clean tabs for a cleaner, faster result experience.',
+      'Compare page updated: AI Summary, Chapters, Speaker diarization, Batch, Translation rows added to full feature comparison.',
+      'Guide, FAQ, and Changelog updated to reflect current feature set accurately.',
+    ],
+  },
+  {
     date: 'March 22, 2026',
     version: 'v1.11',
     tag: 'new',

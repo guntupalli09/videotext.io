@@ -11,7 +11,7 @@ const COMPARE_ROWS = [
   { label: 'Export SRT / VTT subtitle file', videotext: true, competitor: false },
   { label: 'Upload SRT to YouTube / Vimeo', videotext: true, competitor: false },
   { label: 'Full plain-text transcript export', videotext: true, competitor: false },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Speaker labels in transcript', videotext: true, competitor: false },
   { label: 'Auto-generated chapter markers', videotext: true, competitor: false },
   { label: 'Keyword index across transcript', videotext: true, competitor: false },
@@ -42,7 +42,7 @@ const FAQ = [
   },
   {
     q: 'Does VideoText translate captions to other languages?',
-    a: 'Yes — translate your SRT to 50+ languages from the Translate Subtitles tool. Timestamps are preserved exactly. CapCut supports caption translation in limited languages for in-app display only; the translated captions cannot be exported as SRT either.',
+    a: 'Yes — translate your SRT to 70+ languages from the Translate Subtitles tool. Timestamps are preserved exactly. CapCut supports caption translation in limited languages for in-app display only; the translated captions cannot be exported as SRT either.',
   },
   {
     q: 'Is VideoText free like CapCut?',
@@ -150,7 +150,7 @@ export default function CapCutAlternativePage() {
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
             { icon: Zap, title: 'Real SRT & VTT export', body: 'VideoText outputs proper subtitle files with timestamps. Upload the SRT to YouTube Studio, Vimeo, or any platform. CapCut\'s captions are only visible inside CapCut.' },
-            { icon: DollarSign, title: 'Translate to 50+ languages', body: 'Generate a translated SRT in any of 50+ languages with timestamps preserved. CapCut\'s translation cannot be exported as an SRT file.' },
+            { icon: DollarSign, title: 'Translate to 70+ languages', body: 'Generate a translated SRT in any of 70+ languages with timestamps preserved. CapCut\'s translation cannot be exported as an SRT file.' },
             { icon: Shield, title: 'Full transcript included', body: 'Get the complete spoken text as a readable document — speaker-labelled, with keywords and chapters. CapCut shows captions, not transcripts.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">

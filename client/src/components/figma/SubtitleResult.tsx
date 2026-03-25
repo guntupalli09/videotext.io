@@ -14,7 +14,7 @@ interface SubtitleResultProps {
 }
 
 const defaultRelatedTools = [
-  { path: '/translate-subtitles', name: 'Translate Subtitles', description: 'Convert to 50+ languages' },
+  { path: '/translate-subtitles', name: 'Translate Subtitles', description: 'Convert to 70+ languages' },
   { path: '/fix-subtitles', name: 'Fix Subtitles', description: 'Auto-correct timing' },
   { path: '/burn-subtitles', name: 'Burn Subtitles', description: 'Hardcode into video' },
 ];

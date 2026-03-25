@@ -12,7 +12,7 @@ const stats = [
 const tools = [
   { name: 'Video to Transcript', path: '/video-to-transcript', desc: 'Upload any video or paste a YouTube URL. Get a transcript with speaker labels, chapters, and a summary.' },
   { name: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate broadcast-ready SRT and VTT subtitle files from any video with AI.' },
-  { name: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT subtitle files to Arabic, Spanish, Hindi, Japanese, and 50+ languages.' },
+  { name: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT subtitle files to Arabic, Spanish, Hindi, Japanese, and 70+ languages.' },
   { name: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct overlapping timestamps, long lines, and formatting errors in any subtitle file.' },
   { name: 'Burn Subtitles', path: '/burn-subtitles', desc: 'Hardcode subtitles permanently into a video file — no player required to display them.' },
   { name: 'Batch Processing', path: '/batch-process', desc: 'Transcribe or subtitle many videos at once and download all files as a single ZIP.' },
@@ -81,7 +81,7 @@ export default function AboutPage() {
             <div className="w-2 h-2 rounded-full bg-violet-500 mt-2 shrink-0" />
             <div>
               <div className="font-semibold text-gray-900 dark:text-white">AI Engine: OpenAI Whisper large-v3</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">The most accurate open-source speech recognition model, fine-tuned for 50+ languages and noisy real-world audio.</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">The most accurate open-source speech recognition model, fine-tuned for 99 languages and noisy real-world audio.</div>
             </div>
           </div>
           <div className="flex items-start gap-4">

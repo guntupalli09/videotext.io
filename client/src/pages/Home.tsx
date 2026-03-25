@@ -8,7 +8,6 @@ import { Testimonials } from '../components/landing/Testimonials';
 import { UseCases } from '../components/landing/UseCases';
 import { FAQ } from '../components/landing/FAQ';
 import { FinalCTA } from '../components/landing/FinalCTA';
-import { CompetitorSection } from '../components/landing/CompetitorSection';
 import { CheckCircle2, ArrowRight, Zap, Shield, Clock } from 'lucide-react';
 
 // Conversion order (psychologically optimised):
@@ -17,15 +16,14 @@ import { CheckCircle2, ArrowRight, Zap, Shield, Clock } from 'lucide-react';
 // 3. Use Cases — ICP targeting
 // 4. How It Works — dark, de-risk the signup
 // 5. Testimonials — social proof
-// 6. Competitor — speed piggybacking
-// 7. Pricing — frictionless plans
-// 8. FAQ — objection handling
-// 9. Free Tools — non-converter catchment
-// 10. Final CTA — dark, bold close
+// 6. Pricing — frictionless plans
+// 7. FAQ — objection handling
+// 8. Free Tools — non-converter catchment
+// 9. Final CTA — dark, bold close
 
 function TrustBar() {
   const items = [
-    { icon: Zap, text: '6× faster than Descript', highlight: true },
+    { icon: Zap, text: 'Transcript + subtitles + AI summary', highlight: true },
     { icon: CheckCircle2, text: '98.5% accuracy' },
     { icon: Shield, text: 'Files deleted immediately' },
     { icon: Clock, text: '< 3 min for a 2hr video' },
@@ -57,35 +55,19 @@ const PLANS = [
   {
     name: 'Free',
     price: '$0',
-    detail: '3 free imports',
+    detail: '3 imports per day',
     cta: null,
     note: 'No card needed',
     popular: false,
   },
   {
-    name: 'Basic',
-    price: '$19',
-    period: '/mo',
-    detail: '450 min / month',
-    cta: 'Get started',
-    popular: false,
-  },
-  {
     name: 'Pro',
-    price: '$49',
+    price: '$10',
     period: '/mo',
-    detail: '1,200 min / month',
+    detail: 'No fixed limits — billed annually',
     cta: 'Get started',
     popular: true,
-    badge: 'Most popular',
-  },
-  {
-    name: 'Agency',
-    price: '$129',
-    period: '/mo',
-    detail: '3,000 min / month',
-    cta: 'Get started',
-    popular: false,
+    badge: 'Best Value',
   },
 ];
 
@@ -119,7 +101,7 @@ function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto"
         >
           {PLANS.map((plan) => (
             <Link
@@ -200,10 +182,7 @@ export default function Home() {
       {/* 5 — Testimonials */}
       <Testimonials />
 
-      {/* 6 — Competitor comparison / speed proof */}
-      <CompetitorSection />
-
-      {/* 7 — Pricing (dark) */}
+      {/* 6 — Pricing (dark) */}
       <PricingSection />
 
       {/* 8 — FAQ */}

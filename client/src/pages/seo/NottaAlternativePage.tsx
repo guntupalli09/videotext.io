@@ -11,7 +11,7 @@ const COMPARE_ROWS = [
   { label: 'Max duration per file (free tier)', videotext: 'No limit', competitor: '3 minutes' },
   { label: 'Monthly allowance (free tier)', videotext: '3 full imports', competitor: '120 min/month' },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Burn captions into video', videotext: true, competitor: false },
   { label: 'Chapter auto-generation', videotext: true, competitor: false },
   { label: 'Keyword index across transcript', videotext: true, competitor: false },

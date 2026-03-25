@@ -5,6 +5,7 @@ import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
+import UpgradeBanner from '../components/UpgradeBanner'
 import LanguageSelector from '../components/LanguageSelector'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
@@ -23,7 +24,6 @@ import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/fil
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
-import { createCheckoutSession } from '../lib/billing'
 import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
@@ -56,7 +56,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
   const [showPaywall, setShowPaywall] = useState(false)
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
-  const [usedMinutes, setUsedMinutes] = useState<number | null>(null)
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
   const [isRehydrating, setIsRehydrating] = useState(false)
   const [processingStartedAt, setProcessingStartedAt] = useState<number | null>(null)
@@ -423,7 +422,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       const totalAvailable = isImports ? (usageData.limit ?? 3) : (usageData.limits.minutesPerMonth + usageData.overages.minutes)
       const used = isImports ? (usageData.used ?? usageData.usage?.importCount ?? 0) : usageData.usage.totalMinutes
       setAvailableMinutes(totalAvailable)
-      setUsedMinutes(used)
       const atOrOverLimit = isImports ? used >= (usageData.limit ?? 3) : (totalAvailable > 0 && used >= totalAvailable)
       if (atOrOverLimit) {
         setShowPaywall(true)
@@ -735,6 +733,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   return (
     <>
       <ToolLayout {...layoutProps}>
+        <UpgradeBanner variant="watermark" />
         {status === 'idle' && !selectedFile && (
           <UploadZone
             immediateSelect
@@ -1063,21 +1062,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       <PaywallModal
           isOpen={showPaywall}
           onClose={() => setShowPaywall(false)}
-          usedMinutes={usedMinutes ?? 0}
-          availableMinutes={availableMinutes ?? 0}
-          onBuyOverage={async () => {
-            try {
-              const { url } = await createCheckoutSession({
-                mode: 'payment',
-                returnToPath: window.location.pathname,
-                frontendOrigin: window.location.origin,
-              })
-              trackEvent('payment_completed', { type: 'overage_checkout_started' })
-              window.location.href = url
-            } catch (err: any) {
-              toast.error(err.message || 'Failed to start payment')
-            }
-          }}
           onUpgrade={() => {
             // Send the user to the pricing page where they can pick a plan
             window.location.href = '/pricing'

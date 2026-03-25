@@ -55,7 +55,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/translate-subtitles': {
     title: 'Translate Subtitles — SRT/VTT to Any Language',
     description:
-      'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, and 50+ languages with AI. Upload subtitles, pick target language, download. Free tier available.',
+      'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, and 70+ languages with AI. Upload subtitles, pick target language, download. Free tier available.',
   },
   '/fix-subtitles': {
     title: 'Fix Subtitles — Auto-Correct Timing & Format',
@@ -180,12 +180,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/easyscribe-alternative': {
     title: 'Best EasyScribe Alternative for Video & Subtitles | VideoText',
     description:
-      'EasyScribe only does basic audio transcription. VideoText handles video files, YouTube URLs, SRT subtitle export, 50+ language translation, and subtitle burning. Free tier available.',
+      'EasyScribe only does basic audio transcription. VideoText handles video files, YouTube URLs, SRT subtitle export, 70+ language translation, and subtitle burning. Free tier available.',
   },
   '/notta-alternative': {
     title: 'Best Free Notta Alternative for Video Files & Subtitles | VideoText',
     description:
-      "Notta's free plan caps files at 3 minutes. VideoText has no per-file limit — transcribe full-length videos, export SRT/VTT, translate to 50+ languages, and burn subtitles. Free tier available.",
+      "Notta's free plan caps files at 3 minutes. VideoText has no per-file limit — transcribe full-length videos, export SRT/VTT, translate to 70+ languages, and burn subtitles. Free tier available.",
   },
   '/about': {
     title: 'About VideoText — AI Transcription Built for Speed & Privacy',
@@ -396,15 +396,18 @@ export const ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   ),
 }
 
-/** FAQ items for /faq page (global FAQ; not from registry). Used for page content and FAQPage JSON-LD. */
+/** FAQ items for /faq page (global FAQ; not from registry). Used for page content and FAQPage JSON-LD.
+ * Keep answers in sync with FAQ_ITEMS in client/src/pages/Faq.tsx. */
 const FAQ_SCHEMA_ITEMS = [
-  { q: 'Do you store my videos or files?', a: "No. We process your files and then delete them. We don't keep your uploads, transcripts, or generated outputs." },
-  { q: 'Is my content used for AI training?', a: "No. Your content is used only to deliver the service you requested. We do not use it for training models." },
-  { q: 'Do I need to sign up?', a: "Yes. Sign up for free to try the tools. No credit card required. Upgrade when you need more imports or paid features." },
-  { q: 'Can I transcribe a YouTube video without downloading it?', a: "Yes. Paste any public YouTube URL (youtube.com or youtu.be) into the Video to Transcript tool and we stream the audio and transcribe it directly. No download, no file upload. Works with public videos, Shorts, and age-restricted content with optional cookies. Same features as file upload: speakers, summary, chapters, translate to 6 languages." },
-  { q: 'What file formats are supported?', a: "Videos: MP4, MOV, AVI, WebM (and optionally MKV). Subtitles: SRT and VTT. You can also paste a YouTube URL — no download needed." },
-  { q: 'How does the free tier work?', a: "Sign up for free to get 3 imports per month (resets on the 1st), single language, and a watermark on subtitle exports. No credit card required." },
-  { q: 'Can I translate subtitles or transcripts?', a: "Yes. Use Translate Subtitles for SRT/VTT. For transcripts, use the Translate button after generating to view in 6 languages." },
+  { q: 'Do you store my videos or files?', a: "No. We process your files and then delete them immediately after the job completes. We don't keep your uploads, transcripts, or generated outputs. Your content stays yours." },
+  { q: 'Is my content used for AI training?', a: "No. Your content is used only to deliver the service you requested. We do not use it for training AI models or any other secondary purpose." },
+  { q: 'Do I need to sign up?', a: "Sign up for a free account to try. No credit card required. You get 3 free imports per month. Upgrade when you need more imports, languages, or batch processing." },
+  { q: 'Can I transcribe a YouTube video without downloading it?', a: "YouTube URL support is coming soon. Currently, download the video first (MP4) and upload it to the Video to Transcript tool." },
+  { q: 'What file formats are supported?', a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. YouTube URL support is coming soon." },
+  { q: 'How accurate is VideoText transcription?', a: "VideoText uses OpenAI Whisper large-v3. On clear speech with minimal background noise, accuracy is approximately 98.5% word accuracy. Setting the spoken language manually improves results for non-English content." },
+  { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 imports per month, resetting on the 1st. Single language, watermark on subtitle exports. Upgrade any time for more imports, AI features, and batch processing." },
+  { q: 'Can I translate subtitles or transcripts?', a: "Yes. Use the Translate Subtitles tool for SRT/VTT files. For transcripts, use the \"Also translate to\" option before starting to get a full translation in 70+ languages." },
+  { q: 'What is the maximum video duration?', a: "Free: 30 minutes per video. Basic: 45 minutes. Pro: 2 hours. Agency: 4 hours. To transcribe a longer video, trim or split it into segments before uploading." },
 ]
 
 /** Published dates for blog posts — used for BlogPosting JSON-LD and og:article meta. */
@@ -514,7 +517,7 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   },
   '/translate-subtitles': {
     name: 'Translate Subtitles — SRT/VTT to Any Language',
-    description: 'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, French, Japanese, and 50+ languages with AI. Upload subtitles, pick target language, download.',
+    description: 'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, French, Japanese, and 70+ languages with AI. Upload subtitles, pick target language, download.',
     featureList: 'SRT translation, VTT translation, 50+ target languages, Timestamp preservation, Download translated subtitles',
   },
   '/fix-subtitles': {
@@ -564,7 +567,7 @@ const HOWTO_SCHEMAS: Record<string, { name: string; description: string; steps: 
     steps: [
       { name: 'Sign up for VideoText', text: 'Go to videotext.io and sign up for a free account. No credit card required. You get 3 free imports per month.' },
       { name: 'Upload your video or paste a YouTube URL', text: 'On the Video to Subtitles page, upload your video file (MP4, MOV, AVI, WebM) or paste a public YouTube URL directly.' },
-      { name: 'Select your language', text: 'Choose the spoken language of the video. VideoText supports 50+ languages via OpenAI Whisper.' },
+      { name: 'Select your language', text: 'Choose the spoken language of the video. VideoText supports 70+ languages via OpenAI Whisper.' },
       { name: 'Generate subtitles', text: 'Click Generate. VideoText transcribes the audio and creates time-coded subtitle cues. A 60-minute video takes under 5 minutes.' },
       { name: 'Download the SRT file', text: 'Click Download SRT. The file is saved to your device in standard SubRip (.srt) format, ready to upload to YouTube, Vimeo, or any video player.' },
     ],

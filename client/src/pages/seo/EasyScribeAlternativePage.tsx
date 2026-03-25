@@ -11,7 +11,7 @@ const COMPARE_ROWS = [
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: true },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Burn subtitles into video', videotext: true, competitor: false },
   { label: 'Batch process multiple videos', videotext: true, competitor: false },
   { label: 'Files deleted after processing', videotext: true, competitor: false },
@@ -23,7 +23,7 @@ const COMPARE_ROWS = [
 const FAQ = [
   {
     q: 'What is a good EasyScribe alternative for video transcription?',
-    a: 'VideoText is the most fully-featured EasyScribe alternative. Where EasyScribe focuses on basic audio transcription, VideoText handles video files natively, supports YouTube URL input, generates SRT/VTT subtitle files, translates to 50+ languages, and burns subtitles into video — all from a single tool.',
+    a: 'VideoText is the most fully-featured EasyScribe alternative. Where EasyScribe focuses on basic audio transcription, VideoText handles video files natively, supports YouTube URL input, generates SRT/VTT subtitle files, translates to 70+ languages, and burns subtitles into video — all from a single tool.',
   },
   {
     q: 'Is VideoText free unlike EasyScribe?',
@@ -146,7 +146,7 @@ export default function EasyScribeAlternativePage() {
         {/* Key advantages */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
-            { icon: Zap, title: 'Full subtitle workflow', body: 'VideoText generates SRT and VTT files with accurate timestamps, translates them to 50+ languages, and can burn them directly into video. EasyScribe produces plain text only.' },
+            { icon: Zap, title: 'Full subtitle workflow', body: 'VideoText generates SRT and VTT files with accurate timestamps, translates them to 70+ languages, and can burn them directly into video. EasyScribe produces plain text only.' },
             { icon: DollarSign, title: 'Free tier included', body: 'Start with 3 free imports per month — no credit card, no trial expiry. EasyScribe requires payment to get started.' },
             { icon: Shield, title: 'YouTube URL support', body: 'Paste any YouTube link and VideoText transcribes it directly. No need to download the video. EasyScribe has no YouTube integration.' },
           ].map(({ icon: Icon, title, body }) => (
