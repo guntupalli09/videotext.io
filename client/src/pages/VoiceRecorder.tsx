@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import UpgradeBanner from '../components/UpgradeBanner'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -14,6 +15,9 @@ import {
   Download,
   Wifi,
   Sparkles,
+  Lock,
+  Users,
+  FileText,
 } from 'lucide-react'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import {
@@ -370,7 +374,13 @@ export default function VoiceRecorder() {
   }
 
   function downloadTranscript() {
-    const blob = new Blob([transcript], { type: 'text/plain;charset=utf-8' })
+    const WM_SEP   = '=================================================================================='
+    const WM_LINE1 = 'Fast AI transcription by VideoText.io — Free Plan'
+    const WM_LINE2 = '⚠  Remove this watermark: videotext.io/pricing  |  Upgrade to Pro'
+    const content = isPaidPlan
+      ? transcript
+      : `${WM_SEP}\n${WM_LINE1}\n${WM_LINE2}\n${WM_SEP}\n\n${transcript}\n\n${WM_SEP}\n${WM_LINE1}\n${WM_LINE2}\n${WM_SEP}`
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -398,6 +408,10 @@ export default function VoiceRecorder() {
     setTimeout(() => canvasRef.current && runWaveform(), 50)
   }
 
+  const isPaidPlan =
+    typeof window !== 'undefined' &&
+    (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+
   const wordCount = transcript.trim().split(/\s+/).filter(Boolean).length
   const showCanvas = phase === 'idle' || phase === 'requesting' || phase === 'recording'
 
@@ -406,9 +420,9 @@ export default function VoiceRecorder() {
     <ToolLayout
       breadcrumbs={[{ label: 'Voice Recorder', href: '/voice-recorder' }]}
       title="Voice to Text"
-      subtitle="Record in any of 99 languages — speaker detection, noise suppression, no signup needed."
+      subtitle="Speak and get an instant transcript — no file, no upload, live in seconds."
       icon={<Mic className="w-5 h-5 text-violet-600" />}
-      tags={['Free', 'Noise Suppressed', '99 Languages']}
+      tags={['Free', '99 Languages', 'Live Transcription']}
     >
       <div className="max-w-2xl mx-auto space-y-5 pb-16">
         <UpgradeBanner variant="voice" />
@@ -675,7 +689,7 @@ export default function VoiceRecorder() {
                       className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       <Download className="w-3.5 h-3.5" />
-                      .txt
+                      {isPaidPlan ? 'Download' : 'Download with watermark'}
                     </button>
                   </div>
                 </div>
@@ -692,6 +706,45 @@ export default function VoiceRecorder() {
                     </p>
                   )}
                 </div>
+
+                {/* Pro-locked feature teasers — free users only */}
+                {!isPaidPlan && transcript.trim().length > 0 && (
+                  <div className="rounded-xl border border-violet-200 dark:border-violet-800/40 bg-violet-50/50 dark:bg-violet-950/20 p-4 space-y-3">
+                    <p className="text-xs font-semibold text-violet-500 dark:text-violet-400 uppercase tracking-wide">
+                      Unlock with Pro
+                    </p>
+                    <div className="grid grid-cols-3 gap-3">
+                      {([
+                        { Icon: Users,    label: 'Speaker Labels', desc: 'Who said what' },
+                        { Icon: Sparkles, label: 'AI Summary',      desc: 'Key points extracted' },
+                        { Icon: FileText, label: 'SRT Export',      desc: 'Subtitle-ready format' },
+                      ] as const).map(({ Icon, label, desc }) => (
+                        <Link
+                          to="/pricing"
+                          key={label}
+                          className="flex flex-col items-center gap-1.5 rounded-lg bg-white dark:bg-gray-800 border border-violet-200 dark:border-violet-700/60 p-3 text-center hover:border-violet-400 dark:hover:border-violet-500 transition-colors"
+                        >
+                          <div className="relative">
+                            <Icon className="w-5 h-5 text-gray-300 dark:text-gray-600" />
+                            <Lock className="w-3 h-3 text-violet-500 absolute -top-1 -right-1" />
+                          </div>
+                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-tight">
+                            {label}
+                          </span>
+                          <span className="text-[11px] text-gray-400 dark:text-gray-500 leading-tight">
+                            {desc}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                    <Link
+                      to="/pricing"
+                      className="block text-center text-xs font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+                    >
+                      Upgrade to Pro — remove watermark &amp; unlock all features →
+                    </Link>
+                  </div>
+                )}
 
                 {/* Record again */}
                 <button
