@@ -2661,6 +2661,84 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             )
                           })}
                         </div>
+                        {/* Subtitle files — SRT (original + translated) */}
+                        {segmentsForExport && segmentsForExport.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Subtitle Files</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {/* Original SRT */}
+                              {(() => {
+                                const langCode = 'EN'
+                                const handleDownloadSrt = () => {
+                                  const srt = segmentsToSrt(segmentsForExport)
+                                  const blob = new Blob([srt], { type: 'text/plain' })
+                                  const a = document.createElement('a')
+                                  a.href = URL.createObjectURL(blob)
+                                  a.download = `transcript_${langCode.toLowerCase()}.srt`
+                                  a.click()
+                                  URL.revokeObjectURL(a.href)
+                                  toast.success('SRT downloaded')
+                                }
+                                return (
+                                  <div className="rounded-xl bg-violet-50 ring-1 ring-violet-100 p-4">
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full shrink-0 bg-violet-400" aria-hidden />
+                                        <span className="text-sm font-semibold text-gray-800">SRT [{langCode}]</span>
+                                        <span className="text-[10px] font-mono text-gray-400">.srt</span>
+                                      </div>
+                                      <button
+                                        onClick={handleDownloadSrt}
+                                        className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-lg transition-colors bg-white hover:bg-violet-50 text-violet-600 hover:text-violet-700 ring-1 ring-gray-200"
+                                      >
+                                        <Download className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                                        Download
+                                      </button>
+                                    </div>
+                                    <pre className="text-xs text-gray-600 bg-white/70 p-3 rounded-lg max-h-28 overflow-y-auto whitespace-pre-wrap break-words ring-1 ring-white/80">
+                                      {segmentsToSrt(segmentsForExport).slice(0, 400)}…
+                                    </pre>
+                                  </div>
+                                )
+                              })()}
+                              {/* Translated SRT — only when translation available */}
+                              {translateEnabled && translationLanguage && translatedSegments && (() => {
+                                const langCode = languageToCode(translationLanguage).toUpperCase()
+                                const handleDownloadTranslatedSrt = () => {
+                                  const srt = segmentsToSrt(translatedSegments)
+                                  const blob = new Blob([srt], { type: 'text/plain' })
+                                  const a = document.createElement('a')
+                                  a.href = URL.createObjectURL(blob)
+                                  a.download = `transcript_${langCode.toLowerCase()}.srt`
+                                  a.click()
+                                  URL.revokeObjectURL(a.href)
+                                  toast.success('Translated SRT downloaded')
+                                }
+                                return (
+                                  <div className="rounded-xl bg-blue-50 ring-1 ring-blue-100 p-4">
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full shrink-0 bg-blue-400" aria-hidden />
+                                        <span className="text-sm font-semibold text-gray-800">SRT [{langCode}]</span>
+                                        <span className="text-[10px] font-mono text-gray-400">.srt</span>
+                                      </div>
+                                      <button
+                                        onClick={handleDownloadTranslatedSrt}
+                                        className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-lg transition-colors bg-white hover:bg-blue-50 text-blue-600 hover:text-blue-700 ring-1 ring-gray-200"
+                                      >
+                                        <Download className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                                        Download
+                                      </button>
+                                    </div>
+                                    <pre className="text-xs text-gray-600 bg-white/70 p-3 rounded-lg max-h-28 overflow-y-auto whitespace-pre-wrap break-words ring-1 ring-white/80">
+                                      {segmentsToSrt(translatedSegments).slice(0, 400)}…
+                                    </pre>
+                                  </div>
+                                )
+                              })()}
+                            </div>
+                          </div>
+                        )}
                         {/* Translated transcript export — shown when "Also translate to" was enabled */}
                         {translateEnabled && translationLanguage && translatedCache[translationLanguage] && (
                           <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
