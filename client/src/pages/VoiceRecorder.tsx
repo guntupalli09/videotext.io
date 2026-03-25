@@ -463,7 +463,7 @@ export default function VoiceRecorder() {
       title="Voice to Text"
       subtitle="Speak and get an instant transcript — no file, no upload, live in seconds."
       icon={<Mic className="w-5 h-5 text-violet-600" />}
-      tags={['Free', '99 Languages', 'Live Transcription']}
+      tags={['Free', '99 Languages', 'Live Transcription', 'Translation']}
     >
       <div className="max-w-2xl mx-auto space-y-5 pb-16">
         <UpgradeBanner variant="voice" />
