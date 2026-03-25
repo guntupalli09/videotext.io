@@ -69,7 +69,7 @@ const FAQ_ITEMS = [
     category: "General",
     icon: HelpCircle,
     q: "Can I transcribe a Zoom or Teams recording?",
-    a: "Yes. Zoom saves recordings as MP4. Download the recording from your Zoom portal or local Zoom folder, then upload to Video to Transcript. Set "Speakers" in the result to label who said what. For a full step-by-step, see our blog guide on transcribing Zoom recordings.",
+    a: "Yes. Zoom saves recordings as MP4. Download the recording from your Zoom portal or local Zoom folder, then upload to Video to Transcript. Set \"Speakers\" in the result to label who said what. For a full step-by-step, see our blog guide on transcribing Zoom recordings.",
   },
   {
     category: "General",
@@ -162,7 +162,7 @@ const FAQ_ITEMS = [
     category: "Billing",
     icon: CreditCard,
     q: "How do I cancel or change my plan?",
-    a: "Paid users: open "Manage subscription" on the Pricing page to upgrade, downgrade, or cancel via the Stripe portal. Access continues until the end of your billing period. No partial refunds for mid-cycle cancellations.",
+    a: "Paid users: open \"Manage subscription\" on the Pricing page to upgrade, downgrade, or cancel via the Stripe portal. Access continues until the end of your billing period. No partial refunds for mid-cycle cancellations.",
   },
   {
     category: "Billing",
