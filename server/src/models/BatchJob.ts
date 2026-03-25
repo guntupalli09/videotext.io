@@ -1,6 +1,34 @@
 import type { Prisma } from '@prisma/client'
 import { prisma } from '../db'
 
+/** Atomic increment — avoids lost updates when multiple batch jobs finish concurrently. */
+export async function incrementBatchProcessedVideos(batchId: string): Promise<BatchJob | undefined> {
+  await prisma.batchJobRecord.update({
+    where: { id: batchId },
+    data: { processedVideos: { increment: 1 } },
+  })
+  return getBatchById(batchId)
+}
+
+/** Atomic failure increment + append error (transactional). */
+export async function appendBatchFailure(batchId: string, videoName: string, reason: string): Promise<BatchJob | undefined> {
+  return prisma.$transaction(async (tx) => {
+    const row = await tx.batchJobRecord.findUnique({ where: { id: batchId } })
+    if (!row) return undefined
+    const prev = Array.isArray(row.errors) ? (row.errors as { videoName: string; reason: string }[]) : []
+    const next = [...prev, { videoName, reason: reason.slice(0, 2000) }]
+    await tx.batchJobRecord.update({
+      where: { id: batchId },
+      data: {
+        failedVideos: { increment: 1 },
+        errors: next as Prisma.InputJsonValue,
+      },
+    })
+    const r = await tx.batchJobRecord.findUnique({ where: { id: batchId } })
+    return r ? recordToBatch(r) : undefined
+  })
+}
+
 export type BatchStatus = 'queued' | 'processing' | 'completed' | 'failed' | 'partial'
 
 export interface BatchJob {

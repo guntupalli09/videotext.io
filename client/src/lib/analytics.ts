@@ -15,10 +15,18 @@ let optedOut = false
 /** If PostHog host is unreachable (e.g. blocked by ad blocker), opt out so the SDK stops retrying. */
 function probeAndOptOutIfBlocked(): void {
   if (optedOut || !initialized) return
-  const probeUrl = POSTHOG_HOST.replace(/\/$/, '') + '/e/?v=0'
+  // Match posthog-js ingest path (e.g. us.i.posthog.com/i/v0/e/...) so ad-block blocks the same URL we probe.
+  const base = POSTHOG_HOST.replace(/\/$/, '')
+  const probeUrl = `${base}/i/v0/e/?ip=0&_=0&ver=1&compression=gzip-js`
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 3000)
-  fetch(probeUrl, { method: 'GET', signal: controller.signal, keepalive: false })
+  fetch(probeUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: '',
+    signal: controller.signal,
+    keepalive: false,
+  })
     .then(() => clearTimeout(timeout))
     .catch(() => {
       clearTimeout(timeout)

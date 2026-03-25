@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, FileCode, Download, Lock, Play, Pause, Volume2, VolumeX, Search, X, Layers, Sparkles, FolderArchive, AlertCircle } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, FileCode, Download, Lock, Play, Pause, Volume2, VolumeX, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2 } from 'lucide-react'
 import FailedState from '../components/FailedState'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
@@ -160,6 +160,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [isBatchMode, setIsBatchMode] = useState(false)
   const [batchInfo, setBatchInfo] = useState<BatchStatus | null>(null)
   const batchPollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  /** Monotonic max % so the bar never steps backward if the API briefly returns a stale count. */
+  const batchPctPeakRef = useRef(0)
+  const [isBatchStarting, setIsBatchStarting] = useState(false)
   /** Optional: translate subtitle exports per video (ISO codes via languageToCode). */
   const [batchTranslateLanguage, setBatchTranslateLanguage] = useState<string>('')
   const [batchSpeakerDiarization, setBatchSpeakerDiarization] = useState(false)
@@ -579,8 +582,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   }
 
   const handleProcessBatch = async () => {
-    if (batchFiles.length === 0) return
+    if (batchFiles.length === 0 || isBatchStarting) return
     const paid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+    if (batchPollRef.current) {
+      clearInterval(batchPollRef.current)
+      batchPollRef.current = null
+    }
+    batchPctPeakRef.current = 0
+    setIsBatchStarting(true)
     try {
       const extraLangs =
         batchTranslateLanguage && paid ? [languageToCode(batchTranslateLanguage)] : []
@@ -595,7 +604,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       const poll = setInterval(async () => {
         try {
           const s = await getBatchStatus(batchId)
-          setBatchInfo(s)
+          const pct = Math.max(batchPctPeakRef.current, s.progress.percentage)
+          batchPctPeakRef.current = pct
+          setBatchInfo({ ...s, progress: { ...s.progress, percentage: pct } })
           if (s.status === 'completed' || s.status === 'partial' || s.status === 'failed') {
             clearInterval(poll)
             batchPollRef.current = null
@@ -608,8 +619,19 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       batchPollRef.current = poll
     } catch {
       toast.error('Failed to start batch processing. Please try again.')
+    } finally {
+      setIsBatchStarting(false)
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (batchPollRef.current) {
+        clearInterval(batchPollRef.current)
+        batchPollRef.current = null
+      }
+    }
+  }, [])
 
   const handleCancelUpload = () => {
     if (uploadAbortRef.current) {
@@ -1168,6 +1190,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       clearInterval(batchPollRef.current)
       batchPollRef.current = null
     }
+    batchPctPeakRef.current = 0
+    setIsBatchStarting(false)
     setStatus('idle')
     setProgress(0)
     setUploadPhase('uploading')
@@ -1839,10 +1863,19 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             <button
               type="button"
               onClick={handleProcessBatch}
-              disabled={batchFiles.length === 0}
-              className="w-full py-3 px-6 rounded-xl font-semibold text-sm bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
+              disabled={batchFiles.length === 0 || isBatchStarting}
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-semibold text-sm bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
             >
-              Process {batchFiles.length} video{batchFiles.length !== 1 ? 's' : ''}
+              {isBatchStarting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" aria-hidden />
+                  Starting…
+                </>
+              ) : (
+                <>
+                  Process {batchFiles.length} video{batchFiles.length !== 1 ? 's' : ''}
+                </>
+              )}
             </button>
           </div>
         )}
@@ -2028,7 +2061,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               </div>
               <div className="w-full bg-gray-200/90 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
                 <div
-                  className="bg-gradient-to-r from-violet-500 to-fuchsia-500 h-2.5 rounded-full transition-all duration-500 ease-out"
+                  className="bg-gradient-to-r from-violet-500 to-fuchsia-500 h-2.5 rounded-full transition-all duration-200 ease-out"
                   style={{ width: `${Math.min(100, batchInfo.progress.percentage)}%` }}
                 />
               </div>

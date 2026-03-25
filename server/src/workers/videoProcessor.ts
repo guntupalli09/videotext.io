@@ -24,7 +24,7 @@ import {
 import { validateFileType, validateFileSize } from '../utils/fileValidation'
 import { trimVideoSegment } from '../services/trimming'
 import { LANGUAGE_NAMES, generateMultiLanguageSubtitles } from '../services/multiLanguage'
-import { BatchJob, getBatchById, saveBatch } from '../models/BatchJob'
+import { BatchJob, appendBatchFailure, getBatchById, incrementBatchProcessedVideos, saveBatch } from '../models/BatchJob'
 import { getUser, saveUser, incrementUserUsage, PlanType } from '../models/User'
 import { getPlanLimits, getJobPriority, getMaxJobRuntimeMinutes } from '../utils/limits'
 import { resetUserUsageIfNeeded } from '../utils/usageReset'
@@ -1271,13 +1271,12 @@ async function processJob(job: import('bull').Job<JobData>) {
         case 'batch-video-to-subtitles': {
           let videoPath = data.filePath!
           const batchId = data.batchId!
-          const batch = await getBatchById(batchId)
+          let batch = await getBatchById(batchId)
 
           if (!batch) {
             throw new Error('Batch not found')
           }
 
-          try {
             let trimmedDuration = 0
             if (data.trimmedStart !== undefined && data.trimmedEnd !== undefined) {
               await job.progress(5)
@@ -1426,8 +1425,9 @@ async function processJob(job: import('bull').Job<JobData>) {
             })
 
             await job.progress(80)
-            batch.processedVideos += 1
-            await saveBatch(batch)
+            const batchAfterOk = await incrementBatchProcessedVideos(batchId)
+            if (!batchAfterOk) throw new Error('Batch not found')
+            batch = batchAfterOk
 
             const userId = data.userId
             const plan = (data.plan || 'free') as PlanType
@@ -1467,20 +1467,6 @@ async function processJob(job: import('bull').Job<JobData>) {
               fileName: `batch-${batchId}.zip`,
               batchId,
             }
-          } catch (error: any) {
-            batch.failedVideos += 1
-            batch.errors.push({
-              videoName: data.originalName || 'unknown',
-              reason: error.message || 'Processing failed',
-            })
-            await saveBatch(batch)
-
-            if (batch.processedVideos + batch.failedVideos >= batch.totalVideos) {
-              await generateBatchZip(batchId, batch)
-            }
-
-            throw error
-          }
           break
         }
 
@@ -1893,18 +1879,18 @@ function attachQueueEvents(queue: import('bull').Queue<JobData>) {
         error: err?.message || 'Job failed',
       }).catch(() => {})
     }
-    if (data?.batchId) {
-      const batch = await getBatchById(data.batchId)
-      if (batch) {
-        batch.failedVideos += 1
-        batch.errors.push({
-          videoName: data.originalName || 'unknown',
-          reason: err?.message || 'Processing failed',
-        })
-        await saveBatch(batch)
-        if (batch.processedVideos + batch.failedVideos >= batch.totalVideos && !batch.zipPath) {
-          await generateBatchZip(data.batchId, batch)
-        }
+    if (data?.batchId && isFinalFailure) {
+      const batchAfterFail = await appendBatchFailure(
+        data.batchId,
+        data.originalName || 'unknown',
+        err?.message || 'Processing failed'
+      )
+      if (
+        batchAfterFail &&
+        batchAfterFail.processedVideos + batchAfterFail.failedVideos >= batchAfterFail.totalVideos &&
+        !batchAfterFail.zipPath
+      ) {
+        await generateBatchZip(data.batchId, batchAfterFail)
       }
     }
   })
