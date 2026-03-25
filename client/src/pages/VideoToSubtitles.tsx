@@ -1063,21 +1063,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       <PaywallModal
           isOpen={showPaywall}
           onClose={() => setShowPaywall(false)}
-          usedMinutes={usedMinutes ?? 0}
-          availableMinutes={availableMinutes ?? 0}
-          onBuyOverage={async () => {
-            try {
-              const { url } = await createCheckoutSession({
-                mode: 'payment',
-                returnToPath: window.location.pathname,
-                frontendOrigin: window.location.origin,
-              })
-              trackEvent('payment_completed', { type: 'overage_checkout_started' })
-              window.location.href = url
-            } catch (err: any) {
-              toast.error(err.message || 'Failed to start payment')
-            }
-          }}
           onUpgrade={() => {
             // Send the user to the pricing page where they can pick a plan
             window.location.href = '/pricing'

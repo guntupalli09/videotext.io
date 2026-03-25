@@ -469,8 +469,6 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
-        usedMinutes={usedMinutes ?? 0}
-        availableMinutes={availableMinutes ?? 0}
         onUpgrade={() => {
           window.location.href = '/pricing'
         }}

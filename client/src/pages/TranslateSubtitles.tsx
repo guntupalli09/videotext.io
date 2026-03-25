@@ -424,8 +424,6 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
-        usedMinutes={usedMinutes ?? 0}
-        availableMinutes={availableMinutes ?? 0}
         onUpgrade={() => {
           window.location.href = '/pricing'
         }}
