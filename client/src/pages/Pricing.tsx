@@ -256,10 +256,10 @@ export default function Pricing() {
               {[
                 'No watermark',
                 'Up to 2 hours per video',
-                'AI chapters, keywords & summaries',
-                'Speaker diarization',
-                'Process multiple videos at once',
-                'Faster processing',
+                'AI summary, chapters & speaker labels',
+                'Translation in 50+ languages',
+                'Batch process multiple videos at once',
+                'Faster processing & queue priority',
               ].map((f) => (
                 <li key={f} className="flex items-start gap-2.5 text-sm text-gray-100 dark:text-gray-800">
                   <svg className="w-4 h-4 shrink-0 text-violet-400 dark:text-violet-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>

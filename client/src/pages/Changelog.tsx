@@ -37,7 +37,7 @@ const ENTRIES: ChangelogEntry[] = [
       'Voice Recorder Pro differentiation: translation and AI features gated to Pro with clear upgrade paths.',
       'Stronger watermark on Free plan subtitle exports.',
       'Removed Highlights, Keywords, and Clean tabs for a cleaner, faster result experience.',
-      'Compare page updated: YouTube URL support marked live (no longer "Coming Soon"), AI Summary/Chapters/Batch/Translation rows added to full feature comparison.',
+      'Compare page updated: AI Summary, Chapters, Speaker diarization, Batch, Translation rows added to full feature comparison.',
       'Guide, FAQ, and Changelog updated to reflect current feature set accurately.',
     ],
   },

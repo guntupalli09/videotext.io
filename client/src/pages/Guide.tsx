@@ -82,8 +82,7 @@ const TOOL_GUIDES: ToolGuide[] = [
     title: 'Video → Transcript',
     shortDesc: 'Extract spoken text from any video. Get a full transcript, then explore summary, chapters, speakers, and more.',
     howTo: [
-      'Option A — YouTube URL: Paste any public youtube.com or youtu.be URL into the YouTube tab. No download needed. Works with Shorts, playlists, and most public videos.',
-      'Option B — File upload: Upload a video file (MP4, MOV, AVI, WebM). Max size and duration depend on your plan.',
+      'Upload a video file (MP4, MOV, AVI, WebM). Max size and duration depend on your plan.',
       'Optionally trim the video to transcribe only a portion (saves quota and speeds up processing).',
       'Set the spoken language if you know it — auto-detect works but manual improves accuracy for non-English content.',
       'Click Start. Transcription streams in real time — you see text within the first 15–30 seconds.',
@@ -263,7 +262,7 @@ export default function Guide() {
 
         <p className="text-gray-700 mb-6">
           This guide is the full &quot;How it works&quot; reference for VideoText. Step-by-step: how each tool works,
-          what inputs we expect, and what you get. The <strong>Video to Transcript</strong> tool also accepts YouTube URLs directly — paste any youtube.com or youtu.be link, no download needed. Other tools require file uploads. For billing and limits, see{' '}
+          what inputs we expect, and what you get. All tools require file uploads (MP4, MOV, AVI, WebM). For billing and limits, see{' '}
           <Link to="/pricing" className="text-violet-600 hover:text-violet-700 font-medium">Pricing</Link>; for privacy, see our{' '}
           <Link to="/faq" className="text-violet-600 hover:text-violet-700 font-medium">FAQ</Link> and{' '}
           <Link to="/privacy" className="text-violet-600 hover:text-violet-700 font-medium">Privacy Policy</Link>. Ask Tex (bottom-right) for quick answers about any tool or plan.

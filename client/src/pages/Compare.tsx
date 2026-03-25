@@ -135,7 +135,7 @@ const FEATURE_ROWS: FeatureSection[] = [
       },
       {
         label: 'YouTube URL direct processing',
-        videotext: true,
+        videotext: 'Coming Soon',
         descript: false,
         otter: false,
         trint: false,
@@ -145,7 +145,6 @@ const FEATURE_ROWS: FeatureSection[] = [
         notta: true,
         sonix: false,
         granola: false,
-        highlight: true,
       },
       {
         label: 'Instant results (no waiting)',
@@ -180,7 +179,7 @@ const FEATURE_ROWS: FeatureSection[] = [
       },
       {
         label: 'Paste YouTube / URL (no download)',
-        videotext: true,
+        videotext: 'Coming Soon',
         descript: false,
         otter: false,
         trint: false,
@@ -190,7 +189,6 @@ const FEATURE_ROWS: FeatureSection[] = [
         notta: true,
         sonix: false,
         granola: false,
-        highlight: true,
       },
       {
         label: 'Upload file',
@@ -868,7 +866,7 @@ export default function Compare() {
               </span>
             </p>
             <p className="text-base text-gray-400 dark:text-white/35 max-w-2xl mx-auto mb-8">
-              We built VideoText because existing tools are slow, bloated, and expensive — and none of them give you AI Summary, auto Chapters, Batch Processing, and Translation in one place at $10/mo. See exactly how we stack up.
+              We built VideoText because existing tools are slow, bloated, and expensive — and none of them give you AI Summary, auto Chapters, Batch Processing, and Translation all in one place at $10/mo. See exactly how we stack up.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to="/video-to-transcript">
