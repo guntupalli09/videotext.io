@@ -3,11 +3,19 @@ import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
 import { v4 as uuidv4 } from 'uuid'
-import { getVideoDuration } from '../services/ffmpeg'
+import { probeVideoDurationResult } from '../services/ffmpeg'
 import { validateFileSize, validateFileType } from '../utils/fileValidation'
 import { BatchJob, saveBatch, getBatchById } from '../models/BatchJob'
 import { getUser, saveUser, PlanType, User, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
-import { getPlanLimits, enforceBatchLimits, enforceUsageLimits, getDailySoftCapConcurrency, getJobPriority, getMaxDailyImports } from '../utils/limits'
+import {
+  getPlanLimits,
+  enforceBatchLimits,
+  enforceUsageLimits,
+  getDailySoftCapConcurrency,
+  getJobPriority,
+  getMaxDailyImports,
+  sumBatchVideoDurationsSeconds,
+} from '../utils/limits'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import { addJobToQueue, getTotalQueueCount } from '../workers/videoProcessor'
 import { insertJobRecord } from '../lib/jobAnalytics'
@@ -142,6 +150,19 @@ router.post(
       const files = req.files as Express.Multer.File[]
       const { primaryLanguage, additionalLanguages } = req.body
 
+      let batchOptsParsed: {
+        additionalLanguages?: string[]
+        speakerDiarization?: boolean
+        numSpeakers?: number
+        diarizationLanguage?: string
+      } = {}
+      try {
+        const raw = req.body.batchOptions
+        if (typeof raw === 'string' && raw.trim()) batchOptsParsed = JSON.parse(raw)
+      } catch {
+        /* ignore invalid JSON */
+      }
+
       if (!files || files.length === 0) {
         return res.status(400).json({ message: 'No files uploaded' })
       }
@@ -170,8 +191,8 @@ router.post(
         return res.status(403).json({ message: 'Batch processing not available for this plan' })
       }
 
-      // Validate each file and collect durations
-      const videoMeta: { path: string; originalName: string; duration: number }[] = []
+      // Validate each file and collect durations (unknown duration is allowed; batch cap uses conservative estimates)
+      const videoMeta: { path: string; originalName: string; duration: number; durationKnown: boolean }[] = []
 
       for (const file of files) {
         if (file.size > user.limits.maxFileSize) {
@@ -185,18 +206,32 @@ router.post(
           return res.status(400).json({ message: typeError })
         }
 
-        const duration = await getVideoDuration(file.path)
+        const probe = await probeVideoDurationResult(file.path)
         videoMeta.push({
           path: file.path,
           originalName: file.originalname,
-          duration,
+          duration: probe.known ? probe.seconds : 0,
+          durationKnown: probe.known,
+        })
+        if (!probe.known) {
+          log.info({
+            msg: 'batch_video_duration_unknown',
+            originalName: file.originalname,
+            duration_source: probe.source,
+          })
+        }
+      }
+
+      if (videoMeta.length === 0) {
+        return res.status(400).json({
+          message: 'No valid videos to process.',
         })
       }
 
       const batchesToday = user.usageThisMonth.batchCount ?? 0
       const batchCheck = await enforceBatchLimits(
         user,
-        videoMeta.map((v) => ({ duration: v.duration })),
+        videoMeta.map((v) => ({ duration: v.duration, durationKnown: v.durationKnown })),
         batchesToday
       )
 
@@ -222,9 +257,9 @@ router.post(
       }
 
       // Server-side minute limit for paid plans only
-      const totalDurationSeconds = videoMeta.reduce(
-        (sum, v) => sum + v.duration,
-        0
+      const totalDurationSeconds = sumBatchVideoDurationsSeconds(
+        user,
+        videoMeta.map((v) => ({ duration: v.duration, durationKnown: v.durationKnown }))
       )
       const requestedMinutes = Math.ceil(totalDurationSeconds / 60)
       if (user.plan !== 'free') {
@@ -264,10 +299,15 @@ router.post(
       await saveUser(user)
 
       // Queue individual video jobs for batch processing
-      const additionalLangs = Array.isArray(additionalLanguages) 
-        ? additionalLanguages 
-        : (additionalLanguages ? JSON.parse(additionalLanguages) : [])
-      
+      let additionalLangs = Array.isArray(additionalLanguages)
+        ? additionalLanguages
+        : additionalLanguages
+          ? JSON.parse(additionalLanguages)
+          : []
+      if (Array.isArray(batchOptsParsed.additionalLanguages) && batchOptsParsed.additionalLanguages.length > 0) {
+        additionalLangs = batchOptsParsed.additionalLanguages
+      }
+
       for (let i = 0; i < videoMeta.length; i++) {
         const video = videoMeta[i]
         const fileSize = fs.statSync(video.path).size
@@ -285,6 +325,15 @@ router.post(
             format: 'srt',
             language: primaryLanguage || 'en',
             additionalLanguages: additionalLangs,
+            speakerDiarization: batchOptsParsed.speakerDiarization === true,
+            numSpeakers:
+              batchOptsParsed.numSpeakers != null && !Number.isNaN(Number(batchOptsParsed.numSpeakers))
+                ? Number(batchOptsParsed.numSpeakers)
+                : undefined,
+            diarizationLanguage:
+              typeof batchOptsParsed.diarizationLanguage === 'string' && batchOptsParsed.diarizationLanguage.trim()
+                ? batchOptsParsed.diarizationLanguage.trim()
+                : undefined,
           },
           requestId: (req as RequestWithId).requestId,
         })

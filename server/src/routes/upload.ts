@@ -17,7 +17,7 @@ import { isQueueAtHardLimit, isQueueAtSoftLimit, getSystemConcurrencyMultiplier 
 import { checkAndRecordUpload } from '../utils/uploadRateLimit'
 import { trackJobCreated } from '../utils/analytics'
 import { insertJobRecord } from '../lib/jobAnalytics'
-import { getVideoDuration } from '../services/ffmpeg'
+import { probeVideoDurationResult } from '../services/ffmpeg'
 import { STREAM_UPLOAD_ASSEMBLY } from '../utils/featureFlags'
 import { getLogger } from '../lib/logger'
 import { isValidYoutubeUrl, getYoutubeMetadata, normalizeYoutubeUrl } from '../services/youtube'
@@ -317,12 +317,14 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
     // Server-side minute limit for paid plans only; free plan uses import count (checked above)
     const minuteChargingTools = ['video-to-transcript', 'video-to-subtitles', 'burn-subtitles', 'compress-video']
     if (user.plan !== 'free' && minuteChargingTools.includes(toolType)) {
-      let durationSeconds: number
-      try {
-        durationSeconds = await getVideoDuration(file.path)
-      } catch {
-        fs.unlinkSync(file.path)
-        return res.status(400).json({ message: 'Could not read video/audio duration.' })
+      const probe = await probeVideoDurationResult(file.path)
+      let durationSeconds = probe.known ? probe.seconds : 0
+      if (!probe.known) {
+        uploadLog.info({
+          msg: 'upload_duration_unknown_allowing_job',
+          toolType,
+          duration_source: probe.source,
+        })
       }
       if (options.trimmedStart != null && options.trimmedEnd != null) {
         const start = parseFloat(String(options.trimmedStart))
@@ -569,14 +571,11 @@ router.post('/dual', upload.fields([
       return res.status(400).json({ message: subResult.error })
     }
 
-    // Server-side minute limit for burn-subtitles
-    let durationSeconds: number
-    try {
-      durationSeconds = await getVideoDuration(videoFile.path)
-    } catch {
-      fs.unlinkSync(videoFile.path)
-      fs.unlinkSync(subtitleFile.path)
-      return res.status(400).json({ message: 'Could not read video duration.' })
+    // Server-side minute limit for burn-subtitles (unknown duration: allow job; pre-check uses 0 minutes)
+    const probe = await probeVideoDurationResult(videoFile.path)
+    let durationSeconds = probe.known ? probe.seconds : 0
+    if (!probe.known) {
+      uploadLog.info({ msg: 'upload_duration_unknown_allowing_job', toolType: 'burn-subtitles', duration_source: probe.source })
     }
     if (trimmedStart != null && trimmedEnd != null) {
       const start = parseFloat(String(trimmedStart))

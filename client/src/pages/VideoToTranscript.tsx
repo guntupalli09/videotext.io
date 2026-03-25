@@ -20,7 +20,7 @@ import { getFailureMessage } from '../lib/failureMessage'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
-import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
+import { API_ORIGIN, getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
 import { LANGUAGES, languageToCode } from '../lib/languages'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
 import { trackAppEvent } from '../lib/feedbackEvents'
@@ -153,6 +153,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [isBatchMode, setIsBatchMode] = useState(false)
   const [batchInfo, setBatchInfo] = useState<BatchStatus | null>(null)
   const batchPollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  /** Optional: translate subtitle exports per video (ISO codes via languageToCode). */
+  const [batchTranslateLanguage, setBatchTranslateLanguage] = useState<string>('')
+  const [batchSpeakerDiarization, setBatchSpeakerDiarization] = useState(false)
 
   // ── YouTube URL input mode ──────────────────────────────────────────────────
   /** 'file' = drag-and-drop upload, 'youtube' = URL paste. Persists while idle. */
@@ -226,9 +229,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
   // Audio for transcript panel playback — use server-transcoded AAC so every browser and
   // every input format (WebM, AVI, MOV, MKV, AC3, DTS, …) works, including Safari.
+  // Must use API origin when VITE_API_URL points at a separate host (relative /api/audio would 404 on the SPA origin).
   useEffect(() => {
     if (status === 'completed' && result?.audioUrl) {
-      setAudioObjectUrl(result.audioUrl)
+      setAudioObjectUrl(getAbsoluteDownloadUrl(result.audioUrl))
       setActiveSegIdx(-1)
       setAudioIsPlaying(false)
       audioPlaybackTimeRef.current = 0
@@ -569,8 +573,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
   const handleProcessBatch = async () => {
     if (batchFiles.length === 0) return
+    const paid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
     try {
-      const res = await uploadBatch(batchFiles, 'en', [])
+      const extraLangs =
+        batchTranslateLanguage && paid ? [languageToCode(batchTranslateLanguage)] : []
+      const res = await uploadBatch(batchFiles, 'en', extraLangs, {
+        speakerDiarization: paid && batchSpeakerDiarization,
+        ...(extraLangs.length > 0 ? { additionalLanguages: extraLangs } : {}),
+      })
       const batchId = res.batchId
       setBatchInfo({ batchId, status: 'queued', progress: { total: batchFiles.length, completed: 0, failed: 0, percentage: 0 }, estimatedTimeRemaining: 0, errors: [] })
       setStatus('processing')
@@ -1362,14 +1372,33 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const _displayParagraphs = getParagraphs(displayTranscript)
   void _displayParagraphs
 
-  // Per-segment translated text — split translated string back by \n\n to align with original segments
-  // (translatePreservingLines preserves double-newline paragraph structure)
+  // Per-segment translated text — align with original segments (paragraph split, line split, or length-weighted fallback)
   const translatedSegments: NonNullable<typeof result>['segments'] | null = useMemo(() => {
     if (!translationLanguage || !translatedCache[translationLanguage] || !result?.segments?.length) return null
-    const paragraphs = translatedCache[translationLanguage].split('\n\n')
-    if (paragraphs.length !== result.segments.length) return null
-    return result.segments.map((s, i) => ({ ...s, text: paragraphs[i]?.trim() ?? s.text }))
-  }, [translationLanguage, translatedCache, result?.segments]) // eslint-disable-line react-hooks/exhaustive-deps
+    const translatedFull = translatedCache[translationLanguage].trim()
+    const segs = result.segments
+    const paras = translatedFull.split(/\n\n+/).filter(Boolean)
+    if (paras.length === segs.length) {
+      return segs.map((s, i) => ({ ...s, text: paras[i]?.trim() ?? s.text }))
+    }
+    const lines = translatedFull.split('\n').filter((l) => l.trim())
+    if (lines.length === segs.length) {
+      return segs.map((s, i) => ({ ...s, text: lines[i]?.trim() ?? s.text }))
+    }
+    const weights = segs.map((s) => Math.max(1, s.text.length))
+    const totalW = weights.reduce((a, b) => a + b, 0)
+    const boundaries: number[] = [0]
+    let acc = 0
+    for (let i = 0; i < segs.length - 1; i++) {
+      acc += (weights[i] / totalW) * translatedFull.length
+      boundaries.push(Math.round(acc))
+    }
+    boundaries.push(translatedFull.length)
+    return segs.map((s, i) => ({
+      ...s,
+      text: translatedFull.slice(boundaries[i], boundaries[i + 1]).trim() || s.text,
+    }))
+  }, [translationLanguage, translatedCache, result?.segments])
 
   const isPaidPlan = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
 
@@ -1666,7 +1695,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 </div>
                 <button
                   type="button"
-                  onClick={() => { setBatchFiles([]); setIsBatchMode(false) }}
+                  onClick={() => {
+                    setBatchFiles([])
+                    setIsBatchMode(false)
+                    setBatchTranslateLanguage('')
+                    setBatchSpeakerDiarization(false)
+                  }}
                   className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                 >
                   Clear all
@@ -1705,6 +1739,42 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   />
                 </span>
               </label>
+            </div>
+            <div className="rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 p-3 space-y-3 text-sm">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Each video is saved in its own folder in the ZIP: <span className="font-mono text-[11px]">.txt</span>,{' '}
+                <span className="font-mono text-[11px]">.json</span>, <span className="font-mono text-[11px]">.srt</span>,{' '}
+                <span className="font-mono text-[11px]">.vtt</span>, <span className="font-mono text-[11px]">_notion.json</span>
+                {isPaidPlan && ', plus optional translations and speaker labels'}.
+              </p>
+              {isPaidPlan && (
+                <>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={batchSpeakerDiarization}
+                      onChange={(e) => setBatchSpeakerDiarization(e.target.checked)}
+                      className="rounded border-gray-300 text-violet-600 focus:ring-violet-500"
+                    />
+                    <span className="text-gray-700 dark:text-gray-300">Speaker labels (who said what)</span>
+                  </label>
+                  <div>
+                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Also translate subtitles to (optional)</label>
+                    <select
+                      value={batchTranslateLanguage}
+                      onChange={(e) => setBatchTranslateLanguage(e.target.value)}
+                      className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2"
+                    >
+                      <option value="">— None —</option>
+                      {LANGUAGES.filter((l) => l.value !== 'English').map((l) => (
+                        <option key={l.value} value={l.value}>
+                          {l.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
             </div>
             <button
               type="button"
@@ -2811,6 +2881,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <audio
                       ref={audioRef}
                       src={audioObjectUrl}
+                      crossOrigin={
+                        typeof window !== 'undefined' && API_ORIGIN !== window.location.origin
+                          ? 'anonymous'
+                          : undefined
+                      }
+                      preload="metadata"
                       onLoadedMetadata={() => {
                         const dur = audioRef.current?.duration ?? 0
                         setAudioDuration(dur)

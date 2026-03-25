@@ -3,8 +3,11 @@ import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
 import ffprobeInstaller from '@ffprobe-installer/ffprobe'
 import path from 'path'
 import fs from 'fs'
-import { FfprobeData } from 'fluent-ffmpeg'
+import { execFile, spawn } from 'child_process'
+import { promisify } from 'util'
 import { detectSubtitleFormat, parseSRT, parseVTT } from '../utils/srtParser'
+
+const execFileAsync = promisify(execFile)
 import { getLogger } from '../lib/logger'
 
 const log = getLogger('worker')
@@ -788,60 +791,330 @@ export function compressVideo(
   })
 }
 
+/** ffprobe JSON probes: larger second pass helps moov-at-end / sparse metadata. */
+const FFPROBE_PROBE_DEEP = { probesize: '256M', analyzeduration: '256M' } as const
+/** Last-resort: parse ffmpeg -i banner (stderr); only for small files to avoid slow opens. */
+const FFMPEG_BANNER_MAX_BYTES = 25 * 1024 * 1024
+const FFMPEG_BANNER_TIMEOUT_MS = 15_000
+
+function finitePositiveSeconds(n: unknown): number | null {
+  const x = typeof n === 'string' ? parseFloat(n) : typeof n === 'number' ? n : NaN
+  if (!Number.isFinite(x) || x <= 0) return null
+  return x
+}
+
+function parseDurationTag(tag: string): number | null {
+  const s = tag.trim()
+  const m = /^(\d+):(\d{2}):(\d+(?:\.\d+)?)$/.exec(s)
+  if (!m) return null
+  const h = parseInt(m[1], 10)
+  const min = parseInt(m[2], 10)
+  const sec = parseFloat(m[3])
+  if (min > 59 || sec >= 60) return null
+  return h * 3600 + min * 60 + sec
+}
+
+function tagsDurationFromTags(tags: Record<string, string> | undefined): number | null {
+  if (!tags) return null
+  const keys = ['DURATION', 'Duration', 'duration']
+  for (const k of keys) {
+    const v = tags[k]
+    if (typeof v === 'string' && v) {
+      const d = parseDurationTag(v)
+      if (d !== null && d > 0) return d
+    }
+  }
+  return null
+}
+
+function parseTimeBaseSeconds(tb: string | undefined): number | null {
+  if (!tb || typeof tb !== 'string') return null
+  const parts = tb.split('/')
+  if (parts.length !== 2) return null
+  const num = parseInt(parts[0], 10)
+  const den = parseInt(parts[1], 10)
+  if (!Number.isFinite(den) || den === 0 || !Number.isFinite(num)) return null
+  return num / den
+}
+
+function durationFromStreamNbFrames(stream: Record<string, unknown>): number | null {
+  const ratio = parseTimeBaseSeconds(stream.time_base as string | undefined)
+  if (!ratio || ratio <= 0) return null
+  const nf = stream.nb_frames
+  const n = typeof nf === 'string' ? parseInt(nf, 10) : typeof nf === 'number' ? nf : NaN
+  if (!Number.isFinite(n) || n <= 0) return null
+  return n * ratio
+}
+
+/** Where duration was resolved from (logging / metering diagnostics). */
+export type DurationProbeSource = 'format' | 'stream' | 'tag' | 'fallback' | 'unknown'
+
+const SOURCE_PRIORITY: Record<Exclude<DurationProbeSource, 'unknown'>, number> = {
+  format: 5,
+  stream: 4,
+  tag: 3,
+  fallback: 2,
+}
+
+function pickBestDurationSource(
+  candidates: { seconds: number; source: Exclude<DurationProbeSource, 'unknown'> }[]
+): { seconds: number; source: Exclude<DurationProbeSource, 'unknown'> } | null {
+  if (candidates.length === 0) return null
+  const maxSec = Math.max(...candidates.map((c) => c.seconds))
+  const tied = candidates.filter((c) => c.seconds === maxSec)
+  tied.sort((a, b) => SOURCE_PRIORITY[b.source] - SOURCE_PRIORITY[a.source])
+  return tied[0]
+}
+
 /**
- * Get video duration in seconds
+ * Collects plausible durations from ffprobe JSON (format, streams, tags, nb_frames*time_base).
  */
-export function getVideoDuration(videoPath: string): Promise<number> {
+export function collectFfprobeDurationCandidates(
+  data: unknown
+): { seconds: number; source: Exclude<DurationProbeSource, 'unknown' | 'fallback'> }[] {
+  const candidates: { seconds: number; source: Exclude<DurationProbeSource, 'unknown' | 'fallback'> }[] = []
+  const root = data && typeof data === 'object' ? (data as Record<string, unknown>) : null
+  const format = root?.format && typeof root.format === 'object' ? (root.format as Record<string, unknown>) : null
+
+  if (format) {
+    const fd = finitePositiveSeconds(format.duration)
+    if (fd !== null) candidates.push({ seconds: fd, source: 'format' })
+    const ftags = format.tags as Record<string, string> | undefined
+    const td = tagsDurationFromTags(ftags)
+    if (td !== null) candidates.push({ seconds: td, source: 'tag' })
+  }
+
+  const streams = Array.isArray(root?.streams) ? (root.streams as Record<string, unknown>[]) : []
+  for (const s of streams) {
+    const ct = s.codec_type
+    if (ct !== 'video' && ct !== 'audio') continue
+    const sd = finitePositiveSeconds(s.duration)
+    if (sd !== null) candidates.push({ seconds: sd, source: 'stream' })
+    const stags = s.tags as Record<string, string> | undefined
+    const td = tagsDurationFromTags(stags)
+    if (td !== null) candidates.push({ seconds: td, source: 'tag' })
+    const nb = durationFromStreamNbFrames(s)
+    if (nb !== null && nb > 0) candidates.push({ seconds: nb, source: 'stream' })
+  }
+
+  return candidates
+}
+
+/**
+ * Collects plausible durations from ffprobe JSON (format, streams, tags, nb_frames*time_base).
+ */
+export function resolveDurationSecondsFromFfprobeJson(data: unknown): number {
+  const candidates = collectFfprobeDurationCandidates(data)
+  if (candidates.length === 0) return 0
+  return Math.max(...candidates.map((c) => c.seconds))
+}
+
+export interface VideoDurationProbeResult {
+  known: boolean
+  seconds: number
+  source: DurationProbeSource
+  lastError?: string
+}
+
+async function ffprobeJson(
+  videoPath: string,
+  opts?: { probesize?: string; analyzeduration?: string }
+): Promise<unknown> {
+  const probesize = opts?.probesize ?? '100M'
+  const analyzeduration = opts?.analyzeduration ?? '100M'
+  const args = [
+    '-v',
+    'error',
+    '-print_format',
+    'json',
+    '-show_format',
+    '-show_streams',
+    '-probesize',
+    probesize,
+    '-analyzeduration',
+    analyzeduration,
+    videoPath,
+  ]
+  const { stdout } = await execFileAsync(ffprobePath, args, { maxBuffer: 20 * 1024 * 1024 })
+  return JSON.parse(stdout)
+}
+
+function getDurationFromFfmpegBanner(videoPath: string): Promise<number> {
   return new Promise((resolve, reject) => {
-    // Check if file exists first
-    if (!fs.existsSync(videoPath)) {
-      reject(new Error(`Video file not found: ${videoPath}`))
-      return
+    const proc = spawn(ffmpegPath, ['-hide_banner', '-i', videoPath], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+    })
+    const chunks: Buffer[] = []
+    let settled = false
+    const finish = (fn: () => void) => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      try {
+        proc.kill('SIGKILL')
+      } catch {
+        /* ignore */
+      }
+      fn()
+    }
+    const timer = setTimeout(() => {
+      finish(() => reject(new Error('ffmpeg duration banner probe timed out')))
+    }, FFMPEG_BANNER_TIMEOUT_MS)
+
+    const tryParse = (buf: Buffer) => {
+      const s = buf.toString('utf8')
+      // Typical: "Duration: 00:01:30.04" or "Duration: 01:23:45.000" (fraction optional in some builds)
+      const m = /Duration:\s*(\d+):(\d{2}):(\d{2}(?:\.\d+)?)/.exec(s)
+      if (m) {
+        const h = parseInt(m[1], 10)
+        const min = parseInt(m[2], 10)
+        const sec = parseFloat(m[3])
+        const total = h * 3600 + min * 60 + sec
+        if (Number.isFinite(total) && total > 0) {
+          finish(() => resolve(total))
+        }
+      }
     }
 
-    log.debug({ msg: 'About to run ffprobe', videoPath })
-    ffmpeg.ffprobe(videoPath, ['-probesize', '100M', '-analyzeduration', '100M'], (err: Error | null, metadata: FfprobeData) => {
-      if (err) {
-        log.error({ msg: 'ffprobe failed', videoPath, error: (err as Error)?.message ?? String(err) })
-        reject(new Error(`Failed to probe video: ${err.message}`))
-        return
-      }
-
-      log.debug({ msg: 'ffprobe succeeded', videoPath })
-
-      if (!metadata || !metadata.format) {
-        reject(new Error('Invalid video metadata'))
-        return
-      }
-
-      const duration = metadata.format.duration || 0
-      if (duration === 0) {
-        reject(new Error('Could not determine video duration from metadata'))
-        return
-      }
-
-      resolve(duration)
+    proc.stderr?.on('data', (d: Buffer) => {
+      chunks.push(d)
+      tryParse(Buffer.concat(chunks))
+    })
+    proc.stdout?.on('data', () => {
+      /* ignore */
+    })
+    proc.on('error', (e) => finish(() => reject(e)))
+    proc.on('close', () => {
+      if (settled) return
+      tryParse(Buffer.concat(chunks))
+      if (!settled) finish(() => reject(new Error('Could not parse duration from ffmpeg output')))
     })
   })
 }
 
-/** Phase 1B — UTILITY 6: Video metadata for resolution targeting. */
-export function getVideoMetadata(videoPath: string): Promise<{ width: number; height: number; duration: number }> {
-  return new Promise((resolve, reject) => {
-    if (!fs.existsSync(videoPath)) {
-      reject(new Error(`Video file not found: ${videoPath}`))
-      return
+/**
+ * Probe duration without throwing when metadata is missing (still throws if file does not exist).
+ * Use for validation gates: unknown duration must not fail the job; enforce limits only when known.
+ */
+export async function probeVideoDurationResult(videoPath: string): Promise<VideoDurationProbeResult> {
+  if (!fs.existsSync(videoPath)) {
+    throw new Error(`Video file not found: ${videoPath}`)
+  }
+
+  let lastErr: Error | null = null
+  const probePasses: (typeof FFPROBE_PROBE_DEEP | undefined)[] = [undefined, FFPROBE_PROBE_DEEP]
+  for (const probeOpts of probePasses) {
+    try {
+      const j = probeOpts
+        ? await ffprobeJson(videoPath, { probesize: probeOpts.probesize, analyzeduration: probeOpts.analyzeduration })
+        : await ffprobeJson(videoPath)
+      const candidates = collectFfprobeDurationCandidates(j)
+      const best = pickBestDurationSource(candidates)
+      if (best && best.seconds > 0) {
+        log.info({
+          msg: 'video_duration_probe',
+          videoPath,
+          duration_sec: best.seconds,
+          duration_source: best.source,
+          pass: probeOpts ? 'deep' : 'default',
+        })
+        return { known: true, seconds: best.seconds, source: best.source }
+      }
+    } catch (e) {
+      lastErr = e instanceof Error ? e : new Error(String(e))
+      log.error({ msg: 'ffprobe json failed', videoPath, pass: probeOpts ? 'deep' : 'default', error: lastErr.message })
     }
-    ffmpeg.ffprobe(videoPath, ['-probesize', '100M', '-analyzeduration', '100M'], (err: Error | null, metadata: FfprobeData) => {
-      if (err) return reject(err)
-      const v = (metadata?.streams || []).find((s: any) => s.codec_type === 'video')
-      const width = Number(v?.width) || 0
-      const height = Number(v?.height) || 0
-      const duration = metadata?.format?.duration || 0
-      if (!width || !height) return reject(new Error('Could not read video resolution'))
-      resolve({ width, height, duration })
-    })
-  })
+  }
+
+  try {
+    const st = fs.statSync(videoPath)
+    if (st.size <= FFMPEG_BANNER_MAX_BYTES) {
+      const d3 = await getDurationFromFfmpegBanner(videoPath)
+      if (d3 > 0) {
+        log.info({ msg: 'video_duration_probe', videoPath, duration_sec: d3, duration_source: 'fallback' })
+        return { known: true, seconds: d3, source: 'fallback' }
+      }
+    }
+  } catch (e) {
+    log.debug({ msg: 'ffmpeg banner duration fallback failed', videoPath, error: (e as Error)?.message ?? String(e) })
+  }
+
+  const msg = lastErr
+    ? `Could not determine video duration from metadata (${lastErr.message})`
+    : 'Could not determine video duration from metadata. If the file plays in your browser, try re-exporting as MP4 (H.264/AAC) or contact support.'
+  log.info({ msg: 'video_duration_probe', videoPath, duration_source: 'unknown', known: false, last_error: msg })
+  return { known: false, seconds: 0, source: 'unknown', lastError: msg }
+}
+
+/**
+ * Resolve duration from ffprobe JSON (preferred), deeper probe, then small-file ffmpeg banner.
+ * Throws if duration cannot be determined (strict callers).
+ */
+export async function probeDurationSeconds(videoPath: string): Promise<number> {
+  const r = await probeVideoDurationResult(videoPath)
+  if (!r.known) {
+    throw new Error(r.lastError || 'Could not determine video duration from metadata')
+  }
+  return r.seconds
+}
+
+/**
+ * Get video duration in seconds (multi-source ffprobe + optional small-file fallback).
+ */
+export function getVideoDuration(videoPath: string): Promise<number> {
+  return probeDurationSeconds(videoPath)
+}
+
+/** Phase 1B — UTILITY 6: Video metadata for resolution targeting. */
+export async function getVideoMetadata(videoPath: string): Promise<{ width: number; height: number; duration: number }> {
+  if (!fs.existsSync(videoPath)) {
+    throw new Error(`Video file not found: ${videoPath}`)
+  }
+
+  let bestW = 0
+  let bestH = 0
+  let bestD = 0
+  let lastErr: Error | null = null
+  const probePasses: (typeof FFPROBE_PROBE_DEEP | undefined)[] = [undefined, FFPROBE_PROBE_DEEP]
+
+  for (const probeOpts of probePasses) {
+    try {
+      const j = probeOpts
+        ? await ffprobeJson(videoPath, { probesize: probeOpts.probesize, analyzeduration: probeOpts.analyzeduration })
+        : await ffprobeJson(videoPath)
+      const streams = Array.isArray((j as Record<string, unknown>)?.streams)
+        ? ((j as Record<string, unknown>).streams as Record<string, unknown>[])
+        : []
+      const v = streams.find((s) => s.codec_type === 'video')
+      const w = Number(v?.width) || 0
+      const h = Number(v?.height) || 0
+      const d = resolveDurationSecondsFromFfprobeJson(j)
+      if (w && h) {
+        bestW = w
+        bestH = h
+      }
+      if (d > bestD) bestD = d
+    } catch (e) {
+      lastErr = e instanceof Error ? e : new Error(String(e))
+    }
+  }
+
+  if (!bestW || !bestH) {
+    throw new Error(lastErr ? `Failed to probe video: ${lastErr.message}` : 'Could not read video resolution')
+  }
+
+  if (bestD <= 0) {
+    try {
+      const st = fs.statSync(videoPath)
+      if (st.size <= FFMPEG_BANNER_MAX_BYTES) {
+        bestD = await getDurationFromFfmpegBanner(videoPath)
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  return { width: bestW, height: bestH, duration: bestD }
 }
 
 /** Phase 1B — Preset profiles: Web (720p), Mobile (480p), Archive (original). */

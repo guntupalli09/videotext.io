@@ -4,7 +4,8 @@ import { transcribeVideo } from './transcription'
 import { translateSubtitles } from './translation'
 import { parseSRT, toSRT } from '../utils/srtParser'
 
-const LANGUAGE_NAMES: Record<string, string> = {
+/** ISO-ish codes → English names for translation prompts */
+export const LANGUAGE_NAMES: Record<string, string> = {
   en: 'English',
   es: 'Spanish',
   fr: 'French',
@@ -15,6 +16,7 @@ const LANGUAGE_NAMES: Record<string, string> = {
   ja: 'Japanese',
   ko: 'Korean',
   zh: 'Chinese Simplified',
+  'zh-tw': 'Chinese Traditional',
   it: 'Italian',
   ru: 'Russian',
 }

@@ -1325,13 +1325,29 @@ export interface BatchUploadResponse {
 export async function uploadBatch(
   files: File[],
   primaryLanguage: string,
-  additionalLanguages: string[] = []
+  additionalLanguages: string[] = [],
+  batchOptions?: {
+    speakerDiarization?: boolean
+    numSpeakers?: number
+    diarizationLanguage?: string
+    additionalLanguages?: string[]
+  }
 ): Promise<BatchUploadResponse> {
   const formData = new FormData()
   files.forEach(file => formData.append('files', file))
   formData.append('primaryLanguage', primaryLanguage)
   if (additionalLanguages.length > 0) {
     formData.append('additionalLanguages', JSON.stringify(additionalLanguages))
+  }
+  const mergedOpts: Record<string, unknown> = { ...(batchOptions || {}) }
+  if (additionalLanguages.length > 0) mergedOpts.additionalLanguages = additionalLanguages
+  const shouldSendBatchOpts =
+    mergedOpts.speakerDiarization === true ||
+    mergedOpts.numSpeakers != null ||
+    (typeof mergedOpts.diarizationLanguage === 'string' && mergedOpts.diarizationLanguage.trim() !== '') ||
+    (Array.isArray(mergedOpts.additionalLanguages) && mergedOpts.additionalLanguages.length > 0)
+  if (shouldSendBatchOpts) {
+    formData.append('batchOptions', JSON.stringify(mergedOpts))
   }
 
   const response = await api('/api/batch/upload', {

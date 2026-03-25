@@ -6,18 +6,24 @@ import path from 'path'
 import fs from 'fs'
 import archiver from 'archiver'
 import { transcribeVideo, transcribeVideoVerbose } from '../services/transcription'
-import { translateSubtitleFile, detectLanguageConsistency, translatePreservingLines } from '../services/translation'
+import { translateSubtitleFile, translateSubtitles, detectLanguageConsistency, translatePreservingLines } from '../services/translation'
 import { fixSubtitleFile, validateSubtitleFile } from '../services/subtitles'
 import { generateSummary, generateChapters } from '../services/transcriptSummary'
 import { exportTranscriptJson, exportTranscriptDocx, exportTranscriptPdf } from '../services/transcriptExport'
 import { fireWebhook } from '../utils/webhook'
 import { transcribeWithDiarization, resolveSpeakerNames } from '../services/diarization'
 import { convertSubtitleFile } from '../services/subtitleConverter'
-import { burnSubtitles, compressVideo, getVideoDuration, HUNG_JOB_MESSAGE, extractAudioForPlayback, type CompressProfile } from '../services/ffmpeg'
-import { generateOutputFilename, downloadVideoFromURL, validateVideoDuration } from '../services/video'
+import { burnSubtitles, compressVideo, HUNG_JOB_MESSAGE, extractAudioForPlayback, type CompressProfile } from '../services/ffmpeg'
+import {
+  generateOutputFilename,
+  downloadVideoFromURL,
+  validateVideoDuration,
+  resolveMeteringSeconds,
+  type ValidateVideoDurationResult,
+} from '../services/video'
 import { validateFileType, validateFileSize } from '../utils/fileValidation'
 import { trimVideoSegment } from '../services/trimming'
-import { generateMultiLanguageSubtitles } from '../services/multiLanguage'
+import { LANGUAGE_NAMES, generateMultiLanguageSubtitles } from '../services/multiLanguage'
 import { BatchJob, getBatchById, saveBatch } from '../models/BatchJob'
 import { getUser, saveUser, incrementUserUsage, PlanType } from '../models/User'
 import { getPlanLimits, getJobPriority, getMaxJobRuntimeMinutes } from '../utils/limits'
@@ -288,10 +294,27 @@ const tempDir =
   process.env.TEMP_FILE_PATH ||
   (process.platform === 'win32' ? path.join(process.cwd(), 'temp') : '/tmp')
 
+function sanitizeBatchFolderName(name: string): string {
+  const n = name.replace(/[^\w\u00C0-\u024F\-_.]+/g, '_').replace(/_+/g, '_').trim().replace(/^_|_$/g, '') || 'video'
+  return n.slice(0, 80)
+}
+
+function segmentsToSubtitleEntries(
+  segments: { start: number; end: number; text: string; speaker?: string }[]
+): SubtitleEntry[] {
+  return segments.map((s, i) => ({
+    index: i + 1,
+    startTime: s.start,
+    endTime: s.end,
+    text: s.text,
+  }))
+}
+
 async function generateBatchZip(batchId: string, batch: BatchJob): Promise<void> {
   const zipPath = path.join(tempDir, `batch-${batchId}.zip`)
   const output = fs.createWriteStream(zipPath)
   const archive = archiver('zip', { zlib: { level: 9 } })
+  const stagingRoot = path.join(tempDir, 'batch-zip-staging', batchId)
 
   return new Promise((resolve, reject) => {
     output.on('close', async () => {
@@ -301,6 +324,13 @@ async function generateBatchZip(batchId: string, batch: BatchJob): Promise<void>
       batch.status = batch.failedVideos === batch.totalVideos ? 'failed' : batch.failedVideos > 0 ? 'partial' : 'completed'
       batch.completedAt = new Date()
       await saveBatch(batch)
+      try {
+        if (fs.existsSync(stagingRoot)) {
+          fs.rmSync(stagingRoot, { recursive: true, force: true })
+        }
+      } catch {
+        /* ignore */
+      }
       resolve()
     })
 
@@ -312,31 +342,43 @@ async function generateBatchZip(batchId: string, batch: BatchJob): Promise<void>
 
     archive.pipe(output)
 
-    // Find all SRT files for this batch
-    const batchFiles = fs.readdirSync(tempDir)
-      .filter(f => f.startsWith(`batch-${batchId}-`) && f.endsWith('.srt'))
-      .map(f => ({
-        path: path.join(tempDir, f),
-        name: f.replace(`batch-${batchId}-`, ''), // Remove batch prefix
-      }))
-
-    // Add all SRT files; Phase 1B — 7B: also add VTT converted versions to ZIP
-    for (const file of batchFiles) {
-      archive.file(file.path, { name: file.name })
-      try {
-        const converted = convertSubtitleFile(file.path, 'vtt')
-        const vttName = file.name.replace(/\.srt$/i, '.vtt')
-        archive.append(converted.content, { name: vttName })
-      } catch {
-        // Derived utility failure must not block batch completion
+    let added = false
+    if (fs.existsSync(stagingRoot)) {
+      const sub = fs.readdirSync(stagingRoot)
+      if (sub.length > 0) {
+        archive.directory(stagingRoot, false)
+        added = true
+        archive.append(
+          `VideoText batch export\nBatch ID: ${batchId}\nEach folder is one input video (named from the file).\n` +
+            `Files: .txt (transcript), .json (segments + full text), .srt / .vtt (captions), *_notion.json (Notion-ready blocks), ` +
+            `*_speakers.txt (when speaker labels are enabled), *_<lang>.srt/.vtt (translations).\n`,
+          { name: 'README.txt' }
+        )
       }
     }
 
-    // Add error log if there are errors
+    if (!added) {
+      const batchFiles = fs
+        .readdirSync(tempDir)
+        .filter((f) => f.startsWith(`batch-${batchId}-`) && f.endsWith('.srt'))
+        .map((f) => ({
+          path: path.join(tempDir, f),
+          name: f.replace(`batch-${batchId}-`, ''),
+        }))
+      for (const file of batchFiles) {
+        archive.file(file.path, { name: file.name })
+        try {
+          const converted = convertSubtitleFile(file.path, 'vtt')
+          const vttName = file.name.replace(/\.srt$/i, '.vtt')
+          archive.append(converted.content, { name: vttName })
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+
     if (batch.errors.length > 0) {
-      const errorLog = batch.errors
-        .map(e => `${e.videoName}: ${e.reason}`)
-        .join('\n')
+      const errorLog = batch.errors.map((e) => `${e.videoName}: ${e.reason}`).join('\n')
       archive.append(errorLog, { name: 'error_log.txt' })
     }
 
@@ -581,6 +623,8 @@ async function processJob(job: import('bull').Job<JobData>) {
           let firstPartialEmittedAt: number | undefined
           let firstChunkDurationSec: number | undefined
           let totalVideoDurationSec: number | undefined
+          let durationCheck: ValidateVideoDurationResult | undefined
+          let videoPathForDuration: string | undefined
           let fullText: string
           let segments: { start: number; end: number; text: string; speaker?: string }[] = []
           const processingStartMs = Date.now()
@@ -619,14 +663,17 @@ async function processJob(job: import('bull').Job<JobData>) {
 
           // Validate duration (works for both video and audio via ffprobe)
           await job.progress(15)
-          const durationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration)
+          videoPathForDuration = videoPath
+          durationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration)
           if (!durationCheck.valid) {
             throw new Error(durationCheck.error || 'Video too long')
           }
           totalVideoDurationSec =
             data.trimmedStart !== undefined && data.trimmedEnd !== undefined
               ? Math.max(0, data.trimmedEnd - data.trimmedStart)
-              : durationCheck.duration || 0
+              : durationCheck.durationKnown === false
+                ? undefined
+                : (durationCheck.duration ?? 0)
 
           // Kick off AAC extraction in parallel with transcription — never blocks the job.
           // Produces a universally browser-compatible audio file for the in-app player.
@@ -898,10 +945,15 @@ async function processJob(job: import('bull').Job<JobData>) {
             primaryFileName = zipFilename
           }
 
-          const processedSeconds =
-            data.trimmedStart !== undefined && data.trimmedEnd !== undefined
-              ? Math.max(0, data.trimmedEnd - data.trimmedStart)
-              : totalVideoDurationSec || 0
+          const processedSeconds = data.precomputedTranscript
+            ? (totalVideoDurationSec ?? 0)
+            : await resolveMeteringSeconds({
+                durationCheck: durationCheck!,
+                trimmedStart: data.trimmedStart,
+                trimmedEnd: data.trimmedEnd,
+                segments,
+                videoPath: videoPathForDuration!,
+              })
           result = {
             downloadUrl: primaryDownloadUrl,
             fileName: primaryFileName,
@@ -942,14 +994,14 @@ async function processJob(job: import('bull').Job<JobData>) {
             ).catch(() => {})
           }
 
-          if (firstPartialEmittedAt && totalVideoDurationSec != null) {
+          if (firstPartialEmittedAt && (totalVideoDurationSec != null || processedSeconds > 0)) {
             const ttfwMs = firstPartialEmittedAt - processingStartMs
             log.info({
               msg: 'ttfw_metrics',
               jobId: String(jobId),
               ttfw_ms: ttfwMs,
               first_chunk_duration_sec: firstChunkDurationSec ?? null,
-              total_video_duration_sec: totalVideoDurationSec,
+              total_video_duration_sec: totalVideoDurationSec ?? processedSeconds,
               file_size_bytes: data.fileSize ?? null,
             })
           }
@@ -1074,10 +1126,12 @@ async function processJob(job: import('bull').Job<JobData>) {
             }
 
             // Metering: primary + 0.5x per additional language
-            const processedSeconds =
-              data.trimmedStart !== undefined && data.trimmedEnd !== undefined
-                ? Math.max(0, data.trimmedEnd - data.trimmedStart)
-                : durationCheck.duration || 0
+            const processedSeconds = await resolveMeteringSeconds({
+              durationCheck,
+              trimmedStart: data.trimmedStart,
+              trimmedEnd: data.trimmedEnd,
+              videoPath,
+            })
             const baseMinutes = secondsToMinutes(processedSeconds)
             const translatedMinutes = calculateTranslationMinutes(processedSeconds, additionalLangs.length)
             if (userId && !job.data.usageIncremented) {
@@ -1143,10 +1197,13 @@ async function processJob(job: import('bull').Job<JobData>) {
               // Phase 1B: derived validation must not block job
             }
 
-            const processedSecondsSub =
-              data.trimmedStart !== undefined && data.trimmedEnd !== undefined
-                ? Math.max(0, data.trimmedEnd - data.trimmedStart)
-                : durationCheck.duration || 0
+            const processedSecondsSub = await resolveMeteringSeconds({
+              durationCheck,
+              trimmedStart: data.trimmedStart,
+              trimmedEnd: data.trimmedEnd,
+              segments: verboseResult.segments,
+              videoPath,
+            })
             result = {
               downloadUrl: `/api/download/${outputFilename}`,
               fileName: outputFilename,
@@ -1190,17 +1247,15 @@ async function processJob(job: import('bull').Job<JobData>) {
         }
 
         case 'batch-video-to-subtitles': {
-          // Batch processing: process single video, save SRT, update batch status
           let videoPath = data.filePath!
           const batchId = data.batchId!
           const batch = await getBatchById(batchId)
-          
+
           if (!batch) {
             throw new Error('Batch not found')
           }
 
           try {
-            // Trim if needed
             let trimmedDuration = 0
             if (data.trimmedStart !== undefined && data.trimmedEnd !== undefined) {
               await job.progress(5)
@@ -1213,12 +1268,103 @@ async function processJob(job: import('bull').Job<JobData>) {
               trimmedDuration = trimResult.trimmedDuration
             }
 
-            // Transcribe
-            await job.progress(20)
-            const format = options?.format || 'srt'
+            await job.progress(15)
             const glossary = options?.glossary?.trim()
+            const lang = options?.language || 'en'
+            const isAudio = data.inputType === 'audio'
             const processingStartMs = Date.now()
-            const subtitles = await transcribeVideo(videoPath, format, options?.language, glossary)
+
+            let fullText = ''
+            let segments: { start: number; end: number; text: string; speaker?: string }[] = []
+
+            if (options?.speakerDiarization) {
+              await job.progress(18)
+              const diar = await transcribeWithDiarization(videoPath, options?.diarizationLanguage || lang, {
+                isAlreadyAudio: isAudio,
+                prompt: glossary,
+                numSpeakers: options?.numSpeakers,
+              })
+              if (diar) {
+                fullText = diar.text
+                segments = resolveSpeakerNames(diar.segments)
+              } else {
+                const verbose = await transcribeVideoVerbose(videoPath, lang, glossary, isAudio, undefined, undefined, jobId)
+                fullText = verbose.text
+                segments = verbose.segments || []
+              }
+            } else {
+              const verbose = await transcribeVideoVerbose(videoPath, lang, glossary, isAudio, undefined, undefined, jobId)
+              fullText = verbose.text
+              segments = verbose.segments || []
+            }
+
+            try {
+              if (segments.length > 0) {
+                fullText = segmentToStructuredText(segments)
+              }
+              fullText = formatTranscript(fullText)
+            } catch {
+              /* keep */
+            }
+
+            const originalName = data.originalName || 'video'
+            const nameWithoutExt = path.basename(originalName, path.extname(originalName))
+            const baseName = sanitizeBatchFolderName(nameWithoutExt)
+            const pos = data.batchPosition ?? 1
+            const folderKey = `${baseName}_${pos}`
+            const stagingRoot = path.join(tempDir, 'batch-zip-staging', batchId)
+            const outDir = path.join(stagingRoot, folderKey)
+            fs.mkdirSync(outDir, { recursive: true })
+
+            const entries = segmentsToSubtitleEntries(segments)
+            const primarySrt = toSRT(entries)
+            const primaryVtt = toVTT(entries)
+            await fs.promises.writeFile(path.join(outDir, `${baseName}.txt`), fullText, 'utf-8')
+            exportTranscriptJson(
+              fullText,
+              segments.map((s) => ({ start: s.start, end: s.end, text: s.text })),
+              path.join(outDir, `${baseName}.json`)
+            )
+            await fs.promises.writeFile(path.join(outDir, `${baseName}.srt`), primarySrt, 'utf-8')
+            await fs.promises.writeFile(path.join(outDir, `${baseName}.vtt`), primaryVtt, 'utf-8')
+
+            const notionBlocks = segments.map((s) => ({
+              type: 'paragraph',
+              rich_text: [{ text: { content: s.speaker ? `[${s.speaker}] ${s.text}` : s.text } }],
+            }))
+            await fs.promises.writeFile(
+              path.join(outDir, `${baseName}_notion.json`),
+              JSON.stringify(notionBlocks, null, 2),
+              'utf-8'
+            )
+
+            if (segments.some((s) => s.speaker)) {
+              const speakerLines = segments.map(
+                (s) => `[${s.speaker || 'Speaker'}] ${s.start.toFixed(1)}s  ${s.text}`
+              )
+              await fs.promises.writeFile(
+                path.join(outDir, `${baseName}_speakers.txt`),
+                speakerLines.join('\n\n'),
+                'utf-8'
+              )
+            }
+
+            const additionalLangs = options?.additionalLanguages || []
+            for (const code of additionalLangs) {
+              const langName = LANGUAGE_NAMES[code] || code
+              const translatedEntries = await translateSubtitles(entries, langName)
+              await fs.promises.writeFile(
+                path.join(outDir, `${baseName}_${code}.srt`),
+                toSRT(translatedEntries),
+                'utf-8'
+              )
+              await fs.promises.writeFile(
+                path.join(outDir, `${baseName}_${code}.vtt`),
+                toVTT(translatedEntries),
+                'utf-8'
+              )
+            }
+
             const fileReceivedToTranscriptionFinishedMs = Date.now() - processingStartMs
             log.info({
               msg: 'processing_timing',
@@ -1228,22 +1374,20 @@ async function processJob(job: import('bull').Job<JobData>) {
               batch_id: batchId,
             })
 
-            // Save SRT file (preserve original name for ZIP)
             await job.progress(80)
-            const originalName = data.originalName || 'video'
-            const nameWithoutExt = path.basename(originalName, path.extname(originalName))
-            const srtFilename = `${nameWithoutExt}.srt`
-            const srtPath = path.join(tempDir, `batch-${batchId}-${srtFilename}`)
-            await fs.promises.writeFile(srtPath, subtitles, 'utf-8')
-
-            // Update batch progress
             batch.processedVideos += 1
             await saveBatch(batch)
 
-            // Metering: minutes for paid, import count for free
             const userId = data.userId
             const plan = (data.plan || 'free') as PlanType
-            const processedSeconds = trimmedDuration > 0 ? trimmedDuration : await getVideoDuration(videoPath)
+            const processedSeconds =
+              trimmedDuration > 0
+                ? trimmedDuration
+                : await resolveMeteringSeconds({
+                    durationCheck: { durationKnown: false },
+                    segments,
+                    videoPath,
+                  })
             const minutes = secondsToMinutes(processedSeconds)
             if (userId && !job.data.usageIncremented) {
               await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'batch', jobId)
@@ -1251,23 +1395,28 @@ async function processJob(job: import('bull').Job<JobData>) {
               if (plan === 'free') {
                 await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
               } else {
-                await incrementUserUsage(userId, { totalMinutes: minutes, videoCount: 1, importCountToday: 1, dailyMinutesToday: minutes })
+                const translatedExtra =
+                  additionalLangs.length > 0 ? calculateTranslationMinutes(processedSeconds, additionalLangs.length) : 0
+                await incrementUserUsage(userId, {
+                  totalMinutes: minutes + translatedExtra,
+                  videoCount: 1,
+                  importCountToday: 1,
+                  dailyMinutesToday: minutes + translatedExtra,
+                  translatedMinutes: translatedExtra,
+                })
               }
             }
 
-            // Check if batch is complete
             if (batch.processedVideos + batch.failedVideos >= batch.totalVideos) {
               await generateBatchZip(batchId, batch)
             }
 
             result = {
-              downloadUrl: `/api/download/${path.basename(srtPath)}`,
-              fileName: path.basename(srtPath),
+              downloadUrl: `/api/download/batch-${batchId}.zip`,
+              fileName: `batch-${batchId}.zip`,
               batchId,
-              srtPath,
             }
           } catch (error: any) {
-            // Track failure
             batch.failedVideos += 1
             batch.errors.push({
               videoName: data.originalName || 'unknown',
@@ -1275,7 +1424,6 @@ async function processJob(job: import('bull').Job<JobData>) {
             })
             await saveBatch(batch)
 
-            // Check if batch is complete (even with failures)
             if (batch.processedVideos + batch.failedVideos >= batch.totalVideos) {
               await generateBatchZip(batchId, batch)
             }
@@ -1399,6 +1547,12 @@ async function processJob(job: import('bull').Job<JobData>) {
             if (redis) registerActiveFiles(redis, jobId, [...inputPaths, ...trimmedPaths]).catch(() => {})
           }
 
+          await job.progress(14)
+          const burnDurationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration)
+          if (!burnDurationCheck.valid) {
+            throw new Error(burnDurationCheck.error || 'Video too long')
+          }
+
           // Burn subtitles
           await job.progress(20)
           const outputFilename = generateOutputFilename(data.originalName || 'video', '_subtitled', '.mp4')
@@ -1429,11 +1583,13 @@ async function processJob(job: import('bull').Job<JobData>) {
           }
 
           // Metering: minutes for paid, import count for free
-          const durationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration)
-          const processedSeconds =
-            data.trimmedStart !== undefined && data.trimmedEnd !== undefined
-              ? Math.max(0, data.trimmedEnd - data.trimmedStart)
-              : durationCheck.duration || 0
+          const processedSeconds = await resolveMeteringSeconds({
+            durationCheck: burnDurationCheck,
+            trimmedStart: data.trimmedStart,
+            trimmedEnd: data.trimmedEnd,
+            videoPath: outputPath,
+            secondaryVideoPaths: [videoPath],
+          })
           const minutes = secondsToMinutes(processedSeconds)
           if (userId && !job.data.usageIncremented) {
             await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'video-tool', jobId)
@@ -1475,6 +1631,12 @@ async function processJob(job: import('bull').Job<JobData>) {
           const profile = options?.compressProfile as CompressProfile | undefined
           const crf = profile ? 28 : crfMap[options?.compressionLevel || 'medium']
 
+          await job.progress(18)
+          const compressDurationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration)
+          if (!compressDurationCheck.valid) {
+            throw new Error(compressDurationCheck.error || 'Video too long')
+          }
+
           await job.progress(20)
           const outputFilename = generateOutputFilename(data.originalName || 'video', '_compressed', '.mp4')
           const outputPath = path.join(tempDir, outputFilename)
@@ -1496,11 +1658,13 @@ async function processJob(job: import('bull').Job<JobData>) {
           }
 
           // Metering: minutes for paid, import count for free
-          const durationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration)
-          const processedSeconds =
-            data.trimmedStart !== undefined && data.trimmedEnd !== undefined
-              ? Math.max(0, data.trimmedEnd - data.trimmedStart)
-              : durationCheck.duration || 0
+          const processedSeconds = await resolveMeteringSeconds({
+            durationCheck: compressDurationCheck,
+            trimmedStart: data.trimmedStart,
+            trimmedEnd: data.trimmedEnd,
+            videoPath: outputPath,
+            secondaryVideoPaths: [videoPath],
+          })
           const minutes = secondsToMinutes(processedSeconds)
           if (userId && !job.data.usageIncremented) {
             await maybeTrackFirstPaidJob(userId, plan, job.data.toolType ?? 'video-tool', jobId)

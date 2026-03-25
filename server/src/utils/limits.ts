@@ -175,9 +175,26 @@ export async function enforceUsageLimits(
   return { allowed: true, overage: false }
 }
 
+/**
+ * Total seconds for batch duration cap. Files with unknown duration count as one “fair share” of the batch
+ * max (batchMaxDuration / batchMaxVideos) so a batch cannot be filled with unprobed long files.
+ */
+export function sumBatchVideoDurationsSeconds(
+  user: User,
+  videos: { duration: number; durationKnown?: boolean }[]
+): number {
+  const maxSec = user.limits.batchMaxDuration * 60
+  const maxVideos = user.limits.batchMaxVideos
+  const estimatePerUnknown = maxSec / Math.max(1, maxVideos)
+  return videos.reduce((sum, v) => {
+    if (v.durationKnown === false) return sum + estimatePerUnknown
+    return sum + v.duration
+  }, 0)
+}
+
 export async function enforceBatchLimits(
   user: User,
-  videos: { duration: number }[],
+  videos: { duration: number; durationKnown?: boolean }[],
   batchesToday: number
 ): Promise<{ allowed: boolean; reason?: string }> {
   if (!user.limits.batchEnabled) {
@@ -188,7 +205,7 @@ export async function enforceBatchLimits(
     return { allowed: false, reason: 'BATCH_TOO_MANY_VIDEOS' }
   }
 
-  const totalDurationSeconds = videos.reduce((sum, v) => sum + v.duration, 0)
+  const totalDurationSeconds = sumBatchVideoDurationsSeconds(user, videos)
   if (totalDurationSeconds > user.limits.batchMaxDuration * 60) {
     return { allowed: false, reason: 'BATCH_DURATION_EXCEEDED' }
   }

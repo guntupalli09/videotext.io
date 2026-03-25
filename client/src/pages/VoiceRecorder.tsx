@@ -409,8 +409,9 @@ export default function VoiceRecorder() {
     }
   }
 
-  function downloadTranscript() {
-    const baseText = transcriptView === 'translated' && translatedText ? translatedText : transcript
+  function downloadTranscript(which: 'original' | 'translated' = 'original') {
+    const useTranslated = which === 'translated' && translatedText
+    const baseText = useTranslated ? translatedText! : transcript
     const WM_SEP   = '=================================================================================='
     const WM_LINE1 = 'Fast AI transcription by VideoText.io — Free Plan'
     const WM_LINE2 = '⚠  Remove this watermark: videotext.io/pricing  |  Upgrade to Pro'
@@ -421,7 +422,7 @@ export default function VoiceRecorder() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    const langSuffix = transcriptView === 'translated' && translatedText ? `_${translateLanguage.toLowerCase().replace(/\s+/g, '-')}` : ''
+    const langSuffix = useTranslated ? `_${translateLanguage.toLowerCase().replace(/\s+/g, '-')}` : ''
     a.download = `transcript${langSuffix}.txt`
     a.click()
     URL.revokeObjectURL(url)
@@ -726,12 +727,22 @@ export default function VoiceRecorder() {
                       {copied ? 'Copied!' : isPaidPlan ? 'Copy' : 'Copy (watermarked)'}
                     </button>
                     <button
-                      onClick={downloadTranscript}
+                      onClick={() => downloadTranscript('original')}
                       className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       <Download className="w-3.5 h-3.5" />
-                      {isPaidPlan ? 'Download' : 'Download (watermarked)'}
+                      {isPaidPlan ? 'Download original' : 'Download original (watermarked)'}
                     </button>
+                    {isPaidPlan && translatedText && (
+                      <button
+                        type="button"
+                        onClick={() => downloadTranscript('translated')}
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-blue-200 dark:border-blue-700 text-sm font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        Download {translateLanguage}
+                      </button>
+                    )}
                   </div>
                 </div>
 
