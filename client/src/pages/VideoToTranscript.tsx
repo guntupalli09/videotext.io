@@ -1407,6 +1407,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       : fullTranscript || ''
   const _displayParagraphs = getParagraphs(displayTranscript)
   void _displayParagraphs
+
+  // Per-segment translated text — split translated string back by \n\n to align with original segments
+  // (translatePreservingLines preserves double-newline paragraph structure)
+  const translatedSegments: typeof result.segments | null = useMemo(() => {
+    if (!translationLanguage || !translatedCache[translationLanguage] || !result?.segments?.length) return null
+    const paragraphs = translatedCache[translationLanguage].split('\n\n')
+    if (paragraphs.length !== result.segments.length) return null
+    return result.segments.map((s, i) => ({ ...s, text: paragraphs[i]?.trim() ?? s.text }))
+  }, [translationLanguage, translatedCache, result?.segments]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const isPaidPlan = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
 
   // Search: match in segments (if any) or paragraphs; return { index, snippet, startTime? }
@@ -2338,7 +2348,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                     {isActive && (
                                       <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 mr-1.5 mb-0.5 animate-pulse" aria-hidden />
                                     )}
-                                    {item.text}
+                                    {transcriptView === 'translated' && translatedSegments?.[i]?.text
+                                      ? translatedSegments[i].text
+                                      : item.text}
                                   </p>
                                 </div>
                               )
@@ -2794,36 +2806,49 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         </div>
                       ))}
                     </div>
-                  ) : result?.segments?.length && transcriptView === 'original' ? (
-                    <div>
-                      {segmentParagraphs.map((group, pi) => (
-                        <p key={pi} className="mb-5">
-                          {group.map(({ seg, globalIndex }: { seg: { start: number; end: number; text: string; speaker?: string }; globalIndex: number }) => {
-                            const isActive = globalIndex === activeSegIdx
-                            return (
-                              <span
-                                key={globalIndex}
-                                ref={(el) => { if (el) segmentRefsRef.current.set(globalIndex, el); else segmentRefsRef.current.delete(globalIndex) }}
-                                onClick={() => {
-                                  if (!audioRef.current) return
-                                  audioRef.current.currentTime = seg.start
-                                  audioRef.current.play().catch(() => {})
-                                }}
-                                className={audioObjectUrl ? 'cursor-pointer' : ''}
-                              >
-                                <span className={`text-[11px] font-mono mr-1 ${isActive ? 'text-violet-500 dark:text-violet-400' : 'text-gray-400 dark:text-gray-500'}`}>
-                                  ({formatTimestamp(seg.start)})
+                  ) : result?.segments?.length ? (() => {
+                    // Use translated segments when on translated tab (timestamps from original)
+                    const segs = transcriptView === 'translated' && translatedSegments
+                      ? translatedSegments
+                      : result.segments
+                    // Group segments into paragraphs of ~5 for readability
+                    const groups: { seg: typeof segs[0]; globalIndex: number }[][] = []
+                    const PARA_SIZE = 5
+                    for (let i = 0; i < segs.length; i += PARA_SIZE) {
+                      groups.push(segs.slice(i, i + PARA_SIZE).map((s, j) => ({ seg: s, globalIndex: i + j })))
+                    }
+                    return (
+                      <div>
+                        {groups.map((group, pi) => (
+                          <p key={pi} className="mb-5">
+                            {group.map(({ seg, globalIndex }) => {
+                              const isActive = globalIndex === activeSegIdx
+                              const origSeg = result.segments![globalIndex]
+                              return (
+                                <span
+                                  key={globalIndex}
+                                  ref={(el) => { if (el) segmentRefsRef.current.set(globalIndex, el); else segmentRefsRef.current.delete(globalIndex) }}
+                                  onClick={() => {
+                                    if (!audioRef.current || !origSeg) return
+                                    audioRef.current.currentTime = origSeg.start
+                                    audioRef.current.play().catch(() => {})
+                                  }}
+                                  className={audioObjectUrl ? 'cursor-pointer' : ''}
+                                >
+                                  <span className={`text-[11px] font-mono mr-1 ${isActive ? 'text-violet-500 dark:text-violet-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                                    ({formatTimestamp(origSeg?.start ?? seg.start)})
+                                  </span>
+                                  <span className={isActive ? 'bg-yellow-200 dark:bg-yellow-900/60 rounded px-0.5 transition-colors' : ''}>
+                                    {seg.text}
+                                  </span>{' '}
                                 </span>
-                                <span className={isActive ? 'bg-yellow-200 dark:bg-yellow-900/60 rounded px-0.5 transition-colors' : ''}>
-                                  {seg.text}
-                                </span>{' '}
-                              </span>
-                            )
-                          })}
-                        </p>
-                      ))}
-                    </div>
-                  ) : (
+                              )
+                            })}
+                          </p>
+                        ))}
+                      </div>
+                    )
+                  })() : (
                     <div className="whitespace-pre-wrap">{displayTranscript || fullTranscript || transcriptPreview || ''}</div>
                   )}
                 </div>
