@@ -1205,25 +1205,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }, 100)
   }, [])
 
-  // Group segments into paragraphs for Turboscribe-style inline display (silence gap > 1.5s = new paragraph)
-  const segmentParagraphs = useMemo(() => {
-    const segs = result?.segments
-    if (!segs?.length) return []
-    const groups: { seg: typeof segs[0]; globalIndex: number }[][] = []
-    let current: { seg: typeof segs[0]; globalIndex: number }[] = []
-    for (let i = 0; i < segs.length; i++) {
-      const seg = segs[i]
-      const prev = segs[i - 1]
-      if (prev && seg.start - prev.end > 1.5 && current.length > 0) {
-        groups.push(current)
-        current = []
-      }
-      current.push({ seg, globalIndex: i })
-    }
-    if (current.length) groups.push(current)
-    return groups
-  }, [result?.segments])
-
   // Auto-scroll transcript to keep active segment visible during playback
   useEffect(() => {
     if (activeSegIdx < 0 || !audioIsPlaying) return
@@ -1410,7 +1391,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
   // Per-segment translated text — split translated string back by \n\n to align with original segments
   // (translatePreservingLines preserves double-newline paragraph structure)
-  const translatedSegments: typeof result.segments | null = useMemo(() => {
+  const translatedSegments: NonNullable<typeof result>['segments'] | null = useMemo(() => {
     if (!translationLanguage || !translatedCache[translationLanguage] || !result?.segments?.length) return null
     const paragraphs = translatedCache[translationLanguage].split('\n\n')
     if (paragraphs.length !== result.segments.length) return null
@@ -1523,12 +1504,18 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
               />
             )}
-            {/* Batch hint for free users */}
-            {inputMode === 'file' && !isPaidPlan && (
-              <p className="text-xs text-center text-gray-400 dark:text-gray-500">
-                Drop multiple files for batch mode —{' '}
-                <Link to="/pricing" className="text-violet-500 hover:underline font-medium">Pro only</Link>
-              </p>
+            {/* Batch hint */}
+            {inputMode === 'file' && (
+              isPaidPlan ? (
+                <p className="text-xs text-center text-gray-400 dark:text-gray-500">
+                  Pro tip: drop or select multiple files at once to process as a batch
+                </p>
+              ) : (
+                <p className="text-xs text-center text-gray-400 dark:text-gray-500">
+                  Drop multiple files for batch mode —{' '}
+                  <Link to="/pricing" className="text-violet-500 hover:underline font-medium">Pro only</Link>
+                </p>
+              )
             )}
 
             {/* ── YouTube URL tab ── */}
