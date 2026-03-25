@@ -69,8 +69,6 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string } | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
-  const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
-  const [usedMinutes, setUsedMinutes] = useState<number | null>(null)
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
@@ -149,8 +147,6 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
       const isImports = usageData.quotaType === 'imports'
       const totalAvailable = isImports ? (usageData.limit ?? 3) : (usageData.limits.minutesPerMonth + usageData.overages.minutes)
       const used = isImports ? (usageData.used ?? usageData.usage?.importCount ?? 0) : usageData.usage.totalMinutes
-      setAvailableMinutes(totalAvailable)
-      setUsedMinutes(used)
       const atOrOverLimit = isImports ? used >= (usageData.limit ?? 3) : (totalAvailable > 0 && used >= totalAvailable)
       if (atOrOverLimit) {
         setShowPaywall(true)

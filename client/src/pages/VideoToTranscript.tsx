@@ -101,7 +101,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
-  const [usedMinutes, setUsedMinutes] = useState<number | null>(null)
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
   const [isRehydrating, setIsRehydrating] = useState(false)
   const [processingStartedAt, setProcessingStartedAt] = useState<number | null>(null)
@@ -350,7 +349,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               const total = isImports ? (data.limit ?? 3) : (data.limits.minutesPerMonth + data.overages.minutes)
               const used = isImports ? (data.used ?? data.usage?.importCount ?? 0) : data.usage.totalMinutes
               setAvailableMinutes(total)
-              setUsedMinutes(used)
             })
             .catch(() => {})
           return
@@ -415,7 +413,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   const total = isImports ? (data.limit ?? 3) : (data.limits.minutesPerMonth + data.overages.minutes)
                   const used = isImports ? (data.used ?? data.usage?.importCount ?? 0) : data.usage.totalMinutes
                   setAvailableMinutes(total)
-                  setUsedMinutes(used)
                 })
                 .catch(() => {})
             } else if (t === 'failed') {
@@ -573,7 +570,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       const totalAvailable = isImports ? (usageData.limit ?? 3) : (usageData.limits.minutesPerMonth + usageData.overages.minutes)
       const used = isImports ? (usageData.used ?? usageData.usage?.importCount ?? 0) : usageData.usage.totalMinutes
       setAvailableMinutes(totalAvailable)
-      setUsedMinutes(used)
       const atOrOverLimit = isImports ? used >= (usageData.limit ?? 3) : (totalAvailable > 0 && used >= totalAvailable)
       if (atOrOverLimit) {
         setShowPaywall(true)
@@ -729,7 +725,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   const total = isImports ? (data.limit ?? 3) : (data.limits.minutesPerMonth + data.overages.minutes)
                   const used = isImports ? (data.used ?? data.usage?.importCount ?? 0) : data.usage.totalMinutes
                   setAvailableMinutes(total)
-                  setUsedMinutes(used)
                 })
                 .catch(() => {})
             }
@@ -851,7 +846,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         ? (usageData.used ?? usageData.usage?.importCount ?? 0)
         : usageData.usage.totalMinutes
       setAvailableMinutes(totalAvailable)
-      setUsedMinutes(used)
       const atOrOverLimit = isImports
         ? used >= (usageData.limit ?? 3)
         : (totalAvailable > 0 && used >= totalAvailable)
@@ -960,7 +954,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 const total = ii ? (data.limit ?? 3) : (data.limits.minutesPerMonth + data.overages.minutes)
                 const u = ii ? (data.used ?? data.usage?.importCount ?? 0) : data.usage.totalMinutes
                 setAvailableMinutes(total)
-                setUsedMinutes(u)
               }).catch(() => {})
             try {
               trackEvent('job_completed', { job_id: response.jobId, tool_type: 'youtube-to-transcript', processing_time_ms: processingMs })
