@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Suspense, lazy } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { Languages, Copy, Check, Download, ArrowRight, Clock } from 'lucide-react'
+import { Languages, Copy, Check, Download, ArrowRight } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
@@ -330,7 +330,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   return (
     <>
       <ToolLayout {...layoutProps}>
-        <UpgradeBanner variant="translate" />
+        <UpgradeBanner variant="video-length" />
 
         {/* ── Tab switcher ──────────────────────────────────────────────────── */}
         {status === 'idle' && (

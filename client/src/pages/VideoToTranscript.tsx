@@ -580,7 +580,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     try {
       const res = await uploadBatch(batchFiles, 'en', [])
       const batchId = res.batchId
-      setBatchInfo({ batchId, status: 'queued', progress: { total: batchFiles.length, completed: 0, failed: 0, percentage: 0 }, errors: [] })
+      setBatchInfo({ batchId, status: 'queued', progress: { total: batchFiles.length, completed: 0, failed: 0, percentage: 0 }, estimatedTimeRemaining: 0, errors: [] })
       setStatus('processing')
       const poll = setInterval(async () => {
         try {
