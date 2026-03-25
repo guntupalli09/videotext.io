@@ -689,16 +689,17 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
 
     try {
+      const _isPaid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
       const baseOptions: Parameters<typeof uploadFileWithProgress>[1] = {
         toolType: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT,
         trimmedStart: (trimStartSec ?? trimStart) ?? undefined,
         trimmedEnd: (trimEndSec ?? trimEnd) ?? undefined,
-        includeSummary,
-        includeChapters,
+        includeSummary: _isPaid ? includeSummary : false,
+        includeChapters: _isPaid ? includeChapters : false,
         exportFormats: exportFormats.length > 0 ? exportFormats : (['txt'] as const),
-        speakerDiarization,
-        numSpeakers: numSpeakers ? Number(numSpeakers) : undefined,
-        diarizationLanguage: diarizationLanguage.trim() || undefined,
+        speakerDiarization: _isPaid ? speakerDiarization : false,
+        numSpeakers: _isPaid && numSpeakers ? Number(numSpeakers) : undefined,
+        diarizationLanguage: _isPaid ? diarizationLanguage.trim() || undefined : undefined,
         glossary: glossary.trim() || undefined,
       }
       setDiarizationWasRequested(speakerDiarization)
@@ -907,6 +908,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const url = youtubeUrlInput.trim()
     if (!url) { toast.error('Please enter a YouTube URL'); return }
     if (!isYoutubeUrl(url)) { toast.error('Please enter a valid YouTube URL (youtube.com or youtu.be)'); return }
+    const _isPaid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
 
     // Quota check (mirrors handleProcess)
     let usageData: Awaited<ReturnType<typeof getCurrentUsage>> | null = null
@@ -953,12 +955,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       const response: YoutubeUploadResponse = await submitYoutubeUrl(
         url,
         {
-          includeSummary,
-          includeChapters,
+          includeSummary: _isPaid ? includeSummary : false,
+          includeChapters: _isPaid ? includeChapters : false,
           exportFormats: exportFormats.length > 0 ? exportFormats : ['txt'],
-          speakerDiarization,
-          numSpeakers: numSpeakers ? Number(numSpeakers) : undefined,
-          diarizationLanguage: diarizationLanguage.trim() || undefined,
+          speakerDiarization: _isPaid ? speakerDiarization : false,
+          numSpeakers: _isPaid && numSpeakers ? Number(numSpeakers) : undefined,
+          diarizationLanguage: _isPaid ? diarizationLanguage.trim() || undefined : undefined,
           glossary: glossary.trim() || undefined,
         },
         uploadAbortRef.current.signal
@@ -1511,6 +1513,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
               />
             )}
+            {/* Batch hint for free users */}
+            {inputMode === 'file' && !isPaidPlan && (
+              <p className="text-xs text-center text-gray-400 dark:text-gray-500">
+                Drop multiple files for batch mode —{' '}
+                <Link to="/pricing" className="text-violet-500 hover:underline font-medium">Pro only</Link>
+              </p>
+            )}
 
             {/* ── YouTube URL tab ── */}
             {inputMode === 'youtube' && (
@@ -1572,34 +1581,58 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 <div className="rounded-xl bg-gray-50/90 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700/50 p-4 space-y-3">
                   <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Options</h4>
                   <div className="space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={includeSummary}
-                        onChange={(e) => setIncludeSummary(e.target.checked)}
-                        className="rounded border-gray-300 text-purple-600"
-                      />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">Include AI summary &amp; bullets</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={includeChapters}
-                        onChange={(e) => setIncludeChapters(e.target.checked)}
-                        className="rounded border-gray-300 text-purple-600"
-                      />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">Auto-generate chapters</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={speakerDiarization}
-                        onChange={(e) => setSpeakerDiarization(e.target.checked)}
-                        className="rounded border-gray-300 text-purple-600"
-                      />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">Speaker labels (who said what)</span>
-                    </label>
-                    {speakerDiarization && (
+                    {/* AI Summary — Pro only */}
+                    {isPaidPlan ? (
+                      <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={includeSummary}
+                          onChange={(e) => setIncludeSummary(e.target.checked)}
+                          className="rounded border-gray-300 text-purple-600"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Include AI summary &amp; bullets</span>
+                      </label>
+                    ) : (
+                      <div className="flex items-center justify-between opacity-60">
+                        <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">Include AI summary &amp; bullets <Lock className="w-3 h-3 text-gray-400" /></span>
+                        <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                      </div>
+                    )}
+                    {/* Chapters — Pro only */}
+                    {isPaidPlan ? (
+                      <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={includeChapters}
+                          onChange={(e) => setIncludeChapters(e.target.checked)}
+                          className="rounded border-gray-300 text-purple-600"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Auto-generate chapters</span>
+                      </label>
+                    ) : (
+                      <div className="flex items-center justify-between opacity-60">
+                        <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">Auto-generate chapters <Lock className="w-3 h-3 text-gray-400" /></span>
+                        <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                      </div>
+                    )}
+                    {/* Speaker labels — Pro only */}
+                    {isPaidPlan ? (
+                      <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={speakerDiarization}
+                          onChange={(e) => setSpeakerDiarization(e.target.checked)}
+                          className="rounded border-gray-300 text-purple-600"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Speaker labels (who said what)</span>
+                      </label>
+                    ) : (
+                      <div className="flex items-center justify-between opacity-60">
+                        <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">Speaker labels (who said what) <Lock className="w-3 h-3 text-gray-400" /></span>
+                        <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                      </div>
+                    )}
+                    {isPaidPlan && speakerDiarization && (
                       <>
                         <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
                           Speaker identification adds extra processing time — roughly 1.5× longer than standard transcription (e.g. a 2-hour video takes ~10 min instead of ~4 min).
@@ -1736,23 +1769,56 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Options</h3>
               <div className="space-y-4">
-                <Checkbox
-                  label="Include AI summary & bullets"
-                  checked={includeSummary}
-                  onChange={(checked) => setIncludeSummary(checked)}
-                />
-                <Checkbox
-                  label="Auto-generate chapters"
-                  checked={includeChapters}
-                  onChange={(checked) => setIncludeChapters(checked)}
-                />
-                <Checkbox
-                  label="Speaker labels (who said what)"
-                  description="Identify and label different speakers in the transcript"
-                  checked={speakerDiarization}
-                  onChange={(checked) => setSpeakerDiarization(checked)}
-                />
-                {speakerDiarization && (
+                {/* AI Summary — Pro only */}
+                {isPaidPlan ? (
+                  <Checkbox
+                    label="Include AI summary & bullets"
+                    checked={includeSummary}
+                    onChange={(checked) => setIncludeSummary(checked)}
+                  />
+                ) : (
+                  <div className="flex items-center justify-between opacity-60">
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                      Include AI summary &amp; bullets
+                      <Lock className="w-3 h-3 text-gray-400" />
+                    </span>
+                    <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                  </div>
+                )}
+                {/* Chapters — Pro only */}
+                {isPaidPlan ? (
+                  <Checkbox
+                    label="Auto-generate chapters"
+                    checked={includeChapters}
+                    onChange={(checked) => setIncludeChapters(checked)}
+                  />
+                ) : (
+                  <div className="flex items-center justify-between opacity-60">
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                      Auto-generate chapters
+                      <Lock className="w-3 h-3 text-gray-400" />
+                    </span>
+                    <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                  </div>
+                )}
+                {/* Speaker labels — Pro only */}
+                {isPaidPlan ? (
+                  <Checkbox
+                    label="Speaker labels (who said what)"
+                    description="Identify and label different speakers in the transcript"
+                    checked={speakerDiarization}
+                    onChange={(checked) => setSpeakerDiarization(checked)}
+                  />
+                ) : (
+                  <div className="flex items-center justify-between opacity-60">
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                      Speaker labels (who said what)
+                      <Lock className="w-3 h-3 text-gray-400" />
+                    </span>
+                    <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                  </div>
+                )}
+                {isPaidPlan && speakerDiarization && (
                   <>
                     <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 -mt-1">
                       Speaker identification adds extra processing time — roughly 1.5× longer than standard transcription (e.g. a 2-hour video takes ~10 min instead of ~4 min).
