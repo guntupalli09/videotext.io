@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Lock, Play, Pause, Volume2, VolumeX, Search, X } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, FileCode, Download, Lock, Play, Pause, Volume2, VolumeX, Search, X } from 'lucide-react'
 import FailedState from '../components/FailedState'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
@@ -32,16 +32,13 @@ import toast from 'react-hot-toast'
 // import { emitToolCompleted } from '../workflow/workflowStore'
 
 // ─── Phase 1 – Derived Transcript Utilities (client-side only) ─────────────────
-const BRANCH_IDS = ['transcript', 'speakers', 'summary', 'chapters', 'highlights', 'keywords', 'clean', 'exports'] as const
+const BRANCH_IDS = ['transcript', 'speakers', 'summary', 'chapters', 'exports'] as const
 type BranchId = (typeof BRANCH_IDS)[number]
 const BRANCH_LABELS: Record<BranchId, string> = {
   transcript: 'Transcript',
   speakers: 'Speakers',
   summary: 'Summary',
   chapters: 'Chapters',
-  highlights: 'Highlights',
-  keywords: 'Keywords',
-  clean: 'Clean',
   exports: 'Exports',
 }
 const BRANCH_ICONS: Record<BranchId, typeof FileText> = {
@@ -49,12 +46,8 @@ const BRANCH_ICONS: Record<BranchId, typeof FileText> = {
   speakers: Users,
   summary: ListOrdered,
   chapters: BookOpen,
-  highlights: Sparkles,
-  keywords: Hash,
-  clean: Eraser,
   exports: FileCode,
 }
-const FILLER_WORDS = new Set(['um', 'uh', 'like', 'you know', 'basically', 'actually', 'literally', 'so', 'well', 'just', 'really', 'right', 'i mean', 'kind of', 'sort of'])
 const STOPWORDS = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'when', 'where', 'why', 'how'])
 
 /** Optional SEO overrides for alternate entry points (e.g. /video-to-text, /youtube-to-transcript). Do NOT duplicate logic here. */
@@ -114,7 +107,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const uploadAbortRef = useRef<AbortController | null>(null)
   // Phase 1 – Derived Transcript Utilities: branch tab (no remount/refetch)
   const [activeBranch, setActiveBranch] = useState<BranchId>('transcript')
-  const [cleanTranscriptEnabled, setCleanTranscriptEnabled] = useState(false)
   const [translationLanguage, setTranslationLanguage] = useState<string | null>(null)
   const [translatedCache, setTranslatedCache] = useState<Record<string, string>>({})
   const [translateEnabled, setTranslateEnabled] = useState(false)
@@ -1167,7 +1159,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setFullTranscript('')
     setPartialSegments([])
     setActiveBranch('transcript')
-    setCleanTranscriptEnabled(false)
     setIncludeSummary(true)
     setIncludeChapters(true)
     setExportFormats(['txt'])
@@ -1362,24 +1353,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
   }, [fullTranscript, getParagraphs])
 
-  const getCleanTranscript = useCallback((): string => {
-    try {
-      const raw = fullTranscript || ''
-      if (!raw.trim()) return ''
-      const paras = getParagraphs(raw)
-      return paras
-        .map((p) =>
-          p.split(/\s+/)
-            .filter((w) => !FILLER_WORDS.has(w.toLowerCase().replace(/[^\w]/g, '')))
-            .join(' ')
-            .replace(/\s+/g, ' ')
-        )
-        .map((s) => (s.length ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s))
-        .join('\n\n')
-    } catch {
-      return ''
-    }
-  }, [fullTranscript, getParagraphs])
 
   const transcriptParagraphs = getParagraphs(fullTranscript || '')
   const displayTranscript =
@@ -1852,11 +1825,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     ? 'border-blue-200 dark:border-blue-800/40 bg-blue-50/40 dark:bg-blue-950/20'
                     : 'border-gray-100 dark:border-gray-800'
                 }`}>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                      Also translate to
-                      {!isPaidPlan && <Lock className="w-3 h-3 text-gray-400" />}
-                    </span>
+                  <div className="flex items-center gap-2">
                     {isPaidPlan ? (
                       <input
                         type="checkbox"
@@ -1867,8 +1836,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         }}
                         className="rounded accent-blue-500"
                       />
-                    ) : (
-                      <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                    ) : null}
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                      Also translate to
+                      {!isPaidPlan && <Lock className="w-3 h-3 text-gray-400" />}
+                    </span>
+                    {!isPaidPlan && (
+                      <Link to="/pricing" className="ml-auto text-xs text-violet-500 font-medium hover:underline">Pro</Link>
                     )}
                   </div>
                   {translateEnabled && isPaidPlan && (
@@ -2203,8 +2177,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     const counts: Partial<Record<BranchId, number>> = {
                       speakers: getSpeakersData().length,
                       chapters: getChaptersData().length,
-                      highlights: getHighlightsData().length,
-                      keywords: getKeywordsData().length,
                     }
                     return BRANCH_IDS.map((id) => {
                       const Icon = BRANCH_ICONS[id]
@@ -2443,91 +2415,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         </div>
                       )
                     })()}
-                  </div>
-                )}
-
-              {activeBranch === 'highlights' && (
-                  <div className="bg-white rounded-2xl p-6 shadow-card">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
-                      Highlights / Key moments
-                    </h3>
-                    {(() => {
-                      const items = getHighlightsData()
-                      if (!items.length) {
-                        return (
-                          <div className="rounded-xl bg-gray-50/80 p-4">
-                            <p className="text-gray-600 text-sm font-medium mb-1">Highlights</p>
-                            <p className="text-gray-500 text-sm">Definitions, conclusions, quotes, and important statements. Empty when no such segments are detected in the transcript.</p>
-                          </div>
-                        )
-                      }
-                      return (
-                        <div className="space-y-3 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto">
-                          {items.map((item, i) => (
-                            <div key={i} className="flex gap-2">
-                              <span className="text-xs font-semibold text-violet-600 shrink-0">{item.type}</span>
-                              <p className="text-sm text-gray-700">{item.text}</p>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    })()}
-                  </div>
-                )}
-
-              {activeBranch === 'keywords' && (
-                  <div className="bg-white rounded-2xl p-6 shadow-card">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <Hash className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
-                      Keywords / Topic index
-                    </h3>
-                    {(() => {
-                      const kw = getKeywordsData()
-                      if (!kw.length) {
-                        return (
-                          <div className="rounded-xl bg-gray-50/80 p-4">
-                            <p className="text-gray-600 text-sm font-medium mb-1">Keywords</p>
-                            <p className="text-gray-500 text-sm">Repeated terms that link to transcript sections. Empty when no word appears often enough to qualify.</p>
-                          </div>
-                        )
-                      }
-                      return (
-                        <div className="flex flex-wrap gap-2">
-                          {kw.map((item, i) => (
-                            <button
-                              key={i}
-                              onClick={() => scrollToSegment(item.segmentIndex)}
-                              className="px-3 py-1.5 rounded-full bg-violet-100 text-violet-800 text-sm hover:bg-violet-200"
-                            >
-                              {item.keyword} ({item.count})
-                            </button>
-                          ))}
-                        </div>
-                      )
-                    })()}
-                  </div>
-                )}
-
-              {activeBranch === 'clean' && (
-                  <div className="bg-white rounded-2xl p-6 shadow-card">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Clean transcript</h3>
-                    <p className="text-sm text-gray-500 mb-4">Filler words removed, casing normalized, paragraph grouping. Original transcript is always preserved in the Transcript branch.</p>
-                    <label className="flex items-center gap-2 mb-4">
-                      <input
-                        type="checkbox"
-                        checked={cleanTranscriptEnabled}
-                        onChange={(e) => setCleanTranscriptEnabled(e.target.checked)}
-                      />
-                      <span className="text-sm">Show cleaned version</span>
-                    </label>
-                    <div className="bg-gray-50 rounded-lg p-4 min-h-48 max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] overflow-y-auto">
-                      {cleanTranscriptEnabled ? (
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{getCleanTranscript() || 'No content.'}</p>
-                      ) : (
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{fullTranscript || 'No transcript.'}</p>
-                      )}
-                    </div>
                   </div>
                 )}
 
