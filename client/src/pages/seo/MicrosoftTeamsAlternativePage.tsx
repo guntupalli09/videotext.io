@@ -15,7 +15,7 @@ const COMPARE_ROWS = [
   { label: 'Files deleted after processing', videotext: true, competitor: false },
   { label: 'No Microsoft account required', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Transcribe any video file (not just Teams)', videotext: true, competitor: false },
   { label: 'Keyword index + chapter generation', videotext: true, competitor: false },
   { label: 'Speaker detection', videotext: true, competitor: true },
@@ -150,7 +150,7 @@ export default function MicrosoftTeamsAlternativePage() {
           {[
             { icon: DollarSign, title: 'No Copilot licence needed', body: 'Teams transcription requires $30/user/month Copilot add-on. VideoText is free to start — download your Teams MP4 and process it here without any Microsoft licence.' },
             { icon: Shield, title: 'Files deleted immediately', body: 'Teams keeps meeting transcripts in OneDrive under IT-controlled policies. VideoText deletes your file immediately after transcription — zero retention.' },
-            { icon: Zap, title: 'SRT export + 50+ language translation', body: 'Export SRT or VTT subtitle files and translate to 50+ languages. Teams Copilot outputs DOCX files inside Teams only — no subtitle export, no translation.' },
+            { icon: Zap, title: 'SRT export + 70+ language translation', body: 'Export SRT or VTT subtitle files and translate to 70+ languages. Teams Copilot outputs DOCX files inside Teams only — no subtitle export, no translation.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center mb-3">

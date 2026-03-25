@@ -122,7 +122,7 @@ export default function SubtitleCharacterChecker() {
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-fix long lines and formatting' },
         { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert format after checking' },
         { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate broadcast-ready subtitles with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate to 50+ languages' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate to 70+ languages' },
       ]}
     >
       <div className="space-y-4">

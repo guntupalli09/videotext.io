@@ -66,7 +66,7 @@ export const TEX_ENTRIES: TexEntry[] = [
     keywords: ['translate', 'translation', 'arabic', 'hindi', 'translate subtitles', 'srt translator'],
     question: 'How does Translate Subtitles work?',
     answer:
-      'Upload an SRT or VTT file and choose a target language. We translate the text while keeping timestamps intact. Supports 50+ languages including Arabic, Hindi, Spanish. Great for making content accessible in multiple languages.',
+      'Upload an SRT or VTT file and choose a target language. We translate the text while keeping timestamps intact. Supports 70+ languages including Arabic, Hindi, Spanish. Great for making content accessible in multiple languages.',
     link: { path: '/translate-subtitles', label: 'Try Translate Subtitles' },
   },
   {

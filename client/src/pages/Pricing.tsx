@@ -257,7 +257,7 @@ export default function Pricing() {
                 'No watermark',
                 'Up to 2 hours per video',
                 'AI summary, chapters & speaker labels',
-                'Translation in 50+ languages',
+                'Translation in 70+ languages',
                 'Batch process multiple videos at once',
                 'Faster processing & queue priority',
               ].map((f) => (

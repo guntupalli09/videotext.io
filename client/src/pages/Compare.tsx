@@ -249,7 +249,7 @@ const FEATURE_ROWS: FeatureSection[] = [
         granola: '~91%',
       },
       {
-        label: '50+ language support',
+        label: '99 language support',
         videotext: true,
         descript: false,
         otter: true,
@@ -343,7 +343,7 @@ const FEATURE_ROWS: FeatureSection[] = [
         highlight: true,
       },
       {
-        label: 'Transcript translation (in-app, 50+ languages)',
+        label: 'Transcript translation (in-app, 70+ languages)',
         videotext: 'Pro ✓',
         descript: false,
         otter: false,

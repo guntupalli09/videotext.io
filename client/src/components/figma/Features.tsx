@@ -25,7 +25,7 @@ const SPOTLIGHT_TOOLS = [
     tagline: 'From video to words at machine speed.',
     description:
       'Upload any video and get a clean, timestamped transcript. AI-powered with 98.5% accuracy. Export as TXT, PDF, DOCX, or JSON.',
-    bullets: ['Speaker detection & labels', 'Auto chapters & summary', '50+ languages supported'],
+    bullets: ['Speaker detection & labels', 'Auto chapters & summary', '99 languages supported', 'Translation to 70+ languages'],
     gradient: 'from-violet-500 to-indigo-600',
     glowColor: 'rgba(139,92,246,0.08)',
     href: '/video-to-transcript',

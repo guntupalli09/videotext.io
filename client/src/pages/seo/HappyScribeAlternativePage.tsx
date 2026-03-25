@@ -11,7 +11,7 @@ const COMPARE_ROWS = [
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: true },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: true },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: true },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: true },
   { label: 'Burn subtitles into video', videotext: true, competitor: false },
   { label: 'Batch process multiple videos', videotext: true, competitor: false },
   { label: 'Files deleted after processing', videotext: true, competitor: false },

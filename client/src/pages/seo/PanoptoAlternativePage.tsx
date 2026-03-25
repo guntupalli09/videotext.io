@@ -11,7 +11,7 @@ const COMPARE_ROWS = [
   { label: 'Works without institutional account', videotext: true, competitor: false },
   { label: 'Export transcript as TXT file', videotext: true, competitor: false },
   { label: 'Export SRT / VTT subtitle file', videotext: true, competitor: false },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Auto-generated chapter markers', videotext: true, competitor: false },
   { label: 'Keyword index across transcript', videotext: true, competitor: false },
   { label: 'Works on videos from any source', videotext: true, competitor: false },

@@ -13,7 +13,7 @@ const COMPARE_ROWS = [
   { label: 'Files deleted after processing', videotext: true, competitor: false },
   { label: 'No heavy video editor required', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: true },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Burn subtitles into video', videotext: true, competitor: false },
   { label: 'Batch process up to 20 videos', videotext: true, competitor: false },
   { label: 'Works on mobile', videotext: true, competitor: false },

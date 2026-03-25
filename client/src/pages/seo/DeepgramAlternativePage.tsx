@@ -15,7 +15,7 @@ const COMPARE_ROWS = [
   { label: 'YouTube URL → transcript', videotext: true, competitor: false },
   { label: 'Speaker labels in transcript', videotext: true, competitor: true },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Summary generation', videotext: true, competitor: false },
   { label: 'Auto-generated chapters', videotext: true, competitor: false },
   { label: 'Keyword index', videotext: true, competitor: false },
@@ -35,7 +35,7 @@ const FAQ = [
   },
   {
     q: 'Is Deepgram or Whisper (VideoText) more accurate?',
-    a: 'Deepgram Nova-2 and Whisper large-v3 (VideoText) are comparable in English — both achieve ~97–99% word accuracy on clean speech. For non-English languages and lower-resource languages, Whisper generally outperforms Nova-2 since it was trained on 680K hours of multilingual audio. VideoText also includes 50+ language translation on top of the transcript.',
+    a: 'Deepgram Nova-2 and Whisper large-v3 (VideoText) are comparable in English — both achieve ~97–99% word accuracy on clean speech. For non-English languages and lower-resource languages, Whisper generally outperforms Nova-2 since it was trained on 680K hours of multilingual audio. VideoText also includes 70+ language translation on top of the transcript.',
   },
   {
     q: 'Does VideoText work for video files unlike Deepgram?',

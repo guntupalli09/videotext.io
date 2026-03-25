@@ -10,7 +10,7 @@ const COMPARE_ROWS = [
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: false },
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Burn subtitles into video', videotext: true, competitor: false },
   { label: 'Batch process multiple videos', videotext: true, competitor: false },
   { label: 'Files deleted after processing', videotext: true, competitor: false },
@@ -144,7 +144,7 @@ export default function OtterAiAlternativePage() {
           {[
             { icon: Zap, title: 'Video files supported', body: 'Otter.ai does not accept MP4 or MOV uploads. VideoText handles any video format and YouTube URLs directly.' },
             { icon: Shield, title: 'Subtitle export included', body: 'VideoText exports SRT and VTT files with accurate timestamps. Otter only produces plain-text transcripts.' },
-            { icon: DollarSign, title: 'Translation in 50+ languages', body: 'Translate your transcript or subtitle file to any language. Otter.ai has no subtitle translation feature.' },
+            { icon: DollarSign, title: 'Translation in 70+ languages', body: 'Translate your transcript or subtitle file to any language. Otter.ai has no subtitle translation feature.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center mb-3">

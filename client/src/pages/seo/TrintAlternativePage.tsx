@@ -12,7 +12,7 @@ const COMPARE_ROWS = [
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'Files deleted after processing', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: true },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: true },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: true },
   { label: 'Burn subtitles into video', videotext: true, competitor: false },
   { label: 'Batch process multiple videos', videotext: true, competitor: false },
   { label: 'Works without enterprise sales', videotext: true, competitor: false },
@@ -39,7 +39,7 @@ const FAQ = [
   },
   {
     q: 'Does VideoText work for the same languages as Trint?',
-    a: 'VideoText supports transcription in 50+ languages via Whisper and subtitle translation into 50+ languages. Trint supports 40+ languages. For most common languages, VideoText covers the same range at a fraction of the price.',
+    a: 'VideoText supports transcription in 99 languages via Whisper and subtitle translation into 70+ languages. Trint supports 40+ languages. For most common languages, VideoText covers the same range at a fraction of the price.',
   },
 ]
 

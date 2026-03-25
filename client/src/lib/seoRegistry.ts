@@ -98,7 +98,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/youtube-transcript',
     title: 'YouTube Transcript – Get Transcript from Any YouTube Video | VideoText',
     description:
-      'Get a transcript from any YouTube video. Paste the URL, no download needed. Accurate AI transcription. Download as TXT, SRT, or translate to 50+ languages. Free tier.',
+      'Get a transcript from any YouTube video. Paste the URL, no download needed. Accurate AI transcription. Download as TXT, SRT, or translate to 70+ languages. Free tier.',
     h1: 'YouTube Transcript — Get Text from Any Video',
     intro:
       'Get a transcript from any YouTube video in seconds. Paste the URL — we stream the audio and transcribe it with AI. Download the text, generate SRT subtitles, or translate to 6 languages. No software to install, no file to upload.',
@@ -144,7 +144,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/transcribe-youtube-video',
     title: 'Transcribe YouTube Video – Free Online | VideoText',
     description:
-      'Transcribe any YouTube video free. Paste the URL, get an accurate transcript. Sign up for free. AI-powered. Download as TXT or SRT. Translate to 50+ languages.',
+      'Transcribe any YouTube video free. Paste the URL, get an accurate transcript. Sign up for free. AI-powered. Download as TXT or SRT. Translate to 70+ languages.',
     h1: 'Transcribe YouTube Video — Free Online',
     intro:
       'Transcribe any YouTube video for free. Paste the URL and get an accurate text transcript in seconds. Sign up for free. No download needed. Use the transcript for subtitles, blog posts, or translation.',
@@ -260,7 +260,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'srt-translator',
     faq: [
       { q: 'What is an SRT translator?', a: 'An SRT translator converts the text inside an SRT or VTT subtitle file into another language while keeping every timestamp exactly as it was. You upload the subtitle file, select the target language, and download a translated version where the captions stay perfectly in sync with the video.' },
-      { q: 'Which languages does the SRT translator support?', a: 'The translator supports 50+ languages including Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, and more. The original timing is always preserved — only the text content changes. Set the source and target language before processing for best accuracy.' },
+      { q: 'Which languages does the SRT translator support?', a: 'The translator supports 70+ languages including Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, and more. The original timing is always preserved — only the text content changes. Set the source and target language before processing for best accuracy.' },
       { q: 'Can I edit the translated SRT subtitles?', a: 'Yes. After translation, preview the result and download. Paid plans unlock in-app editing so you can adjust translated text before downloading, which is useful for fixing AI translation nuances or adding context that direct translation misses.' },
     ],
   },
@@ -440,17 +440,17 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/subtitle-translator',
     title: 'Subtitle Translator — SRT/VTT to Any Language | VideoText',
     description:
-      'Translate SRT or VTT subtitles to 50+ languages. Upload, pick target language, download. Timestamps stay intact. Free tier.',
+      'Translate SRT or VTT subtitles to 70+ languages. Upload, pick target language, download. Timestamps stay intact. Free tier.',
     h1: 'Subtitle Translator — SRT/VTT to Any Language',
     intro:
-      'Translate SRT or VTT subtitles to 50+ languages. Upload, pick target language, download. Timestamps stay intact.',
+      'Translate SRT or VTT subtitles to 70+ languages. Upload, pick target language, download. Timestamps stay intact.',
     breadcrumbLabel: 'Subtitle Translator',
     toolKey: 'translate-subtitles',
     relatedSlugs: ['/video-to-subtitles', '/fix-subtitles', '/burn-subtitles'],
     indexable: true,
     intentKey: 'subtitle-translator',
     faq: [
-      { q: 'What languages does the subtitle translator support?', a: 'The subtitle translator supports 50+ languages including Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, Turkish, Italian, Dutch, and more. Pick your target language from the dropdown before processing. The source language is detected automatically or you can set it manually for better accuracy.' },
+      { q: 'What languages does the subtitle translator support?', a: 'The subtitle translator supports 70+ languages including Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, Turkish, Italian, Dutch, and more. Pick your target language from the dropdown before processing. The source language is detected automatically or you can set it manually for better accuracy.' },
       { q: 'Do timestamps stay intact when translating subtitles?', a: 'Yes. Only the text content is translated — every start time and end time in the original SRT or VTT file stays exactly as it was. Your translated subtitles remain perfectly synchronized with the video without any timing adjustments needed.' },
       { q: 'Is the subtitle translator free?', a: 'Yes. Free tier is available after signing up for free. Upload an SRT or VTT file and download the translated version at no cost within the monthly free limit. Paid plans unlock higher minute limits and multi-language output so you can translate a file to multiple languages in one session.' },
     ],
@@ -1002,10 +1002,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/free-subtitle-generator',
     title: 'Free Subtitle Generator – Sign Up to Try | VideoText',
     description:
-      'Generate subtitles free online. Upload video and get accurate SRT or VTT subtitles in seconds. Sign up for free to try. AI-powered, fast, and supports 50+ languages.',
+      'Generate subtitles free online. Upload video and get accurate SRT or VTT subtitles in seconds. Sign up for free to try. AI-powered, fast, and supports 99 languages.',
     h1: 'Free Subtitle Generator – Sign Up to Try',
     intro:
-      'Generate subtitles for free — sign up for free. Upload any video and get accurate, timed SRT or VTT subtitle files in seconds. Our AI supports 50+ languages and produces captions ready for YouTube, TikTok, Instagram, and any web player. No credit card. Sign up for free to try.',
+      'Generate subtitles for free — sign up for free. Upload any video and get accurate, timed SRT or VTT subtitle files in seconds. Our AI supports 99 languages and produces captions ready for YouTube, TikTok, Instagram, and any web player. No credit card. Sign up for free to try.',
     breadcrumbLabel: 'Free Subtitle Generator',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/subtitle-generator', '/automatic-subtitles', '/caption-generator'],
@@ -1042,10 +1042,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/srt-generator',
     title: 'SRT Generator – Create SRT Subtitle Files from Video | VideoText',
     description:
-      'Generate SRT subtitle files from any video. Upload your video and get a timed SRT file in seconds. Free, AI-powered, supports 50+ languages. Sign up for free to try.',
+      'Generate SRT subtitle files from any video. Upload your video and get a timed SRT file in seconds. Free, AI-powered, supports 99 languages. Sign up for free to try.',
     h1: 'SRT Generator – Create SRT Files from Video',
     intro:
-      'Generate SRT subtitle files from any video with one click. Upload your video, our AI transcribes the speech with accurate timestamps, and you download an SRT file ready for YouTube, Vimeo, or any platform. Free tier. Sign up for free to try, 50+ languages supported.',
+      'Generate SRT subtitle files from any video with one click. Upload your video, our AI transcribes the speech with accurate timestamps, and you download an SRT file ready for YouTube, Vimeo, or any platform. Free tier. Sign up for free to try, 70+ languages supported.',
     breadcrumbLabel: 'SRT Generator',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-srt', '/mp4-to-srt', '/subtitle-generator'],
@@ -1066,15 +1066,15 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Translate video to another language online. Transcribe and view translated transcript in Hindi, Spanish, Chinese, Russian, and more. Generate translated SRT/VTT subtitles. Free tier.',
     h1: 'Translate Video Online',
     intro:
-      'Translate your video to another language — free online. Upload a video, get a transcript, and translate it to English, Hindi, Telugu, Spanish, Chinese, or Russian with one click. Or generate SRT/VTT subtitles and translate the subtitle file to 50+ languages. No signup for the free tier.',
+      'Translate your video to another language — free online. Upload a video, get a transcript, and translate it to English, Hindi, Telugu, Spanish, Chinese, or Russian with one click. Or generate SRT/VTT subtitles and translate the subtitle file to 70+ languages. No signup for the free tier.',
     breadcrumbLabel: 'Translate Video',
     toolKey: 'translate-subtitles',
     relatedSlugs: ['/video-translation', '/subtitle-translator', '/multilingual-subtitles'],
     indexable: true,
     intentKey: 'translate-video',
     faq: [
-      { q: 'How do I translate a video to another language?', a: 'Upload your video and transcribe it using the Video to Transcript tool. Click Translate to view the full transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian. To translate subtitle files (SRT/VTT), generate subtitles first, then use Translate Subtitles to convert the caption file to any of 50+ languages.' },
-      { q: 'Which languages can I translate my video to?', a: 'Transcript translation supports 6 languages: English, Hindi, Telugu, Spanish, Chinese, and Russian — switch between them instantly after transcribing. Subtitle file translation supports 50+ languages including Arabic, French, German, Portuguese, Japanese, Korean, Turkish, and more. Each translation preserves the original timestamps.' },
+      { q: 'How do I translate a video to another language?', a: 'Upload your video and transcribe it using the Video to Transcript tool. Click Translate to view the full transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian. To translate subtitle files (SRT/VTT), generate subtitles first, then use Translate Subtitles to convert the caption file to any of 70+ languages.' },
+      { q: 'Which languages can I translate my video to?', a: 'Transcript translation supports 6 languages: English, Hindi, Telugu, Spanish, Chinese, and Russian — switch between them instantly after transcribing. Subtitle file translation supports 70+ languages including Arabic, French, German, Portuguese, Japanese, Korean, Turkish, and more. Each translation preserves the original timestamps.' },
       { q: 'Is video translation free?', a: 'Yes. Free tier is available after signing up for free for both transcript translation and subtitle file translation. Paid plans unlock multi-language subtitle output in a single batch — generate translated SRT files in three or more languages from one upload — and higher minute limits for larger video libraries.' },
       { q: 'Does video translation automatically burn subtitles into the video?', a: 'No — translation produces a translated SRT or VTT subtitle file, which you can upload to YouTube or any platform as a caption track. To burn translated captions permanently into the video (for Instagram, TikTok, or silent autoplay), use our Burn Subtitles tool with the translated SRT file.' },
     ],
@@ -1083,10 +1083,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/video-translation',
     title: 'Video Translation – Translate Video Content Online | VideoText',
     description:
-      'Translate video content to 50+ languages. Transcribe video and view translated transcript in Hindi, Spanish, Chinese, Russian, or English. Export translated SRT/VTT subtitles. Free tier.',
+      'Translate video content to 70+ languages. Transcribe video and view translated transcript in Hindi, Spanish, Chinese, Russian, or English. Export translated SRT/VTT subtitles. Free tier.',
     h1: 'Video Translation Online',
     intro:
-      'Translate video content to any language online. Upload your video, get an accurate transcript, then translate it to English, Hindi, Telugu, Spanish, Chinese, or Russian. For subtitle translation, generate SRT or VTT and translate to 50+ languages. Export and burn into the video for multilingual content. Free tier. Sign up for free to try.',
+      'Translate video content to any language online. Upload your video, get an accurate transcript, then translate it to English, Hindi, Telugu, Spanish, Chinese, or Russian. For subtitle translation, generate SRT or VTT and translate to 70+ languages. Export and burn into the video for multilingual content. Free tier. Sign up for free to try.',
     breadcrumbLabel: 'Video Translation',
     toolKey: 'translate-subtitles',
     relatedSlugs: ['/translate-video', '/subtitle-translator', '/multilingual-subtitles'],
@@ -1094,7 +1094,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'video-translation',
     faq: [
       { q: 'What is video translation?', a: 'Video translation converts your video content into another language as text (transcript) or timed captions (SRT/VTT) that can be burned into the video or uploaded to a platform.' },
-      { q: 'What languages are supported for video translation?', a: 'Transcript view: 6 languages (English, Hindi, Telugu, Spanish, Chinese, Russian). Subtitle file translation: 50+ languages via Translate Subtitles.' },
+      { q: 'What languages are supported for video translation?', a: 'Transcript view: 6 languages (English, Hindi, Telugu, Spanish, Chinese, Russian). Subtitle file translation: 70+ languages via Translate Subtitles.' },
       { q: 'Is video translation free?', a: 'Yes. Free tier is available after signing up for free.' },
       { q: 'How do I get translated captions on my video?', a: 'Generate subtitles, translate the SRT/VTT file, then use Burn Subtitles to hardcode the translated captions into the video.' },
     ],
@@ -1105,7 +1105,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     title: 'YouTube Transcript Generator – Convert YouTube Video to Text | VideoText',
     description: 'Generate transcripts from YouTube videos instantly. Paste a URL and export SRT, TXT, or DOCX with VideoText.',
     h1: 'YouTube Transcript Generator',
-    intro: 'Convert any YouTube video to a transcript with one click. Paste a youtube.com or youtu.be link — no download, no upload. AI transcription in seconds. Export as TXT, SRT, or translate to 50+ languages. Free tier.',
+    intro: 'Convert any YouTube video to a transcript with one click. Paste a youtube.com or youtu.be link — no download, no upload. AI transcription in seconds. Export as TXT, SRT, or translate to 70+ languages. Free tier.',
     breadcrumbLabel: 'YouTube Transcript Generator',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/youtube-to-transcript', '/video-to-subtitles', '/transcribe-youtube-video'],
@@ -1411,7 +1411,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     title: 'Best Free HappyScribe Alternative – Transcription & Subtitles | VideoText',
     description: 'HappyScribe starts at $17/month with no free tier and no YouTube input. VideoText is free to start — upload video or paste a YouTube URL, get SRT, translate, burn subtitles.',
     h1: 'HappyScribe Alternative',
-    intro: 'Looking for a HappyScribe alternative? VideoText transcribes video and YouTube URLs, generates SRT/VTT subtitle files, translates to 50+ languages, and burns captions into video — all free to start. No credit card. Files deleted after processing.',
+    intro: 'Looking for a HappyScribe alternative? VideoText transcribes video and YouTube URLs, generates SRT/VTT subtitle files, translates to 70+ languages, and burns captions into video — all free to start. No credit card. Files deleted after processing.',
     breadcrumbLabel: 'HappyScribe Alternative',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-transcript', '/subtitle-generator', '/sonix-alternative', '/descript-alternative'],
@@ -1430,7 +1430,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     title: 'Best Free Sonix Alternative – No Per-Minute Fees | VideoText',
     description: 'Sonix charges $22/month + $0.10/minute overage. VideoText starts free and costs $10/month flat — same Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing.',
     h1: 'Sonix Alternative',
-    intro: 'Looking for a Sonix alternative? VideoText transcribes video and YouTube URLs with Whisper AI, exports SRT/VTT, translates subtitles to 50+ languages, and burns captions — all at a flat price with no per-minute fees. Free tier. Files deleted after processing.',
+    intro: 'Looking for a Sonix alternative? VideoText transcribes video and YouTube URLs with Whisper AI, exports SRT/VTT, translates subtitles to 70+ languages, and burns captions — all at a flat price with no per-minute fees. Free tier. Files deleted after processing.',
     breadcrumbLabel: 'Sonix Alternative',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-transcript', '/fastest-transcription-tool', '/happyscribe-alternative', '/trint-alternative'],
@@ -1447,16 +1447,16 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   {
     path: '/easyscribe-alternative',
     title: 'Best EasyScribe Alternative for Video & Subtitles | VideoText',
-    description: 'EasyScribe covers basic audio transcription only. VideoText transcribes video files and YouTube URLs, exports SRT subtitles, translates to 50+ languages, and burns captions. Free tier.',
+    description: 'EasyScribe covers basic audio transcription only. VideoText transcribes video files and YouTube URLs, exports SRT subtitles, translates to 70+ languages, and burns captions. Free tier.',
     h1: 'EasyScribe Alternative',
-    intro: 'Looking for an EasyScribe alternative? VideoText handles the full video transcription workflow — MP4 uploads, YouTube URL input, SRT/VTT subtitle export, 50+ language translation, subtitle burning, and batch processing. Free tier, no credit card needed.',
+    intro: 'Looking for an EasyScribe alternative? VideoText handles the full video transcription workflow — MP4 uploads, YouTube URL input, SRT/VTT subtitle export, 70+ language translation, subtitle burning, and batch processing. Free tier, no credit card needed.',
     breadcrumbLabel: 'EasyScribe Alternative',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-transcript', '/subtitle-generator', '/happyscribe-alternative', '/turboscribe-alternative'],
     indexable: true,
     intentKey: 'easyscribe-alternative',
     faq: [
-      { q: 'What can VideoText do that EasyScribe cannot?', a: 'VideoText generates SRT/VTT subtitle files, translates to 50+ languages, burns subtitles into video, supports YouTube URLs, and processes batches. EasyScribe only produces plain-text transcripts.' },
+      { q: 'What can VideoText do that EasyScribe cannot?', a: 'VideoText generates SRT/VTT subtitle files, translates to 70+ languages, burns subtitles into video, supports YouTube URLs, and processes batches. EasyScribe only produces plain-text transcripts.' },
       { q: 'Is VideoText free to try unlike EasyScribe?', a: 'Yes. VideoText has a permanent free tier with 3 imports per month. No credit card required to get started.' },
       { q: 'Can VideoText transcribe YouTube videos?', a: 'Yes. Paste any YouTube URL and VideoText streams and transcribes it. No need to download the video first.' },
       { q: 'Is VideoText more accurate than EasyScribe?', a: 'VideoText uses OpenAI Whisper large-v3 at ~98.5% word accuracy on clean audio — one of the most accurate models available.' },
@@ -2945,7 +2945,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does VideoText work on Windows unlike Buzz?', a: 'Yes. VideoText is browser-based and works on Windows, Mac, and Linux. Buzz supports macOS and Linux only.' },
       { q: 'Is VideoText free like Buzz?', a: 'Yes. VideoText free tier: 3 imports/month. Buzz is free and open-source but requires local setup and model downloads.' },
       { q: 'Does VideoText require downloading Whisper model files like Buzz does?', a: 'No. VideoText runs in the cloud — no model downloads, no local storage requirements, no GPU needed. Buzz requires downloading Whisper model files (~150MB–3GB depending on model size) to your local machine.' },
-      { q: 'What extra features does VideoText have over Buzz?', a: 'VideoText adds speaker diarization, auto-generated summary, chapter navigation, keyword indexing, SRT/VTT subtitle export, subtitle translation to 50+ languages, and YouTube URL input. Buzz outputs raw transcript text only.' },
+      { q: 'What extra features does VideoText have over Buzz?', a: 'VideoText adds speaker diarization, auto-generated summary, chapter navigation, keyword indexing, SRT/VTT subtitle export, subtitle translation to 70+ languages, and YouTube URL input. Buzz outputs raw transcript text only.' },
       { q: 'Is VideoText more accurate than Buzz?', a: 'Both tools can use Whisper large-v3, giving equivalent accuracy (~98.5% WER on clear speech). VideoText always uses large-v3; Buzz lets you choose smaller, faster models at lower accuracy if preferred.' },
     ],
   },
@@ -2958,7 +2958,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "CapCut auto-captions are designed for TikTok/Reels — styled overlays, not exportable SRT files. VideoText generates accurate SRT/VTT subtitle files you can use anywhere. Free tier.",
     h1: 'CapCut Alternative — Export Clean SRT Subtitle Files',
     intro:
-      "CapCut's auto-caption feature adds styled text overlays to your video for TikTok and Reels — they look great in-app but cannot be exported as SRT or VTT files for use on YouTube, Vimeo, or other platforms. VideoText generates clean, timestamped SRT and VTT files you can upload to any video platform, translate to 50+ languages, or burn permanently into your video. Free tier.",
+      "CapCut's auto-caption feature adds styled text overlays to your video for TikTok and Reels — they look great in-app but cannot be exported as SRT or VTT files for use on YouTube, Vimeo, or other platforms. VideoText generates clean, timestamped SRT and VTT files you can upload to any video platform, translate to 70+ languages, or burn permanently into your video. Free tier.",
     breadcrumbLabel: 'CapCut Alternative',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/subtitle-generator', '/srt-generator', '/video-to-srt', '/translate-subtitles'],
@@ -2966,7 +2966,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'capcut-alternative',
     faq: [
       { q: 'Why use VideoText instead of CapCut for captions?', a: 'CapCut captions are styled overlays — they cannot be exported as SRT or VTT files. VideoText gives you a proper SRT/VTT subtitle file with accurate timestamps that works on YouTube, Vimeo, Dailymotion, and any other platform.' },
-      { q: 'Can VideoText translate captions like CapCut?', a: 'Yes. VideoText translates subtitles to 50+ languages — more than CapCut supports. The translated SRT preserves all original timestamps.' },
+      { q: 'Can VideoText translate captions like CapCut?', a: 'Yes. VideoText translates subtitles to 70+ languages — more than CapCut supports. The translated SRT preserves all original timestamps.' },
       { q: 'Can I burn captions into the video with VideoText?', a: 'Yes. Use the Burn Subtitles tool to permanently embed SRT captions into your video. Useful for platforms where external subtitles are not supported.' },
       { q: 'Is VideoText free like CapCut?', a: 'Yes. Free tier: 3 imports/month, no credit card. Watermark on subtitle files in the free tier, removed on paid plans.' },
     ],
@@ -2994,10 +2994,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/vizard-alternative',
     title: 'Best Vizard Alternative for Video Transcription & Subtitles | VideoText',
     description:
-      'Vizard is an AI video repurposing tool with auto-subtitles. VideoText focuses on accurate transcription and SRT export for standalone use — speaker labels, translate to 50+ languages, free tier.',
+      'Vizard is an AI video repurposing tool with auto-subtitles. VideoText focuses on accurate transcription and SRT export for standalone use — speaker labels, translate to 70+ languages, free tier.',
     h1: 'Vizard Alternative — Transcription and SRT Without Video Editing',
     intro:
-      "Vizard is an AI video editing platform focused on repurposing long-form video into short clips, with auto-captions built in. If you need accurate transcription and subtitle export without the full video editing workflow, VideoText is more direct: upload any video, get a speaker-labeled transcript and SRT/VTT file in minutes. Translate to 50+ languages, burn captions, export in multiple formats. Free tier.",
+      "Vizard is an AI video editing platform focused on repurposing long-form video into short clips, with auto-captions built in. If you need accurate transcription and subtitle export without the full video editing workflow, VideoText is more direct: upload any video, get a speaker-labeled transcript and SRT/VTT file in minutes. Translate to 70+ languages, burn captions, export in multiple formats. Free tier.",
     breadcrumbLabel: 'Vizard Alternative',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/subtitle-generator', '/srt-generator', '/translate-subtitles', '/capcut-alternative'],
@@ -3016,7 +3016,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'InVideo AI generates videos with auto-captions. VideoText transcribes your existing videos to text and SRT — no video regeneration needed. Speaker labels, translate, free tier.',
     h1: 'InVideo AI Alternative — Transcribe Existing Videos',
     intro:
-      'InVideo AI creates AI-generated videos with captions built in. If you already have a video and need accurate subtitles or a transcript — not a new AI-generated video — VideoText is more direct. Upload your existing video, get a transcript with speaker labels and a downloadable SRT file. Translate to 50+ languages. Free tier.',
+      'InVideo AI creates AI-generated videos with captions built in. If you already have a video and need accurate subtitles or a transcript — not a new AI-generated video — VideoText is more direct. Upload your existing video, get a transcript with speaker labels and a downloadable SRT file. Translate to 70+ languages. Free tier.',
     breadcrumbLabel: 'InVideo Alternative',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/subtitle-generator', '/translate-subtitles', '/capcut-alternative', '/vizard-alternative'],
@@ -3026,7 +3026,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can VideoText transcribe videos created in InVideo?', a: 'Yes. Export your InVideo video as MP4 and upload it to VideoText for a full transcript and SRT subtitle file.' },
       { q: 'Is VideoText free unlike InVideo?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card.' },
       { q: 'What is InVideo AI used for?', a: 'InVideo AI is a text-to-video and video creation platform — it generates videos from scripts, blog posts, or prompts. VideoText does the reverse: it converts existing videos to text transcripts and SRT subtitle files.' },
-      { q: 'Can I get subtitle files from InVideo videos using VideoText?', a: 'Yes. Export your InVideo video as MP4, upload it to VideoText, and get an SRT or VTT subtitle file with accurate timestamps. Translate the SRT to 50+ languages for multi-language distribution.' },
+      { q: 'Can I get subtitle files from InVideo videos using VideoText?', a: 'Yes. Export your InVideo video as MP4, upload it to VideoText, and get an SRT or VTT subtitle file with accurate timestamps. Translate the SRT to 70+ languages for multi-language distribution.' },
       { q: 'Does VideoText support all video formats?', a: 'Yes. VideoText accepts MP4, MOV, AVI, WebM, MKV, and all major audio formats (MP3, WAV, M4A, FLAC, OGG).' },
     ],
   },
@@ -3047,7 +3047,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does VideoText do the opposite of Fliki?', a: 'Yes. Fliki converts text/audio to video. VideoText converts video/audio to text and SRT. They cover complementary workflows.' },
       { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
       { q: 'Can I use VideoText-generated SRT files in Fliki?', a: 'Yes. Generate an SRT from your source audio/video in VideoText, then import the SRT file into Fliki\'s subtitle or caption workflow for your video project.' },
-      { q: 'Does VideoText support the same languages as Fliki?', a: 'VideoText transcribes in 90+ languages and translates subtitles to 50+ languages. Fliki supports multiple languages for TTS voice generation — the two tools serve different language workflows (transcription vs. speech synthesis).' },
+      { q: 'Does VideoText support the same languages as Fliki?', a: 'VideoText transcribes in 90+ languages and translates subtitles to 70+ languages. Fliki supports multiple languages for TTS voice generation — the two tools serve different language workflows (transcription vs. speech synthesis).' },
       { q: 'What can VideoText transcribe?', a: 'Any audio or video file: MP4, MOV, AVI, WebM, MKV, MP3, WAV, M4A, AAC, OGG, FLAC. Also accepts YouTube URLs directly — no download needed for YouTube videos.' },
     ],
   },
@@ -3184,7 +3184,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'genio-alternative',
     faq: [
-      { q: 'What does VideoText offer as a Genio alternative?', a: 'Whisper large-v3 accuracy, speaker labels, summary, chapters, keyword index, SRT/VTT/TXT export, YouTube URL input, translate to 50+ languages, and files deleted after processing.' },
+      { q: 'What does VideoText offer as a Genio alternative?', a: 'Whisper large-v3 accuracy, speaker labels, summary, chapters, keyword index, SRT/VTT/TXT export, YouTube URL input, translate to 70+ languages, and files deleted after processing.' },
       { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
       { q: 'How accurate is VideoText compared to Genio?', a: 'VideoText uses Whisper large-v3 which achieves ~98.5% word accuracy on clear speech — the highest accuracy open-source model available. It supports 90+ source languages.' },
       { q: 'Does VideoText support batch processing like Genio?', a: 'Yes. The Batch Process tool lets you upload multiple files at once and process them in parallel. Download all transcripts as a ZIP archive.' },
@@ -3277,17 +3277,17 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/allscribe-alternative',
     title: 'Best Allscribe Alternative for AI Video Transcription | VideoText',
     description:
-      'Looking for an Allscribe alternative? VideoText transcribes video and audio with Whisper large-v3 — speaker labels, SRT export, translate to 50+ languages. Free tier, no credit card.',
+      'Looking for an Allscribe alternative? VideoText transcribes video and audio with Whisper large-v3 — speaker labels, SRT export, translate to 70+ languages. Free tier, no credit card.',
     h1: 'Allscribe Alternative — AI Transcription with More Export Options',
     intro:
-      'VideoText is a full-featured Allscribe alternative. Transcribe any video or audio file with Whisper large-v3 accuracy. Get speaker labels, summary, chapters, keyword index, and export as TXT, SRT, or VTT. Translate to 50+ languages. Files deleted after processing. Free tier.',
+      'VideoText is a full-featured Allscribe alternative. Transcribe any video or audio file with Whisper large-v3 accuracy. Get speaker labels, summary, chapters, keyword index, and export as TXT, SRT, or VTT. Translate to 70+ languages. Files deleted after processing. Free tier.',
     breadcrumbLabel: 'Allscribe Alternative',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-transcript', '/turboscribe-alternative', '/easyscribe-alternative', '/audio-to-text'],
     indexable: true,
     intentKey: 'allscribe-alternative',
     faq: [
-      { q: 'What does VideoText offer over Allscribe?', a: 'Speaker diarization, auto-generated summary, chapter navigation, keyword indexing, SRT/VTT subtitle export, translation to 50+ languages, YouTube URL input, and instant file deletion after processing.' },
+      { q: 'What does VideoText offer over Allscribe?', a: 'Speaker diarization, auto-generated summary, chapter navigation, keyword indexing, SRT/VTT subtitle export, translation to 70+ languages, YouTube URL input, and instant file deletion after processing.' },
       { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
       { q: 'How accurate is VideoText compared to Allscribe?', a: 'VideoText uses Whisper large-v3 (~98.5% WER on clear speech). This is comparable to the best available AI transcription engines and significantly more accurate than older Whisper variants.' },
       { q: 'Does VideoText support batch transcription like Allscribe?', a: 'Yes. The Batch Process tool lets you upload and process multiple files simultaneously. All transcripts download as a ZIP archive.' },
@@ -3300,7 +3300,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/videoProc-alternative',
     title: 'Best VideoProc Converter Alternative for Transcription | VideoText',
     description:
-      "VideoProc Converter AI includes basic speech-to-text as part of video conversion. VideoText specializes in accurate transcription — speaker labels, SRT export, translate to 50+ languages. Free tier.",
+      "VideoProc Converter AI includes basic speech-to-text as part of video conversion. VideoText specializes in accurate transcription — speaker labels, SRT export, translate to 70+ languages. Free tier.",
     h1: 'VideoProc Alternative — Dedicated Transcription for Your Videos',
     intro:
       "VideoProc Converter AI is a desktop video processing suite that includes basic speech-to-text conversion. For accurate transcription with speaker labels, summary, chapters, and SRT export, VideoText is the dedicated alternative. Upload your video in the browser — no software install — and get a complete transcript in minutes. Free tier.",
@@ -3319,10 +3319,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/movavi-alternative',
     title: 'Best Movavi Video Converter Alternative for Transcription | VideoText',
     description:
-      'Movavi is a video converter with basic subtitle tools. VideoText transcribes video to text with Whisper AI — accurate SRT generation, translate to 50+ languages, speaker labels. Free tier.',
+      'Movavi is a video converter with basic subtitle tools. VideoText transcribes video to text with Whisper AI — accurate SRT generation, translate to 70+ languages, speaker labels. Free tier.',
     h1: 'Movavi Alternative — AI Transcription and Subtitle Generation',
     intro:
-      "Movavi is a desktop video editor and converter that includes subtitle editing tools but requires manual subtitle creation. VideoText automates subtitle generation: upload your video and get a Whisper-accurate SRT or VTT file in minutes with no manual timing work. Translate to 50+ languages. Burn captions into video. Free tier.",
+      "Movavi is a desktop video editor and converter that includes subtitle editing tools but requires manual subtitle creation. VideoText automates subtitle generation: upload your video and get a Whisper-accurate SRT or VTT file in minutes with no manual timing work. Translate to 70+ languages. Burn captions into video. Free tier.",
     breadcrumbLabel: 'Movavi Alternative',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/subtitle-generator', '/srt-generator', '/video-to-srt', '/subtitle-edit-alternative'],
@@ -3341,14 +3341,14 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Looking for a Vocallab.io alternative? VideoText transcribes video and audio with Whisper large-v3 — speaker labels, SRT export, translate, free tier. No credit card.',
     h1: 'Vocallab Alternative — Transcription with More Features',
     intro:
-      'VideoText is a comprehensive Vocallab.io alternative. Upload any video or audio file and get a speaker-labeled transcript with summary, chapters, keyword index, and SRT/VTT export. Translate to 50+ languages. Files deleted after processing. Free tier.',
+      'VideoText is a comprehensive Vocallab.io alternative. Upload any video or audio file and get a speaker-labeled transcript with summary, chapters, keyword index, and SRT/VTT export. Translate to 70+ languages. Files deleted after processing. Free tier.',
     breadcrumbLabel: 'Vocallab Alternative',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-transcript', '/turboscribe-alternative', '/notta-alternative', '/audio-to-text'],
     indexable: true,
     intentKey: 'vocallab-alternative',
     faq: [
-      { q: 'Is VideoText better than Vocallab.io?', a: 'VideoText offers Whisper large-v3 transcription, speaker diarization, auto-summary, chapter navigation, keyword indexing, SRT/VTT/TXT export, translation to 50+ languages, and YouTube URL input. Files are deleted immediately after processing.' },
+      { q: 'Is VideoText better than Vocallab.io?', a: 'VideoText offers Whisper large-v3 transcription, speaker diarization, auto-summary, chapter navigation, keyword indexing, SRT/VTT/TXT export, translation to 70+ languages, and YouTube URL input. Files are deleted immediately after processing.' },
       { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
       { q: 'What file formats does VideoText accept vs Vocallab?', a: 'VideoText accepts all major video (MP4, MOV, AVI, WebM, MKV) and audio formats (MP3, WAV, M4A, AAC, OGG, FLAC). It also takes YouTube URLs directly — no separate download step needed.' },
       { q: 'Does VideoText delete my files after transcription?', a: 'Yes. Your file is deleted immediately after the transcript is generated. Nothing is stored on VideoText servers. Download your transcript and it is yours to keep.' },
@@ -3359,10 +3359,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/skribo-alternative',
     title: 'Best Skribo.xyz Alternative for Browser Transcription | VideoText',
     description:
-      'Looking for a Skribo alternative? VideoText transcribes video and audio in the browser with Whisper large-v3 — speaker labels, SRT export, translate to 50+ languages. Free tier.',
+      'Looking for a Skribo alternative? VideoText transcribes video and audio in the browser with Whisper large-v3 — speaker labels, SRT export, translate to 70+ languages. Free tier.',
     h1: 'Skribo Alternative — Full-Featured Browser Transcription',
     intro:
-      'VideoText is a fully featured Skribo.xyz alternative. Upload any video or audio file and get a speaker-labeled Whisper transcript with summary, chapters, keyword index, and SRT/VTT export. Translate to 50+ languages. Free tier, no credit card.',
+      'VideoText is a fully featured Skribo.xyz alternative. Upload any video or audio file and get a speaker-labeled Whisper transcript with summary, chapters, keyword index, and SRT/VTT export. Translate to 70+ languages. Free tier, no credit card.',
     breadcrumbLabel: 'Skribo Alternative',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-transcript', '/audio-to-text', '/turboscribe-alternative', '/easyscribe-alternative'],
@@ -3371,7 +3371,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Why choose VideoText over Skribo?', a: 'VideoText offers Whisper large-v3 accuracy, speaker diarization, summary, chapters, keywords, multi-format export, and translation — all in a single browser-based tool with a free tier and no credit card.' },
       { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
-      { q: 'Does VideoText support the same languages as Skribo?', a: 'VideoText transcribes in 90+ languages using Whisper\'s multilingual model and translates to 50+ languages. It covers all major world languages including English, Spanish, French, German, Portuguese, Japanese, Chinese, Arabic, and more.' },
+      { q: 'Does VideoText support the same languages as Skribo?', a: 'VideoText transcribes in 90+ languages using Whisper\'s multilingual model and translates to 70+ languages. It covers all major world languages including English, Spanish, French, German, Portuguese, Japanese, Chinese, Arabic, and more.' },
       { q: 'What video formats can I upload to VideoText?', a: 'MP4, MOV, AVI, WebM, MKV, and all major audio formats (MP3, WAV, M4A, AAC, OGG, FLAC). You can also paste a YouTube URL to transcribe directly without uploading.' },
       { q: 'How long does VideoText take to process a file?', a: 'Typically 30–90 seconds for short files and 5–8 minutes for hour-long recordings. Processing speed does not depend on your local device hardware.' },
     ],
@@ -3713,9 +3713,9 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   {
     path: '/subly-alternative',
     title: 'Subly Alternative – Subtitle Generation Without Per-Credit Pricing | VideoText',
-    description: 'VideoText as a Subly alternative. Generate subtitles from any video on a flat plan. SRT, VTT export. Translate to 50+ languages. Burn captions into video. Free tier.',
+    description: 'VideoText as a Subly alternative. Generate subtitles from any video on a flat plan. SRT, VTT export. Translate to 70+ languages. Burn captions into video. Free tier.',
     h1: 'Subly Alternative — Flat Pricing for Subtitle Generation',
-    intro: 'Looking for a Subly alternative? Subly charges per video credit. VideoText uses a flat monthly plan — process as many videos as your plan allows without per-video charges. Upload any video or paste a YouTube URL, get SRT and VTT files, translate to 50+ languages, and burn captions into video. Free tier available.',
+    intro: 'Looking for a Subly alternative? Subly charges per video credit. VideoText uses a flat monthly plan — process as many videos as your plan allows without per-video charges. Upload any video or paste a YouTube URL, get SRT and VTT files, translate to 70+ languages, and burn captions into video. Free tier available.',
     breadcrumbLabel: 'Subly Alternative',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/subtitle-generator', '/zubtitle-alternative', '/kapwing-alternative', '/translate-subtitles'],
@@ -3723,7 +3723,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'subly-alternative',
     faq: [
       { q: 'How does VideoText compare to Subly for subtitle generation?', a: 'Both tools generate subtitles from video. Subly uses credit-based pricing (pay per video). VideoText uses a flat monthly subscription — no per-video charges. VideoText also includes a full transcript, speaker labels, and AI summary alongside the subtitle file.' },
-      { q: 'Does VideoText support subtitle translation like Subly?', a: 'Yes. VideoText translates SRT and VTT subtitle files to 50+ languages. Subly also supports translation, but charges additional credits per language.' },
+      { q: 'Does VideoText support subtitle translation like Subly?', a: 'Yes. VideoText translates SRT and VTT subtitle files to 70+ languages. Subly also supports translation, but charges additional credits per language.' },
       { q: 'Can VideoText burn subtitles into video?', a: 'Yes. VideoText can permanently embed (hard-code) subtitles into your video file. The burned-in video is ready to upload to social media without needing a separate subtitle file.' },
       { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. Paid plans start at $10/month with no per-video credit charges.' },
     ],
@@ -3749,9 +3749,9 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   {
     path: '/maestra-alternative',
     title: 'Maestra Alternative – Accurate Subtitles and Transcription at Lower Cost | VideoText',
-    description: 'VideoText as a Maestra alternative. AI transcription and subtitle generation from any video. SRT, VTT export. 50+ language translation. Free tier. No watermark on exports.',
+    description: 'VideoText as a Maestra alternative. AI transcription and subtitle generation from any video. SRT, VTT export. 70+ language translation. Free tier. No watermark on exports.',
     h1: 'Maestra Alternative — Subtitles and Transcription Without Per-Minute Billing',
-    intro: 'Looking for a Maestra alternative? Maestra bills per minute of audio processed. VideoText uses a flat plan — one import covers your full video regardless of length. Upload any video or YouTube URL and get a transcript, SRT/VTT files, speaker labels, and translation to 50+ languages. No watermark on subtitle file exports.',
+    intro: 'Looking for a Maestra alternative? Maestra bills per minute of audio processed. VideoText uses a flat plan — one import covers your full video regardless of length. Upload any video or YouTube URL and get a transcript, SRT/VTT files, speaker labels, and translation to 70+ languages. No watermark on subtitle file exports.',
     breadcrumbLabel: 'Maestra Alternative',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/subtitle-generator', '/video-to-transcript', '/subly-alternative', '/happyscribe-alternative'],
@@ -3759,7 +3759,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'maestra-alternative',
     faq: [
       { q: 'How does VideoText compare to Maestra?', a: 'Maestra bills per minute of processed audio, which becomes expensive for long videos. VideoText uses flat per-import pricing — a 2-hour documentary costs the same as a 5-minute clip. Both tools produce SRT files and translations, but VideoText also includes a full text transcript and AI summary.' },
-      { q: 'Does VideoText support the same languages as Maestra?', a: 'VideoText transcribes and translates in 50+ languages powered by Whisper large-v3. Maestra supports 80+ languages. For the most common content languages (English, Spanish, French, German, Portuguese, Hindi, Japanese, Korean, Chinese, Arabic), both tools deliver strong accuracy.' },
+      { q: 'Does VideoText support the same languages as Maestra?', a: 'VideoText transcribes and translates in 70+ languages powered by Whisper large-v3. Maestra supports 80+ languages. For the most common content languages (English, Spanish, French, German, Portuguese, Hindi, Japanese, Korean, Chinese, Arabic), both tools deliver strong accuracy.' },
       { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. No per-minute billing, no credit card required.' },
     ],
   },

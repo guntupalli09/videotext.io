@@ -87,7 +87,7 @@ const TOOL_GUIDES: ToolGuide[] = [
       'Set the spoken language if you know it — auto-detect works but manual improves accuracy for non-English content.',
       'Click Start. Transcription streams in real time — you see text within the first 15–30 seconds.',
       'When done, explore the result tabs: Transcript (full text with timestamps), Speakers (Pro — who said what), Summary (Pro — key points + action items), Chapters (Pro — timestamped sections), and Exports.',
-      'Pro tip: check "Also translate to" before starting to get a side-by-side translation of the transcript in 50+ languages.',
+      'Pro tip: check "Also translate to" before starting to get a side-by-side translation of the transcript in 70+ languages.',
       'Copy text or download (TXT, SRT, VTT on all plans; JSON/DOCX/PDF/CSV/Notion on Pro).',
     ],
     expected: [
@@ -100,7 +100,7 @@ const TOOL_GUIDES: ToolGuide[] = [
       'AI Summary: bullet-point key points and action items — Pro only.',
       'AI Chapters: auto-generated timestamped section headings — Pro only.',
       'Speaker diarization: who said what, with named speaker labels — Pro only.',
-      '"Also translate to" checkbox: get a full translation of the transcript in 50+ languages alongside the original — Pro only.',
+      '"Also translate to" checkbox: get a full translation of the transcript in 70+ languages alongside the original — Pro only.',
       'Export as TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.',
     ],
   },
@@ -277,7 +277,7 @@ export default function Guide() {
             { who: 'Social media creators', want: 'Subtitles burned in for silent autoplay. Translate to reach global audiences.', path: '#burn-subtitles' },
             { who: 'Teams & agencies', want: 'Batch process 20–100 videos in one go, download ZIP with SRT per video', path: '#batch-process' },
             { who: 'Meeting notes', want: 'Transcribe Zoom/Teams MP4, speaker-labelled notes + AI action items', path: '#video-to-transcript' },
-            { who: 'Educators', want: 'Auto-captions + timing fix for accessibility. Translate to 50+ languages for global reach.', path: '#fix-subtitles' },
+            { who: 'Educators', want: 'Auto-captions + timing fix for accessibility. Translate to 70+ languages for global reach.', path: '#fix-subtitles' },
           ].map(({ who, want, path }) => (
             <a key={who} href={path} className="block bg-violet-50/50 border border-violet-100 rounded-lg p-3 hover:bg-violet-50 transition-colors">
               <span className="text-xs font-bold text-violet-600 uppercase tracking-wide">{who}</span>

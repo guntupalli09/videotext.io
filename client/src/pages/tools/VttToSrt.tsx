@@ -76,7 +76,7 @@ export default function VttToSrt() {
         { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check for errors before converting' },
         { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine two subtitle tracks into one' },
         { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate SRT/VTT from video with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 50+ languages' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
       ]}
     >
       <div className="space-y-4">

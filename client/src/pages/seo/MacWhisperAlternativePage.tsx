@@ -17,7 +17,7 @@ const COMPARE_ROWS = [
   { label: 'Summary generation', videotext: true, competitor: false },
   { label: 'Auto-generated chapters', videotext: true, competitor: false },
   { label: 'Keyword index', videotext: true, competitor: false },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: true },
   { label: 'YouTube URL input', videotext: true, competitor: false },
   { label: 'Audio runs 100% locally (privacy)', videotext: false, competitor: true },

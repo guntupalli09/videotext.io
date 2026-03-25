@@ -13,7 +13,7 @@ const COMPARE_ROWS = [
   { label: 'Files deleted after processing', videotext: true, competitor: false },
   { label: 'No Zoom account required', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
-  { label: 'Translate subtitles (50+ languages)', videotext: true, competitor: false },
+  { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'YouTube URL → transcript', videotext: true, competitor: false },
   { label: 'Burn captions into video', videotext: true, competitor: false },
   { label: 'Keyword index across transcript', videotext: true, competitor: false },
@@ -150,7 +150,7 @@ export default function ZoomAlternativePage() {
           {[
             { icon: DollarSign, title: 'No plan upgrade needed', body: 'Zoom AI Companion is locked behind Business/Enterprise. VideoText works on any Zoom plan — just download the MP4 and upload it here for free.' },
             { icon: Shield, title: 'Privacy-first processing', body: 'Zoom stores your meeting transcripts in its cloud. VideoText deletes your file immediately after transcription. Nothing is retained.' },
-            { icon: Zap, title: 'SRT + translation included', body: 'Export SRT or VTT subtitle files and translate to 50+ languages. Zoom AI Companion has no subtitle export and no translation feature.' },
+            { icon: Zap, title: 'SRT + translation included', body: 'Export SRT or VTT subtitle files and translate to 70+ languages. Zoom AI Companion has no subtitle export and no translation feature.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center mb-3">

@@ -34,7 +34,7 @@ const FAQS = [
   },
   {
     q: 'What languages do you support?',
-    a: 'Transcription works in 50+ languages including English, Spanish, French, German, Japanese, Portuguese, Arabic, Hindi, Korean, Chinese, and many more. Translation to additional languages is available via the Translate Subtitles tool.',
+    a: 'Transcription works in 99 languages including English, Spanish, French, German, Japanese, Portuguese, Arabic, Hindi, Korean, Chinese, and many more. Translation to additional languages is available via the Translate Subtitles tool.',
   },
   {
     q: "What's included in the free plan?",

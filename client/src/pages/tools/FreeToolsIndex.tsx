@@ -120,7 +120,7 @@ export default function FreeToolsIndex() {
             These tools are completely free and run in your browser. They require no account, no subscription, and no data is sent to our servers. They're designed for video creators, subtitle editors, accessibility specialists, and content teams who need quick utilities without signing up for another tool.
           </p>
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed mt-3">
-            When you need more — like AI-generated subtitles from video, translation to 50+ languages, or batch processing hundreds of videos — <Link to="/video-to-subtitles" className="text-violet-600 hover:underline">VideoText's paid tools</Link> are right here.
+            When you need more — like AI-generated subtitles from video, translation to 70+ languages, or batch processing hundreds of videos — <Link to="/video-to-subtitles" className="text-violet-600 hover:underline">VideoText's paid tools</Link> are right here.
           </p>
         </section>
       </div>

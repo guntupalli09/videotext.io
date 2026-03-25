@@ -51,7 +51,7 @@ const FAQ_ITEMS = [
     category: "General",
     icon: FileVideo,
     q: "What can I do with the transcript?",
-    a: "View, copy, or download it. On Pro, the result page unlocks: AI Summary (key bullet points + action items), AI Chapters (auto-generated timestamped sections), and Speakers (who said what, with named labels). Use the \"Also translate to\" checkbox before starting to get a full translation of the transcript in 50+ languages. Export formats: TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.",
+    a: "View, copy, or download it. On Pro, the result page unlocks: AI Summary (key bullet points + action items), AI Chapters (auto-generated timestamped sections), and Speakers (who said what, with named labels). Use the \"Also translate to\" checkbox before starting to get a full translation of the transcript in 70+ languages. Export formats: TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.",
   },
   {
     category: "General",
@@ -100,7 +100,7 @@ const FAQ_ITEMS = [
     category: "Accuracy & quality",
     icon: BarChart2,
     q: "What languages are supported?",
-    a: "Transcription: 50+ languages via Whisper, including English, Spanish, French, German, Arabic, Hindi, Japanese, Chinese, Portuguese, Russian, Italian, Dutch, and more. Subtitle translation: 50+ target languages. In-app transcript translation: English, Hindi, Telugu, Spanish, Chinese, Russian.",
+    a: "Transcription: 99 languages via Whisper, including English, Spanish, French, German, Arabic, Hindi, Japanese, Chinese, Portuguese, Russian, Italian, Dutch, and more. Subtitle & transcript translation: 70+ target languages. In-app transcript view translation: English, Hindi, Telugu, Spanish, Chinese, Russian.",
   },
   {
     category: "Accuracy & quality",
@@ -119,7 +119,7 @@ const FAQ_ITEMS = [
     category: "Tools",
     icon: Languages,
     q: "Can I translate subtitles or transcripts?",
-    a: "Yes, two ways. (1) Subtitle file translation: use Translate Subtitles — upload SRT or VTT, pick any of 50+ target languages, download the translated file with original timestamps intact. (2) Transcript translation: on Pro, check \"Also translate to\" before uploading — VideoText generates your transcript AND a full translation side by side. The translated output includes timestamped segments and speaker labels. Both methods use the same 50+ language library.",
+    a: "Yes, two ways. (1) Subtitle file translation: use Translate Subtitles — upload SRT or VTT, pick any of 70+ target languages, download the translated file with original timestamps intact. (2) Transcript translation: on Pro, check \"Also translate to\" before uploading — VideoText generates your transcript AND a full translation side by side. The translated output includes timestamped segments and speaker labels. Both methods use the same 70+ language library.",
   },
   {
     category: "Tools",
@@ -156,7 +156,7 @@ const FAQ_ITEMS = [
     category: "Billing",
     icon: CreditCard,
     q: "What does Pro include that Free doesn't?",
-    a: "Pro unlocks: AI Summary, AI Chapters, Speaker diarization, Transcript translation (50+ languages), Batch processing (up to 20 videos), longer videos (2 hours vs 30 min), more languages, and no watermark on exports. All for $10/month (annual) or $20/month monthly.",
+    a: "Pro unlocks: AI Summary, AI Chapters, Speaker diarization, Transcript translation (70+ languages), Batch processing (up to 20 videos), longer videos (2 hours vs 30 min), more languages, and no watermark on exports. All for $10/month (annual) or $20/month monthly.",
   },
   {
     category: "Billing",

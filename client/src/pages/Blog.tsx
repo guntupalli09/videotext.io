@@ -639,7 +639,7 @@ Today we are covering subtitle formats.`}
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {[
-                ['VideoText', '✓', '✓', '✓ 50+ languages'],
+                ['VideoText', '✓', '✓', '✓ 70+ languages'],
                 ['CapCut', '✓', '✓', '✓ limited'],
                 ['Descript', '✓', '✗', '✗'],
                 ['Otter.ai', '✗', '✗', '✗'],
@@ -808,7 +808,7 @@ Today we are covering subtitle formats.`}
         </p>
         <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Step 2: Translate using VideoText</h3>
         <p>
-          Go to <strong>Translate Subtitles</strong>. Upload your SRT or VTT file. Choose the target language from the dropdown — VideoText supports 50+ languages including:
+          Go to <strong>Translate Subtitles</strong>. Upload your SRT or VTT file. Choose the target language from the dropdown — VideoText supports 70+ languages including:
         </p>
         <ul className="list-disc pl-5 space-y-1">
           <li>Spanish, French, German, Italian, Portuguese</li>
