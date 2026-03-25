@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Suspense, lazy } from 'react'
+import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2 } from 'lucide-react'
 import FailedState from '../components/FailedState'
@@ -29,6 +29,7 @@ import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 // import { useWorkflow } from '../contexts/WorkflowContext'
 import { trackAppEvent } from '../lib/feedbackEvents'
+import { exportFileStem, joinExportFilename, langCodeForFile } from '../lib/exportFileNames'
 // import { emitToolCompleted } from '../workflow/workflowStore'
 
 /** Optional SEO overrides for alternate entry points (e.g. /mp4-to-srt, /subtitle-generator). Do NOT duplicate logic. */
@@ -82,6 +83,15 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const [failedMessage, setFailedMessage] = useState<string | undefined>(undefined)
+
+  const fallbackSubtitleName = useMemo(() => {
+    const ext = format === 'vtt' ? '.vtt' : '.srt'
+    return joinExportFilename(
+      exportFileStem(selectedFile?.name, 'video'),
+      `subtitles_original_${langCodeForFile(language || undefined)}`,
+      ext
+    )
+  }, [selectedFile?.name, language, format])
 
   useEffect(() => {
     setFreeExportsUsed(0)
@@ -682,7 +692,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       setConvertPreview(null)
       const res = await fetch(getDownloadUrl())
       const blob = await res.blob()
-      const file = new File([blob], result.fileName || 'subtitles.srt', { type: blob.type || 'text/plain' })
+      const file = new File([blob], result.fileName || fallbackSubtitleName, { type: blob.type || 'text/plain' })
       const uploadRes = await uploadFile(file, {
         toolType: BACKEND_TOOL_TYPES.CONVERT_SUBTITLES,
         targetFormat: effectiveFormat,
@@ -859,7 +869,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         {status === 'completed' && result && (
           <div className="space-y-6">
             <SubtitleResult
-              fileName={result.fileName ?? 'subtitles.srt'}
+              fileName={result.fileName ?? fallbackSubtitleName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               format={format.toUpperCase() as 'SRT' | 'VTT'}
               onDownload={
@@ -877,7 +887,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                         const blob = await res.blob()
                         const a = document.createElement('a')
                         a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || 'subtitles.srt'
+                        a.download = result?.fileName || fallbackSubtitleName
                         a.click()
                         URL.revokeObjectURL(a.href)
                         trackAppEvent('export_clicked', { toolId: 'video-to-subtitles' })
@@ -896,7 +906,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                         const blob = await res.blob()
                         const a = document.createElement('a')
                         a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || 'subtitles.srt'
+                        a.download = result?.fileName || fallbackSubtitleName
                         a.click()
                         URL.revokeObjectURL(a.href)
                       } catch {
@@ -934,7 +944,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                       const url = URL.createObjectURL(blob)
                       const a = document.createElement('a')
                       a.href = url
-                      a.download = (result.fileName || 'subtitles.srt').replace(/\.vtt$/i, '.srt')
+                      a.download = (result.fileName || fallbackSubtitleName).replace(/\.vtt$/i, '.srt')
                       a.click()
                       URL.revokeObjectURL(url)
                     }}
@@ -1019,7 +1029,11 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                       const blob = await res.blob()
                       const a = document.createElement('a')
                       a.href = URL.createObjectURL(blob)
-                      a.download = `subtitles.${ext}`
+                      a.download = joinExportFilename(
+                        exportFileStem(selectedFile?.name, 'video'),
+                        `subtitles_converted_${convertTargetFormat}`,
+                        `.${ext}`
+                      )
                       a.click()
                       URL.revokeObjectURL(a.href)
                       setFreeExportsUsed((prev) => prev + 1)

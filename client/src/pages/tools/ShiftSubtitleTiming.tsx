@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
 import { parseSrt, parseVtt, cuesToSrt, cuesToVtt, shiftCues, detectFormat, downloadText } from '../../lib/subtitleUtils'
+import { exportFileStem, joinExportFilename } from '../../lib/exportFileNames'
 
 export default function ShiftSubtitleTiming() {
   const [text, setText] = useState('')
@@ -43,7 +44,10 @@ export default function ShiftSubtitleTiming() {
   }
 
   function handleDownload() {
-    downloadText(output, `${fileName || 'subtitles'}_shifted.${format}`)
+    downloadText(
+      output,
+      joinExportFilename(exportFileStem(fileName, 'subtitles'), `timing_shifted_${format}`, `.${format}`)
+    )
   }
 
   return (

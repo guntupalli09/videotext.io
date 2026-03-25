@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
 import { parseAss, cuesToSrt, downloadText } from '../../lib/subtitleUtils'
+import { exportFileStem, joinExportFilename } from '../../lib/exportFileNames'
 
 export default function AssToSrt() {
   const [text, setText] = useState('')
@@ -39,7 +40,7 @@ export default function AssToSrt() {
   }
 
   function handleDownload() {
-    downloadText(output, `${fileName || 'subtitles'}.srt`)
+    downloadText(output, joinExportFilename(exportFileStem(fileName, 'subtitles'), 'converted_ass_to_srt', '.srt'))
   }
 
   return (

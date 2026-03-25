@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Film } from 'lucide-react'
 // import { useWorkflow } from '../contexts/WorkflowContext'
@@ -23,6 +23,7 @@ import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 import { Minimize2, FileText, MessageSquare } from 'lucide-react'
 import { trackAppEvent } from '../lib/feedbackEvents'
+import { exportFileStem, joinExportFilename } from '../lib/exportFileNames'
 // import { emitToolCompleted } from '../workflow/workflowStore'
 
 /** Optional SEO overrides for alternate entry points. Do NOT duplicate logic. */
@@ -79,6 +80,11 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const processingStartedAtRef = useRef<number | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
+
+  const fallbackBurnName = useMemo(
+    () => joinExportFilename(exportFileStem(videoFile?.name, 'video'), 'video_with_subtitles_burned_in', '.mp4'),
+    [videoFile?.name]
+  )
 
   useEffect(() => {
     if (result?.downloadUrl) setFreeExportsUsed(0)
@@ -407,7 +413,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
           <div className="space-y-6">
             <TranslateResult
               title="Video with burned subtitles ready!"
-              fileName={result.fileName ?? 'video-with-subtitles.mp4'}
+              fileName={result.fileName ?? fallbackBurnName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               downloadLabel={plan === 'free' ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download (2 free)') : 'Download Video'}
               onDownload={
@@ -422,7 +428,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                         const blob = await res.blob()
                         const a = document.createElement('a')
                         a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || 'video-with-subtitles.mp4'
+                        a.download = result?.fileName || fallbackBurnName
                         a.click()
                         URL.revokeObjectURL(a.href)
                         setFreeExportsUsed((prev) => prev + 1)
@@ -434,7 +440,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                   : () => {
                       const a = document.createElement('a')
                       a.href = getDownloadUrl()
-                      a.download = result?.fileName || 'video-with-subtitles.mp4'
+                      a.download = result?.fileName || fallbackBurnName
                       a.click()
                     }
               }

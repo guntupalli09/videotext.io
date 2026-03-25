@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Minimize2 } from 'lucide-react'
 // import { useWorkflow } from '../contexts/WorkflowContext'
@@ -25,6 +25,7 @@ import toast from 'react-hot-toast'
 import { MessageSquare, Film, FileText } from 'lucide-react'
 import { formatFileSize } from '../lib/utils'
 import { trackAppEvent } from '../lib/feedbackEvents'
+import { exportFileStem, joinExportFilename } from '../lib/exportFileNames'
 // import { emitToolCompleted } from '../workflow/workflowStore'
 
 type CompressionLevel = 'light' | 'medium' | 'heavy'
@@ -76,6 +77,11 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const processingStartedAtRef = useRef<number | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
+
+  const fallbackCompressedName = useMemo(
+    () => joinExportFilename(exportFileStem(selectedFile?.name, 'video'), 'video_compressed', '.mp4'),
+    [selectedFile?.name]
+  )
 
   useEffect(() => {
     if (result?.downloadUrl) setFreeExportsUsed(0)
@@ -341,7 +347,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
           <div className="space-y-6">
             <TranslateResult
               title="Video compressed!"
-              fileName={result.fileName ?? 'compressed.mp4'}
+              fileName={result.fileName ?? fallbackCompressedName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               downloadLabel={plan === 'free' ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download (2 free)') : 'Download Video'}
               onDownload={
@@ -356,7 +362,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
                         const blob = await res.blob()
                         const a = document.createElement('a')
                         a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || 'compressed.mp4'
+                        a.download = result?.fileName || fallbackCompressedName
                         a.click()
                         URL.revokeObjectURL(a.href)
                         trackAppEvent('export_clicked', { toolId: 'compress-video' })
@@ -369,7 +375,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
                   : () => {
                       const a = document.createElement('a')
                       a.href = getDownloadUrl()
-                      a.download = result?.fileName || 'compressed.mp4'
+                      a.download = result?.fileName || fallbackCompressedName
                       a.click()
                     }
               }

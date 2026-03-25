@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
 import { parseTtml, cuesToSrt, downloadText } from '../../lib/subtitleUtils'
+import { exportFileStem, joinExportFilename } from '../../lib/exportFileNames'
 
 export default function TtmlToSrt() {
   const [text, setText] = useState('')
@@ -39,7 +40,7 @@ export default function TtmlToSrt() {
   }
 
   function handleDownload() {
-    downloadText(output, `${fileName || 'subtitles'}.srt`)
+    downloadText(output, joinExportFilename(exportFileStem(fileName, 'subtitles'), 'converted_ttml_to_srt', '.srt'))
   }
 
   return (

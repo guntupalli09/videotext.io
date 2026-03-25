@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
 import { parseSbv, cuesToSrt, downloadText } from '../../lib/subtitleUtils'
+import { exportFileStem, joinExportFilename } from '../../lib/exportFileNames'
 
 export default function SbvToSrt() {
   const [text, setText] = useState('')
@@ -35,7 +36,7 @@ export default function SbvToSrt() {
   }
 
   function handleDownload() {
-    downloadText(output, `${fileName || 'subtitles'}.srt`)
+    downloadText(output, joinExportFilename(exportFileStem(fileName, 'subtitles'), 'converted_sbv_to_srt', '.srt'))
   }
 
   return (

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
 import { parseVtt, cuesToSrt } from '../../lib/subtitleUtils'
+import { exportFileStem, joinExportFilename } from '../../lib/exportFileNames'
 
 export default function VttToSrt() {
   const [text, setText] = useState('')
@@ -111,7 +112,15 @@ export default function VttToSrt() {
               <pre className="text-xs text-gray-800 dark:text-gray-200 p-4 font-mono overflow-auto max-h-48 whitespace-pre-wrap">{output.slice(0, 600)}{output.length > 600 ? '\n…' : ''}</pre>
             </div>
             <button
-              onClick={() => { const blob = new Blob([output], { type: 'text/plain' }); const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = `${fileName || 'subtitles'}.srt`; a.click(); URL.revokeObjectURL(u) }}
+              onClick={() => {
+                const blob = new Blob([output], { type: 'text/plain' })
+                const u = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = u
+                a.download = joinExportFilename(exportFileStem(fileName, 'subtitles'), 'converted_vtt_to_srt', '.srt')
+                a.click()
+                URL.revokeObjectURL(u)
+              }}
               className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors"
             >
               Download .srt file

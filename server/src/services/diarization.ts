@@ -175,126 +175,30 @@ export async function transcribeWithDiarization(
 }
 
 /**
- * Build a map from raw Replicate speaker IDs (e.g. "SPEAKER_00") to display names.
- * Uses detected names where available, falls back to "Speaker 1", "Speaker 2", …
+ * Map raw diarization speaker IDs (e.g. SPEAKER_00) to stable display labels Speaker 1, Speaker 2, …
+ * Order follows first appearance in the segment list.
  */
-function buildSpeakerMap(speakerIds: string[], detectedNames: Record<string, string>): Record<string, string> {
+function buildSpeakerMap(speakerIds: string[]): Record<string, string> {
   const map: Record<string, string> = {}
-  let fallbackIdx = 1
+  let n = 1
   for (const id of speakerIds) {
-    const name = detectedNames[id]?.trim()
-    map[id] = name || `Speaker ${fallbackIdx++}`
+    map[id] = `Speaker ${n++}`
   }
   return map
 }
 
 function applyFallbackLabels(segments: DiarizedSegment[]): DiarizedSegment[] {
   const ids = [...new Set(segments.map((s) => s.speaker?.trim()).filter(Boolean))] as string[]
-  const map = buildSpeakerMap(ids, {})
+  const map = buildSpeakerMap(ids)
   return segments.map((s) => ({
     ...s,
     speaker: s.speaker ? (map[s.speaker.trim()] ?? s.speaker) : undefined,
   }))
-}
-
-// Patterns ordered from most explicit to least explicit.
-// Each entry is [regex, captureGroupIndex] where the capture group holds the name.
-const NAME_PATTERNS: Array<[RegExp, number]> = [
-  // Self-introductions — explicit
-  [/\bmy name is ([A-Z][a-z]+)/i, 1],
-  [/\bi(?:'m| am) ([A-Z][a-z]+)/i, 1],
-  [/\bthis is ([A-Z][a-z]+)\b/i, 1],
-  [/\bmy name's ([A-Z][a-z]+)/i, 1],
-  [/\bthey call me ([A-Z][a-z]+)/i, 1],
-  [/\beveryone calls me ([A-Z][a-z]+)/i, 1],
-  [/\bpeople call me ([A-Z][a-z]+)/i, 1],
-  [/\byou can call me ([A-Z][a-z]+)/i, 1],
-  [/\bi go by ([A-Z][a-z]+)/i, 1],
-  // Host/interviewer introducing guest
-  [/\bjoining (?:us|me) (?:today |now )?is ([A-Z][a-z]+)/i, 1],
-  [/\bwelcome[,\s]+([A-Z][a-z]+)\b/i, 1],
-  [/\bintroducing ([A-Z][a-z]+)\b/i, 1],
-  [/\bour (?:guest|speaker) (?:today )?is ([A-Z][a-z]+)/i, 1],
-  [/\bi(?:'d| would) like to (?:introduce|welcome) ([A-Z][a-z]+)/i, 1],
-  [/\bplease welcome ([A-Z][a-z]+)/i, 1],
-  // Direct address — speaker being addressed by another
-  [/^([A-Z][a-z]+)[,!]\s/m, 1],
-  [/\s([A-Z][a-z]+)[,!]\s/m, 1],
-  [/\bthank you[,\s]+([A-Z][a-z]+)\b/i, 1],
-  [/\bthanks[,\s]+([A-Z][a-z]+)\b/i, 1],
-  [/\bover to you[,\s]+([A-Z][a-z]+)/i, 1],
-  [/\bback to you[,\s]+([A-Z][a-z]+)/i, 1],
-  [/\bwhat do you think[,\s]+([A-Z][a-z]+)/i, 1],
-  [/\bwhat(?:'s| is) your (?:take|view|opinion)[,\s]+([A-Z][a-z]+)/i, 1],
-  [/\bgreat point[,\s]+([A-Z][a-z]+)/i, 1],
-  [/\bgood point[,\s]+([A-Z][a-z]+)/i, 1],
-  [/\bexactly[,\s]+([A-Z][a-z]+)/i, 1],
-  [/\bright[,\s]+([A-Z][a-z]+)[?.,]/i, 1],
-  // Third-person references from another speaker
-  [/\bas ([A-Z][a-z]+) (?:said|mentioned|pointed out|noted|explained)/i, 1],
-  [/\baccording to ([A-Z][a-z]+)\b/i, 1],
-  [/\b([A-Z][a-z]+) (?:said|mentioned|pointed out|noted|explained|told us|was saying)/i, 1],
-  [/\b([A-Z][a-z]+)'s (?:point|question|idea|comment|thought)\b/i, 1],
-]
-
-// Common English words that are capitalized and could be falsely matched as names
-const FALSE_POSITIVE_NAMES = new Set([
-  'I', 'The', 'A', 'An', 'And', 'But', 'Or', 'So', 'As', 'At', 'By', 'In', 'Of', 'On',
-  'To', 'Up', 'It', 'He', 'She', 'We', 'You', 'My', 'Hi', 'Hey', 'Oh', 'Ok', 'Okay',
-  'Yes', 'No', 'Not', 'Now', 'Just', 'Very', 'Well', 'Good', 'Great', 'Right', 'Sure',
-  'This', 'That', 'These', 'Those', 'Here', 'There', 'When', 'Where', 'What', 'How',
-  'Who', 'Why', 'All', 'Any', 'Some', 'Our', 'Your', 'Their', 'Its', 'Us', 'Me',
-  'Also', 'Even', 'Still', 'Then', 'Than', 'Both', 'Each', 'Few', 'More', 'Most',
-  'Other', 'Such', 'Into', 'Over', 'After', 'Before', 'Above', 'Below', 'Between',
-  'Today', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
-  'January', 'February', 'March', 'April', 'June', 'July', 'August', 'September',
-  'October', 'November', 'December',
-])
-
-function extractNameFromText(text: string): string | null {
-  for (const [pattern, group] of NAME_PATTERNS) {
-    const m = text.match(pattern)
-    if (m) {
-      const candidate = m[group]
-      if (candidate && !FALSE_POSITIVE_NAMES.has(candidate) && candidate.length >= 2) {
-        return candidate
-      }
-    }
-  }
-  return null
 }
 
 /**
- * Identify real speaker names from transcript content using regex pattern matching.
- * Scans each speaker's lines for introductions, direct address, and third-person references.
- * Falls back to "Speaker 1", "Speaker 2", … for any unidentified speaker.
+ * Normalize diarization output to generic Speaker 1, Speaker 2, … (no name extraction from text).
  */
 export function resolveSpeakerNames(segments: DiarizedSegment[]): DiarizedSegment[] {
-  const speakerIds = [...new Set(segments.map((s) => s.speaker?.trim()).filter(Boolean))] as string[]
-  if (speakerIds.length === 0) return applyFallbackLabels(segments)
-
-  const detected: Record<string, string> = {}
-
-  for (const id of speakerIds) {
-    // Lines said BY this speaker
-    const ownLines = segments.filter((s) => s.speaker?.trim() === id).map((s) => s.text)
-    for (const line of ownLines) {
-      const name = extractNameFromText(line)
-      if (name) { detected[id] = name; break }
-    }
-    if (detected[id]) continue
-
-    // Lines said BY OTHER speakers that may address or mention this speaker
-    const otherLines = segments.filter((s) => s.speaker?.trim() !== id).map((s) => s.text)
-    for (const line of otherLines) {
-      const name = extractNameFromText(line)
-      if (name) { detected[id] = name; break }
-    }
-  }
-
-  const map = buildSpeakerMap(speakerIds, detected)
-  return segments.map((s) => ({
-    ...s,
-    speaker: s.speaker ? (map[s.speaker.trim()] ?? s.speaker) : undefined,
-  }))
+  return applyFallbackLabels(segments)
 }

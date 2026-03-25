@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
 import { parseSrt, parseVtt, detectFormat, stripTags, downloadText } from '../../lib/subtitleUtils'
+import { exportFileStem, joinExportFilename } from '../../lib/exportFileNames'
 
 export default function SrtToText() {
   const [text, setText] = useState('')
@@ -142,7 +143,17 @@ export default function SrtToText() {
             </div>
             <div className="flex gap-2">
               <button onClick={() => navigator.clipboard.writeText(output)} className="flex-1 py-2.5 rounded-xl border border-violet-300 dark:border-violet-600 text-violet-700 dark:text-violet-300 font-semibold text-sm hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors">Copy all</button>
-              <button onClick={() => downloadText(output, `${fileName || 'transcript'}.txt`)} className="flex-1 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors">Download .txt</button>
+              <button
+                onClick={() =>
+                  downloadText(
+                    output,
+                    joinExportFilename(exportFileStem(fileName, 'subtitles'), 'plain_text_from_subtitles', '.txt')
+                  )
+                }
+                className="flex-1 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors"
+              >
+                Download .txt
+              </button>
             </div>
           </div>
         )}

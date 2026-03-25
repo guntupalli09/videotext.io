@@ -29,6 +29,7 @@ import {
 } from '../lib/api'
 import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
 import { LANGUAGES } from '../lib/languages'
+import { exportFileStem, joinExportFilename, targetLangFileSlug } from '../lib/exportFileNames'
 import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 
@@ -422,8 +423,13 @@ export default function VoiceRecorder() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    const langSuffix = useTranslated ? `_${translateLanguage.toLowerCase().replace(/\s+/g, '-')}` : ''
-    a.download = `transcript${langSuffix}.txt`
+    a.download = joinExportFilename(
+      exportFileStem(undefined, 'voice_recording'),
+      useTranslated
+        ? `transcript_translated_${targetLangFileSlug(translateLanguage)}`
+        : 'transcript_original_auto',
+      '.txt'
+    )
     a.click()
     URL.revokeObjectURL(url)
   }

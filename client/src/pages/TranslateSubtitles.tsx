@@ -23,6 +23,7 @@ import toast from 'react-hot-toast'
 import { Film, Wrench, MessageSquare } from 'lucide-react'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { LANGUAGES } from '../lib/languages'
+import { exportFileStem, joinExportFilename, targetLangFileSlug } from '../lib/exportFileNames'
 
 type Tab = 'upload' | 'paste'
 
@@ -61,6 +62,17 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const isPaidPlan = !['free', ''].includes(plan)
   const canEdit = ['basic', 'pro', 'agency'].includes(plan)
+
+  /** Paste / .txt upload → .txt; file upload → .srt (or .vtt from server). */
+  const translateFallbackExt: '.srt' | '.txt' =
+    !selectedFile || selectedFile.name.toLowerCase().endsWith('.txt') ? '.txt' : '.srt'
+
+  const fallbackTranslatedName = (ext: '.srt' | '.vtt' | '.txt') =>
+    joinExportFilename(
+      exportFileStem(selectedFile?.name, 'subtitles'),
+      `subtitles_translated_${targetLangFileSlug(targetLanguage)}`,
+      ext
+    )
 
   useEffect(() => {
     if (result?.downloadUrl) setFreeExportsUsed(0)
@@ -467,7 +479,16 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                   {copied ? 'Copied!' : 'Copy'}
                 </button>
                 <button
-                  onClick={() => downloadText(pasteResult, `translation-${targetLanguage.toLowerCase()}.txt`)}
+                  onClick={() =>
+                    downloadText(
+                      pasteResult,
+                      joinExportFilename(
+                        exportFileStem(undefined, 'pasted_text'),
+                        `transcript_translated_${targetLangFileSlug(targetLanguage)}`,
+                        '.txt'
+                      )
+                    )
+                  }
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -515,7 +536,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
           <div className="space-y-6">
             <TranslateResult
               title="Translation complete!"
-              fileName={result.fileName ?? 'translated.txt'}
+              fileName={result.fileName ?? fallbackTranslatedName(translateFallbackExt)}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               downloadLabel={isPaidPlan ? 'Download translated file' : (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download with watermark')}
               onDownload={
@@ -533,7 +554,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                         const blob = await res.blob()
                         const a = document.createElement('a')
                         a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || 'translated.txt'
+                        a.download = result?.fileName || fallbackTranslatedName(translateFallbackExt)
                         a.click()
                         URL.revokeObjectURL(a.href)
                         setFreeExportsUsed((prev) => prev + 1)
@@ -551,7 +572,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                         const blob = await res.blob()
                         const a = document.createElement('a')
                         a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || 'translated.txt'
+                        a.download = result?.fileName || fallbackTranslatedName(translateFallbackExt)
                         a.click()
                         URL.revokeObjectURL(a.href)
                       } catch {
@@ -623,7 +644,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                       const url = URL.createObjectURL(blob)
                       const a = document.createElement('a')
                       a.href = url
-                      a.download = (result.fileName || 'translated.srt').replace(/\.vtt$/i, '.srt')
+                      a.download = (result.fileName || fallbackTranslatedName('.srt')).replace(/\.vtt$/i, '.srt')
                       a.click()
                       URL.revokeObjectURL(url)
                     }}

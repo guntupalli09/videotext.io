@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
 import { parseSrt, parseVtt, cuesToSrt, mergeCues, detectFormat, downloadText } from '../../lib/subtitleUtils'
+import { joinExportFilename } from '../../lib/exportFileNames'
 
 export default function MergeSrtFiles() {
   const [fileA, setFileA] = useState({ name: '', content: '' })
@@ -120,7 +121,10 @@ export default function MergeSrtFiles() {
                 </div>
               ))}
             </div>
-            <button onClick={() => downloadText(output, 'merged_subtitles.srt')} className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors">
+            <button
+              onClick={() => downloadText(output, joinExportFilename('merged_subtitles', 'combined_from_two_files', '.srt'))}
+              className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors"
+            >
               Download merged SRT
             </button>
           </div>

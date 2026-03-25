@@ -99,7 +99,7 @@ const TOOL_GUIDES: ToolGuide[] = [
       'Full transcript with timestamps and editable segments (all plans).',
       'AI Summary: bullet-point key points and action items — Pro only.',
       'AI Chapters: auto-generated timestamped section headings — Pro only.',
-      'Speaker diarization: who said what, with named speaker labels — Pro only.',
+      'Speaker diarization: who said what (Speaker 1, 2, …) — Pro only.',
       '"Also translate to" checkbox: get a full translation of the transcript in 70+ languages alongside the original — Pro only.',
       'Export as TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.',
     ],

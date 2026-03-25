@@ -22,6 +22,13 @@ import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/fil
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { API_ORIGIN, getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
 import { LANGUAGES, languageToCode } from '../lib/languages'
+import {
+  exportFileStem,
+  joinExportFilename,
+  langCodeForFile,
+  targetLangFileSlug,
+  transcriptExportName,
+} from '../lib/exportFileNames'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { trackEvent } from '../lib/analytics'
@@ -168,6 +175,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [batchSpeakerDiarization, setBatchSpeakerDiarization] = useState(false)
   /** Whisper / batch job language (ISO code via languageToCode). */
   const [batchPrimaryLanguage, setBatchPrimaryLanguage] = useState('English')
+
+  /** ISO-ish tag for original-language exports (batch uses chosen spoken language; single-file uses auto-detect). */
+  const exportSourceLangCode = useMemo(() => {
+    if (isBatchMode) return languageToCode(batchPrimaryLanguage) || 'auto'
+    return undefined
+  }, [isBatchMode, batchPrimaryLanguage])
 
   // ── YouTube URL input mode ──────────────────────────────────────────────────
   /** 'file' = drag-and-drop upload, 'youtube' = URL paste. Persists while idle. */
@@ -1481,7 +1494,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'transcript.srt'
+    a.download = joinExportFilename(
+      exportFileStem(selectedFile?.name, 'video'),
+      `subtitles_original_${langCodeForFile(exportSourceLangCode)}`,
+      '.srt'
+    )
     a.click()
     URL.revokeObjectURL(url)
     toast.success('SRT downloaded')
@@ -1502,7 +1519,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'transcript.vtt'
+    a.download = joinExportFilename(
+      exportFileStem(selectedFile?.name, 'video'),
+      `subtitles_original_${langCodeForFile(exportSourceLangCode)}`,
+      '.vtt'
+    )
     a.click()
     URL.revokeObjectURL(url)
     toast.success('VTT downloaded')
@@ -1811,11 +1832,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             <div className="rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 p-3 space-y-3 text-sm">
               <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                 ZIP layout: <span className="font-mono text-[11px]">Batch/&lt;video-folder&gt;/</span> with{' '}
-                <span className="font-mono text-[11px]">*_transcript.txt</span>,{' '}
-                <span className="font-mono text-[11px]">*_transcript.json</span>,{' '}
-                <span className="font-mono text-[11px]">*_transcript.srt/.vtt</span>,{' '}
+                <span className="font-mono text-[11px]">*_transcript_original_*.txt</span>,{' '}
+                <span className="font-mono text-[11px]">*_transcript_original_*.json</span>,{' '}
+                <span className="font-mono text-[11px]">*_subtitles_original_*</span>,{' '}
                 <span className="font-mono text-[11px]">*_notion.json</span>
-                {isPaidPlan && ', plus speaker files and translated *_*.srt / *_*_transcript.txt'}.
+                {isPaidPlan && ', plus speaker files and translated *_subtitles_translated_* / *_transcript_translated_*'}.
               </p>
               <div>
                 <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Spoken language (transcription)</label>
@@ -2105,7 +2126,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 <p className="text-xs text-gray-500 dark:text-gray-500 mt-3 leading-relaxed">
                   Inside the ZIP: <span className="font-mono">README.txt</span> explains the layout.{' '}
                   Open <span className="font-mono">Batch/</span> — each subfolder is one video with{' '}
-                  <span className="font-mono">*_transcript.txt</span>, JSON, SRT/VTT, optional speakers, and translations.
+                  <span className="font-mono">*_transcript_original_*</span>, JSON, subtitles, optional speakers, and translations.
                 </p>
               </div>
             </div>
@@ -2321,7 +2342,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             )}
             {/* Result header + primary actions */}
             <TranscriptResult
-              fileName={result.fileName ?? selectedFile?.name?.replace(/\.[^/.]+$/, '') + '_transcript.txt'}
+              fileName={
+                result.fileName ??
+                joinExportFilename(
+                  exportFileStem(selectedFile?.name, 'video'),
+                  `transcript_original_${langCodeForFile(exportSourceLangCode)}`,
+                  '.txt'
+                )
+              }
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               fileSize={result.fileName ? undefined : undefined}
               transcript={displayTranscript || fullTranscript || transcriptPreview || ''}
@@ -2477,7 +2505,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         <>
                           <p className="text-sm text-gray-500 mb-4">
                             {hasMultipleSpeakers
-                              ? 'Speaker labels come from automatic detection. If names were mentioned in the video they are used directly; otherwise speakers are labelled Speaker 1, 2, …'
+                              ? 'Speaker labels come from voice-based detection. Each distinct voice is shown as Speaker 1, Speaker 2, and so on.'
                               : diarizationWasRequested
                                 ? 'Speaker identification ran but could not detect multiple speakers — the video may have a single speaker, or the service encountered an issue. Try again if unexpected.'
                                 : 'Check &quot;Speaker labels&quot; before transcribing to get automatic labels for different voices.'}
@@ -2682,13 +2710,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             const freeCanDownload = !isPaidPlan && freeExportsUsed < 2
                             const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
                             const mimeType = format === 'json' ? 'application/json' : 'text/plain'
-                            const ext = format === 'json' ? 'json' : format === 'csv' ? 'csv' : 'txt'
                             const handleDownload = () => {
                               if (isPaidPlan) {
                                 const blob = new Blob([content], { type: mimeType })
                                 const a = document.createElement('a')
                                 a.href = URL.createObjectURL(blob)
-                                a.download = `transcript-export.${ext}`
+                                a.download = transcriptExportName(selectedFile?.name, format, exportSourceLangCode)
                                 a.click()
                                 URL.revokeObjectURL(a.href)
                                 toast.success('Download started')
@@ -2703,7 +2730,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                               const blob = new Blob([watermarkedContent], { type: mimeType })
                               const a = document.createElement('a')
                               a.href = URL.createObjectURL(blob)
-                              a.download = `transcript-export.${ext}`
+                              a.download = transcriptExportName(selectedFile?.name, format, exportSourceLangCode)
                               a.click()
                               URL.revokeObjectURL(a.href)
                               toast.success('Download started (with watermark)')
@@ -2757,13 +2784,17 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               {/* Original SRT */}
                               {(() => {
-                                const langCode = 'EN'
+                                const langCode = langCodeForFile(exportSourceLangCode).toUpperCase()
                                 const handleDownloadSrt = () => {
                                   const srt = segmentsToSrt(segmentsForExport)
                                   const blob = new Blob([srt], { type: 'text/plain' })
                                   const a = document.createElement('a')
                                   a.href = URL.createObjectURL(blob)
-                                  a.download = `transcript_${langCode.toLowerCase()}.srt`
+                                  a.download = joinExportFilename(
+                                    exportFileStem(selectedFile?.name, 'video'),
+                                    `subtitles_original_${langCodeForFile(exportSourceLangCode)}`,
+                                    '.srt'
+                                  )
                                   a.click()
                                   URL.revokeObjectURL(a.href)
                                   toast.success('SRT downloaded')
@@ -2793,12 +2824,17 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                               {/* Translated SRT — only when translation available */}
                               {translateEnabled && translationLanguage && translatedSegments && (() => {
                                 const langCode = languageToCode(translationLanguage).toUpperCase()
+                                const trSlug = targetLangFileSlug(translationLanguage)
                                 const handleDownloadTranslatedSrt = () => {
                                   const srt = segmentsToSrt(translatedSegments)
                                   const blob = new Blob([srt], { type: 'text/plain' })
                                   const a = document.createElement('a')
                                   a.href = URL.createObjectURL(blob)
-                                  a.download = `transcript_${langCode.toLowerCase()}.srt`
+                                  a.download = joinExportFilename(
+                                    exportFileStem(selectedFile?.name, 'video'),
+                                    `subtitles_translated_${trSlug}`,
+                                    '.srt'
+                                  )
                                   a.click()
                                   URL.revokeObjectURL(a.href)
                                   toast.success('Translated SRT downloaded')
@@ -2849,7 +2885,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                     const blob = new Blob([content], { type: 'text/plain' })
                                     const a = document.createElement('a')
                                     a.href = URL.createObjectURL(blob)
-                                    a.download = `transcript_${languageToCode(translationLanguage)}.txt`
+                                    a.download = joinExportFilename(
+                                      exportFileStem(selectedFile?.name, 'video'),
+                                      `transcript_translated_${targetLangFileSlug(translationLanguage)}`,
+                                      '.txt'
+                                    )
                                     a.click()
                                     URL.revokeObjectURL(a.href)
                                     toast.success('Download started')

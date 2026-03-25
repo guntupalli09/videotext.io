@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
 import { parseSrt, cuesToVtt, downloadText } from '../../lib/subtitleUtils'
+import { exportFileStem, joinExportFilename } from '../../lib/exportFileNames'
 
 export default function SrtToVtt() {
   const [text, setText] = useState('')
@@ -35,7 +36,7 @@ export default function SrtToVtt() {
   }
 
   function handleDownload() {
-    downloadText(output, `${fileName || 'subtitles'}.vtt`)
+    downloadText(output, joinExportFilename(exportFileStem(fileName, 'subtitles'), 'converted_srt_to_vtt', '.vtt'))
   }
 
   return (

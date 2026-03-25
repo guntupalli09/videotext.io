@@ -15,12 +15,27 @@ import { transcribeWithDiarization, resolveSpeakerNames } from '../services/diar
 import { convertSubtitleFile } from '../services/subtitleConverter'
 import { burnSubtitles, compressVideo, HUNG_JOB_MESSAGE, extractAudioForPlayback, type CompressProfile } from '../services/ffmpeg'
 import {
-  generateOutputFilename,
   downloadVideoFromURL,
   validateVideoDuration,
   resolveMeteringSeconds,
   type ValidateVideoDurationResult,
 } from '../services/video'
+import {
+  audioExtractFilename,
+  joinExportFilename,
+  langCodeForFile,
+  subtitlesConvertedFilename,
+  subtitlesFixedFilename,
+  subtitlesMultilangZipFilename,
+  subtitlesOriginalFilename,
+  subtitlesTranslatedFilename,
+  targetLangFileSlug,
+  transcriptBundleZipFilename,
+  transcriptOriginalFilename,
+  transcriptTranslatedTextFilename,
+  videoBurnedInFilename,
+  videoCompressedFilename,
+} from '../utils/exportFileNames'
 import { validateFileType, validateFileSize } from '../utils/fileValidation'
 import { trimVideoSegment } from '../services/trimming'
 import { LANGUAGE_NAMES, generateMultiLanguageSubtitles } from '../services/multiLanguage'
@@ -368,12 +383,12 @@ async function generateBatchZip(batchId: string, batch: BatchJob): Promise<void>
           `VideoText batch export\nBatch ID: ${batchId}\n\n` +
             `Folder "Batch" contains one subfolder per input video (name includes position if filenames collide).\n\n` +
             `Per video (same outputs as single-file Video → Transcript, except no summary/chapters in batch):\n` +
-            `  • *_transcript.txt — plain transcript\n` +
-            `  • *_transcript.json — full text + segments (speaker field when diarization ran)\n` +
-            `  • *_transcript.srt / *_transcript.vtt — subtitles ([Speaker] prefixes in cues when diarization ran)\n` +
-            `  • *_speakers.txt — speaker lines (always present if you enabled speaker labels)\n` +
-            `  • *_notion.json — Notion-ready blocks\n` +
-            `  • *_<lang>.srt, *_<lang>.vtt, *_<lang>_transcript.txt — translations when enabled\n`,
+            `  • *_transcript_original_<lang>.txt — plain transcript (spoken language)\n` +
+            `  • *_transcript_original_<lang>.json — full text + segments (speaker field when diarization ran)\n` +
+            `  • *_subtitles_original_<lang>.srt / .vtt — timed subtitles ([Speaker] when diarization ran)\n` +
+            `  • *_speakers_labeled.txt — speaker lines (if speaker labels enabled)\n` +
+            `  • *_transcript_notion_blocks.json — Notion-ready blocks\n` +
+            `  • *_subtitles_translated_<lang>.srt/.vtt, *_transcript_translated_<lang>.txt — per target language\n`,
           { name: 'README.txt' }
         )
       }
@@ -699,7 +714,7 @@ async function processJob(job: import('bull').Job<JobData>) {
 
           // Kick off AAC extraction in parallel with transcription — never blocks the job.
           // Produces a universally browser-compatible audio file for the in-app player.
-          const audioFilename = generateOutputFilename(data.originalName || 'video', '_audio', '.m4a')
+          const audioFilename = audioExtractFilename(data.originalName)
           const audioOutputPath = path.join(tempDir, audioFilename)
           audioExtractionPromise = extractAudioForPlayback(videoPath, audioOutputPath)
             .then(() => `/api/audio/${audioFilename}`)
@@ -860,16 +875,16 @@ async function processJob(job: import('bull').Job<JobData>) {
             transcription_from_captions: !!data.precomputedTranscript,
           })
 
-          const baseName = path.basename(data.originalName || 'video', path.extname(data.originalName || 'video'))
+          const whisperLangForNames = options?.language || data.youtubeDefaultLanguage
           const filesToZip: { path: string; name: string }[] = []
           let primaryDownloadUrl: string
           let primaryFileName: string
 
           // Always write TXT (async to avoid blocking event loop)
-          const txtFilename = generateOutputFilename(data.originalName || 'video', '_transcript', '.txt')
+          const txtFilename = transcriptOriginalFilename(data.originalName, whisperLangForNames, '.txt')
           const txtPath = path.join(tempDir, txtFilename)
           await fs.promises.writeFile(txtPath, fullText, 'utf-8')
-          filesToZip.push({ path: txtPath, name: `${baseName}_transcript.txt` })
+          filesToZip.push({ path: txtPath, name: txtFilename })
           primaryDownloadUrl = `/api/download/${txtFilename}`
           primaryFileName = txtFilename
           if (STREAM_PROGRESS) await job.progress(55)
@@ -923,23 +938,23 @@ async function processJob(job: import('bull').Job<JobData>) {
           const exportStartMs = Date.now()
           const exportPromises: Promise<void>[] = []
           if (exportFormats.includes('json')) {
-            const jsonFilename = generateOutputFilename(data.originalName || 'video', '_transcript', '.json')
+            const jsonFilename = transcriptOriginalFilename(data.originalName, whisperLangForNames, '.json')
             const jsonPath = path.join(tempDir, jsonFilename)
             exportTranscriptJson(fullText, segments, jsonPath)
-            filesToZip.push({ path: jsonPath, name: `${baseName}_transcript.json` })
+            filesToZip.push({ path: jsonPath, name: jsonFilename })
           }
           if (exportFormats.includes('docx')) {
-            const docxFilename = generateOutputFilename(data.originalName || 'video', '_transcript', '.docx')
+            const docxFilename = transcriptOriginalFilename(data.originalName, whisperLangForNames, '.docx')
             const docxPath = path.join(tempDir, docxFilename)
             exportPromises.push(exportTranscriptDocx(fullText, docxPath).then(() => {
-              filesToZip.push({ path: docxPath, name: `${baseName}_transcript.docx` })
+              filesToZip.push({ path: docxPath, name: docxFilename })
             }))
           }
           if (exportFormats.includes('pdf')) {
-            const pdfFilename = generateOutputFilename(data.originalName || 'video', '_transcript', '.pdf')
+            const pdfFilename = transcriptOriginalFilename(data.originalName, whisperLangForNames, '.pdf')
             const pdfPath = path.join(tempDir, pdfFilename)
             exportPromises.push(exportTranscriptPdf(fullText, pdfPath).then(() => {
-              filesToZip.push({ path: pdfPath, name: `${baseName}_transcript.pdf` })
+              filesToZip.push({ path: pdfPath, name: pdfFilename })
             }))
           }
           if (exportPromises.length > 0) {
@@ -952,7 +967,7 @@ async function processJob(job: import('bull').Job<JobData>) {
 
           // If multiple outputs, serve ZIP as primary
           if (filesToZip.length > 1) {
-            const zipFilename = `${baseName}_transcript.zip`
+            const zipFilename = transcriptBundleZipFilename(data.originalName, whisperLangForNames)
             const zipPath = path.join(tempDir, zipFilename)
             const zipStream = fs.createWriteStream(zipPath)
             const zip = archiver('zip', { zlib: { level: 9 } })
@@ -1099,26 +1114,25 @@ async function processJob(job: import('bull').Job<JobData>) {
             await job.progress(80)
             const outputFiles: { [lang: string]: string } = {}
             
-            // Save primary language
+            // Save primary language (original transcription language)
             const primaryLang = options?.language || 'en'
             const primaryExt = format === 'srt' ? '.srt' : '.vtt'
-            const primaryFilename = generateOutputFilename(data.originalName || 'video', `_${primaryLang}`, primaryExt)
+            const primaryFilename = subtitlesOriginalFilename(data.originalName, primaryLang, primaryExt)
             const primaryPath = path.join(tempDir, primaryFilename)
             await fs.promises.writeFile(primaryPath, multiLangResults[primaryLang], 'utf-8')
             outputFiles[primaryLang] = primaryFilename
             
-            // Save additional languages
+            // Save additional languages (translated subtitles)
             for (const lang of additionalLangs) {
               const langExt = format === 'srt' ? '.srt' : '.vtt'
-              const langFilename = generateOutputFilename(data.originalName || 'video', `_${lang}`, langExt)
+              const langFilename = subtitlesTranslatedFilename(data.originalName, lang, langExt)
               const langPath = path.join(tempDir, langFilename)
               await fs.promises.writeFile(langPath, multiLangResults[lang], 'utf-8')
               outputFiles[lang] = langFilename
             }
 
             // Create ZIP for multi-language outputs
-            const baseName = path.basename(data.originalName || 'video', path.extname(data.originalName || 'video'))
-            const zipFilename = `${baseName}_languages.zip`
+            const zipFilename = subtitlesMultilangZipFilename(data.originalName)
             const zipPath = path.join(tempDir, zipFilename)
             const zipStream = fs.createWriteStream(zipPath)
             const zip = archiver('zip', { zlib: { level: 9 } })
@@ -1207,7 +1221,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             // Save subtitles
             await job.progress(80)
             const ext = format === 'srt' ? '.srt' : '.vtt'
-            const outputFilename = generateOutputFilename(data.originalName || 'video', '', ext)
+            const outputFilename = subtitlesOriginalFilename(data.originalName, options?.language, ext)
             const outputPath = path.join(tempDir, outputFilename)
             await fs.promises.writeFile(outputPath, subtitles, 'utf-8')
 
@@ -1340,8 +1354,13 @@ async function processJob(job: import('bull').Job<JobData>) {
             const entries = segmentsToSubtitleEntriesForBatch(segments)
             const primarySrt = toSRT(entries)
             const primaryVtt = toVTT(entries)
-            const transcriptTxtName = `${baseName}_transcript.txt`
-            const transcriptJsonName = `${baseName}_transcript.json`
+            const batchSourceLang = langCodeForFile(options?.language || 'en')
+            const transcriptTxtName = joinExportFilename(baseName, `transcript_original_${batchSourceLang}`, '.txt')
+            const transcriptJsonName = joinExportFilename(baseName, `transcript_original_${batchSourceLang}`, '.json')
+            const subtitlesSrtName = joinExportFilename(baseName, `subtitles_original_${batchSourceLang}`, '.srt')
+            const subtitlesVttName = joinExportFilename(baseName, `subtitles_original_${batchSourceLang}`, '.vtt')
+            const notionName = joinExportFilename(baseName, 'transcript_notion_blocks', '.json')
+            const speakersName = joinExportFilename(baseName, 'speakers_labeled', '.txt')
             await fs.promises.writeFile(path.join(outDir, transcriptTxtName), fullText, 'utf-8')
             exportTranscriptJson(
               fullText,
@@ -1353,15 +1372,15 @@ async function processJob(job: import('bull').Job<JobData>) {
               })),
               path.join(outDir, transcriptJsonName)
             )
-            await fs.promises.writeFile(path.join(outDir, `${baseName}_transcript.srt`), primarySrt, 'utf-8')
-            await fs.promises.writeFile(path.join(outDir, `${baseName}_transcript.vtt`), primaryVtt, 'utf-8')
+            await fs.promises.writeFile(path.join(outDir, subtitlesSrtName), primarySrt, 'utf-8')
+            await fs.promises.writeFile(path.join(outDir, subtitlesVttName), primaryVtt, 'utf-8')
 
             const notionBlocks = segments.map((s) => ({
               type: 'paragraph',
               rich_text: [{ text: { content: s.speaker ? `[${s.speaker}] ${s.text}` : s.text } }],
             }))
             await fs.promises.writeFile(
-              path.join(outDir, `${baseName}_notion.json`),
+              path.join(outDir, notionName),
               JSON.stringify(notionBlocks, null, 2),
               'utf-8'
             )
@@ -1372,13 +1391,13 @@ async function processJob(job: import('bull').Job<JobData>) {
                   (s) => `[${s.speaker || 'Speaker'}] ${s.start.toFixed(1)}s  ${s.text}`
                 )
                 await fs.promises.writeFile(
-                  path.join(outDir, `${baseName}_speakers.txt`),
+                  path.join(outDir, speakersName),
                   speakerLines.join('\n\n'),
                   'utf-8'
                 )
               } else {
                 await fs.promises.writeFile(
-                  path.join(outDir, `${baseName}_speakers.txt`),
+                  path.join(outDir, speakersName),
                   [
                     'Speaker diarization was enabled, but no speaker labels were returned for this file.',
                     '(Common when the audio is a single speaker or the model falls back to plain transcription.)',
@@ -1398,21 +1417,12 @@ async function processJob(job: import('bull').Job<JobData>) {
               const langName = LANGUAGE_NAMES[code] || code
               const translatedEntries = await translateSubtitles(entries, langName, sourceLangName)
               const translatedPlain = translatedEntries.map((e) => e.text).join('\n\n')
-              await fs.promises.writeFile(
-                path.join(outDir, `${baseName}_${code}.srt`),
-                toSRT(translatedEntries),
-                'utf-8'
-              )
-              await fs.promises.writeFile(
-                path.join(outDir, `${baseName}_${code}.vtt`),
-                toVTT(translatedEntries),
-                'utf-8'
-              )
-              await fs.promises.writeFile(
-                path.join(outDir, `${baseName}_${code}_transcript.txt`),
-                translatedPlain,
-                'utf-8'
-              )
+              const trSrt = joinExportFilename(baseName, `subtitles_translated_${code}`, '.srt')
+              const trVtt = joinExportFilename(baseName, `subtitles_translated_${code}`, '.vtt')
+              const trTxt = joinExportFilename(baseName, `transcript_translated_${code}`, '.txt')
+              await fs.promises.writeFile(path.join(outDir, trSrt), toSRT(translatedEntries), 'utf-8')
+              await fs.promises.writeFile(path.join(outDir, trVtt), toVTT(translatedEntries), 'utf-8')
+              await fs.promises.writeFile(path.join(outDir, trTxt), translatedPlain, 'utf-8')
             }
 
             const fileReceivedToTranscriptionFinishedMs = Date.now() - processingStartMs
@@ -1473,7 +1483,7 @@ async function processJob(job: import('bull').Job<JobData>) {
         case 'translate-subtitles': {
           await job.progress(20)
           const targetLang = options?.targetLanguage || 'Spanish'
-          const langSlug = targetLang.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 14)
+          const langSlug = targetLangFileSlug(targetLang)
           const filePath = data.filePath!
           const isTxtFile = filePath.toLowerCase().endsWith('.txt')
 
@@ -1482,7 +1492,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             const raw = await fs.promises.readFile(filePath, 'utf-8')
             const translatedText = await translatePreservingLines(raw, targetLang)
             await job.progress(85)
-            const outputFilename = generateOutputFilename(data.originalName || 'translation', `_${langSlug}`, '.txt')
+            const outputFilename = transcriptTranslatedTextFilename(data.originalName, langSlug)
             const outputPath = path.join(tempDir, outputFilename)
             await fs.promises.writeFile(outputPath, translatedText, 'utf-8')
             result = {
@@ -1494,7 +1504,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             const translated = await translateSubtitleFile(filePath, targetLang)
             await job.progress(70)
             const ext = translated.format === 'srt' ? '.srt' : '.vtt'
-            const outputFilename = generateOutputFilename(data.originalName || 'subtitles', `_${langSlug}`, ext)
+            const outputFilename = subtitlesTranslatedFilename(data.originalName, langSlug, ext)
             const outputPath = path.join(tempDir, outputFilename)
             await fs.promises.writeFile(outputPath, translated.content, 'utf-8')
 
@@ -1532,7 +1542,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           // Save fixed file
           await job.progress(70)
           const ext = fixed.format === 'srt' ? '.srt' : '.vtt'
-          const outputFilename = generateOutputFilename(data.originalName || 'subtitles', '_fixed', ext)
+          const outputFilename = subtitlesFixedFilename(data.originalName, ext)
           const outputPath = path.join(tempDir, outputFilename)
           await fs.promises.writeFile(outputPath, fixed.content, 'utf-8')
 
@@ -1552,8 +1562,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           const converted = convertSubtitleFile(data.filePath!, targetFormat)
 
           await job.progress(70)
-          const ext = converted.format === 'txt' ? '.txt' : converted.format === 'vtt' ? '.vtt' : '.srt'
-          const outputFilename = generateOutputFilename(data.originalName || 'subtitles', '_converted', ext)
+          const outputFilename = subtitlesConvertedFilename(data.originalName, converted.format)
           const outputPath = path.join(tempDir, outputFilename)
           await fs.promises.writeFile(outputPath, converted.content, 'utf-8')
 
@@ -1592,7 +1601,7 @@ async function processJob(job: import('bull').Job<JobData>) {
 
           // Burn subtitles
           await job.progress(20)
-          const outputFilename = generateOutputFilename(data.originalName || 'video', '_subtitled', '.mp4')
+          const outputFilename = videoBurnedInFilename(data.originalName)
           const outputPath = path.join(tempDir, outputFilename)
 
           const burnPreset = (options?.burnFontSize || options?.burnPosition || options?.burnBackgroundOpacity)
@@ -1675,7 +1684,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           }
 
           await job.progress(20)
-          const outputFilename = generateOutputFilename(data.originalName || 'video', '_compressed', '.mp4')
+          const outputFilename = videoCompressedFilename(data.originalName)
           const outputPath = path.join(tempDir, outputFilename)
 
           await compressVideo(
