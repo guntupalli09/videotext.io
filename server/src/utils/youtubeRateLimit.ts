@@ -21,6 +21,7 @@ export function maxYoutubeJobsPerHour(plan: PlanType): number {
     pro: 10,
     founding_workflow: 10,
     agency: 20,
+    business: 20,
   }
   return limits[plan] ?? 3
 }

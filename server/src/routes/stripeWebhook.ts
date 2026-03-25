@@ -70,6 +70,10 @@ async function ensureUserForStripeCustomer(
       translatedMinutes: 0,
       importCount: 0,
       resetDate: now,
+      importCountToday: 0,
+      importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+      dailyMinutesToday: 0,
+      dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
     },
     limits,
     overagesThisMonth: {
