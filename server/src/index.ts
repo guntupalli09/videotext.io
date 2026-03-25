@@ -33,6 +33,7 @@ import adminSupportRoutes, { runAlertChecks, maybeSendDailyDigest } from './rout
 import { runRecompute } from './services/recomputeMetrics'
 import { pushLogEntry } from './lib/logRing'
 import { purgeOldStripeEvents } from './models/StripeEventLog'
+import { prisma } from './db'
 import { refreshApiCredits } from './lib/apiCreditsCache'
 import { createMagicLinkToken } from './routes/auth'
 

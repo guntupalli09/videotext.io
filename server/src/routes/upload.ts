@@ -892,9 +892,9 @@ router.post('/complete', async (req: Request, res: Response) => {
     async function doEnqueueJob(): Promise<{ job: Awaited<ReturnType<typeof addJobToQueue>>; fileSize: number }> {
       if (!meta) throw new Error('Upload session not found')
       let user = meta.userId ? await getUser(meta.userId) : null
+      const now = new Date()
       if (!user && meta.userId) {
         const limits = getPlanLimits(meta.plan)
-        const now = new Date()
         const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
         user = {
           id: meta.userId!,
