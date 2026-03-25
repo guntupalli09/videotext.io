@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, useLocation, useNavigate, Outlet } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom'
 import { trackEvent, identifyUser, capturePageview } from './lib/analytics'
 import { Toaster, toast } from 'react-hot-toast'
 import Navigation from './components/Navigation'
@@ -37,7 +37,6 @@ const Terms = lazy(() => import('./pages/Terms'))
 const VoiceRecorder = lazy(() => import('./pages/VoiceRecorder'))
 const VideoToTranscript = lazy(() => import('./pages/VideoToTranscript'))
 const VideoToSubtitles = lazy(() => import('./pages/VideoToSubtitles'))
-const BatchProcess = lazy(() => import('./pages/BatchProcess'))
 const TranslateSubtitles = lazy(() => import('./pages/TranslateSubtitles'))
 const FixSubtitles = lazy(() => import('./pages/FixSubtitles'))
 const BurnSubtitles = lazy(() => import('./pages/BurnSubtitles'))
@@ -455,8 +454,9 @@ function App() {
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
-            <Route path="/batch-process" element={<BatchProcess />} />
+            <Route path="/batch-process" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/translate-subtitles" element={<TranslateSubtitles />} />
+            <Route path="/translation" element={<TranslateSubtitles />} />
             <Route path="/fix-subtitles" element={<FixSubtitles />} />
             <Route path="/burn-subtitles" element={<BurnSubtitles />} />
             <Route path="/compress-video" element={<CompressVideo />} />

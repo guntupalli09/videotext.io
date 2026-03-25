@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Lock, Play, Pause, Volume2, VolumeX, Search } from 'lucide-react'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
+import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Download, Eraser, Lock, Play, Pause, Volume2, VolumeX, Search, X } from 'lucide-react'
 import FailedState from '../components/FailedState'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
@@ -15,12 +15,13 @@ import { ResultSkeleton } from '../components/figma/ResultSkeleton'
 import { TranscriptResult } from '../components/figma/TranscriptResult'
 import { Checkbox } from '../components/figma/FormControls'
 import { incrementUsage } from '../lib/usage'
-import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, invalidateUsageCache, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, submitYoutubeUrl, isYoutubeUrl, claimGuestJob, type YoutubeUploadResponse } from '../lib/api'
+import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, invalidateUsageCache, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, submitYoutubeUrl, isYoutubeUrl, claimGuestJob, uploadBatch, getBatchStatus, getBatchDownloadUrl, type YoutubeUploadResponse, type BatchStatus } from '../lib/api'
 import { getFailureMessage } from '../lib/failureMessage'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
-import { getAbsoluteDownloadUrl } from '../lib/apiBase'
+import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
+import { LANGUAGES, languageToCode } from '../lib/languages'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { trackEvent } from '../lib/analytics'
@@ -116,6 +117,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [cleanTranscriptEnabled, setCleanTranscriptEnabled] = useState(false)
   const [translationLanguage, setTranslationLanguage] = useState<string | null>(null)
   const [translatedCache, setTranslatedCache] = useState<Record<string, string>>({})
+  const [translateEnabled, setTranslateEnabled] = useState(false)
+  const [transcriptView, setTranscriptView] = useState<'original' | 'translated'>('original')
   const transcriptScrollRef = useRef<HTMLDivElement>(null)
   const segmentRefsRef = useRef<Map<number, HTMLSpanElement>>(new Map())
   const speakerSegmentRefsRef = useRef<Map<number, HTMLDivElement>>(new Map())
@@ -153,6 +156,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   /** Contextual failure message (from getFailureMessage); shown in FailedState and Tex. */
   const [failedMessage, setFailedMessage] = useState<string | undefined>(undefined)
+  // Batch processing state (multi-file Pro mode)
+  const [batchFiles, setBatchFiles] = useState<File[]>([])
+  const [isBatchMode, setIsBatchMode] = useState(false)
+  const [batchInfo, setBatchInfo] = useState<BatchStatus | null>(null)
+  const batchPollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // ── YouTube URL input mode ──────────────────────────────────────────────────
   /** 'file' = drag-and-drop upload, 'youtube' = URL paste. Persists while idle. */
@@ -268,9 +276,34 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
   // Reset translation when transcript result changes
   useEffect(() => {
-    setTranslationLanguage(null)
+    if (!translateEnabled) {
+      setTranslationLanguage(null)
+    }
     setTranslatedCache({})
-  }, [result])
+    setTranscriptView('original')
+  }, [result]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-translate transcript when enabled and transcript text becomes available
+  useEffect(() => {
+    if (!translateEnabled || !translationLanguage || !fullTranscript.trim()) return
+    if (translatedCache[translationLanguage]) return // already translated
+    const token = getAuthToken()
+    fetch(`${getApiBase()}/api/translate-transcript/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ text: fullTranscript, targetLanguage: translationLanguage }),
+    })
+      .then((r) => r.json())
+      .then(({ translatedText }: { translatedText?: string }) => {
+        if (translatedText) {
+          setTranslatedCache((prev) => ({ ...prev, [translationLanguage]: translatedText }))
+        }
+      })
+      .catch(() => {})
+  }, [fullTranscript, translateEnabled, translationLanguage]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Restore scroll position when transitioning from partial to completed transcript.
   // Double rAF so we run after DOM/layout has stabilized (avoids jump when height changes).
@@ -523,6 +556,49 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setFileFromWorkflow(false)
     setTrimStart(null)
     setTrimEnd(null)
+  }
+
+  const handleFilesSelect = (files: File[]) => {
+    if (files.length <= 1) {
+      if (files.length === 1) handleFileSelect(files[0])
+      return
+    }
+    const paid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+    if (!paid) {
+      // Free plan: accept only first file, show inline upsell
+      handleFileSelect(files[0])
+      toast('Upgrade to Pro to process multiple videos at once.', { icon: '⬆️', duration: 5000 })
+      return
+    }
+    setBatchFiles(files.slice(0, 20))
+    setIsBatchMode(true)
+    setSelectedFile(null)
+  }
+
+  const handleProcessBatch = async () => {
+    if (batchFiles.length === 0) return
+    try {
+      const res = await uploadBatch(batchFiles, 'en', [])
+      const batchId = res.batchId
+      setBatchInfo({ batchId, status: 'queued', progress: { total: batchFiles.length, completed: 0, failed: 0, percentage: 0 }, errors: [] })
+      setStatus('processing')
+      const poll = setInterval(async () => {
+        try {
+          const s = await getBatchStatus(batchId)
+          setBatchInfo(s)
+          if (s.status === 'completed' || s.status === 'partial' || s.status === 'failed') {
+            clearInterval(poll)
+            batchPollRef.current = null
+            setStatus('completed')
+          }
+        } catch {
+          // ignore transient poll errors
+        }
+      }, 3000)
+      batchPollRef.current = poll
+    } catch {
+      toast.error('Failed to start batch processing. Please try again.')
+    }
   }
 
   const handleCancelUpload = () => {
@@ -1072,6 +1148,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       clearTimeout(minStreamDelayTimeoutRef.current)
       minStreamDelayTimeoutRef.current = null
     }
+    // Reset batch state
+    setBatchFiles([])
+    setIsBatchMode(false)
+    setBatchInfo(null)
+    if (batchPollRef.current) {
+      clearInterval(batchPollRef.current)
+      batchPollRef.current = null
+    }
     setStatus('idle')
     setProgress(0)
     setUploadPhase('uploading')
@@ -1092,6 +1176,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setSearchQuery('')
     setTranscriptEditMode(false)
     setEditableSegments(null)
+    setTranslateEnabled(false)
+    setTranslationLanguage(null)
+    setTranslatedCache({})
+    setTranscriptView('original')
     // Reset YouTube state
     setYoutubeUrlInput('')
     setYoutubeDisplayTitle(null)
@@ -1312,7 +1400,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
   const transcriptParagraphs = getParagraphs(fullTranscript || '')
   const displayTranscript =
-    translationLanguage && translatedCache[translationLanguage] != null
+    transcriptView === 'translated' && translationLanguage && translatedCache[translationLanguage] != null
       ? translatedCache[translationLanguage]
       : fullTranscript || ''
   const _displayParagraphs = getParagraphs(displayTranscript)
@@ -1403,7 +1491,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     <>
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" />
-        {status === 'idle' && !selectedFile && (
+        {status === 'idle' && !selectedFile && !isBatchMode && (
           <div className="space-y-4">
             {/* YouTube URL tab temporarily hidden — feature under development */}
 
@@ -1411,7 +1499,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             {inputMode === 'file' && (
               <UploadZone
                 immediateSelect
+                multiple
                 onFileSelect={handleFileSelect}
+                onFilesSelect={handleFilesSelect}
                 initialFiles={selectedFile ? [selectedFile] : null}
                 onRemove={() => {
                   // if (fileFromWorkflow) workflow.clearVideo()
@@ -1560,6 +1650,70 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           </div>
         )}
 
+        {/* Batch mode — file list + process CTA */}
+        {isBatchMode && status === 'idle' && (
+          <div className="space-y-4">
+            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {batchFiles.length} video{batchFiles.length !== 1 ? 's' : ''} selected
+                  </h3>
+                  <span className="text-xs text-violet-500 font-medium bg-violet-50 dark:bg-violet-900/20 px-2 py-0.5 rounded-full">Pro · up to 20</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setBatchFiles([]); setIsBatchMode(false) }}
+                  className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                >
+                  Clear all
+                </button>
+              </div>
+              <div className="space-y-1.5 max-h-64 overflow-y-auto">
+                {batchFiles.map((f, i) => (
+                  <div key={i} className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                    <span className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1">{f.name}</span>
+                    <span className="text-xs text-gray-400 shrink-0">{(f.size / (1024 * 1024)).toFixed(1)} MB</span>
+                    <button
+                      type="button"
+                      onClick={() => setBatchFiles(prev => prev.filter((_, j) => j !== i))}
+                      className="text-gray-400 hover:text-red-500 transition-colors shrink-0"
+                      aria-label="Remove file"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <label className="block">
+                <span className="sr-only">Add more files</span>
+                <span className="inline-flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 font-medium cursor-pointer hover:underline">
+                  + Add more
+                  <input
+                    type="file"
+                    multiple
+                    accept="video/*,audio/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const added = Array.from(e.target.files ?? [])
+                      if (added.length) setBatchFiles(prev => [...prev, ...added].slice(0, 20))
+                      e.target.value = ''
+                    }}
+                  />
+                </span>
+              </label>
+            </div>
+            <button
+              type="button"
+              onClick={handleProcessBatch}
+              disabled={batchFiles.length === 0}
+              className="w-full py-3 px-6 rounded-xl font-semibold text-sm bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
+            >
+              Process {batchFiles.length} video{batchFiles.length !== 1 ? 's' : ''}
+            </button>
+          </div>
+        )}
+
         {status === 'idle' && selectedFile && (
           <ProcessingInterface
             file={{
@@ -1629,12 +1783,111 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     </div>
                   </>
                 )}
+                {/* Also translate to — Pro only */}
+                <div className={`rounded-xl border p-3 space-y-2 transition-colors ${
+                  translateEnabled && isPaidPlan
+                    ? 'border-blue-200 dark:border-blue-800/40 bg-blue-50/40 dark:bg-blue-950/20'
+                    : 'border-gray-100 dark:border-gray-800'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                      Also translate to
+                      {!isPaidPlan && <Lock className="w-3 h-3 text-gray-400" />}
+                    </span>
+                    {isPaidPlan ? (
+                      <input
+                        type="checkbox"
+                        checked={translateEnabled}
+                        onChange={(e) => {
+                          setTranslateEnabled(e.target.checked)
+                          if (e.target.checked && !translationLanguage) setTranslationLanguage('Spanish')
+                        }}
+                        className="rounded accent-blue-500"
+                      />
+                    ) : (
+                      <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                    )}
+                  </div>
+                  {translateEnabled && isPaidPlan && (
+                    <>
+                      <select
+                        value={translationLanguage ?? 'Spanish'}
+                        onChange={(e) => setTranslationLanguage(e.target.value)}
+                        className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        {LANGUAGES.map((l) => (
+                          <option key={l.value} value={l.value}>{l.label}</option>
+                        ))}
+                      </select>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                        A translated transcript will be added alongside the original — always preserved.
+                      </p>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </ProcessingInterface>
         )}
 
-        {status === 'processing' && (
+        {/* Batch processing progress */}
+        {isBatchMode && status === 'processing' && batchInfo && (
+          <div className="rounded-2xl border border-violet-100 dark:border-violet-900/30 bg-violet-50/60 dark:bg-violet-950/20 p-6 space-y-5">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                Processing {batchInfo.progress.total} video{batchInfo.progress.total !== 1 ? 's' : ''}…
+              </h3>
+              <span className="text-sm text-violet-600 dark:text-violet-400 font-medium">
+                {batchInfo.progress.completed}/{batchInfo.progress.total} complete
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div
+                className="bg-violet-500 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${batchInfo.progress.percentage}%` }}
+              />
+            </div>
+            {batchInfo.progress.failed > 0 && (
+              <p className="text-xs text-red-500">{batchInfo.progress.failed} failed</p>
+            )}
+            <p className="text-xs text-gray-500 dark:text-gray-400">Transcripts will be available for download when complete.</p>
+          </div>
+        )}
+
+        {/* Batch completed results */}
+        {isBatchMode && status === 'completed' && batchInfo && (
+          <div className="rounded-2xl border border-green-100 dark:border-green-900/30 bg-green-50/60 dark:bg-green-950/20 p-6 space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
+                <Download className="w-5 h-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">Batch complete</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {batchInfo.progress.completed} of {batchInfo.progress.total} transcribed
+                  {batchInfo.progress.failed > 0 && ` · ${batchInfo.progress.failed} failed`}
+                </p>
+              </div>
+            </div>
+            <a
+              href={getBatchDownloadUrl(batchInfo.batchId)}
+              download
+              className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-xl font-semibold text-sm bg-green-600 hover:bg-green-700 text-white transition-colors shadow-md"
+            >
+              <Download className="w-4 h-4" />
+              Download all as ZIP
+            </a>
+            <button
+              type="button"
+              onClick={handleProcessAnother}
+              className="w-full py-2.5 px-6 rounded-xl text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              Process another batch
+            </button>
+          </div>
+        )}
+
+        {!isBatchMode && status === 'processing' && (
           <div className="bg-purple-50 dark:bg-purple-900/10 rounded-2xl p-8 border border-purple-100 dark:border-purple-900/30">
             <div className="flex items-center gap-4 mb-8 pb-6 border-b border-purple-200 dark:border-purple-900/30">
               {/* YouTube thumbnail or file icon */}
@@ -1721,7 +1974,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           </div>
         )}
 
-        {status === 'completed' && result && (
+        {!isBatchMode && status === 'completed' && result && (
           <>
             {/* ── Teaser preview card (non-logged-in) — first 10% of real content ── */}
             {showAuthGate && !isLoggedIn() && (() => {
@@ -1813,6 +2066,40 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             {/* Blur overlay for non-logged-in users — the JobAuthGateModal sits above this */}
             {showAuthGate && !isLoggedIn() && (
               <div className="absolute inset-0 z-10 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 rounded-2xl" aria-hidden="true" />
+            )}
+            {/* Translation sub-tabs — shown when "Also translate to" was enabled and translation is ready */}
+            {translateEnabled && translationLanguage && translatedCache[translationLanguage] && (
+              <div className="flex gap-1 border-b border-gray-100 dark:border-gray-800 pb-0 -mb-4">
+                <button
+                  type="button"
+                  onClick={() => setTranscriptView('original')}
+                  className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                    transcriptView === 'original'
+                      ? 'text-gray-900 dark:text-white border-b-2 border-violet-500'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  }`}
+                >
+                  Original
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTranscriptView('translated')}
+                  className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                    transcriptView === 'translated'
+                      ? 'text-gray-900 dark:text-white border-b-2 border-violet-500'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  }`}
+                >
+                  {translationLanguage}
+                </button>
+              </div>
+            )}
+            {/* Translating indicator */}
+            {translateEnabled && translationLanguage && !translatedCache[translationLanguage] && fullTranscript && (
+              <div className="flex items-center gap-2 text-xs text-blue-500">
+                <div className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+                Translating to {translationLanguage}…
+              </div>
             )}
             {/* Result header + primary actions */}
             <TranscriptResult
@@ -2330,6 +2617,45 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             )
                           })}
                         </div>
+                        {/* Translated transcript export — shown when "Also translate to" was enabled */}
+                        {translateEnabled && translationLanguage && translatedCache[translationLanguage] && (
+                          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                            <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-3">
+                              Translated — {translationLanguage}
+                            </p>
+                            <div className="rounded-xl bg-blue-50 ring-1 ring-blue-100 dark:bg-blue-950/20 dark:ring-blue-800/30 p-4">
+                              <div className="flex items-center justify-between gap-2 mb-3">
+                                <div className="flex items-center gap-2">
+                                  <span className="w-2 h-2 rounded-full shrink-0 bg-blue-400" aria-hidden />
+                                  <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                    Transcript [{languageToCode(translationLanguage).toUpperCase()}]
+                                  </span>
+                                  <span className="text-[10px] font-mono text-gray-400">.txt</span>
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    const content = translatedCache[translationLanguage]
+                                    const blob = new Blob([content], { type: 'text/plain' })
+                                    const a = document.createElement('a')
+                                    a.href = URL.createObjectURL(blob)
+                                    a.download = `transcript_${languageToCode(translationLanguage)}.txt`
+                                    a.click()
+                                    URL.revokeObjectURL(a.href)
+                                    toast.success('Download started')
+                                  }}
+                                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+                                >
+                                  <Download className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                                  Download
+                                </button>
+                              </div>
+                              <pre className="text-xs text-gray-600 dark:text-gray-400 bg-white/70 dark:bg-white/5 p-3 rounded-lg max-h-28 overflow-y-auto whitespace-pre-wrap break-words ring-1 ring-white/80 dark:ring-white/10">
+                                {translatedCache[translationLanguage].slice(0, 400)}
+                                {translatedCache[translationLanguage].length > 400 ? '…' : ''}
+                              </pre>
+                            </div>
+                          </div>
+                        )}
                       </>
                     )}
                   </div>
@@ -2564,7 +2890,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           </>
         )}
 
-        {status === 'failed' && (
+        {!isBatchMode && status === 'failed' && (
           <FailedState
             onTryAgain={() => {
               setFailedMessage(undefined)

@@ -12,6 +12,11 @@ export const API_ORIGIN =
       ? window.location.origin
       : 'http://localhost:3001'
 
+/** Returns the API origin (e.g. https://api.videotext.io). */
+export function getApiBase(): string {
+  return API_ORIGIN
+}
+
 /** Resolve relative API path (e.g. /api/download/xxx) to absolute URL for fetch/download. */
 export function getAbsoluteDownloadUrl(relativeOrAbsolute: string): string {
   if (relativeOrAbsolute.startsWith('http')) return relativeOrAbsolute

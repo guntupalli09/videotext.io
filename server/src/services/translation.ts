@@ -37,8 +37,63 @@ const LANGUAGE_NAMES_BY_CODE: Record<string, string> = {
   ru: 'Russian',
 }
 
-/** Supported display names for transcript translation (frontend sends these). */
-export const TRANSCRIPT_TRANSLATION_LANGUAGES = ['English', 'Hindi', 'Telugu', 'Spanish', 'Chinese', 'Russian'] as const
+/**
+ * Translate text while preserving exact line structure.
+ * Blank lines are tracked and re-inserted after translation — never sent to GPT.
+ * Use this for .txt files and transcripts where line breaks carry meaning.
+ */
+export async function translatePreservingLines(text: string, targetLanguage: string): Promise<string> {
+  const lines = text.split('\n')
+
+  const blankPositions = new Set<number>()
+  const nonBlankLines: string[] = []
+
+  lines.forEach((line, i) => {
+    if (line.trim().length === 0) {
+      blankPositions.add(i)
+    } else {
+      nonBlankLines.push(line)
+    }
+  })
+
+  if (nonBlankLines.length === 0) return text
+
+  const BATCH_SIZE = 20
+  const translatedNonBlankLines: string[] = []
+
+  for (let i = 0; i < nonBlankLines.length; i += BATCH_SIZE) {
+    const batch = nonBlankLines.slice(i, i + BATCH_SIZE)
+    const numbered = batch.map((line, idx) => `${i + idx + 1}. ${line}`).join('\n')
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [{
+        role: 'user',
+        content: `Translate each line to ${targetLanguage}. Return EXACTLY ${batch.length} lines in the same order. Format: "1. translated text". Do not merge, split, or reorder lines. Do not add explanations. Output only the translated lines.\n\n${numbered}`,
+      }],
+      temperature: 0.3,
+      max_tokens: 4000,
+    })
+
+    let out = response.choices[0]?.message?.content?.trim() ?? ''
+    out = out.replace(/```[\s\S]*?```/g, '').trim()
+
+    const parsed = out.split('\n').filter((l) => l.trim().length > 0)
+    for (let j = 0; j < batch.length; j++) {
+      const raw = parsed[j] ?? batch[j]
+      const m = raw.match(/^\d+[\.\)]\s*(.+)$/)
+      translatedNonBlankLines.push(m ? m[1].trim() : raw.trim())
+    }
+  }
+
+  // Re-assemble: restore blank lines at original positions
+  const result: string[] = []
+  let nbIdx = 0
+  for (let i = 0; i < lines.length; i++) {
+    result.push(blankPositions.has(i) ? '' : (translatedNonBlankLines[nbIdx++] ?? lines[i]))
+  }
+  return result.join('\n')
+}
 
 /**
  * Translate subtitle entries

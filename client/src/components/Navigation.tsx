@@ -10,11 +10,10 @@ const AI_TOOLS = [
   { name: 'Voice → Text 🎙️', path: '/voice-recorder' },
   { name: 'Video → Transcript', path: '/video-to-transcript' },
   { name: 'Video → Subtitles', path: '/video-to-subtitles' },
-  { name: 'Translate Subtitles', path: '/translate-subtitles' },
+  { name: 'Translation', path: '/translation' },
   { name: 'Fix Subtitles', path: '/fix-subtitles' },
   { name: 'Burn Subtitles', path: '/burn-subtitles' },
   { name: 'Compress Video', path: '/compress-video' },
-  { name: 'Batch Processing', path: '/batch-process' },
 ]
 
 const FREE_TOOLS = [

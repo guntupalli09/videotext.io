@@ -6,7 +6,7 @@ import path from 'path'
 import fs from 'fs'
 import archiver from 'archiver'
 import { transcribeVideo, transcribeVideoVerbose } from '../services/transcription'
-import { translateSubtitleFile, detectLanguageConsistency } from '../services/translation'
+import { translateSubtitleFile, detectLanguageConsistency, translatePreservingLines } from '../services/translation'
 import { fixSubtitleFile, validateSubtitleFile } from '../services/subtitles'
 import { generateSummary, generateChapters } from '../services/transcriptSummary'
 import { exportTranscriptJson, exportTranscriptDocx, exportTranscriptPdf } from '../services/transcriptExport'
@@ -1283,33 +1283,47 @@ async function processJob(job: import('bull').Job<JobData>) {
 
         case 'translate-subtitles': {
           await job.progress(20)
-          const translated = await translateSubtitleFile(
-            data.filePath!,
-            options?.targetLanguage || 'arabic'
-          )
+          const targetLang = options?.targetLanguage || 'Spanish'
+          const langSlug = targetLang.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 14)
+          const filePath = data.filePath!
+          const isTxtFile = filePath.toLowerCase().endsWith('.txt')
 
-          // Save translated file
-          await job.progress(70)
-          const langCode = options?.targetLanguage === 'hindi' ? 'hi' : 'ar'
-          const ext = translated.format === 'srt' ? '.srt' : '.vtt'
-          const outputFilename = generateOutputFilename(data.originalName || 'subtitles', `_${langCode}`, ext)
-          const outputPath = path.join(tempDir, outputFilename)
-          await fs.promises.writeFile(outputPath, translated.content, 'utf-8')
+          if (isTxtFile) {
+            // Plain-text translation: preserve exact line structure
+            const raw = await fs.promises.readFile(filePath, 'utf-8')
+            const translatedText = await translatePreservingLines(raw, targetLang)
+            await job.progress(85)
+            const outputFilename = generateOutputFilename(data.originalName || 'translation', `_${langSlug}`, '.txt')
+            const outputPath = path.join(tempDir, outputFilename)
+            await fs.promises.writeFile(outputPath, translatedText, 'utf-8')
+            result = {
+              downloadUrl: `/api/download/${outputFilename}`,
+              fileName: outputFilename,
+            }
+          } else {
+            // SRT / VTT: timestamps are never touched — only text fields translated
+            const translated = await translateSubtitleFile(filePath, targetLang)
+            await job.progress(70)
+            const ext = translated.format === 'srt' ? '.srt' : '.vtt'
+            const outputFilename = generateOutputFilename(data.originalName || 'subtitles', `_${langSlug}`, ext)
+            const outputPath = path.join(tempDir, outputFilename)
+            await fs.promises.writeFile(outputPath, translated.content, 'utf-8')
 
-          let consistencyIssues: { line: number; issueType: string }[] = []
-          try {
-            const format = detectSubtitleFormat(outputPath)
-            const entries = format === 'srt' ? parseSRT(outputPath) : parseVTT(outputPath)
-            const check = detectLanguageConsistency(entries, options?.targetLanguage || 'arabic')
-            consistencyIssues = check.issues
-          } catch {
-            // Phase 1B: derived check must not block job
-          }
+            let consistencyIssues: { line: number; issueType: string }[] = []
+            try {
+              const format = detectSubtitleFormat(outputPath)
+              const entries = format === 'srt' ? parseSRT(outputPath) : parseVTT(outputPath)
+              const check = detectLanguageConsistency(entries, targetLang)
+              consistencyIssues = check.issues
+            } catch {
+              // Phase 1B: derived check must not block job
+            }
 
-          result = {
-            downloadUrl: `/api/download/${outputFilename}`,
-            fileName: outputFilename,
-            consistencyIssues: consistencyIssues.length > 0 ? consistencyIssues : undefined,
+            result = {
+              downloadUrl: `/api/download/${outputFilename}`,
+              fileName: outputFilename,
+              consistencyIssues: consistencyIssues.length > 0 ? consistencyIssues : undefined,
+            }
           }
           break
         }

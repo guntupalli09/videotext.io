@@ -230,15 +230,21 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
     // Validate file type based on tool
     let typeError: string | null = null
     if (toolType === 'translate-subtitles' || toolType === 'fix-subtitles' || toolType === 'convert-subtitles') {
-      const subResult = await validateSubtitleFile(file.path)
-      uploadLog.info({ msg: '[upload] subtitle validation',
-        toolType,
-        originalname: file.originalname,
-        detectedFormat: subResult.detectedFormat,
-        validationError: subResult.error ?? undefined,
-      })
-      if (subResult.error) {
-        typeError = subResult.error
+      const isPlainText = file.originalname.toLowerCase().endsWith('.txt')
+      if (toolType === 'translate-subtitles' && isPlainText) {
+        // .txt files are valid for translation — no subtitle structure required
+        uploadLog.info({ msg: '[upload] txt translation file accepted', originalname: file.originalname })
+      } else {
+        const subResult = await validateSubtitleFile(file.path)
+        uploadLog.info({ msg: '[upload] subtitle validation',
+          toolType,
+          originalname: file.originalname,
+          detectedFormat: subResult.detectedFormat,
+          validationError: subResult.error ?? undefined,
+        })
+        if (subResult.error) {
+          typeError = subResult.error
+        }
       }
     } else if (toolType !== 'burn-subtitles' && inputType !== 'audio') {
       // For video tools (and not audio-only), validate video type (extension fallback for AVI etc.)
