@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { FileText, Users, ListOrdered, BookOpen, FileCode, Download, Lock, Play, Pause, Volume2, VolumeX, Search, X } from 'lucide-react'
+import { FileText, Users, ListOrdered, BookOpen, FileCode, Download, Lock, Play, Pause, Volume2, VolumeX, Search, X, Layers, Sparkles, FolderArchive, AlertCircle } from 'lucide-react'
 import FailedState from '../components/FailedState'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
@@ -49,6 +49,13 @@ const BRANCH_ICONS: Record<BranchId, typeof FileText> = {
   exports: FileCode,
 }
 const STOPWORDS = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'when', 'where', 'why', 'how'])
+
+/** Matches server `batchEnabled` (Pro, Business, Agency, founding_workflow — not Basic). */
+function batchUploadEligible(): boolean {
+  if (typeof window === 'undefined') return false
+  const p = (localStorage.getItem('plan') || 'free').toLowerCase()
+  return ['pro', 'agency', 'business', 'founding_workflow'].includes(p)
+}
 
 /** Optional SEO overrides for alternate entry points (e.g. /video-to-text, /youtube-to-transcript). Do NOT duplicate logic here. */
 export type VideoToTranscriptSeoProps = {
@@ -156,6 +163,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   /** Optional: translate subtitle exports per video (ISO codes via languageToCode). */
   const [batchTranslateLanguage, setBatchTranslateLanguage] = useState<string>('')
   const [batchSpeakerDiarization, setBatchSpeakerDiarization] = useState(false)
+  /** Whisper / batch job language (ISO code via languageToCode). */
+  const [batchPrimaryLanguage, setBatchPrimaryLanguage] = useState('English')
 
   // ── YouTube URL input mode ──────────────────────────────────────────────────
   /** 'file' = drag-and-drop upload, 'youtube' = URL paste. Persists while idle. */
@@ -559,11 +568,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       if (files.length === 1) handleFileSelect(files[0])
       return
     }
-    const paid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
-    if (!paid) {
-      // Free plan: accept only first file, show inline upsell
+    if (!batchUploadEligible()) {
       handleFileSelect(files[0])
-      toast('Upgrade to Pro to process multiple videos at once.', { icon: '⬆️', duration: 5000 })
+      toast('Batch upload is on Pro and Business — upgrade to process multiple videos at once.', { icon: '📦', duration: 5500 })
       return
     }
     setBatchFiles(files.slice(0, 20))
@@ -577,7 +584,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     try {
       const extraLangs =
         batchTranslateLanguage && paid ? [languageToCode(batchTranslateLanguage)] : []
-      const res = await uploadBatch(batchFiles, 'en', extraLangs, {
+      const primaryCode = languageToCode(batchPrimaryLanguage || 'English') || 'en'
+      const res = await uploadBatch(batchFiles, primaryCode, extraLangs, {
         speakerDiarization: paid && batchSpeakerDiarization,
         ...(extraLangs.length > 0 ? { additionalLanguages: extraLangs } : {}),
       })
@@ -1183,6 +1191,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setTranslationLanguage(null)
     setTranslatedCache({})
     setTranscriptView('original')
+    setBatchTranslateLanguage('')
+    setBatchSpeakerDiarization(false)
+    setBatchPrimaryLanguage('English')
     // Reset YouTube state
     setYoutubeUrlInput('')
     setYoutubeDisplayTitle(null)
@@ -1492,32 +1503,64 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
             {/* ── File upload tab ── */}
             {inputMode === 'file' && (
-              <UploadZone
-                immediateSelect
-                multiple
-                onFileSelect={handleFileSelect}
-                onFilesSelect={handleFilesSelect}
-                initialFiles={selectedFile ? [selectedFile] : null}
-                onRemove={() => {
-                  // if (fileFromWorkflow) workflow.clearVideo()
-                  setSelectedFile(null)
-                  setFileFromWorkflow(false)
-                }}
-                fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
-              />
-            )}
-            {/* Batch hint */}
-            {inputMode === 'file' && (
-              isPaidPlan ? (
-                <p className="text-xs text-center text-gray-400 dark:text-gray-500">
-                  Pro tip: drop or select multiple files at once to process as a batch
-                </p>
-              ) : (
-                <p className="text-xs text-center text-gray-400 dark:text-gray-500">
-                  Drop multiple files for batch mode —{' '}
-                  <Link to="/pricing" className="text-violet-500 hover:underline font-medium">Pro only</Link>
-                </p>
-              )
+              <div className="space-y-3 sm:space-y-4">
+                {batchUploadEligible() && (
+                  <div
+                    className="rounded-xl sm:rounded-2xl border-2 border-purple-400/55 dark:border-purple-500/45 bg-gradient-to-br from-purple-500/[0.12] via-violet-600/[0.08] to-fuchsia-600/[0.06] dark:from-purple-950/60 dark:via-violet-950/40 dark:to-fuchsia-950/25 px-4 py-3.5 sm:px-5 sm:py-4 shadow-sm shadow-purple-500/10"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    <div className="flex gap-3 sm:gap-4">
+                      <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-purple-600/25 dark:bg-purple-400/20 ring-2 ring-purple-500/35">
+                        <Layers className="h-5 w-5 sm:h-6 sm:w-6 text-purple-700 dark:text-purple-200" aria-hidden />
+                      </div>
+                      <div className="min-w-0 text-left flex-1">
+                        <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white leading-snug">
+                          Batch upload included — add several videos at once
+                        </p>
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 leading-relaxed">
+                          Drag in multiple files or use “browse” and select more than one. You get one ZIP with all transcripts when processing finishes.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <UploadZone
+                  immediateSelect
+                  multiple
+                  onFileSelect={handleFileSelect}
+                  onFilesSelect={handleFilesSelect}
+                  initialFiles={selectedFile ? [selectedFile] : null}
+                  onRemove={() => {
+                    // if (fileFromWorkflow) workflow.clearVideo()
+                    setSelectedFile(null)
+                    setFileFromWorkflow(false)
+                  }}
+                  fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
+                />
+                {!batchUploadEligible() && (
+                  <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+                    {isPaidPlan ? (
+                      <>
+                        Batch processing (multiple files) is on{' '}
+                        <span className="font-medium text-gray-700 dark:text-gray-200">Pro &amp; Business</span>
+                        .{' '}
+                        <Link to="/pricing" className="text-violet-600 dark:text-violet-400 font-semibold hover:underline">
+                          View plans
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        Batch upload — process many videos in one go — is on{' '}
+                        <Link to="/pricing" className="text-violet-600 dark:text-violet-400 font-semibold hover:underline">
+                          Pro &amp; Business
+                        </Link>
+                        .
+                      </>
+                    )}
+                  </p>
+                )}
+              </div>
             )}
 
             {/* ── YouTube URL tab ── */}
@@ -1700,6 +1743,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     setIsBatchMode(false)
                     setBatchTranslateLanguage('')
                     setBatchSpeakerDiarization(false)
+                    setBatchPrimaryLanguage('English')
                   }}
                   className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                 >
@@ -1741,12 +1785,28 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               </label>
             </div>
             <div className="rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 p-3 space-y-3 text-sm">
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Each video is saved in its own folder in the ZIP: <span className="font-mono text-[11px]">.txt</span>,{' '}
-                <span className="font-mono text-[11px]">.json</span>, <span className="font-mono text-[11px]">.srt</span>,{' '}
-                <span className="font-mono text-[11px]">.vtt</span>, <span className="font-mono text-[11px]">_notion.json</span>
-                {isPaidPlan && ', plus optional translations and speaker labels'}.
+              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                ZIP layout: <span className="font-mono text-[11px]">Batch/&lt;video-folder&gt;/</span> with{' '}
+                <span className="font-mono text-[11px]">*_transcript.txt</span>,{' '}
+                <span className="font-mono text-[11px]">*_transcript.json</span>,{' '}
+                <span className="font-mono text-[11px]">*_transcript.srt/.vtt</span>,{' '}
+                <span className="font-mono text-[11px]">*_notion.json</span>
+                {isPaidPlan && ', plus speaker files and translated *_*.srt / *_*_transcript.txt'}.
               </p>
+              <div>
+                <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Spoken language (transcription)</label>
+                <select
+                  value={batchPrimaryLanguage}
+                  onChange={(e) => setBatchPrimaryLanguage(e.target.value)}
+                  className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2"
+                >
+                  {LANGUAGES.map((l) => (
+                    <option key={l.value} value={l.value}>
+                      {l.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
               {isPaidPlan && (
                 <>
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -1939,47 +1999,99 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
         {/* Batch processing progress */}
         {isBatchMode && status === 'processing' && batchInfo && (
-          <div className="rounded-2xl border border-violet-100 dark:border-violet-900/30 bg-violet-50/60 dark:bg-violet-950/20 p-6 space-y-5">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                Processing {batchInfo.progress.total} video{batchInfo.progress.total !== 1 ? 's' : ''}…
-              </h3>
-              <span className="text-sm text-violet-600 dark:text-violet-400 font-medium">
-                {batchInfo.progress.completed}/{batchInfo.progress.total} complete
+          <div className="rounded-2xl border border-violet-200/80 dark:border-violet-800/50 bg-gradient-to-br from-violet-50/90 via-white to-fuchsia-50/50 dark:from-violet-950/40 dark:via-gray-900/80 dark:to-fuchsia-950/20 p-6 sm:p-8 space-y-6 shadow-lg shadow-violet-500/10">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div className="flex gap-4">
+                <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-md">
+                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
+                    Batch processing
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
+                    Each video runs full transcription; then we pack everything into one ZIP.
+                  </p>
+                </div>
+              </div>
+              <div className="text-right sm:pt-1">
+                <p className="text-2xl font-bold tabular-nums text-violet-600 dark:text-violet-300">
+                  {batchInfo.progress.completed + batchInfo.progress.failed}/{batchInfo.progress.total}
+                </p>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">videos finished</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                <span>Overall progress</span>
+                <span>{batchInfo.progress.percentage}%</span>
+              </div>
+              <div className="w-full bg-gray-200/90 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-violet-500 to-fuchsia-500 h-2.5 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${Math.min(100, batchInfo.progress.percentage)}%` }}
+                />
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 dark:bg-gray-800/80 px-3 py-1.5 border border-violet-100 dark:border-violet-900/40 text-gray-700 dark:text-gray-300">
+                <FolderArchive className="w-3.5 h-3.5 text-violet-500" />
+                ZIP: Batch/&lt;folder&gt;/ per video
               </span>
+              {batchInfo.progress.failed > 0 && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 dark:bg-red-950/40 px-3 py-1.5 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  {batchInfo.progress.failed} failed (see ZIP error log)
+                </span>
+              )}
             </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div
-                className="bg-violet-500 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${batchInfo.progress.percentage}%` }}
-              />
-            </div>
-            {batchInfo.progress.failed > 0 && (
-              <p className="text-xs text-red-500">{batchInfo.progress.failed} failed</p>
-            )}
-            <p className="text-xs text-gray-500 dark:text-gray-400">Transcripts will be available for download when complete.</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 border-t border-violet-100/80 dark:border-violet-900/30 pt-4">
+              Download unlocks when every video finishes. You can leave this page — the job runs on our servers.
+            </p>
           </div>
         )}
 
         {/* Batch completed results */}
         {isBatchMode && status === 'completed' && batchInfo && (
-          <div className="rounded-2xl border border-green-100 dark:border-green-900/30 bg-green-50/60 dark:bg-green-950/20 p-6 space-y-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
-                <Download className="w-5 h-5 text-green-600 dark:text-green-400" />
+          <div className="rounded-2xl border border-emerald-200/80 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50/95 via-white to-teal-50/60 dark:from-emerald-950/35 dark:via-gray-900/90 dark:to-teal-950/25 p-6 sm:p-8 space-y-6 shadow-lg shadow-emerald-500/10">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+              <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md">
+                <Download className="w-6 h-6" aria-hidden />
               </div>
-              <div>
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white">Batch complete</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {batchInfo.progress.completed} of {batchInfo.progress.total} transcribed
-                  {batchInfo.progress.failed > 0 && ` · ${batchInfo.progress.failed} failed`}
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Your batch is ready</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {batchInfo.progress.completed} of {batchInfo.progress.total} transcribed successfully
+                  {batchInfo.progress.failed > 0 && (
+                    <span className="text-amber-700 dark:text-amber-400">
+                      {' '}
+                      · {batchInfo.progress.failed} could not be completed (details included in the ZIP)
+                    </span>
+                  )}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-500 mt-3 leading-relaxed">
+                  Inside the ZIP: <span className="font-mono">README.txt</span> explains the layout.{' '}
+                  Open <span className="font-mono">Batch/</span> — each subfolder is one video with{' '}
+                  <span className="font-mono">*_transcript.txt</span>, JSON, SRT/VTT, optional speakers, and translations.
                 </p>
               </div>
             </div>
+            {batchInfo.errors && batchInfo.errors.length > 0 && (
+              <div className="rounded-xl border border-amber-200/50 dark:border-amber-900/40 bg-amber-50/50 dark:bg-amber-950/20 px-4 py-3 text-sm">
+                <p className="font-medium text-amber-900 dark:text-amber-200 mb-2">Issues</p>
+                <ul className="list-disc list-inside space-y-1 text-amber-800 dark:text-amber-300/90 text-xs">
+                  {batchInfo.errors.map((e, i) => (
+                    <li key={i}>
+                      <span className="font-medium">{e.videoName}</span>: {e.reason}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <a
               href={getBatchDownloadUrl(batchInfo.batchId)}
               download
-              className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-xl font-semibold text-sm bg-green-600 hover:bg-green-700 text-white transition-colors shadow-md"
+              className="flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white transition-colors shadow-md"
             >
               <Download className="w-4 h-4" />
               Download all as ZIP

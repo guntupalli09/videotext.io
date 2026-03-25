@@ -97,10 +97,12 @@ export async function translatePreservingLines(text: string, targetLanguage: str
 
 /**
  * Translate subtitle entries
+ * @param sourceLanguageName — spoken language of the subtitle lines (default English); required for non-English transcripts.
  */
 export async function translateSubtitles(
   entries: SubtitleEntry[],
-  targetLanguage: string
+  targetLanguage: string,
+  sourceLanguageName: string = 'English'
 ): Promise<SubtitleEntry[]> {
   // Translate in batches to avoid token limits and improve reliability
   const BATCH_SIZE = 20
@@ -120,7 +122,7 @@ export async function translateSubtitles(
       model: 'gpt-4o-mini',
       messages: [{
         role: 'user',
-        content: `Translate the following ${batch.length} subtitle lines from English to ${targetLanguage}.
+        content: `Translate the following ${batch.length} subtitle lines from ${sourceLanguageName} to ${targetLanguage}.
 
 CRITICAL REQUIREMENTS:
 - You MUST translate ALL ${batch.length} lines
@@ -337,8 +339,7 @@ export async function translateSubtitleFile(
     ? parseSRT(filePath)
     : parseVTT(filePath)
   
-  // Translate
-  const translatedEntries = await translateSubtitles(entries, targetLanguage)
+  const translatedEntries = await translateSubtitles(entries, targetLanguage, 'English')
   
   // Convert back to format
   const content = format === 'srt'
@@ -371,9 +372,10 @@ export async function generateMultiLanguageSubtitlesFromVideo(
     [primaryLanguageCode]: primarySrt,
   }
 
+  const sourceName = LANGUAGE_NAMES_BY_CODE[primaryLanguageCode] || 'English'
   for (const code of additionalLanguageCodes) {
     const languageName = LANGUAGE_NAMES_BY_CODE[code] || code
-    const translatedEntries = await translateSubtitles(primaryEntries, languageName)
+    const translatedEntries = await translateSubtitles(primaryEntries, languageName, sourceName)
     out[code] = toSRT(translatedEntries)
   }
 

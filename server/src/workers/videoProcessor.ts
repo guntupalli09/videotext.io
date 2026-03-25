@@ -299,15 +299,31 @@ function sanitizeBatchFolderName(name: string): string {
   return n.slice(0, 80)
 }
 
-function segmentsToSubtitleEntries(
+/** Subtitle cues for batch ZIP; include [Speaker] prefix in cue text when diarization produced labels. */
+function segmentsToSubtitleEntriesForBatch(
   segments: { start: number; end: number; text: string; speaker?: string }[]
 ): SubtitleEntry[] {
   return segments.map((s, i) => ({
     index: i + 1,
     startTime: s.start,
     endTime: s.end,
-    text: s.text,
+    text: s.speaker ? `[${s.speaker}] ${s.text}` : s.text,
   }))
+}
+
+/** Recursively add a directory tree to the zip with stable paths (fixes flat/dump zips from archiver.directory on some platforms). */
+function appendFsDirToArchive(archive: ReturnType<typeof archiver>, dirFsPath: string, zipPathPrefix: string): void {
+  if (!fs.existsSync(dirFsPath)) return
+  for (const name of fs.readdirSync(dirFsPath)) {
+    const full = path.join(dirFsPath, name)
+    const stat = fs.statSync(full)
+    const zipName = zipPathPrefix ? `${zipPathPrefix}/${name}`.replace(/\\/g, '/') : name.replace(/\\/g, '/')
+    if (stat.isDirectory()) {
+      appendFsDirToArchive(archive, full, zipName)
+    } else {
+      archive.file(full, { name: zipName })
+    }
+  }
 }
 
 async function generateBatchZip(batchId: string, batch: BatchJob): Promise<void> {
@@ -346,12 +362,18 @@ async function generateBatchZip(batchId: string, batch: BatchJob): Promise<void>
     if (fs.existsSync(stagingRoot)) {
       const sub = fs.readdirSync(stagingRoot)
       if (sub.length > 0) {
-        archive.directory(stagingRoot, false)
+        appendFsDirToArchive(archive, stagingRoot, 'Batch')
         added = true
         archive.append(
-          `VideoText batch export\nBatch ID: ${batchId}\nEach folder is one input video (named from the file).\n` +
-            `Files: .txt (transcript), .json (segments + full text), .srt / .vtt (captions), *_notion.json (Notion-ready blocks), ` +
-            `*_speakers.txt (when speaker labels are enabled), *_<lang>.srt/.vtt (translations).\n`,
+          `VideoText batch export\nBatch ID: ${batchId}\n\n` +
+            `Folder "Batch" contains one subfolder per input video (name includes position if filenames collide).\n\n` +
+            `Per video (same outputs as single-file Video → Transcript, except no summary/chapters in batch):\n` +
+            `  • *_transcript.txt — plain transcript\n` +
+            `  • *_transcript.json — full text + segments (speaker field when diarization ran)\n` +
+            `  • *_transcript.srt / *_transcript.vtt — subtitles ([Speaker] prefixes in cues when diarization ran)\n` +
+            `  • *_speakers.txt — speaker lines (always present if you enabled speaker labels)\n` +
+            `  • *_notion.json — Notion-ready blocks\n` +
+            `  • *_<lang>.srt, *_<lang>.vtt, *_<lang>_transcript.txt — translations when enabled\n`,
           { name: 'README.txt' }
         )
       }
@@ -1316,17 +1338,24 @@ async function processJob(job: import('bull').Job<JobData>) {
             const outDir = path.join(stagingRoot, folderKey)
             fs.mkdirSync(outDir, { recursive: true })
 
-            const entries = segmentsToSubtitleEntries(segments)
+            const entries = segmentsToSubtitleEntriesForBatch(segments)
             const primarySrt = toSRT(entries)
             const primaryVtt = toVTT(entries)
-            await fs.promises.writeFile(path.join(outDir, `${baseName}.txt`), fullText, 'utf-8')
+            const transcriptTxtName = `${baseName}_transcript.txt`
+            const transcriptJsonName = `${baseName}_transcript.json`
+            await fs.promises.writeFile(path.join(outDir, transcriptTxtName), fullText, 'utf-8')
             exportTranscriptJson(
               fullText,
-              segments.map((s) => ({ start: s.start, end: s.end, text: s.text })),
-              path.join(outDir, `${baseName}.json`)
+              segments.map((s) => ({
+                start: s.start,
+                end: s.end,
+                text: s.text,
+                ...(s.speaker ? { speaker: s.speaker } : {}),
+              })),
+              path.join(outDir, transcriptJsonName)
             )
-            await fs.promises.writeFile(path.join(outDir, `${baseName}.srt`), primarySrt, 'utf-8')
-            await fs.promises.writeFile(path.join(outDir, `${baseName}.vtt`), primaryVtt, 'utf-8')
+            await fs.promises.writeFile(path.join(outDir, `${baseName}_transcript.srt`), primarySrt, 'utf-8')
+            await fs.promises.writeFile(path.join(outDir, `${baseName}_transcript.vtt`), primaryVtt, 'utf-8')
 
             const notionBlocks = segments.map((s) => ({
               type: 'paragraph',
@@ -1338,21 +1367,38 @@ async function processJob(job: import('bull').Job<JobData>) {
               'utf-8'
             )
 
-            if (segments.some((s) => s.speaker)) {
-              const speakerLines = segments.map(
-                (s) => `[${s.speaker || 'Speaker'}] ${s.start.toFixed(1)}s  ${s.text}`
-              )
-              await fs.promises.writeFile(
-                path.join(outDir, `${baseName}_speakers.txt`),
-                speakerLines.join('\n\n'),
-                'utf-8'
-              )
+            if (options?.speakerDiarization) {
+              if (segments.some((s) => s.speaker)) {
+                const speakerLines = segments.map(
+                  (s) => `[${s.speaker || 'Speaker'}] ${s.start.toFixed(1)}s  ${s.text}`
+                )
+                await fs.promises.writeFile(
+                  path.join(outDir, `${baseName}_speakers.txt`),
+                  speakerLines.join('\n\n'),
+                  'utf-8'
+                )
+              } else {
+                await fs.promises.writeFile(
+                  path.join(outDir, `${baseName}_speakers.txt`),
+                  [
+                    'Speaker diarization was enabled, but no speaker labels were returned for this file.',
+                    '(Common when the audio is a single speaker or the model falls back to plain transcription.)',
+                    '',
+                    '--- Transcript ---',
+                    '',
+                    fullText,
+                  ].join('\n'),
+                  'utf-8'
+                )
+              }
             }
 
             const additionalLangs = options?.additionalLanguages || []
+            const sourceLangName = LANGUAGE_NAMES[options?.language || 'en'] || 'English'
             for (const code of additionalLangs) {
               const langName = LANGUAGE_NAMES[code] || code
-              const translatedEntries = await translateSubtitles(entries, langName)
+              const translatedEntries = await translateSubtitles(entries, langName, sourceLangName)
+              const translatedPlain = translatedEntries.map((e) => e.text).join('\n\n')
               await fs.promises.writeFile(
                 path.join(outDir, `${baseName}_${code}.srt`),
                 toSRT(translatedEntries),
@@ -1361,6 +1407,11 @@ async function processJob(job: import('bull').Job<JobData>) {
               await fs.promises.writeFile(
                 path.join(outDir, `${baseName}_${code}.vtt`),
                 toVTT(translatedEntries),
+                'utf-8'
+              )
+              await fs.promises.writeFile(
+                path.join(outDir, `${baseName}_${code}_transcript.txt`),
+                translatedPlain,
                 'utf-8'
               )
             }

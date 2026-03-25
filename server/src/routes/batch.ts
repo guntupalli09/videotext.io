@@ -382,7 +382,8 @@ router.get('/:batchId/status', async (req: Request, res: Response) => {
   const completed = batch.processedVideos
   const failed = batch.failedVideos
   const total = batch.totalVideos
-  const percentage = total === 0 ? 0 : Math.round((completed / total) * 100)
+  const done = completed + failed
+  const percentage = total === 0 ? 0 : Math.round((done / total) * 100)
 
   res.json({
     batchId: batch.id,

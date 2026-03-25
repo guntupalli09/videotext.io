@@ -7,6 +7,7 @@ export interface TranscriptSegment {
   start: number
   end: number
   text: string
+  speaker?: string
 }
 
 /**
@@ -19,7 +20,12 @@ export function exportTranscriptJson(
 ): void {
   const data = {
     text: fullText,
-    segments: segments.map((s) => ({ start: s.start, end: s.end, text: s.text })),
+    segments: segments.map((s) => ({
+      start: s.start,
+      end: s.end,
+      text: s.text,
+      ...(s.speaker ? { speaker: s.speaker } : {}),
+    })),
   }
   fs.writeFileSync(outputPath, JSON.stringify(data, null, 2), 'utf-8')
 }

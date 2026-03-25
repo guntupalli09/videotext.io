@@ -40,10 +40,11 @@ export async function generateMultiLanguageSubtitles(
     [primaryLanguage]: primarySrt,
   }
 
+  const sourceName = LANGUAGE_NAMES[primaryLanguage] || primaryLanguage || 'English'
   const translated = await Promise.all(
     additionalLanguages.map(async (langCode) => {
       const langName = LANGUAGE_NAMES[langCode] || langCode
-      const entries = await translateSubtitles(primaryEntries, langName)
+      const entries = await translateSubtitles(primaryEntries, langName, sourceName)
       return { langCode, srt: toSRT(entries) }
     })
   )
