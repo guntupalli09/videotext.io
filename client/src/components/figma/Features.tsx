@@ -44,7 +44,7 @@ const SPOTLIGHT_TOOLS = [
     tagline: 'Speak naturally. Get an accurate transcript instantly.',
     description:
       'Record up to 1 hour directly in your browser — no app, no upload. AI transcribes with 98.5% accuracy across 99 languages. Copy or download in one click.',
-    bullets: ['Noise suppression built-in', '99 languages auto-detected', 'Up to 1 hour recording'],
+    bullets: ['Noise suppression built-in', '99 languages auto-detected', 'Up to 1 hour recording', 'Translation to 70+ languages'],
     gradient: 'from-purple-500 to-violet-600',
     glowColor: 'rgba(168,85,247,0.08)',
     href: '/voice-recorder',
