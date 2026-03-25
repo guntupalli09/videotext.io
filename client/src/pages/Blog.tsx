@@ -1239,12 +1239,6 @@ export default function Blog() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 sm:py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        {!activePost && (
-          <Link to="/" className="text-sm text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-medium mb-6 inline-block">
-            ← Back to home
-          </Link>
-        )}
-
         {activePost ? (
           <PostView post={activePost} />
         ) : (

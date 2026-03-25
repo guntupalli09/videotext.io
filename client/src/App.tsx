@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, useLocation, useNavigate, Outlet } from '
 import { trackEvent, identifyUser, capturePageview } from './lib/analytics'
 import { Toaster, toast } from 'react-hot-toast'
 import Navigation from './components/Navigation'
-import Breadcrumb from './components/Breadcrumb'
 import { getSessionDetails, getSessionStatus, setupPassword } from './lib/billing'
 import { invalidateUsageCache } from './lib/api'
 import Footer from './components/Footer'
@@ -412,7 +411,6 @@ function App() {
         <Navigation />
         <OfflineBanner />
         <main id="main" className="flex-grow w-full min-w-0" role="main">
-          <Breadcrumb />
           <SessionErrorBoundary>
             <Suspense fallback={<RouteFallback />}>
               <Routes>
