@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import UpgradeBanner from '../components/UpgradeBanner'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mic,
@@ -410,6 +411,7 @@ export default function VoiceRecorder() {
       tags={['Free', 'Noise Suppressed', '99 Languages']}
     >
       <div className="max-w-2xl mx-auto space-y-5 pb-16">
+        <UpgradeBanner variant="voice" />
 
         {/* ── Main recorder card ──────────────────────────────────────────── */}
         <motion.div

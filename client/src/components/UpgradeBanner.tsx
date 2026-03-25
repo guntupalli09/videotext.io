@@ -7,6 +7,7 @@ export type UpgradeBannerVariant =
   | 'queue'          // "Process faster with priority queue"
   | 'ai-features'    // "Unlock AI chapters, keywords & summaries"
   | 'batch'          // "Process 20 videos at once with batch"
+  | 'voice'          // "Remove watermark & unlock full-length recordings"
 
 const MESSAGES: Record<UpgradeBannerVariant, { text: string; cta: string }> = {
   'video-length': {
@@ -28,6 +29,10 @@ const MESSAGES: Record<UpgradeBannerVariant, { text: string; cta: string }> = {
   'batch': {
     text: 'Batch processing is Pro-only.',
     cta: 'Process 20 videos at once — upgrade to Pro',
+  },
+  'voice': {
+    text: 'Voice recordings export with a watermark.',
+    cta: 'Remove watermark & unlock full-length recordings — upgrade to Pro',
   },
 }
 
