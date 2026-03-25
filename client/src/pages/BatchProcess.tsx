@@ -3,6 +3,7 @@ import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import { FolderPlus, Film, Minimize2, FileText } from 'lucide-react'
 import { ToolLayout } from '../components/figma/ToolLayout'
+import UpgradeBanner from '../components/UpgradeBanner'
 import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
 import { TranslateResult } from '../components/figma/TranslateResult'
@@ -107,6 +108,7 @@ export default function BatchProcess(props: BatchProcessSeoProps = {}) {
   return (
     <>
       <ToolLayout {...layoutProps}>
+        <UpgradeBanner variant="batch" />
         {status === 'idle' && files.length === 0 && (
           <UploadZone
             multiple

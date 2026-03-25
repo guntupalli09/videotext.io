@@ -27,16 +27,18 @@ function getContent(reason?: PaywallReason, resetDate?: string) {
   switch (reason) {
     case 'VIDEO_TOO_LONG':
       return {
-        title: 'Video too long for free plan',
-        body: 'Free supports up to 30 minutes. Pro supports up to 2 hours.',
+        title: 'Free plan: 30 min max',
+        body: 'Free plan supports videos up to 30 minutes. Upgrade to Pro to process full-length videos (up to 2 hours).',
         cta: 'Upgrade to Pro',
+        secondaryLabel: 'Upload shorter video',
         secondary: null,
       }
     case 'BATCH_NOT_AVAILABLE':
       return {
-        title: 'Batch processing is a Pro feature',
-        body: 'Upload up to 20 videos at once with Pro. Pro also includes speaker labels, AI summaries, and 5 languages.',
-        cta: 'Upgrade to Pro',
+        title: 'Batch processing is Pro',
+        body: 'Process 20 videos at once. Pro also unlocks speaker labels, AI summaries, and full-length videos.',
+        cta: 'Unlock batch — upgrade to Pro',
+        secondaryLabel: null,
         secondary: null,
       }
     case 'MULTI_LANGUAGE_NOT_AVAILABLE':
@@ -44,14 +46,16 @@ function getContent(reason?: PaywallReason, resetDate?: string) {
         title: 'Multiple languages require Pro',
         body: 'Pro supports 5 languages with speaker diarization, AI summaries, and batch processing.',
         cta: 'Upgrade to Pro',
+        secondaryLabel: null,
         secondary: null,
       }
     case 'FREE_DAILY_LIMIT_REACHED':
     default:
       return {
-        title: "You've used today's 3 free imports",
-        body: 'Pro includes batch processing, speaker labels, AI summaries, chapters, keywords, and 5 languages — no fixed limits.',
+        title: "Today's 3 free imports used",
+        body: 'Upgrade to Pro — no daily limits, AI chapters, keywords, speaker labels, batch processing, and no watermark.',
         cta: 'Upgrade to Pro — $10/mo annual',
+        secondaryLabel: null,
         secondary: `Resets at ${resetLabel} if you'd like to wait.`,
       }
   }
@@ -64,7 +68,7 @@ export default function PaywallModal({ isOpen, onClose, reason, onUpgrade, reset
 
   if (!isOpen) return null
 
-  const { title, body, cta, secondary } = getContent(reason, resetDate)
+  const { title, body, cta, secondaryLabel, secondary } = getContent(reason, resetDate)
 
   return (
     <AnimatePresence>
@@ -100,6 +104,16 @@ export default function PaywallModal({ isOpen, onClose, reason, onUpgrade, reset
           >
             {cta}
           </Link>
+
+          {secondaryLabel && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-3 block w-full py-3 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-medium text-sm text-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              {secondaryLabel}
+            </button>
+          )}
 
           {secondary && (
             <p className="mt-3 text-xs text-gray-400 dark:text-gray-500 text-center">{secondary}</p>

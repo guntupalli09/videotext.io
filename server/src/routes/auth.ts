@@ -428,6 +428,53 @@ router.post('/reset-password', async (req: Request, res: Response) => {
   }
 })
 
+// ─── Magic login link ──────────────────────────────────────────────────────────
+// Generates a one-time token stored in Redis (1h expiry) and returns it so callers
+// can embed it in an email link.  Separate endpoint validates the token and returns a JWT.
+
+const MAGIC_LINK_EXPIRY_SECONDS = 60 * 60 // 1 hour
+function magicKey(token: string) { return `magic:${token}` }
+
+export async function createMagicLinkToken(userId: string): Promise<string> {
+  const token = crypto.randomBytes(32).toString('hex')
+  await otpRedis.set(magicKey(token), userId, 'EX', MAGIC_LINK_EXPIRY_SECONDS)
+  return token
+}
+
+/** GET /api/auth/magic-login?token=xxx
+ *  Validates the one-time token, returns a JWT, and deletes the token (single-use).
+ */
+router.get('/magic-login', async (req: Request, res: Response) => {
+  try {
+    const { token } = req.query as { token?: string }
+    if (!token || typeof token !== 'string') {
+      return res.status(400).json({ message: 'Token is required.' })
+    }
+    const userId = await otpRedis.get(magicKey(token))
+    if (!userId) {
+      return res.status(400).json({ message: 'Magic link expired or already used.' })
+    }
+    await otpRedis.del(magicKey(token))
+
+    const user = await prisma.user.findUnique({ where: { id: userId } })
+    if (!user) {
+      return res.status(404).json({ message: 'Account not found.' })
+    }
+
+    // Map DB row to User model shape
+    const userObj = {
+      id: user.id,
+      email: user.email,
+      plan: user.plan as import('../models/User').PlanType,
+    }
+    const jwt = signAuthToken(userObj as import('../models/User').User)
+    return res.json({ token: jwt, userId: user.id, plan: user.plan, email: user.email })
+  } catch (error: any) {
+    log.error({ msg: 'magic-login error', error: (error as Error)?.message ?? String(error) })
+    return res.status(500).json({ message: 'Magic login failed.' })
+  }
+})
+
 /** Demo login: returns a JWT for the shared demo account (pro plan). No password required.
  *  Controlled by DEMO_ENABLED env var (defaults to true). Rate-limited to prevent abuse.
  */

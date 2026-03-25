@@ -29,6 +29,7 @@ const Demo = lazy(() => import('./pages/Demo'))
 const Signup = lazy(() => import('./pages/Signup'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
+const MagicLogin = lazy(() => import('./pages/MagicLogin'))
 const Refer = lazy(() => import('./pages/Refer'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Faq = lazy(() => import('./pages/Faq'))
@@ -423,6 +424,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/magic-login" element={<MagicLogin />} />
             <Route path="/refer" element={<Refer />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/faq" element={<Faq />} />

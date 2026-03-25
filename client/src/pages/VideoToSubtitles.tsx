@@ -5,6 +5,7 @@ import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
+import UpgradeBanner from '../components/UpgradeBanner'
 import LanguageSelector from '../components/LanguageSelector'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
@@ -732,6 +733,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   return (
     <>
       <ToolLayout {...layoutProps}>
+        <UpgradeBanner variant="watermark" />
         {status === 'idle' && !selectedFile && (
           <UploadZone
             immediateSelect

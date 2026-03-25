@@ -4,6 +4,7 @@ import { FileText, Users, ListOrdered, BookOpen, Sparkles, Hash, FileCode, Downl
 import FailedState from '../components/FailedState'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
+import UpgradeBanner from '../components/UpgradeBanner'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import { isLoggedIn } from '../lib/auth'
 import { ToolLayout } from '../components/figma/ToolLayout'
@@ -1353,8 +1354,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       return
     }
     const srt = segmentsToSrt(segmentsForExport)
+    const WM = '⚠  Generated with VideoText.io — Free Plan  |  Remove watermark: videotext.io/pricing'
     const watermarkedSrt = !isPaidPlan
-      ? `0\n00:00:00,500 --> 00:00:03,000\nSubtitles by VideoText.io (Free Plan) · videotext.io\n\n${srt}`
+      ? `0\n00:00:00,000 --> 00:00:08,000\n${WM}\n\n${srt}`
       : srt
     const blob = new Blob([watermarkedSrt], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
@@ -1372,8 +1374,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       return
     }
     const vtt = segmentsToVtt(segmentsForExport)
+    const WM_VTT = '⚠  Generated with VideoText.io — Free Plan  |  Remove watermark: videotext.io/pricing'
     const watermarkedVtt = !isPaidPlan
-      ? vtt.replace('WEBVTT', 'WEBVTT\n\n00:00:00.500 --> 00:00:03.000\nSubtitles by VideoText.io (Free Plan) · videotext.io\n')
+      ? vtt.replace('WEBVTT', `WEBVTT\n\n00:00:00.000 --> 00:00:08.000\n${WM_VTT}\n`)
       : vtt
     const blob = new Blob([watermarkedVtt], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
@@ -1397,6 +1400,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   return (
     <>
       <ToolLayout {...layoutProps}>
+        <UpgradeBanner variant="video-length" />
         {status === 'idle' && !selectedFile && (
           <div className="space-y-4">
             {/* YouTube URL tab temporarily hidden — feature under development */}
