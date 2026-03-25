@@ -51,7 +51,13 @@ const FAQ_ITEMS = [
     category: "General",
     icon: FileVideo,
     q: "What can I do with the transcript?",
-    a: "View, copy, or download it. The transcript page also offers: Summary (key points, action items), Chapters (timestamped sections), Speakers (who said what), Highlights, Keywords, and Clean view (filler words removed). Use Translate to view in English, Hindi, Telugu, Spanish, Chinese, or Russian. Export formats include TXT, SRT, VTT; JSON/CSV/Markdown/DOCX/PDF on paid plans.",
+    a: "View, copy, or download it. On Pro, the result page unlocks: AI Summary (key bullet points + action items), AI Chapters (auto-generated timestamped sections), and Speakers (who said what, with named labels). Use the \"Also translate to\" checkbox before starting to get a full translation of the transcript in 50+ languages. Export formats: TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.",
+  },
+  {
+    category: "General",
+    icon: FileVideo,
+    q: "What are AI Summary and AI Chapters?",
+    a: "AI Summary condenses the transcript into bullet-point key takeaways and action items — useful for meeting recaps, podcast show notes, or lecture reviews. AI Chapters automatically splits the transcript into titled, timestamped sections (like YouTube chapters), so you can navigate long recordings instantly. Both are generated automatically alongside the transcript on Pro plans.",
   },
   {
     category: "General",
@@ -113,7 +119,7 @@ const FAQ_ITEMS = [
     category: "Tools",
     icon: Languages,
     q: "Can I translate subtitles or transcripts?",
-    a: "Yes. For subtitle files: use Translate Subtitles — upload SRT or VTT, pick a target language, download the translated file with original timestamps intact. For transcripts: after generating, click Translate to view in English, Hindi, Telugu, Spanish, Chinese, or Russian.",
+    a: "Yes, two ways. (1) Subtitle file translation: use Translate Subtitles — upload SRT or VTT, pick any of 50+ target languages, download the translated file with original timestamps intact. (2) Transcript translation: on Pro, check \"Also translate to\" before uploading — VideoText generates your transcript AND a full translation side by side. The translated output includes timestamped segments and speaker labels. Both methods use the same 50+ language library.",
   },
   {
     category: "Tools",
@@ -137,20 +143,20 @@ const FAQ_ITEMS = [
     category: "Tools",
     icon: FileVideo,
     q: "Can I process multiple videos at once?",
-    a: "Yes, with Batch Processing (Pro and Agency plans). Upload up to 20 videos (Pro) or 100 videos (Agency). Each video is processed in parallel. When all jobs complete, download a single ZIP with one SRT per video. Failed videos are listed in an error log included in the ZIP.",
+    a: "Yes, with Batch Processing (Pro and Agency plans). Drop multiple video files at once on the Video to Transcript or Batch Process page. Each video processes in parallel and you get a single ZIP with one SRT per video when all jobs complete. Pro: up to 20 videos. Agency: up to 100 videos. Failed videos are listed in an error_log.txt inside the ZIP.",
   },
   // Billing
   {
-    category: "Billing",
+    category: “Billing”,
     icon: CreditCard,
-    q: "How does the free tier work?",
-    a: "Sign up for free to get 3 imports per month (resets on the 1st of each month). Single language, watermark on subtitle exports. No credit card required. Upgrade when you need more imports, multiple languages, or batch processing.",
+    q: “How does the free tier work?”,
+    a: “Sign up for free (no credit card) to get 3 imports per month, resetting on the 1st. Single language, watermark on subtitle exports. Transcript and subtitles are always available. AI features (Summary, Chapters, Speakers, Translation, Batch) are Pro only. Upgrade any time on the Pricing page.”,
   },
   {
-    category: "Billing",
+    category: “Billing”,
     icon: CreditCard,
-    q: "What does “Creator Pro locked” mean?",
-    a: "Creator Pro is an early-user pricing tier at $10/month, locked forever for users who subscribed early. It is equivalent to the Pro plan in features but at the introductory price. New subscribers see the current Creator Pro price on the Pricing page.",
+    q: “What does Pro include that Free doesn't?”,
+    a: “Pro unlocks: AI Summary, AI Chapters, Speaker diarization, Transcript translation (50+ languages), Batch processing (up to 20 videos), longer videos (2 hours vs 30 min), more languages, and no watermark on exports. All for $10/month (annual) or $20/month monthly.”,
   },
   {
     category: "Billing",

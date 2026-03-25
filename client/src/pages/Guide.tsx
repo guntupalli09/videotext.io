@@ -87,9 +87,9 @@ const TOOL_GUIDES: ToolGuide[] = [
       'Optionally trim the video to transcribe only a portion (saves quota and speeds up processing).',
       'Set the spoken language if you know it — auto-detect works but manual improves accuracy for non-English content.',
       'Click Start. Transcription streams in real time — you see text within the first 15–30 seconds.',
-      'When done, explore the tabs: Transcript, Speakers, Summary, Chapters, Highlights, Keywords, Clean, and Exports.',
-      'Use Translate to view the transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian (in-app; no new file generated).',
-      'Copy text or download (TXT, SRT, VTT; JSON/DOCX/PDF/CSV/Notion on paid plans).',
+      'When done, explore the result tabs: Transcript (full text with timestamps), Speakers (Pro — who said what), Summary (Pro — key points + action items), Chapters (Pro — timestamped sections), and Exports.',
+      'Pro tip: check "Also translate to" before starting to get a side-by-side translation of the transcript in 50+ languages.',
+      'Copy text or download (TXT, SRT, VTT on all plans; JSON/DOCX/PDF/CSV/Notion on Pro).',
     ],
     expected: [
       { label: 'Input', detail: 'Video file (MP4, MOV, AVI, WebM).' },
@@ -97,11 +97,12 @@ const TOOL_GUIDES: ToolGuide[] = [
       { label: 'File size', detail: 'Free: 2 GB; Basic: 5 GB; Pro: 10 GB; Agency: 20 GB.' },
     ],
     features: [
-      'Full transcript with timestamps and editable segments.',
-      'Summary (bullets, action items), Chapters (section headings with timestamps), Speakers (grouped by speaker when detectable).',
-      'Highlights (definitions, conclusions, quotes), Keywords (repeated terms linked to sections).',
-      'Clean view: filler words removed, casing normalized; original always in Transcript.',
-      'Export as TXT, SRT, VTT; paid plans unlock JSON, CSV, Markdown, Notion, DOCX, PDF.',
+      'Full transcript with timestamps and editable segments (all plans).',
+      'AI Summary: bullet-point key points and action items — Pro only.',
+      'AI Chapters: auto-generated timestamped section headings — Pro only.',
+      'Speaker diarization: who said what, with named speaker labels — Pro only.',
+      '"Also translate to" checkbox: get a full translation of the transcript in 50+ languages alongside the original — Pro only.',
+      'Export as TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.',
     ],
   },
   {
@@ -236,10 +237,10 @@ const TOOL_GUIDES: ToolGuide[] = [
 
 /** Plan limits at a glance (authoritative summary; exact values in server/utils/limits.ts). */
 const PLAN_LIMITS = [
-  { plan: 'Free', minutes: '3 imports (lifetime)', maxDuration: '30 min', maxSize: '2 GB', languages: '1', batch: '-' },
-  { plan: 'Basic', minutes: '450/month', maxDuration: '45 min', maxSize: '5 GB', languages: '2', batch: '-' },
-  { plan: 'Pro', minutes: '1,200/month', maxDuration: '2 h', maxSize: '10 GB', languages: '5', batch: '20 videos, 60 min total' },
-  { plan: 'Agency', minutes: '3,000/month', maxDuration: '4 h', maxSize: '20 GB', languages: '10', batch: '100 videos, 300 min total' },
+  { plan: 'Free', minutes: '3 imports/month', maxDuration: '30 min', maxSize: '2 GB', languages: '1', batch: '-', aiFeatures: '-' },
+  { plan: 'Basic', minutes: '450/month', maxDuration: '45 min', maxSize: '5 GB', languages: '2', batch: '-', aiFeatures: '-' },
+  { plan: 'Pro', minutes: '1,200/month', maxDuration: '2 h', maxSize: '10 GB', languages: '5', batch: '20 videos', aiFeatures: 'Summary, Chapters, Speakers, Translation' },
+  { plan: 'Agency', minutes: '3,000/month', maxDuration: '4 h', maxSize: '20 GB', languages: '10', batch: '100 videos', aiFeatures: 'All Pro features' },
 ]
 
 export default function Guide() {
@@ -271,13 +272,13 @@ export default function Guide() {
         {/* Quick persona guides */}
         <div className="mb-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
-            { who: 'Voice notes', want: 'Record any idea or meeting in browser, get transcript instantly', path: '#voice-recorder' },
-            { who: 'YouTubers', want: 'Transcript + multi-language subtitles burned into video', path: '#video-to-transcript' },
-            { who: 'Podcast editors', want: 'Transcript with speaker labels, chapters, summary', path: '#video-to-transcript' },
-            { who: 'Social media creators', want: 'Subtitles burned in for silent autoplay on Instagram/TikTok', path: '#burn-subtitles' },
-            { who: 'Teams & agencies', want: 'Batch process 20–100 videos in one go, download ZIP', path: '#batch-process' },
-            { who: 'Meeting notes', want: 'Transcribe Zoom/Teams MP4, get speaker-labelled notes', path: '#video-to-transcript' },
-            { who: 'Educators', want: 'Auto-captions with subtitle timing fix for accessibility compliance', path: '#fix-subtitles' },
+            { who: 'Voice notes', want: 'Record any idea or meeting in browser, get transcript instantly. No file needed.', path: '#voice-recorder' },
+            { who: 'YouTubers', want: 'Transcript + AI chapters + multi-language subtitles burned into video', path: '#video-to-transcript' },
+            { who: 'Podcast editors', want: 'Transcript + speaker labels + AI summary + chapters — all in one job', path: '#video-to-transcript' },
+            { who: 'Social media creators', want: 'Subtitles burned in for silent autoplay. Translate to reach global audiences.', path: '#burn-subtitles' },
+            { who: 'Teams & agencies', want: 'Batch process 20–100 videos in one go, download ZIP with SRT per video', path: '#batch-process' },
+            { who: 'Meeting notes', want: 'Transcribe Zoom/Teams MP4, speaker-labelled notes + AI action items', path: '#video-to-transcript' },
+            { who: 'Educators', want: 'Auto-captions + timing fix for accessibility. Translate to 50+ languages for global reach.', path: '#fix-subtitles' },
           ].map(({ who, want, path }) => (
             <a key={who} href={path} className="block bg-violet-50/50 border border-violet-100 rounded-lg p-3 hover:bg-violet-50 transition-colors">
               <span className="text-xs font-bold text-violet-600 uppercase tracking-wide">{who}</span>
@@ -429,7 +430,7 @@ export default function Guide() {
           <div className="p-4 sm:p-6 border-b border-gray-100">
             <h2 className="text-lg font-bold text-gray-900">Plan limits at a glance</h2>
             <p className="text-sm text-gray-600 mt-1">
-              Free: 3 lifetime imports, 30 min per video. Paid: minutes per month. Max duration, file size, and languages depend on your plan. Exact limits are enforced at upload.
+              Free: 3 imports/month, 30 min per video. Paid: monthly minute quota. AI features (Summary, Chapters, Speakers, Translation, Batch) are Pro and above. Exact limits enforced at upload.
             </p>
           </div>
           <div className="overflow-x-auto">
@@ -442,17 +443,19 @@ export default function Guide() {
                   <th className="px-4 py-3 font-semibold text-gray-900">Max file size</th>
                   <th className="px-4 py-3 font-semibold text-gray-900">Languages</th>
                   <th className="px-4 py-3 font-semibold text-gray-900">Batch</th>
+                  <th className="px-4 py-3 font-semibold text-gray-900">AI Features</th>
                 </tr>
               </thead>
               <tbody>
                 {PLAN_LIMITS.map((row) => (
-                  <tr key={row.plan} className="border-b border-gray-100">
-                    <td className="px-4 py-3 font-medium text-gray-800">{row.plan}</td>
+                  <tr key={row.plan} className={`border-b border-gray-100 ${row.plan === 'Pro' ? 'bg-violet-50/40' : ''}`}>
+                    <td className="px-4 py-3 font-medium text-gray-800">{row.plan}{row.plan === 'Pro' ? <span className="ml-2 text-[10px] bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full font-semibold">Popular</span> : ''}</td>
                     <td className="px-4 py-3 text-gray-700">{row.minutes}</td>
                     <td className="px-4 py-3 text-gray-700">{row.maxDuration}</td>
                     <td className="px-4 py-3 text-gray-700">{row.maxSize}</td>
                     <td className="px-4 py-3 text-gray-700">{row.languages}</td>
                     <td className="px-4 py-3 text-gray-700">{row.batch}</td>
+                    <td className="px-4 py-3 text-gray-700">{row.aiFeatures}</td>
                   </tr>
                 ))}
               </tbody>
