@@ -18,14 +18,17 @@ import {
   Lock,
   Users,
   FileText,
+  Languages,
 } from 'lucide-react'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import {
   uploadFileWithProgress,
   subscribeJobStatus,
   BACKEND_TOOL_TYPES,
+  getAuthToken,
 } from '../lib/api'
-import { getAbsoluteDownloadUrl } from '../lib/apiBase'
+import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
+import { LANGUAGES } from '../lib/languages'
 import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 
@@ -67,6 +70,11 @@ export default function VoiceRecorder() {
   const [partial, setPartial] = useState('')
   const [copied, setCopied] = useState(false)
   const [errMsg, setErrMsg] = useState('')
+  // Translation (Pro)
+  const [translateLanguage, setTranslateLanguage] = useState('Spanish')
+  const [translatedText, setTranslatedText] = useState<string | null>(null)
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [transcriptView, setTranscriptView] = useState<'original' | 'translated'>('original')
 
   // Refs — stable, no stale closures
   const phaseRef = useRef<Phase>('idle')
@@ -363,28 +371,58 @@ export default function VoiceRecorder() {
 
   // ── Actions ────────────────────────────────────────────────────────────────
   async function copyTranscript() {
+    const displayText = transcriptView === 'translated' && translatedText ? translatedText : transcript
+    const WM = '\n\n---\nTranscribed by VideoText.io (Free Plan) · videotext.io/pricing'
+    const textToCopy = isPaidPlan ? displayText : displayText + WM
     try {
-      await navigator.clipboard.writeText(transcript)
+      await navigator.clipboard.writeText(textToCopy)
       setCopied(true)
-      toast.success('Copied to clipboard!')
+      toast.success(isPaidPlan ? 'Copied to clipboard!' : 'Copied (with watermark)')
       setTimeout(() => setCopied(false), 2000)
     } catch {
       toast.error('Copy failed')
     }
   }
 
+  async function handleTranslate() {
+    if (!transcript.trim() || isTranslating) return
+    setIsTranslating(true)
+    setTranslatedText(null)
+    try {
+      const token = getAuthToken()
+      const res = await fetch(`${getApiBase()}/api/translate-transcript/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ text: transcript, targetLanguage: translateLanguage }),
+      })
+      if (!res.ok) throw new Error('Translation failed')
+      const { translatedText: result } = await res.json() as { translatedText: string }
+      setTranslatedText(result)
+      setTranscriptView('translated')
+    } catch {
+      toast.error('Translation failed. Please try again.')
+    } finally {
+      setIsTranslating(false)
+    }
+  }
+
   function downloadTranscript() {
+    const baseText = transcriptView === 'translated' && translatedText ? translatedText : transcript
     const WM_SEP   = '=================================================================================='
     const WM_LINE1 = 'Fast AI transcription by VideoText.io — Free Plan'
     const WM_LINE2 = '⚠  Remove this watermark: videotext.io/pricing  |  Upgrade to Pro'
     const content = isPaidPlan
-      ? transcript
-      : `${WM_SEP}\n${WM_LINE1}\n${WM_LINE2}\n${WM_SEP}\n\n${transcript}\n\n${WM_SEP}\n${WM_LINE1}\n${WM_LINE2}\n${WM_SEP}`
+      ? baseText
+      : `${WM_SEP}\n${WM_LINE1}\n${WM_LINE2}\n${WM_SEP}\n\n${baseText}\n\n${WM_SEP}\n${WM_LINE1}\n${WM_LINE2}\n${WM_SEP}`
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'transcript.txt'
+    const langSuffix = transcriptView === 'translated' && translatedText ? `_${translateLanguage.toLowerCase().replace(/\s+/g, '-')}` : ''
+    a.download = `transcript${langSuffix}.txt`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -403,6 +441,9 @@ export default function VoiceRecorder() {
     setRecSecs(0)
     setUploadPct(0)
     setErrMsg('')
+    setTranslatedText(null)
+    setIsTranslating(false)
+    setTranscriptView('original')
     barsRef.current = new Array(NUM_BARS).fill(0.05)
     // Restart idle waveform after React paint
     setTimeout(() => canvasRef.current && runWaveform(), 50)
@@ -672,7 +713,7 @@ export default function VoiceRecorder() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <button
                       onClick={copyTranscript}
                       className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -682,30 +723,112 @@ export default function VoiceRecorder() {
                       ) : (
                         <Copy className="w-3.5 h-3.5" />
                       )}
-                      {copied ? 'Copied!' : 'Copy'}
+                      {copied ? 'Copied!' : isPaidPlan ? 'Copy' : 'Copy (watermarked)'}
                     </button>
                     <button
                       onClick={downloadTranscript}
                       className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       <Download className="w-3.5 h-3.5" />
-                      {isPaidPlan ? 'Download' : 'Download with watermark'}
+                      {isPaidPlan ? 'Download' : 'Download (watermarked)'}
                     </button>
                   </div>
                 </div>
 
+                {/* Translation sub-tabs — shown when translation is available */}
+                {isPaidPlan && translatedText && (
+                  <div className="flex gap-1 border-b border-gray-100 dark:border-gray-800">
+                    <button
+                      type="button"
+                      onClick={() => setTranscriptView('original')}
+                      className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                        transcriptView === 'original'
+                          ? 'text-gray-900 dark:text-white border-b-2 border-violet-500'
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
+                      }`}
+                    >
+                      Original
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTranscriptView('translated')}
+                      className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                        transcriptView === 'translated'
+                          ? 'text-gray-900 dark:text-white border-b-2 border-violet-500'
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
+                      }`}
+                    >
+                      {translateLanguage}
+                    </button>
+                  </div>
+                )}
+
                 {/* Transcript body */}
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5 max-h-80 overflow-y-auto">
-                  {transcript.trim() ? (
-                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
-                      {transcript}
-                    </p>
-                  ) : (
-                    <p className="text-sm text-gray-400 dark:text-gray-500 italic">
-                      No speech detected. Try recording again in a quieter environment.
-                    </p>
-                  )}
+                  {(() => {
+                    const displayText = transcriptView === 'translated' && translatedText ? translatedText : transcript
+                    return displayText.trim() ? (
+                      <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                        {displayText}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+                        No speech detected. Try recording again in a quieter environment.
+                      </p>
+                    )
+                  })()}
                 </div>
+
+                {/* Translation panel — Pro only */}
+                {isPaidPlan && transcript.trim() && (
+                  <div className={`rounded-xl border p-4 space-y-3 transition-colors ${
+                    translatedText ? 'border-blue-200 dark:border-blue-800/40 bg-blue-50/40 dark:bg-blue-950/20' : 'border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/20'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <Languages className="w-4 h-4 text-blue-500 shrink-0" />
+                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Translate</span>
+                      <span className="ml-auto text-[10px] font-semibold text-violet-500 bg-violet-50 dark:bg-violet-900/20 px-2 py-0.5 rounded-full">Pro</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <select
+                        value={translateLanguage}
+                        onChange={(e) => {
+                          setTranslateLanguage(e.target.value)
+                          setTranslatedText(null)
+                          setTranscriptView('original')
+                        }}
+                        className="flex-1 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        {LANGUAGES.map((l) => (
+                          <option key={l.value} value={l.value}>{l.label}</option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={handleTranslate}
+                        disabled={isTranslating}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
+                      >
+                        {isTranslating ? (
+                          <>
+                            <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                            Translating…
+                          </>
+                        ) : (
+                          <>
+                            <Languages className="w-3.5 h-3.5" />
+                            {translatedText ? 'Re-translate' : 'Translate'}
+                          </>
+                        )}
+                      </button>
+                    </div>
+                    {translatedText && (
+                      <p className="text-xs text-blue-500 dark:text-blue-400">
+                        Translation ready — switch tabs above to view.
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 {/* Pro-locked feature teasers — free users only */}
                 {!isPaidPlan && transcript.trim().length > 0 && (
@@ -713,11 +836,12 @@ export default function VoiceRecorder() {
                     <p className="text-xs font-semibold text-violet-500 dark:text-violet-400 uppercase tracking-wide">
                       Unlock with Pro
                     </p>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 gap-3">
                       {([
-                        { Icon: Users,    label: 'Speaker Labels', desc: 'Who said what' },
-                        { Icon: Sparkles, label: 'AI Summary',      desc: 'Key points extracted' },
-                        { Icon: FileText, label: 'SRT Export',      desc: 'Subtitle-ready format' },
+                        { Icon: Users,     label: 'Speaker Labels', desc: 'Who said what' },
+                        { Icon: Sparkles,  label: 'AI Summary',     desc: 'Key points extracted' },
+                        { Icon: Languages, label: 'Translation',    desc: '70+ languages' },
+                        { Icon: FileText,  label: 'SRT Export',     desc: 'Subtitle-ready format' },
                       ] as const).map(({ Icon, label, desc }) => (
                         <Link
                           to="/pricing"
