@@ -1354,9 +1354,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       return
     }
     const srt = segmentsToSrt(segmentsForExport)
-    const WM = '⚠  Generated with VideoText.io — Free Plan  |  Remove watermark: videotext.io/pricing'
+    const WM1 = 'Fast AI transcription by VideoText.io — Free Plan'
+    const WM2 = '⚠  Remove this watermark: videotext.io/pricing  |  Upgrade to Pro'
     const watermarkedSrt = !isPaidPlan
-      ? `0\n00:00:00,000 --> 00:00:08,000\n${WM}\n\n${srt}`
+      ? `0\n00:00:00,000 --> 00:00:08,000\n${WM1}\n${WM2}\n\n${srt}`
       : srt
     const blob = new Blob([watermarkedSrt], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
@@ -1374,9 +1375,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       return
     }
     const vtt = segmentsToVtt(segmentsForExport)
-    const WM_VTT = '⚠  Generated with VideoText.io — Free Plan  |  Remove watermark: videotext.io/pricing'
+    const WM1_VTT = 'Fast AI transcription by VideoText.io — Free Plan'
+    const WM2_VTT = '⚠  Remove this watermark: videotext.io/pricing  |  Upgrade to Pro'
     const watermarkedVtt = !isPaidPlan
-      ? vtt.replace('WEBVTT', `WEBVTT\n\n00:00:00.000 --> 00:00:08.000\n${WM_VTT}\n`)
+      ? vtt.replace('WEBVTT', `WEBVTT\n\n00:00:00.000 --> 00:00:08.000\n${WM1_VTT}\n${WM2_VTT}\n`)
       : vtt
     const blob = new Blob([watermarkedVtt], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)

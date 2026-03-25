@@ -12,7 +12,8 @@ const tempDir =
   (process.platform === 'win32' ? path.join(process.cwd(), 'temp') : '/tmp')
 
 // Strong, highly visible watermark strings
-const WATERMARK_BANNER = '⚠  Generated with VideoText.io — Free Plan  |  Remove watermark: videotext.io/pricing'
+const WATERMARK_LINE1 = 'Fast AI transcription by VideoText.io — Free Plan'
+const WATERMARK_LINE2 = '⚠  Remove this watermark: videotext.io/pricing  |  Upgrade to Pro'
 const WATERMARK_SEPARATOR = '=================================================================================='
 const TEXT_EXTENSIONS = new Set(['.srt', '.vtt', '.txt', '.json', '.csv'])
 
@@ -25,11 +26,12 @@ const TEXT_EXTENSIONS = new Set(['.srt', '.vtt', '.txt', '.json', '.csv'])
 function applyWatermark(content: string, ext: string): string {
   switch (ext) {
     case '.srt': {
-      // Prominent 8-second cue at the start of the video
+      // Prominent 8-second two-line cue at the very start of the video
       const cue = [
         '0',
         '00:00:00,000 --> 00:00:08,000',
-        WATERMARK_BANNER,
+        WATERMARK_LINE1,
+        WATERMARK_LINE2,
         '',
         '',
       ].join('\n')
@@ -38,7 +40,7 @@ function applyWatermark(content: string, ext: string): string {
     case '.vtt': {
       const lines = content.split('\n')
       const headerIdx = lines.findIndex((l) => l.startsWith('WEBVTT'))
-      const cueLines = ['', '00:00:00.000 --> 00:00:08.000', WATERMARK_BANNER, '']
+      const cueLines = ['', '00:00:00.000 --> 00:00:08.000', WATERMARK_LINE1, WATERMARK_LINE2, '']
       if (headerIdx >= 0) {
         lines.splice(headerIdx + 1, 0, ...cueLines)
       }
@@ -49,19 +51,19 @@ function applyWatermark(content: string, ext: string): string {
         const obj = JSON.parse(content)
         if (typeof obj === 'object' && obj !== null && !Array.isArray(obj)) {
           const watermarked = {
-            _watermark: WATERMARK_BANNER,
+            _watermark: `${WATERMARK_LINE1} | ${WATERMARK_LINE2}`,
             _upgrade: 'videotext.io/pricing',
             ...obj,
           }
           return JSON.stringify(watermarked, null, 2)
         }
       } catch { /* fall through */ }
-      return `${WATERMARK_SEPARATOR}\n${WATERMARK_BANNER}\n${WATERMARK_SEPARATOR}\n\n${content}\n\n${WATERMARK_SEPARATOR}\n${WATERMARK_BANNER}\n${WATERMARK_SEPARATOR}\n`
+      return `${WATERMARK_SEPARATOR}\n${WATERMARK_LINE1}\n${WATERMARK_LINE2}\n${WATERMARK_SEPARATOR}\n\n${content}\n\n${WATERMARK_SEPARATOR}\n${WATERMARK_LINE1}\n${WATERMARK_LINE2}\n${WATERMARK_SEPARATOR}\n`
     }
     default: {
       // TXT, CSV, and any other text format
-      const header = `${WATERMARK_SEPARATOR}\n${WATERMARK_BANNER}\n${WATERMARK_SEPARATOR}\n\n`
-      const footer = `\n\n${WATERMARK_SEPARATOR}\n${WATERMARK_BANNER}\n${WATERMARK_SEPARATOR}\n`
+      const header = `${WATERMARK_SEPARATOR}\n${WATERMARK_LINE1}\n${WATERMARK_LINE2}\n${WATERMARK_SEPARATOR}\n\n`
+      const footer = `\n\n${WATERMARK_SEPARATOR}\n${WATERMARK_LINE1}\n${WATERMARK_LINE2}\n${WATERMARK_SEPARATOR}\n`
       return header + content + footer
     }
   }

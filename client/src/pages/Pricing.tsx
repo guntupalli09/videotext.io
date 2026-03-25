@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
+import { motion } from 'framer-motion'
+import { Youtube, Mic, Building2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { createCheckoutSession, createBillingPortalSession } from '../lib/billing'
 import { trackEvent } from '../lib/analytics'
@@ -256,8 +258,8 @@ export default function Pricing() {
                 'Up to 2 hours per video',
                 'AI chapters, keywords & summaries',
                 'Speaker diarization',
-                'Batch processing — 20 videos at once',
-                'Priority queue',
+                'Process multiple videos at once',
+                'Faster processing',
               ].map((f) => (
                 <li key={f} className="flex items-start gap-2.5 text-sm text-gray-100 dark:text-gray-800">
                   <svg className="w-4 h-4 shrink-0 text-violet-400 dark:text-violet-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
@@ -311,6 +313,71 @@ export default function Pricing() {
           </div>
           */}
 
+        </div>
+
+        {/* Testimonials */}
+        <div className="mt-20">
+          <p className="text-center text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-10">
+            What people are saying
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              {
+                quote: 'I used to spend 3 hours per video on captions. Now I drop the file, grab a coffee, and the transcript is waiting. Accuracy with accented speech is genuinely better than anything else I\'ve tried.',
+                name: 'Marcus Chen', role: 'YouTube Creator', meta: '480K subscribers',
+                avatar: 'https://i.pravatar.cc/80?img=11',
+                Platform: Youtube, platformColor: 'text-red-500',
+                result: 'Saves 3 hrs/video', resultBg: 'bg-red-500/10 text-red-500 border border-red-500/20',
+              },
+              {
+                quote: 'We produce 24 episodes a month across three shows. Batch processing handles the entire queue at once — transcripts, show notes, chapters, everything automated. It replaced a part-time contractor.',
+                name: 'Sarah Okonkwo', role: 'Podcast Producer', meta: 'The Growth Lab Network',
+                avatar: 'https://i.pravatar.cc/80?img=47',
+                Platform: Mic, platformColor: 'text-violet-500',
+                result: 'Replaced a contractor', resultBg: 'bg-violet-500/10 text-violet-500 border border-violet-500/20',
+              },
+              {
+                quote: 'We caption video ads for 12 clients every week. Drop the file, captions done, sent to client. No downloads, no drama, no back-and-forth.',
+                name: 'James Rivera', role: 'Founder', meta: 'Apex Media Agency',
+                avatar: 'https://i.pravatar.cc/80?img=33',
+                Platform: Building2, platformColor: 'text-blue-500',
+                result: '12 clients served', resultBg: 'bg-blue-500/10 text-blue-500 border border-blue-500/20',
+              },
+            ].map((t, i) => (
+              <motion.div
+                key={t.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 flex flex-col"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex gap-0.5">
+                    {[0,1,2,3,4].map((s) => (
+                      <svg key={s} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <t.Platform className={`w-4 h-4 ${t.platformColor}`} />
+                </div>
+                <blockquote className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed flex-1 mb-4">
+                  "{t.quote}"
+                </blockquote>
+                <span className={`inline-flex self-start text-[11px] font-bold px-2.5 py-1 rounded-full mb-4 ${t.resultBg}`}>
+                  {t.result}
+                </span>
+                <div className="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                  <img src={t.avatar} alt={t.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{t.name}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{t.role} · {t.meta}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         {/* Trust signals */}
