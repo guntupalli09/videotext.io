@@ -2133,40 +2133,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             {showAuthGate && !isLoggedIn() && (
               <div className="absolute inset-0 z-10 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 rounded-2xl" aria-hidden="true" />
             )}
-            {/* Translation sub-tabs — shown when "Also translate to" was enabled and translation is ready */}
-            {translateEnabled && translationLanguage && translatedCache[translationLanguage] && (
-              <div className="flex gap-1 border-b border-gray-100 dark:border-gray-800 pb-0 -mb-4">
-                <button
-                  type="button"
-                  onClick={() => setTranscriptView('original')}
-                  className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-                    transcriptView === 'original'
-                      ? 'text-gray-900 dark:text-white border-b-2 border-violet-500'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                  }`}
-                >
-                  Original
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTranscriptView('translated')}
-                  className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-                    transcriptView === 'translated'
-                      ? 'text-gray-900 dark:text-white border-b-2 border-violet-500'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                  }`}
-                >
-                  {translationLanguage}
-                </button>
-              </div>
-            )}
-            {/* Translating indicator */}
-            {translateEnabled && translationLanguage && !translatedCache[translationLanguage] && fullTranscript && (
-              <div className="flex items-center gap-2 text-xs text-blue-500">
-                <div className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
-                Translating to {translationLanguage}…
-              </div>
-            )}
             {/* Result header + primary actions */}
             <TranscriptResult
               fileName={result.fileName ?? selectedFile?.name?.replace(/\.[^/.]+$/, '') + '_transcript.txt'}
@@ -2731,7 +2697,46 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             {/* Main transcript workspace panel (last) */}
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Transcript</h3>
+                {/* Panel header with translation sub-tabs inline */}
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white shrink-0">Transcript</h3>
+                  {/* Translation tabs — right-aligned, shown when translation is ready */}
+                  {translateEnabled && translationLanguage && (
+                    <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
+                      {translatedCache[translationLanguage] ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setTranscriptView('original')}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                              transcriptView === 'original'
+                                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                            }`}
+                          >
+                            Original
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setTranscriptView('translated')}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                              transcriptView === 'translated'
+                                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                            }`}
+                          >
+                            {translationLanguage}
+                          </button>
+                        </>
+                      ) : fullTranscript ? (
+                        <span className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-blue-500">
+                          <span className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin shrink-0" />
+                          Translating to {translationLanguage}…
+                        </span>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
                 <div className="flex flex-wrap items-center gap-2 mb-4">
                   <div className="flex-1 min-w-[160px] relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -2789,7 +2794,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         </div>
                       ))}
                     </div>
-                  ) : result?.segments?.length && !translationLanguage ? (
+                  ) : result?.segments?.length && transcriptView === 'original' ? (
                     <div>
                       {segmentParagraphs.map((group, pi) => (
                         <p key={pi} className="mb-5">
