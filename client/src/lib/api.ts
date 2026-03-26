@@ -1680,3 +1680,61 @@ export async function translateTranscript(
   }
   return response.json()
 }
+
+export type TranscriptShareSegment = { start: number; end: number; text: string; speaker?: string }
+
+export type TranscriptSharePayload = {
+  fullText: string
+  segments?: TranscriptShareSegment[]
+  summary?: { summary?: string; bullets?: string[]; actionItems?: string[] }
+}
+
+export type CreateTranscriptShareBody = {
+  jobId: string
+  jobToken: string
+  variant: 'original' | 'translated'
+  sourceTool: 'video-to-transcript' | 'voice-to-text'
+  title?: string
+  targetLanguage?: string | null
+  payload: TranscriptSharePayload
+}
+
+export type CreateTranscriptShareResponse = { slug: string; path: string; url: string }
+
+export async function createTranscriptShare(body: CreateTranscriptShareBody): Promise<CreateTranscriptShareResponse> {
+  const response = await api('/api/shares', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  const data = (await response.json().catch(() => ({}))) as { message?: string } & Partial<CreateTranscriptShareResponse>
+  if (!response.ok) {
+    throw new Error(data.message || 'Could not create share link.')
+  }
+  if (!data.slug || !data.path) {
+    throw new Error('Invalid share response.')
+  }
+  return { slug: data.slug, path: data.path, url: data.url || data.path }
+}
+
+export type PublicTranscriptShareResponse = {
+  slug: string
+  variant: string
+  sourceTool: string
+  title: string
+  targetLanguage: string | null
+  payload: TranscriptSharePayload
+  createdAt: string
+}
+
+export async function fetchPublicTranscriptShare(slug: string): Promise<PublicTranscriptShareResponse> {
+  const response = await api(`/api/shares/public/${encodeURIComponent(slug)}`, { timeout: 20000 })
+  const data = (await response.json().catch(() => ({}))) as { message?: string } & Partial<PublicTranscriptShareResponse>
+  if (!response.ok) {
+    throw new Error(data.message || 'Could not load shared transcript.')
+  }
+  if (!data.payload || typeof data.payload.fullText !== 'string') {
+    throw new Error('Invalid shared transcript.')
+  }
+  return data as PublicTranscriptShareResponse
+}

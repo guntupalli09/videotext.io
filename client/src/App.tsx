@@ -66,6 +66,7 @@ const TactiqAlternative = lazy(() => import('./pages/seo/TactiqAlternativePage')
 const About = lazy(() => import('./pages/AboutPage'))
 const Open = lazy(() => import('./pages/Open'))
 const NotFound = lazy(() => import('./pages/NotFound'))
+const ShareTranscript = lazy(() => import('./pages/ShareTranscript'))
 // Free tools — client-side only, zero server dependency
 const FreeToolsIndex = lazy(() => import('./pages/tools/FreeToolsIndex'))
 const SrtToVtt = lazy(() => import('./pages/tools/SrtToVtt'))
@@ -452,6 +453,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/open" element={<Open />} />
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
+            <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
             <Route path="/batch-process" element={<Navigate to="/video-to-transcript" replace />} />

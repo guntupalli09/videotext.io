@@ -44,6 +44,10 @@ const FAQS = [
     q: 'Can I export to different formats?',
     a: 'Yes. Transcripts export as TXT, JSON, DOCX, and PDF. Subtitles export as SRT and VTT. Voice recordings produce a plain-text transcript you can copy or download as a .txt instantly. You can also burn subtitles directly into your video file using the Burn Subtitles tool.',
   },
+  {
+    q: 'Can I share a transcript with someone without sending a file?',
+    a: 'On Pro, yes. After your video or voice job completes, use Share with a link to copy a read-only URL for the original or translated transcript. Viewers open it in the browser and do not need to sign up. Free tier users can still copy or download text manually.',
+  },
 ];
 
 function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {

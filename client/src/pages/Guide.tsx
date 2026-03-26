@@ -61,6 +61,7 @@ const TOOL_GUIDES: ToolGuide[] = [
       'Click the red stop button when done (or the recorder stops automatically at 60 minutes).',
       'Your audio uploads in the background and the transcript appears within seconds.',
       'Copy the transcript to clipboard or download as a .txt file.',
+      'On Pro, after the transcript is ready, use Share with a link to send a read-only page (original or translated) — same as Video → Transcript.',
       'Click "Record another" to start a new session.',
     ],
     expected: [
@@ -74,6 +75,7 @@ const TOOL_GUIDES: ToolGuide[] = [
       'Noise suppression and echo cancellation built in.',
       '99 languages auto-detected — speak in any language.',
       'Copy or download transcript with one click.',
+      'Pro: optional translation, then shareable read-only links for original or translated text.',
     ],
   },
   {
@@ -88,7 +90,7 @@ const TOOL_GUIDES: ToolGuide[] = [
       'Click Start. Transcription streams in real time — you see text within the first 15–30 seconds.',
       'When done, explore the result tabs: Transcript (full text with timestamps), Speakers (Pro — who said what), Summary (Pro — key points + action items), Chapters (Pro — timestamped sections), and Exports.',
       'Pro tip: check "Also translate to" before starting to get a side-by-side translation of the transcript in 70+ languages.',
-      'Copy text or download (TXT, SRT, VTT on all plans; JSON/DOCX/PDF/CSV/Notion on Pro).',
+      'Copy text or download (TXT, SRT, VTT on all plans; JSON/DOCX/PDF/CSV/Notion on Pro). On Pro, use Share with a link to send a read-only transcript page (original or translated) — viewers do not need to log in.',
     ],
     expected: [
       { label: 'Input', detail: 'Video file (MP4, MOV, AVI, WebM).' },
@@ -102,6 +104,7 @@ const TOOL_GUIDES: ToolGuide[] = [
       'Speaker diarization: who said what (Speaker 1, 2, …) — Pro only.',
       '"Also translate to" checkbox: get a full translation of the transcript in 70+ languages alongside the original — Pro only.',
       'Export as TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.',
+      'Shareable links (Pro): from the result screen, copy a URL to a read-only transcript page — original or translated separately.',
     ],
   },
   {

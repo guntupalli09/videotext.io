@@ -21,6 +21,7 @@ import {
   Languages,
 } from 'lucide-react'
 import { ToolLayout } from '../components/figma/ToolLayout'
+import TranscriptSharePanel from '../components/TranscriptSharePanel'
 import {
   uploadFileWithProgress,
   subscribeJobStatus,
@@ -76,6 +77,8 @@ export default function VoiceRecorder() {
   const [translatedText, setTranslatedText] = useState<string | null>(null)
   const [isTranslating, setIsTranslating] = useState(false)
   const [transcriptView, setTranscriptView] = useState<'original' | 'translated'>('original')
+  const [voiceJobId, setVoiceJobId] = useState<string | null>(null)
+  const [voiceJobToken, setVoiceJobToken] = useState<string | null>(null)
 
   // Refs — stable, no stale closures
   const phaseRef = useRef<Phase>('idle')
@@ -325,6 +328,9 @@ export default function VoiceRecorder() {
         { onProgress: (p) => setUploadPct(p), signal: abortRef.current.signal }
       )
 
+      setVoiceJobId(res.jobId)
+      setVoiceJobToken(res.jobToken ?? null)
+
       setPhase('processing')
       setPartial('')
 
@@ -451,6 +457,8 @@ export default function VoiceRecorder() {
     setTranslatedText(null)
     setIsTranslating(false)
     setTranscriptView('original')
+    setVoiceJobId(null)
+    setVoiceJobToken(null)
     barsRef.current = new Array(NUM_BARS).fill(0.05)
     // Restart idle waveform after React paint
     setTimeout(() => canvasRef.current && runWaveform(), 50)
@@ -845,6 +853,18 @@ export default function VoiceRecorder() {
                       </p>
                     )}
                   </div>
+                )}
+
+                {phase === 'result' && voiceJobId && voiceJobToken && transcript.trim() && (
+                  <TranscriptSharePanel
+                    jobId={voiceJobId}
+                    jobToken={voiceJobToken}
+                    sourceTool="voice-to-text"
+                    title="Voice recording"
+                    originalFullText={transcript}
+                    translatedFullText={translatedText}
+                    translationLanguage={translatedText ? translateLanguage : null}
+                  />
                 )}
 
                 {/* Pro-locked feature teasers — free users only */}

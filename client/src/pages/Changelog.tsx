@@ -24,6 +24,16 @@ const TAG_LABELS: Record<ChangelogEntry['tag'], string> = {
 const ENTRIES: ChangelogEntry[] = [
   {
     date: 'March 25, 2026',
+    version: 'v1.13',
+    tag: 'new',
+    items: [
+      'Pro: Shareable transcript links for Video → Transcript and Voice → Text. After a job completes, create a read-only page for the original or translated text and copy the URL — viewers do not need a VideoText account.',
+      'Shared pages include timestamps and speaker lines when available, plus AI summary blocks for video jobs when you share the original.',
+      'Pricing, Guide, FAQ, Compare, landing FAQ, and Features copy updated for transcript sharing.',
+    ],
+  },
+  {
+    date: 'March 25, 2026',
     version: 'v1.12',
     tag: 'new',
     items: [

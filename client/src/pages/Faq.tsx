@@ -51,7 +51,13 @@ const FAQ_ITEMS = [
     category: "General",
     icon: FileVideo,
     q: "What can I do with the transcript?",
-    a: "View, copy, or download it. On Pro, the result page unlocks: AI Summary (key bullet points + action items), AI Chapters (auto-generated timestamped sections), and Speakers (who said what, with named labels). Use the \"Also translate to\" checkbox before starting to get a full translation of the transcript in 70+ languages. Export formats: TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.",
+    a: "View, copy, or download it. On Pro, the result page unlocks: AI Summary (key bullet points + action items), AI Chapters (auto-generated timestamped sections), and Speakers (who said what, with named labels). Use the \"Also translate to\" checkbox before starting to get a full translation of the transcript in 70+ languages. You can also create a read-only share link for the original or translated text — anyone with the URL can read it; they do not need a VideoText account. Export formats: TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.",
+  },
+  {
+    category: "General",
+    icon: FileVideo,
+    q: "How do shareable transcript links work?",
+    a: "On Pro (and Agency/Business), after Video → Transcript or Voice → Text finishes processing, use Share with a link on the result screen. You get a separate URL for the original transcript and, if you translated, for the translation. The page is read-only and works for anyone with the link — they do not need a VideoText login. We store only the text snapshot you chose to share. Free and Basic plans do not include share links.",
   },
   {
     category: "General",

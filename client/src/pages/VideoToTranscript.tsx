@@ -13,6 +13,7 @@ import { ProcessingInterface } from '../components/figma/ProcessingInterface'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
 import { ResultSkeleton } from '../components/figma/ResultSkeleton'
 import { TranscriptResult } from '../components/figma/TranscriptResult'
+import TranscriptSharePanel from '../components/TranscriptSharePanel'
 import { Checkbox } from '../components/figma/FormControls'
 import { incrementUsage } from '../lib/usage'
 import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, invalidateUsageCache, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, submitYoutubeUrl, isYoutubeUrl, claimGuestJob, uploadBatch, getBatchStatus, getBatchDownloadUrl, type YoutubeUploadResponse, type BatchStatus } from '../lib/api'
@@ -2383,6 +2384,33 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               showTranscriptCard={false}
               showNextSteps={false}
             />
+
+            {status === 'completed' &&
+              result &&
+              (() => {
+                const jid = currentJobId || getPersistedJobId(location.pathname)
+                const jtok = getPersistedJobToken(location.pathname)
+                const orig = (fullTranscript || transcriptPreview || '').trim()
+                if (!jid || !jtok || !orig) return null
+                return (
+                  <TranscriptSharePanel
+                    jobId={jid}
+                    jobToken={jtok}
+                    sourceTool="video-to-transcript"
+                    title={selectedFile?.name || result.fileName || 'Transcript'}
+                    originalFullText={fullTranscript || transcriptPreview || ''}
+                    translatedFullText={
+                      translationLanguage && translatedCache[translationLanguage] != null
+                        ? translatedCache[translationLanguage]
+                        : null
+                    }
+                    translationLanguage={translationLanguage}
+                    segments={result.segments}
+                    translatedSegments={translatedSegments ?? undefined}
+                    summary={result.summary}
+                  />
+                )
+              })()}
 
             {/* ── Transcript stats pills ── */}
             {(() => {

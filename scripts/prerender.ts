@@ -589,58 +589,7 @@ function escapeHtml(s: string): string {
     .replace(/>/g, '&gt;')
 }
 
-function buildHead(meta: RouteMeta): string {
-  const { path: routePath, title, description, faq, breadcrumbLabel, noindex } = meta
-  const canonicalUrl = routePath === '/' ? SITE_URL + '/' : `${SITE_URL}${routePath}`
-
-  const jsonLdBlocks: object[] = []
-
-  // Breadcrumb (for non-home pages)
-  if (routePath !== '/') {
-    jsonLdBlocks.push({
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: breadcrumbLabel ?? title, item: canonicalUrl },
-      ],
-    })
-  }
-
-  // FAQ schema
-  if (faq && faq.length > 0) {
-    jsonLdBlocks.push({
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: faq.map(({ q, a }) => ({
-        '@type': 'Question',
-        name: q,
-        acceptedAnswer: { '@type': 'Answer', text: a },
-      })),
-    })
-  }
-
-  const jsonLdTags = jsonLdBlocks
-    .map((obj) => `  <script type="application/ld+json">\n    ${JSON.stringify(obj)}\n  </script>`)
-    .join('\n')
-
-  return `
-  <title>${escapeHtml(title)}</title>
-  <meta name="description" content="${escapeHtml(description)}" />
-  <link rel="canonical" href="${canonicalUrl}" />
-  ${noindex ? '<meta name="robots" content="noindex,nofollow" />' : '<meta name="robots" content="index,follow" />'}
-  <meta property="og:title" content="${escapeHtml(title)}" />
-  <meta property="og:description" content="${escapeHtml(description)}" />
-  <meta property="og:url" content="${canonicalUrl}" />
-  <meta property="og:image" content="${DEFAULT_OG_IMAGE}" />
-  <meta name="twitter:title" content="${escapeHtml(title)}" />
-  <meta name="twitter:description" content="${escapeHtml(description)}" />
-${jsonLdTags}`.trim()
-}
-
 function injectHead(template: string, meta: RouteMeta): string {
-  const injectedHead = buildHead(meta)
-
   // Replace title tag
   let html = template.replace(
     /<title>[^<]*<\/title>/,
@@ -698,7 +647,8 @@ function injectHead(template: string, meta: RouteMeta): string {
     )
   }
 
-  // Inject FAQ + Breadcrumb JSON-LD blocks before </head>
+  // Inject Breadcrumb JSON-LD before </head>. FAQPage is emitted only by the SPA (AppSeo +
+  // react-helmet-async); duplicating it here caused two FAQPage blocks on prerendered pages.
   const extraJsonLd: object[] = []
 
   if (meta.path !== '/') {
@@ -734,18 +684,6 @@ function injectHead(template: string, meta: RouteMeta): string {
         ],
       })
     }
-  }
-
-  if (meta.faq && meta.faq.length > 0) {
-    extraJsonLd.push({
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: meta.faq.map(({ q, a }) => ({
-        '@type': 'Question',
-        name: q,
-        acceptedAnswer: { '@type': 'Answer', text: a },
-      })),
-    })
   }
 
   if (extraJsonLd.length > 0) {

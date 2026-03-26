@@ -69,6 +69,24 @@ model Job {
   @@index([completedAt])
 }
 
+// Pro (and team) — read-only public snapshot for sharing transcripts
+model TranscriptShare {
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  userId         String
+  jobId          String
+  variant        String    // original | translated
+  sourceTool     String    // video-to-transcript | voice-to-text
+  title          String    @default("")
+  targetLanguage String?
+  payload        Json
+  createdAt      DateTime  @default(now())
+  revokedAt      DateTime?
+
+  @@index([userId])
+  @@index([jobId])
+}
+
 model SubscriptionSnapshot {
   id                    String   @id @default(cuid())
   userId                String

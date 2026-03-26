@@ -258,6 +258,7 @@ export default function Pricing() {
                 'Up to 2 hours per video',
                 'AI summary, chapters & speaker labels',
                 'Translation in 70+ languages',
+                'Share read-only transcript links (original & translated)',
                 'Batch process multiple videos at once',
                 'Faster processing & queue priority',
               ].map((f) => (

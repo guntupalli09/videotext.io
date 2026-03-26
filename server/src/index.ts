@@ -27,6 +27,7 @@ import { getLogger } from './lib/logger'
 import healthRoutes from './routes/health'
 import feedbackRoutes from './routes/feedback'
 import eventsRoutes from './routes/events'
+import shareRoutes from './routes/share'
 import feedbackSystemRoutes from './routes/feedbackSystem'
 import adminDashboardRoutes, { clearDashboardCache } from './routes/adminDashboard'
 import adminSupportRoutes, { runAlertChecks, maybeSendDailyDigest } from './routes/adminSupport'
@@ -223,6 +224,7 @@ app.use('/api/batch', batchRoutes)
 app.use('/api/billing', billingRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/translate-transcript', translateTranscriptRoutes)
+app.use('/api/shares', shareRoutes)
 app.use('/api/feedback', feedbackRoutes)
 app.use('/api/events', eventsRoutes)
 app.use('/api/feedback', feedbackSystemRoutes)
