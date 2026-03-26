@@ -15,6 +15,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { getProgrammaticSeoEntries } from '../client/src/lib/generateSeoPages'
+import { getCanonicalPathForRoute } from '../client/src/lib/primaryUrls'
 
 const REPO_ROOT = path.resolve(__dirname, '..')
 // Vercel outputDirectory is the root-level dist/ (build copies client/dist → dist/).
@@ -602,8 +603,9 @@ function injectHead(template: string, meta: RouteMeta): string {
     `<meta name="description" content="${escapeHtml(meta.description)}" />`
   )
 
-  // Replace canonical
-  const canonicalUrl = meta.path === '/' ? SITE_URL + '/' : `${SITE_URL}${meta.path}`
+  // Replace canonical (match SPA primary map so static HTML agrees with Helmet)
+  const primaryPath = getCanonicalPathForRoute(meta.path)
+  const canonicalUrl = primaryPath === '/' ? SITE_URL + '/' : `${SITE_URL}${primaryPath}`
   html = html.replace(
     /<link\s+rel="canonical"\s+href="[^"]*"\s*\/>/,
     `<link rel="canonical" href="${canonicalUrl}" />`
@@ -647,51 +649,8 @@ function injectHead(template: string, meta: RouteMeta): string {
     )
   }
 
-  // Inject Breadcrumb JSON-LD before </head>. FAQPage is emitted only by the SPA (AppSeo +
-  // react-helmet-async); duplicating it here caused two FAQPage blocks on prerendered pages.
-  const extraJsonLd: object[] = []
-
-  if (meta.path !== '/') {
-    const isBlogPost = meta.path.startsWith('/blog/') && meta.path !== '/blog'
-    const isToolPage = meta.path.startsWith('/tools/') && meta.path !== '/tools'
-    if (isBlogPost) {
-      extraJsonLd.push({
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-          { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_URL}/blog` },
-          { '@type': 'ListItem', position: 3, name: meta.breadcrumbLabel ?? meta.title, item: canonicalUrl },
-        ],
-      })
-    } else if (isToolPage) {
-      extraJsonLd.push({
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-          { '@type': 'ListItem', position: 2, name: 'Free Tools', item: `${SITE_URL}/tools` },
-          { '@type': 'ListItem', position: 3, name: meta.breadcrumbLabel ?? meta.title, item: canonicalUrl },
-        ],
-      })
-    } else {
-      extraJsonLd.push({
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-          { '@type': 'ListItem', position: 2, name: meta.breadcrumbLabel ?? meta.title, item: canonicalUrl },
-        ],
-      })
-    }
-  }
-
-  if (extraJsonLd.length > 0) {
-    const jsonLdTags = extraJsonLd
-      .map((obj) => `  <script type="application/ld+json">${JSON.stringify(obj)}</script>`)
-      .join('\n')
-    html = html.replace('</head>', `${jsonLdTags}\n</head>`)
-  }
+  // BreadcrumbList + FAQPage JSON-LD come only from the SPA (AppSeo + react-helmet-async).
+  // Injecting them here duplicated structured data on prerendered HTML + hydrated head.
 
   return html
 }

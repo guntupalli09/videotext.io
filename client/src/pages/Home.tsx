@@ -9,6 +9,7 @@ import { UseCases } from '../components/landing/UseCases';
 import { FAQ } from '../components/landing/FAQ';
 import { FinalCTA } from '../components/landing/FinalCTA';
 import { CheckCircle2, ArrowRight, Zap, Shield, Clock } from 'lucide-react';
+import { REVENUE_TOOL_LINKS } from '../lib/revenueTools';
 
 // Conversion order (psychologically optimised):
 // 1. Hero — 3-second clarity + CTA
@@ -169,6 +170,29 @@ export default function Home() {
 
       {/* Trust bar — instant credibility after hero */}
       <TrustBar />
+
+      {/* Core paid AI tools — internal links to primary URLs (SEO + conversion) */}
+      <section className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/[0.06] py-8 transition-colors duration-500">
+        <div className="max-w-5xl mx-auto px-6">
+          <p className="text-xs font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400 mb-3">
+            Core AI tools
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {REVENUE_TOOL_LINKS.map((tool) => (
+              <Link
+                key={tool.path}
+                to={tool.path}
+                className="group rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/80 p-4 hover:border-violet-400 dark:hover:border-violet-500 transition-colors"
+              >
+                <p className="font-bold text-sm text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-300">
+                  {tool.label}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-snug">{tool.short}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* 2 — Features / toolkit */}
       <Features />

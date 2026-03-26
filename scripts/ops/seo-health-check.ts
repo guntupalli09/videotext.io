@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
  * SEO health check for CI/schedule. Shell-mode: robots + sitemap + HTTP 200.
- * Strict-mode: plus title, meta description, canonical, BreadcrumbList; FAQPage must not be duplicated in ld+json.
+ * Strict-mode: plus title, meta description, canonical; FAQPage/BreadcrumbList must not be duplicated in ld+json.
  * Env: SITE_URL (canonical base; default https://www.videotext.io), BASE_URL (fetch base; default SITE_URL),
  *      SEO_HEALTH_MODE=shell|strict (default: strict if BASE_URL matches SITE_URL, else shell).
  * Exit: 0 on PASS, 1 on FAIL. Prints first failing URL and reason.
  */
 import * as path from 'path'
 import * as fs from 'fs'
-import { countFaqPageInJsonLdScripts } from '../seo/jsonLdUtils'
+import { countFaqPageInJsonLdScripts, countBreadcrumbListInJsonLdScripts } from '../seo/jsonLdUtils'
 
 const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace(/\/$/, '')
 const BASE_URL = (process.env.BASE_URL || SITE_URL).replace(/\/$/, '')
@@ -38,7 +38,6 @@ function parseHtml(html: string): {
   title: string | null
   metaDescription: string | null
   canonical: string | null
-  breadcrumbList: boolean
 } {
   const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i)
   const title = titleMatch ? titleMatch[1].trim() : null
@@ -46,8 +45,7 @@ function parseHtml(html: string): {
   const metaDescription = descMatch ? descMatch[1].trim() : null
   const canonMatch = html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']*)["']/i) || html.match(/<link[^>]+href=["']([^"']*)["'][^>]+rel=["']canonical["']/i)
   const canonical = canonMatch ? canonMatch[1].trim() : null
-  const breadcrumbList = /"@type"\s*:\s*"BreadcrumbList"/.test(html) || /BreadcrumbList/.test(html)
-  return { title, metaDescription, canonical, breadcrumbList }
+  return { title, metaDescription, canonical }
 }
 
 async function fetchUrl(url: string): Promise<string> {
@@ -112,16 +110,16 @@ async function main(): Promise<void> {
       const html = await fetchUrl(url)
       const pathname = new URL(url).pathname || '/'
       const pathKey = pathname === '/' ? '/' : pathname
-      const { title, metaDescription, canonical, breadcrumbList } = parseHtml(html)
+      const { title, metaDescription, canonical } = parseHtml(html)
       const faqJsonLdCount = countFaqPageInJsonLdScripts(html)
+      const breadcrumbJsonLdCount = countBreadcrumbListInJsonLdScripts(html)
       if (!title || title.length < 2) fail('missing or empty <title>', url)
       if (!metaDescription || metaDescription.length < 20) fail('missing or short meta description', url)
       const expectedCanonical = pathKey === '/' ? SITE_URL : `${SITE_URL}${pathKey}`
       const canonicalNorm = canonical ? canonical.replace(/\/$/, '') || canonical : ''
       const expectedNorm = expectedCanonical.replace(/\/$/, '')
       if (!canonical || canonicalNorm !== expectedNorm) fail(`canonical expected ${expectedCanonical}, got ${canonical || 'null'}`, url)
-      const isToolOrSeo = pathKey !== '/' && pathKey !== '/pricing' && pathKey !== '/faq'
-      if (isToolOrSeo && !breadcrumbList) fail('BreadcrumbList JSON-LD expected', url)
+      if (breadcrumbJsonLdCount > 1) fail(`duplicate BreadcrumbList in application/ld+json (count=${breadcrumbJsonLdCount})`, url)
       if (faqJsonLdCount > 1) fail(`duplicate FAQPage in application/ld+json (count=${faqJsonLdCount})`, url)
       const expectFaqPage = pathKey === '/faq' || (registryFaq.get(pathKey) ?? 0) > 0
       if (!expectFaqPage && faqJsonLdCount > 0) fail('FAQPage JSON-LD should not be present', url)

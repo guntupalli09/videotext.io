@@ -37,6 +37,7 @@ export default function VideoScriptTimer() {
     <FreeToolLayout
       title="Video Script Timer — How Long Will My Video Be?"
       description="Paste your video script and instantly estimate video length at your speaking rate. Perfect for planning YouTube videos, ads, shorts, explainers, and presentations."
+      hubLink={{ label: 'Free Video Tools', path: '/tools' }}
       contentSections={[
         {
           heading: 'How many words per minute for video?',

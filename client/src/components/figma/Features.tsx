@@ -74,6 +74,14 @@ const SECONDARY_TOOLS = [
     href: '/translate-subtitles',
   },
   {
+    icon: FolderSync,
+    name: 'Batch Processing',
+    description: 'Upload a whole season at once. Process 50+ videos in parallel and download as a ZIP.',
+    gradient: 'from-indigo-500 to-purple-600',
+    accent: 'text-indigo-400',
+    href: '/batch-process',
+  },
+  {
     icon: Wrench,
     name: 'Fix Subtitles',
     description: 'Auto-correct timing drift, overlapping cues, grammar, and formatting in any SRT/VTT file.',
@@ -96,14 +104,6 @@ const SECONDARY_TOOLS = [
     gradient: 'from-cyan-500 to-blue-600',
     accent: 'text-cyan-400',
     href: '/compress-video',
-  },
-  {
-    icon: FolderSync,
-    name: 'Batch Processing',
-    description: 'Upload a whole season at once. Process 50+ videos in parallel and download as a ZIP.',
-    gradient: 'from-indigo-500 to-purple-600',
-    accent: 'text-indigo-400',
-    href: '/batch-process',
   },
 ];
 

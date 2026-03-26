@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * Smoke test: fetch 10 URLs and assert title, meta description, canonical, BreadcrumbList, FAQ JSON-LD sanity.
- * FAQPage in raw HTML is optional (react-helmet adds it after load); duplicate FAQPage in ld+json scripts fails.
+ * Smoke test: fetch 10 URLs and assert title, meta description, canonical, FAQ/Breadcrumb JSON-LD sanity.
+ * FAQPage & BreadcrumbList in raw HTML are optional (react-helmet adds after load); duplicates in ld+json fail.
  * No flaky deps; uses fetch. Run after build with BASE_URL pointing at served client (e.g. http://localhost:4173).
  * Run from repo root: npx tsx scripts/seo/smoke-seo-output.ts
  */
 import * as path from 'path'
 import * as fs from 'fs'
-import { countFaqPageInJsonLdScripts } from './jsonLdUtils'
+import { countFaqPageInJsonLdScripts, countBreadcrumbListInJsonLdScripts } from './jsonLdUtils'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173'
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
@@ -49,8 +49,7 @@ function parseHtml(html: string): {
   const metaDescription = descMatch ? descMatch[1].trim() : null
   const canonMatch = html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']*)["']/i) || html.match(/<link[^>]+href=["']([^"']*)["'][^>]+rel=["']canonical["']/i)
   const canonical = canonMatch ? canonMatch[1].trim() : null
-  const breadcrumbList = /"@type"\s*:\s*"BreadcrumbList"/.test(html) || /BreadcrumbList/.test(html)
-  return { title, metaDescription, canonical, breadcrumbList }
+  return { title, metaDescription, canonical }
 }
 
 async function fetchUrl(url: string): Promise<string> {
@@ -67,8 +66,9 @@ async function main(): Promise<void> {
     const url = p === '/' ? base : `${base}${p}`
     try {
       const html = await fetchUrl(url)
-      const { title, metaDescription, canonical, breadcrumbList } = parseHtml(html)
+      const { title, metaDescription, canonical } = parseHtml(html)
       const faqJsonLdCount = countFaqPageInJsonLdScripts(html)
+      const breadcrumbJsonLdCount = countBreadcrumbListInJsonLdScripts(html)
       if (!title || title.length < 2) {
         console.error(`[smoke] ${url}: missing or empty <title>`)
         failed = true
@@ -86,9 +86,8 @@ async function main(): Promise<void> {
         failed = true
         continue
       }
-      const isToolOrSeo = p !== '/' && p !== '/pricing' && p !== '/faq'
-      if (isToolOrSeo && !breadcrumbList) {
-        console.error(`[smoke] ${url}: BreadcrumbList JSON-LD expected`)
+      if (breadcrumbJsonLdCount > 1) {
+        console.error(`[smoke] ${url}: duplicate BreadcrumbList in application/ld+json (count=${breadcrumbJsonLdCount})`)
         failed = true
         continue
       }

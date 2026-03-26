@@ -6,11 +6,13 @@ import { prefetchRoute } from '../lib/prefetch'
 import { isLoggedIn } from '../lib/auth'
 import { useFounderStatus } from '../hooks/useFounderStatus'
 
+/** Order = paid / core AI tools first (SEO + conversion). */
 const AI_TOOLS = [
-  { name: 'Voice → Text 🎙️', path: '/voice-recorder' },
   { name: 'Video → Transcript', path: '/video-to-transcript' },
+  { name: 'Voice → Text', path: '/voice-recorder' },
+  { name: 'Translate Subtitles', path: '/translate-subtitles' },
+  { name: 'Batch processing', path: '/batch-process' },
   { name: 'Video → Subtitles', path: '/video-to-subtitles' },
-  { name: 'Translation', path: '/translation' },
   { name: 'Fix Subtitles', path: '/fix-subtitles' },
   { name: 'Burn Subtitles', path: '/burn-subtitles' },
   { name: 'Compress Video', path: '/compress-video' },
@@ -87,7 +89,7 @@ export default function Navigation() {
                   >
                     {/* AI Tools column */}
                     <div className="px-4 border-r border-white/[0.06]">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400 mb-2 px-1">AI Tools</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400 mb-2 px-1">Core AI tools</p>
                       {AI_TOOLS.map((t) => (
                         <Link
                           key={t.path}

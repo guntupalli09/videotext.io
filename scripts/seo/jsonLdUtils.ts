@@ -12,3 +12,14 @@ export function countFaqPageInJsonLdScripts(html: string): number {
   }
   return n
 }
+
+/** Count BreadcrumbList objects inside application/ld+json script tags. */
+export function countBreadcrumbListInJsonLdScripts(html: string): number {
+  const re = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
+  let n = 0
+  let m: RegExpExecArray | null
+  while ((m = re.exec(html)) !== null) {
+    if (/"@type"\s*:\s*"BreadcrumbList"/.test(m[1])) n++
+  }
+  return n
+}

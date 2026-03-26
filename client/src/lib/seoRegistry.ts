@@ -4,6 +4,8 @@
  * NO content rewriting; pure migration from existing wrapper pages.
  */
 import { getProgrammaticSeoEntries } from './generateSeoPages'
+import { resolveInternalLinkPath } from './primaryUrls'
+import { REVENUE_TOOL_PATHS } from './revenueTools'
 
 export interface FaqItem {
   q: string
@@ -662,6 +664,38 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What is bulk transcript export?', a: 'Upload multiple videos and get transcript/subtitle output for all in one ZIP. Same as Batch Processing.' },
       { q: 'Is this free?', a: 'Bulk/batch is on Pro and Agency plans.' },
       { q: 'What do I get in the ZIP?', a: 'One SRT (or equivalent) per video. You can use each file as transcript or captions.' },
+    ],
+  },
+  {
+    path: '/bulk-video-transcription',
+    title: 'Bulk Video Transcription — Transcribe Multiple Videos at Once | VideoText',
+    description:
+      'Transcribe multiple videos in one upload. Bulk video transcription and batch subtitle generation: upload many files, download one ZIP. Pro & Agency plans. Same workflow as Batch Process.',
+    h1: 'Bulk Video Transcription — Multiple Videos, One Batch',
+    intro:
+      'Transcribe multiple videos at once or generate subtitles for a whole folder in a single run. Upload many MP4/MOV files, set the spoken language once, and download a ZIP with one SRT per video — ideal for bulk video transcription, batch subtitle generation, and creator pipelines. Available on Pro and Agency plans.',
+    breadcrumbLabel: 'Bulk Video Transcription',
+    toolKey: 'batch-process',
+    relatedSlugs: ['/batch-process', '/video-to-transcript', '/video-to-subtitles', '/bulk-subtitle-export'],
+    indexable: true,
+    intentKey: 'bulk-video-transcription',
+    faq: [
+      {
+        q: 'How do I transcribe multiple videos at once?',
+        a: 'Use VideoText Batch Process: upload several videos in one session, choose transcript or subtitle output, and download a single ZIP with one file per video. Pro supports up to 20 videos per batch; Agency supports larger batches for teams and agencies.',
+      },
+      {
+        q: 'What is bulk video transcription?',
+        a: 'Bulk video transcription means processing many video files in one job instead of uploading one at a time. You get consistent naming, one ZIP download, and parallel processing so a batch of videos finishes faster than sequential uploads.',
+      },
+      {
+        q: 'Can I use this for batch subtitle generation?',
+        a: 'Yes. Batch Process generates timed subtitles (SRT) for each video in your upload. You can also run bulk transcript export if you need plain text. Multi-language batch output is available on higher plans for localization workflows.',
+      },
+      {
+        q: 'Is bulk transcription free?',
+        a: 'Batch processing is available on Pro and Agency plans. Free and Basic plans use single-file transcription and subtitle tools. Upgrade when you need to transcribe multiple videos at once or run batch subtitle generation regularly.',
+      },
     ],
   },
   {
@@ -3952,7 +3986,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'To convert an SRT file to a Word document, you need to extract just the dialogue text — stripping the timestamps and block numbers. Use our free SRT to Text tool to extract clean text from your SRT file, then open the .txt output in Word. Alternatively, use VideoText\'s AI transcription tool to go directly from video to a clean, formatted transcript ready to paste into any document.',
     breadcrumbLabel: 'SRT to Word',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/video-to-transcript', '/srt-to-text', '/srt-to-vtt', '/subtitle-resources'],
+    relatedSlugs: ['/video-to-transcript', '/srt-to-vtt', '/how-to-create-srt-file', '/video-to-subtitles'],
     indexable: true,
     intentKey: 'srt-to-word',
     faq: [
@@ -3983,25 +4017,31 @@ const CORE_TOOL_LABELS: Record<string, string> = {
   '/voice-recorder': 'Voice to Text',
 }
 
-/** Popular tool paths for Footer (core + selected SEO). Single source for footer links. */
+/** Labels for static routes not in registry (footer, breadcrumbs). */
+const STATIC_PAGE_LABELS: Record<string, string> = {
+  '/tools': 'Free tools',
+  '/subtitle-tools': 'Subtitle tools',
+  '/subtitle-resources': 'Subtitle resources',
+  '/open': 'Open stats',
+  '/compare': 'Compare tools',
+  '/guide': 'Guide',
+  '/blog': 'Blog',
+}
+
+/** Popular footer links — revenue tools first, then SEO hubs & proof. */
 const POPULAR_FOOTER_PATHS: string[] = [
-  '/video-to-transcript',
-  '/voice-recorder',
-  '/voice-to-text',
-  '/speech-to-text',
+  ...REVENUE_TOOL_PATHS,
   '/youtube-to-transcript',
-  '/youtube-transcript-generator',
-  '/video-to-text-converter',
-  '/podcast-transcription',
-  '/subtitle-generator',
-  '/video-caption-generator',
-  '/add-subtitles-to-video',
-  '/audio-to-text-converter',
   '/video-to-subtitles',
-  '/translate-subtitles',
-  '/subtitle-editor',
+  '/fix-subtitles',
   '/compress-video',
-  '/batch-process',
+  '/tools',
+  '/subtitle-tools',
+  '/subtitle-resources',
+  '/open',
+  '/compare',
+  '/guide',
+  '/blog',
 ]
 
 /** Links for Footer "Popular tools" section; labels from registry or core labels. */
@@ -4017,7 +4057,7 @@ export function getSeoEntry(path: string): SeoRegistryEntry | undefined {
 export function getPageLabel(path: string): string {
   const entry = byPath.get(path)
   if (entry) return entry.breadcrumbLabel
-  return CORE_TOOL_LABELS[path] ?? path.slice(1).replace(/-/g, ' ')
+  return CORE_TOOL_LABELS[path] ?? STATIC_PAGE_LABELS[path] ?? path.slice(1).replace(/-/g, ' ')
 }
 
 const MIN_RELATED = 4
@@ -4037,23 +4077,30 @@ export function getRelatedSuggestionsForEntry(entry: SeoRegistryEntry): { path: 
   for (const path of entry.relatedSlugs) {
     if (seen.has(path) || out.length >= MAX_RELATED || !isPathIndexable(path)) continue
     seen.add(path)
-    out.push({ path, title: getPageLabel(path) })
+    out.push({ path: resolveInternalLinkPath(path), title: getPageLabel(path) })
   }
   if (out.length >= MIN_RELATED) return out.slice(0, MAX_RELATED)
 
   for (const other of REGISTRY) {
     if (seen.has(other.path) || !other.indexable || other.toolKey !== entry.toolKey || out.length >= MAX_RELATED) continue
     seen.add(other.path)
-    out.push({ path: other.path, title: other.breadcrumbLabel })
+    out.push({ path: resolveInternalLinkPath(other.path), title: other.breadcrumbLabel })
   }
   if (out.length >= MIN_RELATED) return out.slice(0, MAX_RELATED)
 
   for (const other of REGISTRY) {
     if (seen.has(other.path) || !other.indexable || out.length >= MAX_RELATED) continue
     seen.add(other.path)
-    out.push({ path: other.path, title: other.breadcrumbLabel })
+    out.push({ path: resolveInternalLinkPath(other.path), title: other.breadcrumbLabel })
   }
-  return out.slice(0, MAX_RELATED)
+  const deduped: { path: string; title: string }[] = []
+  const seenTargets = new Set<string>()
+  for (const item of out) {
+    if (seenTargets.has(item.path)) continue
+    seenTargets.add(item.path)
+    deduped.push(item)
+  }
+  return deduped.slice(0, MAX_RELATED)
 }
 
 export function isSeoPagePath(path: string): boolean {

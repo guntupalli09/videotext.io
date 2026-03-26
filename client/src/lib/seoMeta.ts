@@ -4,6 +4,7 @@
  */
 import { SITE_URL, SITE_NAME } from './seo'
 import { getAllSeoEntries } from './seoRegistry'
+import { resolveInternalLinkPath } from './primaryUrls'
 
 /** Static (non-SEO-registry) routes: title + description. */
 const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> = {
@@ -607,11 +608,14 @@ export function getBreadcrumbJsonLd(_pathname: string, items: { name: string; pa
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: item.name,
-      item: `${SITE_URL}${item.path === '/' ? '' : item.path}`,
-    })),
+    itemListElement: items.map((item, i) => {
+      const p = resolveInternalLinkPath(item.path)
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        name: item.name,
+        item: `${SITE_URL}${p === '/' ? '' : p}`,
+      }
+    }),
   }
 }

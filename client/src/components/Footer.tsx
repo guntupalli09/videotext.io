@@ -49,9 +49,9 @@ export default function Footer() {
               <li><Link to="/subly-alternative" className="hover:text-white transition-colors">Subly alternative</Link></li>
             </ul>
           </div>
-          {/* Popular tools: from registry (core + selected SEO paths). */}
+          {/* Core product URLs, free-tool hubs, proof — see getPopularFooterLinks() */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Popular tools</h3>
+            <h3 className="text-white font-semibold mb-4">Product & resources</h3>
             <ul className="space-y-2 text-sm">
               {popularLinks.map(({ path, label }) => (
                 <li key={path}>

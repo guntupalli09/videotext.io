@@ -8,6 +8,7 @@ import { invalidateUsageCache } from './lib/api'
 import Footer from './components/Footer'
 import Seo from './components/Seo'
 import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd, getSoftwareApplicationJsonLd, getHowToJsonLd, BLOG_POST_DATES } from './lib/seoMeta'
+import { getCanonicalPathForRoute } from './lib/primaryUrls'
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
 import OfflineBanner from './components/OfflineBanner'
@@ -161,11 +162,13 @@ function AppSeo() {
       // non-blocking
     }
   }, [pathname])
+  const canonicalPath = getCanonicalPathForRoute(pathname)
+
   return (
     <Seo
       title={meta.title}
       description={meta.description}
-      canonicalPath={pathname}
+      canonicalPath={canonicalPath}
       jsonLd={jsonLd}
       noindex={is404}
       articleMeta={articleMeta}

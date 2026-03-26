@@ -39,6 +39,7 @@ export default function WordsPerMinute() {
     <FreeToolLayout
       title="Words Per Minute Calculator — Speaking Rate Checker"
       description="Calculate your speaking rate in words per minute (WPM). Enter text and recording time, or word count and duration. Instant result, no account needed."
+      hubLink={{ label: 'Free Video Tools', path: '/tools' }}
       contentSections={[
         {
           heading: 'Why does speaking rate matter for video creators?',

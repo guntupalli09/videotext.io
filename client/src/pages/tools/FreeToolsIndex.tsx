@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import OpenStatsStrip from '../../components/OpenStatsStrip'
 
 const TOOLS = [
   {
@@ -76,6 +77,7 @@ export default function FreeToolsIndex() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-10">
+        <OpenStatsStrip />
         {TOOLS.map((group) => (
           <section key={group.category}>
             <h2 className="text-xs font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400 mb-4">{group.category}</h2>

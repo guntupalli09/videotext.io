@@ -5,6 +5,7 @@
  */
 import { Link } from 'react-router-dom'
 import { BarChart2, Clock, Globe, Shield, Zap, TrendingUp } from 'lucide-react'
+import { OPEN_STATS_LAST_UPDATED } from '../lib/openStats'
 
 const STATS = [
   {
@@ -95,7 +96,7 @@ export default function Open() {
           <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl leading-relaxed">
             We publish our processing stats, accuracy benchmarks, and technology choices publicly. These are numbers we measured — not marketing claims. Updated monthly.
           </p>
-          <p className="text-sm text-gray-400 dark:text-white/30 mt-3">Last updated: March 14, 2026</p>
+          <p className="text-sm text-gray-400 dark:text-white/30 mt-3">Last updated: {OPEN_STATS_LAST_UPDATED}</p>
         </div>
       </section>
 

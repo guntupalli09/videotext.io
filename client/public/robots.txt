@@ -2,5 +2,5 @@
 User-agent: *
 Allow: /
 
-# Sitemap index (submit sitemap-core.xml first, then add sitemap-index.xml)
-Sitemap: https://videotext.io/sitemap-index.xml
+# Sitemap index lists sitemap-core.xml + sitemap-programmatic.xml (submit this URL in GSC)
+Sitemap: https://videotext.io/sitemap.xml

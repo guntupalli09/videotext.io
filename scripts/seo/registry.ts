@@ -204,6 +204,36 @@ export const CORE_PATHS: string[] = [
   // Remaining alternatives are in sitemap2 via seoRegistry
 ]
 
+/**
+ * Free client-side tools + hub pages (prerender STATIC_META). Must stay in sync with
+ * scripts/prerender.ts and STATIC_ROUTE_SEO in client/src/lib/seoMeta.ts.
+ * Previously omitted from sitemaps → weaker discovery vs internal links only.
+ */
+export const FREE_TOOL_AND_HUB_PATHS: string[] = [
+  '/tools',
+  '/tools/srt-to-vtt',
+  '/tools/vtt-to-srt',
+  '/tools/shift-subtitle-timing',
+  '/tools/merge-srt-files',
+  '/tools/srt-to-text',
+  '/tools/subtitle-validator',
+  '/tools/subtitle-reading-speed',
+  '/tools/subtitle-character-checker',
+  '/tools/subtitle-word-counter',
+  '/tools/video-script-timer',
+  '/tools/words-per-minute-calculator',
+  '/tools/video-bitrate-calculator',
+  '/tools/aspect-ratio-calculator',
+  '/tools/timestamp-converter',
+  '/tools/video-metadata-viewer',
+  '/tools/sbv-to-srt',
+  '/tools/srt-to-sbv',
+  '/tools/ass-to-srt',
+  '/tools/ttml-to-srt',
+  '/subtitle-tools',
+  '/subtitle-resources',
+]
+
 /** Programmatic-only paths (from targets × intents). Submit after core. */
 export function getProgrammaticPaths(): string[] {
   return getProgrammaticSeoEntries().map((e) => e.path)
@@ -216,7 +246,8 @@ export function getSitemap2Paths(): string[] {
   const programmatic = getProgrammaticPaths()
   const otherManual = registry.filter((p) => !coreSet.has(p))
   const otherProgrammatic = programmatic.filter((p) => !coreSet.has(p))
-  return [...new Set([...otherManual, ...otherProgrammatic])]
+  const freeTools = FREE_TOOL_AND_HUB_PATHS.filter((p) => !coreSet.has(p))
+  return [...new Set([...otherManual, ...otherProgrammatic, ...freeTools])]
 }
 
 /** All routes (for validation). No duplicates. */
@@ -305,6 +336,7 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   // Translation variants
   'translate-video': '/translate-subtitles',
   'video-translation': '/translate-subtitles',
+  'bulk-video-transcription': '/batch-process',
 }
 
 export function pathToSlug(routePath: string): string {

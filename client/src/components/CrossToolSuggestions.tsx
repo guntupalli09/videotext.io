@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, LucideIcon } from 'lucide-react'
+import { resolveInternalLinkPath } from '../lib/primaryUrls'
 
 export interface ToolSuggestion {
   icon: LucideIcon
@@ -59,7 +60,7 @@ export default function CrossToolSuggestions({ suggestions, workflowHint }: Cros
                 className={suggestionClass}
                 onClick={() => {
                   suggestion.onBeforeNavigate?.()
-                  navigate(suggestion.path, { state: suggestion.state })
+                  navigate(resolveInternalLinkPath(suggestion.path), { state: suggestion.state })
                 }}
               >
                 {content}
@@ -69,7 +70,7 @@ export default function CrossToolSuggestions({ suggestions, workflowHint }: Cros
           return (
             <Link
               key={suggestion.path}
-              to={suggestion.path}
+              to={resolveInternalLinkPath(suggestion.path)}
               state={suggestion.state}
               className={suggestionClass}
             >

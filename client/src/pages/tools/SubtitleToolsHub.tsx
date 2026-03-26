@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import OpenStatsStrip from '../../components/OpenStatsStrip'
 
 const SUBTITLE_TOOLS = [
   {
@@ -58,6 +59,7 @@ export default function SubtitleToolsHub() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-12 space-y-12">
+        <OpenStatsStrip />
 
         {/* Tool Grid */}
         {SUBTITLE_TOOLS.map((group) => (
