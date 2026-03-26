@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import UpgradeBanner from '../components/UpgradeBanner'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -28,7 +28,10 @@ import {
   BACKEND_TOOL_TYPES,
   getAuthToken,
 } from '../lib/api'
-import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
+import { getAbsoluteDownloadUrl, getApiBase, API_ORIGIN } from '../lib/apiBase'
+import { formatTimestamp, type Segment } from '../lib/srtExport'
+import { getActiveSegmentIndexAtTime } from '../lib/segmentSync'
+import PinnedAudioPlayerBar from '../components/transcript/PinnedAudioPlayerBar'
 import { LANGUAGES } from '../lib/languages'
 import { exportFileStem, joinExportFilename, targetLangFileSlug } from '../lib/exportFileNames'
 import { trackEvent } from '../lib/analytics'
@@ -79,6 +82,78 @@ export default function VoiceRecorder() {
   const [transcriptView, setTranscriptView] = useState<'original' | 'translated'>('original')
   const [voiceJobId, setVoiceJobId] = useState<string | null>(null)
   const [voiceJobToken, setVoiceJobToken] = useState<string | null>(null)
+  /** Segments + audio URL from job result — enables pinned player + highlight sync (all plans). */
+  const [voiceSegments, setVoiceSegments] = useState<Segment[] | null>(null)
+  const [voiceAudioUrl, setVoiceAudioUrl] = useState<string | null>(null)
+
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const audioPlaybackTimeRef = useRef(0)
+  const scrubberRef = useRef<HTMLInputElement>(null)
+  const timeDisplayRef = useRef<HTMLSpanElement>(null)
+  const durationDisplayRef = useRef<HTMLSpanElement>(null)
+  const volumeSliderRef = useRef<HTMLInputElement>(null)
+  const segmentRefsRef = useRef<Map<number, HTMLParagraphElement>>(new Map())
+  const [activeSegIdx, setActiveSegIdx] = useState(-1)
+  const [audioIsPlaying, setAudioIsPlaying] = useState(false)
+  const [audioDuration, setAudioDuration] = useState(0)
+  const [audioVolume, setAudioVolume] = useState(1)
+  const [audioMuted, setAudioMuted] = useState(false)
+  const [audioSpeed, setAudioSpeed] = useState(1)
+
+  const syncScrubberFill = useCallback(() => {
+    const el = scrubberRef.current
+    if (!el) return
+    const max = parseFloat(el.max) || 1
+    const val = parseFloat(el.value) || 0
+    el.style.setProperty('--fill', `${Math.min(100, Math.max(0, (val / max) * 100))}%`)
+  }, [])
+  const syncVolumeFill = useCallback(() => {
+    const el = volumeSliderRef.current
+    if (!el) return
+    const v = parseFloat(el.value)
+    const pct = Number.isFinite(v) ? v * 100 : 0
+    el.style.setProperty('--fill', `${Math.min(100, Math.max(0, pct))}%`)
+  }, [])
+
+  const audioObjectUrl = useMemo(
+    () => (voiceAudioUrl ? getAbsoluteDownloadUrl(voiceAudioUrl) : null),
+    [voiceAudioUrl]
+  )
+
+  const handlePlaybackTime = useCallback(
+    (t: number) => {
+      audioPlaybackTimeRef.current = t
+      if (voiceSegments?.length) {
+        const newIdx = getActiveSegmentIndexAtTime(voiceSegments, t)
+        setActiveSegIdx((prev) => (prev === newIdx ? prev : newIdx))
+      }
+    },
+    [voiceSegments]
+  )
+
+  useEffect(() => {
+    if (!audioObjectUrl) return
+    syncVolumeFill()
+  }, [audioObjectUrl, audioVolume, syncVolumeFill])
+
+  useEffect(() => {
+    if (!voiceAudioUrl) return
+    setActiveSegIdx(-1)
+    setAudioIsPlaying(false)
+    audioPlaybackTimeRef.current = 0
+    if (scrubberRef.current) {
+      scrubberRef.current.value = '0'
+      scrubberRef.current.style.setProperty('--fill', '0%')
+    }
+    if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(0)
+    if (durationDisplayRef.current) durationDisplayRef.current.textContent = formatTimestamp(0)
+  }, [voiceAudioUrl])
+
+  useEffect(() => {
+    if (phase !== 'result' || activeSegIdx < 0 || !audioIsPlaying) return
+    const el = segmentRefsRef.current.get(activeSegIdx)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [phase, activeSegIdx, audioIsPlaying])
 
   // Refs — stable, no stale closures
   const phaseRef = useRef<Phase>('idle')
@@ -342,6 +417,8 @@ export default function VoiceRecorder() {
 
           if (s.status === 'completed' && s.result) {
             stopPollRef.current?.()
+            setVoiceSegments(s.result.segments?.length ? s.result.segments : null)
+            setVoiceAudioUrl(s.result.audioUrl ?? null)
             let text = ''
             if (s.result.segments?.length) {
               text = s.result.segments.map((seg) => seg.text).join('\n\n')
@@ -459,6 +536,12 @@ export default function VoiceRecorder() {
     setTranscriptView('original')
     setVoiceJobId(null)
     setVoiceJobToken(null)
+    setVoiceSegments(null)
+    setVoiceAudioUrl(null)
+    setActiveSegIdx(-1)
+    setAudioIsPlaying(false)
+    audioPlaybackTimeRef.current = 0
+    segmentRefsRef.current.clear()
     barsRef.current = new Array(NUM_BARS).fill(0.05)
     // Restart idle waveform after React paint
     setTimeout(() => canvasRef.current && runWaveform(), 50)
@@ -480,7 +563,7 @@ export default function VoiceRecorder() {
       icon={<Mic className="w-5 h-5 text-violet-600" />}
       tags={['Free', '99 Languages', 'Live Transcription', 'Translation']}
     >
-      <div className="max-w-2xl mx-auto space-y-5 pb-16">
+      <div className={`max-w-2xl mx-auto space-y-5 ${audioObjectUrl ? 'pb-24 sm:pb-28' : 'pb-16'}`}>
         <UpgradeBanner variant="voice" />
 
         {/* ── Main recorder card ──────────────────────────────────────────── */}
@@ -788,10 +871,44 @@ export default function VoiceRecorder() {
                   </div>
                 )}
 
-                {/* Transcript body */}
+                {/* Transcript body — segment highlight + tap-to-seek when audio + timed segments exist */}
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5 max-h-80 overflow-y-auto">
                   {(() => {
                     const displayText = transcriptView === 'translated' && translatedText ? translatedText : transcript
+                    const showSegmentSync =
+                      audioObjectUrl &&
+                      voiceSegments?.length &&
+                      !(transcriptView === 'translated' && translatedText)
+                    if (showSegmentSync && voiceSegments) {
+                      return (
+                        <div className="space-y-2">
+                          {voiceSegments.map((seg, i) => {
+                            const isActive = i === activeSegIdx
+                            return (
+                              <p
+                                key={i}
+                                ref={(el) => {
+                                  if (el) segmentRefsRef.current.set(i, el)
+                                  else segmentRefsRef.current.delete(i)
+                                }}
+                                onClick={() => {
+                                  if (!audioRef.current) return
+                                  audioRef.current.currentTime = seg.start
+                                  void audioRef.current.play().catch(() => {})
+                                }}
+                                className={`text-sm leading-relaxed rounded-lg px-2 py-1.5 -mx-2 transition-colors cursor-pointer ${
+                                  isActive
+                                    ? 'bg-amber-100/95 dark:bg-amber-900/40 text-gray-900 dark:text-gray-100 font-medium shadow-sm'
+                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-gray-800/60'
+                                }`}
+                              >
+                                {seg.text}
+                              </p>
+                            )
+                          })}
+                        </div>
+                      )
+                    }
                     return displayText.trim() ? (
                       <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                         {displayText}
@@ -996,6 +1113,35 @@ export default function VoiceRecorder() {
             </p>
           </div>
         </motion.div>
+
+        {audioObjectUrl && phase === 'result' && (
+          <PinnedAudioPlayerBar
+            audioSrc={audioObjectUrl}
+            audioRef={audioRef}
+            scrubberRef={scrubberRef}
+            timeDisplayRef={timeDisplayRef}
+            durationDisplayRef={durationDisplayRef}
+            volumeSliderRef={volumeSliderRef}
+            audioDuration={audioDuration}
+            setAudioDuration={setAudioDuration}
+            audioIsPlaying={audioIsPlaying}
+            setAudioIsPlaying={setAudioIsPlaying}
+            audioMuted={audioMuted}
+            setAudioMuted={setAudioMuted}
+            audioVolume={audioVolume}
+            setAudioVolume={setAudioVolume}
+            audioSpeed={audioSpeed}
+            setAudioSpeed={setAudioSpeed}
+            syncScrubberFill={syncScrubberFill}
+            syncVolumeFill={syncVolumeFill}
+            onPlaybackTime={handlePlaybackTime}
+            crossOrigin={
+              typeof window !== 'undefined' && API_ORIGIN !== window.location.origin
+                ? 'anonymous'
+                : undefined
+            }
+          />
+        )}
 
       </div>
     </ToolLayout>

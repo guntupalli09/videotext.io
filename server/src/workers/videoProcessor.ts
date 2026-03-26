@@ -819,13 +819,15 @@ async function processJob(job: import('bull').Job<JobData>) {
           } else {
             await job.progress(30)
             const glossary = options?.glossary?.trim()
-            if (partialWriter) {
+            // Audio-only / voice jobs: always use verbose path so we get timed segments for playback sync
+            // (plain transcribeVideo returns text only). Streaming partials still require partialWriter.
+            if (partialWriter || isAlreadyAudio) {
               const verbose = await transcribeVideoVerbose(
                 videoPath,
                 options?.language,
                 glossary,
                 isAlreadyAudio,
-                onPartial,
+                partialWriter ? onPartial : undefined,
                 undefined,
                 jobId,
                 {

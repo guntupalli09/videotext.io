@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { FileText, FileCode, Download, Lock, Play, Pause, Volume2, VolumeX, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Copy, Gem } from 'lucide-react'
+import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Copy, Gem } from 'lucide-react'
 import FailedState from '../components/FailedState'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
@@ -15,6 +15,8 @@ import { ResultSkeleton } from '../components/figma/ResultSkeleton'
 import { TranscriptResult } from '../components/figma/TranscriptResult'
 import TranscriptSharePanel from '../components/TranscriptSharePanel'
 import SpeakerSegmentsPanel from '../components/videoTranscript/SpeakerSegmentsPanel'
+import PinnedAudioPlayerBar from '../components/transcript/PinnedAudioPlayerBar'
+import { getActiveSegmentIndexAtTime } from '../lib/segmentSync'
 import { Checkbox } from '../components/figma/FormControls'
 import { incrementUsage } from '../lib/usage'
 import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, invalidateUsageCache, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, submitYoutubeUrl, isYoutubeUrl, claimGuestJob, uploadBatch, getBatchStatus, getBatchDownloadUrl, type YoutubeUploadResponse, type BatchStatus } from '../lib/api'
@@ -119,6 +121,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const audioPlaybackTimeRef = useRef(0)   // updated at timeupdate frequency without triggering re-renders
   const scrubberRef = useRef<HTMLInputElement>(null)
   const timeDisplayRef = useRef<HTMLSpanElement>(null)
+  const durationDisplayRef = useRef<HTMLSpanElement>(null)
+  const volumeSliderRef = useRef<HTMLInputElement>(null)
   const [activeSegIdx, setActiveSegIdx] = useState(-1)  // re-renders only when segment boundary crosses
   const [audioIsPlaying, setAudioIsPlaying] = useState(false)
   const [audioDuration, setAudioDuration] = useState(0)
@@ -126,6 +130,38 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [audioVolume, setAudioVolume] = useState(1)
   const [audioMuted, setAudioMuted] = useState(false)
   const [audioSpeed, setAudioSpeed] = useState(1)
+  const syncScrubberFill = useCallback(() => {
+    const el = scrubberRef.current
+    if (!el) return
+    const max = parseFloat(el.max) || 1
+    const val = parseFloat(el.value) || 0
+    el.style.setProperty('--fill', `${Math.min(100, Math.max(0, (val / max) * 100))}%`)
+  }, [])
+  const syncVolumeFill = useCallback(() => {
+    const el = volumeSliderRef.current
+    if (!el) return
+    const v = parseFloat(el.value)
+    const pct = Number.isFinite(v) ? v * 100 : 0
+    el.style.setProperty('--fill', `${Math.min(100, Math.max(0, pct))}%`)
+  }, [])
+
+  useEffect(() => {
+    if (!audioObjectUrl) return
+    syncVolumeFill()
+  }, [audioObjectUrl, audioVolume, syncVolumeFill])
+
+  const handlePlaybackTime = useCallback(
+    (t: number) => {
+      audioPlaybackTimeRef.current = t
+      const segs = result?.segments
+      if (segs?.length) {
+        const newIdx = getActiveSegmentIndexAtTime(segs, t)
+        setActiveSegIdx((prev) => (prev === newIdx ? prev : newIdx))
+      }
+    },
+    [result?.segments]
+  )
+
   const rehydratePollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const activeUploadPollRef = useRef<(() => void) | null>(null)
   const pollConsecutiveNetworkErrorsRef = useRef(0)
@@ -247,8 +283,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       setActiveSegIdx(-1)
       setAudioIsPlaying(false)
       audioPlaybackTimeRef.current = 0
-      if (scrubberRef.current) scrubberRef.current.value = '0'
+      if (scrubberRef.current) {
+        scrubberRef.current.value = '0'
+        scrubberRef.current.style.setProperty('--fill', '0%')
+      }
       if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(0)
+      if (durationDisplayRef.current) durationDisplayRef.current.textContent = formatTimestamp(0)
       return () => {
         setAudioObjectUrl(null)
       }
@@ -2378,7 +2418,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               )
             })()}
 
-          <div className={`space-y-6 relative ${showAuthGate && !isLoggedIn() ? 'pointer-events-none select-none' : ''}`}>
+          <div
+            className={`space-y-6 relative ${showAuthGate && !isLoggedIn() ? 'pointer-events-none select-none' : ''} ${audioObjectUrl ? 'pb-24 sm:pb-28' : ''}`}
+          >
             {/* Blur overlay for non-logged-in users — the JobAuthGateModal sits above this */}
             {showAuthGate && !isLoggedIn() && (
               <div className="absolute inset-0 z-10 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 rounded-2xl" aria-hidden="true" />
@@ -2670,120 +2712,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     </div>
                   )}
                 </div>
-
-                {/* Audio player — below transcript */}
-                {audioObjectUrl && (
-                  <div className="mt-4 px-4 pt-3 pb-3 bg-gray-100 dark:bg-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700">
-                    <audio
-                      ref={audioRef}
-                      src={audioObjectUrl}
-                      crossOrigin={
-                        typeof window !== 'undefined' && API_ORIGIN !== window.location.origin
-                          ? 'anonymous'
-                          : undefined
-                      }
-                      preload="metadata"
-                      onLoadedMetadata={() => {
-                        const dur = audioRef.current?.duration ?? 0
-                        setAudioDuration(dur)
-                        if (scrubberRef.current) scrubberRef.current.max = String(dur)
-                      }}
-                      onTimeUpdate={() => {
-                        const t = audioRef.current?.currentTime ?? 0
-                        audioPlaybackTimeRef.current = t
-                        if (scrubberRef.current) scrubberRef.current.value = String(t)
-                        if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
-                        const segs = result?.segments
-                        if (segs?.length) {
-                          let newIdx = -1
-                          for (let i = segs.length - 1; i >= 0; i--) {
-                            if (t >= segs[i].start) { newIdx = i; break }
-                          }
-                          setActiveSegIdx(prev => prev === newIdx ? prev : newIdx)
-                        }
-                      }}
-                      onPlay={() => setAudioIsPlaying(true)}
-                      onPause={() => setAudioIsPlaying(false)}
-                      onEnded={() => setAudioIsPlaying(false)}
-                    />
-                    {/* Play + scrubber + time */}
-                    <div className="flex items-center gap-3 mb-2.5">
-                      <button
-                        type="button"
-                        onClick={() => { if (!audioRef.current) return; audioIsPlaying ? audioRef.current.pause() : audioRef.current.play().catch(() => {}) }}
-                        className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 hover:bg-violet-700 active:scale-95 text-white transition-all"
-                      >
-                        {audioIsPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
-                      </button>
-                      <input
-                        ref={scrubberRef}
-                        type="range"
-                        min={0}
-                        max={audioDuration || 100}
-                        step={0.1}
-                        defaultValue={0}
-                        onChange={(e) => {
-                          const t = Number(e.target.value)
-                          audioPlaybackTimeRef.current = t
-                          if (audioRef.current) audioRef.current.currentTime = t
-                          if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
-                        }}
-                        className="flex-1 h-1.5 accent-violet-600 cursor-pointer"
-                      />
-                      <span ref={timeDisplayRef} className="shrink-0 text-xs font-mono text-gray-500 dark:text-gray-400 w-10 text-right">
-                        0:00
-                      </span>
-                    </div>
-                    {/* Volume + speed */}
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        title={audioMuted ? 'Unmute' : 'Mute'}
-                        onClick={() => {
-                          const muted = !audioMuted
-                          setAudioMuted(muted)
-                          if (audioRef.current) audioRef.current.muted = muted
-                        }}
-                        className="shrink-0 text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
-                      >
-                        {audioMuted || audioVolume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-                      </button>
-                      <input
-                        type="range"
-                        min={0}
-                        max={1}
-                        step={0.05}
-                        value={audioVolume}
-                        onChange={(e) => {
-                          const v = Number(e.target.value)
-                          setAudioVolume(v)
-                          if (audioRef.current) {
-                            audioRef.current.volume = v
-                            audioRef.current.muted = v === 0
-                          }
-                          if (v > 0 && audioMuted) setAudioMuted(false)
-                        }}
-                        className="w-20 h-1.5 accent-violet-600 cursor-pointer"
-                      />
-                      <div className="ml-auto flex items-center gap-2">
-                        <span className="text-xs text-gray-400 dark:text-gray-500 select-none">Speed</span>
-                        <select
-                          value={audioSpeed}
-                          onChange={(e) => {
-                            const s = Number(e.target.value)
-                            setAudioSpeed(s)
-                            if (audioRef.current) audioRef.current.playbackRate = s
-                          }}
-                          className="text-xs bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1 cursor-pointer focus:outline-none focus:ring-1 focus:ring-violet-500"
-                        >
-                          {[0.25, 0.5, 0.75, 1, 1.5, 2].map(s => (
-                            <option key={s} value={s}>{s}x</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
                 )}
               </div>
@@ -3023,6 +2951,35 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 })()}
               </aside>
             </div>
+
+            {audioObjectUrl && (
+              <PinnedAudioPlayerBar
+                audioSrc={audioObjectUrl}
+                audioRef={audioRef}
+                scrubberRef={scrubberRef}
+                timeDisplayRef={timeDisplayRef}
+                durationDisplayRef={durationDisplayRef}
+                volumeSliderRef={volumeSliderRef}
+                audioDuration={audioDuration}
+                setAudioDuration={setAudioDuration}
+                audioIsPlaying={audioIsPlaying}
+                setAudioIsPlaying={setAudioIsPlaying}
+                audioMuted={audioMuted}
+                setAudioMuted={setAudioMuted}
+                audioVolume={audioVolume}
+                setAudioVolume={setAudioVolume}
+                audioSpeed={audioSpeed}
+                setAudioSpeed={setAudioSpeed}
+                syncScrubberFill={syncScrubberFill}
+                syncVolumeFill={syncVolumeFill}
+                onPlaybackTime={handlePlaybackTime}
+                crossOrigin={
+                  typeof window !== 'undefined' && API_ORIGIN !== window.location.origin
+                    ? 'anonymous'
+                    : undefined
+                }
+              />
+            )}
 
             <div id="vt-exports-root" className="mt-8 bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-card border border-gray-200 dark:border-gray-800 scroll-mt-24">
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 flex items-center gap-2">

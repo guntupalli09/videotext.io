@@ -179,3 +179,53 @@ html.dark [data-user-menu-panel],
 html.dark [data-user-menu-panel] [data-user-menu-body] {
   background-color: #1f2937 !important;
 }
+
+/* Pinned transcript audio bar — dark bar, violet progress, lavender thumb */
+.vtt-pinned-audio input[type='range'].vtt-rail {
+  --fill: 0%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1.25rem;
+  background: transparent;
+  cursor: pointer;
+}
+.vtt-pinned-audio input[type='range'].vtt-rail::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    #7c3aed 0%,
+    #7c3aed var(--fill),
+    #3d3555 var(--fill),
+    #3d3555 100%
+  );
+}
+.vtt-pinned-audio input[type='range'].vtt-rail::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: #c4b5fd;
+  border: 2px solid #1a1628;
+  margin-top: -4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+.vtt-pinned-audio input[type='range'].vtt-rail::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: #3d3555;
+}
+.vtt-pinned-audio input[type='range'].vtt-rail::-moz-range-progress {
+  height: 6px;
+  border-radius: 9999px;
+  background: #7c3aed;
+}
+.vtt-pinned-audio input[type='range'].vtt-rail::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: #c4b5fd;
+  border: 2px solid #1a1628;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}

@@ -99,6 +99,8 @@ export interface JobStatus {
     segments?: { start: number; end: number; text: string; speaker?: string }[]
     summary?: { summary: string; bullets: string[]; actionItems?: string[] }
     chapters?: { title: string; startTime: number; endTime?: number }[]
+    /** AAC playback URL for in-app transcript sync (all plans when extraction succeeds). */
+    audioUrl?: string
   }
   /** Pseudo-streaming: only when status === 'processing'. Ignore when completed/failed. */
   partialVersion?: number
