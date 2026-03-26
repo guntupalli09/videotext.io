@@ -1665,6 +1665,21 @@ export async function claimGuestJob(jobId: string, jobToken: string): Promise<vo
   }
 }
 
+/**
+ * Ensure a guest job is attached to the current user before actions that require ownership (e.g. share link).
+ * No-op if the job was already claimed (409).
+ */
+export async function ensureGuestJobClaimed(jobId: string, jobToken: string): Promise<void> {
+  const response = await api(`/api/job/${jobId}/claim`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jobToken }),
+  })
+  if (response.ok || response.status === 409) return
+  const data = (await response.json().catch(() => ({}))) as { message?: string }
+  throw new Error(data.message || 'Could not attach this job to your account.')
+}
+
 export async function translateTranscript(
   text: string,
   targetLanguage: string

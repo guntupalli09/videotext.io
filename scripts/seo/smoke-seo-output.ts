@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
- * Smoke test: fetch 10 URLs and assert title, meta description, canonical, BreadcrumbList, FAQPage.
- * FAQPage assertion is registry-driven: expect FAQPage JSON-LD when registry entry has faq.length > 0.
+ * Smoke test: fetch 10 URLs and assert title, meta description, canonical, BreadcrumbList, FAQ JSON-LD sanity.
+ * FAQPage in raw HTML is optional (react-helmet adds it after load); duplicate FAQPage in ld+json scripts fails.
  * No flaky deps; uses fetch. Run after build with BASE_URL pointing at served client (e.g. http://localhost:4173).
  * Run from repo root: npx tsx scripts/seo/smoke-seo-output.ts
  */
 import * as path from 'path'
 import * as fs from 'fs'
+import { countFaqPageInJsonLdScripts } from './jsonLdUtils'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173'
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
@@ -41,7 +42,6 @@ function parseHtml(html: string): {
   metaDescription: string | null
   canonical: string | null
   breadcrumbList: boolean
-  faqPage: boolean
 } {
   const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i)
   const title = titleMatch ? titleMatch[1].trim() : null
@@ -50,8 +50,7 @@ function parseHtml(html: string): {
   const canonMatch = html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']*)["']/i) || html.match(/<link[^>]+href=["']([^"']*)["'][^>]+rel=["']canonical["']/i)
   const canonical = canonMatch ? canonMatch[1].trim() : null
   const breadcrumbList = /"@type"\s*:\s*"BreadcrumbList"/.test(html) || /BreadcrumbList/.test(html)
-  const faqPage = /"@type"\s*:\s*"FAQPage"/.test(html) || /FAQPage/.test(html)
-  return { title, metaDescription, canonical, breadcrumbList, faqPage }
+  return { title, metaDescription, canonical, breadcrumbList }
 }
 
 async function fetchUrl(url: string): Promise<string> {
@@ -68,7 +67,8 @@ async function main(): Promise<void> {
     const url = p === '/' ? base : `${base}${p}`
     try {
       const html = await fetchUrl(url)
-      const { title, metaDescription, canonical, breadcrumbList, faqPage } = parseHtml(html)
+      const { title, metaDescription, canonical, breadcrumbList } = parseHtml(html)
+      const faqJsonLdCount = countFaqPageInJsonLdScripts(html)
       if (!title || title.length < 2) {
         console.error(`[smoke] ${url}: missing or empty <title>`)
         failed = true
@@ -92,13 +92,13 @@ async function main(): Promise<void> {
         failed = true
         continue
       }
-      const expectFaqPage = p === '/faq' || (registryFaqCount.get(p) ?? 0) > 0
-      if (expectFaqPage && !faqPage) {
-        console.error(`[smoke] ${url}: FAQPage JSON-LD expected (registry has FAQs for this path)`)
+      if (faqJsonLdCount > 1) {
+        console.error(`[smoke] ${url}: duplicate FAQPage in application/ld+json (count=${faqJsonLdCount})`)
         failed = true
         continue
       }
-      if (!expectFaqPage && faqPage && p !== '/faq') {
+      const expectFaqPage = p === '/faq' || (registryFaqCount.get(p) ?? 0) > 0
+      if (!expectFaqPage && faqJsonLdCount > 0) {
         console.error(`[smoke] ${url}: FAQPage JSON-LD should not be present (registry has no FAQs for this path)`)
         failed = true
         continue

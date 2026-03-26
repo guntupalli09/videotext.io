@@ -281,6 +281,18 @@ router.post('/:jobId/claim', async (req: Request, res: Response) => {
       return res.status(409).json({ message: 'Job already claimed.' })
     }
 
+    // Persist new owner on the queue job (required for share, billing attribution, etc.)
+    try {
+      await job.update({ ...(job.data as JobData), userId })
+    } catch (updateErr: unknown) {
+      log.error({
+        msg: 'Claim job queue update failed',
+        jobId,
+        error: updateErr instanceof Error ? updateErr.message : String(updateErr),
+      })
+      return res.status(500).json({ message: 'Failed to claim job. Please try again.' })
+    }
+
     // Increment real user's import count to reflect the guest trial job
     const user = await getUser(userId)
     if (user) {

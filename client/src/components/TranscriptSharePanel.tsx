@@ -4,7 +4,12 @@ import { Link2, Loader2, Check, Crown } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { isLoggedIn } from '../lib/auth'
 import { planIncludesTranscriptShare } from '../lib/planShare'
-import { createTranscriptShare, type TranscriptSharePayload, type TranscriptShareSegment } from '../lib/api'
+import {
+  createTranscriptShare,
+  ensureGuestJobClaimed,
+  type TranscriptSharePayload,
+  type TranscriptShareSegment,
+} from '../lib/api'
 
 export type TranscriptShareSourceTool = 'video-to-transcript' | 'voice-to-text'
 
@@ -63,6 +68,7 @@ export default function TranscriptSharePanel({
 
     setBusy(variant)
     try {
+      await ensureGuestJobClaimed(jobId, jobToken)
       const { path } = await createTranscriptShare({
         jobId,
         jobToken,
