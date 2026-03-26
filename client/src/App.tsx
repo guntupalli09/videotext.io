@@ -25,6 +25,7 @@ const Home = lazy(() => import('./pages/Home'))
 const Pricing = lazy(() => import('./pages/Pricing'))
 const Login = lazy(() => import('./pages/Login'))
 const Demo = lazy(() => import('./pages/Demo'))
+const TranscriptResultWorkspaceMock = lazy(() => import('./pages/TranscriptResultWorkspaceMock'))
 const Signup = lazy(() => import('./pages/Signup'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
@@ -419,6 +420,7 @@ function App() {
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/demo" element={<Demo />} />
+            <Route path="/preview/transcript-results" element={<TranscriptResultWorkspaceMock />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />

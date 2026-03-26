@@ -1,7 +1,7 @@
 import type { User } from '../models/User'
 
 /** Returns the next midnight UTC after `now`. */
-function nextMidnightUTC(now: Date): Date {
+export function nextMidnightUTC(now: Date): Date {
   const d = new Date(now)
   d.setUTCHours(24, 0, 0, 0)
   return d

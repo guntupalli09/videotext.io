@@ -1,5 +1,6 @@
 import { prisma } from '../db'
 import type { Prisma, User as DbUser } from '@prisma/client'
+import { nextMidnightUTC } from '../utils/usageReset'
 
 export type PlanType = 'free' | 'basic' | 'pro' | 'agency' | 'founding_workflow' | 'business'
 
@@ -97,9 +98,15 @@ function rowToUser(row: DbUser): User {
       importCount: Number(usage?.importCount ?? 0),
       resetDate: usage?.resetDate ? new Date(usage.resetDate as string) : new Date(),
       importCountToday: Number(usage?.importCountToday ?? 0),
-      importCountTodayResetDate: usage?.importCountTodayResetDate ? new Date(usage.importCountTodayResetDate as string) : new Date(),
+      // Must be *after* "now" until the next UTC midnight — never default to `new Date()` or
+      // resetDailyImportIfNeeded() thinks the window already elapsed and zeros importCountToday on every read.
+      importCountTodayResetDate: usage?.importCountTodayResetDate
+        ? new Date(usage.importCountTodayResetDate as string)
+        : nextMidnightUTC(new Date()),
       dailyMinutesToday: Number(usage?.dailyMinutesToday ?? 0),
-      dailyMinutesTodayResetDate: usage?.dailyMinutesTodayResetDate ? new Date(usage.dailyMinutesTodayResetDate as string) : new Date(),
+      dailyMinutesTodayResetDate: usage?.dailyMinutesTodayResetDate
+        ? new Date(usage.dailyMinutesTodayResetDate as string)
+        : nextMidnightUTC(new Date()),
       subscriptionCancelingAt: usage?.subscriptionCancelingAt ? new Date(usage.subscriptionCancelingAt as string) : undefined,
     },
     limits: limits as PlanLimits,

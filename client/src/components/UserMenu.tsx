@@ -165,7 +165,7 @@ export default function UserMenu() {
                     <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
                       {usage.quotaType === 'imports' && usage.remaining === 0
                         ? <span className="text-base font-normal">You&apos;ve used all 3 imports. Upgrade to use the tool.</span>
-                        : <>{usage.remaining} <span className="text-base font-normal text-gray-600 dark:text-gray-300">{usage.quotaType === 'imports' ? 'of 3 imports remaining' : 'min remaining'}</span></>}
+                        : <>{usage.remaining} <span className="text-base font-normal text-gray-600 dark:text-gray-300">{usage.quotaType === 'imports' ? `of ${usage.totalPlanMinutes} free imports left today` : 'min remaining'}</span></>}
                     </p>
                   </div>
                 ) : (
