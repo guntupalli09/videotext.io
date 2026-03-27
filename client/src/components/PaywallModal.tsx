@@ -9,6 +9,8 @@ export type PaywallReason =
   | 'VIDEO_TOO_LONG'
   | 'BATCH_NOT_AVAILABLE'
   | 'MULTI_LANGUAGE_NOT_AVAILABLE'
+  | 'COPY_LIMIT_REACHED'
+  | 'AI_FEATURES'
 
 interface PaywallModalProps {
   isOpen: boolean
@@ -19,11 +21,7 @@ interface PaywallModalProps {
   resetDate?: string
 }
 
-function getContent(reason?: PaywallReason, resetDate?: string) {
-  const resetLabel = resetDate
-    ? new Date(resetDate).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' })
-    : 'midnight'
-
+function getContent(reason?: PaywallReason) {
   switch (reason) {
     case 'VIDEO_TOO_LONG':
       return {
@@ -49,6 +47,22 @@ function getContent(reason?: PaywallReason, resetDate?: string) {
         secondaryLabel: null,
         secondary: null,
       }
+    case 'COPY_LIMIT_REACHED':
+      return {
+        title: 'Your transcript is ready',
+        body: "You've used your 3 free copies. Upgrade to Pro to copy and export unlimited transcripts — no watermark, no limits.",
+        cta: 'Upgrade to Pro',
+        secondaryLabel: null,
+        secondary: null,
+      }
+    case 'AI_FEATURES':
+      return {
+        title: 'Unlock AI Summary & Chapters',
+        body: 'Pro automatically generates a summary, bullet points, and chapter markers for every transcript.',
+        cta: 'Upgrade to Pro',
+        secondaryLabel: null,
+        secondary: null,
+      }
     case 'FREE_DAILY_LIMIT_REACHED':
     default:
       return {
@@ -56,7 +70,7 @@ function getContent(reason?: PaywallReason, resetDate?: string) {
         body: 'Upgrade to Pro — no daily limits, AI chapters, keywords, speaker labels, batch processing, and no watermark.',
         cta: 'Upgrade to Pro — $10/mo annual',
         secondaryLabel: null,
-        secondary: `Resets at ${resetLabel} if you'd like to wait.`,
+        secondary: null,
       }
   }
 }
@@ -68,7 +82,7 @@ export default function PaywallModal({ isOpen, onClose, reason, onUpgrade, reset
 
   if (!isOpen) return null
 
-  const { title, body, cta, secondaryLabel, secondary } = getContent(reason, resetDate)
+  const { title, body, cta, secondaryLabel, secondary } = getContent(reason)
 
   return (
     <AnimatePresence>
