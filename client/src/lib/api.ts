@@ -1450,29 +1450,6 @@ export async function completeSignup(verificationToken: string, password: string
   }
 }
 
-/** Sign in (or up) with an Apple ID token from Sign in with Apple JS popup.
- *  email is only provided by Apple on the first sign-in; pass it when available. */
-export async function loginWithApple(idToken: string, email?: string): Promise<{
-  token: string
-  userId: string
-  plan: string
-  email: string
-}> {
-  const response = await api('/api/auth/apple', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ idToken, email }),
-  })
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({ message: 'Apple login failed' }))
-    throw new Error(err.message || 'Apple login failed')
-  }
-  const data = await response.json()
-  if (!data.token || !data.userId || data.plan == null) {
-    throw new Error('Invalid Apple login response')
-  }
-  return { token: data.token, userId: data.userId, plan: data.plan, email: data.email || '' }
-}
 
 /** Sign in (or up) with a Google ID token from Google Identity Services. */
 export async function loginWithGoogle(credential: string): Promise<{
