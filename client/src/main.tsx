@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { Analytics } from '@vercel/analytics/react'
 import { HelmetProvider } from 'react-helmet-async'
 import { ThemeProvider } from './lib/theme'
 import { initAnalytics, identifyUser } from './lib/analytics'
@@ -41,6 +42,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ThemeProvider>
       <HelmetProvider>
         <App />
+        <Analytics />
       </HelmetProvider>
     </ThemeProvider>
   </React.StrictMode>,
