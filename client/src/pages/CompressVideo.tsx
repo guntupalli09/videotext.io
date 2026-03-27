@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Minimize2 } from 'lucide-react'
+import { Minimize2, Lock } from 'lucide-react'
+import { isLoggedIn } from '../lib/auth'
 // import { useWorkflow } from '../contexts/WorkflowContext'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
+import JobAuthGateModal from '../components/JobAuthGateModal'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingInterface } from '../components/figma/ProcessingInterface'
@@ -15,10 +17,10 @@ import { TranslateResult } from '../components/figma/TranslateResult'
 import { RadioGroup } from '../components/figma/FormControls'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { incrementUsage } from '../lib/usage'
-import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError } from '../lib/api'
+import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, claimGuestJob } from '../lib/api'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
-import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
+import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
@@ -70,6 +72,10 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string } | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [showAuthGate, setShowAuthGate] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null)
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
@@ -86,6 +92,13 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   useEffect(() => {
     if (result?.downloadUrl) setFreeExportsUsed(0)
   }, [result?.downloadUrl])
+
+  useEffect(() => {
+    if (status === 'completed' && !isLoggedIn()) {
+      const t = setTimeout(() => setShowAuthGate(true), 3000)
+      return () => clearTimeout(t)
+    }
+  }, [status])
 
   useEffect(() => {
     if (!selectedFile) {
@@ -182,6 +195,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
       setUploadProgress(100)
 
       persistJobId(location.pathname, response.jobId, response.jobToken)
+      setCurrentJobId(response.jobId)
       const pollIntervalRef = { current: 0 as number }
       const doPoll = async () => {
         try {
@@ -345,6 +359,58 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
 
         {status === 'completed' && result && selectedFile && (
           <div className="space-y-6">
+            {/* Teaser card for guests */}
+            {showAuthGate && !isLoggedIn() && (
+              <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
+                <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                    <span className="text-sm font-semibold text-gray-800 dark:text-white">Video compressed!</span>
+                    {lastProcessingMs != null && (
+                      <span className="text-xs text-gray-400">· {(lastProcessingMs / 1000).toFixed(1)}s</span>
+                    )}
+                  </div>
+                </div>
+                <div className="px-5 py-4">
+                  <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <span>Original: {formatFileSize(selectedFile.size)}</span>
+                    <span className="text-gray-400">→</span>
+                    <span className="text-emerald-600 font-semibold">Compressed: {formatFileSize(getEstimatedSize())}</span>
+                  </div>
+                  <p className="text-[11px] text-gray-400 mb-2 font-medium">Sign up to unlock:</p>
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {(['Download compressed video', '2 free exports', 'No watermark'] as const).map((feat) => (
+                      <span key={feat} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-[11px] text-gray-400 dark:text-gray-500">
+                        <Lock className="w-2.5 h-2.5" />
+                        {feat}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
+                      className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors"
+                    >
+                      Create free account
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
+                      className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      Log in
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Full result — blurred for guests */}
+            <div className={`relative ${showAuthGate && !isLoggedIn() ? 'pointer-events-none select-none' : ''}`}>
+              {showAuthGate && !isLoggedIn() && (
+                <div className="absolute inset-0 z-10 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 rounded-2xl" aria-hidden="true" />
+              )}
             <TranslateResult
               title="Video compressed!"
               fileName={result.fileName ?? fallbackCompressedName}
@@ -388,6 +454,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
                 { path: '/video-to-transcript', name: 'Video → Transcript', description: 'Get transcript & chapters' },
               ]}
             />
+            </div>{/* end blur wrapper */}
             <div className="mt-2 min-h-[2.75rem]">
             {/* <WorkflowChainSuggestion
               pathname={location.pathname}
@@ -438,6 +505,23 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
         onClose={() => setShowPaywall(false)}
         onUpgrade={() => {
           window.location.href = '/pricing'
+        }}
+      />
+
+      <JobAuthGateModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authModalMode}
+        jobDescription="Your video is compressed!"
+        onAuthSuccess={async () => {
+          const jobId = currentJobId || getPersistedJobId(location.pathname)
+          const jobToken = getPersistedJobToken(location.pathname)
+          if (jobId && jobToken) {
+            await claimGuestJob(jobId, jobToken)
+          }
+          setShowAuthGate(false)
+          setShowAuthModal(false)
+          window.location.reload()
         }}
       />
 

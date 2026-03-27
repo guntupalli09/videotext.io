@@ -22,12 +22,15 @@ import {
 } from 'lucide-react'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import TranscriptSharePanel from '../components/TranscriptSharePanel'
+import JobAuthGateModal from '../components/JobAuthGateModal'
 import {
   uploadFileWithProgress,
   subscribeJobStatus,
   BACKEND_TOOL_TYPES,
   getAuthToken,
+  claimGuestJob,
 } from '../lib/api'
+import { isLoggedIn } from '../lib/auth'
 import { getAbsoluteDownloadUrl, getApiBase, API_ORIGIN } from '../lib/apiBase'
 import { formatTimestamp, type Segment } from '../lib/srtExport'
 import { getActiveSegmentIndexAtTime } from '../lib/segmentSync'
@@ -82,6 +85,9 @@ export default function VoiceRecorder() {
   const [transcriptView, setTranscriptView] = useState<'original' | 'translated'>('original')
   const [voiceJobId, setVoiceJobId] = useState<string | null>(null)
   const [voiceJobToken, setVoiceJobToken] = useState<string | null>(null)
+  const [showAuthGate, setShowAuthGate] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
   /** Segments + audio URL from job result — enables pinned player + highlight sync (all plans). */
   const [voiceSegments, setVoiceSegments] = useState<Segment[] | null>(null)
   const [voiceAudioUrl, setVoiceAudioUrl] = useState<string | null>(null)
@@ -135,6 +141,13 @@ export default function VoiceRecorder() {
     if (!audioObjectUrl) return
     syncVolumeFill()
   }, [audioObjectUrl, audioVolume, syncVolumeFill])
+
+  useEffect(() => {
+    if (phase === 'result' && !isLoggedIn()) {
+      const t = setTimeout(() => setShowAuthGate(true), 3000)
+      return () => clearTimeout(t)
+    }
+  }, [phase])
 
   useEffect(() => {
     if (!voiceAudioUrl) return
@@ -799,6 +812,59 @@ export default function VoiceRecorder() {
                 transition={{ duration: 0.25 }}
                 className="p-6 sm:p-8 space-y-5"
               >
+                {/* Teaser card for guests */}
+                {showAuthGate && !isLoggedIn() && (
+                  <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
+                    <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                        <span className="text-sm font-semibold text-gray-800 dark:text-white">Voice transcript ready!</span>
+                      </div>
+                      <span className="text-xs text-gray-400">{wordCount.toLocaleString()} words · {formatTime(recSecs)} recorded</span>
+                    </div>
+                    <div className="px-5 py-4">
+                      {transcript && (
+                        <div className="relative overflow-hidden mb-4" style={{ maxHeight: '8rem' }}>
+                          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                            {transcript.slice(0, Math.max(300, Math.ceil(transcript.length * 0.25)))}
+                          </p>
+                          <div className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none bg-gradient-to-t from-white dark:from-gray-900 to-transparent" />
+                        </div>
+                      )}
+                      <p className="text-[11px] text-gray-400 mb-2 font-medium">Sign up to unlock:</p>
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {(['Full transcript', 'Download TXT', 'Copy text'] as const).map((feat) => (
+                          <span key={feat} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-[11px] text-gray-400 dark:text-gray-500">
+                            <Lock className="w-2.5 h-2.5" />
+                            {feat}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
+                          className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors"
+                        >
+                          Create free account
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
+                          className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                        >
+                          Log in
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Full result — blurred for guests */}
+                <div className={`relative ${showAuthGate && !isLoggedIn() ? 'pointer-events-none select-none' : ''}`}>
+                  {showAuthGate && !isLoggedIn() && (
+                    <div className="absolute inset-0 z-10 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 rounded-2xl" aria-hidden="true" />
+                  )}
                 {/* Result header */}
                 <div className="flex items-center justify-between flex-wrap gap-3">
                   <div className="flex items-center gap-2.5">
@@ -1027,6 +1093,8 @@ export default function VoiceRecorder() {
                   </div>
                 )}
 
+                </div>{/* end blur wrapper */}
+
                 {/* Record again */}
                 <button
                   onClick={reset}
@@ -1147,6 +1215,21 @@ export default function VoiceRecorder() {
         )}
 
       </div>
+
+      <JobAuthGateModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authModalMode}
+        jobDescription="Your voice transcript is ready!"
+        onAuthSuccess={async () => {
+          if (voiceJobId && voiceJobToken) {
+            await claimGuestJob(voiceJobId, voiceJobToken)
+          }
+          setShowAuthGate(false)
+          setShowAuthModal(false)
+          window.location.reload()
+        }}
+      />
     </ToolLayout>
   )
 }

@@ -585,11 +585,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   //   if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
   // }, [status, selectedFile])
 
-  // Show auth gate immediately when job completes and user is not logged in.
+  // Show auth gate 3 seconds after job completes so the user gets a taste of their result.
   // Users can see live partial transcription during processing but results are gated.
   useEffect(() => {
     if (status === 'completed' && !isLoggedIn()) {
-      setShowAuthGate(true)
+      const t = setTimeout(() => setShowAuthGate(true), 3000)
+      return () => clearTimeout(t)
     }
   }, [status])
 
@@ -2370,9 +2371,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             {showAuthGate && !isLoggedIn() && (() => {
               const fullText = displayTranscript || fullTranscript || transcriptPreview || ''
               const previewSegs = result.segments?.length
-                ? result.segments.slice(0, Math.max(3, Math.ceil(result.segments.length * 0.1)))
+                ? result.segments.slice(0, Math.max(3, Math.ceil(result.segments.length * 0.25)))
                 : null
-              const previewText = fullText.slice(0, Math.max(400, Math.ceil(fullText.length * 0.1)))
+              const previewText = fullText.slice(0, Math.max(400, Math.ceil(fullText.length * 0.25)))
               return (
                 <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none mb-2">
                   {/* header row */}
