@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import Seo from '../../components/Seo'
 import OpenStatsStrip from '../../components/OpenStatsStrip'
 
 const SUBTITLE_TOOLS = [
@@ -49,6 +50,11 @@ const STANDARDS = [
 export default function SubtitleToolsHub() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
+      <Seo
+        title="Free Subtitle Tools for Creators — Convert, Validate & Fix | VideoText"
+        description="Free online subtitle tools: convert SRT, VTT, SBV, ASS, TTML. Validate timing, check reading speed, merge files. All run in your browser — no account, no upload."
+        canonicalPath="/subtitle-tools"
+      />
       {/* Hero */}
       <div className="bg-gradient-to-br from-violet-600 to-violet-800 text-white py-16 px-4">
         <div className="max-w-3xl mx-auto text-center">

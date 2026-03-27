@@ -1,4 +1,6 @@
+import { useLocation } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import Seo from './Seo'
 import OpenStatsStrip from './OpenStatsStrip'
 import { resolveInternalLinkPath } from '../lib/primaryUrls'
 
@@ -52,9 +54,11 @@ export default function FreeToolLayout({
   hubLink,
   showOpenStatsStrip = true,
 }: FreeToolLayoutProps) {
+  const { pathname } = useLocation()
   const isSubtitleCluster = hubLink?.path === '/subtitle-tools'
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
+      <Seo title={title} description={description} canonicalPath={pathname} />
       {/* Hero */}
       <div className="bg-gradient-to-b from-violet-50 to-white dark:from-gray-800 dark:to-gray-900 border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-3xl mx-auto px-4 py-10 sm:py-14 text-center">
@@ -108,49 +112,45 @@ export default function FreeToolLayout({
         {/* The actual tool */}
         <section>{children}</section>
 
-        {/* Upgrade nudge — pain→solution framing, positioned immediately after the tool delivers value */}
+        {/* Upgrade nudge — positioned immediately after the tool delivers value */}
         <section className="rounded-2xl bg-gray-900 dark:bg-gray-800 border border-gray-700 dark:border-gray-600 overflow-hidden">
           <div className="px-6 py-7 sm:px-8">
-            {/* Hook */}
             <p className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-2">⚡ Skip the manual steps</p>
             <h2 className="text-xl sm:text-2xl font-display font-bold text-white leading-snug mb-1">
-              VideoText AI generates subtitles in under 2 minutes
+              Turn any video into a transcript, chapters &amp; summary — automatically
             </h2>
             <p className="text-sm text-gray-400 mb-5">
-              Upload your video once — get accurate SRT and VTT files ready to publish.
+              Upload once. Get a full transcript, AI-generated chapters, speaker labels, and subtitles in under 3 minutes.
             </p>
 
-            {/* Feature proof — specificity builds trust */}
             <ul className="space-y-2 mb-6">
               {[
-                { icon: '✓', text: 'Accurate captions in 99 languages with speaker detection' },
-                { icon: '✓', text: 'Edit, translate, and burn-in subtitles — all in one place' },
-                { icon: '✓', text: 'Works with YouTube, TikTok, Zoom, Podcast, Screencasts' },
-              ].map((item) => (
-                <li key={item.text} className="flex items-start gap-2.5 text-sm text-gray-300">
-                  <span className="text-green-400 font-bold shrink-0 mt-px">{item.icon}</span>
-                  {item.text}
+                '✓ Full transcript + AI summary & chapters in one upload',
+                '✓ Accurate captions in 70+ languages with speaker detection',
+                '✓ Works with YouTube, podcasts, Zoom, TikTok & more',
+              ].map((text) => (
+                <li key={text} className="flex items-start gap-2.5 text-sm text-gray-300">
+                  <span className="text-green-400 font-bold shrink-0 mt-px">{text.slice(0, 1)}</span>
+                  {text.slice(2)}
                 </li>
               ))}
             </ul>
 
-            {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
-                to="/video-to-subtitles"
+                to="/video-to-transcript"
                 className="inline-flex items-center justify-center rounded-xl bg-violet-500 hover:bg-violet-400 text-white font-semibold px-6 py-3 text-sm transition-colors"
               >
-                Try free — no card needed →
+                Try AI Transcription — free →
               </Link>
               <Link
-                to="/pricing"
+                to="/video-to-subtitles"
                 className="inline-flex items-center justify-center rounded-xl border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white font-semibold px-6 py-3 text-sm transition-colors"
               >
-                See pricing
+                Generate subtitles
               </Link>
             </div>
 
-            {/* Social proof — reduces final hesitation */}
             <p className="text-xs text-gray-500 mt-4">
               Trusted by 12,000+ creators, podcasters, and video agencies.
             </p>

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import Seo from '../../components/Seo'
 import OpenStatsStrip from '../../components/OpenStatsStrip'
 
 const TOOLS = [
@@ -61,6 +62,11 @@ const TOOLS = [
 export default function FreeToolsIndex() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
+      <Seo
+        title="Free Video & Subtitle Tools — No Account Required | VideoText"
+        description="20+ free browser-based tools for video creators and subtitle editors. Convert SRT, VTT, SBV, ASS, TTML. Validate, merge, shift timing. No upload, no account."
+        canonicalPath="/tools"
+      />
       {/* Hero */}
       <div className="bg-gradient-to-b from-violet-50 to-white dark:from-gray-800 dark:to-gray-900 border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-4xl mx-auto px-4 py-12 sm:py-16 text-center">
