@@ -165,17 +165,17 @@ export function Hero() {
 
         {/* H1 */}
         <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5">
-          Transcript, AI summary &amp;
+          Turn any video into transcript,
           <span className="block mt-3 pb-2 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-            chapters — in minutes.
+            summary &amp; chapters — in minutes.
           </span>
         </h1>
 
         {/* Sub-headline */}
         <p className="text-center text-[16px] sm:text-[17px] text-white/50 max-w-lg mx-auto leading-relaxed mb-8">
-          Upload any video or audio. Get an accurate transcript, AI-generated summary,{' '}
-          <span className="text-violet-300 font-medium">chapter markers, and subtitles</span>{' '}
-          — ready to share in under 3 minutes.
+          Stop spending hours editing transcripts — get{' '}
+          <span className="text-violet-300 font-medium">clean, ready-to-use results</span>{' '}
+          automatically.
         </p>
 
         {/* Dropzone + Record */}
