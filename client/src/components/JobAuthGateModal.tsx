@@ -14,7 +14,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Download, CheckCircle2, ChevronRight, Lock, Zap } from 'lucide-react'
-import { sendOtp, verifyOtp, loginWithGoogle } from '../lib/api'
+import { sendOtp, verifyOtp, loginWithGoogle, loginWithApple } from '../lib/api'
 import { completeSignup, login, storeLoginResult } from '../lib/auth'
 import { identifyUser } from '../lib/analytics'
 
@@ -48,6 +48,50 @@ declare global {
 }
 
 const GOOGLE_CLIENT_ID = (import.meta as { env?: Record<string, string> }).env?.VITE_GOOGLE_CLIENT_ID ?? ''
+
+// ── Apple Sign In ─────────────────────────────────────────────────────────────
+declare global {
+  interface Window {
+    AppleID?: {
+      auth: {
+        init: (config: {
+          clientId: string
+          scope: string
+          redirectURI: string
+          usePopup: boolean
+        }) => void
+        signIn: () => Promise<{
+          authorization: { id_token: string; code: string }
+          user?: { email?: string; name?: { firstName?: string; lastName?: string } }
+        }>
+      }
+    }
+  }
+}
+
+const APPLE_CLIENT_ID = (import.meta as { env?: Record<string, string> }).env?.VITE_APPLE_CLIENT_ID ?? ''
+const APPLE_REDIRECT_URI = (import.meta as { env?: Record<string, string> }).env?.VITE_APPLE_REDIRECT_URI ?? ''
+
+function loadAppleScript(): Promise<void> {
+  if (typeof window === 'undefined') return Promise.resolve()
+  if (window.AppleID) return Promise.resolve()
+  return new Promise((resolve, reject) => {
+    const existing = document.getElementById('apple-signin-script')
+    if (existing) {
+      existing.addEventListener('load', () => resolve())
+      existing.addEventListener('error', reject)
+      return
+    }
+    const script = document.createElement('script')
+    script.id = 'apple-signin-script'
+    script.src = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js'
+    script.async = true
+    script.defer = true
+    script.onload = () => resolve()
+    script.onerror = reject
+    document.head.appendChild(script)
+  })
+}
 
 function loadGsiScript(): Promise<void> {
   if (typeof window === 'undefined') return Promise.resolve()
@@ -102,6 +146,7 @@ export default function JobAuthGateModal({
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const googleBtnRef = useRef<HTMLDivElement>(null)
+  const [appleLoading, setAppleLoading] = useState(false)
 
   // Load and render the Google Sign-In button whenever the modal opens and Google is configured
   useEffect(() => {
@@ -220,6 +265,39 @@ export default function JobAuthGateModal({
     }
   }
 
+  async function handleAppleSignIn() {
+    if (!APPLE_CLIENT_ID || !APPLE_REDIRECT_URI) return
+    setAppleLoading(true)
+    setError(null)
+    try {
+      await loadAppleScript()
+      if (!window.AppleID) throw new Error('Apple Sign In failed to load')
+      window.AppleID.auth.init({
+        clientId: APPLE_CLIENT_ID,
+        scope: 'name email',
+        redirectURI: APPLE_REDIRECT_URI,
+        usePopup: true,
+      })
+      const response = await window.AppleID.auth.signIn()
+      const idToken = response.authorization.id_token
+      const email = response.user?.email ?? undefined
+      const result = await loginWithApple(idToken, email)
+      storeLoginResult(result)
+      try { localStorage.setItem('videotext:guestJobUsed', '1') } catch { /* ignore */ }
+      try { identifyUser(result.userId, { plan: result.plan, email: result.email }) } catch { /* ignore */ }
+      window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
+      reset()
+      onAuthSuccess()
+    } catch (err: unknown) {
+      // Apple cancels the popup by throwing — don't show error for user-initiated cancel
+      const msg = err instanceof Error ? err.message : ''
+      if (msg.toLowerCase().includes('cancel') || msg.toLowerCase().includes('popup')) return
+      setError(msg || 'Apple login failed')
+    } finally {
+      setAppleLoading(false)
+    }
+  }
+
   if (!isOpen) return null
 
   return (
@@ -294,25 +372,42 @@ export default function JobAuthGateModal({
               </div>
 
               {/* Google Sign-In (shown when configured) */}
-              {GOOGLE_CLIENT_ID && (
-                <>
-                  <div
-                    ref={googleBtnRef}
-                    className="w-full overflow-hidden rounded-xl"
-                    style={{ minHeight: 44 }}
-                  />
-                  {googleLoading && (
-                    <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+              {(GOOGLE_CLIENT_ID || APPLE_CLIENT_ID) && (
+                <div className="space-y-2">
+                  {GOOGLE_CLIENT_ID && (
+                    <>
+                      <div
+                        ref={googleBtnRef}
+                        className="w-full overflow-hidden rounded-xl"
+                        style={{ minHeight: 44 }}
+                      />
+                      {googleLoading && (
+                        <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+                      )}
+                    </>
+                  )}
+                  {APPLE_CLIENT_ID && (
+                    <button
+                      type="button"
+                      onClick={handleAppleSignIn}
+                      disabled={appleLoading}
+                      className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl bg-black hover:bg-gray-900 text-white text-sm font-semibold transition-colors disabled:opacity-60"
+                    >
+                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                        <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701z"/>
+                      </svg>
+                      {appleLoading ? 'Signing in…' : 'Continue with Apple'}
+                    </button>
                   )}
                   {error && (
                     <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg">{error}</p>
                   )}
-                  <div className="flex items-center gap-3 my-1">
+                  <div className="flex items-center gap-3 pt-1">
                     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
                     <span className="text-xs text-gray-400">or</span>
                     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
                   </div>
-                </>
+                </div>
               )}
 
               {/* Primary CTA */}
@@ -365,26 +460,43 @@ export default function JobAuthGateModal({
                 </p>
               </div>
 
-              {/* Google Sign-In */}
-              {GOOGLE_CLIENT_ID && (
-                <>
-                  <div
-                    ref={googleBtnRef}
-                    className="w-full overflow-hidden rounded-xl"
-                    style={{ minHeight: 44 }}
-                  />
-                  {googleLoading && (
-                    <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+              {/* Google + Apple Sign-In */}
+              {(GOOGLE_CLIENT_ID || APPLE_CLIENT_ID) && (
+                <div className="space-y-2">
+                  {GOOGLE_CLIENT_ID && (
+                    <>
+                      <div
+                        ref={googleBtnRef}
+                        className="w-full overflow-hidden rounded-xl"
+                        style={{ minHeight: 44 }}
+                      />
+                      {googleLoading && (
+                        <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+                      )}
+                    </>
+                  )}
+                  {APPLE_CLIENT_ID && (
+                    <button
+                      type="button"
+                      onClick={handleAppleSignIn}
+                      disabled={appleLoading}
+                      className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl bg-black hover:bg-gray-900 text-white text-sm font-semibold transition-colors disabled:opacity-60"
+                    >
+                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                        <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701z"/>
+                      </svg>
+                      {appleLoading ? 'Signing in…' : 'Continue with Apple'}
+                    </button>
                   )}
                   {error && (
                     <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg">{error}</p>
                   )}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 pt-1">
                     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
                     <span className="text-xs text-gray-400">or continue with email</span>
                     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
                   </div>
-                </>
+                </div>
               )}
 
               <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20">
@@ -520,26 +632,43 @@ export default function JobAuthGateModal({
                 </p>
               </div>
 
-              {/* Google Sign-In */}
-              {GOOGLE_CLIENT_ID && (
-                <>
-                  <div
-                    ref={googleBtnRef}
-                    className="w-full overflow-hidden rounded-xl"
-                    style={{ minHeight: 44 }}
-                  />
-                  {googleLoading && (
-                    <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+              {/* Google + Apple Sign-In */}
+              {(GOOGLE_CLIENT_ID || APPLE_CLIENT_ID) && (
+                <div className="space-y-2">
+                  {GOOGLE_CLIENT_ID && (
+                    <>
+                      <div
+                        ref={googleBtnRef}
+                        className="w-full overflow-hidden rounded-xl"
+                        style={{ minHeight: 44 }}
+                      />
+                      {googleLoading && (
+                        <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+                      )}
+                    </>
+                  )}
+                  {APPLE_CLIENT_ID && (
+                    <button
+                      type="button"
+                      onClick={handleAppleSignIn}
+                      disabled={appleLoading}
+                      className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl bg-black hover:bg-gray-900 text-white text-sm font-semibold transition-colors disabled:opacity-60"
+                    >
+                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                        <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701z"/>
+                      </svg>
+                      {appleLoading ? 'Signing in…' : 'Continue with Apple'}
+                    </button>
                   )}
                   {error && (
                     <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg">{error}</p>
                   )}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 pt-1">
                     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
                     <span className="text-xs text-gray-400">or continue with email</span>
                     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
                   </div>
-                </>
+                </div>
               )}
 
               <div>
