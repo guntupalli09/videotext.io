@@ -12,7 +12,7 @@ const USE_CASES = [
     points: [
       'Chapter markers auto-detected',
       'AI summary for descriptions & shorts',
-      'Perfect for repurposing long-form content',
+      'Translate into 70+ languages for global reach',
     ],
     cta: 'Transcribe your video',
     href: '/video-to-transcript',
@@ -29,7 +29,7 @@ const USE_CASES = [
     points: [
       'Timestamped transcript for show notes',
       'AI-generated chapters and summary',
-      'Speaker labels for multi-host shows',
+      'Translate into 70+ languages in one click',
     ],
     cta: 'Try podcast transcription',
     href: '/podcast-transcript',
@@ -41,12 +41,12 @@ const USE_CASES = [
     icon: Building2,
     iconBg: 'bg-blue-600',
     label: 'For Agencies',
-    headline: 'Batch 50 videos at once.',
+    headline: 'Batch 20 videos at once.',
     description: 'Upload a full season or a client\'s entire backlog. Our batch processor queues and transcribes everything in parallel — delivers a ZIP when it\'s done.',
     points: [
-      'Process 50+ videos simultaneously',
+      'Process up to 20 videos simultaneously',
       'Bulk subtitle export in SRT or VTT',
-      'White-label friendly output filenames',
+      'Translate into 70+ languages per batch',
     ],
     cta: 'Try batch processing',
     href: '/batch-process',

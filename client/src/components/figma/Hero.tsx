@@ -209,7 +209,7 @@ export function Hero() {
             {
               icon: Languages,
               label: 'Translation',
-              preview: 'Translate your transcript into 70+ languages with one click.',
+              preview: 'Translate into 70+ languages — subtitles and transcript both covered.',
               color: 'text-amber-400',
               bg: 'bg-amber-500/10',
             },
