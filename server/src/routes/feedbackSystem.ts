@@ -103,10 +103,10 @@ router.post('/structured', submitLimit, async (req: Request, res: Response) => {
 // ─── GET /api/admin/feedback-analytics ──────────────────────────────────────
 
 router.get('/analytics', async (req: Request, res: Response) => {
-  const founderId = await requireFounder(req, res)
-  if (!founderId) return res as Response
-
   try {
+    const founderId = await requireFounder(req, res)
+    if (!founderId) return res as Response
+
     const [funnel, features, segments, decisionEngine, issueClusters, segmentIssues] = await Promise.all([
       computeFunnelMetrics(),
       computeFeatureEngine(),
@@ -156,13 +156,12 @@ router.get('/analytics', async (req: Request, res: Response) => {
 // ─── GET /api/admin/reactivation-users ───────────────────────────────────────
 
 router.get('/reactivation-users', async (req: Request, res: Response) => {
-  const founderId = await requireFounder(req, res)
-  if (!founderId) return res as Response
-
-  const category = typeof req.query.category === 'string' ? req.query.category : ''
-  if (!category) return res.status(400).json({ message: 'category required' })
-
   try {
+    const founderId = await requireFounder(req, res)
+    if (!founderId) return res as Response
+
+    const category = typeof req.query.category === 'string' ? req.query.category : ''
+    if (!category) return res.status(400).json({ message: 'category required' })
     const users = await getUsersWhoReportedIssue(category)
     // Enrich with user email
     const ids = users.map((u) => u.userId).filter((id): id is string => id != null)
