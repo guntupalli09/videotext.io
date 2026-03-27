@@ -7,6 +7,10 @@ import {
   CheckCircle2,
   Upload,
   ChevronRight,
+  FileText,
+  Sparkles,
+  List,
+  Languages,
 } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
 
@@ -91,12 +95,12 @@ function HeroDropzone() {
         {/* Text */}
         <div className="text-center">
           <p className="text-white font-bold text-base leading-snug">
-            {dragging ? 'Release to upload' : 'Drop a video file here'}
+            {dragging ? 'Release to start transcribing' : 'Upload your video or audio — get results in minutes'}
           </p>
           <p className="text-white/40 text-sm mt-0.5">
-            MP4, MOV, MKV, AVI, WebM, MPEG, M4V, FLV, WMV, 3GP · MP3, WAV, M4A, FLAC, AAC
+            MP4, MOV, MKV, AVI, WebM · MP3, WAV, M4A, FLAC, AAC
           </p>
-          <p className="text-white/25 text-xs">or click to browse</p>
+          <p className="text-white/25 text-xs">drag &amp; drop or click to browse</p>
         </div>
 
       </div>
@@ -118,10 +122,10 @@ function HeroDropzone() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-white font-semibold text-[13px] leading-tight">
-            Record to get a transcript
+            Record your voice — get an instant transcript
           </p>
           <p className="text-white/35 text-[12px] mt-0.5">
-            Record directly in your browser — no upload needed
+            No upload needed — record directly in your browser
           </p>
         </div>
         <ChevronRight className="w-4 h-4 text-white/25 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
@@ -152,30 +156,76 @@ export function Hero() {
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-12 sm:pt-16 pb-8">
 
-        {/* Speed badge */}
+        {/* Badge */}
         <div className="flex justify-center mb-4">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/25 backdrop-blur-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
-            <span className="text-[11px] font-semibold text-violet-300 tracking-wide">5× faster processing</span>
+            <Sparkles className="w-3 h-3 text-violet-400" />
+            <span className="text-[11px] font-semibold text-violet-300 tracking-wide">AI Summary + Chapters on every transcript</span>
           </div>
         </div>
 
         {/* H1 */}
         <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5">
-          Clean transcripts from
+          Turn any video into transcript,
           <span className="block mt-3 pb-2 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-            anything you record.
+            summary &amp; chapters — in minutes.
           </span>
         </h1>
 
         {/* Sub-headline */}
         <p className="text-center text-[16px] sm:text-[17px] text-white/50 max-w-lg mx-auto leading-relaxed mb-8">
-          Upload a video or speak directly — get export-ready text{' '}
-          <span className="text-violet-300 font-medium">instantly.</span>
+          Stop spending hours editing transcripts — get a transcript, AI summary, chapters,{' '}
+          <span className="text-violet-300 font-medium">and translation</span>{' '}
+          automatically.
         </p>
 
         {/* Dropzone + Record */}
         <HeroDropzone />
+
+        {/* Output preview strip — shows what you actually get */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 w-full max-w-xl mx-auto">
+          {[
+            {
+              icon: FileText,
+              label: 'Transcript',
+              preview: 'Full word-for-word text with timestamps, speaker labels, and SRT export.',
+              color: 'text-emerald-400',
+              bg: 'bg-emerald-500/10',
+            },
+            {
+              icon: Sparkles,
+              label: 'AI Summary',
+              preview: 'Key points, bullet takeaways, and a one-paragraph overview — auto-generated.',
+              color: 'text-violet-400',
+              bg: 'bg-violet-500/10',
+            },
+            {
+              icon: List,
+              label: 'Chapters',
+              preview: 'Auto-detected chapter markers with timestamps for YouTube and podcast players.',
+              color: 'text-blue-400',
+              bg: 'bg-blue-500/10',
+            },
+            {
+              icon: Languages,
+              label: 'Translation',
+              preview: 'Translate into 70+ languages — subtitles and transcript both covered.',
+              color: 'text-amber-400',
+              bg: 'bg-amber-500/10',
+            },
+          ].map(({ icon: Icon, label, preview, color, bg }) => (
+            <div
+              key={label}
+              className="rounded-xl border border-white/[0.07] bg-white/[0.03] p-3 text-center flex flex-col items-center gap-2"
+            >
+              <div className={`w-7 h-7 rounded-lg ${bg} flex items-center justify-center`}>
+                <Icon className={`w-3.5 h-3.5 ${color}`} />
+              </div>
+              <p className="text-[11px] font-bold text-white/80 leading-tight">{label}</p>
+              <p className="text-[10px] text-white/30 leading-relaxed hidden sm:block">{preview}</p>
+            </div>
+          ))}
+        </div>
 
         {/* Secondary CTA */}
         <div className="flex items-center justify-center mt-4">
@@ -186,7 +236,7 @@ export function Hero() {
             <div className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center bg-white/[0.04]">
               <Play className="w-2.5 h-2.5 ml-0.5" />
             </div>
-            See how it works
+            Watch 60-sec demo
           </Link>
         </div>
 
@@ -226,10 +276,10 @@ export function Hero() {
                 />
               ))}
               <span className="w-[22px] h-[22px] rounded-full border-2 border-gray-950 bg-violet-500/25 flex items-center justify-center">
-                <span className="text-[7px] font-bold text-violet-300">2K+</span>
+                <span className="text-[7px] font-bold text-violet-300">12K+</span>
               </span>
             </span>
-            <span><span className="text-white/55 font-semibold">2,000+ creators</span> trust VideoText</span>
+            <span><span className="text-white/55 font-semibold">12,000+ creators</span> trust VideoText</span>
           </span>
           <span className="hidden sm:block w-px h-3 bg-white/10" />
           {/* Stars */}
