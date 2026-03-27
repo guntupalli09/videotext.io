@@ -11,12 +11,64 @@
  * rather than a wall — feels like saving progress, not a paywall.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Download, CheckCircle2, ChevronRight, Lock, Zap } from 'lucide-react'
-import { sendOtp, verifyOtp } from '../lib/api'
+import { sendOtp, verifyOtp, loginWithGoogle } from '../lib/api'
 import { completeSignup, login, storeLoginResult } from '../lib/auth'
 import { identifyUser } from '../lib/analytics'
+
+// ── Google Identity Services ──────────────────────────────────────────────────
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: {
+            client_id: string
+            callback: (response: { credential: string }) => void
+            auto_select?: boolean
+          }) => void
+          renderButton: (
+            element: HTMLElement,
+            options: {
+              type?: string
+              theme?: string
+              size?: string
+              text?: string
+              width?: number
+              logo_alignment?: string
+            }
+          ) => void
+          cancel: () => void
+        }
+      }
+    }
+  }
+}
+
+const GOOGLE_CLIENT_ID = (import.meta as { env?: Record<string, string> }).env?.VITE_GOOGLE_CLIENT_ID ?? ''
+
+function loadGsiScript(): Promise<void> {
+  if (typeof window === 'undefined') return Promise.resolve()
+  if (window.google?.accounts) return Promise.resolve()
+  return new Promise((resolve, reject) => {
+    const existing = document.getElementById('gsi-script')
+    if (existing) {
+      existing.addEventListener('load', () => resolve())
+      existing.addEventListener('error', reject)
+      return
+    }
+    const script = document.createElement('script')
+    script.id = 'gsi-script'
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.defer = true
+    script.onload = () => resolve()
+    script.onerror = reject
+    document.head.appendChild(script)
+  })
+}
 
 type Mode = 'choice' | 'signup-combo' | 'signup-otp' | 'login'
 
@@ -48,6 +100,60 @@ export default function JobAuthGateModal({
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
+  const googleBtnRef = useRef<HTMLDivElement>(null)
+
+  // Load and render the Google Sign-In button whenever the modal opens and Google is configured
+  useEffect(() => {
+    if (!isOpen || !GOOGLE_CLIENT_ID) return
+    let cancelled = false
+    loadGsiScript().then(() => {
+      if (cancelled || !googleBtnRef.current || !window.google?.accounts) return
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: async (response) => {
+          if (!response.credential) return
+          setGoogleLoading(true)
+          setError(null)
+          try {
+            const result = await loginWithGoogle(response.credential)
+            storeLoginResult(result)
+            try { localStorage.setItem('videotext:guestJobUsed', '1') } catch { /* ignore */ }
+            try { identifyUser(result.userId, { plan: result.plan, email: result.email }) } catch { /* ignore */ }
+            window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
+            reset()
+            onAuthSuccess()
+          } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Google login failed')
+          } finally {
+            setGoogleLoading(false)
+          }
+        },
+      })
+      window.google.accounts.id.renderButton(googleBtnRef.current, {
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+        text: 'continue_with',
+        width: googleBtnRef.current.offsetWidth || 400,
+        logo_alignment: 'center',
+      })
+    }).catch(() => { /* GSI failed to load — hide button silently */ })
+    return () => { cancelled = true }
+  }, [isOpen])
+
+  // Re-render the Google button when mode changes (each mode mounts a new div)
+  useEffect(() => {
+    if (!isOpen || !GOOGLE_CLIENT_ID || !window.google?.accounts || !googleBtnRef.current) return
+    window.google.accounts.id.renderButton(googleBtnRef.current, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: 'continue_with',
+      width: googleBtnRef.current.offsetWidth || 400,
+      logo_alignment: 'center',
+    })
+  }, [mode, isOpen])
 
   function reset() {
     setMode(initialMode)
@@ -187,6 +293,28 @@ export default function JobAuthGateModal({
                 </ul>
               </div>
 
+              {/* Google Sign-In (shown when configured) */}
+              {GOOGLE_CLIENT_ID && (
+                <>
+                  <div
+                    ref={googleBtnRef}
+                    className="w-full overflow-hidden rounded-xl"
+                    style={{ minHeight: 44 }}
+                  />
+                  {googleLoading && (
+                    <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+                  )}
+                  {error && (
+                    <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg">{error}</p>
+                  )}
+                  <div className="flex items-center gap-3 my-1">
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                    <span className="text-xs text-gray-400">or</span>
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                  </div>
+                </>
+              )}
+
               {/* Primary CTA */}
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -236,6 +364,28 @@ export default function JobAuthGateModal({
                   Free account — takes 30 seconds.
                 </p>
               </div>
+
+              {/* Google Sign-In */}
+              {GOOGLE_CLIENT_ID && (
+                <>
+                  <div
+                    ref={googleBtnRef}
+                    className="w-full overflow-hidden rounded-xl"
+                    style={{ minHeight: 44 }}
+                  />
+                  {googleLoading && (
+                    <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+                  )}
+                  {error && (
+                    <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg">{error}</p>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                    <span className="text-xs text-gray-400">or continue with email</span>
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                  </div>
+                </>
+              )}
 
               <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
@@ -369,6 +519,28 @@ export default function JobAuthGateModal({
                   Log in to download your transcript.
                 </p>
               </div>
+
+              {/* Google Sign-In */}
+              {GOOGLE_CLIENT_ID && (
+                <>
+                  <div
+                    ref={googleBtnRef}
+                    className="w-full overflow-hidden rounded-xl"
+                    style={{ minHeight: 44 }}
+                  />
+                  {googleLoading && (
+                    <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+                  )}
+                  {error && (
+                    <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg">{error}</p>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                    <span className="text-xs text-gray-400">or continue with email</span>
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                  </div>
+                </>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">Email</label>

@@ -1450,6 +1450,29 @@ export async function completeSignup(verificationToken: string, password: string
   }
 }
 
+/** Sign in (or up) with a Google ID token from Google Identity Services. */
+export async function loginWithGoogle(credential: string): Promise<{
+  token: string
+  userId: string
+  plan: string
+  email: string
+}> {
+  const response = await api('/api/auth/google', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credential }),
+  })
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ message: 'Google login failed' }))
+    throw new Error(err.message || 'Google login failed')
+  }
+  const data = await response.json()
+  if (!data.token || !data.userId || data.plan == null) {
+    throw new Error('Invalid Google login response')
+  }
+  return { token: data.token, userId: data.userId, plan: data.plan, email: data.email || '' }
+}
+
 // Usage APIs
 export interface UsageData {
   plan: string
