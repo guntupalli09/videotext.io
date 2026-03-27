@@ -22,3 +22,8 @@ export function getAbsoluteDownloadUrl(relativeOrAbsolute: string): string {
   if (relativeOrAbsolute.startsWith('http')) return relativeOrAbsolute
   return API_ORIGIN + relativeOrAbsolute
 }
+
+/** Returns the WebSocket base URL matching the API origin (https → wss, http → ws). */
+export function getWsBase(): string {
+  return API_ORIGIN.replace(/^https:\/\//, 'wss://').replace(/^http:\/\//, 'ws://')
+}

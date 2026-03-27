@@ -28,7 +28,7 @@ import {
   BACKEND_TOOL_TYPES,
   getAuthToken,
 } from '../lib/api'
-import { getAbsoluteDownloadUrl, getApiBase, API_ORIGIN } from '../lib/apiBase'
+import { getAbsoluteDownloadUrl, getApiBase, API_ORIGIN, getWsBase } from '../lib/apiBase'
 import { formatTimestamp, type Segment } from '../lib/srtExport'
 import { getActiveSegmentIndexAtTime } from '../lib/segmentSync'
 import PinnedAudioPlayerBar from '../components/transcript/PinnedAudioPlayerBar'
@@ -66,6 +66,17 @@ function getBestMimeType(): string {
   )
 }
 
+/** Convert Web Audio float32 samples to linear16 PCM ArrayBuffer for Deepgram streaming. */
+function convertToPCM16(samples: Float32Array): ArrayBuffer {
+  const buffer = new ArrayBuffer(samples.length * 2)
+  const view = new DataView(buffer)
+  for (let i = 0; i < samples.length; i++) {
+    const clamped = Math.max(-1, Math.min(1, samples[i]))
+    view.setInt16(i * 2, clamped < 0 ? clamped * 32768 : clamped * 32767, true)
+  }
+  return buffer
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function VoiceRecorder() {
   const [phase, setPhase] = useState<Phase>('idle')
@@ -99,6 +110,9 @@ export default function VoiceRecorder() {
   const [audioVolume, setAudioVolume] = useState(1)
   const [audioMuted, setAudioMuted] = useState(false)
   const [audioSpeed, setAudioSpeed] = useState(1)
+  // Live transcription state (Deepgram streaming during recording)
+  const [liveFinal, setLiveFinal] = useState('')
+  const [liveInterim, setLiveInterim] = useState('')
 
   const syncScrubberFill = useCallback(() => {
     const el = scrubberRef.current
@@ -168,6 +182,8 @@ export default function VoiceRecorder() {
   const abortRef = useRef<AbortController | null>(null)
   const stopPollRef = useRef<(() => void) | null>(null)
   const barsRef = useRef<number[]>(new Array(NUM_BARS).fill(0.05))
+  const wsLiveRef = useRef<WebSocket | null>(null)
+  const scriptProcessorRef = useRef<ScriptProcessorNode | null>(null)
 
   // Keep phase ref in sync for RAF closure access
   useEffect(() => {
@@ -191,6 +207,8 @@ export default function VoiceRecorder() {
       clearInterval(timerRef.current)
       timerRef.current = null
     }
+    scriptProcessorRef.current?.disconnect()
+    scriptProcessorRef.current = null
     streamRef.current?.getTracks().forEach((t) => t.stop())
     streamRef.current = null
     audioCtxRef.current?.close().catch(() => {})
@@ -326,6 +344,60 @@ export default function VoiceRecorder() {
       src.connect(an)
       analyserRef.current = an
 
+      // ── Live transcription via Deepgram WebSocket ──────────────────────────
+      // Streams raw linear16 PCM audio to the server, which proxies to Deepgram.
+      // Gracefully no-ops if the server has no DEEPGRAM_API_KEY configured.
+      try {
+        const sampleRate = actx.sampleRate
+        const wsUrl =
+          `${getWsBase()}/api/live-transcription` +
+          `?sample_rate=${Math.round(sampleRate)}`
+        const ws = new WebSocket(wsUrl)
+        wsLiveRef.current = ws
+
+        // ScriptProcessorNode captures raw PCM from the microphone.
+        // Buffer size 4096 gives ~85ms per chunk at 48 kHz — good balance
+        // of latency vs overhead. We connect src directly so the capture
+        // is independent of the analyser/waveform path.
+        const scriptProc = actx.createScriptProcessor(4096, 1, 1)
+        scriptProcessorRef.current = scriptProc
+
+        // Silent output — ScriptProcessorNode requires a downstream node to fire.
+        const silentGain = actx.createGain()
+        silentGain.gain.value = 0
+        silentGain.connect(actx.destination)
+        scriptProc.connect(silentGain)
+        src.connect(scriptProc)
+
+        scriptProc.onaudioprocess = (event) => {
+          if (wsLiveRef.current?.readyState !== WebSocket.OPEN) return
+          const pcm = convertToPCM16(event.inputBuffer.getChannelData(0))
+          wsLiveRef.current.send(pcm)
+        }
+
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data as string) as {
+              type: string
+              text?: string
+              is_final?: boolean
+            }
+            if (data.type === 'transcript' && data.text) {
+              if (data.is_final) {
+                setLiveFinal((prev) => (prev ? prev + ' ' + data.text! : data.text!))
+                setLiveInterim('')
+              } else {
+                setLiveInterim(data.text)
+              }
+            }
+          } catch { /* ignore malformed messages */ }
+        }
+
+        ws.onerror = () => {
+          // Silently swallow — live transcription is an enhancement, not required
+        }
+      } catch { /* ignore WebSocket init failures */ }
+
       // MediaRecorder — pick best available codec
       const mt = getBestMimeType()
       const rec = new MediaRecorder(stream, mt ? { mimeType: mt } : undefined)
@@ -375,6 +447,9 @@ export default function VoiceRecorder() {
 
   function stopRecording() {
     try { trackEvent('recording_stopped', { duration_seconds: recSecs }) } catch { /* non-blocking */ }
+    // Close live transcription stream before stopping MediaRecorder
+    wsLiveRef.current?.close()
+    wsLiveRef.current = null
     if (recRef.current && recRef.current.state !== 'inactive') {
       recRef.current.stop()
     }
@@ -521,6 +596,8 @@ export default function VoiceRecorder() {
   }
 
   function reset() {
+    wsLiveRef.current?.close()
+    wsLiveRef.current = null
     abortRef.current?.abort()
     stopPollRef.current?.()
     releaseAudio()
@@ -534,6 +611,8 @@ export default function VoiceRecorder() {
     setRecSecs(0)
     setUploadPct(0)
     setErrMsg('')
+    setLiveFinal('')
+    setLiveInterim('')
     setTranslatedText(null)
     setIsTranslating(false)
     setTranscriptView('original')
@@ -714,6 +793,36 @@ export default function VoiceRecorder() {
                     Background noise is being filtered
                   </p>
                 </div>
+
+                {/* ── Live transcript preview ──────────────────────────── */}
+                {(liveFinal || liveInterim) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="w-full rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60 p-4 max-h-44 overflow-y-auto"
+                  >
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <motion.span
+                        className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block"
+                        animate={{ opacity: [1, 0.2, 1] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-red-500">
+                        Live
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
+                      {liveFinal}
+                      {liveInterim && (
+                        <span className="text-gray-400 dark:text-gray-500 italic">
+                          {liveFinal ? ' ' : ''}
+                          {liveInterim}
+                        </span>
+                      )}
+                    </p>
+                  </motion.div>
+                )}
               </motion.div>
             )}
 
