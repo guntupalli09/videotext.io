@@ -3,7 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Copy, Gem } from 'lucide-react'
 import FailedState from '../components/FailedState'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
-import PaywallModal from '../components/PaywallModal'
+import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import UpgradeBanner from '../components/UpgradeBanner'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import { isLoggedIn } from '../lib/auth'
@@ -180,6 +180,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [partialSegments, setPartialSegments] = useState<{ start: number; end: number; text: string; speaker?: string }[]>([])
   /** Free plan: number of export downloads used for this transcript (max 2, with watermark). */
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
+  /** Free plan: number of clipboard copies used this session (max 3). */
+  const [freeCopiesUsed, setFreeCopiesUsed] = useState(0)
+  /** Reason to show in PaywallModal — set before opening the modal. */
+  const [paywallReason, setPaywallReason] = useState<PaywallReason | undefined>(undefined)
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   /** Contextual failure message (from getFailureMessage); shown in FailedState and Tex. */
@@ -1180,6 +1184,21 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   }
 
   const handleCopyToClipboard = async () => {
+    // Gate 1: require login
+    if (!isLoggedIn()) {
+      trackEvent('copy_gate_auth', { tool: 'video-to-transcript' })
+      setAuthModalMode('signup-combo')
+      setShowAuthModal(true)
+      return
+    }
+    // Gate 2: 3 free copies per session for free-plan users
+    const _isCopyPaid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+    if (!_isCopyPaid && freeCopiesUsed >= 3) {
+      trackEvent('copy_gate_limit', { tool: 'video-to-transcript', copies_used: freeCopiesUsed })
+      setPaywallReason('COPY_LIMIT_REACHED')
+      setShowPaywall(true)
+      return
+    }
     const textToCopy =
       translationLanguage && translatedCache[translationLanguage] != null
         ? translatedCache[translationLanguage]
@@ -1204,8 +1223,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         toast.success('Copied to clipboard!')
       } catch {
         toast.error('Failed to copy to clipboard')
+        return
       }
     }
+    trackEvent('transcript_copied', { plan: _isCopyPaid ? 'paid' : 'free', copies_used: freeCopiesUsed + 1 })
+    // Increment counter for free users after successful copy
+    if (!_isCopyPaid) setFreeCopiesUsed((n) => n + 1)
   }
 
   const handleProcessAnother = () => {
@@ -1494,6 +1517,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   }, [translationLanguage, translatedCache, result?.segments])
 
   const isPaidPlan = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+
+  // Track when the AI summary teaser is shown to a free user (fires once per completed job)
+  useEffect(() => {
+    if (status === 'completed' && result && !isPaidPlan) {
+      trackEvent('ai_summary_teaser_shown', { tool: 'video-to-transcript' })
+    }
+  }, [status, result, isPaidPlan])
 
   const handleQuickTxtExport = useCallback(() => {
     const content = (displayTranscript || fullTranscript || '').trim()
@@ -2761,19 +2791,30 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           </ul>
                         ) : schema.summary ? (
                           <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-6">{schema.summary}</p>
+                        ) : isPaidPlan ? (
+                          <p className="text-xs text-gray-500 dark:text-gray-400">No summary for this transcript yet.</p>
                         ) : (
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {isPaidPlan ? (
-                              'No summary for this transcript yet.'
-                            ) : (
-                              <>
-                                <Link to="/pricing" className="text-violet-600 dark:text-violet-400 font-medium hover:underline">
-                                  Upgrade
-                                </Link>
-                                {' '}for AI summary and chapters on Pro uploads.
-                              </>
-                            )}
-                          </p>
+                          <div className="relative rounded-lg overflow-hidden">
+                            {/* Blurred skeleton lines representing locked summary content */}
+                            <div className="blur-sm select-none pointer-events-none space-y-2 py-1">
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-full" />
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-5/6" />
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-11/12" />
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-4/5" />
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-full" />
+                            </div>
+                            {/* Overlay CTA */}
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-white/80 dark:bg-gray-900/80">
+                              <Lock className="w-3.5 h-3.5 text-violet-500" />
+                              <button
+                                type="button"
+                                onClick={() => { setPaywallReason('AI_FEATURES'); setShowPaywall(true) }}
+                                className="text-xs font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+                              >
+                                Unlock AI Summary →
+                              </button>
+                            </div>
+                          </div>
                         )}
                       </div>
                       <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
@@ -3265,6 +3306,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
+        reason={paywallReason}
       />
 
       <JobAuthGateModal

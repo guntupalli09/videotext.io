@@ -113,6 +113,11 @@ export type AnalyticsEvent =
   | 'payment_completed'
   | 'soft_cap_shown'
   | 'daily_cap_hit'
+  // Phase 1 monetization tracking
+  | 'transcript_copied'       // copy succeeded; props: { plan }
+  | 'copy_gate_auth'          // copy blocked — user not logged in; shown auth modal
+  | 'copy_gate_limit'         // copy blocked — free copies exhausted; shown paywall
+  | 'ai_summary_teaser_shown' // blurred AI summary teaser rendered for free user
 
 export function trackEvent(event: AnalyticsEvent, props?: Record<string, unknown>): void {
   if (import.meta.env.DEV) {
