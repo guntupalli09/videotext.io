@@ -75,7 +75,7 @@ function getContent(reason?: PaywallReason) {
   }
 }
 
-export default function PaywallModal({ isOpen, onClose, reason, onUpgrade, resetDate }: PaywallModalProps) {
+export default function PaywallModal({ isOpen, onClose, reason, onUpgrade }: PaywallModalProps) {
   useEffect(() => {
     if (isOpen) trackEvent('paywall_shown', { reason })
   }, [isOpen, reason])
