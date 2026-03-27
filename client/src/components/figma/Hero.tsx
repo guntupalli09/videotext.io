@@ -10,6 +10,7 @@ import {
   FileText,
   Sparkles,
   List,
+  Languages,
 } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
 
@@ -94,12 +95,12 @@ function HeroDropzone() {
         {/* Text */}
         <div className="text-center">
           <p className="text-white font-bold text-base leading-snug">
-            {dragging ? 'Release to upload' : 'Drop a video file here'}
+            {dragging ? 'Release to start transcribing' : 'Upload your video or audio — get results in minutes'}
           </p>
           <p className="text-white/40 text-sm mt-0.5">
-            MP4, MOV, MKV, AVI, WebM, MPEG, M4V, FLV, WMV, 3GP · MP3, WAV, M4A, FLAC, AAC
+            MP4, MOV, MKV, AVI, WebM · MP3, WAV, M4A, FLAC, AAC
           </p>
-          <p className="text-white/25 text-xs">or click to browse</p>
+          <p className="text-white/25 text-xs">drag &amp; drop or click to browse</p>
         </div>
 
       </div>
@@ -121,10 +122,10 @@ function HeroDropzone() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-white font-semibold text-[13px] leading-tight">
-            Record to get a transcript
+            Record your voice — get an instant transcript
           </p>
           <p className="text-white/35 text-[12px] mt-0.5">
-            Record directly in your browser — no upload needed
+            No upload needed — record directly in your browser
           </p>
         </div>
         <ChevronRight className="w-4 h-4 text-white/25 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
@@ -173,8 +174,8 @@ export function Hero() {
 
         {/* Sub-headline */}
         <p className="text-center text-[16px] sm:text-[17px] text-white/50 max-w-lg mx-auto leading-relaxed mb-8">
-          Stop spending hours editing transcripts — get{' '}
-          <span className="text-violet-300 font-medium">clean, ready-to-use results</span>{' '}
+          Stop spending hours editing transcripts — get a transcript, AI summary, chapters,{' '}
+          <span className="text-violet-300 font-medium">and translation</span>{' '}
           automatically.
         </p>
 
@@ -182,7 +183,7 @@ export function Hero() {
         <HeroDropzone />
 
         {/* Output preview strip — shows what you actually get */}
-        <div className="grid grid-cols-3 gap-2.5 mt-5 w-full max-w-xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 w-full max-w-xl mx-auto">
           {[
             {
               icon: FileText,
@@ -204,6 +205,13 @@ export function Hero() {
               preview: 'Auto-detected chapter markers with timestamps for YouTube and podcast players.',
               color: 'text-blue-400',
               bg: 'bg-blue-500/10',
+            },
+            {
+              icon: Languages,
+              label: 'Translation',
+              preview: 'Translate your transcript into 70+ languages with one click.',
+              color: 'text-amber-400',
+              bg: 'bg-amber-500/10',
             },
           ].map(({ icon: Icon, label, preview, color, bg }) => (
             <div
