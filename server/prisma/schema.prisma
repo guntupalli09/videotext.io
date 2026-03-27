@@ -11,6 +11,7 @@ datasource db {
 model User {
   id                       String   @id
   email                    String
+  name                     String?
   passwordHash             String   @default("")
   plan                     String   // free | basic | pro | agency
   stripeCustomerId         String?  @unique

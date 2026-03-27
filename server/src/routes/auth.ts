@@ -598,6 +598,9 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
       email_verified?: string
       aud?: string
       sub?: string
+      name?: string
+      given_name?: string
+      family_name?: string
     }
 
     // Ensure the token was issued for our app
@@ -610,6 +613,7 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
     }
 
     const email = tokenInfo.email.toLowerCase().trim()
+    const googleName = tokenInfo.name || [tokenInfo.given_name, tokenInfo.family_name].filter(Boolean).join(' ') || null
     let user = await getUserByEmail(email)
 
     if (!user) {
@@ -620,6 +624,7 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
       const newUser: User = {
         id: crypto.randomUUID(),
         email,
+        name: googleName,
         passwordHash: randomHash,
         plan: 'free',
         stripeCustomerId: undefined,
@@ -654,11 +659,16 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
       user = newUser
       log.info({ msg: 'Google OAuth new user created', email })
     } else {
+      // Update name if we now have one and the user didn't have one stored
+      if (googleName && !user.name) {
+        user = { ...user, name: googleName }
+        await saveUser(user)
+      }
       log.info({ msg: 'Google OAuth existing user login', email })
     }
 
     const token = signAuthToken(user)
-    return res.json({ token, userId: user.id, plan: user.plan, email: user.email })
+    return res.json({ token, userId: user.id, plan: user.plan, email: user.email, name: user.name ?? null })
   } catch (error: unknown) {
     log.error({ msg: 'google-auth error', error: (error as Error)?.message ?? String(error) })
     return res.status(500).json({ message: 'Google login failed.' })

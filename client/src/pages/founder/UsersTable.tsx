@@ -43,7 +43,7 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
     let list = users
     if (search.trim()) {
       const q = search.toLowerCase()
-      list = list.filter((u) => u.email.toLowerCase().includes(q) || (u.utmSource ?? '').toLowerCase().includes(q))
+      list = list.filter((u) => u.email.toLowerCase().includes(q) || (u.name ?? '').toLowerCase().includes(q) || (u.utmSource ?? '').toLowerCase().includes(q))
     }
     if (planFilter !== 'all') {
       list = list.filter((u) => u.plan === planFilter)
@@ -101,6 +101,7 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
         <table className="w-full text-sm min-w-[700px]">
           <thead className="sticky top-0 bg-zinc-900 z-10">
             <tr className="border-b border-zinc-800 text-left">
+              <th className="py-3 px-4 text-zinc-400 font-medium">Name</th>
               <th className="py-3 px-4 text-zinc-400 font-medium">Email</th>
               <th className="py-3 px-4 text-zinc-400 font-medium">Plan</th>
               <th
@@ -125,11 +126,12 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-zinc-600 text-sm">No users match.</td>
+                <td colSpan={8} className="py-8 text-center text-zinc-600 text-sm">No users match.</td>
               </tr>
             )}
             {filtered.map((u) => (
               <tr key={u.id} className="border-b border-zinc-800/50 hover:bg-zinc-800/40 transition-colors">
+                <td className="py-2.5 px-4 text-zinc-300 text-xs truncate max-w-[140px]">{u.name ?? <span className="text-zinc-600">—</span>}</td>
                 <td className="py-2.5 px-4 text-white font-mono text-xs">{u.email}</td>
                 <td className="py-2.5 px-4">
                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${PLAN_COLORS[u.plan] ?? 'bg-zinc-700 text-zinc-300'}`}>
