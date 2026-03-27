@@ -1,17 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Youtube, Mic, Building2 } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { createCheckoutSession, createBillingPortalSession } from '../lib/billing'
 import { trackEvent } from '../lib/analytics'
 import type { BillingPlan } from '../lib/billing'
-import { getCurrentUsage, sendOtp, verifyOtp } from '../lib/api'
+import { getCurrentUsage } from '../lib/api'
 import { isLoggedIn, logout } from '../lib/auth'
 
-// Must match server auth validation: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email || '').trim())
-}
 
 function Check() {
   return (
@@ -27,14 +22,6 @@ export default function Pricing() {
   const [subscriptionCancelingAt, setSubscriptionCancelingAt] = useState<string | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
   const [directCheckoutLoading, setDirectCheckoutLoading] = useState(false)
-  const [checkoutEmail, setCheckoutEmail] = useState('')
-  const [emailPrompt, setEmailPrompt] = useState<{ plan: BillingPlan; annual: boolean } | null>(null)
-  const [emailInput, setEmailInput] = useState('')
-  const [otpModal, setOtpModal] = useState<{ email: string; plan: BillingPlan; annual: boolean } | null>(null)
-  const [otpSent, setOtpSent] = useState(false)
-  const [otpCode, setOtpCode] = useState('')
-  const [otpLoading, setOtpLoading] = useState(false)
-  const [otpError, setOtpError] = useState<string | null>(null)
   const [annual, setAnnual] = useState(true) // default to annual (best value)
 
   const refreshCurrentPlan = useCallback(() => {
@@ -77,62 +64,26 @@ export default function Pricing() {
   async function handleSubscribe(plan: BillingPlan, isAnnual = false) {
     try { trackEvent('plan_clicked', { plan, annual: isAnnual }) } catch { /* non-blocking */ }
 
-    if (isLoggedIn()) {
-      setDirectCheckoutLoading(true)
-      try {
-        const { url } = await createCheckoutSession({
-          mode: 'subscription', plan, annual: isAnnual,
-          returnToPath: '/pricing', frontendOrigin: window.location.origin,
-        })
-        trackEvent('payment_completed', { type: 'subscription_checkout_started', plan, annual: isAnnual })
-        window.location.href = url
-      } catch (e: any) {
-        const msg: string = e.message || ''
-        if (msg.includes('session has expired') || msg.includes('log out and log back in')) {
-          logout(); window.location.reload(); return
-        }
-        alert(msg || 'Failed to start checkout. Please try again.')
-      } finally {
-        setDirectCheckoutLoading(false)
-      }
-      return
-    }
-
-    setEmailPrompt({ plan, annual: isAnnual })
-    setEmailInput(checkoutEmail)
-  }
-
-  function handleEmailPromptContinue() {
-    const email = emailInput.trim().toLowerCase()
-    if (!email || !isValidEmail(email) || !emailPrompt) return
-    setCheckoutEmail(email)
-    setOtpModal({ email, plan: emailPrompt.plan, annual: emailPrompt.annual })
-    setEmailPrompt(null)
-    setOtpSent(false); setOtpCode(''); setOtpError(null)
-  }
-
-  async function handleSendOtp() {
-    if (!otpModal || !isValidEmail(otpModal.email)) { setOtpError('Please enter a valid email address.'); return }
-    setOtpLoading(true); setOtpError(null)
-    try { await sendOtp(otpModal.email); setOtpSent(true) }
-    catch (e: any) { setOtpError(e.message || 'Failed to send code') }
-    finally { setOtpLoading(false) }
-  }
-
-  async function handleVerifyAndCheckout() {
-    if (!otpModal || !otpCode.trim()) return
-    setOtpLoading(true); setOtpError(null)
+    // Both logged-in and anonymous users go straight to Stripe Checkout.
+    // For logged-in users the server reads their verified email from the JWT.
+    // For anonymous users the server omits customer_email so Stripe collects it.
+    setDirectCheckoutLoading(true)
     try {
-      const { token } = await verifyOtp(otpModal.email, otpCode.trim())
       const { url } = await createCheckoutSession({
-        mode: 'subscription', plan: otpModal.plan, annual: otpModal.annual,
-        returnToPath: '/', frontendOrigin: window.location.origin,
-        email: otpModal.email, emailVerificationToken: token,
+        mode: 'subscription', plan, annual: isAnnual,
+        returnToPath: '/pricing', frontendOrigin: window.location.origin,
       })
-      trackEvent('payment_completed', { type: 'subscription_checkout_started', plan: otpModal.plan, annual: otpModal.annual })
+      trackEvent('payment_completed', { type: 'subscription_checkout_started', plan, annual: isAnnual })
       window.location.href = url
-    } catch (e: any) { setOtpError(e.message || 'Verification failed') }
-    finally { setOtpLoading(false) }
+    } catch (e: any) {
+      const msg: string = e.message || ''
+      if (msg.includes('session has expired') || msg.includes('log out and log back in')) {
+        logout(); window.location.reload(); return
+      }
+      alert(msg || 'Failed to start checkout. Please try again.')
+    } finally {
+      setDirectCheckoutLoading(false)
+    }
   }
 
   const row = 'flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300'
@@ -403,82 +354,6 @@ export default function Pricing() {
         )}
       </div>
 
-      {/* Email prompt modal */}
-      {emailPrompt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="email-prompt-title">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-sm w-full p-6">
-            <h2 id="email-prompt-title" className="text-lg font-semibold text-gray-900 dark:text-white">Enter your email</h2>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">We'll send a verification code so you can manage your plan and get receipts.</p>
-            <div className="mt-4">
-              <input
-                type="email"
-                value={emailInput}
-                onChange={(e) => setEmailInput(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2.5 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                onKeyDown={(e) => e.key === 'Enter' && handleEmailPromptContinue()}
-              />
-            </div>
-            <div className="mt-4 flex gap-2">
-              <button type="button" onClick={handleEmailPromptContinue} disabled={!emailInput.trim() || !isValidEmail(emailInput)} className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-50 transition-colors">Continue</button>
-              <button type="button" onClick={() => setEmailPrompt(null)} className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* OTP verification modal */}
-      {otpModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="otp-title">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-sm w-full p-6">
-            <h2 id="otp-title" className="text-lg font-semibold text-gray-900 dark:text-white">Verify your email</h2>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              We'll send a 6-digit code to <strong>{otpModal.email}</strong>.
-            </p>
-            {!otpSent ? (
-              <div className="mt-4 space-y-3">
-                {otpError && (
-                  <p className="text-sm text-red-600 dark:text-red-400">
-                    {otpError}
-                    {otpError.includes('Account already exists') && (
-                      <> <Link to="/login" className="underline font-medium text-violet-600 hover:text-violet-700">Log in</Link></>
-                    )}
-                  </p>
-                )}
-                <div className="flex gap-2">
-                  <button type="button" onClick={handleSendOtp} disabled={otpLoading} className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-60">{otpLoading ? 'Sending…' : 'Send code'}</button>
-                  <button type="button" onClick={() => setOtpModal(null)} className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-                </div>
-              </div>
-            ) : (
-              <div className="mt-4 space-y-3">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Enter 6-digit code</label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                  placeholder="000000"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-center text-lg tracking-widest focus:ring-2 focus:ring-violet-500 focus:border-violet-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                />
-                {otpError && (
-                  <p className="text-sm text-red-600 dark:text-red-400">
-                    {otpError}
-                    {otpError.includes('Account already exists') && (
-                      <> <Link to="/login" className="underline font-medium text-violet-600 hover:text-violet-700">Log in</Link></>
-                    )}
-                  </p>
-                )}
-                <div className="flex gap-2">
-                  <button type="button" onClick={handleVerifyAndCheckout} disabled={otpLoading || otpCode.length !== 6} className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-60">{otpLoading ? 'Redirecting…' : 'Verify and continue'}</button>
-                  <button type="button" onClick={() => setOtpModal(null)} className="px-4 py-2.5 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">Cancel</button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

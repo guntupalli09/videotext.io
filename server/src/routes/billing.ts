@@ -80,17 +80,15 @@ router.post('/checkout', async (req: Request, res: Response) => {
           checkoutEmail = customerUser?.email
         }
       } else {
+        // Anonymous user: use OTP-verified email if provided; otherwise let Stripe collect it at checkout
         const verified = emailVerificationToken ? verifyEmailVerificationToken(emailVerificationToken) : null
-        checkoutEmail = verified?.email || (stripeCustomerId ? undefined : email)
+        checkoutEmail = verified?.email || (stripeCustomerId ? undefined : email) || undefined
       }
-      if (!checkoutEmail || !checkoutEmail.includes('@')) {
-        if (isLoggedInUser) {
-          return res.status(400).json({
-            message: 'Your account email could not be found. Please log out and sign back in, then try again.',
-          })
-        }
+      // Logged-in users must always have a resolvable email; anonymous users can proceed without one
+      // (Stripe Checkout will collect the email when customer_email is not pre-filled)
+      if (!checkoutEmail && isLoggedInUser) {
         return res.status(400).json({
-          message: 'Please verify your email first (enter your email and the code we sent you) before subscribing.',
+          message: 'Your account email could not be found. Please log out and sign back in, then try again.',
         })
       }
 
