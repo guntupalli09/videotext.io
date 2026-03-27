@@ -467,6 +467,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                         a.download = result?.fileName || fallbackFixedName
                         a.click()
                         URL.revokeObjectURL(a.href)
+                        try { trackEvent('result_downloaded', { tool: 'fix-subtitles', plan: 'free' }) } catch { /* non-blocking */ }
                         setFreeExportsUsed((prev) => prev + 1)
                         toast.success('Download started (with watermark)')
                       } catch {
@@ -485,6 +486,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                         a.download = result?.fileName || fallbackFixedName
                         a.click()
                         URL.revokeObjectURL(a.href)
+                        try { trackEvent('result_downloaded', { tool: 'fix-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
                       } catch {
                         toast.error('Download failed')
                       }

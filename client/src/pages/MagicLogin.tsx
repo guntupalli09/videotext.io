@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { trackEvent, identifyUser } from '../lib/analytics'
 
 /**
  * Handles magic login links sent via daily email.
@@ -31,9 +32,14 @@ export default function MagicLogin() {
         if (data.token) localStorage.setItem('auth_token', data.token)
         if (data.plan)  localStorage.setItem('plan', data.plan)
         if (data.userId) localStorage.setItem('user_id', data.userId)
+        try {
+          if (data.userId) identifyUser(data.userId, { plan: data.plan })
+          trackEvent('magic_login_completed', { plan: data.plan })
+        } catch { /* non-blocking */ }
         navigate(next, { replace: true })
       })
       .catch((e: any) => {
+        try { trackEvent('magic_login_failed', { error: e.message }) } catch { /* non-blocking */ }
         setError(e.message || 'Magic link failed.')
       })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps

@@ -5,6 +5,7 @@ import UserMenu from './UserMenu'
 import { prefetchRoute } from '../lib/prefetch'
 import { isLoggedIn } from '../lib/auth'
 import { useFounderStatus } from '../hooks/useFounderStatus'
+import { trackEvent } from '../lib/analytics'
 
 /** Order = paid / core AI tools first (SEO + conversion). */
 const AI_TOOLS = [
@@ -96,6 +97,7 @@ export default function Navigation() {
                           to={t.path}
                           className="block px-2 py-1.5 text-sm text-white/65 hover:text-white hover:bg-white/[0.05] rounded-lg transition-colors"
                           onMouseEnter={() => prefetchRoute(t.path)}
+                          onClick={() => { try { trackEvent('tool_nav_clicked', { tool: t.name, path: t.path, category: 'ai' }) } catch { /* non-blocking */ } }}
                         >
                           {t.name}
                         </Link>
@@ -115,6 +117,7 @@ export default function Navigation() {
                               : 'text-white/65 hover:text-white hover:bg-white/[0.05]'
                           }`}
                           onMouseEnter={() => prefetchRoute(t.path)}
+                          onClick={() => { try { trackEvent('tool_nav_clicked', { tool: t.name, path: t.path, category: 'free' }) } catch { /* non-blocking */ } }}
                         >
                           {t.name}
                         </Link>
@@ -158,6 +161,7 @@ export default function Navigation() {
                   to="/login"
                   className="text-sm font-semibold text-white/80 hover:text-white border border-white/20 hover:border-white/40 rounded-lg px-4 py-1.5 transition-all"
                   onMouseEnter={() => prefetchRoute('/login')}
+                  onClick={() => { try { trackEvent('nav_cta_clicked', { label: 'Login', destination: '/login' }) } catch { /* non-blocking */ } }}
                 >
                   Login
                 </Link>
@@ -165,6 +169,7 @@ export default function Navigation() {
                   to="/signup"
                   className="text-sm font-bold text-white bg-violet-600 hover:bg-violet-500 rounded-lg px-4 py-1.5 transition-colors flex items-center gap-1"
                   onMouseEnter={() => prefetchRoute('/signup')}
+                  onClick={() => { try { trackEvent('nav_cta_clicked', { label: 'Start free', destination: '/signup' }) } catch { /* non-blocking */ } }}
                 >
                   Start free <span aria-hidden>→</span>
                 </Link>
@@ -180,6 +185,7 @@ export default function Navigation() {
               <Link
                 to="/signup"
                 className="text-xs font-bold text-white bg-violet-600 hover:bg-violet-500 rounded-lg px-3 py-1.5 transition-colors"
+                onClick={() => { try { trackEvent('nav_cta_clicked', { label: 'Start free', destination: '/signup', mobile: true }) } catch { /* non-blocking */ } }}
               >
                 Start free →
               </Link>

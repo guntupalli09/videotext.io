@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom'
-import { trackEvent, identifyUser, capturePageview } from './lib/analytics'
+import { trackEvent, identifyUser, capturePageview, startAdBlockProbe } from './lib/analytics'
 import { Toaster, toast } from 'react-hot-toast'
 import Navigation from './components/Navigation'
 import { getSessionDetails, getSessionStatus, setupPassword } from './lib/billing'
@@ -396,6 +396,8 @@ function SessionTracker() {
     if (getLifetimeSessionCount() >= 2) {
       trackAppEvent('session_returned')
     }
+
+    startAdBlockProbe()
   }, []) // once per mount
   return null
 }

@@ -106,14 +106,14 @@ export default function Pricing() {
           <div className="mt-8 inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-full p-1">
             <button
               type="button"
-              onClick={() => setAnnual(false)}
+              onClick={() => { setAnnual(false); try { trackEvent('billing_period_toggled', { annual: false }) } catch { /* non-blocking */ } }}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${!annual ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
             >
               Monthly
             </button>
             <button
               type="button"
-              onClick={() => setAnnual(true)}
+              onClick={() => { setAnnual(true); try { trackEvent('billing_period_toggled', { annual: true }) } catch { /* non-blocking */ } }}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${annual ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
             >
               Annual

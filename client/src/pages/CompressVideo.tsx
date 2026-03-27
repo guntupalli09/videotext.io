@@ -366,6 +366,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
                         a.click()
                         URL.revokeObjectURL(a.href)
                         trackAppEvent('export_clicked', { toolId: 'compress-video' })
+                        try { trackEvent('result_downloaded', { tool: 'compress-video', plan: 'free' }) } catch { /* non-blocking */ }
                         setFreeExportsUsed((prev) => prev + 1)
                         toast.success('Download started')
                       } catch {
@@ -377,6 +378,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
                       a.href = getDownloadUrl()
                       a.download = result?.fileName || fallbackCompressedName
                       a.click()
+                      try { trackEvent('result_downloaded', { tool: 'compress-video', plan: 'paid' }) } catch { /* non-blocking */ }
                     }
               }
               onProcessAnother={handleProcessAnother}
