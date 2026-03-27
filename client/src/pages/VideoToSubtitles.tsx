@@ -922,11 +922,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               </div>
             )}
 
-            {/* Full result — blurred for guests */}
-            <div className={`relative ${showAuthGate && !isLoggedIn() ? 'pointer-events-none select-none' : ''}`}>
-              {showAuthGate && !isLoggedIn() && (
-                <div className="absolute inset-0 z-10 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 rounded-2xl" aria-hidden="true" />
-              )}
+            {/* Full result — hidden until signed in */}
+            {(!showAuthGate || isLoggedIn()) && (
             <SubtitleResult
               fileName={result.fileName ?? fallbackSubtitleName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
@@ -978,7 +975,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               onProcessAnother={handleProcessAnother}
               relatedTools={[]}
             />
-            </div>{/* end blur wrapper */}
+            )}{/* end gate-hidden result */}
             <div className="mt-2 min-h-[2.75rem]">
             {/* <WorkflowChainSuggestion
               pathname={location.pathname}

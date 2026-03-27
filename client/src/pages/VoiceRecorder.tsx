@@ -860,11 +860,8 @@ export default function VoiceRecorder() {
                   </div>
                 )}
 
-                {/* Full result — blurred for guests */}
-                <div className={`relative ${showAuthGate && !isLoggedIn() ? 'pointer-events-none select-none' : ''}`}>
-                  {showAuthGate && !isLoggedIn() && (
-                    <div className="absolute inset-0 z-10 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 rounded-2xl" aria-hidden="true" />
-                  )}
+                {/* Full result — hidden until signed in */}
+                {(!showAuthGate || isLoggedIn()) && (<>
                 {/* Result header */}
                 <div className="flex items-center justify-between flex-wrap gap-3">
                   <div className="flex items-center gap-2.5">
@@ -1093,7 +1090,7 @@ export default function VoiceRecorder() {
                   </div>
                 )}
 
-                </div>{/* end blur wrapper */}
+                </>)}{/* end gate-hidden result */}
 
                 {/* Record again */}
                 <button

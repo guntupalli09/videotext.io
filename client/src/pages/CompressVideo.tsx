@@ -406,11 +406,8 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
               </div>
             )}
 
-            {/* Full result — blurred for guests */}
-            <div className={`relative ${showAuthGate && !isLoggedIn() ? 'pointer-events-none select-none' : ''}`}>
-              {showAuthGate && !isLoggedIn() && (
-                <div className="absolute inset-0 z-10 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 rounded-2xl" aria-hidden="true" />
-              )}
+            {/* Full result — hidden until signed in */}
+            {(!showAuthGate || isLoggedIn()) && (
             <TranslateResult
               title="Video compressed!"
               fileName={result.fileName ?? fallbackCompressedName}
@@ -454,7 +451,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
                 { path: '/video-to-transcript', name: 'Video → Transcript', description: 'Get transcript & chapters' },
               ]}
             />
-            </div>{/* end blur wrapper */}
+            )}{/* end gate-hidden result */}
             <div className="mt-2 min-h-[2.75rem]">
             {/* <WorkflowChainSuggestion
               pathname={location.pathname}

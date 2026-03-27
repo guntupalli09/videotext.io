@@ -88,6 +88,7 @@ export interface DashboardFeedback {
 export interface DashboardUser {
   id: string
   email: string
+  name: string | null
   plan: string
   createdAt: string
   lastActiveAt: string | null

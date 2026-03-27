@@ -227,16 +227,16 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
       `,
       // All users with total and 30d job counts
       prisma.$queryRaw<{
-        id: string; email: string; plan: string; createdAt: Date; lastActiveAt: Date | null;
+        id: string; email: string; name: string | null; plan: string; createdAt: Date; lastActiveAt: Date | null;
         utmSource: string | null; firstReferrer: string | null;
         totalJobs: bigint; jobCount30d: bigint;
       }[]>`
-        SELECT u.id, u.email, u.plan, u."createdAt", u."lastActiveAt", u."utmSource", u."firstReferrer",
+        SELECT u.id, u.email, u.name, u.plan, u."createdAt", u."lastActiveAt", u."utmSource", u."firstReferrer",
           COUNT(j.id)::bigint as "totalJobs",
           COUNT(j.id) FILTER (WHERE j."createdAt" >= ${thirtyDaysAgo})::bigint as "jobCount30d"
         FROM "User" u
         LEFT JOIN "Job" j ON j."userId" = u.id
-        GROUP BY u.id, u.email, u.plan, u."createdAt", u."lastActiveAt", u."utmSource", u."firstReferrer"
+        GROUP BY u.id, u.email, u.name, u.plan, u."createdAt", u."lastActiveAt", u."utmSource", u."firstReferrer"
         ORDER BY u."createdAt" DESC
         LIMIT 500
       `,
@@ -424,6 +424,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
     const users = (allUsers ?? []).map((u) => ({
       id: u.id,
       email: u.email,
+      name: u.name ?? null,
       plan: u.plan,
       createdAt: u.createdAt.toISOString(),
       lastActiveAt: u.lastActiveAt ? u.lastActiveAt.toISOString() : null,

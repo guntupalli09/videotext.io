@@ -2454,12 +2454,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             })()}
 
           <div
-            className={`space-y-6 relative ${showAuthGate && !isLoggedIn() ? 'pointer-events-none select-none' : ''} ${audioObjectUrl ? 'pb-24 sm:pb-28' : ''}`}
+            className={`space-y-6 ${audioObjectUrl ? 'pb-24 sm:pb-28' : ''}`}
+            hidden={showAuthGate && !isLoggedIn()}
           >
-            {/* Blur overlay for non-logged-in users — the JobAuthGateModal sits above this */}
-            {showAuthGate && !isLoggedIn() && (
-              <div className="absolute inset-0 z-10 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 rounded-2xl" aria-hidden="true" />
-            )}
             {/* Result header + primary actions */}
             <TranscriptResult
               fileName={
