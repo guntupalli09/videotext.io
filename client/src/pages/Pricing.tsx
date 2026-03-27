@@ -5,7 +5,7 @@ import { createCheckoutSession, createBillingPortalSession } from '../lib/billin
 import { trackEvent } from '../lib/analytics'
 import type { BillingPlan } from '../lib/billing'
 import { getCurrentUsage } from '../lib/api'
-import { isLoggedIn, logout } from '../lib/auth'
+import { logout } from '../lib/auth'
 
 
 function Check() {
