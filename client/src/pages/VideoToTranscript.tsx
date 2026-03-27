@@ -1186,6 +1186,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const handleCopyToClipboard = async () => {
     // Gate 1: require login
     if (!isLoggedIn()) {
+      trackEvent('copy_gate_auth', { tool: 'video-to-transcript' })
       setAuthModalMode('signup-combo')
       setShowAuthModal(true)
       return
@@ -1193,6 +1194,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     // Gate 2: 3 free copies per session for free-plan users
     const _isCopyPaid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
     if (!_isCopyPaid && freeCopiesUsed >= 3) {
+      trackEvent('copy_gate_limit', { tool: 'video-to-transcript', copies_used: freeCopiesUsed })
       setPaywallReason('COPY_LIMIT_REACHED')
       setShowPaywall(true)
       return
@@ -1224,6 +1226,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         return
       }
     }
+    trackEvent('transcript_copied', { plan: _isCopyPaid ? 'paid' : 'free', copies_used: freeCopiesUsed + 1 })
     // Increment counter for free users after successful copy
     if (!_isCopyPaid) setFreeCopiesUsed((n) => n + 1)
   }
@@ -1514,6 +1517,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   }, [translationLanguage, translatedCache, result?.segments])
 
   const isPaidPlan = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+
+  // Track when the AI summary teaser is shown to a free user (fires once per completed job)
+  useEffect(() => {
+    if (status === 'completed' && result && !isPaidPlan) {
+      trackEvent('ai_summary_teaser_shown', { tool: 'video-to-transcript' })
+    }
+  }, [status, result, isPaidPlan])
 
   const handleQuickTxtExport = useCallback(() => {
     const content = (displayTranscript || fullTranscript || '').trim()
