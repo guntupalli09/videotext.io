@@ -891,6 +891,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                         a.click()
                         URL.revokeObjectURL(a.href)
                         trackAppEvent('export_clicked', { toolId: 'video-to-subtitles' })
+                        try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format, plan: 'free' }) } catch { /* non-blocking */ }
                         setFreeExportsUsed((prev) => prev + 1)
                         toast.success('Download started (with watermark)')
                       } catch {
@@ -909,6 +910,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                         a.download = result?.fileName || fallbackSubtitleName
                         a.click()
                         URL.revokeObjectURL(a.href)
+                        try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format, plan: 'paid' }) } catch { /* non-blocking */ }
                       } catch {
                         toast.error('Download failed')
                       }
@@ -947,6 +949,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                       a.download = (result.fileName || fallbackSubtitleName).replace(/\.vtt$/i, '.srt')
                       a.click()
                       URL.revokeObjectURL(url)
+                      try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: 'srt', edited: true }) } catch { /* non-blocking */ }
                     }}
                     className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-gray-300"
                   >
@@ -1036,6 +1039,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                       )
                       a.click()
                       URL.revokeObjectURL(a.href)
+                      try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: convertTargetFormat, plan: 'free' }) } catch { /* non-blocking */ }
                       setFreeExportsUsed((prev) => prev + 1)
                       setConvertDownloadUrl(null)
                       toast.success('Download started (with watermark)')

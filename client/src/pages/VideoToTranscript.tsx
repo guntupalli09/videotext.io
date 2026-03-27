@@ -1308,6 +1308,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       a.download = result?.fileName ?? 'transcript.txt'
       a.click()
       URL.revokeObjectURL(a.href)
+      try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'txt' }) } catch { /* non-blocking */ }
     } catch {
       toast.error('Download failed')
     }
@@ -1551,6 +1552,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     a.download = file
     a.click()
     URL.revokeObjectURL(a.href)
+    try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'txt', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
     toast.success(isPaidPlan ? 'TXT downloaded' : 'TXT downloaded (with watermark)')
   }, [
     displayTranscript,
@@ -1614,6 +1616,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     )
     a.click()
     URL.revokeObjectURL(url)
+    try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'srt', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
     toast.success('SRT downloaded')
   }
 
@@ -1639,6 +1642,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     )
     a.click()
     URL.revokeObjectURL(url)
+    try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'vtt', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
     toast.success('VTT downloaded')
   }
 

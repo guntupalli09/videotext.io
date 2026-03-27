@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { login, storeLoginResult } from '../lib/auth'
-import { identifyUser } from '../lib/analytics'
+import { identifyUser, trackEvent } from '../lib/analytics'
 import { motion } from 'framer-motion'
 import { FileText, Youtube, Zap, ChevronRight } from 'lucide-react'
 
@@ -22,18 +22,22 @@ export default function Login() {
     e.preventDefault()
     setError(null)
     setLoading(true)
+    try { trackEvent('login_started') } catch { /* non-blocking */ }
     try {
       const result = await login(email, password)
       storeLoginResult(result)
       try {
         identifyUser(result.userId, { plan: result.plan, email: result.email })
+        trackEvent('login_completed', { plan: result.plan })
       } catch {
         // non-blocking
       }
       navigate(returnTo, { replace: true })
       window.location.reload()
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      const msg = err instanceof Error ? err.message : 'Login failed'
+      try { trackEvent('login_failed', { error: msg }) } catch { /* non-blocking */ }
+      setError(msg)
     } finally {
       setLoading(false)
     }

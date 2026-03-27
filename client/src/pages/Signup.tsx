@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { sendOtp, verifyOtp } from '../lib/api'
 import { completeSignup, storeLoginResult } from '../lib/auth'
-import { identifyUser } from '../lib/analytics'
+import { identifyUser, trackEvent } from '../lib/analytics'
 import { motion } from 'framer-motion'
 import { FileText, Youtube, Shield, ChevronRight, CheckCircle2 } from 'lucide-react'
 
@@ -27,6 +27,7 @@ export default function Signup() {
     e.preventDefault()
     setError(null)
     setLoading(true)
+    try { trackEvent('signup_started', { from_guest_job: fromGuestJob }) } catch { /* non-blocking */ }
     try {
       await sendOtp(email)
       setStep('otp')
@@ -70,6 +71,7 @@ export default function Signup() {
       }
       try {
         identifyUser(result.userId, { plan: result.plan, email: result.email })
+        trackEvent('signup_completed', { plan: result.plan, from_guest_job: fromGuestJob })
       } catch {
         // non-blocking
       }

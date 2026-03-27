@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { requestPasswordReset } from '../lib/auth'
+import { trackEvent } from '../lib/analytics'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -12,6 +13,7 @@ export default function ForgotPassword() {
     e.preventDefault()
     setError(null)
     setLoading(true)
+    try { trackEvent('forgot_password_requested') } catch { /* non-blocking */ }
     try {
       await requestPasswordReset(email)
       setSent(true)

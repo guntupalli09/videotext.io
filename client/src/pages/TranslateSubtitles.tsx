@@ -557,6 +557,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                         a.download = result?.fileName || fallbackTranslatedName(translateFallbackExt)
                         a.click()
                         URL.revokeObjectURL(a.href)
+                        try { trackEvent('result_downloaded', { tool: 'translate-subtitles', plan: 'free' }) } catch { /* non-blocking */ }
                         setFreeExportsUsed((prev) => prev + 1)
                         toast.success('Download started')
                       } catch {
@@ -575,6 +576,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                         a.download = result?.fileName || fallbackTranslatedName(translateFallbackExt)
                         a.click()
                         URL.revokeObjectURL(a.href)
+                        try { trackEvent('result_downloaded', { tool: 'translate-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
                       } catch {
                         toast.error('Download failed')
                       }

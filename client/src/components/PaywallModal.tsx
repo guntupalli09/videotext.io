@@ -113,7 +113,7 @@ export default function PaywallModal({ isOpen, onClose, reason, onUpgrade }: Pay
 
           <Link
             to="/pricing"
-            onClick={onUpgrade ?? onClose}
+            onClick={() => { try { trackEvent('upgrade_clicked', { source: 'paywall_modal', reason }) } catch { /* non-blocking */ }; (onUpgrade ?? onClose)?.() }}
             className="block w-full py-3.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm text-center transition-colors shadow-sm"
           >
             {cta}

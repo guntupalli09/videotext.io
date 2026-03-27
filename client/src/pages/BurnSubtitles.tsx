@@ -431,6 +431,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                         a.download = result?.fileName || fallbackBurnName
                         a.click()
                         URL.revokeObjectURL(a.href)
+                        try { trackEvent('result_downloaded', { tool: 'burn-subtitles', plan: 'free' }) } catch { /* non-blocking */ }
                         setFreeExportsUsed((prev) => prev + 1)
                         toast.success('Download started')
                       } catch {
@@ -442,6 +443,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                       a.href = getDownloadUrl()
                       a.download = result?.fileName || fallbackBurnName
                       a.click()
+                      try { trackEvent('result_downloaded', { tool: 'burn-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
                     }
               }
               onProcessAnother={handleProcessAnother}

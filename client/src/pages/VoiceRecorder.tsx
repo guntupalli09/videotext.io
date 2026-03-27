@@ -290,6 +290,7 @@ export default function VoiceRecorder() {
   async function startRecording() {
     setErrMsg('')
     setPhase('requesting')
+    try { trackEvent('recording_started') } catch { /* non-blocking */ }
 
     if (!navigator.mediaDevices?.getUserMedia) {
       setErrMsg('Your browser does not support microphone access. Try Chrome, Firefox, or Safari.')
@@ -373,6 +374,7 @@ export default function VoiceRecorder() {
   }
 
   function stopRecording() {
+    try { trackEvent('recording_stopped', { duration_seconds: recSecs }) } catch { /* non-blocking */ }
     if (recRef.current && recRef.current.state !== 'inactive') {
       recRef.current.stop()
     }
@@ -515,6 +517,7 @@ export default function VoiceRecorder() {
     )
     a.click()
     URL.revokeObjectURL(url)
+    try { trackEvent('result_downloaded', { tool: 'voice-recorder', format: 'txt', translated: useTranslated }) } catch { /* non-blocking */ }
   }
 
   function reset() {

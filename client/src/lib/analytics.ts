@@ -87,11 +87,33 @@ export type AnalyticsEvent =
   | 'payment_completed'
   | 'soft_cap_shown'
   | 'daily_cap_hit'
-  // Phase 1 monetization tracking
-  | 'transcript_copied'       // copy succeeded; props: { plan }
-  | 'copy_gate_auth'          // copy blocked — user not logged in; shown auth modal
-  | 'copy_gate_limit'         // copy blocked — free copies exhausted; shown paywall
-  | 'ai_summary_teaser_shown' // blurred AI summary teaser rendered for free user
+  // Monetization tracking
+  | 'transcript_copied'            // copy succeeded; props: { plan }
+  | 'copy_gate_auth'               // copy blocked — user not logged in; shown auth modal
+  | 'copy_gate_limit'              // copy blocked — free copies exhausted; shown paywall
+  | 'ai_summary_teaser_shown'      // blurred AI summary teaser rendered for free user
+  | 'upgrade_clicked'              // user clicked upgrade CTA; props: { source, plan }
+  | 'billing_period_toggled'       // monthly/annual toggle; props: { annual: boolean }
+  // Auth funnel
+  | 'login_started'
+  | 'login_completed'
+  | 'login_failed'                 // props: { error }
+  | 'signup_started'
+  | 'signup_completed'             // account created
+  | 'forgot_password_requested'
+  | 'magic_login_completed'
+  | 'magic_login_failed'           // props: { error }
+  // Nav & discovery
+  | 'nav_cta_clicked'              // props: { label, destination }
+  | 'tool_nav_clicked'             // user clicked a tool from nav dropdown; props: { tool, path }
+  // Tool configuration
+  | 'format_changed'               // props: { tool, format }
+  | 'language_selected'            // props: { tool, language, additional?: boolean }
+  | 'tool_option_changed'          // generic; props: { tool, option, value }
+  // Tool result actions
+  | 'process_another_clicked'      // props: { tool }
+  | 'recording_started'
+  | 'recording_stopped'            // props: { duration_seconds }
 
 export function trackEvent(event: AnalyticsEvent, props?: Record<string, unknown>): void {
   if (import.meta.env.DEV) {
