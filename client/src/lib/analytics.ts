@@ -1,20 +1,19 @@
 /**
  * Analytics: PostHog + optional dev console. All calls are non-blocking and defensive.
  * When PostHog is blocked (e.g. ad blocker), we opt out to stop retries and console spam.
- * Env: VITE_POSTHOG_KEY, VITE_POSTHOG_HOST (default https://app.posthog.com)
+ * PostHog is initialized via PostHogProvider in main.tsx.
+ * Env: VITE_POSTHOG_KEY, VITE_POSTHOG_HOST (default https://us.i.posthog.com)
  */
 
 import posthog from 'posthog-js'
 
-const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY as string | undefined
-const POSTHOG_HOST = (import.meta.env.VITE_POSTHOG_HOST as string) || 'https://app.posthog.com'
+const POSTHOG_HOST = (import.meta.env.VITE_POSTHOG_HOST as string) || 'https://us.i.posthog.com'
 
-let initialized = false
 let optedOut = false
 
 /** If PostHog host is unreachable (e.g. blocked by ad blocker), opt out so the SDK stops retrying. */
 function probeAndOptOutIfBlocked(): void {
-  if (optedOut || !initialized) return
+  if (optedOut) return
   // Match posthog-js ingest path (e.g. us.i.posthog.com/i/v0/e/...) so ad-block blocks the same URL we probe.
   const base = POSTHOG_HOST.replace(/\/$/, '')
   const probeUrl = `${base}/i/v0/e/?ip=0&_=0&ver=1&compression=gzip-js`
@@ -43,39 +42,14 @@ function probeAndOptOutIfBlocked(): void {
     })
 }
 
-export function initAnalytics(): void {
-  if (initialized) return
-  if (!POSTHOG_KEY || !POSTHOG_KEY.trim()) {
-    if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
-      console.log('[analytics] PostHog disabled (no VITE_POSTHOG_KEY in client env)')
-    }
-    return
-  }
-  try {
-    posthog.init(POSTHOG_KEY, {
-      api_host: POSTHOG_HOST,
-      person_profiles: 'identified_only',
-      capture_pageview: true, // initial load; we also send $pageview on route change for SPA
-    })
-    initialized = true
-    if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
-      console.log('[analytics] PostHog initialized')
-    }
-    // After a short delay, probe; if blocked (ad blocker), opt out to stop retry spam
-    setTimeout(probeAndOptOutIfBlocked, 1500)
-  } catch (e) {
-    if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
-      console.warn('[analytics] PostHog init failed', e)
-    }
-  }
+/** Probe for ad blockers after PostHog initializes. Call once from a root component. */
+export function startAdBlockProbe(): void {
+  setTimeout(probeAndOptOutIfBlocked, 1500)
 }
 
 /** Send PostHog's standard $pageview so Web analytics dashboard gets SPA route changes. */
 export function capturePageview(pathname: string): void {
-  if (!initialized || optedOut) return
+  if (optedOut) return
   try {
     const url = typeof window !== 'undefined' ? `${window.location.origin}${pathname}` : ''
     posthog.capture('$pageview', { $current_url: url })
@@ -86,7 +60,7 @@ export function capturePageview(pathname: string): void {
 
 /** Identify user (e.g. after checkout). Safe to call with anonymous id or skip for anonymous. */
 export function identifyUser(userId: string, traits?: { email?: string; plan?: string }): void {
-  if (!initialized || optedOut) return
+  if (optedOut) return
   try {
     posthog.identify(userId)
     if (traits?.plan) posthog.people.set({ plan: traits.plan })
@@ -124,7 +98,7 @@ export function trackEvent(event: AnalyticsEvent, props?: Record<string, unknown
     // eslint-disable-next-line no-console
     console.log('[analytics]', event, props ?? {})
   }
-  if (!initialized || optedOut) return
+  if (optedOut) return
   try {
     posthog.capture(event, props)
   } catch {

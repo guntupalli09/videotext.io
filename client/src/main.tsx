@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom/client'
 import { Analytics } from '@vercel/analytics/react'
 import { HelmetProvider } from 'react-helmet-async'
 import { ThemeProvider } from './lib/theme'
-import { initAnalytics, identifyUser } from './lib/analytics'
+import { identifyUser } from './lib/analytics'
 import { initSentry } from './lib/sentry'
+import { PostHogProvider } from '@posthog/react'
 import App from './App.tsx'
 import './index.css'
 
@@ -16,7 +17,6 @@ if (typeof window !== 'undefined') {
   (window as unknown as { __RELEASE__?: string }).__RELEASE__ = release
 }
 
-initAnalytics()
 const userId = typeof localStorage !== 'undefined' ? localStorage.getItem('userId') : null
 const plan = typeof localStorage !== 'undefined' ? localStorage.getItem('plan') : null
 if (userId && userId !== 'demo-user') {
@@ -37,13 +37,22 @@ window.addEventListener('unhandledrejection', (event) => {
   }
 })
 
+const posthogOptions = {
+  api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://us.i.posthog.com',
+  defaults: '2026-01-30',
+  person_profiles: 'identified_only' as const,
+  capture_pageview: false, // App.tsx sends $pageview on SPA route changes
+} as const
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <HelmetProvider>
-        <App />
-        <Analytics />
-      </HelmetProvider>
-    </ThemeProvider>
+    <PostHogProvider apiKey={import.meta.env.VITE_POSTHOG_KEY || ''} options={posthogOptions}>
+      <ThemeProvider>
+        <HelmetProvider>
+          <App />
+          <Analytics />
+        </HelmetProvider>
+      </ThemeProvider>
+    </PostHogProvider>
   </React.StrictMode>,
 )
