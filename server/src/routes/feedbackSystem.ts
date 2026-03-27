@@ -11,6 +11,9 @@ import rateLimit from 'express-rate-limit'
 import { prisma } from '../db'
 import { getEffectiveUserId, getAuthFromRequest } from '../utils/auth'
 import { getUser } from '../models/User'
+import { getLogger } from '../lib/logger'
+
+const log = getLogger('api')
 import {
   computeFunnelMetrics,
   computeFeatureEngine,
@@ -148,8 +151,9 @@ router.get('/analytics', async (req: Request, res: Response) => {
         createdAt: e.createdAt.toISOString(),
       })),
     })
-  } catch {
-    return res.status(500).json({ message: 'Internal server error' })
+  } catch (err) {
+    log.error({ msg: '[feedback/analytics] handler error', error: String(err) })
+    return res.status(500).json({ message: 'Internal server error', detail: String(err) })
   }
 })
 

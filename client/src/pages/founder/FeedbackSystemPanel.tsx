@@ -198,8 +198,13 @@ export default function FeedbackSystemPanel() {
       const res = await fetch('/api/admin/feedback/analytics', {
         headers: { Authorization: `Bearer ${token}` },
       })
-      if (!res.ok) throw new Error(`${res.status}`)
-      setData(await res.json())
+      const text = await res.text()
+      if (!res.ok) throw new Error(`HTTP ${res.status} — ${text.slice(0, 300)}`)
+      try {
+        setData(JSON.parse(text))
+      } catch {
+        throw new Error(`HTTP ${res.status} but body is not JSON — starts with: ${text.slice(0, 200)}`)
+      }
     } catch (e) {
       setError(`Failed to load: ${e}`)
     } finally {
