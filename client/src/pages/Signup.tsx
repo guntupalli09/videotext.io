@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { sendOtp, verifyOtp } from '../lib/api'
+import { sendOtp, verifyOtp, loginWithGoogle } from '../lib/api'
 import { completeSignup, storeLoginResult } from '../lib/auth'
 import { identifyUser, trackEvent } from '../lib/analytics'
 import { motion } from 'framer-motion'
 import { FileText, Youtube, Shield, ChevronRight, CheckCircle2 } from 'lucide-react'
+import GoogleSignInButton, { GOOGLE_CLIENT_ID } from '../components/GoogleSignInButton'
 
 type Step = 'email' | 'otp' | 'password'
 
@@ -16,12 +17,33 @@ export default function Signup() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
   const params = new URLSearchParams(location.search)
   const returnTo = params.get('returnTo') || '/'
   const fromGuestJob = params.get('guestJob') === '1'
+
+  async function handleGoogleCredential(credential: string) {
+    setGoogleLoading(true)
+    setError(null)
+    try {
+      const result = await loginWithGoogle(credential)
+      storeLoginResult(result)
+      if (fromGuestJob) {
+        try { localStorage.setItem('videotext:guestJobUsed', '1') } catch { /* ignore */ }
+      }
+      try { identifyUser(result.userId, { plan: result.plan, email: result.email }) } catch { /* non-blocking */ }
+      window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
+      navigate(returnTo, { replace: true })
+      window.location.reload()
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Google sign-up failed')
+    } finally {
+      setGoogleLoading(false)
+    }
+  }
 
   async function handleSendOtp(e: React.FormEvent) {
     e.preventDefault()
@@ -199,6 +221,25 @@ export default function Signup() {
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-7">
             {stepDescriptions[step]}
           </p>
+
+          {step === 'email' && GOOGLE_CLIENT_ID && (
+            <div className="mb-6 space-y-3">
+              <GoogleSignInButton onCredential={handleGoogleCredential} text="signup_with" />
+              {googleLoading && (
+                <p className="text-center text-sm text-gray-500 dark:text-gray-400">Signing up with Google…</p>
+              )}
+              {error && (
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg" role="alert">
+                  {error}
+                </motion.p>
+              )}
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                <span className="text-xs text-gray-400 dark:text-gray-500">or continue with email</span>
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+              </div>
+            </div>
+          )}
 
           {step === 'email' && (
             <form onSubmit={handleSendOtp} className="space-y-4">
