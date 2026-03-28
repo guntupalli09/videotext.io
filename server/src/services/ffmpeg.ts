@@ -139,7 +139,7 @@ export function extractAudioForPlayback(videoPath: string, outputPath: string): 
         '-b:a', '128k',
         '-movflags', '+faststart',
       ])
-      .on('stderr', (line: string) => { stderrLines.push(line) })
+      .on('stderr', (line: string) => { stderrLines.push(line); hung.reset() })
       .on('end', () => {
         hung.clear()
         resolve(outputPath)
