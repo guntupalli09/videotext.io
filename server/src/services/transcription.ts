@@ -3,7 +3,7 @@ import OpenAI, { toFile } from 'openai'
 import pLimit from 'p-limit'
 import fs from 'fs'
 import path from 'path'
-import { convertAudioToWav, extractAudio, extractAudioToWav, extractAndSplitAudio, extractAndSplitAudioExtractionFirst, EXTRACTION_FIRST_CHUNK_SEC, getVideoDuration, splitAudioIntoChunks } from './ffmpeg'
+import { convertAudioToWav, extractAudio, extractAudioToWav, extractAndSplitAudio, extractAndSplitAudioExtractionFirst, EXTRACTION_FIRST_CHUNK_SEC, getVideoDuration, splitAudioIntoChunks, NO_AUDIO_STREAM_ERROR } from './ffmpeg'
 import { PROCESSING_V2 } from '../utils/featureFlags'
 import { toSRT, toVTT } from '../utils/srtParser'
 import type { SubtitleEntry } from '../utils/srtParser'
@@ -417,6 +417,12 @@ async function transcribeVideoParallel(
     const segments = results.flat().sort((a, b) => a.start - b.start)
     const text = segments.map((s) => s.text).filter(Boolean).join(' ')
     return { text, segments }
+  } catch (err) {
+    // No audio stream → complete successfully with empty transcript rather than failing the job.
+    if (err instanceof Error && err.message === NO_AUDIO_STREAM_ERROR) {
+      return { text: '', segments: [] }
+    }
+    throw err
   } finally {
     if (killBackgroundExtraction) {
       killBackgroundExtraction()
