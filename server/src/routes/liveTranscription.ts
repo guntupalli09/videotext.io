@@ -174,17 +174,15 @@ export function attachLiveTranscription(server: Server): void {
       const deepgram = new DeepgramClient({ apiKey })
 
       const dgSocket = await deepgram.listen.v1.connect({
-        model: 'nova-2',
+        model: 'nova-3',
         language: language as never,
         encoding: 'linear16' as never,
         sample_rate: sampleRate,
         channels: 1,
-        punctuate: 'true' as never,
-        smart_format: 'true' as never,
+        smart_format: 'true' as never,   // punctuation + formatting (replaces punctuate)
         interim_results: 'true' as never,
-        diarize: 'true' as never,            // speaker detection
-        endpointing: 500,                    // 500ms — handles varied speech pace better than 300ms
-        utterance_end_ms: '1500' as never,  // sentence boundary detection
+        diarize: 'true' as never,
+        endpointing: 500,
         Authorization: `Token ${apiKey}`,
       })
 
