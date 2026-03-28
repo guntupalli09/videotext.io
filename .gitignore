@@ -39,6 +39,9 @@ Thumbs.db
 temp/
 *.tmp
 
+# Redis persistence files
+dump.rdb
+
 # SEO automation cache and output (optional: commit output in PRs)
 scripts/seo/cache/
 scripts/seo/output/
