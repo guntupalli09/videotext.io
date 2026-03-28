@@ -214,13 +214,13 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
     }
 
     // Audio-only upload (video-to-transcript / video-to-subtitles): client sent pre-extracted audio; skip server extraction
-    const isAudioOnlyUpload =
-      (toolType === 'video-to-transcript' || toolType === 'video-to-subtitles') &&
-      req.body.uploadMode === 'audio-only'
     const allowedAudioExt = ['.mp3', '.webm', '.wav', '.m4a']
     const looksLikeAudio =
       (file.mimetype && file.mimetype.startsWith('audio/')) ||
       allowedAudioExt.some((ext) => file.originalname.toLowerCase().endsWith(ext))
+    const isAudioOnlyUpload =
+      (toolType === 'video-to-transcript' || toolType === 'video-to-subtitles') &&
+      (req.body.uploadMode === 'audio-only' || looksLikeAudio)
     const inputType: 'video' | 'audio' = isAudioOnlyUpload && looksLikeAudio ? 'audio' : 'video'
     const originalNameForJob =
       inputType === 'audio' && req.body.originalFileName

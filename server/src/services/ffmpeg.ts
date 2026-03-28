@@ -501,7 +501,7 @@ export function extractAndSplitAudioExtractionFirst(
         '-reset_timestamps', '1',
       ])
       .output(pattern)
-      .on('stderr', (line: string) => { stderrLines.push(line) })
+      .on('stderr', (line: string) => { stderrLines.push(line); hung.reset() })
       .on('end', () => {
         hung.clear()
         backgroundCmd = null
