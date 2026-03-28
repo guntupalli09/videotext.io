@@ -31,7 +31,7 @@ import {
   claimGuestJob,
 } from '../lib/api'
 import { isLoggedIn } from '../lib/auth'
-import { getAbsoluteDownloadUrl, getApiBase, API_ORIGIN } from '../lib/apiBase'
+import { getAbsoluteDownloadUrl, getApiBase, API_ORIGIN, getWsBase } from '../lib/apiBase'
 import { formatTimestamp, type Segment } from '../lib/srtExport'
 import { getActiveSegmentIndexAtTime } from '../lib/segmentSync'
 import PinnedAudioPlayerBar from '../components/transcript/PinnedAudioPlayerBar'
@@ -67,6 +67,17 @@ function getBestMimeType(): string {
       }
     }) ?? ''
   )
+}
+
+/** Convert Web Audio float32 samples to linear16 PCM ArrayBuffer for Deepgram streaming. */
+function convertToPCM16(samples: Float32Array): ArrayBuffer {
+  const buffer = new ArrayBuffer(samples.length * 2)
+  const view = new DataView(buffer)
+  for (let i = 0; i < samples.length; i++) {
+    const clamped = Math.max(-1, Math.min(1, samples[i]))
+    view.setInt16(i * 2, clamped < 0 ? clamped * 32768 : clamped * 32767, true)
+  }
+  return buffer
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -105,6 +116,9 @@ export default function VoiceRecorder() {
   const [audioVolume, setAudioVolume] = useState(1)
   const [audioMuted, setAudioMuted] = useState(false)
   const [audioSpeed, setAudioSpeed] = useState(1)
+  // Live transcription state (Deepgram streaming during recording)
+  const [liveFinal, setLiveFinal] = useState('')
+  const [liveInterim, setLiveInterim] = useState('')
 
   const syncScrubberFill = useCallback(() => {
     const el = scrubberRef.current
@@ -181,6 +195,9 @@ export default function VoiceRecorder() {
   const abortRef = useRef<AbortController | null>(null)
   const stopPollRef = useRef<(() => void) | null>(null)
   const barsRef = useRef<number[]>(new Array(NUM_BARS).fill(0.05))
+  const wsLiveRef = useRef<WebSocket | null>(null)
+  const workletNodeRef = useRef<AudioWorkletNode | null>(null)
+  const speakersSeenRef = useRef<Set<number>>(new Set())
 
   // Keep phase ref in sync for RAF closure access
   useEffect(() => {
@@ -204,6 +221,8 @@ export default function VoiceRecorder() {
       clearInterval(timerRef.current)
       timerRef.current = null
     }
+    workletNodeRef.current?.disconnect()
+    workletNodeRef.current = null
     streamRef.current?.getTracks().forEach((t) => t.stop())
     streamRef.current = null
     audioCtxRef.current?.close().catch(() => {})
@@ -339,7 +358,7 @@ export default function VoiceRecorder() {
       src.connect(an)
       analyserRef.current = an
 
-      // MediaRecorder — pick best available codec
+      // MediaRecorder — start immediately so the UI transitions to 'recording' without delay
       const mt = getBestMimeType()
       const rec = new MediaRecorder(stream, mt ? { mimeType: mt } : undefined)
       recRef.current = rec
@@ -371,6 +390,98 @@ export default function VoiceRecorder() {
       setPhase('recording')
       runWaveform() // restart waveform in recording mode
       trackEvent('processing_started', { tool: 'voice-recorder' })
+
+      // ── Live transcription — background, non-blocking ──────────────────────
+      // Launched AFTER setPhase('recording') so the UI responds instantly.
+      // AudioWorklet load is async; recording + waveform are already running.
+      void (async () => {
+        try {
+          const sampleRate = actx.sampleRate
+          const sessionId = (crypto as { randomUUID?: () => string }).randomUUID?.() ?? `${Date.now()}`
+          const token = getAuthToken()
+          const wsUrl =
+            `${getWsBase()}/api/live-transcription` +
+            `?sample_rate=${Math.round(sampleRate)}&session_id=${sessionId}` +
+            (token ? `&token=${encodeURIComponent(token)}` : '')
+
+          let liveReconnects = 0
+          const MAX_LIVE_RECONNECTS = 3
+
+          function spawnWs() {
+            if (liveReconnects >= MAX_LIVE_RECONNECTS) return
+            if (phaseRef.current !== 'recording') return
+
+            const ws = new WebSocket(wsUrl)
+            wsLiveRef.current = ws
+
+            ws.onmessage = (event) => {
+              try {
+                const data = JSON.parse(event.data as string) as {
+                  type: string
+                  text?: string
+                  is_final?: boolean
+                  speaker?: number
+                }
+                if (data.type === 'transcript' && data.text) {
+                  if (data.is_final) {
+                    // Track distinct speakers; show [S1]/[S2] only once both appear
+                    if (data.speaker != null) speakersSeenRef.current.add(data.speaker)
+                    const multiSpeaker = speakersSeenRef.current.size > 1
+                    const label = multiSpeaker && data.speaker != null
+                      ? `[S${data.speaker + 1}] `
+                      : ''
+                    setLiveFinal((prev) => {
+                      const line = label + data.text!
+                      return prev ? prev + '\n' + line : line
+                    })
+                    setLiveInterim('')
+                  } else {
+                    setLiveInterim(data.text)
+                  }
+                }
+              } catch { /* ignore malformed messages */ }
+            }
+
+            ws.onclose = () => {
+              // Only reconnect for unintended drops — stopRecording() nulls wsLiveRef
+              // before close fires, so this guard prevents reconnect on intentional stop.
+              if (wsLiveRef.current === null) return
+              wsLiveRef.current = null
+              if (phaseRef.current === 'recording') {
+                liveReconnects++
+                const backoff = Math.min(500 * Math.pow(2, liveReconnects - 1), 4000)
+                setTimeout(spawnWs, backoff)
+              }
+            }
+
+            ws.onerror = () => { /* handled by onclose */ }
+          }
+
+          // Load AudioWorklet (off-main-thread PCM capture)
+          await actx.audioWorklet.addModule('/audio-pcm-processor.js')
+          // Guard: user may have stopped recording while the worklet was loading
+          if (phaseRef.current !== 'recording') return
+
+          const workletNode = new AudioWorkletNode(actx, 'pcm-capture', {
+            processorOptions: { targetSize: 2048 },
+          })
+          workletNodeRef.current = workletNode
+
+          // Silent output keeps the AudioWorkletNode active in the audio graph
+          const silentGain = actx.createGain()
+          silentGain.gain.value = 0
+          silentGain.connect(actx.destination)
+          workletNode.connect(silentGain)
+          src.connect(workletNode)
+
+          workletNode.port.onmessage = (event: MessageEvent<ArrayBuffer>) => {
+            if (wsLiveRef.current?.readyState !== WebSocket.OPEN) return
+            wsLiveRef.current.send(convertToPCM16(new Float32Array(event.data)))
+          }
+
+          spawnWs()
+        } catch { /* AudioWorklet unavailable or server not configured — silently degrade */ }
+      })()
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
       if (/permission|denied/i.test(msg)) {
@@ -388,6 +499,9 @@ export default function VoiceRecorder() {
 
   function stopRecording() {
     try { trackEvent('recording_stopped', { duration_seconds: recSecs }) } catch { /* non-blocking */ }
+    // Close live transcription stream before stopping MediaRecorder
+    wsLiveRef.current?.close()
+    wsLiveRef.current = null
     if (recRef.current && recRef.current.state !== 'inactive') {
       recRef.current.stop()
     }
@@ -534,6 +648,8 @@ export default function VoiceRecorder() {
   }
 
   function reset() {
+    wsLiveRef.current?.close()
+    wsLiveRef.current = null
     abortRef.current?.abort()
     stopPollRef.current?.()
     releaseAudio()
@@ -547,6 +663,9 @@ export default function VoiceRecorder() {
     setRecSecs(0)
     setUploadPct(0)
     setErrMsg('')
+    setLiveFinal('')
+    setLiveInterim('')
+    speakersSeenRef.current = new Set()
     setTranslatedText(null)
     setIsTranslating(false)
     setTranscriptView('original')
@@ -727,6 +846,36 @@ export default function VoiceRecorder() {
                     Background noise is being filtered
                   </p>
                 </div>
+
+                {/* ── Live transcript preview ──────────────────────────── */}
+                {(liveFinal || liveInterim) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="w-full rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60 p-4 max-h-44 overflow-y-auto"
+                  >
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <motion.span
+                        className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block"
+                        animate={{ opacity: [1, 0.2, 1] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-red-500">
+                        Live
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
+                      {liveFinal}
+                      {liveInterim && (
+                        <span className="text-gray-400 dark:text-gray-500 italic">
+                          {liveFinal ? ' ' : ''}
+                          {liveInterim}
+                        </span>
+                      )}
+                    </p>
+                  </motion.div>
+                )}
               </motion.div>
             )}
 

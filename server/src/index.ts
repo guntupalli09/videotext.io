@@ -37,6 +37,7 @@ import { purgeOldStripeEvents } from './models/StripeEventLog'
 import { prisma } from './db'
 import { refreshApiCredits } from './lib/apiCreditsCache'
 import { createMagicLinkToken } from './routes/auth'
+import { attachLiveTranscription } from './routes/liveTranscription'
 
 const log = getLogger('api')
 
@@ -430,6 +431,9 @@ const server = app.listen(PORT, () => {
     .then((n) => log.info({ msg: 'Redis warmup OK', queueCount: n }))
     .catch((e) => log.warn({ msg: 'Redis warmup failed (readyz may still work later)', error: (e as Error)?.message }))
 })
+
+// Attach live transcription WebSocket server (requires DEEPGRAM_API_KEY env var)
+attachLiveTranscription(server)
 
 // Handle server errors gracefully
 server.on('error', (error: NodeJS.ErrnoException) => {
