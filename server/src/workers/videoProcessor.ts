@@ -1093,6 +1093,11 @@ async function processJob(job: import('bull').Job<JobData>) {
             throw new Error(durationCheck.error || 'Video too long')
           }
 
+          // Fail fast when file has no audio stream — avoids retries with a cryptic ffmpeg error.
+          if (!isAlreadyAudio && !(await hasAudioStream(videoPath))) {
+            throw new Error('This file has no audio track. Please upload a video or audio file that contains audio.')
+          }
+
           const format = options?.format || 'srt'
           const additionalLangs = options?.additionalLanguages || []
           
@@ -1314,6 +1319,11 @@ async function processJob(job: import('bull').Job<JobData>) {
             const glossary = options?.glossary?.trim()
             const lang = options?.language || 'en'
             const isAudio = data.inputType === 'audio'
+
+            // Fail fast when file has no audio stream — avoids retries with a cryptic ffmpeg error.
+            if (!isAudio && !(await hasAudioStream(videoPath))) {
+              throw new Error('This file has no audio track. Please upload a video or audio file that contains audio.')
+            }
             const processingStartMs = Date.now()
 
             let fullText = ''
