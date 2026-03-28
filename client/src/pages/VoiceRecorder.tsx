@@ -345,93 +345,7 @@ export default function VoiceRecorder() {
       src.connect(an)
       analyserRef.current = an
 
-      // ── Live transcription via Deepgram WebSocket ──────────────────────────
-      // AudioWorkletNode (off-main-thread) → server proxy → Deepgram Nova-2.
-      // Full reconnection with exponential backoff; silently degrades on failure.
-      try {
-        const sampleRate = actx.sampleRate
-        // session_id lets the server correlate reconnects and enables resume continuity
-        const sessionId = (crypto as { randomUUID?: () => string }).randomUUID?.() ?? `${Date.now()}`
-        const wsBase = getWsBase()
-        const wsUrl =
-          `${wsBase}/api/live-transcription` +
-          `?sample_rate=${Math.round(sampleRate)}&session_id=${sessionId}`
-
-        let liveReconnects = 0
-        const MAX_LIVE_RECONNECTS = 3
-
-        function spawnWs() {
-          if (liveReconnects >= MAX_LIVE_RECONNECTS) return
-          if (phaseRef.current !== 'recording') return
-
-          const ws = new WebSocket(wsUrl)
-          wsLiveRef.current = ws
-
-          ws.onmessage = (event) => {
-            try {
-              const data = JSON.parse(event.data as string) as {
-                type: string
-                text?: string
-                is_final?: boolean
-                speaker?: number
-              }
-              if (data.type === 'transcript' && data.text) {
-                if (data.is_final) {
-                  // Track distinct speakers; only show labels once multiple speakers appear
-                  if (data.speaker != null) speakersSeenRef.current.add(data.speaker)
-                  const multiSpeaker = speakersSeenRef.current.size > 1
-                  const label = multiSpeaker && data.speaker != null
-                    ? `[S${data.speaker + 1}] `
-                    : ''
-                  setLiveFinal((prev) => {
-                    const line = label + data.text!
-                    return prev ? prev + '\n' + line : line
-                  })
-                  setLiveInterim('')
-                } else {
-                  setLiveInterim(data.text)
-                }
-              }
-            } catch { /* ignore malformed messages */ }
-          }
-
-          ws.onclose = () => {
-            wsLiveRef.current = null
-            // Auto-reconnect with exponential backoff (500ms, 1s, 2s)
-            if (phaseRef.current === 'recording') {
-              liveReconnects++
-              const backoff = Math.min(500 * Math.pow(2, liveReconnects - 1), 4000)
-              setTimeout(spawnWs, backoff)
-            }
-          }
-
-          ws.onerror = () => { /* close event handles reconnect */ }
-        }
-
-        // AudioWorkletNode runs on the audio rendering thread (not UI thread).
-        // Zero-copy transfer of PCM chunks via Transferable ArrayBuffer.
-        await actx.audioWorklet.addModule('/audio-pcm-processor.js')
-        const workletNode = new AudioWorkletNode(actx, 'pcm-capture', {
-          processorOptions: { targetSize: 2048 },
-        })
-        workletNodeRef.current = workletNode
-
-        // Connect into audio graph — silent output keeps the worklet node active
-        const silentGain = actx.createGain()
-        silentGain.gain.value = 0
-        silentGain.connect(actx.destination)
-        workletNode.connect(silentGain)
-        src.connect(workletNode)
-
-        workletNode.port.onmessage = (event: MessageEvent<ArrayBuffer>) => {
-          if (wsLiveRef.current?.readyState !== WebSocket.OPEN) return
-          wsLiveRef.current.send(convertToPCM16(new Float32Array(event.data)))
-        }
-
-        spawnWs()
-      } catch { /* AudioWorklet unavailable or Deepgram not configured — silently degrade */ }
-
-      // MediaRecorder — pick best available codec
+      // MediaRecorder — start immediately so the UI transitions to 'recording' without delay
       const mt = getBestMimeType()
       const rec = new MediaRecorder(stream, mt ? { mimeType: mt } : undefined)
       recRef.current = rec
@@ -463,6 +377,98 @@ export default function VoiceRecorder() {
       setPhase('recording')
       runWaveform() // restart waveform in recording mode
       trackEvent('processing_started', { tool: 'voice-recorder' })
+
+      // ── Live transcription — background, non-blocking ──────────────────────
+      // Launched AFTER setPhase('recording') so the UI responds instantly.
+      // AudioWorklet load is async; recording + waveform are already running.
+      void (async () => {
+        try {
+          const sampleRate = actx.sampleRate
+          const sessionId = (crypto as { randomUUID?: () => string }).randomUUID?.() ?? `${Date.now()}`
+          const token = getAuthToken()
+          const wsUrl =
+            `${getWsBase()}/api/live-transcription` +
+            `?sample_rate=${Math.round(sampleRate)}&session_id=${sessionId}` +
+            (token ? `&token=${encodeURIComponent(token)}` : '')
+
+          let liveReconnects = 0
+          const MAX_LIVE_RECONNECTS = 3
+
+          function spawnWs() {
+            if (liveReconnects >= MAX_LIVE_RECONNECTS) return
+            if (phaseRef.current !== 'recording') return
+
+            const ws = new WebSocket(wsUrl)
+            wsLiveRef.current = ws
+
+            ws.onmessage = (event) => {
+              try {
+                const data = JSON.parse(event.data as string) as {
+                  type: string
+                  text?: string
+                  is_final?: boolean
+                  speaker?: number
+                }
+                if (data.type === 'transcript' && data.text) {
+                  if (data.is_final) {
+                    // Track distinct speakers; show [S1]/[S2] only once both appear
+                    if (data.speaker != null) speakersSeenRef.current.add(data.speaker)
+                    const multiSpeaker = speakersSeenRef.current.size > 1
+                    const label = multiSpeaker && data.speaker != null
+                      ? `[S${data.speaker + 1}] `
+                      : ''
+                    setLiveFinal((prev) => {
+                      const line = label + data.text!
+                      return prev ? prev + '\n' + line : line
+                    })
+                    setLiveInterim('')
+                  } else {
+                    setLiveInterim(data.text)
+                  }
+                }
+              } catch { /* ignore malformed messages */ }
+            }
+
+            ws.onclose = () => {
+              // Only reconnect for unintended drops — stopRecording() nulls wsLiveRef
+              // before close fires, so this guard prevents reconnect on intentional stop.
+              if (wsLiveRef.current === null) return
+              wsLiveRef.current = null
+              if (phaseRef.current === 'recording') {
+                liveReconnects++
+                const backoff = Math.min(500 * Math.pow(2, liveReconnects - 1), 4000)
+                setTimeout(spawnWs, backoff)
+              }
+            }
+
+            ws.onerror = () => { /* handled by onclose */ }
+          }
+
+          // Load AudioWorklet (off-main-thread PCM capture)
+          await actx.audioWorklet.addModule('/audio-pcm-processor.js')
+          // Guard: user may have stopped recording while the worklet was loading
+          if (phaseRef.current !== 'recording') return
+
+          const workletNode = new AudioWorkletNode(actx, 'pcm-capture', {
+            processorOptions: { targetSize: 2048 },
+          })
+          workletNodeRef.current = workletNode
+
+          // Silent output keeps the AudioWorkletNode active in the audio graph
+          const silentGain = actx.createGain()
+          silentGain.gain.value = 0
+          silentGain.connect(actx.destination)
+          workletNode.connect(silentGain)
+          src.connect(workletNode)
+
+          workletNode.port.onmessage = (event: MessageEvent<ArrayBuffer>) => {
+            if (wsLiveRef.current?.readyState !== WebSocket.OPEN) return
+            wsLiveRef.current.send(convertToPCM16(new Float32Array(event.data)))
+          }
+
+          spawnWs()
+        } catch { /* AudioWorklet unavailable or server not configured — silently degrade */ }
+      })()
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
       if (/permission|denied/i.test(msg)) {
