@@ -557,5 +557,123 @@ router.post('/demo', demoRateLimit, async (req: Request, res: Response) => {
   }
 })
 
+// ─── Google OAuth ──────────────────────────────────────────────────────────────
+
+const googleAuthLimit = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => (req.ip ?? 'unknown'),
+  message: { message: 'Too many Google login attempts. Please wait a minute.' },
+})
+
+/**
+ * POST /api/auth/google
+ * Body: { credential: string }  — Google ID token from Google Identity Services
+ * Verifies the token with Google, finds or creates the user, returns a JWT.
+ */
+router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
+  try {
+    const { credential } = req.body as { credential?: string }
+    if (!credential || typeof credential !== 'string') {
+      return res.status(400).json({ message: 'Google credential is required.' })
+    }
+
+    const clientId = process.env.GOOGLE_CLIENT_ID
+    if (!clientId) {
+      return res.status(503).json({ message: 'Google login is not configured on this server.' })
+    }
+
+    // Verify Google ID token via Google's public tokeninfo endpoint (no SDK needed)
+    const tokenInfoRes = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`,
+      { signal: AbortSignal.timeout(8000) }
+    )
+    if (!tokenInfoRes.ok) {
+      return res.status(401).json({ message: 'Invalid Google credential.' })
+    }
+    const tokenInfo = await tokenInfoRes.json() as {
+      email?: string
+      email_verified?: string
+      aud?: string
+      sub?: string
+      name?: string
+      given_name?: string
+      family_name?: string
+    }
+
+    // Ensure the token was issued for our app
+    if (tokenInfo.aud !== clientId) {
+      log.warn({ msg: 'Google token audience mismatch', aud: tokenInfo.aud, expected: clientId })
+      return res.status(401).json({ message: 'Invalid Google credential.' })
+    }
+    if (!tokenInfo.email || tokenInfo.email_verified !== 'true') {
+      return res.status(401).json({ message: 'Google account email is not verified.' })
+    }
+
+    const email = tokenInfo.email.toLowerCase().trim()
+    const googleName = tokenInfo.name || [tokenInfo.given_name, tokenInfo.family_name].filter(Boolean).join(' ') || null
+    let user = await getUserByEmail(email)
+
+    if (!user) {
+      // New user — create account. passwordHash is a random unusable value (Google is the auth provider).
+      const now = new Date()
+      const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+      const randomHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 10)
+      const newUser: User = {
+        id: crypto.randomUUID(),
+        email,
+        name: googleName,
+        passwordHash: randomHash,
+        plan: 'free',
+        stripeCustomerId: undefined,
+        subscriptionId: undefined,
+        paymentMethodId: undefined,
+        billingPeriodStart: undefined,
+        billingPeriodEnd: undefined,
+        passwordSetupToken: undefined,
+        passwordSetupExpiresAt: undefined,
+        passwordSetupUsed: false,
+        passwordResetToken: undefined,
+        passwordResetExpiresAt: undefined,
+        usageThisMonth: {
+          totalMinutes: 0,
+          videoCount: 0,
+          batchCount: 0,
+          languageCount: 0,
+          translatedMinutes: 0,
+          importCount: 0,
+          resetDate,
+          importCountToday: 0,
+          importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+          dailyMinutesToday: 0,
+          dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        },
+        limits: getPlanLimits('free'),
+        overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
+        createdAt: now,
+        updatedAt: now,
+      }
+      await saveUser(newUser)
+      user = newUser
+      log.info({ msg: 'Google OAuth new user created', email })
+    } else {
+      // Update name if we now have one and the user didn't have one stored
+      if (googleName && !user.name) {
+        user = { ...user, name: googleName }
+        await saveUser(user)
+      }
+      log.info({ msg: 'Google OAuth existing user login', email })
+    }
+
+    const token = signAuthToken(user)
+    return res.json({ token, userId: user.id, plan: user.plan, email: user.email, name: user.name ?? null })
+  } catch (error: unknown) {
+    log.error({ msg: 'google-auth error', error: (error as Error)?.message ?? String(error) })
+    return res.status(500).json({ message: 'Google login failed.' })
+  }
+})
+
 export default router
 

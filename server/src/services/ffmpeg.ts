@@ -51,6 +51,16 @@ function getEncodePresetOptions(): string[] {
 export const HUNG_JOB_MS = 90 * 1000
 export const HUNG_JOB_MESSAGE = 'HUNG_JOB'
 
+/** Thrown by extraction functions when the input file has no audio streams. */
+export const NO_AUDIO_STREAM_ERROR = 'NO_AUDIO_STREAM'
+
+/** Build a rejection error for ffmpeg extraction failures; detects the "no audio stream" case. */
+function makeExtractionError(err: Error, stderrLines: string[]): Error {
+  const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
+  if (stderr.includes('does not contain any stream')) return new Error(NO_AUDIO_STREAM_ERROR)
+  return new Error(stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message)
+}
+
 /** Extraction-first: length of first chunk extracted early (seconds) to reduce TTFW. 10s targets ~5–10s first word. */
 export const EXTRACTION_FIRST_CHUNK_SEC = 10
 
@@ -109,9 +119,7 @@ export function extractAudio(
       })
       .on('error', (err: Error) => {
         hung.clear()
-        const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        const msg = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(msg))
+        reject(makeExtractionError(err, stderrLines))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.save(outputPath)
@@ -139,16 +147,14 @@ export function extractAudioForPlayback(videoPath: string, outputPath: string): 
         '-b:a', '128k',
         '-movflags', '+faststart',
       ])
-      .on('stderr', (line: string) => { stderrLines.push(line) })
+      .on('stderr', (line: string) => { stderrLines.push(line); hung.reset() })
       .on('end', () => {
         hung.clear()
         resolve(outputPath)
       })
       .on('error', (err: Error) => {
         hung.clear()
-        const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        const msg = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(msg))
+        reject(makeExtractionError(err, stderrLines))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.save(outputPath)
@@ -181,9 +187,7 @@ export function extractAudioToWav(
       })
       .on('error', (err: Error) => {
         hung.clear()
-        const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        const msg = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(msg))
+        reject(makeExtractionError(err, stderrLines))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.save(outputPath)
@@ -208,9 +212,7 @@ export function convertAudioToWav(inputPath: string, outputPath: string): Promis
       })
       .on('error', (err: Error) => {
         hung.clear()
-        const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        const msg = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(msg))
+        reject(makeExtractionError(err, stderrLines))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.save(outputPath)
@@ -342,9 +344,7 @@ export function extractAndSplitAudio(
       })
       .on('error', (err: Error) => {
         hung.clear()
-        const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        const msg = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(msg))
+        reject(makeExtractionError(err, stderrLines))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.run()
@@ -397,9 +397,7 @@ function extractAndSplitAudioVariable(
       })
       .on('error', (err: Error) => {
         hung.clear()
-        const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        const msg = stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message
-        reject(new Error(msg))
+        reject(makeExtractionError(err, stderrLines))
       })
     const hung = setupHungProtection(cmd, reject)
     cmd.run()
@@ -501,7 +499,7 @@ export function extractAndSplitAudioExtractionFirst(
         '-reset_timestamps', '1',
       ])
       .output(pattern)
-      .on('stderr', (line: string) => { stderrLines.push(line) })
+      .on('stderr', (line: string) => { stderrLines.push(line); hung.reset() })
       .on('end', () => {
         hung.clear()
         backgroundCmd = null
@@ -514,8 +512,7 @@ export function extractAndSplitAudioExtractionFirst(
       .on('error', (err: Error) => {
         hung.clear()
         backgroundCmd = null
-        const stderr = stderrLines.length ? stderrLines.join('\n').trim().slice(-2000) : ''
-        reject(new Error(stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message))
+        reject(makeExtractionError(err, stderrLines))
       })
     backgroundCmd = cmd
     const hung = setupHungProtection(cmd, reject)
@@ -1131,3 +1128,4 @@ const PROFILE_CRF: Record<CompressProfile, number> = {
   mobile: 28,
   archive: 23,
 }
+

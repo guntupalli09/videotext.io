@@ -6,17 +6,19 @@
  *
  * Flow A (signup): email + password → OTP verify → account created → onAuthSuccess
  * Flow B (login):  email + password → logged in → onAuthSuccess
+ * Flow C (Google): one click → onAuthSuccess
  *
- * Framing: "Don't lose your transcript" (loss aversion, TurboScribe-style)
+ * Framing: "Finish signing up" (TurboScribe-style loss aversion)
  * rather than a wall — feels like saving progress, not a paywall.
  */
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Download, CheckCircle2, ChevronRight, Lock, Zap } from 'lucide-react'
-import { sendOtp, verifyOtp } from '../lib/api'
+import { sendOtp, verifyOtp, loginWithGoogle } from '../lib/api'
 import { completeSignup, login, storeLoginResult } from '../lib/auth'
 import { identifyUser } from '../lib/analytics'
+import GoogleSignInButton, { GOOGLE_CLIENT_ID } from './GoogleSignInButton'
 
 type Mode = 'choice' | 'signup-combo' | 'signup-otp' | 'login'
 
@@ -33,21 +35,41 @@ export default function JobAuthGateModal({
   isOpen,
   onClose,
   onAuthSuccess,
-  jobDescription = 'Your transcript is ready',
+  jobDescription = 'Your result is ready',
   dismissable = false,
   initialMode = 'signup-combo',
 }: JobAuthGateModalProps) {
   const [mode, setMode] = useState<Mode>(initialMode)
 
-  useEffect(() => {
+  // Reset mode when modal reopens
+  useState(() => {
     if (isOpen) setMode(initialMode)
-  }, [isOpen, initialMode])
+  })
 
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
+
+  async function handleGoogleCredential(credential: string) {
+    setGoogleLoading(true)
+    setError(null)
+    try {
+      const result = await loginWithGoogle(credential)
+      storeLoginResult(result)
+      try { localStorage.setItem('videotext:guestJobUsed', '1') } catch { /* ignore */ }
+      try { identifyUser(result.userId, { plan: result.plan, email: result.email }) } catch { /* ignore */ }
+      window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
+      reset()
+      onAuthSuccess()
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Google login failed')
+    } finally {
+      setGoogleLoading(false)
+    }
+  }
 
   function reset() {
     setMode(initialMode)
@@ -119,7 +141,7 @@ export default function JobAuthGateModal({
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        {/* Backdrop — lighter than before so user knows their transcript is there */}
+        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -160,12 +182,11 @@ export default function JobAuthGateModal({
                 <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">{jobDescription}</span>
               </div>
 
-              {/* Loss aversion headline */}
               <h2 id="auth-gate-title" className="text-2xl font-extrabold text-gray-900 dark:text-white mb-2 font-display leading-tight">
-                Don't lose your transcript!
+                Finish signing up to get your result
               </h2>
               <p className="text-[15px] text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
-                Finish signing up to save your progress and download your transcript.
+                Free account — unlock the full version and download.
               </p>
 
               {/* What you get */}
@@ -175,8 +196,8 @@ export default function JobAuthGateModal({
                 </p>
                 <ul className="space-y-2">
                   {[
-                    { icon: Download, text: 'Download full transcript (TXT, PDF, SRT)' },
-                    { icon: Zap, text: '2 more free imports this month' },
+                    { icon: Download, text: 'Download full result (TXT, PDF, SRT)' },
+                    { icon: Zap, text: '2 more free jobs this month' },
                     { icon: Lock, text: 'Files deleted after processing — always' },
                   ].map(({ icon: Icon, text }) => (
                     <li key={text} className="flex items-center gap-2.5 text-sm text-violet-800 dark:text-violet-300">
@@ -187,6 +208,24 @@ export default function JobAuthGateModal({
                 </ul>
               </div>
 
+              {/* Google Sign-In */}
+              {GOOGLE_CLIENT_ID && (
+                <div className="space-y-2 mb-3">
+                  <GoogleSignInButton onCredential={handleGoogleCredential} text="continue_with" />
+                  {googleLoading && (
+                    <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+                  )}
+                  {error && (
+                    <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg">{error}</p>
+                  )}
+                  <div className="flex items-center gap-3 pt-1">
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                    <span className="text-xs text-gray-400">or</span>
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                  </div>
+                </div>
+              )}
+
               {/* Primary CTA */}
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -194,7 +233,7 @@ export default function JobAuthGateModal({
                 onClick={() => { setMode('signup-combo'); setError(null) }}
                 className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-violet-500/25 hover:shadow-xl hover:shadow-violet-500/35 transition-all mb-3"
               >
-                Save my transcript — it's free
+                Sign up with email — it's free
                 <ChevronRight className="w-4 h-4" />
               </motion.button>
 
@@ -205,9 +244,7 @@ export default function JobAuthGateModal({
                 Already have an account? Log in
               </button>
 
-              <div className="flex items-center justify-center gap-4 mt-4">
-                <p className="text-[11px] text-gray-400 dark:text-gray-500">No credit card · Files deleted after processing</p>
-              </div>
+              <p className="text-[11px] text-center text-gray-400 dark:text-gray-500 mt-4">No credit card · Files deleted after processing</p>
 
               {!dismissable && (
                 <p className="text-center text-[11px] text-gray-400 dark:text-gray-500 mt-2">
@@ -227,23 +264,32 @@ export default function JobAuthGateModal({
           {/* ── SIGNUP step 1: email + password ── */}
           {mode === 'signup-combo' && (
             <form onSubmit={handleSignupCombo} className="space-y-4">
-              {/* Loss aversion header */}
               <div>
                 <h2 id="auth-gate-title" className="text-2xl font-extrabold text-gray-900 dark:text-white font-display">
-                  Save your transcript
+                  Finish signing up
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   Free account — takes 30 seconds.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">2 more free imports included</p>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400">1 used for this trial · 2 more after signup</p>
+              {/* Google Sign-In */}
+              {GOOGLE_CLIENT_ID && (
+                <div className="space-y-2">
+                  <GoogleSignInButton onCredential={handleGoogleCredential} text="signup_with" />
+                  {googleLoading && (
+                    <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+                  )}
+                  {error && (
+                    <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg">{error}</p>
+                  )}
+                  <div className="flex items-center gap-3 pt-1">
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                    <span className="text-xs text-gray-400">or continue with email</span>
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">Email</label>
@@ -345,7 +391,7 @@ export default function JobAuthGateModal({
                 >
                   {loading
                     ? 'Creating account…'
-                    : <><span>Create account & download</span><ChevronRight className="w-3.5 h-3.5" /></>}
+                    : <><span>Create account & unlock</span><ChevronRight className="w-3.5 h-3.5" /></>}
                 </motion.button>
                 <button
                   type="button"
@@ -366,9 +412,27 @@ export default function JobAuthGateModal({
                   Welcome back
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Log in to download your transcript.
+                  Log in to access your result.
                 </p>
               </div>
+
+              {/* Google Sign-In */}
+              {GOOGLE_CLIENT_ID && (
+                <div className="space-y-2">
+                  <GoogleSignInButton onCredential={handleGoogleCredential} text="signin_with" />
+                  {googleLoading && (
+                    <p className="text-center text-sm text-gray-500">Signing in with Google…</p>
+                  )}
+                  {error && (
+                    <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg">{error}</p>
+                  )}
+                  <div className="flex items-center gap-3 pt-1">
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                    <span className="text-xs text-gray-400">or continue with email</span>
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">Email</label>
@@ -412,7 +476,7 @@ export default function JobAuthGateModal({
                 >
                   {loading
                     ? 'Logging in…'
-                    : <><span>Log in & download</span><ChevronRight className="w-3.5 h-3.5" /></>}
+                    : <><span>Log in & unlock</span><ChevronRight className="w-3.5 h-3.5" /></>}
                 </motion.button>
                 <button
                   type="button"

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2 } from 'lucide-react'
+import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2, Lock } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
+import JobAuthGateModal from '../components/JobAuthGateModal'
 import UpgradeBanner from '../components/UpgradeBanner'
 import LanguageSelector from '../components/LanguageSelector'
 import { ToolLayout } from '../components/figma/ToolLayout'
@@ -17,7 +18,8 @@ import { RadioGroup, Select } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
 import { incrementUsage } from '../lib/usage'
-import { uploadFile, uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken } from '../lib/api'
+import { uploadFile, uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob } from '../lib/api'
+import { isLoggedIn } from '../lib/auth'
 import { getFailureMessage } from '../lib/failureMessage'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
@@ -56,6 +58,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; warnings?: { type: string; message: string; line?: number }[] } | null>(null)
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
   const [showPaywall, setShowPaywall] = useState(false)
+  const [showAuthGate, setShowAuthGate] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
   const [isRehydrating, setIsRehydrating] = useState(false)
@@ -96,6 +101,13 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   useEffect(() => {
     setFreeExportsUsed(0)
   }, [result?.downloadUrl])
+
+  useEffect(() => {
+    if (status === 'completed' && !isLoggedIn()) {
+      const t = setTimeout(() => setShowAuthGate(true), 3000)
+      return () => clearTimeout(t)
+    }
+  }, [status])
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const canEdit = ['basic', 'pro', 'agency'].includes(plan)
@@ -422,8 +434,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     }
 
     const durationSeconds = filePreview?.durationSeconds ?? 0
-    const trimStartSec = trimStartPercent != null ? (durationSeconds * trimStartPercent) / 100 : trimStart
-    const trimEndSec = trimEndPercent != null ? (durationSeconds * trimEndPercent) / 100 : trimEnd
+    const hasTrim = trimStartPercent != null && trimEndPercent != null && (trimStartPercent !== 0 || trimEndPercent !== 100)
+    const trimStartSec = hasTrim ? (durationSeconds * trimStartPercent!) / 100 : trimStart
+    const trimEndSec = hasTrim ? (durationSeconds * trimEndPercent!) / 100 : trimEnd
 
     let usageData: Awaited<ReturnType<typeof getCurrentUsage>> | null = null
     try {
@@ -868,6 +881,50 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
         {status === 'completed' && result && (
           <div className="space-y-6">
+            {/* Teaser card for guests */}
+            {showAuthGate && !isLoggedIn() && (
+              <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
+                <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                    <span className="text-sm font-semibold text-gray-800 dark:text-white">Subtitles ready!</span>
+                    {lastProcessingMs != null && (
+                      <span className="text-xs text-gray-400">· {(lastProcessingMs / 1000).toFixed(1)}s</span>
+                    )}
+                  </div>
+                </div>
+                <div className="px-5 py-4">
+                  <p className="text-[11px] text-gray-400 mb-2 font-medium">Sign up to unlock:</p>
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {([`Download ${format.toUpperCase()} file`, '2 free exports', 'Edit subtitles'] as const).map((feat) => (
+                      <span key={feat} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-[11px] text-gray-400 dark:text-gray-500">
+                        <Lock className="w-2.5 h-2.5" />
+                        {feat}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
+                      className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors"
+                    >
+                      Create free account
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
+                      className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      Log in
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Full result — hidden until signed in */}
+            {(!showAuthGate || isLoggedIn()) && (
             <SubtitleResult
               fileName={result.fileName ?? fallbackSubtitleName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
@@ -919,6 +976,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               onProcessAnother={handleProcessAnother}
               relatedTools={[]}
             />
+            )}{/* end gate-hidden result */}
             <div className="mt-2 min-h-[2.75rem]">
             {/* <WorkflowChainSuggestion
               pathname={location.pathname}
@@ -1085,6 +1143,23 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             window.location.href = '/pricing'
           }}
         />
+
+      <JobAuthGateModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authModalMode}
+        jobDescription="Your subtitles are ready!"
+        onAuthSuccess={async () => {
+          const jobId = currentJobId || getPersistedJobId(location.pathname)
+          const jobToken = getPersistedJobToken(location.pathname)
+          if (jobId && jobToken) {
+            await claimGuestJob(jobId, jobToken)
+          }
+          setShowAuthGate(false)
+          setShowAuthModal(false)
+          window.location.reload()
+        }}
+      />
 
       {faq.length > 0 && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">

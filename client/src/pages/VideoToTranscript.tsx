@@ -585,11 +585,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   //   if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
   // }, [status, selectedFile])
 
-  // Show auth gate immediately when job completes and user is not logged in.
+  // Show auth gate 3 seconds after job completes so the user gets a taste of their result.
   // Users can see live partial transcription during processing but results are gated.
   useEffect(() => {
     if (status === 'completed' && !isLoggedIn()) {
-      setShowAuthGate(true)
+      const t = setTimeout(() => setShowAuthGate(true), 3000)
+      return () => clearTimeout(t)
     }
   }, [status])
 
@@ -709,8 +710,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
 
     const durationSeconds = filePreview?.durationSeconds ?? 0
-    const trimStartSec = trimStartPercent != null ? (durationSeconds * trimStartPercent) / 100 : trimStart
-    const trimEndSec = trimEndPercent != null ? (durationSeconds * trimEndPercent) / 100 : trimEnd
+    // Only apply trim when user actually moved handles away from the default full-range (0/100).
+    // ProcessingInterface always passes (0, 100) when untouched; treating that as "no trim"
+    // prevents files whose duration is misreported by the browser (e.g. large WAV) from being
+    // incorrectly truncated to the browser's partial duration estimate.
+    const hasTrim = trimStartPercent != null && trimEndPercent != null && (trimStartPercent !== 0 || trimEndPercent !== 100)
+    const trimStartSec = hasTrim ? (durationSeconds * trimStartPercent!) / 100 : trimStart
+    const trimEndSec = hasTrim ? (durationSeconds * trimEndPercent!) / 100 : trimEnd
 
     // Quota check: imports for free, minutes for paid
     let usageData: Awaited<ReturnType<typeof getCurrentUsage>> | null = null
@@ -2370,9 +2376,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             {showAuthGate && !isLoggedIn() && (() => {
               const fullText = displayTranscript || fullTranscript || transcriptPreview || ''
               const previewSegs = result.segments?.length
-                ? result.segments.slice(0, Math.max(3, Math.ceil(result.segments.length * 0.1)))
+                ? result.segments.slice(0, Math.max(3, Math.ceil(result.segments.length * 0.25)))
                 : null
-              const previewText = fullText.slice(0, Math.max(400, Math.ceil(fullText.length * 0.1)))
+              const previewText = fullText.slice(0, Math.max(400, Math.ceil(fullText.length * 0.25)))
               return (
                 <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none mb-2">
                   {/* header row */}
@@ -2453,12 +2459,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             })()}
 
           <div
-            className={`space-y-6 relative ${showAuthGate && !isLoggedIn() ? 'pointer-events-none select-none' : ''} ${audioObjectUrl ? 'pb-24 sm:pb-28' : ''}`}
+            className={`space-y-6 ${audioObjectUrl ? 'pb-24 sm:pb-28' : ''}`}
+            hidden={showAuthGate && !isLoggedIn()}
           >
-            {/* Blur overlay for non-logged-in users — the JobAuthGateModal sits above this */}
-            {showAuthGate && !isLoggedIn() && (
-              <div className="absolute inset-0 z-10 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 rounded-2xl" aria-hidden="true" />
-            )}
             {/* Result header + primary actions */}
             <TranscriptResult
               fileName={

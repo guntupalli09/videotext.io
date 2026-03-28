@@ -1309,6 +1309,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             const glossary = options?.glossary?.trim()
             const lang = options?.language || 'en'
             const isAudio = data.inputType === 'audio'
+
             const processingStartMs = Date.now()
 
             let fullText = ''

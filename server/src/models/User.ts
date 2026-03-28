@@ -42,6 +42,7 @@ export interface OveragesThisMonth {
 export interface User {
   id: string
   email: string
+  name?: string | null
   passwordHash: string
   plan: PlanType
   stripeCustomerId?: string
@@ -77,6 +78,7 @@ function rowToUser(row: DbUser): User {
   return {
     id: row.id,
     email: row.email,
+    name: (row as { name?: string | null }).name ?? null,
     passwordHash: row.passwordHash,
     plan: row.plan as PlanType,
     stripeCustomerId: row.stripeCustomerId ?? undefined,
@@ -129,6 +131,7 @@ function userToDb(user: User) {
   return {
     id: user.id,
     email: user.email,
+    name: user.name ?? null,
     passwordHash: user.passwordHash,
     plan: user.plan,
     stripeCustomerId: user.stripeCustomerId ?? null,
