@@ -1131,3 +1131,17 @@ const PROFILE_CRF: Record<CompressProfile, number> = {
   mobile: 28,
   archive: 23,
 }
+
+/**
+ * Returns true if the file has at least one audio stream.
+ * Used to give users a clear error before attempting extraction on audio-less videos.
+ * Never throws — returns false on probe failure so the job proceeds and fails with the raw error.
+ */
+export async function hasAudioStream(filePath: string): Promise<boolean> {
+  try {
+    const json = await ffprobeJson(filePath) as { streams?: { codec_type?: string }[] }
+    return Array.isArray(json?.streams) && json.streams.some((s) => s?.codec_type === 'audio')
+  } catch {
+    return false // let the extraction attempt fail with its own error
+  }
+}

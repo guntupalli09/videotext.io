@@ -13,7 +13,7 @@ import { exportTranscriptJson, exportTranscriptDocx, exportTranscriptPdf } from 
 import { fireWebhook } from '../utils/webhook'
 import { transcribeWithDiarization, resolveSpeakerNames } from '../services/diarization'
 import { convertSubtitleFile } from '../services/subtitleConverter'
-import { burnSubtitles, compressVideo, HUNG_JOB_MESSAGE, extractAudioForPlayback, type CompressProfile } from '../services/ffmpeg'
+import { burnSubtitles, compressVideo, HUNG_JOB_MESSAGE, extractAudioForPlayback, hasAudioStream, type CompressProfile } from '../services/ffmpeg'
 import {
   downloadVideoFromURL,
   validateVideoDuration,
@@ -711,6 +711,11 @@ async function processJob(job: import('bull').Job<JobData>) {
               : durationCheck.durationKnown === false
                 ? undefined
                 : (durationCheck.duration ?? 0)
+
+          // Fail fast when file has no audio stream — avoids 3× retries with a cryptic ffmpeg error.
+          if (!isAlreadyAudio && !(await hasAudioStream(videoPath))) {
+            throw new Error('This file has no audio track. Please upload a video or audio file that contains audio.')
+          }
 
           // Kick off AAC extraction in parallel with transcription — never blocks the job.
           // Produces a universally browser-compatible audio file for the in-app player.
