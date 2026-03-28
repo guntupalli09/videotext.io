@@ -145,8 +145,9 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
     }
 
     const durationSeconds = filePreview?.durationSeconds ?? 0
-    const trimStartSec = trimStartPercent != null ? (durationSeconds * trimStartPercent) / 100 : trimStart
-    const trimEndSec = trimEndPercent != null ? (durationSeconds * trimEndPercent) / 100 : trimEnd
+    const hasTrim = trimStartPercent != null && trimEndPercent != null && (trimStartPercent !== 0 || trimEndPercent !== 100)
+    const trimStartSec = hasTrim ? (durationSeconds * trimStartPercent!) / 100 : trimStart
+    const trimEndSec = hasTrim ? (durationSeconds * trimEndPercent!) / 100 : trimEnd
 
     try {
       const usageData = await getCurrentUsage()

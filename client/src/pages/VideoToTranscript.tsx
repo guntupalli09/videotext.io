@@ -709,8 +709,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
 
     const durationSeconds = filePreview?.durationSeconds ?? 0
-    const trimStartSec = trimStartPercent != null ? (durationSeconds * trimStartPercent) / 100 : trimStart
-    const trimEndSec = trimEndPercent != null ? (durationSeconds * trimEndPercent) / 100 : trimEnd
+    // Only apply trim when user actually moved handles away from the default full-range (0/100).
+    // ProcessingInterface always passes (0, 100) when untouched; treating that as "no trim"
+    // prevents files whose duration is misreported by the browser (e.g. large WAV) from being
+    // incorrectly truncated to the browser's partial duration estimate.
+    const hasTrim = trimStartPercent != null && trimEndPercent != null && (trimStartPercent !== 0 || trimEndPercent !== 100)
+    const trimStartSec = hasTrim ? (durationSeconds * trimStartPercent!) / 100 : trimStart
+    const trimEndSec = hasTrim ? (durationSeconds * trimEndPercent!) / 100 : trimEnd
 
     // Quota check: imports for free, minutes for paid
     let usageData: Awaited<ReturnType<typeof getCurrentUsage>> | null = null
