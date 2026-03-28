@@ -13,6 +13,7 @@ import { pushLogEntry } from '../lib/logRing'
 import type { PlanType } from '../models/User'
 import { getLogger } from '../lib/logger'
 import { incrementResendCounter } from '../lib/apiCreditsCache'
+import Stripe from 'stripe'
 
 const log = getLogger('api')
 const router = express.Router()
@@ -815,6 +816,77 @@ router.post('/support/revoke', async (req: Request, res: Response): Promise<Resp
     return res.json({ ok: true, email: user.email })
   } catch (err) {
     log.error({ msg: 'admin/support/revoke error', error: (err as Error)?.message ?? String(err) })
+    return res.status(500).json({ message: 'Internal server error' })
+  }
+})
+
+/**
+ * POST /api/admin/support/delete-user
+ * Permanently delete a user: cancel their Stripe subscription, wipe all DB records.
+ * Body: { userId: string }
+ */
+router.post('/support/delete-user', async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const founderId = await requireFounder(req, res)
+    if (!founderId) return res as Response
+    const { userId } = req.body as { userId?: string }
+    if (!userId) return res.status(400).json({ message: 'userId required' })
+
+    const user = await getUser(userId)
+    if (!user) return res.status(404).json({ message: 'User not found' })
+
+    // 1. Cancel Stripe subscription immediately so no future charges occur
+    const stripeKey = process.env.STRIPE_SECRET_KEY
+    if (stripeKey) {
+      const stripe = new Stripe(stripeKey, { apiVersion: '2026-01-28.clover' })
+      if (user.subscriptionId) {
+        try {
+          const sub = await stripe.subscriptions.retrieve(user.subscriptionId)
+          if (sub.status !== 'canceled') {
+            await stripe.subscriptions.cancel(user.subscriptionId)
+            log.info({ msg: 'Stripe sub canceled on user delete', subId: user.subscriptionId, email: user.email })
+          }
+        } catch (e) {
+          log.warn({ msg: 'Could not cancel Stripe sub', subId: user.subscriptionId, error: (e as Error).message })
+        }
+      }
+      if (user.stripeCustomerId) {
+        try {
+          const subs = await stripe.subscriptions.list({ customer: user.stripeCustomerId, status: 'all', limit: 10 })
+          for (const sub of subs.data) {
+            if (sub.status !== 'canceled') {
+              await stripe.subscriptions.cancel(sub.id)
+              log.info({ msg: 'Stripe sub canceled via customerId', subId: sub.id, email: user.email })
+            }
+          }
+        } catch (e) {
+          log.warn({ msg: 'Could not sweep Stripe subs', error: (e as Error).message })
+        }
+      }
+    }
+
+    // 2. Delete child rows
+    await Promise.all([
+      prisma.job.deleteMany({ where: { userId } }),
+      prisma.transcriptShare.deleteMany({ where: { userId } }),
+      prisma.subscriptionSnapshot.deleteMany({ where: { userId } }),
+      prisma.userMetrics.deleteMany({ where: { userId } }),
+    ])
+
+    // 3. Nullify optional userId on audit/feedback tables (preserve the data, unlink the user)
+    await Promise.all([
+      prisma.feedback.updateMany({ where: { userId }, data: { userId: null } }),
+      prisma.eventLog.updateMany({ where: { userId }, data: { userId: null } }),
+      prisma.feedbackEvent.updateMany({ where: { userId }, data: { userId: null } }),
+    ])
+
+    // 4. Delete the user row
+    await prisma.user.delete({ where: { id: userId } })
+
+    log.info({ msg: 'USER_DELETED', founderId, deletedId: userId, email: user.email })
+    return res.json({ ok: true, email: user.email })
+  } catch (err) {
+    log.error({ msg: 'admin/support/delete-user error', error: (err as Error)?.message ?? String(err) })
     return res.status(500).json({ message: 'Internal server error' })
   }
 })

@@ -7,6 +7,7 @@ import {
   setSupportPlan,
   restrictUser,
   revokeUserAccess,
+  deleteUserPermanently,
   type SupportUser,
   type SupportJob,
 } from '../../lib/founderDashboard'
@@ -351,6 +352,18 @@ export default function SupportPanel() {
                 ✕ Revoke access
               </button>
               <button
+                onClick={() => {
+                  if (!confirm(`PERMANENTLY DELETE ${user.email}?\n\nThis will:\n• Cancel their Stripe subscription immediately\n• Delete all their jobs and data\n• Remove their account\n\nThis cannot be undone.`)) return
+                  doAction('Delete', async () => {
+                    await deleteUserPermanently(user.id)
+                    setUser(null)
+                  })
+                }}
+                className="px-3 py-2.5 bg-red-700/30 border border-red-600/60 text-red-300 hover:bg-red-700/50 rounded-lg text-sm font-medium transition-colors"
+              >
+                🗑 Delete account
+              </button>
+              <button
                 onClick={() => handleImpersonate()}
                 className="px-3 py-2.5 bg-zinc-700/40 border border-zinc-700 text-zinc-300 hover:bg-zinc-700/70 rounded-lg text-sm font-medium transition-colors"
               >
@@ -359,7 +372,7 @@ export default function SupportPanel() {
             </div>
 
             <p className="text-xs text-zinc-600">
-              Suspend: blocks uploads/processing, account still exists. Revoke: suspend + downgrade to free + clear subscription.
+              Suspend: blocks uploads/processing. Revoke: suspend + downgrade to free. Delete: permanent — cancels Stripe, removes all data.
             </p>
           </div>
 

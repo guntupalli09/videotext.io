@@ -418,3 +418,12 @@ export async function revokeUserAccess(userId: string, note?: string): Promise<v
   const res = await api('/api/admin/support/revoke', { method: 'POST', body: JSON.stringify({ userId, note }) })
   if (!res.ok) throw new Error('Revoke failed')
 }
+
+export async function deleteUserPermanently(userId: string): Promise<{ email: string }> {
+  const res = await api('/api/admin/support/delete-user', { method: 'POST', body: JSON.stringify({ userId }) })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error((body as { message?: string }).message ?? 'Delete failed')
+  }
+  return res.json()
+}
