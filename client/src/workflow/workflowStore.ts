@@ -225,6 +225,24 @@ export function getSnapshot(): WorkflowSnapshot {
   }
 }
 
+/** Ordered pipeline steps for the inline WorkflowPipelineBanner. */
+export interface PipelineStepDef {
+  toolId: string
+  label: string
+  shortLabel: string
+  pathname: string
+  requiresVideo: boolean
+  requiresSrt: boolean
+  producesSrt: boolean
+}
+
+export const PIPELINE_STEPS: PipelineStepDef[] = [
+  { toolId: 'video-to-transcript', label: 'Transcript',     shortLabel: 'Transcript', pathname: '/video-to-transcript', requiresVideo: true,  requiresSrt: false, producesSrt: true  },
+  { toolId: 'video-to-subtitles',  label: 'Subtitles',      shortLabel: 'Subtitles',  pathname: '/video-to-subtitles',  requiresVideo: true,  requiresSrt: false, producesSrt: true  },
+  { toolId: 'translate-subtitles', label: 'Translate',       shortLabel: 'Translate',  pathname: '/translate-subtitles', requiresVideo: false, requiresSrt: true,  producesSrt: true  },
+  { toolId: 'burn-subtitles',      label: 'Burn into Video', shortLabel: 'Burn',       pathname: '/burn-subtitles',      requiresVideo: true,  requiresSrt: true,  producesSrt: false },
+]
+
 /** For dropdown: next tool options (exclude current step tools if desired). All tools. */
 export const WORKFLOW_TOOL_OPTIONS: WorkflowStep[] = [
   { toolId: 'video-to-transcript', label: TOOL_LABELS['video-to-transcript'], pathname: '/video-to-transcript' },

@@ -12,8 +12,8 @@ import { getCanonicalPathForRoute } from './lib/primaryUrls'
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
 import OfflineBanner from './components/OfflineBanner'
-// import { WorkflowProvider } from './contexts/WorkflowContext'
-// import { WorkflowTracker } from './components/workflow/WorkflowTracker'
+import { WorkflowProvider } from './contexts/WorkflowContext'
+// WorkflowTracker (old bottom bar) removed — replaced by inline WorkflowPipelineBanner
 // import { TexAgent } from './components/TexAgent'
 // import TexErrorBoundary from './components/TexAgent/TexErrorBoundary'
 import FeedbackOrchestrator from './components/feedbackSystem/FeedbackOrchestrator'
@@ -405,7 +405,7 @@ function SessionTracker() {
 function App() {
   return (
     <BrowserRouter>
-      {/* <WorkflowProvider> */}
+      <WorkflowProvider>
       <AppSeo />
       <SessionTracker />
       <PostCheckoutHandler />
@@ -503,14 +503,14 @@ function App() {
           </SessionErrorBoundary>
         </main>
         <Footer />
-        {/* <WorkflowTracker /> */}
+        {/* WorkflowTracker (old bottom bar) replaced by inline WorkflowPipelineBanner per tool */}
         {/* <TexErrorBoundary>
           <TexAgent />
         </TexErrorBoundary> */}
         <FeedbackOrchestrator />
         <Toaster position="top-right" />
       </div>
-      {/* </WorkflowProvider> */}
+      </WorkflowProvider>
     </BrowserRouter>
   )
 }

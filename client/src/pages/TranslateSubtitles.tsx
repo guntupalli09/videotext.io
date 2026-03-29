@@ -24,6 +24,9 @@ import { Film, Wrench, MessageSquare } from 'lucide-react'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { LANGUAGES } from '../lib/languages'
 import { exportFileStem, joinExportFilename, targetLangFileSlug } from '../lib/exportFileNames'
+import { useWorkflow } from '../contexts/WorkflowContext'
+import { emitToolCompleted } from '../workflow/workflowStore'
+import { WorkflowPipelineBanner } from '../components/workflow/WorkflowPipelineBanner'
 
 type Tab = 'upload' | 'paste'
 
@@ -38,9 +41,11 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const { seoH1, seoIntro, faq = [] } = props
   const location = useLocation()
   const navigate = useNavigate()
+  const workflow = useWorkflow()
 
   const [tab, setTab] = useState<Tab>('upload')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [fileFromWorkflow, setFileFromWorkflow] = useState(false)
   const [pastedText, setPastedText] = useState('')
   const [targetLanguage, setTargetLanguage] = useState<string>('Spanish')
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
@@ -78,6 +83,19 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     if (result?.downloadUrl) setFreeExportsUsed(0)
   }, [result?.downloadUrl])
 
+  // Pre-fill SRT from workflow context when navigated here via pipeline banner
+  useEffect(() => {
+    const state = location.state as { useWorkflowSrt?: boolean } | undefined
+    if (state?.useWorkflowSrt && workflow.srtContent) {
+      const blob = new Blob([workflow.srtContent], { type: 'text/plain;charset=utf-8' })
+      const file = new File([blob], 'subtitles.srt', { type: 'text/plain' })
+      setSelectedFile(file)
+      setFileFromWorkflow(true)
+      setTab('upload')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state, workflow.srtContent])
+
   const handleFileSelect = (file: File) => {
     try {
       trackEvent('file_selected', {
@@ -88,6 +106,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       // non-blocking
     }
     setSelectedFile(file)
+    setFileFromWorkflow(false)
     setSubtitleRows([])
     setPlainTextResult(null)
   }
@@ -241,6 +260,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             setStatus('completed')
             setResult(jobStatus.result ?? null)
             trackAppEvent('transcription_completed', { toolId: 'translate-subtitles' })
+            const processingMs = Date.now() - (processingStartedAtRef.current ?? Date.now())
+            emitToolCompleted({ toolId: 'translate-subtitles', pathname: '/translate-subtitles', processingMs })
 
             if (jobStatus.result?.downloadUrl) {
               try {
@@ -251,6 +272,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                   setPlainTextResult(txt)
                 } else {
                   setSubtitleRows(parseSubtitlesToRows(txt))
+                  workflow.setSrt(txt)
                 }
               } catch {
                 // ignore
@@ -534,6 +556,12 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
         {/* ── File upload result ────────────────────────────────────────────── */}
         {status === 'completed' && result && (
           <div className="space-y-6">
+            <WorkflowPipelineBanner
+              currentTool="translate-subtitles"
+              hasVideo={!!workflow.videoFile}
+              hasSrt={subtitleRows.length > 0 || !!plainTextResult}
+              className="mb-2"
+            />
             <TranslateResult
               title="Translation complete!"
               fileName={result.fileName ?? fallbackTranslatedName(translateFallbackExt)}

@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Copy, Gem } from 'lucide-react'
+import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Copy, Gem, MessageSquare, Film, Minimize2 } from 'lucide-react'
 import FailedState from '../components/FailedState'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
@@ -39,8 +39,10 @@ import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import { segmentsToSrt, segmentsToVtt, formatTimestamp, type Segment } from '../lib/srtExport'
 import toast from 'react-hot-toast'
-// import { useWorkflow } from '../contexts/WorkflowContext'
-// import { emitToolCompleted } from '../workflow/workflowStore'
+import { useWorkflow } from '../contexts/WorkflowContext'
+import { emitToolCompleted } from '../workflow/workflowStore'
+import { WorkflowPipelineBanner } from '../components/workflow/WorkflowPipelineBanner'
+import { WorkflowFileBadge } from '../components/workflow/WorkflowFileBadge'
 
 // ─── Phase 1 – Derived Transcript Utilities (client-side only) ─────────────────
 const STOPWORDS = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'when', 'where', 'why', 'how'])
@@ -561,15 +563,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [uploadPhase])
 
-  // const workflow = useWorkflow()
+  const workflow = useWorkflow()
 
-  // useEffect(() => {
-  //   const state = location.state as { useWorkflowVideo?: boolean } | undefined
-  //   if (state?.useWorkflowVideo && workflow.videoFile) {
-  //     setSelectedFile(workflow.videoFile)
-  //     setFileFromWorkflow(true)
-  //   }
-  // }, [location.state, workflow.videoFile])
+  useEffect(() => {
+    const state = location.state as { useWorkflowVideo?: boolean } | undefined
+    if (state?.useWorkflowVideo && workflow.videoFile) {
+      setSelectedFile(workflow.videoFile)
+      setFileFromWorkflow(true)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state])
 
   // Pick up a file dropped on the landing page hero dropzone
   useEffect(() => {
@@ -581,9 +584,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keep workflow in sync when result is shown so "Next step" links pre-fill the file on the next tool
-  // useEffect(() => {
-  //   if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
-  // }, [status, selectedFile])
+  useEffect(() => {
+    if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, selectedFile])
 
   // Show auth gate 3 seconds after job completes so the user gets a taste of their result.
   // Users can see live partial transcription during processing but results are gated.
@@ -603,7 +607,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     } catch {
       // non-blocking
     }
-    // workflow.setVideo(file)
+    workflow.setVideo(file)
     setSelectedFile(file)
     setFileFromWorkflow(false)
     setTrimStart(null)
@@ -855,7 +859,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             trackAppEvent('transcription_completed', { toolId: 'video-to-transcript' })
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
-            // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
+            emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
             if (res?.segments?.length) {
               const textFromSegments = res.segments.map((s: { text: string }) => s.text).join('\n\n')
               setFullTranscript(textFromSegments)
@@ -1092,7 +1096,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             trackAppEvent('transcription_completed', { toolId: 'video-to-transcript' })
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
-            // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
+            emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
             if (res?.segments?.length) {
               const text = res.segments.map((s: { text: string }) => s.text).join('\n\n')
               setFullTranscript(text)
@@ -1700,7 +1704,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   onFilesSelect={handleFilesSelect}
                   initialFiles={selectedFile ? [selectedFile] : null}
                   onRemove={() => {
-                    // if (fileFromWorkflow) workflow.clearVideo()
+                    if (fileFromWorkflow) workflow.clearVideo()
                     setSelectedFile(null)
                     setFileFromWorkflow(false)
                   }}
@@ -2032,7 +2036,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               duration: filePreview?.durationSeconds != null ? formatDuration(filePreview.durationSeconds) : undefined,
             }}
             onRemove={() => {
-              // if (fileFromWorkflow) workflow.clearVideo()
+              if (fileFromWorkflow) workflow.clearVideo()
               setSelectedFile(null)
               setFileFromWorkflow(false)
             }}
@@ -2372,6 +2376,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
         {!isBatchMode && status === 'completed' && result && (
           <>
+            {/* ── Workflow pipeline banner ── */}
+            <WorkflowPipelineBanner
+              currentTool="video-to-transcript"
+              hasVideo={!!selectedFile || !!workflow.videoFile}
+              hasSrt={!!(segmentsForExport?.length)}
+              className="mb-4"
+            />
+
             {/* ── Teaser preview card (non-logged-in) — first 10% of real content ── */}
             {showAuthGate && !isLoggedIn() && (() => {
               const fullText = displayTranscript || fullTranscript || transcriptPreview || ''
@@ -3277,10 +3289,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       </>
                     )}
                   </div>
-            {/* <CrossToolSuggestions
-              workflowHint="Your last file is pre-filled on the next tool."
+            <CrossToolSuggestions
+              workflowHint="Your video is pre-loaded — no re-upload needed."
               suggestions={[
-                { icon: Subtitles, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT', state: { useWorkflowVideo: true } },
+                { icon: MessageSquare, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT', state: { useWorkflowVideo: true } },
                 {
                   icon: Film,
                   title: 'Burn Subtitles',
@@ -3288,13 +3300,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   description: 'Burn captions (video + SRT pre-filled)',
                   state: { useWorkflowVideo: true, useWorkflowSrt: true },
                   onBeforeNavigate: () => {
-                    // if (segmentsForExport?.length) workflow.setSrt(segmentsToSrt(segmentsForExport))
-                    // if (selectedFile) workflow.setVideo(selectedFile)
+                    if (segmentsForExport?.length) workflow.setSrt(segmentsToSrt(segmentsForExport))
+                    if (selectedFile) workflow.setVideo(selectedFile)
                   },
                 },
                 { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
               ]}
-            /> */}
+            />
           </div>
           </>
         )}

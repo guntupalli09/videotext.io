@@ -29,10 +29,11 @@ import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJo
 import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
-// import { useWorkflow } from '../contexts/WorkflowContext'
+import { useWorkflow } from '../contexts/WorkflowContext'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { exportFileStem, joinExportFilename, langCodeForFile } from '../lib/exportFileNames'
-// import { emitToolCompleted } from '../workflow/workflowStore'
+import { emitToolCompleted } from '../workflow/workflowStore'
+import { WorkflowPipelineBanner } from '../components/workflow/WorkflowPipelineBanner'
 
 /** Optional SEO overrides for alternate entry points (e.g. /mp4-to-srt, /subtitle-generator). Do NOT duplicate logic. */
 export type VideoToSubtitlesSeoProps = {
@@ -187,7 +188,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           setStatus('completed')
           setResult(jobStatus.result ?? null)
           trackAppEvent('transcription_completed', { toolId: 'video-to-subtitles' })
-          // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
+          emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
           setUploadPhase('processing')
           setUploadProgress(100)
           if (jobStatus.result?.downloadUrl) {
@@ -199,6 +200,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               if (!isZip) {
                 const subtitleText = await subtitleResponse.text()
                 setSubtitleRows(parseSubtitlesToRows(subtitleText))
+                workflow.setSrt(subtitleText)
               } else {
                 setSubtitleRows([])
               }
@@ -243,7 +245,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               setStatus('completed')
               setResult(s.result ?? null)
               trackAppEvent('transcription_completed', { toolId: 'video-to-subtitles' })
-              // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
+              emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
               if (s.result?.downloadUrl) {
                 try {
                   const res = await fetch(getAbsoluteDownloadUrl(s.result.downloadUrl))
@@ -252,6 +254,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                   if (!isZip) {
                     const text = await res.text()
                     setSubtitleRows(parseSubtitlesToRows(text))
+                    workflow.setSrt(text)
                   } else {
                     setSubtitleRows([])
                   }
@@ -334,20 +337,22 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [uploadPhase])
 
-  // const workflow = useWorkflow()
+  const workflow = useWorkflow()
 
-  // useEffect(() => {
-  //   const state = location.state as { useWorkflowVideo?: boolean } | undefined
-  //   if (state?.useWorkflowVideo && workflow.videoFile) {
-  //     setSelectedFile(workflow.videoFile)
-  //     setFileFromWorkflow(true)
-  //   }
-  // }, [location.state, workflow.videoFile])
+  useEffect(() => {
+    const state = location.state as { useWorkflowVideo?: boolean } | undefined
+    if (state?.useWorkflowVideo && workflow.videoFile) {
+      setSelectedFile(workflow.videoFile)
+      setFileFromWorkflow(true)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state])
 
   // Keep workflow in sync when result is shown so "Next step" links pre-fill the file on the next tool
-  // useEffect(() => {
-  //   if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
-  // }, [status, selectedFile])
+  useEffect(() => {
+    if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, selectedFile])
 
   const handleFileSelect = (file: File) => {
     try {
@@ -358,7 +363,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     } catch {
       // non-blocking
     }
-    // workflow.setVideo(file)
+    workflow.setVideo(file)
     setSelectedFile(file)
     setFileFromWorkflow(false)
     setTrimStart(null)
@@ -550,7 +555,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           trackAppEvent('transcription_completed', { toolId: 'video-to-subtitles' })
           const started = processingStartedAtRef.current ?? Date.now()
           const processingMs = Date.now() - started
-          // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })
+          emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })
           if (jobStatus.result?.downloadUrl) {
             try {
               fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
@@ -566,7 +571,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                   return subtitleResponse.text()
                 })
                 .then((subtitleText) => {
-                  if (typeof subtitleText === 'string') setSubtitleRows(parseSubtitlesToRows(subtitleText))
+                  if (typeof subtitleText === 'string') {
+                    setSubtitleRows(parseSubtitlesToRows(subtitleText))
+                    workflow.setSrt(subtitleText)
+                  }
                 })
                 .catch(() => setSubtitleRows([]))
             } catch {
@@ -763,7 +771,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             onFileSelect={handleFileSelect}
             initialFiles={selectedFile ? [selectedFile] : null}
             onRemove={() => {
-              // if (fileFromWorkflow) workflow.clearVideo()
+              if (fileFromWorkflow) workflow.clearVideo()
               setSelectedFile(null)
               setFileFromWorkflow(false)
             }}
@@ -779,7 +787,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               duration: filePreview?.durationSeconds != null ? formatDuration(filePreview.durationSeconds) : undefined,
             }}
             onRemove={() => {
-              // if (fileFromWorkflow) workflow.clearVideo()
+              if (fileFromWorkflow) workflow.clearVideo()
               setSelectedFile(null)
               setFileFromWorkflow(false)
             }}
@@ -881,6 +889,12 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
         {status === 'completed' && result && (
           <div className="space-y-6">
+            <WorkflowPipelineBanner
+              currentTool="video-to-subtitles"
+              hasVideo={!!selectedFile || !!workflow.videoFile}
+              hasSrt={subtitleRows.length > 0}
+              className="mb-2"
+            />
             {/* Teaser card for guests */}
             {showAuthGate && !isLoggedIn() && (
               <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
