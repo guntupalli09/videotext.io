@@ -390,8 +390,9 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
           <UploadZone
             immediateSelect
             onFileSelect={handleFileSelect}
-            initialFiles={null}
-            onRemove={() => setSelectedFile(null)}
+            initialFiles={selectedFile ? [selectedFile] : null}
+            onRemove={() => { setSelectedFile(null); setFileFromWorkflow(false) }}
+            fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
             acceptedFormats={['SRT', 'VTT', 'TXT']}
             acceptAttribute=".srt,.vtt,.txt"
             maxSize="10 MB"
@@ -405,7 +406,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
               name: selectedFile.name,
               size: `${(selectedFile.size / 1024).toFixed(2)} KB`,
             }}
-            onRemove={() => setSelectedFile(null)}
+            onRemove={() => { setSelectedFile(null); setFileFromWorkflow(false) }}
             actionLabel="Translate"
             onAction={handleProcess}
             actionLoading={false}

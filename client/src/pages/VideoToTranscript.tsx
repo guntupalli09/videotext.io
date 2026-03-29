@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Copy, Gem, MessageSquare, Film, Minimize2 } from 'lucide-react'
 import FailedState from '../components/FailedState'
+import CrossToolSuggestions from '../components/CrossToolSuggestions'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import UpgradeBanner from '../components/UpgradeBanner'
@@ -42,7 +43,6 @@ import toast from 'react-hot-toast'
 import { useWorkflow } from '../contexts/WorkflowContext'
 import { emitToolCompleted } from '../workflow/workflowStore'
 import { WorkflowPipelineBanner } from '../components/workflow/WorkflowPipelineBanner'
-import { WorkflowFileBadge } from '../components/workflow/WorkflowFileBadge'
 
 // ─── Phase 1 – Derived Transcript Utilities (client-side only) ─────────────────
 const STOPWORDS = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'when', 'where', 'why', 'how'])
