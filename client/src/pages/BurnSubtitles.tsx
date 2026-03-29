@@ -457,15 +457,11 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                     }
               }
               onProcessAnother={handleProcessAnother}
-              relatedTools={[
-                { path: '/compress-video', name: 'Compress Video', description: 'Reduce file size' },
-                { path: '/video-to-transcript', name: 'Video → Transcript', description: 'Get transcript' },
-                { path: '/video-to-subtitles', name: 'Video → Subtitles', description: 'Generate SRT/VTT' },
-              ]}
             />
 
             <CrossToolSuggestions
-              workflowHint="Your last file is pre-filled on the next tool."
+              workflowHint="Your video is pre-loaded — no re-upload needed."
+              hasPreloadedFiles={!!(videoFile || workflow.videoFile)}
               suggestions={[
                 { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
                 { icon: FileText, title: 'Video → Transcript', path: '/video-to-transcript', description: 'Get transcript', state: { useWorkflowVideo: true } },

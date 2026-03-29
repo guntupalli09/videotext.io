@@ -1127,10 +1127,11 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             </div>
 
             <CrossToolSuggestions
-              workflowHint="Your last file is pre-filled on the next tool."
+              workflowHint="Your video and subtitles are pre-loaded — no re-upload needed."
+              hasPreloadedFiles={!!(selectedFile || workflow.videoFile)}
               suggestions={[
-                { icon: Languages, title: 'Translate Subtitles', path: '/translate-subtitles', description: 'Translate to another language' },
-                { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn into video', state: { useWorkflowVideo: true } },
+                { icon: Languages, title: 'Translate Subtitles', path: '/translate-subtitles', description: 'Translate to another language', state: { useWorkflowSrt: true } },
+                { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn into video', state: { useWorkflowVideo: true, useWorkflowSrt: true } },
                 { icon: Wrench, title: 'Fix Subtitles', path: '/fix-subtitles', description: 'Fix timing & format' },
                 { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
               ]}

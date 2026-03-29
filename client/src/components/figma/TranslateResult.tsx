@@ -1,24 +1,18 @@
-import { motion } from 'framer-motion';
-import { Check, Download, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion'
+import { Check, Download, RotateCcw } from 'lucide-react'
 
 interface TranslateResultProps {
-  title?: string;
-  fileName: string;
-  processingTime: string;
-  fileSize?: string;
+  title?: string
+  fileName: string
+  processingTime: string
+  fileSize?: string
   /** Button label, e.g. "Download translated subtitles" */
-  downloadLabel?: string;
-  onDownload?: () => void;
-  onProcessAnother?: () => void;
-  relatedTools?: Array<{ path: string; name: string; description: string }>;
+  downloadLabel?: string
+  onDownload?: () => void
+  onProcessAnother?: () => void
+  /** @deprecated — next steps are handled by CrossToolSuggestions in the parent page */
+  relatedTools?: Array<{ path: string; name: string; description: string }>
 }
-
-const defaultRelatedTools = [
-  { path: '/fix-subtitles', name: 'Fix Subtitles', description: 'Auto-correct timing' },
-  { path: '/burn-subtitles', name: 'Burn Subtitles', description: 'Hardcode into video' },
-  { path: '/video-to-subtitles', name: 'Video → Subtitles', description: 'Generate SRT/VTT from video' },
-];
 
 export function TranslateResult({
   title = 'Translation complete!',
@@ -28,88 +22,66 @@ export function TranslateResult({
   downloadLabel = 'Download translated subtitles',
   onDownload,
   onProcessAnother,
-  relatedTools = defaultRelatedTools,
 }: TranslateResultProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
+      {/* ── Success header ─────────────────────────────────────────── */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="text-center py-8"
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+        className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm"
       >
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-4"
+          transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.1 }}
+          className="shrink-0 w-9 h-9 rounded-full bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/70 dark:border-emerald-800/60 flex items-center justify-center"
         >
-          <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
+          <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
         </motion.div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{title}</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-1">{fileName}</p>
-        <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
-          Processed in {processingTime} ⚡
-        </p>
-      </motion.div>
 
-      {fileSize != null && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm"
-        >
-          <p className="text-sm text-gray-600 dark:text-gray-400">{fileSize}</p>
-        </motion.div>
-      )}
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white leading-snug">{title}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5" title={fileName}>{fileName}</p>
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-50 dark:bg-violet-900/20 border border-violet-200/60 dark:border-violet-800/50 text-[11px] text-violet-700 dark:text-violet-300 font-medium">
+              ⚡ {processingTime}
+            </span>
+            {fileSize && (
+              <span className="text-[11px] text-gray-400 dark:text-gray-500">{fileSize}</span>
+            )}
+          </div>
+        </div>
 
-      {onDownload && (
-        <motion.button
-          type="button"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.99 }}
-          onClick={onDownload}
-          className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
-        >
-          <Download className="w-5 h-5" />
-          {downloadLabel}
-        </motion.button>
-      )}
-
-      {onProcessAnother && (
-        <div className="text-center">
+        {onProcessAnother && (
           <button
             type="button"
             onClick={onProcessAnother}
-            className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm font-medium transition-colors"
+            className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           >
-            Process another file
+            <RotateCcw className="w-3 h-3" />
+            New file
           </button>
-        </div>
-      )}
+        )}
+      </motion.div>
 
-      {relatedTools.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Next step</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {relatedTools.map((tool) => (
-              <Link
-                key={tool.path}
-                to={tool.path}
-                state={tool.path === '/burn-subtitles' ? { useWorkflowVideo: true } : undefined}
-                className="block p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-purple-300 dark:hover:border-purple-700 shadow-sm hover:shadow-md transition-all text-left group"
-              >
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                  {tool.name}
-                </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{tool.description}</p>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 mt-2 transition-colors" />
-              </Link>
-            ))}
-          </div>
-        </div>
+      {/* ── Primary download CTA ────────────────────────────────────── */}
+      {onDownload && (
+        <motion.button
+          type="button"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.15, ease: [0.4, 0, 0.2, 1] }}
+          whileHover={{ scale: 1.005 }}
+          whileTap={{ scale: 0.995 }}
+          onClick={onDownload}
+          className="w-full h-12 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+        >
+          <Download className="w-4 h-4 shrink-0" strokeWidth={2} />
+          {downloadLabel}
+        </motion.button>
       )}
     </div>
-  );
+  )
 }

@@ -3291,6 +3291,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   </div>
             <CrossToolSuggestions
               workflowHint="Your video is pre-loaded — no re-upload needed."
+              hasPreloadedFiles={!!(selectedFile || workflow.videoFile)}
               suggestions={[
                 { icon: MessageSquare, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT', state: { useWorkflowVideo: true } },
                 {

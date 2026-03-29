@@ -693,9 +693,10 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             )}
 
             <CrossToolSuggestions
-              workflowHint="Burn into video or fix timing on another file."
+              workflowHint="Translated subtitles pre-loaded for the next step."
+              hasPreloadedFiles={subtitleRows.length > 0 || !!plainTextResult}
               suggestions={[
-                { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn translated captions into video' },
+                { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn translated captions into video', state: { useWorkflowSrt: true } },
                 { icon: Wrench, title: 'Fix Subtitles', path: '/fix-subtitles', description: 'Fix timing, grammar, line breaks' },
                 { icon: MessageSquare, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT from another video' },
               ]}
