@@ -257,6 +257,9 @@ export function attachLiveTranscription(server: Server): void {
         log.info({ msg: '[live] Deepgram closed', sessionId })
       })
 
+      // Actually open the WebSocket connection (the SDK separates creation from connecting)
+      dgSocket.connect()
+
       // Forward raw PCM audio from browser → Deepgram
       ws.on('message', (rawData: RawData) => {
         if (!deepgramOpen) return
