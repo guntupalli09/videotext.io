@@ -120,6 +120,20 @@ export function withJobContext(jobId: string | number, requestId?: string): pino
   return getLogger('worker').child({ jobId: String(jobId), requestId: requestId || undefined })
 }
 
+/** Create a child logger with full job context — userId, plan, toolType are pinned to every log line automatically. */
+export function withJobContextFull(
+  jobId: string | number,
+  opts: { requestId?: string; userId?: string; plan?: string; toolType?: string }
+): pino.Logger {
+  return getLogger('worker').child({
+    jobId: String(jobId),
+    ...(opts.requestId ? { requestId: opts.requestId } : {}),
+    ...(opts.userId ? { userId: opts.userId } : {}),
+    ...(opts.plan ? { plan: opts.plan } : {}),
+    ...(opts.toolType ? { toolType: opts.toolType } : {}),
+  })
+}
+
 /** Redact a string for safe logging (e.g. file paths: keep basename only). */
 export function redactFilePath(path: string): string {
   if (!path || typeof path !== 'string') return '[REDACTED]'
