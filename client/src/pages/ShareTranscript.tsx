@@ -145,11 +145,6 @@ export default function ShareTranscript() {
                           {formatTimestamp(seg.start)}
                         </span>
                         <div className="min-w-0 flex-1">
-                          {seg.speaker && (
-                            <p className="text-[11px] font-semibold text-violet-600 dark:text-violet-400 mb-0.5">
-                              {seg.speaker}
-                            </p>
-                          )}
                           <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
                             {seg.text}
                           </p>
