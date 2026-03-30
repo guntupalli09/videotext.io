@@ -285,6 +285,7 @@ async function transcribeVideoParallel(
       // Lock remaining chunks to the language detected in chunk 0 to prevent per-chunk
       // language switches (Whisper hallucinating Welsh/other languages on noisy audio).
       const resolvedLanguage = language || chunk0Result.detectedLanguage
+      transcriptionLog.info({ msg: 'transcription_language_resolved', jobId: String(jobId ?? ''), requested: language ?? null, detected: chunk0Result.detectedLanguage ?? null, resolved: resolvedLanguage ?? null })
       if (onPartial && chunk0Segs.length > 0) {
         firstPartialMs = Date.now() - phaseStart
         onPartial(mergeContiguousSegments([chunk0Segs], 0))
@@ -382,6 +383,7 @@ async function transcribeVideoParallel(
     // Lock remaining chunks to the language detected in chunk 0 to prevent per-chunk
     // language switches (Whisper hallucinating Welsh/other languages on noisy audio).
     const resolvedLanguage = language || chunk0Result.detectedLanguage
+    transcriptionLog.info({ msg: 'transcription_language_resolved', jobId: String(jobId ?? ''), requested: language ?? null, detected: chunk0Result.detectedLanguage ?? null, resolved: resolvedLanguage ?? null })
     resultsByIndex[0] = chunk0Segs
     if (onPartial && chunk0Segs.length > 0) {
       lastContiguousK = 0
