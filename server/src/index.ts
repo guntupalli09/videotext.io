@@ -204,8 +204,8 @@ app.all('/api/upload/chunk', (req, res) => {
   res.status(405).json({ message: 'Method not allowed. Use POST with x-upload-id and x-chunk-index.' })
 })
 
-// JSON body parsing for all other routes
-app.use(express.json())
+// JSON body parsing for all other routes — 4 MB to accommodate share-link transcript snapshots
+app.use(express.json({ limit: '4mb' }))
 app.use('/api', generalLimiter)
 
 // Optional API key auth (sets trusted identity on req.apiKeyUser)
