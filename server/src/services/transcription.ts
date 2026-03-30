@@ -8,6 +8,7 @@ import { PROCESSING_V2 } from '../utils/featureFlags'
 import { toSRT, toVTT } from '../utils/srtParser'
 import type { SubtitleEntry } from '../utils/srtParser'
 import { getLogger } from '../lib/logger'
+import { normalizeLanguageCode } from '../utils/normalizeLanguage'
 
 const transcriptionLog = getLogger('worker')
 const openai = new OpenAI({
@@ -138,7 +139,7 @@ async function transcribeChunkVerbose(
       model: 'whisper-1',
       response_format: 'verbose_json',
       timestamp_granularities: ['segment'],
-      language: language || undefined,
+      language: normalizeLanguageCode(language),
       prompt: prompt?.trim().slice(0, 1500) || undefined,
     }) as { segments?: Array<{ start: number; end: number; text: string }>; language?: string }
     const segments = (transcription.segments || []).map((s) => ({
@@ -504,7 +505,7 @@ export async function transcribeVideo(
           file: audioFile,
           model: 'whisper-1',
           response_format: responseFormat,
-          language: language || undefined,
+          language: normalizeLanguageCode(language),
           prompt: prompt?.trim().slice(0, 1500) || undefined, // Whisper limit ~224 tokens; ~1500 chars safe
         })
         if (!isAlreadyAudio) {
@@ -521,7 +522,7 @@ export async function transcribeVideo(
         file: audioFile,
         model: 'whisper-1',
         response_format: responseFormat,
-        language: language || undefined,
+        language: normalizeLanguageCode(language),
         prompt: prompt?.trim().slice(0, 1500) || undefined,
       })
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- OpenAI SDK response_format union type

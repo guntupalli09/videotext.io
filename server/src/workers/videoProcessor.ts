@@ -70,7 +70,7 @@ import {
   updateJobDurationAndCosts,
   calcWhisperCostMicros,
 } from '../lib/jobAnalytics'
-import { withJobContext, getLogger } from '../lib/logger'
+import { withJobContext, withJobContextFull, getLogger } from '../lib/logger'
 import { initSentry, captureJobError } from '../lib/sentry'
 import { pushLogEntry } from '../lib/logRing'
 import { streamYoutubeAudioToFile, fetchYoutubeCaptions, validateCaptionQuality } from '../services/youtube'
@@ -524,14 +524,14 @@ async function processJob(job: import('bull').Job<JobData>) {
   const jobId = job.id
   const data = job.data as JobData
   const requestId = data.requestId
-  const log = withJobContext(jobId, requestId)
-  log.info({ msg: 'job_received', toolType: data.toolType })
+  const log = withJobContextFull(jobId, { requestId, userId: data.userId, plan: data.plan, toolType: data.toolType })
+  log.info({ msg: 'job_received' })
   const plan = (data.plan || 'free') as PlanType
   const maxRuntimeMs = getMaxJobRuntimeMinutes(plan) * 60 * 1000
   const processingStartMs = Date.now()
 
   const run = async (): Promise<any> => {
-    log.info({ msg: 'job_started', toolType: data.toolType })
+    log.info({ msg: 'job_started' })
     updateJobStarted(String(jobId)).catch(() => {})
     const { toolType, options } = data
 
@@ -749,15 +749,20 @@ async function processJob(job: import('bull').Job<JobData>) {
           if (wantDiarization) {
             await job.progress(22)
             const glossary = options?.glossary?.trim()
+            const diarStartMs = Date.now()
+            log.info({ msg: 'diarization_started', language: options?.diarizationLanguage || options?.language || null, numSpeakers: options?.numSpeakers || null })
             const diar = await transcribeWithDiarization(videoPath, options?.diarizationLanguage || options?.language, { isAlreadyAudio, prompt: glossary, numSpeakers: options?.numSpeakers })
             if (diar) {
               fullText = diar.text
               // Resolve raw speaker IDs (e.g. SPEAKER_00) to real names or "Speaker N" labels.
               segments = resolveSpeakerNames(diar.segments)
+              const speakerSet = new Set(segments.map((s) => s.speaker).filter(Boolean))
+              log.info({ msg: 'diarization_completed', durationMs: Date.now() - diarStartMs, speakerCount: speakerSet.size, segmentCount: segments.length })
               if (partialWriter && segments.length > 0) {
                 partialWriter.onPartial(segments.slice(0, 2000))
               }
             } else {
+              log.warn({ msg: 'diarization_fallback', durationMs: Date.now() - diarStartMs })
               const verbose = await transcribeVideoVerbose(
                 videoPath,
                 options?.language,
@@ -869,12 +874,12 @@ async function processJob(job: import('bull').Job<JobData>) {
 
           const fileReceivedToTranscriptionFinishedMs = Date.now() - processingStartMs
           log.info({
-            msg: 'processing_timing',
-            tool_type: 'video-to-transcript',
-            file_received_to_transcription_finished_ms: fileReceivedToTranscriptionFinishedMs,
-            file_size_bytes: data.fileSize ?? undefined,
-            extraction_skipped: isAlreadyAudio,
-            transcription_from_captions: !!data.precomputedTranscript,
+            msg: 'transcription_completed',
+            durationMs: fileReceivedToTranscriptionFinishedMs,
+            fileSizeBytes: data.fileSize ?? undefined,
+            extractionSkipped: isAlreadyAudio,
+            fromCaptions: !!data.precomputedTranscript,
+            segmentCount: segments.length,
           })
 
           const whisperLangForNames = options?.language || data.youtubeDefaultLanguage
@@ -922,13 +927,14 @@ async function processJob(job: import('bull').Job<JobData>) {
             } else {
               if (!STREAM_PROGRESS) await job.progress(55)
               const summaryStartMs = Date.now()
+              log.info({ msg: 'summary_started', includeSummary, includeChapters })
               const [summaryResult, chaptersResult] = await Promise.all([
                 includeSummary ? generateSummary(fullText, { includeActionItems: true }) : Promise.resolve(undefined),
                 includeChapters && segments.length > 0 ? generateChapters(segments) : Promise.resolve([]),
               ])
               summary = summaryResult
               chapters = chaptersResult && chaptersResult.length > 0 ? chaptersResult : undefined
-              log.info({ msg: 'perf_timing', jobId: String(jobId), summaryMs: Date.now() - summaryStartMs })
+              log.info({ msg: 'summary_completed', durationMs: Date.now() - summaryStartMs, hasSummary: !!summary, chapterCount: chapters?.length ?? 0 })
             }
           }
           if (DEFER_SUMMARY && !STREAM_PROGRESS) await job.progress(55)
@@ -938,6 +944,7 @@ async function processJob(job: import('bull').Job<JobData>) {
 
           // Export optional formats in parallel where possible
           const exportStartMs = Date.now()
+          log.info({ msg: 'export_started', formats: exportFormats })
           const exportPromises: Promise<void>[] = []
           if (exportFormats.includes('json')) {
             const jsonFilename = transcriptOriginalFilename(data.originalName, whisperLangForNames, '.json')
@@ -962,7 +969,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           if (exportPromises.length > 0) {
             await Promise.all(exportPromises)
           }
-          log.info({ msg: 'perf_timing', jobId: String(jobId), exportMs: Date.now() - exportStartMs })
+          log.info({ msg: 'export_completed', durationMs: Date.now() - exportStartMs, formats: exportFormats })
 
           await job.progress(75)
           if (STREAM_PROGRESS) await job.progress(80)
@@ -1103,13 +1110,12 @@ async function processJob(job: import('bull').Job<JobData>) {
               isAlreadyAudio
             )
             const fileReceivedToTranscriptionFinishedMs = Date.now() - processingStartMs
-            workerLog.info({ msg: '[PROCESSING_TIMING]',
-              job_id: String(jobId),
-              tool_type: 'video-to-subtitles',
-              file_received_to_transcription_finished_ms: fileReceivedToTranscriptionFinishedMs,
-              file_size_bytes: data.fileSize ?? undefined,
-              multi_language: true,
-              extraction_skipped: isAlreadyAudio,
+            log.info({
+              msg: 'transcription_completed',
+              durationMs: fileReceivedToTranscriptionFinishedMs,
+              fileSizeBytes: data.fileSize ?? undefined,
+              multiLanguage: true,
+              extractionSkipped: isAlreadyAudio,
             })
             
             // Save all language files
@@ -1204,11 +1210,10 @@ async function processJob(job: import('bull').Job<JobData>) {
             const verboseResult = await transcribeVideoVerbose(videoPath, options?.language, glossary, isAlreadyAudio, onPartialSub, undefined, jobId)
             const fileReceivedToTranscriptionFinishedMs = Date.now() - processingStartMs
             log.info({
-              msg: 'processing_timing',
-              tool_type: 'video-to-subtitles',
-              file_received_to_transcription_finished_ms: fileReceivedToTranscriptionFinishedMs,
-              file_size_bytes: data.fileSize ?? undefined,
-              extraction_skipped: isAlreadyAudio,
+              msg: 'transcription_completed',
+              durationMs: fileReceivedToTranscriptionFinishedMs,
+              fileSizeBytes: data.fileSize ?? undefined,
+              extractionSkipped: isAlreadyAudio,
             })
 
             // Sequential cue numbering (1-based); no duplicates or gaps. Partial on client is segment-only, not SRT.
@@ -1430,11 +1435,10 @@ async function processJob(job: import('bull').Job<JobData>) {
 
             const fileReceivedToTranscriptionFinishedMs = Date.now() - processingStartMs
             log.info({
-              msg: 'processing_timing',
-              tool_type: 'batch-video-to-subtitles',
-              file_received_to_transcription_finished_ms: fileReceivedToTranscriptionFinishedMs,
-              file_size_bytes: data.fileSize ?? undefined,
-              batch_id: batchId,
+              msg: 'transcription_completed',
+              durationMs: fileReceivedToTranscriptionFinishedMs,
+              fileSizeBytes: data.fileSize ?? undefined,
+              batchId,
             })
 
             await job.progress(80)
@@ -1783,7 +1787,7 @@ async function processJob(job: import('bull').Job<JobData>) {
     const result = await Promise.race([run(), dynamicRuntimePromise])
     clearInterval(interval)
     const totalJobMs = Date.now() - processingStartMs
-    log.info({ msg: 'perf_timing', jobId: String(jobId), totalJobMs })
+    log.info({ msg: 'job_completed', durationMs: totalJobMs })
     try {
       trackProcessingFinished({
         job_id: String(jobId),
@@ -1808,7 +1812,6 @@ async function processJob(job: import('bull').Job<JobData>) {
       // non-blocking
     }
     // Success: return value is persisted by Bull as job.returnvalue; job state becomes "completed"
-    log.info({ msg: 'job_completed' })
     pushLogEntry({ ts: new Date().toISOString(), level: 'info', service: 'worker', msg: `job completed: ${data.toolType} in ${(totalJobMs / 1000).toFixed(1)}s`, jobId: String(jobId) })
     return result
   } catch (err: any) {
