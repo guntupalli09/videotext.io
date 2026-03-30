@@ -777,6 +777,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         includeSummary: _isPaid ? includeSummary : false,
         includeChapters: _isPaid ? includeChapters : false,
         exportFormats: exportFormats.length > 0 ? exportFormats : (['txt'] as const),
+        language: diarizationLanguage.trim() || undefined,
         speakerDiarization: _isPaid ? speakerDiarization : false,
         numSpeakers: _isPaid && numSpeakers ? Number(numSpeakers) : undefined,
         diarizationLanguage: _isPaid ? diarizationLanguage.trim() || undefined : undefined,
@@ -1038,6 +1039,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           includeSummary: _isPaid ? includeSummary : false,
           includeChapters: _isPaid ? includeChapters : false,
           exportFormats: exportFormats.length > 0 ? exportFormats : ['txt'],
+          language: diarizationLanguage.trim() || undefined,
           speakerDiarization: _isPaid ? speakerDiarization : false,
           numSpeakers: _isPaid && numSpeakers ? Number(numSpeakers) : undefined,
           diarizationLanguage: _isPaid ? diarizationLanguage.trim() || undefined : undefined,
@@ -1820,6 +1822,19 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
                       </div>
                     )}
+                    {/* Audio language — always visible */}
+                    <div>
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        Audio language <span className="text-gray-400">(optional — improves accuracy)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={diarizationLanguage}
+                        onChange={(e) => setDiarizationLanguage(e.target.value)}
+                        placeholder="Auto-detect (e.g. en, es, fr)"
+                        className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
                     {/* Speaker labels — Pro only */}
                     {isPaidPlan ? (
                       <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -1842,29 +1857,17 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
                           Speaker identification adds extra processing time — roughly 1.5× longer than standard transcription (e.g. a 2-hour video takes ~10 min instead of ~4 min).
                         </p>
-                        <div className="flex gap-2 mt-1">
-                          <div className="flex-1">
-                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">No. of speakers <span className="text-gray-400">(optional)</span></label>
-                            <input
-                              type="number"
-                              min={1}
-                              max={50}
-                              value={numSpeakers}
-                              onChange={(e) => setNumSpeakers(e.target.value)}
-                              placeholder="Auto-detect"
-                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Language <span className="text-gray-400">(optional)</span></label>
-                            <input
-                              type="text"
-                              value={diarizationLanguage}
-                              onChange={(e) => setDiarizationLanguage(e.target.value)}
-                              placeholder="Auto-detect (e.g. en)"
-                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
+                        <div className="mt-1">
+                          <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">No. of speakers <span className="text-gray-400">(optional)</span></label>
+                          <input
+                            type="number"
+                            min={1}
+                            max={50}
+                            value={numSpeakers}
+                            onChange={(e) => setNumSpeakers(e.target.value)}
+                            placeholder="Auto-detect"
+                            className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
                         </div>
                       </>
                     )}
@@ -2073,6 +2076,19 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
                   </div>
                 )}
+                {/* Audio language — always visible, improves both transcription and speaker detection */}
+                <div>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    Audio language <span className="text-gray-400">(optional — improves accuracy)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={diarizationLanguage}
+                    onChange={(e) => setDiarizationLanguage(e.target.value)}
+                    placeholder="Auto-detect (e.g. en, es, fr)"
+                    className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
                 {/* Speaker labels — Pro only */}
                 {isPaidPlan ? (
                   <Checkbox
@@ -2095,29 +2111,17 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 -mt-1">
                       Speaker identification adds extra processing time — roughly 1.5× longer than standard transcription (e.g. a 2-hour video takes ~10 min instead of ~4 min).
                     </p>
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">No. of speakers <span className="text-gray-400">(optional)</span></label>
-                        <input
-                          type="number"
-                          min={1}
-                          max={50}
-                          value={numSpeakers}
-                          onChange={(e) => setNumSpeakers(e.target.value)}
-                          placeholder="Auto-detect"
-                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Language <span className="text-gray-400">(optional)</span></label>
-                        <input
-                          type="text"
-                          value={diarizationLanguage}
-                          onChange={(e) => setDiarizationLanguage(e.target.value)}
-                          placeholder="Auto-detect (e.g. en)"
-                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">No. of speakers <span className="text-gray-400">(optional)</span></label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={50}
+                        value={numSpeakers}
+                        onChange={(e) => setNumSpeakers(e.target.value)}
+                        placeholder="Auto-detect"
+                        className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
                     </div>
                   </>
                 )}
