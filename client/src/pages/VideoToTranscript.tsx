@@ -88,7 +88,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [speakerDiarization, setSpeakerDiarization] = useState(false)
   const [diarizationWasRequested, setDiarizationWasRequested] = useState(false)
   const [numSpeakers, setNumSpeakers] = useState('')
-  const [diarizationLanguage, setDiarizationLanguage] = useState('')
+  const [selectedLanguage, setSelectedLanguage] = useState('')
   const [glossary, setGlossary] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [transcriptEditMode, setTranscriptEditMode] = useState(false)
@@ -777,10 +777,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         includeSummary: _isPaid ? includeSummary : false,
         includeChapters: _isPaid ? includeChapters : false,
         exportFormats: exportFormats.length > 0 ? exportFormats : (['txt'] as const),
-        language: diarizationLanguage.trim() || undefined,
+        language: selectedLanguage ? languageToCode(selectedLanguage) || undefined : undefined,
         speakerDiarization: _isPaid ? speakerDiarization : false,
         numSpeakers: _isPaid && numSpeakers ? Number(numSpeakers) : undefined,
-        diarizationLanguage: _isPaid ? diarizationLanguage.trim() || undefined : undefined,
+        diarizationLanguage: _isPaid ? (selectedLanguage ? languageToCode(selectedLanguage) || undefined : undefined) : undefined,
         glossary: glossary.trim() || undefined,
       }
       setDiarizationWasRequested(speakerDiarization)
@@ -1039,10 +1039,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           includeSummary: _isPaid ? includeSummary : false,
           includeChapters: _isPaid ? includeChapters : false,
           exportFormats: exportFormats.length > 0 ? exportFormats : ['txt'],
-          language: diarizationLanguage.trim() || undefined,
+          language: selectedLanguage ? languageToCode(selectedLanguage) || undefined : undefined,
           speakerDiarization: _isPaid ? speakerDiarization : false,
           numSpeakers: _isPaid && numSpeakers ? Number(numSpeakers) : undefined,
-          diarizationLanguage: _isPaid ? diarizationLanguage.trim() || undefined : undefined,
+          diarizationLanguage: _isPaid ? (selectedLanguage ? languageToCode(selectedLanguage) || undefined : undefined) : undefined,
           glossary: glossary.trim() || undefined,
         },
         uploadAbortRef.current.signal
@@ -1275,7 +1275,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setExportFormats(['txt'])
     setSpeakerDiarization(false)
     setNumSpeakers('')
-    setDiarizationLanguage('')
+    setSelectedLanguage('')
     setGlossary('')
     setSearchQuery('')
     setTranscriptEditMode(false)
@@ -1827,13 +1827,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
                         Audio language <span className="text-gray-400">(optional — improves accuracy)</span>
                       </label>
-                      <input
-                        type="text"
-                        value={diarizationLanguage}
-                        onChange={(e) => setDiarizationLanguage(e.target.value)}
-                        placeholder="Auto-detect (e.g. en, es, fr)"
-                        className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
+                      <select
+                        value={selectedLanguage}
+                        onChange={(e) => setSelectedLanguage(e.target.value)}
+                        className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2"
+                      >
+                        <option value="">Auto-detect</option>
+                        {LANGUAGES.map((l) => (
+                          <option key={l.value} value={l.value}>{l.label}</option>
+                        ))}
+                      </select>
                     </div>
                     {/* Speaker labels — Pro only */}
                     {isPaidPlan ? (
@@ -2081,13 +2084,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
                     Audio language <span className="text-gray-400">(optional — improves accuracy)</span>
                   </label>
-                  <input
-                    type="text"
-                    value={diarizationLanguage}
-                    onChange={(e) => setDiarizationLanguage(e.target.value)}
-                    placeholder="Auto-detect (e.g. en, es, fr)"
-                    className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => setSelectedLanguage(e.target.value)}
+                    className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2"
+                  >
+                    <option value="">Auto-detect</option>
+                    {LANGUAGES.map((l) => (
+                      <option key={l.value} value={l.value}>{l.label}</option>
+                    ))}
+                  </select>
                 </div>
                 {/* Speaker labels — Pro only */}
                 {isPaidPlan ? (
