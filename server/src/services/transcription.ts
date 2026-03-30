@@ -115,16 +115,18 @@ async function ensureAudioForWhisper(
 /** Minimum bytes for a chunk file to be worth sending to Whisper (avoids ffmpeg "Invalid argument" on near-empty last segments). */
 const MIN_CHUNK_BYTES = 1024
 
+type ChunkResult = { segments: WhisperSegment[]; detectedLanguage?: string }
+
 /** Transcribe a single audio chunk with Whisper; return segments with time offset applied. Chunk is converted to WAV so API always gets a supported format. */
 async function transcribeChunkVerbose(
   chunkPath: string,
   timeOffsetSec: number,
   language?: string,
   prompt?: string
-): Promise<WhisperSegment[]> {
+): Promise<ChunkResult> {
   const chunkStat = await fs.promises.stat(chunkPath).catch(() => null)
   if (!chunkStat || chunkStat.size < MIN_CHUNK_BYTES) {
-    return []
+    return { segments: [] }
   }
   const tempDir = path.dirname(chunkPath)
   const wavPath = path.join(tempDir, `whisper_${Date.now()}_${path.basename(chunkPath, path.extname(chunkPath))}.wav`)
@@ -138,13 +140,13 @@ async function transcribeChunkVerbose(
       timestamp_granularities: ['segment'],
       language: language || undefined,
       prompt: prompt?.trim().slice(0, 1500) || undefined,
-    }) as { segments?: Array<{ start: number; end: number; text: string }> }
+    }) as { segments?: Array<{ start: number; end: number; text: string }>; language?: string }
     const segments = (transcription.segments || []).map((s) => ({
       start: Number(s.start) + timeOffsetSec,
       end: Number(s.end) + timeOffsetSec,
       text: typeof s.text === 'string' ? s.text.trim() : '',
     })).filter((s) => s.text)
-    return segments
+    return { segments, detectedLanguage: transcription.language }
   } finally {
     try {
       if (fs.existsSync(wavPath)) fs.unlinkSync(wavPath)
@@ -278,7 +280,11 @@ async function transcribeVideoParallel(
       metrics?.onFirstChunkTranscriptionStart?.()
       const chunk0Promise = transcribeChunkVerbose(extractionResult.firstChunkPath, 0, language, prompt)
       const restPathsPromise = extractionResult.remainingChunksPromise
-      const chunk0Segs = await chunk0Promise
+      const chunk0Result = await chunk0Promise
+      const chunk0Segs = chunk0Result.segments
+      // Lock remaining chunks to the language detected in chunk 0 to prevent per-chunk
+      // language switches (Whisper hallucinating Welsh/other languages on noisy audio).
+      const resolvedLanguage = language || chunk0Result.detectedLanguage
       if (onPartial && chunk0Segs.length > 0) {
         firstPartialMs = Date.now() - phaseStart
         onPartial(mergeContiguousSegments([chunk0Segs], 0))
@@ -308,7 +314,7 @@ async function transcribeVideoParallel(
         chunkPaths.slice(1).map((chunkPath, idx) => {
           const i = idx + 1
           return limit(() =>
-            transcribeChunkVerbose(chunkPath, offsets[i] || 0, language, prompt).then((segs) => {
+            transcribeChunkVerbose(chunkPath, offsets[i] || 0, resolvedLanguage, prompt).then(({ segments: segs }) => {
               resultsByIndex[i] = segs
               if (onPartial) {
                 let k = 0
@@ -371,7 +377,11 @@ async function transcribeVideoParallel(
     // TTFW: Prioritize chunk 0 — run it first and emit first partial immediately when it completes.
     // Then run remaining chunks with limit (MAX_WHISPER_CONCURRENCY respected).
     metrics?.onFirstChunkTranscriptionStart?.()
-    const chunk0Segs = await transcribeChunkVerbose(chunkPaths[0], offsets[0] || 0, language, prompt)
+    const chunk0Result = await transcribeChunkVerbose(chunkPaths[0], offsets[0] || 0, language, prompt)
+    const chunk0Segs = chunk0Result.segments
+    // Lock remaining chunks to the language detected in chunk 0 to prevent per-chunk
+    // language switches (Whisper hallucinating Welsh/other languages on noisy audio).
+    const resolvedLanguage = language || chunk0Result.detectedLanguage
     resultsByIndex[0] = chunk0Segs
     if (onPartial && chunk0Segs.length > 0) {
       lastContiguousK = 0
@@ -384,7 +394,7 @@ async function transcribeVideoParallel(
       chunkPaths.slice(1).map((chunkPath, idx) => {
         const i = idx + 1
         return limit(() =>
-          transcribeChunkVerbose(chunkPath, offsets[i] || 0, language, prompt).then((segs) => {
+          transcribeChunkVerbose(chunkPath, offsets[i] || 0, resolvedLanguage, prompt).then(({ segments: segs }) => {
             resultsByIndex[i] = segs
             if (onPartial) {
               let k = 0
