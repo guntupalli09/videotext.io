@@ -51,8 +51,10 @@ function normalizeLanguageCode(lang: unknown): string | undefined {
   if (!lang || typeof lang !== 'string') return undefined
   const trimmed = lang.trim().toLowerCase()
   if (!trimmed) return undefined
-  if (VALID_ISO_CODES.has(trimmed)) return trimmed   // already a valid ISO code
-  return LANG_NAME_TO_ISO[trimmed]                   // full name → ISO; unknown → undefined (auto-detect)
+  if (VALID_ISO_CODES.has(trimmed)) return trimmed                // exact ISO code ("en", "zh-tw")
+  const base = trimmed.split('-')[0]
+  if (base !== trimmed && VALID_ISO_CODES.has(base)) return base  // region variant ("en-US" → "en")
+  return LANG_NAME_TO_ISO[trimmed]                                // full name → ISO; unknown → undefined
 }
 
 // Configure multer for file uploads. On Railway/Fly/Render only /tmp is guaranteed; relative paths can stall Multer.
