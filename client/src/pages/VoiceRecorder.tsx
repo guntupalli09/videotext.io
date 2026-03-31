@@ -13,7 +13,6 @@ import {
   ShieldCheck,
   AlertCircle,
   Download,
-  Wifi,
   Sparkles,
   Lock,
   Users,
