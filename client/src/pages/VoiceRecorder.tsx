@@ -1355,32 +1355,6 @@ export default function VoiceRecorder() {
           )}
         </AnimatePresence>
 
-        {/* ── Coming Soon: Live Streaming Transcription ───────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
-          className="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30 border border-violet-100 dark:border-violet-900/30 rounded-2xl p-5 sm:p-6 flex items-start gap-4"
-        >
-          <div className="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center shrink-0 mt-0.5">
-            <Wifi className="w-5 h-5 text-violet-600 dark:text-violet-400" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2.5 flex-wrap mb-1.5">
-              <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-                Live Streaming Transcription
-              </p>
-              <span className="text-[10px] font-bold uppercase tracking-widest bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 px-2.5 py-0.5 rounded-full border border-violet-200 dark:border-violet-800">
-                Coming Soon
-              </span>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-              Words appear on screen as you speak — real-time transcription with near-zero latency.
-              Every word, instantly. Be the first to know when it launches.
-            </p>
-          </div>
-        </motion.div>
-
         {audioObjectUrl && phase === 'result' && (
           <PinnedAudioPlayerBar
             audioSrc={audioObjectUrl}
