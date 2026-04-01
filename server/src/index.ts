@@ -401,6 +401,7 @@ const server = app.listen(PORT, () => {
         } catch (e) {
           log.warn({ msg: 'Daily email error', email: u.email, error: (e as Error)?.message })
         }
+        await new Promise((r) => setTimeout(r, 200))
       }
       log.info({ msg: 'Daily quota emails sent', sent, total: freeUsers.length })
     } catch (e) {
