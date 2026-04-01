@@ -235,6 +235,9 @@ export function attachLiveTranscription(server: Server): void {
         }
 
         const speaker = getDominantSpeaker(alt.words)
+        const words = alt.words ?? []
+        const utteranceStart = words.length ? words[0].start : undefined
+        const utteranceEnd   = words.length ? words[words.length - 1].end : undefined
 
         ws.send(
           JSON.stringify({
@@ -242,7 +245,8 @@ export function attachLiveTranscription(server: Server): void {
             text: alt.transcript,
             is_final: result.is_final ?? false,
             speech_final: result.speech_final ?? false,
-            speaker,  // undefined when diarization hasn't assigned speakers yet
+            speaker,
+            ...(utteranceStart !== undefined && { start: utteranceStart, end: utteranceEnd }),
           })
         )
       })

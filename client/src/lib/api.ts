@@ -140,6 +140,8 @@ export interface UploadOptions {
   originalFileName?: string
   /** Original video file size in bytes when uploadMode is audio-only (for limits/logging). */
   originalFileSize?: number
+  /** JSON-serialised { fullText, segments } from Deepgram live session — skips Whisper on the server. */
+  precomputedTranscript?: string
 }
 
 /** Map backend subtitle validation errors to human-friendly messages. */
@@ -180,6 +182,7 @@ function buildUploadFormData(file: File, options: UploadOptions): FormData {
     formData.append('exportFormats', JSON.stringify(options.exportFormats))
   }
   if (options.webhookUrl) formData.append('webhookUrl', options.webhookUrl)
+  if (options.precomputedTranscript) formData.append('precomputedTranscript', options.precomputedTranscript)
   if (options.uploadMode === 'audio-only') {
     formData.append('uploadMode', 'audio-only')
     if (options.originalFileName) formData.append('originalFileName', options.originalFileName)

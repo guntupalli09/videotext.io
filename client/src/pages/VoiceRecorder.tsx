@@ -13,7 +13,6 @@ import {
   ShieldCheck,
   AlertCircle,
   Download,
-  Wifi,
   Sparkles,
   Lock,
   Users,
@@ -136,7 +135,9 @@ export default function VoiceRecorder() {
   }, [])
 
   const audioObjectUrl = useMemo(
-    () => (voiceAudioUrl ? getAbsoluteDownloadUrl(voiceAudioUrl) : null),
+    () => voiceAudioUrl
+      ? (voiceAudioUrl.startsWith('blob:') ? voiceAudioUrl : getAbsoluteDownloadUrl(voiceAudioUrl))
+      : null,
     [voiceAudioUrl]
   )
 
@@ -198,6 +199,7 @@ export default function VoiceRecorder() {
   const wsLiveRef = useRef<WebSocket | null>(null)
   const workletNodeRef = useRef<AudioWorkletNode | null>(null)
   const speakersSeenRef = useRef<Set<number>>(new Set())
+  const utterancesAccRef = useRef<Array<{ text: string; start?: number; end?: number }>>([]) // accumulates Deepgram finals
 
   // Keep phase ref in sync for RAF closure access
   useEffect(() => {
@@ -421,9 +423,13 @@ export default function VoiceRecorder() {
                   text?: string
                   is_final?: boolean
                   speaker?: number
+                  start?: number  // utterance start time (seconds)
+                  end?: number    // utterance end time (seconds)
                 }
                 if (data.type === 'transcript' && data.text) {
                   if (data.is_final) {
+                    // Accumulate for final result (Deepgram-only pipeline)
+                    utterancesAccRef.current.push({ text: data.text, start: data.start, end: data.end })
                     // Track distinct speakers; show [S1]/[S2] only once both appear
                     if (data.speaker != null) speakersSeenRef.current.add(data.speaker)
                     const multiSpeaker = speakersSeenRef.current.size > 1
@@ -513,12 +519,54 @@ export default function VoiceRecorder() {
 
   // ── Upload + Poll ──────────────────────────────────────────────────────────
   async function handleUpload(blob: Blob, mimeType: string) {
-    setPhase('uploading')
-    setUploadPct(0)
-
     const ext = mimeType.includes('ogg') ? 'ogg' : mimeType.includes('mp4') ? 'mp4' : 'webm'
     const file = new File([blob], `voice-recording.${ext}`, { type: mimeType })
     abortRef.current = new AbortController()
+
+    // ── Fast path: Deepgram finals available → instant result ─────────────
+    const utterances = utterancesAccRef.current
+    const deepgramText = utterances.map((u) => u.text.trim()).filter(Boolean).join('\n\n')
+
+    if (deepgramText) {
+      const segs = utterances
+        .filter((u): u is { text: string; start: number; end: number } => u.start !== undefined)
+        .map((u) => ({ start: u.start, end: u.end, text: u.text.trim() }))
+
+      // Local blob URL for immediate playback (no server round-trip needed)
+      setVoiceAudioUrl(URL.createObjectURL(blob))
+      setTranscript(deepgramText)
+      setVoiceSegments(segs.length ? segs : null)
+      setPhase('result')
+      toast.success('Transcript ready!')
+      trackEvent('processing_completed', {
+        tool: 'voice-recorder',
+        words: deepgramText.trim().split(/\s+/).filter(Boolean).length,
+      })
+
+      // Upload audio silently in background — only needed for share link + guest claiming
+      try {
+        const res = await uploadFileWithProgress(
+          file,
+          {
+            toolType: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT,
+            uploadMode: 'audio-only',
+            originalFileName: file.name,
+            exportFormats: ['txt'],
+            precomputedTranscript: JSON.stringify({ fullText: deepgramText, segments: segs }),
+          },
+          { signal: abortRef.current.signal }
+        )
+        setVoiceJobId(res.jobId)
+        setVoiceJobToken(res.jobToken ?? null)
+      } catch {
+        // Silent failure — transcript already shown, download still works client-side
+      }
+      return
+    }
+
+    // ── Fallback path: no Deepgram data → use Whisper ─────────────────────
+    setPhase('uploading')
+    setUploadPct(0)
 
     try {
       const res = await uploadFileWithProgress(
@@ -666,6 +714,7 @@ export default function VoiceRecorder() {
     setLiveFinal('')
     setLiveInterim('')
     speakersSeenRef.current = new Set()
+    utterancesAccRef.current = []
     setTranslatedText(null)
     setIsTranslating(false)
     setTranscriptView('original')
@@ -1304,32 +1353,6 @@ export default function VoiceRecorder() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* ── Coming Soon: Live Streaming Transcription ───────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
-          className="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30 border border-violet-100 dark:border-violet-900/30 rounded-2xl p-5 sm:p-6 flex items-start gap-4"
-        >
-          <div className="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center shrink-0 mt-0.5">
-            <Wifi className="w-5 h-5 text-violet-600 dark:text-violet-400" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2.5 flex-wrap mb-1.5">
-              <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-                Live Streaming Transcription
-              </p>
-              <span className="text-[10px] font-bold uppercase tracking-widest bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 px-2.5 py-0.5 rounded-full border border-violet-200 dark:border-violet-800">
-                Coming Soon
-              </span>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-              Words appear on screen as you speak — real-time transcription with near-zero latency.
-              Every word, instantly. Be the first to know when it launches.
-            </p>
-          </div>
-        </motion.div>
 
         {audioObjectUrl && phase === 'result' && (
           <PinnedAudioPlayerBar

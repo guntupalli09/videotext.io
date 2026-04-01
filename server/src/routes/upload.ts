@@ -388,6 +388,16 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       }
     }
 
+    // If the client already has a Deepgram live transcript, skip Whisper
+    let parsedPrecomputedTranscript: JobData['precomputedTranscript'] | undefined
+    if (typeof options.precomputedTranscript === 'string' && options.precomputedTranscript.trim()) {
+      try {
+        parsedPrecomputedTranscript = JSON.parse(options.precomputedTranscript)
+      } catch {
+        // Ignore — fall back to normal Whisper transcription
+      }
+    }
+
     const job = await addJobToQueue(plan, {
       toolType,
       filePath: file.path,
@@ -402,6 +412,7 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       webhookUrl: typeof webhookUrl === 'string' && webhookUrl.trim() ? webhookUrl.trim() : undefined,
       inputType: inputType === 'audio' ? 'audio' : undefined,
       requestId: (req as RequestWithId).requestId,
+      ...(parsedPrecomputedTranscript && { precomputedTranscript: parsedPrecomputedTranscript }),
     })
     uploadLog.info({ msg: 'upload_end', jobId: job.id, durationMs: Date.now() - uploadStartMs })
     try {
