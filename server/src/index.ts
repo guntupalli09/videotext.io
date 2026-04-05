@@ -345,6 +345,32 @@ const server = app.listen(PORT, () => {
         select: { id: true, email: true },
       })
 
+      const sendOne = async (email: string, html: string): Promise<boolean> => {
+        const maxAttempts = 4
+        let backoff = 2000
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+          const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
+            body: JSON.stringify({ from: fromEmail, to: [email], subject: 'Your 3 free daily transcriptions have arrived! 🎬', html }),
+            signal: AbortSignal.timeout(8000),
+          })
+          if (res.ok) return true
+          const remaining = res.headers.get('x-ratelimit-remaining')
+          const reset = res.headers.get('x-ratelimit-reset')
+          if (res.status === 429) {
+            log.warn({ msg: 'Daily email rate limited', email, attempt, remaining, reset, backoff })
+            await new Promise((r) => setTimeout(r, backoff))
+            backoff *= 2
+            continue
+          }
+          log.warn({ msg: 'Daily email send failed', email, status: res.status, attempt })
+          return false
+        }
+        log.warn({ msg: 'Daily email gave up after retries', email })
+        return false
+      }
+
       log.info({ msg: 'Daily quota email — sending', count: freeUsers.length })
       let sent = 0
       for (const u of freeUsers) {
@@ -385,23 +411,11 @@ const server = app.listen(PORT, () => {
   </table>
 </body>
 </html>`
-          const res = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
-            body: JSON.stringify({
-              from: fromEmail,
-              to: [u.email],
-              subject: 'Your 3 free daily transcriptions have arrived! 🎬',
-              html,
-            }),
-            signal: AbortSignal.timeout(8000),
-          })
-          if (res.ok) sent++
-          else log.warn({ msg: 'Daily email send failed', email: u.email, status: res.status })
+          if (await sendOne(u.email, html)) sent++
         } catch (e) {
           log.warn({ msg: 'Daily email error', email: u.email, error: (e as Error)?.message })
         }
-        await new Promise((r) => setTimeout(r, 200))
+        await new Promise((r) => setTimeout(r, 500))
       }
       log.info({ msg: 'Daily quota emails sent', sent, total: freeUsers.length })
     } catch (e) {
