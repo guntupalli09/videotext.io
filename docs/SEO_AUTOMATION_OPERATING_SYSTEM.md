@@ -26,10 +26,11 @@ What it does:
 - Produces new page/update proposals.
 
 ### 2) KPI monitor from GSC exports (new)
-- Script: `npm run seo:kpi`
+- Script chain:
+  - `npm run seo:fetch` (Search Console API fetch)
+  - `npm run seo:kpi` (KPI action generation)
 - Input (default):
-  - `docs/Performance-extracted/Queries.csv`
-  - `docs/Performance-extracted/Pages.csv`
+  - `scripts/seo/data/gsc-latest.json`
 - Output:
   - `scripts/seo/output/seo-kpi-actions.json`
   - `scripts/seo/output/seo-kpi-report.md`

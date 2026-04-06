@@ -4,21 +4,27 @@
   "scripts": {
     "build": "cd client && npm ci && npm run build && node -e \"require('fs').cpSync('dist','../dist',{recursive:true})\" && cd .. && npx tsx scripts/prerender.ts",
     "prerender": "npx tsx scripts/prerender.ts",
+
     "seo:weekly": "tsx scripts/seo/run-weekly.ts",
+    "seo:fetch": "tsx scripts/seo/fetch-gsc.ts",
     "seo:kpi": "tsx scripts/seo/kpi-monitor.ts",
+
     "seo:sync": "npx tsx scripts/seo/sync-routes-from-registry.ts",
     "seo:sitemap": "tsx scripts/seo/generate-sitemap.ts",
     "seo:validate-registry": "node scripts/seo/validate-registry.js",
     "seo:validate-sitemap": "tsx scripts/seo/validate-sitemap.ts",
     "seo:smoke": "tsx scripts/seo/smoke-seo-output.ts",
+
     "seo:apply-proposals": "tsx scripts/seo/apply-proposals-to-registry.ts",
     "seo:changelog": "tsx scripts/seo/write-changelog.ts",
     "seo:verify": "tsx scripts/seo/verify.ts",
     "seo:health": "tsx scripts/ops/seo-health-check.ts",
+
     "blog:generate": "npx tsx scripts/blog/generate-blog-post.ts"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "googleapis": "^144.0.0",
     "tsx": "^4.7.0"
   }
 }
