@@ -49,12 +49,14 @@ export interface SeoRegistryEntry {
   primaryInGroup?: boolean
   /** For video-to-transcript: open YouTube URL tab by default (improves conversion for YouTube SEO pages). */
   defaultInputMode?: 'youtube'
+  /** Optional YouTube video ID for a demo embed shown below the intro paragraph. */
+  youtubeEmbed?: string
 }
 
 const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   {
     path: '/video-to-text',
-    title: 'Video to Text Online – Fast & Accurate | VideoText',
+    title: 'Video to Text — Transcript Ready in 30 Seconds | VideoText',
     description:
       'Convert video to text online. Get a transcript in seconds, then view it in English, Hindi, Telugu, Spanish, Chinese, or Russian. Sign up for free to try.',
     h1: 'Video to Text Online',
@@ -96,7 +98,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/youtube-transcript',
-    title: 'YouTube Transcript – Get Transcript from Any YouTube Video | VideoText',
+    title: 'YouTube Transcript — Any Video\'s Text in 30 Seconds | VideoText',
     description:
       'Get a transcript from any YouTube video. Paste the URL, no download needed. Accurate AI transcription. Download as TXT, SRT, or translate to 50+ languages. Free tier.',
     h1: 'YouTube Transcript — Get Text from Any Video',
@@ -223,26 +225,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/subtitle-generator',
-    title: 'Subtitle Generator Online – Fast & Accurate | VideoText',
+    title: 'Subtitle Generator — Free AI Captions in Seconds | VideoText',
     description:
-      'Generate subtitles from any video online. Upload your file, get accurate SRT or VTT with timestamps in seconds. Free AI-powered subtitle generator. No software required.',
-    h1: 'Subtitle Generator Online — AI-Powered',
+      'Generate accurate SRT or VTT subtitles from any video. Upload MP4, MOV, or WebM — captions ready in 30 seconds. Whisper AI. No software. Free tier.',
+    h1: 'Subtitle Generator — AI-Powered, Ready in Seconds',
     intro:
-      'Generate subtitles from any video in seconds. Upload your video file and our AI transcribes the speech, aligns every word to a timestamp, and produces a ready-to-use SRT or VTT subtitle file. Upload to YouTube, embed in a web player, or burn directly into the video. Supports 90+ languages. Free tier.',
+      'Generate professional subtitles from any video in seconds — no software to install, no account required to start. Upload an MP4, MOV, WebM, MKV, or AVI file and our AI transcribes every word, aligns each to a precise timestamp, and outputs a ready-to-use SRT or VTT subtitle file. Powered by OpenAI Whisper large-v3 — the same model used by professional studios — running server-side so you get full model accuracy without installing Python or renting a GPU. SRT for YouTube, Vimeo, LinkedIn, and Facebook. VTT for HTML5 web players. Both generated from the same upload in the same job. After downloading, burn the subtitles permanently into the video for Instagram or TikTok using the Burn Subtitles tool. Translate to 50+ languages. Supports 90+ source languages. Free tier: 3 subtitle jobs per month, no credit card required.',
     breadcrumbLabel: 'Subtitle Generator',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/video-to-transcript', '/translate-subtitles', '/video-to-srt', '/burn-subtitles-into-video'],
+    relatedSlugs: ['/video-to-transcript', '/translate-subtitles', '/video-to-srt', '/burn-subtitles-into-video', '/caption-generator', '/automatic-subtitles'],
     indexable: true,
     intentKey: 'subtitle-generator',
     faq: [
-      { q: 'What is an online subtitle generator?', a: 'An online subtitle generator takes a video file, transcribes the speech using AI, and produces a timed subtitle file (SRT or VTT) you can download and use immediately. You upload the video, wait a few seconds, and download the subtitles — no software to install, no manual typing required.' },
-      { q: 'Which subtitle formats does the generator produce?', a: 'SRT and VTT, both generated from the same upload. SRT is the best choice for YouTube, Vimeo, LinkedIn, and most video platforms. VTT is the standard for HTML5 web players like Video.js and Plyr. You choose the format at the point of download — no re-upload needed to switch.' },
-      { q: 'How accurate is the AI subtitle generator?', a: 'VideoText uses OpenAI Whisper large-v3, which achieves around 3–8% Word Error Rate on clear English speech. For technical vocabulary, strong accents, or low-quality audio, accuracy is lower. Setting the spoken language before processing (rather than using auto-detect) consistently improves results.' },
-      { q: 'How do I add the generated subtitles to YouTube?', a: 'Download the SRT file from VideoText. In YouTube Studio, open your video → Subtitles → Add → Upload file. Select your SRT file. YouTube will sync it to the video automatically. The subtitles appear immediately without YouTube\'s auto-caption processing.' },
-      { q: 'Can I generate subtitles in multiple languages?', a: 'Yes. Use the Translate Subtitles tool to translate an existing SRT or VTT file into another language. You can also set the spoken language to non-English before processing — VideoText will transcribe the speech in that language and generate correctly timed subtitles.' },
-      { q: 'What video formats are supported?', a: 'MP4, MOV, WebM, MKV, AVI, and most other standard video formats. Audio files also work: MP3, WAV, M4A, AAC, OGG, FLAC. Upload directly — no conversion needed.' },
-      { q: 'Can I burn the subtitles into the video (hard subtitles)?', a: 'Yes. After generating subtitles, use the Burn Subtitles into Video tool. Upload your video and SRT file, and download a new video with the captions permanently embedded. Useful for social media videos where external subtitle tracks are not supported.' },
-      { q: 'Do I need to sign up to generate subtitles?', a: 'Yes. Sign up for free to try. You get 3 imports per month (resets on the 1st). Upgrade to a paid plan when you need more imports or multi-language subtitle output in one batch.' },
+      { q: 'What is an online subtitle generator?', a: 'An online subtitle generator takes a video file, transcribes the spoken audio using AI speech recognition, and aligns every word to a precise timestamp — producing a timed subtitle file in SRT or VTT format that you can download and use immediately. You upload the video, wait 30–90 seconds, and download the subtitle file. No software to install, no manual timing required — the AI handles every cue from start to finish.' },
+      { q: 'Which subtitle formats does the generator produce?', a: 'SRT and VTT, both generated from the same upload in the same processing job. SRT (SubRip Text) is the best choice for YouTube, Vimeo, LinkedIn, Facebook Video, and virtually every video platform — it is the most widely supported subtitle format. VTT (WebVTT) is the standard for HTML5 web video players like Video.js, Plyr, and JW Player. You choose which format to download after processing — no re-upload needed to get the other format.' },
+      { q: 'How accurate is the AI subtitle generator?', a: 'VideoText uses OpenAI Whisper large-v3, which achieves approximately 3–8% Word Error Rate on clear English speech — meaning 92–97% of words are transcribed correctly on clean audio. For technical vocabulary, strong accents, or low-quality source audio, accuracy is lower. Setting the spoken language manually before processing (rather than relying on auto-detect) consistently improves results by 5–10% on non-English content.' },
+      { q: 'How do I add the generated subtitles to YouTube?', a: 'Download the SRT file from VideoText. In YouTube Studio, open the video → click Subtitles in the left menu → click Add language → select your language → click Add under Subtitles → click Upload file. Select your downloaded SRT file. YouTube maps the timestamps automatically and your subtitle track appears immediately — with higher accuracy than YouTube\'s own auto-caption processing for most content.' },
+      { q: 'Can I generate subtitles in multiple languages?', a: 'Yes. Use the Translate Subtitles tool to translate an existing SRT or VTT file into another language — all 50+ languages are supported and every original timestamp is preserved exactly. You can also set the spoken language to non-English before processing: VideoText will transcribe the speech in that language and produce a correctly timed subtitle file. For creators distributing content internationally, generate one source-language SRT and translate to each target language as separate files.' },
+      { q: 'What video formats are supported?', a: 'MP4, MOV, WebM, MKV, AVI, and most other standard video containers. Audio-only files also work: MP3, WAV, M4A, AAC, OGG, FLAC. The tool accepts any file where spoken speech is present — upload directly without converting. For very large files, trimming to the segment you need reduces processing time and keeps uploads within limits.' },
+      { q: 'Can I burn the subtitles into the video (hard subtitles)?', a: 'Yes. After generating subtitles and downloading the SRT or VTT file, use the Burn Subtitles into Video tool. Upload your video and the subtitle file together, choose font size, vertical position, and background opacity, then download a new MP4 with captions permanently baked into the video frames. These hard subtitles play on every platform — Instagram, TikTok, Facebook — without requiring the viewer to enable a caption track.' },
+      { q: 'Do I need to sign up to generate subtitles?', a: 'Sign up for free to try. You get 3 subtitle jobs per month (resets on the 1st) — no credit card required, no watermark on SRT or VTT file downloads. If you need more than 3 jobs per month, upgrade to Basic ($19/month for 450 minutes), Pro ($49/month for 1,200 minutes), or Agency ($129/month for 3,000 minutes). All paid plans include multi-language subtitle output, batch processing, and priority processing for faster turnaround.' },
     ],
   },
   {
@@ -266,15 +268,15 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/meeting-transcript',
-    title: 'Meeting Transcript — Turn Meetings into Text | VideoText',
+    title: 'Meeting Transcript — Action Items + Speaker Labels | VideoText',
     description:
-      'Convert meeting recordings to text. Get a transcript in seconds, then view it in English, Hindi, Telugu, Spanish, Chinese, or Russian. Download or copy. Sign up for free to try.',
-    h1: 'Meeting Transcript — Turn Meetings into Text',
+      'Transcribe Zoom, Teams, or Google Meet recordings in minutes. Get speaker labels, action items, and full searchable text. No bot, no integration. Free tier.',
+    h1: 'Meeting Transcript — Speaker Labels, Action Items, Full Text',
     intro:
-      'Convert meeting recordings to text in seconds. Upload a video, get a transcript, then view it in English, Hindi, Telugu, Spanish, Chinese, or Russian. Use Speakers and Summary for who said what and key points.',
+      'Convert any meeting recording to a full transcript with speaker labels and auto-extracted action items. Upload your Zoom, Teams, or Google Meet MP4 — no bot to install, no calendar integration required. The AI transcribes every word, the Speakers branch shows who said what, and the Summary branch pulls out decisions and action items automatically. Translate to 6 languages for global teams. Free tier.',
     breadcrumbLabel: 'Meeting Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/youtube-to-transcript', '/video-to-subtitles'],
+    relatedSlugs: ['/zoom-recording-transcript', '/google-meet-transcript', '/teams-meeting-transcript', '/speaker-diarization', '/ai-meeting-notes'],
     indexable: true,
     intentKey: 'meeting-transcript',
     faq: [
@@ -282,6 +284,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does this work for Zoom, Teams, and Google Meet recordings?', a: 'Yes. Upload any meeting recording in MP4 or MOV format — Zoom cloud recordings, Teams downloads, and Google Meet exports all work. Use the Speakers branch after transcribing to see who said what, organized by speaker turn rather than continuous paragraphs.' },
       { q: 'Do timestamps stay accurate in meeting transcripts?', a: 'Yes. The transcript preserves paragraph structure aligned to the original audio timing. The Chapters branch breaks the meeting into navigable sections so you can jump to specific topics. Keywords indexes repeated terms and links each to where it first appears in the transcript.' },
       { q: 'Can I get the meeting transcript in another language?', a: 'Yes. Click Translate after transcribing and pick from English, Hindi, Telugu, Spanish, Chinese, or Russian. The translated view appears alongside the original. This is useful for global teams where meeting notes need to reach colleagues in different countries.' },
+      { q: 'How do I extract action items from a meeting transcript?', a: 'After transcribing, open the Summary branch. It automatically extracts decisions, action items, and key points from the full transcript. No manual scanning required — copy the summary output directly into your meeting notes or send it to attendees as a follow-up.' },
+      { q: 'Do I need to install a bot to transcribe meetings?', a: 'No. VideoText works from the recording file, not from a live call. Download your meeting as MP4 from Zoom, Teams, or Google Meet, upload the file here, and get a transcript. No calendar integration, no bot joining the call, no permissions required on the meeting platform.' },
+      { q: 'How long does a meeting recording take to transcribe?', a: 'Most meeting recordings transcribe in 15–25% of their total runtime. A 60-minute meeting typically finishes in 8–15 minutes. You see the transcript building in real time as segments complete — you can start reviewing while the rest is still processing.' },
+      { q: 'What file formats are supported for meeting recordings?', a: 'MP4 and MOV are the most common meeting recording formats. Zoom, Teams, and Google Meet all export MP4 by default. WebM and MKV are also supported. Audio-only formats (MP3, M4A, WAV) work too — useful if you recorded the meeting on a separate audio device or exported audio-only from a conferencing tool.' },
     ],
   },
   {
@@ -305,21 +311,24 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/video-summary-generator',
-    title: 'Video Summary Generator — Decisions, Actions, Key Points | VideoText',
+    title: 'Video Summary Generator — Action Items + Key Points | VideoText',
     description:
       'Extract structured summaries from video: decisions, action items, key points. Transcribe, use Summary branch, and translate transcript to 6 languages. Free tier.',
-    h1: 'Video Summary Generator — Decisions, Actions, Key Points',
+    h1: 'Video Summary Generator — Action Items, Decisions, Key Points',
     intro:
-      'Extract structured summaries from video: decisions, action items, key points. Upload, transcribe, open the Summary branch, and translate the transcript to 6 languages if needed.',
+      'Extract a structured summary from any video in seconds. Upload your video, get a full transcript, then open the Summary branch to pull out decisions, action items, and key points automatically. No manual note-taking — the AI reads the full transcript and organizes the output. Use the Speakers branch to see who raised each point. Translate the summary to English, Hindi, Telugu, Spanish, Chinese, or Russian in one click. Free tier.',
     breadcrumbLabel: 'Video Summary Generator',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/video-to-subtitles'],
+    relatedSlugs: ['/video-chapters-generator', '/keyword-indexed-transcript', '/speaker-diarization', '/meeting-transcript', '/ai-meeting-notes'],
     indexable: true,
     intentKey: 'video-summary-generator',
     faq: [
-      { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st).' },
-      { q: 'What does the summary include?', a: 'The Summary branch extracts decisions, action items, and key points from the transcript using simple pattern matching.' },
-      { q: 'Can I export the summary?', a: 'Yes. Use the Exports branch to download JSON, CSV, Markdown, or Notion-style export (paid for full download).' },
+      { q: 'What does the video summary generator produce?', a: 'The Summary branch extracts three categories from your transcript: decisions made during the video, action items assigned to people or teams, and key points — the main ideas discussed. Each category is extracted and listed separately so you can scan without reading the full transcript.' },
+      { q: 'How accurate is the automatic video summary?', a: 'Summary accuracy depends on transcript accuracy. For clearly spoken content — meetings, lectures, interviews, podcasts — the summary captures the major points reliably. For content with heavy background noise, very fast speech, or many speakers talking simultaneously, transcript accuracy drops and the summary reflects those gaps. Clean audio produces clean summaries.' },
+      { q: 'Can I export the summary?', a: 'Yes. The Exports branch lets you download the full structured output as JSON, CSV, Markdown, or Notion-style formatted text. The summary section is included in all export formats. Plain text copy is always available — click the copy icon on the Summary tab to grab everything to clipboard immediately.' },
+      { q: 'Does it work for meeting recordings?', a: 'Yes. Meeting recordings (Zoom, Teams, Google Meet, Webex) are a primary use case. Upload the MP4, get the full transcript, and use Summary to extract action items immediately after a call. Use the Speakers branch alongside Summary to see which speaker committed to each action item.' },
+      { q: 'Can I translate the video summary to another language?', a: 'Yes. Click Translate after transcribing and choose from English, Hindi, Telugu, Spanish, Chinese, or Russian. The full transcript — including the summary section — is translated. Useful for global teams where meeting summaries need to reach colleagues who speak different languages.' },
+      { q: 'Is the video summary generator free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st) — sign up for free to try. The Summary branch is available on all plans. Paid plans start at $19/month for 450 minutes and unlock additional export formats and multi-language output.' },
     ],
   },
   {
@@ -571,7 +580,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/video-compressor',
-    title: 'Video Compressor — Reduce File Size Online | VideoText',
+    title: 'Video Compressor — Shrink Any Video for Upload or Sharing | VideoText',
     description:
       'Compress video online: light, medium, or heavy. Reduce file size for sharing and uploads. Free. Sign up for free to try.',
     h1: 'Video Compressor — Reduce File Size Online',
@@ -579,7 +588,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Compress video online: light, medium, or heavy. Reduce file size for sharing and uploads. Free. Sign up for free to try.',
     breadcrumbLabel: 'Video Compressor',
     toolKey: 'compress-video',
-    relatedSlugs: ['/video-to-subtitles'],
+    relatedSlugs: ['/reduce-video-size', '/burn-subtitles-into-video', '/video-with-subtitles', '/batch-video-processing'],
     indexable: true,
     intentKey: 'video-compressor',
     faq: [
@@ -727,21 +736,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/free-transcription',
-    title: 'Free Transcription Online – Sign Up to Try | VideoText',
+    title: 'Free Transcription — No Credit Card, 3 Imports/Month | VideoText',
     description:
-      'Free video transcription. Sign up for free to try. Upload video and get a text transcript in seconds. 3 imports/month free tier (resets on the 1st). AI-powered. MP4, MOV, AVI, WebM supported.',
-    h1: 'Free Transcription Online',
+      'Free AI transcription for video and audio. Upload MP4, MP3, MOV, or WebM — transcript ready in seconds. No watermark on text exports. 3 imports free per month.',
+    h1: 'Free Transcription Online — No Credit Card Required',
     intro:
-      'Get a free transcript from any video — sign up for free. Upload an MP4, MOV, AVI, or WebM, and our AI transcribes the speech into text in seconds. The free tier gives you 3 imports per month (resets on the 1st) with no credit card required. Sign up when you need more minutes or multi-language output.',
+      'Transcribe any video or audio file for free — no credit card, no watermark on the text output. Upload an MP4, MOV, AVI, WebM, MKV, MP3, WAV, or M4A, and our AI transcribes the speech into clean, readable text in seconds. The free tier gives you 3 imports per month that reset on the 1st of each month. No hidden catches: the transcript text is fully copyable and downloadable as TXT at no cost. Upgrade to a paid plan when you need more volume, multi-language output, or export formats like JSON, CSV, or Notion.',
     breadcrumbLabel: 'Free Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/transcribe-video', '/video-to-text', '/ai-transcription'],
+    relatedSlugs: ['/transcribe-video', '/video-to-text', '/ai-transcription', '/youtube-to-transcript', '/mp3-to-text', '/podcast-transcript'],
     indexable: true,
     intentKey: 'free-transcription',
     faq: [
-      { q: 'Is transcription really free?', a: 'Yes. You get 3 imports per month (resets on the 1st) after signing up for free. No credit card needed to try.' },
-      { q: 'What formats are supported for free?', a: 'MP4, MOV, AVI, WebM, and MKV. All formats are available on the free tier.' },
-      { q: 'What is the free tier limit?', a: '3 imports per month (resets on the 1st), single language output. Sign up for a plan to unlock more minutes and multi-language support.' },
+      { q: 'Is the transcription really free?', a: 'Yes. You get 3 imports per month after signing up for free — no credit card required. The free tier resets on the 1st of each month. There is no hidden trial period, no automatic upgrade, and no watermark on the transcript text. You can copy and download the full text output at no cost.' },
+      { q: 'What video and audio formats are supported for free?', a: 'All formats are available on the free tier: MP4, MOV, AVI, WebM, MKV for video; MP3, WAV, M4A, AAC, OGG, FLAC for audio. You do not need to convert your file before uploading. The tool extracts the audio track from video files automatically.' },
+      { q: 'What is the free tier limit?', a: '3 imports per month (resets on the 1st), up to 30 minutes per video, single language output. If you need more than 3 imports per month, longer videos, or multi-language transcription, upgrade to Basic ($19/month for 450 minutes) or Pro ($49/month for 1,200 minutes).' },
+      { q: 'Is there a watermark on free transcriptions?', a: 'No. The transcript text output has no watermark on any plan, including free. You get the full, clean transcript to copy or download. Watermarks only apply to subtitle files burned into video (the Burn Subtitles tool) on the free tier — text transcripts are always watermark-free.' },
+      { q: 'Do I need to install anything to get a free transcription?', a: 'No. VideoText runs entirely in your browser — nothing to download, no Python, no GPU required. Sign up for free, upload your file, and get the transcript. Works on Windows, Mac, Linux, and mobile browsers.' },
+      { q: 'How does VideoText\'s free tier compare to Otter.ai\'s free tier?', a: 'Otter.ai\'s free tier gives you 300 minutes of transcription per month but is limited to live meeting recording and audio files. VideoText\'s free tier handles video files directly (MP4, MOV, WebM), supports YouTube URL transcription, and generates SRT subtitle files — capabilities not available on Otter\'s free plan. VideoText also deletes your files after processing; Otter stores your recordings.' },
+      { q: 'Can I transcribe YouTube videos for free?', a: 'Yes. Paste any public YouTube URL on the free tier and get a full transcript — no download required. The YouTube URL mode uses one of your 3 monthly free imports. This works for regular YouTube videos, Shorts, and most public content.' },
+      { q: 'What happens when I use up my 3 free imports?', a: 'Once you use your 3 free imports, you cannot process new files until the 1st of the next month — at which point your import count resets to 3 automatically. To get unlimited processing before then, upgrade to a paid plan. Paid plans start at $19/month for 450 minutes and there is no lock-in — cancel anytime.' },
       { q: 'Do I need to install anything?', a: 'No. The tool runs in your browser. Upload your file and get a transcript — no installation required.' },
     ],
   },
@@ -807,7 +821,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/podcast-transcript',
-    title: 'Podcast Transcript – Transcribe Episodes Online | VideoText',
+    title: 'Podcast Transcript — Show Notes + SRT in 5 Minutes | VideoText',
     description:
       'Get a transcript for any podcast episode. Upload your episode as an audio or video file and get accurate text in seconds. Free, AI-powered. Speaker labels, show notes, SRT export.',
     h1: 'Podcast Transcript — Transcribe Episodes Online',
@@ -830,7 +844,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/zoom-recording-transcript',
-    title: 'Zoom Recording Transcript – Convert Calls to Text | VideoText',
+    title: 'Zoom Transcript — Speaker Labels + Action Items | VideoText',
     description:
       'Transcribe Zoom recordings to text. Upload your Zoom MP4 and get a transcript with speaker labels, action items, and chapter navigation. Free. No Zoom integration required.',
     h1: 'Zoom Recording Transcript — Convert Calls to Text',
@@ -1215,18 +1229,23 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/video-caption-generator',
-    title: 'Video Caption Generator – Add Captions to Video | VideoText',
-    description: 'Generate captions for video. Upload any video, get SRT/VTT with accurate timestamps. Burn into video or export. Free tier.',
-    h1: 'Video Caption Generator',
-    intro: 'Generate captions for any video. Upload your file and get SRT or VTT with accurate timestamps. Download for YouTube, Vimeo, or burn into the video. Free tier.',
+    title: 'Video Caption Generator — SRT Captions in 30 Seconds | VideoText',
+    description: 'Generate accurate captions for any video. Upload MP4, MOV, or WebM — get SRT or VTT with precise timestamps in seconds. Burn into video or export. Free tier.',
+    h1: 'Video Caption Generator — Captions Ready in 30 Seconds',
+    intro: 'Generate accurate captions for any video in seconds — no software, no manual timing. Upload your MP4, MOV, WebM, MKV, or AVI file and our AI transcribes every spoken word, aligns each to a precise timestamp, and outputs a ready-to-use SRT or VTT caption file. Upload the SRT directly to YouTube Studio, export for Vimeo, or burn the captions permanently into the video for Instagram, TikTok, and Facebook. Supports 90+ spoken languages. Powered by Whisper large-v3. Free tier.',
     breadcrumbLabel: 'Video Caption Generator',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/caption-generator', '/subtitle-generator', '/burn-subtitles'],
+    relatedSlugs: ['/caption-generator', '/subtitle-generator', '/burn-subtitles-into-video', '/automatic-subtitles', '/closed-caption-generator', '/video-to-srt'],
     indexable: true,
     intentKey: 'video-caption-generator',
     faq: [
-      { q: 'How do I add captions to my video?', a: 'Upload your video, choose SRT or VTT, and click Generate. Download the caption file or burn it into the video with our Burn tool.' },
-      { q: 'Is the caption generator free?', a: 'Yes. Free tier includes 3 imports per month.' },
+      { q: 'How do I add captions to my video?', a: 'Upload your video file, choose SRT or VTT format, and click Generate. The AI transcribes the speech and aligns every word to a timestamp. Download the caption file and upload it to YouTube Studio, Vimeo, or any platform that supports SRT. To burn captions permanently into the video frames, use the Burn Subtitles tool after downloading your SRT.' },
+      { q: 'Is the caption generator free?', a: 'Yes. Free tier includes 3 caption jobs per month (resets on the 1st) — sign up for free, no credit card required. The SRT or VTT file you download has no watermark. Paid plans start at $19/month for 450 minutes and unlock multi-language captions, batch processing, and priority queue.' },
+      { q: 'What video formats are supported?', a: 'MP4, MOV, WebM, MKV, AVI, and most other standard video containers. Audio-only files also work: MP3, WAV, M4A, AAC, OGG, FLAC. Upload directly without converting — the tool extracts the audio track automatically.' },
+      { q: 'Can I get captions in multiple languages?', a: 'Yes. Set the spoken language to non-English before processing to generate correctly timed captions in that language. Use the Translate Subtitles tool to translate an existing caption file into 50+ additional languages — all original timestamps are preserved exactly.' },
+      { q: 'How accurate are AI-generated captions?', a: 'VideoText uses OpenAI Whisper large-v3, which achieves approximately 3–8% Word Error Rate on clear audio — meaning 92–97% of words are correct for clean recordings. Setting the spoken language manually (rather than auto-detect) improves accuracy by 5–10% on non-English content. Heavy background noise, multiple simultaneous speakers, or very fast speech will lower accuracy.' },
+      { q: 'Can I burn the captions permanently into the video?', a: 'Yes. After generating captions and downloading the SRT file, use the Burn Subtitles into Video tool. Upload your original video and the SRT file together, choose font size and position, and download a new MP4 with captions baked permanently into the video frames. These hard captions display on every platform — including Instagram, TikTok, and Facebook — without the viewer needing to enable a caption track.' },
+      { q: 'How do I upload captions to YouTube?', a: 'Download the SRT from VideoText. In YouTube Studio, go to your video → Subtitles → Add language → select your language → click Add under Subtitles → Upload file. Select the SRT. YouTube maps every timestamp automatically and the captions go live immediately — with significantly higher accuracy than YouTube\'s own auto-caption processing for most content types.' },
     ],
   },
   {
@@ -2001,7 +2020,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/whisper-online',
-    title: 'Whisper AI Online – Use OpenAI Whisper in Your Browser | VideoText',
+    title: 'Whisper AI Online — Run large-v3 Free, No Python | VideoText',
     description: 'Use OpenAI Whisper online — no setup, no Python, no GPU. Upload a video or audio file and get a Whisper-powered transcript instantly. Free tier. SRT, TXT export.',
     h1: 'Whisper AI Online — Use Whisper in Your Browser',
     intro: 'Use OpenAI\'s Whisper speech recognition model online — no Python, no local GPU, no command line. Upload any video or audio file and get a Whisper-powered transcript in seconds. VideoText runs Whisper server-side so you get the full model quality in your browser. Export TXT, SRT, VTT, or JSON. Free tier.',
@@ -2017,6 +2036,8 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What file formats does Whisper support?', a: 'Any standard video or audio format: MP4, MOV, WebM, MKV, AVI, MP3, WAV, M4A, AAC, OGG, FLAC. Upload the file directly — no conversion needed.' },
       { q: 'What languages does Whisper support?', a: 'Whisper supports 90+ languages. Best accuracy for English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Chinese, Japanese, and Korean. See the full language list on the OpenAI Whisper paper.' },
       { q: 'Is using Whisper online free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). No GPU or compute costs — VideoText absorbs the compute. Sign up for free to try.' },
+      { q: 'How does Whisper large-v3 compare to Whisper medium and small?', a: 'Large-v3 is the most accurate Whisper model and the one VideoText runs. Compared to medium, large-v3 reduces Word Error Rate by roughly 1–2 percentage points on clean English and 3–5 points on non-English languages. Compared to small, the gap is larger — about 3–5% WER on English, 5–10% on multilingual content. If accuracy matters (technical vocabulary, accented speech, non-English audio), large-v3 is worth the extra compute.' },
+      { q: 'Is Whisper more accurate than Google\'s Speech-to-Text or Amazon Transcribe?', a: 'On most academic benchmarks, Whisper large-v3 matches or beats Google Speech-to-Text v2 and Amazon Transcribe for standard English content. Where Whisper pulls ahead significantly: non-English languages, accented speech, and technical or domain-specific vocabulary. Where commercial APIs sometimes win: phone audio (8kHz narrowband), real-time streaming, and speaker diarization with custom vocabulary. For asynchronous video and podcast transcription, Whisper large-v3 is the best accuracy-per-dollar option available.' },
     ],
   },
   {
@@ -2059,7 +2080,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   // ── Cluster D: Audio Format Pages ────────────────────────────────────────────
   {
     path: '/mp3-to-text',
-    title: 'MP3 to Text – Convert MP3 Audio to Text Online | VideoText',
+    title: 'MP3 to Text — Transcribe Any MP3 in Under 5 Minutes | VideoText',
     description: 'Convert MP3 audio files to text online. Upload your MP3 and get an accurate AI transcript in seconds. Free. Export TXT, SRT, or VTT. No signup for the free tier.',
     h1: 'MP3 to Text — Convert MP3 Audio to Text Online',
     intro: 'Convert MP3 audio files to text in seconds. Upload your MP3 — podcast episode, interview, lecture, voice memo, or music with lyrics — and get a full AI-powered transcript. Export as plain text, SRT subtitle file, or VTT. Powered by Whisper. Free tier, no credit card.',
@@ -2075,6 +2096,8 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I get SRT subtitles from an MP3 file?', a: 'Yes. VideoText can generate a timed SRT file from any MP3. This is useful for creating captions for a video that uses audio-only source material, or for syncing text to audio in a media player.' },
       { q: 'What languages does MP3 transcription support?', a: 'Whisper supports 90+ languages. Upload an MP3 in any language and set the source language before processing for best accuracy. Transcription works for English, Spanish, French, German, Hindi, Arabic, Chinese, Japanese, Korean, and many others.' },
       { q: 'Is MP3 to text conversion free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'How long does it take to transcribe an hour-long MP3?', a: 'A 60-minute MP3 typically processes in 8–14 minutes depending on audio quality and current queue load. You see the transcript building in real time as segments complete — you can start reading while the rest is still processing. Paid plans include priority queue access which can cut wait times significantly during peak hours.' },
+      { q: 'Can I transcribe an MP3 with multiple speakers and get speaker labels?', a: 'Yes. After the transcript is ready, open the Speakers branch to see the transcript organized by speaker turn (Speaker 1, Speaker 2, etc.). This works well for interviews, panels, and podcast episodes with two or more hosts. Speaker separation accuracy is best when each speaker has a clearly distinct voice and minimal overlap.' },
     ],
   },
   {
@@ -3960,6 +3983,77 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I get a formatted transcript in Word directly from my video?', a: 'Yes. Upload your video to VideoText\'s Transcript tool. After processing, you can copy the full transcript text or download as TXT and paste into Word. The AI formats the output as clean paragraphs with speaker labels.' },
       { q: 'How do I remove timestamps from an SRT file?', a: 'Use VideoText\'s free SRT to Text converter — it strips all block numbers and timestamps and outputs only the dialogue text, one line per subtitle block.' },
       { q: 'Can I convert SRT to a DOCX file directly?', a: 'Not directly — VideoText exports SRT text as a .txt file. Open it in Word and use Save As → .docx to convert. Google Docs also imports .txt files directly if you drag them into Drive.' },
+    ],
+  },
+  // ── NEW: High-volume missing pages ────────────────────────────────────────────
+  {
+    path: '/ai-meeting-notes',
+    title: 'AI Meeting Notes — Action Items from Any Recording | VideoText',
+    description:
+      'Generate AI meeting notes from any Zoom, Teams, or Google Meet recording. Upload MP4, get speaker-labeled transcript + action items in minutes. No bot. Free tier.',
+    h1: 'AI Meeting Notes — Transcript, Action Items, and Summary from Any Recording',
+    intro:
+      'Generate complete AI meeting notes from any Zoom, Teams, or Google Meet recording — no bot to install, no calendar integration required. Upload your meeting MP4, and the AI produces a full transcript, speaker-labeled turn-by-turn breakdown, auto-extracted action items, and a structured summary. Everything a post-meeting follow-up needs, generated in minutes. Translate to 6 languages for global teams. Files deleted after processing — your meeting content stays private. Free tier.',
+    breadcrumbLabel: 'AI Meeting Notes',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/meeting-transcript', '/zoom-recording-transcript', '/google-meet-transcript', '/teams-meeting-transcript', '/speaker-diarization', '/fireflies-alternative'],
+    indexable: true,
+    intentKey: 'ai-meeting-notes',
+    faq: [
+      { q: 'What are AI meeting notes?', a: 'AI meeting notes are a structured summary automatically generated from a meeting recording transcript. They typically include: the full transcript, speaker-labeled turns (who said what), auto-extracted action items and decisions, and a summary of key topics. VideoText generates all of these from a recording upload — no human note-taking required.' },
+      { q: 'How do I generate AI meeting notes from a Zoom call?', a: 'Download your Zoom meeting as an MP4 — from the Zoom cloud recordings page or your local Zoom recordings folder. Upload the MP4 to VideoText. After transcription completes, open the Summary branch for action items and decisions, the Speakers branch for who-said-what, and the Chapters branch for topic navigation. The whole process takes under 10 minutes for a 60-minute call.' },
+      { q: 'Do I need to install a bot to get AI meeting notes?', a: 'No. VideoText processes the recording file, not the live meeting. You do not need to give VideoText access to your calendar, install a browser extension, or invite a bot to the call. Download the recording after the meeting ends and upload the file directly.' },
+      { q: 'Can AI meeting notes extract action items automatically?', a: 'Yes. The Summary branch automatically identifies and lists action items, decisions made, and key points from the transcript. The extraction uses pattern matching against the full transcript text — it looks for commitment language, assignments, and conclusions. For most meetings, this captures 80–90% of the action items without manual review.' },
+      { q: 'Do I get speaker labels in the meeting notes?', a: 'Yes. The Speakers branch organizes the transcript by speaker turn, labeled Speaker 1, Speaker 2, etc. For most meetings with two to six participants, the AI correctly separates speakers. For the clearest speaker separation, meetings recorded with individual microphone tracks (common in Zoom\'s local recording mode) produce better diarization than single-mix recordings.' },
+      { q: 'Does this work for Teams and Google Meet, not just Zoom?', a: 'Yes. Teams, Google Meet, Cisco Webex, and any conferencing tool that exports MP4 recordings are fully supported. The transcript quality is identical across platforms — it depends on audio quality of the recording, not the conferencing tool. Download the recording from your platform and upload the MP4 directly.' },
+      { q: 'Are my meeting recordings kept private?', a: 'Yes. VideoText deletes all uploaded files immediately after processing. Your meeting content — conversations, names, decisions — is never stored on our servers after the transcript is generated. We do not use your content for AI training. For sensitive meetings (legal, medical, financial), this deletion policy is a significant advantage over tools that retain your recordings.' },
+      { q: 'Is generating AI meeting notes free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st) — sign up for free, no credit card required. A typical 30–60 minute meeting fits within this limit. Paid plans start at $19/month for 450 minutes, suitable for teams that process multiple meetings per week.' },
+    ],
+  },
+  {
+    path: '/transcription-software',
+    title: 'Transcription Software — Whisper AI, Free to Start | VideoText',
+    description:
+      'AI transcription software for video and audio. No install — runs in your browser. Upload MP4, MP3, MOV, get a transcript in minutes. Whisper large-v3. Free tier.',
+    h1: 'Transcription Software — AI-Powered, Browser-Based',
+    intro:
+      'VideoText is AI transcription software that runs entirely in your browser — no download, no installation, no GPU required. Upload any video (MP4, MOV, AVI, WebM, MKV) or audio file (MP3, WAV, M4A) and get a full transcript powered by OpenAI Whisper large-v3 in minutes. Generates speaker labels, chapter sections, auto-summaries, and subtitle files from the same upload. Export as TXT, SRT, VTT, JSON, CSV, or Markdown. Used by YouTubers, podcasters, journalists, researchers, and content agencies. Free tier includes 3 transcriptions per month — no credit card required.',
+    breadcrumbLabel: 'Transcription Software',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/video-to-transcript', '/ai-transcription', '/whisper-online', '/free-transcription', '/podcast-transcript', '/interview-transcription'],
+    indexable: true,
+    intentKey: 'transcription-software',
+    faq: [
+      { q: 'What is transcription software?', a: 'Transcription software converts spoken audio into written text. Modern AI transcription software (like VideoText) processes video and audio files automatically — you upload a file, the AI transcribes the speech, and you download the text. No human transcriptionist, no manual typing. Used by journalists, podcasters, researchers, YouTubers, and businesses to create searchable records of meetings, interviews, lectures, and content.' },
+      { q: 'Do I need to install transcription software on my computer?', a: 'Not with VideoText. It runs entirely in your browser — Chrome, Safari, Firefox, and Edge on any OS. No download, no Python, no GPU. For users who prefer desktop software, options like MacWhisper (Mac only) and Whisper Desktop (Windows) exist, but they require local setup and a capable GPU for full model accuracy. VideoText provides the same Whisper large-v3 accuracy without any of that.' },
+      { q: 'What\'s the most accurate transcription software in 2026?', a: 'Tools powered by Whisper large-v3 (VideoText, MacWhisper, Whisper Desktop) consistently achieve the highest accuracy on independent benchmarks — approximately 3–8% Word Error Rate on clear audio. Commercial APIs like Deepgram Nova-2 and AssemblyAI Universal-2 are competitive for English but fall behind Whisper on non-English languages and domain-specific vocabulary. Rev\'s human transcription reaches 99%+ accuracy but costs $1.50/minute and is not automated.' },
+      { q: 'How does browser-based transcription software compare to desktop apps?', a: 'Browser-based transcription (VideoText) runs Whisper large-v3 on cloud GPUs — you get full model accuracy without GPU hardware. Desktop apps (MacWhisper, Whisper Desktop) run Whisper locally on your machine, which is private but requires a modern GPU (NVIDIA RTX 3070 or better, or Apple Silicon M1+) for reasonable speed. On CPU, desktop transcription takes 3–5x the video\'s runtime. VideoText typically processes faster and requires no hardware.' },
+      { q: 'What transcription software do journalists use?', a: 'Journalists commonly use VideoText, Otter.ai, Descript, Rev, and Trint. For court reporting and legal transcription, specialized tools (CART software) are standard. For general interview and press conference transcription, VideoText provides the best combination of accuracy, speed, and cost — especially for accented speech and technical vocabulary where competitors often fail.' },
+      { q: 'Can I use transcription software for free?', a: 'Yes. VideoText\'s free tier includes 3 transcriptions per month — no credit card required. Otter.ai also has a free tier (limited to 300 minutes/month for audio only). Descript\'s free tier is limited to 1 hour of transcription. For video transcription specifically, VideoText\'s free tier is the most generous available.' },
+      { q: 'What file formats does transcription software support?', a: 'VideoText supports all major video formats (MP4, MOV, AVI, WebM, MKV) and audio formats (MP3, WAV, M4A, AAC, OGG, FLAC). Most transcription software supports MP3 and MP4 as minimum. VideoText\'s broad format support means you can upload directly from any recording source without converting first.' },
+      { q: 'How fast is modern AI transcription software?', a: 'VideoText transcribes at roughly 10–15x real-time — a 60-minute recording processes in 4–7 minutes. Older cloud-based services (like Trint or Rev\'s automated service) run at 2–5x real-time. Human transcription runs at 0.25x real-time (4 hours to transcribe 1 hour). AI transcription software is 15–60x faster than human transcription and produces comparable accuracy on clean audio.' },
+    ],
+  },
+  {
+    path: '/whisper-vs-otter',
+    title: 'Whisper vs Otter.ai — Accuracy, Price, and Use Cases | VideoText',
+    description:
+      'Whisper AI vs Otter.ai: accuracy comparison, pricing, video support, and which to use for your use case. Whisper wins on accuracy. Otter wins on live meetings.',
+    h1: 'Whisper vs Otter.ai — Full Comparison',
+    intro:
+      'Whisper and Otter.ai are fundamentally different tools built for different use cases — comparing them head-to-head reveals exactly when to use each. Whisper (OpenAI\'s open-source model) is an offline speech recognition engine with industry-leading accuracy across 90+ languages and virtually every audio format. Otter.ai is a live meeting assistant that records and transcribes in real time, with collaboration features for teams. This comparison covers accuracy, pricing, video file support, privacy, and the specific scenarios where each tool wins.',
+    breadcrumbLabel: 'Whisper vs Otter.ai',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/whisper-online', '/otter-ai-alternative', '/ai-transcription', '/meeting-transcript', '/descript-alternative'],
+    indexable: true,
+    intentKey: 'whisper-vs-otter',
+    faq: [
+      { q: 'Is Whisper more accurate than Otter.ai?', a: 'Yes, on virtually every benchmark. Whisper large-v3 achieves approximately 3–8% Word Error Rate on clean English audio. Otter.ai uses a proprietary speech model that typically runs 8–15% WER on the same content. The gap widens significantly on accented speech, technical vocabulary, non-English languages, and noisy audio — all areas where Otter.ai\'s model, trained primarily on business English, struggles noticeably.' },
+      { q: 'Does Otter.ai support video files?', a: 'No. Otter.ai only supports live meeting recording and audio file imports (MP3, M4A, WAV). It does not accept MP4, MOV, or other video formats. If you have a video file — Zoom recording, YouTube download, screen recording — you cannot upload it to Otter.ai directly. Whisper-based tools like VideoText accept all standard video and audio formats.' },
+      { q: 'Is Whisper free and is Otter.ai free?', a: 'Whisper itself (the model) is open-source and free. Running it requires Python and a capable GPU or a hosted service. VideoText provides hosted Whisper with a free tier (3 imports/month, no credit card). Otter.ai has a free tier (300 minutes/month) but restricts features. For video transcription, VideoText\'s free tier is more capable than Otter\'s.' },
+      { q: 'When should I use Otter.ai instead of Whisper?', a: 'Otter.ai wins in two specific scenarios: (1) live meeting transcription — it joins calls automatically via calendar integration and transcribes in real time, which Whisper cannot do; (2) collaborative note-taking — Otter\'s web app lets multiple people highlight and comment on the shared transcript during or after a meeting. If your use case is asynchronous (uploading recording files), Whisper\'s accuracy advantage is almost always worth switching for.' },
+      { q: 'Does Otter.ai support non-English languages?', a: 'Otter.ai supports English only. Whisper supports 90+ languages with strong accuracy for Spanish, French, German, Hindi, Chinese, Japanese, Korean, Arabic, and Portuguese. For any non-English transcription use case, Whisper is the only viable option between these two tools.' },
+      { q: 'What is the pricing difference between Whisper and Otter.ai?', a: 'Whisper (open-source) has no cost for the model itself — you pay for compute if running locally or for a hosted service. VideoText (hosted Whisper) starts free and scales to $49/month for 1,200 minutes. Otter.ai Pro is $16.99/month for 1,200 minutes of meeting transcription. If you only transcribe meeting recordings (not live), VideoText\'s pricing is comparable at higher volume and significantly cheaper per accurate transcript due to Whisper\'s lower error rate.' },
     ],
   },
 ]

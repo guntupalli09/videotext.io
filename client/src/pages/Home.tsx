@@ -181,7 +181,64 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 8 — Final CTA */}
+      {/* 8 — From the Blog */}
+      <section className="py-16 bg-gray-50 dark:bg-gray-900/50">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">From the blog</h2>
+            <Link
+              to="/blog"
+              className="text-sm font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 transition-colors"
+            >
+              All posts →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {[
+              {
+                slug: 'how-to-get-youtube-transcript',
+                date: 'Mar 2026',
+                tag: 'Guide',
+                title: 'How to get a transcript from any YouTube video',
+                summary: 'Paste a URL, get the full text in seconds. No download required.',
+              },
+              {
+                slug: 'best-free-transcription-tools-2026',
+                date: 'Mar 2026',
+                tag: 'Comparison',
+                title: 'Best free transcription tools in 2026',
+                summary: 'Ranked by accuracy, speed, and what each free tier actually gives you.',
+              },
+              {
+                slug: 'whisper-ai-online',
+                date: 'Mar 2026',
+                tag: 'Guide',
+                title: 'Whisper AI: what it is and how to use it online',
+                summary: 'Run OpenAI\'s most accurate model in your browser — no Python, no GPU.',
+              },
+            ].map((post) => (
+              <Link
+                key={post.slug}
+                to={`/blog/${post.slug}`}
+                className="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-md transition-all"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs font-semibold bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full">
+                    {post.tag}
+                  </span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">{post.date}</span>
+                </div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors leading-snug mb-2">
+                  {post.title}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{post.summary}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 9 — Final CTA */}
       <FinalCTA />
     </div>
   );

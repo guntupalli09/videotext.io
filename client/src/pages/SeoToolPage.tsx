@@ -74,6 +74,20 @@ export default function SeoToolPage() {
       <Suspense fallback={<RouteFallback />}>
         <Tool {...toolProps} />
       </Suspense>
+      {entry.youtubeEmbed && (
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pb-8">
+          <div className="relative w-full rounded-xl overflow-hidden shadow-md" style={{ paddingBottom: '56.25%' }}>
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${entry.youtubeEmbed}`}
+              title="Video demo"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
+              className="absolute inset-0 w-full h-full border-0"
+            />
+          </div>
+        </div>
+      )}
       {suggestions.length > 0 && (
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-12">
           <CrossToolSuggestions suggestions={suggestions} />

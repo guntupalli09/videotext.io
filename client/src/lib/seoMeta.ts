@@ -148,12 +148,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Compare VideoText against Descript, Otter.ai, and Trint on speed, accuracy, pricing, and privacy. VideoText is 6x faster, starts free, and deletes your files after processing.',
   },
   '/descript-alternative': {
-    title: 'Best Free Descript Alternative for Transcription & Subtitles | VideoText',
+    title: 'Descript Alternative — 6x Faster, Free to Start | VideoText',
     description:
       'Looking for a Descript alternative? VideoText transcribes video 6x faster, starts free ($0 vs $24/mo), and deletes your files. No heavy editor required. Try free.',
   },
   '/otter-ai-alternative': {
-    title: 'Best Otter.ai Alternative for Video Files & Subtitles | VideoText',
+    title: 'Otter.ai Alternative — Video Files + SRT Export | VideoText',
     description:
       'Otter.ai doesn\'t support video uploads or SRT export. VideoText does — plus YouTube URL input, subtitle translation, and file deletion. Free tier available.',
   },
