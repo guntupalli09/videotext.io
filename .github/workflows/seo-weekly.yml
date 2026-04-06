@@ -21,11 +21,7 @@ jobs:
       - name: Install root deps
         run: npm install
 
-      - name: Run SEO weekly job
-        run: npm run seo:weekly
-        env:
-          SERP_API_KEY: ${{ secrets.SERP_API_KEY }}
-
+      # 🔥 STEP 1 — Fetch GSC data (API-based, replaces CSV exports)
       - name: Fetch Google Search Console data
         run: npm run seo:fetch
         env:
@@ -33,7 +29,14 @@ jobs:
           GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
           GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
 
-      - name: Run SEO KPI monitor (GSC API based)
+      # 🔥 STEP 2 — Run SEO weekly discovery (SERP + proposals)
+      - name: Run SEO weekly job
+        run: npm run seo:weekly
+        env:
+          SERP_API_KEY: ${{ secrets.SERP_API_KEY }}
+
+      # 🔥 STEP 3 — Run KPI monitor (uses fetched GSC data)
+      - name: Run SEO KPI monitor
         run: npm run seo:kpi
 
       - name: Run SEO verify
@@ -49,7 +52,7 @@ jobs:
             scripts/seo/output/seo-kpi-actions.json
             scripts/seo/output/seo-kpi-report.md
 
-  # Open PR with proposals, changelog, and sitemap refresh (default: human-in-the-loop).
+  # Open PR with proposals, changelog, and sitemap refresh (human-in-the-loop).
   open-pr:
     needs: seo-pipeline
     runs-on: ubuntu-latest
@@ -102,13 +105,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: seo/weekly-proposals
           delete-branch: true
-          title: 'SEO Weekly: proposals, registry edits, and sitemap'
+          title: 'SEO Weekly: proposals, KPI insights, registry edits, and sitemap'
           body: |
             ## SEO Weekly Run
             - **Proposals:** `scripts/seo/output/seo-proposals.json`
             - **Changelog:** `scripts/seo/output/changelog.md`
+            - **KPI Actions:** `scripts/seo/output/seo-kpi-actions.json`
+            - **KPI Report:** `scripts/seo/output/seo-kpi-report.md`
             - **Registry:** Patched for CREATE_NEW_PAGE proposals (if any).
-            - **Sitemap:** Regenerated from indexable routes; ping Google/Bing when merged.
+            - **Sitemap:** Regenerated from indexable routes.
             - **Guardrails:** validate-registry and validate-sitemap passed.
-            **Review before merging.** Ensure caps and content quality are satisfied.
-          commit-message: 'chore(seo): weekly proposals, registry edits, sitemap'
+
+            ⚠️ Review before merging. Prioritize P0 KPI actions.
+
+          commit-message: 'chore(seo): weekly proposals, KPI insights, registry edits, sitemap'

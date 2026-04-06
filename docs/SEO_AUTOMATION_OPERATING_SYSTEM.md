@@ -42,11 +42,6 @@ What it does automatically:
 - Flags canonical split risk (`www` vs non-`www`).
 - Emits prioritized actions (`P0/P1/P2`) for execution.
 
-Required environment variables:
-- `GSC_CLIENT_EMAIL`
-- `GSC_PRIVATE_KEY` (use `\\n` escaped newlines; fetch script normalizes)
-- `GSC_SITE_URL`
-
 ### 3) Auto-PR generation
 In weekly workflow:
 - Apply allowed proposals to registry (`seo:apply-proposals`).
