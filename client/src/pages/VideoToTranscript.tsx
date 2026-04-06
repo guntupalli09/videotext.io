@@ -59,10 +59,19 @@ export type VideoToTranscriptSeoProps = {
   faq?: { q: string; a: string }[]
   /** Open YouTube URL tab by default (for /youtube-to-transcript SEO pages). */
   defaultInputMode?: 'file' | 'youtube'
+  seoDeepContent?: {
+    proofPoints?: string[]
+    workflowSteps?: { title: string; detail: string }[]
+    outputExamples?: { title: string; body: string }[]
+    comparisonRows?: { feature: string; videotext: string; alternatives: string }[]
+    useCases?: { title: string; body: string }[]
+    ctaText?: string
+    ctaPath?: string
+  }
 }
 
 export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {}) {
-  const { seoH1, seoIntro, faq = [] } = props
+  const { seoH1, seoIntro, faq = [], seoDeepContent } = props
   const location = useLocation()
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -1655,6 +1664,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   }
 
   const breadcrumbs = [{ label: 'Video to Transcript', href: '/video-to-transcript' }]
+  const hasDeepContent = Boolean(
+    seoDeepContent?.proofPoints?.length ||
+    seoDeepContent?.workflowSteps?.length ||
+    seoDeepContent?.outputExamples?.length ||
+    seoDeepContent?.comparisonRows?.length ||
+    seoDeepContent?.useCases?.length
+  )
   const layoutProps = {
     breadcrumbs,
     title: seoH1 ?? 'Video → Transcript',
@@ -3342,6 +3358,109 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           window.location.reload()
         }}
       />
+
+      {hasDeepContent && (
+        <section className="mt-12 px-6 max-w-7xl mx-auto space-y-8" aria-label="Workflow proof and comparison">
+          {seoDeepContent?.proofPoints?.length ? (
+            <div className="rounded-2xl border border-violet-200 bg-violet-50/60 p-5">
+              <h2 className="text-xl font-bold text-gray-900">Proof, not promises</h2>
+              <ul className="mt-3 space-y-2 list-disc pl-5 text-sm text-gray-700">
+                {seoDeepContent.proofPoints.map((point, idx) => (
+                  <li key={`proof-${idx}`}>{point}</li>
+                ))}
+              </ul>
+              {seoDeepContent.ctaText && seoDeepContent.ctaPath && (
+                <div className="mt-4">
+                  <Link
+                    to={seoDeepContent.ctaPath}
+                    className="inline-flex items-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700 transition-colors"
+                  >
+                    {seoDeepContent.ctaText}
+                  </Link>
+                </div>
+              )}
+            </div>
+          ) : null}
+
+          {seoDeepContent?.workflowSteps?.length ? (
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-3">Step-by-step workflow</h2>
+              <div className="grid gap-3 md:grid-cols-3">
+                {seoDeepContent.workflowSteps.map((step, idx) => (
+                  <article key={`step-${idx}`} className="rounded-xl border border-gray-200 bg-white p-4">
+                    <h3 className="font-semibold text-gray-900">{step.title}</h3>
+                    <p className="mt-1 text-sm text-gray-600">{step.detail}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {seoDeepContent?.outputExamples?.length ? (
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-3">What your output looks like</h2>
+              <div className="grid gap-3 md:grid-cols-3">
+                {seoDeepContent.outputExamples.map((example, idx) => (
+                  <article key={`example-${idx}`} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                    <h3 className="font-semibold text-gray-900">{example.title}</h3>
+                    <p className="mt-1 text-sm text-gray-600">{example.body}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {seoDeepContent?.comparisonRows?.length ? (
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-3">VideoText vs typical alternatives</h2>
+              <div className="overflow-x-auto rounded-xl border border-gray-200">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Feature</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">VideoText</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Typical alternatives</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {seoDeepContent.comparisonRows.map((row, idx) => (
+                      <tr key={`cmp-${idx}`} className="border-t border-gray-200">
+                        <td className="px-4 py-3 font-medium text-gray-900">{row.feature}</td>
+                        <td className="px-4 py-3 text-gray-700">{row.videotext}</td>
+                        <td className="px-4 py-3 text-gray-600">{row.alternatives}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
+
+          {seoDeepContent?.useCases?.length ? (
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-3">Who this page is built for</h2>
+              <div className="grid gap-3 md:grid-cols-3">
+                {seoDeepContent.useCases.map((useCase, idx) => (
+                  <article key={`usecase-${idx}`} className="rounded-xl border border-gray-200 bg-white p-4">
+                    <h3 className="font-semibold text-gray-900">{useCase.title}</h3>
+                    <p className="mt-1 text-sm text-gray-600">{useCase.body}</p>
+                  </article>
+                ))}
+              </div>
+              {seoDeepContent.ctaText && seoDeepContent.ctaPath && (
+                <div className="mt-4">
+                  <Link
+                    to={seoDeepContent.ctaPath}
+                    className="inline-flex items-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700 transition-colors"
+                  >
+                    {seoDeepContent.ctaText}
+                  </Link>
+                </div>
+              )}
+            </div>
+          ) : null}
+        </section>
+      )}
 
       {faq.length > 0 && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 px-6 max-w-7xl mx-auto" aria-label="FAQ">

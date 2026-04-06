@@ -64,6 +64,7 @@ export default function SeoToolPage() {
     seoH1: entry.h1,
     seoIntro: entry.intro,
     faq: entry.faq,
+    seoDeepContent: entry.deepContent,
   }
   if (entry.toolKey === 'video-to-transcript' && entry.defaultInputMode === 'youtube') {
     toolProps.defaultInputMode = 'youtube'
