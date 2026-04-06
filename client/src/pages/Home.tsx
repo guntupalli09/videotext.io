@@ -156,6 +156,46 @@ export default function Home() {
       {/* 8 — FAQ */}
       <FAQ />
 
+      {/* 8.5 — High-intent transcription hub links */}
+      <section className="bg-white dark:bg-gray-950 py-10 border-t border-gray-100 dark:border-gray-800 transition-colors duration-500">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="mb-5">
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">
+              High-intent guides
+            </p>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white font-display transition-colors duration-500">
+              Start with the exact transcription workflow you need
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-3xl transition-colors duration-500">
+              These pages are built for specific outcomes: YouTube URL transcription, podcast show-note workflows,
+              interview transcripts, and comparison pages for switching from Otter/Descript/Rev-style tools.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[
+              { label: 'Best Transcription Tool', path: '/best-transcription-tool', desc: 'Compare speed, output quality, and workflow fit' },
+              { label: 'Video to Transcription', path: '/video-to-transcription', desc: 'Convert long video into transcript + chapters fast' },
+              { label: 'YouTube URL to Transcription', path: '/youtube-url-to-transcription', desc: 'Paste a link and get structured output in minutes' },
+              { label: 'Podcast Transcription Tool', path: '/podcast-transcription-tool', desc: 'Create show notes, clips, and searchable transcript assets' },
+              { label: 'Meeting Transcription Tool', path: '/meeting-transcription-tool', desc: 'Turn calls into summaries, transcripts, and follow-ups' },
+              { label: 'Interview Transcription Tool', path: '/interview-transcription-tool', desc: 'Speaker-structured transcripts for newsroom and research' },
+            ].map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className="group rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4 hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-md transition-all duration-200"
+              >
+                <p className="font-bold text-sm text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors">
+                  {item.label}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-snug">{item.desc}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 9 — Free Tools cluster */}
       <section className="bg-gray-50 dark:bg-gray-900/60 border-y border-gray-100 dark:border-gray-800 py-8 transition-colors duration-500">
         <div className="max-w-5xl mx-auto px-6">

@@ -12,6 +12,37 @@ export interface FaqItem {
   a: string
 }
 
+export interface SeoWorkflowStep {
+  title: string
+  detail: string
+}
+
+export interface SeoOutputExample {
+  title: string
+  body: string
+}
+
+export interface SeoUseCase {
+  title: string
+  body: string
+}
+
+export interface SeoComparisonRow {
+  feature: string
+  videotext: string
+  alternatives: string
+}
+
+export interface SeoDeepContent {
+  proofPoints?: string[]
+  workflowSteps?: SeoWorkflowStep[]
+  outputExamples?: SeoOutputExample[]
+  comparisonRows?: SeoComparisonRow[]
+  useCases?: SeoUseCase[]
+  ctaText?: string
+  ctaPath?: string
+}
+
 export type SeoToolKey =
   | 'video-to-transcript'
   | 'video-to-subtitles'
@@ -51,6 +82,8 @@ export interface SeoRegistryEntry {
   primaryInGroup?: boolean
   /** For video-to-transcript: open YouTube URL tab by default (improves conversion for YouTube SEO pages). */
   defaultInputMode?: 'youtube'
+  /** Optional deep content sections for high-priority ranking pages. */
+  deepContent?: SeoDeepContent
 }
 
 const MANUAL_REGISTRY: SeoRegistryEntry[] = [
@@ -1495,6 +1528,174 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can VideoText transcribe YouTube videos?', a: 'Yes. Paste any YouTube URL and VideoText streams and transcribes it. No need to download the video first.' },
       { q: 'Is VideoText more accurate than EasyScribe?', a: 'VideoText uses OpenAI Whisper large-v3 at ~98.5% word accuracy on clean audio — one of the most accurate models available.' },
       { q: 'Does VideoText delete my files after transcription?', a: 'Yes. Your file is deleted immediately after processing completes. Nothing is stored on our servers.' },
+    ],
+  },
+  {
+    path: '/best-transcription-tool',
+    title: 'Best Transcription Tool in 2026: Fast AI, Clean Output | VideoText',
+    description: 'Best transcription tool for creators, podcasters, and teams. Convert a 2-hour video in ~5 minutes. Transcript, summary, chapters, subtitles, and exports in one flow.',
+    h1: 'Best Transcription Tool in 2026',
+    intro: 'Need the best transcription tool for real publishing workflows, not just raw text? VideoText turns long videos and audio into clean transcript output, auto summaries, chapter timestamps, and subtitle files in minutes. Built for creators, editors, agencies, and journalists who need speed and structure.',
+    breadcrumbLabel: 'Best Transcription Tool',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/video-to-transcription', '/youtube-url-to-transcription', '/podcast-transcription-tool', '/otter-ai-alternative', '/descript-alternative'],
+    indexable: true,
+    intentKey: 'best-transcription-tool',
+    faq: [
+      { q: 'What makes VideoText one of the best transcription tools?', a: 'Most tools stop at raw transcript text. VideoText outputs a full publish-ready package: transcript, AI summary, chapters, speaker labels, and subtitle exports (SRT/VTT). For long-form creators, that removes hours of manual cleanup.' },
+      { q: 'How fast is VideoText on long recordings?', a: 'A 2-hour recording typically processes in around 5 minutes depending on audio quality and queue load. You can start reviewing segments while processing completes.' },
+      { q: 'Is this built for teams or solo creators?', a: 'Both. Solo creators use it for fast transcript-to-publish workflows; teams and agencies use batch workflows and export-ready outputs for client delivery.' },
+      { q: 'Does VideoText replace Otter, Descript, Rev, or Notta?', a: 'For pure transcription and subtitle workflows, yes in many cases. VideoText is optimized for speed and clean structured output rather than timeline-heavy editing.' },
+    ],
+  },
+  {
+    path: '/video-to-transcription',
+    title: 'Video to Transcription: Convert Video to Text in Minutes | VideoText',
+    description: 'Convert video to transcription online. Upload file or paste link and get transcript, summary, chapters, and subtitle exports. Fast AI workflow for creators and teams.',
+    h1: 'Video to Transcription in Minutes',
+    intro: 'Convert any video into a clean transcription workflow: full transcript, key summary, chapter markers, and subtitle-ready files. No manual typing, no editing bottleneck.',
+    breadcrumbLabel: 'Video to Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/video-to-transcript', '/youtube-url-to-transcription', '/best-transcription-tool', '/video-transcription', '/transcribe-video'],
+    indexable: true,
+    intentKey: 'video-to-transcription',
+    faq: [
+      { q: 'How do I convert video to transcription?', a: 'Upload a video (MP4, MOV, WebM, MKV, AVI) or use a supported URL input, then click Transcribe. VideoText returns transcript text plus optional summaries, chapters, and subtitle exports.' },
+      { q: 'Is video to transcription different from video to text?', a: 'Practically, they are the same intent. This page focuses on full workflow output: transcript + structure (summary, chapters, speakers), not just plain text extraction.' },
+      { q: 'Can I export subtitle files from a transcription run?', a: 'Yes. After transcription, you can generate or export SRT/VTT and use them on YouTube, web players, or social workflows.' },
+      { q: 'Is there a free tier?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Paid plans unlock higher volume and advanced workflows.' },
+    ],
+  },
+  {
+    path: '/youtube-url-to-transcription',
+    title: 'YouTube URL to Transcription: Paste Link, Get Transcript Fast | VideoText',
+    description: 'Turn any YouTube URL into transcript, summary, and chapters. No download required. Paste link, transcribe fast, and export text or subtitle files.',
+    h1: 'YouTube URL to Transcription',
+    intro: 'Paste a YouTube URL and get a structured transcript workflow in minutes: text, summary, chapters, and subtitle-ready output. No manual download step.',
+    breadcrumbLabel: 'YouTube URL to Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/youtube-to-transcript', '/youtube-transcript', '/best-youtube-transcription-tool', '/best-transcription-tool', '/transcribe-youtube-video'],
+    indexable: true,
+    intentKey: 'youtube-url-to-transcription',
+    canonicalGroup: 'youtube-transcript',
+    defaultInputMode: 'youtube',
+    deepContent: {
+      proofPoints: [
+        '2-hour creator interview → transcript + summary + chapters in ~5 minutes.',
+        'No manual download flow: paste YouTube URL directly and transcribe.',
+        'Structured output includes transcript text, chapter points, and subtitle-ready exports.',
+      ],
+      workflowSteps: [
+        { title: 'Step 1 — Paste YouTube URL', detail: 'Paste any supported YouTube watch/short link. The page opens with YouTube mode ready so users can start in seconds.' },
+        { title: 'Step 2 — Generate transcript output', detail: 'Run transcription to get clean text with optional summary and chapter extraction for faster editing and publishing.' },
+        { title: 'Step 3 — Export and publish', detail: 'Copy transcript, export subtitle files, and repurpose output into descriptions, posts, and show notes.' },
+      ],
+      outputExamples: [
+        { title: 'Transcript output', body: 'Readable paragraph format with speaker context for fast scanning and clip extraction.' },
+        { title: 'Summary output', body: 'Key takeaway bullets for descriptions, newsletters, and social copy.' },
+        { title: 'Chapter output', body: 'Auto-generated chapter points that map long videos into clickable sections.' },
+      ],
+      comparisonRows: [
+        { feature: 'YouTube URL-first flow', videotext: 'Paste URL and transcribe directly', alternatives: 'Often require extra steps or manual file workflow' },
+        { feature: 'Structured output', videotext: 'Transcript + summary + chapters + subtitle exports', alternatives: 'Frequently plain transcript only' },
+        { feature: 'Publishing speed', videotext: 'Designed for same-session publish workflow', alternatives: 'More cleanup before publish' },
+      ],
+      useCases: [
+        { title: 'YouTubers', body: 'Turn a long-form video into chapters, summary text, and searchable transcript assets.' },
+        { title: 'Video editors', body: 'Extract the transcript quickly for cut planning and caption prep.' },
+        { title: 'Agencies', body: 'Run repeatable client workflows from URL to publish-ready outputs.' },
+      ],
+      ctaText: 'Paste a YouTube URL and transcribe now',
+      ctaPath: '/youtube-url-to-transcription',
+    },
+    faq: [
+      { q: 'Can I transcribe YouTube directly from a URL?', a: 'Yes. Paste any supported YouTube link format and VideoText streams audio for transcription. You do not need to download the file first.' },
+      { q: 'What output do I get from YouTube URL transcription?', a: 'You get full transcript text plus optional summary, chapter points, and subtitle export formats like SRT/VTT.' },
+      { q: 'Does this work for Shorts?', a: 'Yes. Shorts URLs are supported with the same transcription flow as standard YouTube videos.' },
+      { q: 'Is YouTube URL transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to test with real videos.' },
+    ],
+  },
+  {
+    path: '/podcast-transcription-tool',
+    title: 'Podcast Transcription Tool for Show Notes, Chapters & Clips | VideoText',
+    description: 'Podcast transcription tool built for publishing speed. Convert episodes into transcript text, chapter markers, summaries, and subtitle-ready assets.',
+    h1: 'Podcast Transcription Tool',
+    intro: 'Turn podcast episodes into reusable assets quickly: searchable transcript text, chapter timestamps, key takeaways, and subtitle exports for clips. Built for weekly publishing cadence.',
+    breadcrumbLabel: 'Podcast Transcription Tool',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/podcast-transcript', '/best-podcast-transcription-tool', '/fastest-transcription-tool', '/best-transcription-tool', '/audio-to-text'],
+    indexable: true,
+    intentKey: 'podcast-transcription-tool',
+    deepContent: {
+      proofPoints: [
+        '2-hour podcast episode → transcript package in ~5 minutes.',
+        'No cleanup-first workflow: transcript, summary, and chapter structure are generated together.',
+        'Built for recurring publishing cadence (weekly episodes, clips, show notes).',
+      ],
+      workflowSteps: [
+        { title: 'Step 1 — Upload episode audio/video', detail: 'Upload your podcast export file and start transcription. Use speaker segmentation for host/guest readability.' },
+        { title: 'Step 2 — Review structured outputs', detail: 'Get transcript text plus summary and chapter sections to speed up show-note drafting and content repurposing.' },
+        { title: 'Step 3 — Publish everywhere', detail: 'Use transcript text for SEO pages, summary bullets for episode descriptions, and captions for social clips.' },
+      ],
+      outputExamples: [
+        { title: 'Show-note draft', body: 'Summary bullets + chapter points provide a strong first draft for episode pages.' },
+        { title: 'Clip captions', body: 'Subtitle-ready outputs make short-form clip publishing faster.' },
+        { title: 'Searchable archive', body: 'Transcript text creates searchable content across your back catalog.' },
+      ],
+      comparisonRows: [
+        { feature: 'Podcast workflow focus', videotext: 'Optimized for show notes + chapters + clips', alternatives: 'General-purpose transcript tools only' },
+        { feature: 'Output readiness', videotext: 'Structured assets with minimal cleanup', alternatives: 'More manual editing before publish' },
+        { feature: 'Speed on long episodes', videotext: 'Minutes, not hours, for long-form episodes', alternatives: 'Slower handoff or editing loops' },
+      ],
+      useCases: [
+        { title: 'Podcast hosts', body: 'Generate transcript and summary immediately after recording.' },
+        { title: 'Editors', body: 'Find quotable moments quickly with transcript and chapter structure.' },
+        { title: 'Content teams', body: 'Repurpose one episode into newsletter, blog, and social content faster.' },
+      ],
+      ctaText: 'Transcribe your podcast episode now',
+      ctaPath: '/podcast-transcription-tool',
+    },
+    faq: [
+      { q: 'How is this different from basic podcast transcription tools?', a: 'Beyond transcript text, VideoText adds summaries, chapter sections, and export-ready outputs that speed up show notes and content repurposing.' },
+      { q: 'What formats can I upload for podcast transcription?', a: 'Upload common podcast exports like MP4, MOV, and WebM containers. If your workflow starts with MP3/WAV, export to a supported container or use your video recording source file.' },
+      { q: 'Can I use this for multi-speaker interviews?', a: 'Yes. Speaker segmentation helps split host/guest sections and improves editing speed for long episodes.' },
+      { q: 'How fast is the workflow?', a: 'A long episode usually completes within minutes, allowing same-day show notes and social clip prep without manual transcription.' },
+    ],
+  },
+  {
+    path: '/meeting-transcription-tool',
+    title: 'Meeting Transcription Tool with Summaries & Action Items | VideoText',
+    description: 'Convert Zoom, Teams, and webinar recordings into searchable transcripts with structured summaries and action points. Faster than manual meeting notes.',
+    h1: 'Meeting Transcription Tool',
+    intro: 'Upload meeting recordings and get structured outputs your team can act on: transcript text, speaker turns, concise summaries, and action-item friendly notes.',
+    breadcrumbLabel: 'Meeting Transcription Tool',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/meeting-transcript', '/meeting-transcription', '/zoom-recording-transcript', '/microsoft-teams-alternative', '/best-transcription-tool'],
+    indexable: true,
+    intentKey: 'meeting-transcription-tool',
+    faq: [
+      { q: 'Can I transcribe Zoom or Teams recordings?', a: 'Yes. Export the meeting as MP4, upload it to VideoText, and get a searchable transcript plus structured summary output.' },
+      { q: 'Does this help with action items?', a: 'Yes. Summaries and chapter-style sections make follow-ups easier than raw transcript blocks.' },
+      { q: 'Is speaker labeling supported?', a: 'Yes. Speaker separation is available for clearer meeting documentation and handoff notes.' },
+      { q: 'Is this suitable for agencies and client calls?', a: 'Yes. Teams use it to document discovery calls, interviews, and handoffs with faster turnaround.' },
+    ],
+  },
+  {
+    path: '/interview-transcription-tool',
+    title: 'Interview Transcription Tool for Journalists & Researchers | VideoText',
+    description: 'Transcribe interviews into clean, searchable text with speaker separation and fast turnaround. Built for newsroom and research workflows.',
+    h1: 'Interview Transcription Tool',
+    intro: 'Transcribe interviews fast without losing context. VideoText produces clean transcript output with speaker structure so journalists and researchers can quote, edit, and publish faster.',
+    breadcrumbLabel: 'Interview Transcription Tool',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/interview-transcription', '/journalism-transcription', '/research-interview-transcription', '/best-transcription-tool', '/podcast-transcription-tool'],
+    indexable: true,
+    intentKey: 'interview-transcription-tool',
+    faq: [
+      { q: 'Is this accurate enough for quote extraction?', a: 'For clear recordings, yes. You should still review sensitive quotes before publication, but structured output and speaker segmentation reduce manual verification time significantly.' },
+      { q: 'Can I transcribe long interviews quickly?', a: 'Yes. Long recordings are processed in minutes, and you can start reviewing earlier segments while processing continues.' },
+      { q: 'Does this work for field interviews and noisy audio?', a: 'It works best with clean audio, but supports varied recording conditions. For difficult audio, preprocessing (noise reduction) improves output quality.' },
+      { q: 'Can I export text for editorial workflows?', a: 'Yes. Export formats support transcript handoff into docs, captioning, and downstream publishing workflows.' },
     ],
   },
   {
@@ -4031,6 +4232,10 @@ const STATIC_PAGE_LABELS: Record<string, string> = {
 /** Popular footer links — revenue tools first, then SEO hubs & proof. */
 const POPULAR_FOOTER_PATHS: string[] = [
   ...REVENUE_TOOL_PATHS,
+  '/best-transcription-tool',
+  '/video-to-transcription',
+  '/youtube-url-to-transcription',
+  '/podcast-transcription-tool',
   '/youtube-to-transcript',
   '/video-to-subtitles',
   '/fix-subtitles',
