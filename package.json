@@ -5,6 +5,7 @@
     "build": "cd client && npm ci && npm run build && node -e \"require('fs').cpSync('dist','../dist',{recursive:true})\" && cd .. && npx tsx scripts/prerender.ts",
     "prerender": "npx tsx scripts/prerender.ts",
     "seo:weekly": "tsx scripts/seo/run-weekly.ts",
+    "seo:kpi": "tsx scripts/seo/kpi-monitor.ts",
     "seo:sync": "npx tsx scripts/seo/sync-routes-from-registry.ts",
     "seo:sitemap": "tsx scripts/seo/generate-sitemap.ts",
     "seo:validate-registry": "node scripts/seo/validate-registry.js",

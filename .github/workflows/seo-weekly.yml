@@ -26,6 +26,9 @@ jobs:
         env:
           SERP_API_KEY: ${{ secrets.SERP_API_KEY }}
 
+      - name: Run SEO KPI monitor (GSC export based)
+        run: npm run seo:kpi
+
       - name: Run SEO verify
         run: npm run seo:verify
 
@@ -36,6 +39,8 @@ jobs:
           path: |
             scripts/seo/output/seo-proposals.json
             scripts/seo/output/changelog.md
+            scripts/seo/output/seo-kpi-actions.json
+            scripts/seo/output/seo-kpi-report.md
 
   # Open PR with proposals, changelog, and sitemap refresh (default: human-in-the-loop).
   open-pr:
