@@ -16,6 +16,8 @@ export default function Footer() {
             <p className="text-sm text-gray-300">
               Turn speech into text: transcripts, subtitles, translation. For creators & teams. We don’t store your data.
             </p>
+
+            {/* LaunchBoosts Badge */}
             <a
               href="https://launchboosts.com/project/videotext"
               target="_blank"
@@ -28,6 +30,22 @@ export default function Footer() {
                 alt="Featured on LaunchBoosts"
                 width={180}
                 height={54}
+              />
+            </a>
+
+            {/* IndieHunt Badge */}
+            <a
+              href="https://indiehunt.io/project/videotext"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex mt-3"
+              aria-label="Featured on IndieHunt"
+            >
+              <img
+                src="https://indiehunt.io/badges/indiehunt-badge-dark.svg"
+                alt="Featured on IndieHunt"
+                width={265}
+                height={58}
               />
             </a>
           </div>
@@ -54,6 +72,7 @@ export default function Footer() {
               <li><Link to="/changelog" className="hover:text-white transition-colors">Changelog</Link></li>
             </ul>
           </div>
+
           {/* Alternatives */}
           <div>
             <h3 className="text-white font-semibold mb-4">Alternatives</h3>
@@ -70,7 +89,8 @@ export default function Footer() {
               <li><Link to="/subly-alternative" className="hover:text-white transition-colors">Subly alternative</Link></li>
             </ul>
           </div>
-          {/* Core product URLs, free-tool hubs, proof — see getPopularFooterLinks() */}
+
+          {/* Product & resources */}
           <div>
             <h3 className="text-white font-semibold mb-4">Product & resources</h3>
             <ul className="space-y-2 text-sm">
@@ -88,16 +108,8 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">Legal</h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/privacy" className="hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="hover:text-white transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
+              <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
               <li>
                 <button
                   type="button"
