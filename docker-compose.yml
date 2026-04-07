@@ -162,6 +162,29 @@ services:
           memory: 1g
           cpus: "1.0"
 
+  # ── Docker build-cache cleanup ────────────────────────────────────────────
+  # Prunes images and build cache older than 7 days every Sunday at 03:00 UTC.
+  # Prevents Docker's build cache from silently accumulating GBs over time.
+  # Logs: docker compose logs docker-cleanup
+  docker-cleanup:
+    image: docker:cli
+    container_name: videotools-docker-cleanup
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./scripts/docker-cleanup.sh:/scripts/docker-cleanup.sh:ro
+    command: >
+      sh -c "
+        chmod +x /scripts/docker-cleanup.sh &&
+        echo '0 3 * * 0 /scripts/docker-cleanup.sh >> /proc/1/fd/1 2>&1' | crontab - &&
+        crond -f -l 2
+      "
+    deploy:
+      resources:
+        limits:
+          memory: 64m
+          cpus: "0.1"
+
 volumes:
   redis-data:
   postgres-data:
