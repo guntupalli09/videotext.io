@@ -30,6 +30,13 @@ export default function Footer() {
               <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
               <li><Link to="/compare" className="hover:text-white transition-colors">Compare tools</Link></li>
               <li><Link to="/open" className="hover:text-white transition-colors">Open stats</Link></li>
+              <li><Link to="/transcription-benchmark" className="hover:text-white transition-colors">Transcription benchmark</Link></li>
+              <li><Link to="/accuracy-test" className="hover:text-white transition-colors">Accuracy test</Link></li>
+              <li><Link to="/best-transcription-tool" className="hover:text-white transition-colors">Best transcription tool</Link></li>
+              <li><Link to="/fastest-transcription-software" className="hover:text-white transition-colors">Fastest transcription software</Link></li>
+              <li><Link to="/otter-vs-videotext" className="hover:text-white transition-colors">Otter vs VideoText</Link></li>
+              <li><Link to="/descript-vs-videotext" className="hover:text-white transition-colors">Descript vs VideoText</Link></li>
+              <li><Link to="/ai-transcription-tools" className="hover:text-white transition-colors">AI transcription tools</Link></li>
               <li><Link to="/changelog" className="hover:text-white transition-colors">Changelog</Link></li>
             </ul>
           </div>

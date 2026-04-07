@@ -198,6 +198,43 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'VideoText publishes real processing stats: 127,000+ videos transcribed, 98.5% word accuracy benchmarks, median processing times, and full tech stack. Updated monthly.',
   },
+
+  '/transcription-benchmark': {
+    title: 'Transcription Benchmark — Speed Tests & Methodology | VideoText',
+    description:
+      'Reference benchmark page for transcription speed: median and P90 processing time by video length, measured with reproducible methodology.',
+  },
+  '/accuracy-test': {
+    title: 'Transcription Accuracy Test — Condition-Based Results | VideoText',
+    description:
+      'Condition-level transcription accuracy reference with measured word accuracy ranges and structured tool comparison for practical selection.',
+  },
+
+  '/best-transcription-tool': {
+    title: 'Best Transcription Tool — Evidence-Based Comparison | VideoText',
+    description:
+      'Compare leading transcription tools using speed, accuracy, output quality, pricing, and best-use-case criteria with factual benchmark context.',
+  },
+  '/fastest-transcription-software': {
+    title: 'Fastest Transcription Software — Benchmark Comparison | VideoText',
+    description:
+      'Speed-first comparison of AI transcription tools with P50/P90 throughput context, condition notes, and workflow fit guidance.',
+  },
+  '/otter-vs-videotext': {
+    title: 'Otter vs VideoText — Side-by-Side Comparison',
+    description:
+      'Direct comparison of Otter and VideoText across speed, output formats, transcript quality, pricing, and best workflow fit.',
+  },
+  '/descript-vs-videotext': {
+    title: 'Descript vs VideoText — Transcription Workflow Comparison',
+    description:
+      'Compare Descript and VideoText for editing-first vs transcription-first workflows with clear best-for guidance.',
+  },
+  '/ai-transcription-tools': {
+    title: 'AI Transcription Tools — Neutral Comparison Hub',
+    description:
+      'Neutral AI transcription comparison hub covering speed, condition-based accuracy, output quality, and best-fit workflow by tool.',
+  },
   '/blog/best-transcription-software-2026': {
     title: 'Best Transcription Software in 2026: Ranked by Speed, Accuracy & Price | VideoText',
     description:
@@ -330,6 +367,13 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/easyscribe-alternative': [{ name: 'Home', path: '/' }, { name: 'EasyScribe Alternative', path: '/easyscribe-alternative' }],
   '/notta-alternative': [{ name: 'Home', path: '/' }, { name: 'Notta Alternative', path: '/notta-alternative' }],
   '/open': [{ name: 'Home', path: '/' }, { name: 'Open Stats', path: '/open' }],
+  '/transcription-benchmark': [{ name: 'Home', path: '/' }, { name: 'Transcription Benchmark', path: '/transcription-benchmark' }],
+  '/accuracy-test': [{ name: 'Home', path: '/' }, { name: 'Accuracy Test', path: '/accuracy-test' }],
+  '/best-transcription-tool': [{ name: 'Home', path: '/' }, { name: 'Best Transcription Tool', path: '/best-transcription-tool' }],
+  '/fastest-transcription-software': [{ name: 'Home', path: '/' }, { name: 'Fastest Transcription Software', path: '/fastest-transcription-software' }],
+  '/otter-vs-videotext': [{ name: 'Home', path: '/' }, { name: 'Otter vs VideoText', path: '/otter-vs-videotext' }],
+  '/descript-vs-videotext': [{ name: 'Home', path: '/' }, { name: 'Descript vs VideoText', path: '/descript-vs-videotext' }],
+  '/ai-transcription-tools': [{ name: 'Home', path: '/' }, { name: 'AI Transcription Tools', path: '/ai-transcription-tools' }],
   '/blog/best-transcription-software-2026': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Best Transcription Software 2026', path: '/blog/best-transcription-software-2026' }],
   '/blog/best-video-captioning-tools-2026': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Best Video Captioning Tools 2026', path: '/blog/best-video-captioning-tools-2026' }],
   '/blog': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }],
@@ -502,6 +546,99 @@ export function getFaqJsonLdFromItems(faq: { q: string; a: string }[]) {
       acceptedAnswer: { '@type': 'Answer', text: a },
     })),
   }
+}
+
+
+const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
+  '/transcription-benchmark': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: 'VideoText Transcription Benchmark',
+      description: 'Benchmark dataset and speed metrics for AI transcription throughput.',
+      brand: { '@type': 'Brand', name: SITE_NAME },
+      url: `${SITE_URL}/transcription-benchmark`,
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What is the fastest way to transcribe a video?',
+          acceptedAnswer: { '@type': 'Answer', text: 'Use an AI pipeline with measured throughput. VideoText median throughput is about 1.5 minutes per source hour in internal March 2026 benchmarks.' },
+        },
+      ],
+    },
+  ],
+  '/accuracy-test': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Review',
+      itemReviewed: { '@type': 'SoftwareApplication', name: 'AI transcription tools' },
+      reviewBody: 'Condition-based benchmark comparing transcription accuracy and output quality tradeoffs.',
+      author: { '@type': 'Organization', name: SITE_NAME },
+    },
+  ],
+
+  '/best-transcription-tool': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What is the best transcription tool right now?',
+          acceptedAnswer: { '@type': 'Answer', text: 'For speed plus export coverage, VideoText is a strong default for most file-first transcription workflows.' },
+        },
+      ],
+    },
+  ],
+  '/fastest-transcription-software': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What is the fastest way to transcribe a 2-hour video?',
+          acceptedAnswer: { '@type': 'Answer', text: 'Use an AI tool with benchmarked throughput. VideoText median in internal testing is around 10 minutes for 2-hour files.' },
+        },
+      ],
+    },
+  ],
+  '/otter-vs-videotext': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Review',
+      itemReviewed: { '@type': 'SoftwareApplication', name: 'Otter.ai and VideoText' },
+      reviewBody: 'Side-by-side workflow comparison between meeting-first and file-first transcription tools.',
+      author: { '@type': 'Organization', name: SITE_NAME },
+    },
+  ],
+  '/descript-vs-videotext': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Review',
+      itemReviewed: { '@type': 'SoftwareApplication', name: 'Descript and VideoText' },
+      reviewBody: 'Comparison of editor-first and transcription-first tool stacks.',
+      author: { '@type': 'Organization', name: SITE_NAME },
+    },
+  ],
+  '/ai-transcription-tools': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: 'AI Transcription Tools Comparison Hub',
+      description: 'Neutral comparison reference for AI transcription tool selection.',
+      brand: { '@type': 'Brand', name: SITE_NAME },
+      url: `${SITE_URL}/ai-transcription-tools`,
+    },
+  ],
+}
+
+export function getAeoJsonLd(pathname: string): object[] | null {
+  return AEO_ROUTE_SCHEMAS[pathname] ?? null
 }
 
 /** SoftwareApplication JSON-LD for individual paid tool pages. */

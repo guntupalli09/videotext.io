@@ -261,6 +261,28 @@ export default function Home() {
         </div>
       </section>
 
+
+      <section className="py-10 border-t border-gray-100 dark:border-gray-800">
+        <div className="max-w-5xl mx-auto px-6">
+          <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">Answer hubs</p>
+          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">Transcription comparison & benchmark hubs</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { label: 'Best transcription tool', path: '/best-transcription-tool' },
+              { label: 'Fastest transcription software', path: '/fastest-transcription-software' },
+              { label: 'Otter vs VideoText', path: '/otter-vs-videotext' },
+              { label: 'Descript vs VideoText', path: '/descript-vs-videotext' },
+              { label: 'AI transcription tools', path: '/ai-transcription-tools' },
+              { label: 'Transcription benchmark', path: '/transcription-benchmark' },
+            ].map((item) => (
+              <Link key={item.path} to={item.path} className="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 text-sm font-semibold text-gray-800 dark:text-gray-200 hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300">
+                {item.label} →
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 10 — Final CTA */}
       <FinalCTA />
     </div>
