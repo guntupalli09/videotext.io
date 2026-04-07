@@ -15,7 +15,7 @@ const CLEANUP_INTERVAL   = 15 * 60 * 1000  // 15 minutes
 const FILE_MAX_AGE       = 150 * 60 * 1000  // 2.5 hours (normal) — jobs routinely take 10–30 min, 1 hr was too tight
 // 90 minutes covers: up to 20 min queue wait + up to 30 min Whisper processing + overhead.
 // Previously 40 min, which was tight enough to kill jobs under load.
-const EMERGENCY_AGE_MS   = 90 * 60 * 1000   // 90 minutes (disk pressure)
+const EMERGENCY_AGE_MS   = 30 * 60 * 1000   // 30 minutes (disk pressure)
 const DISK_EMERGENCY_THRESHOLD = 0.80        // 80% full triggers emergency mode
 
 export function startFileCleanup(redis?: Redis) {
