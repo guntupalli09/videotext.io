@@ -16,6 +16,20 @@ export default function Footer() {
             <p className="text-sm text-gray-300">
               Turn speech into text: transcripts, subtitles, translation. For creators & teams. We don’t store your data.
             </p>
+            <a
+              href="https://launchboosts.com/project/videotext"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex mt-4"
+              aria-label="Featured on LaunchBoosts"
+            >
+              <img
+                src="https://launchboosts.com/badges/featured-dark.svg"
+                alt="Featured on LaunchBoosts"
+                width={180}
+                height={54}
+              />
+            </a>
           </div>
 
           {/* Links */}
