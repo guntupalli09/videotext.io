@@ -21,7 +21,7 @@ jobs:
       - name: Install root deps
         run: npm install
 
-      # 🔥 STEP 1 — Fetch GSC data (API-based, replaces CSV exports)
+      # 🔥 STEP 1 — Fetch GSC data (API-based)
       - name: Fetch Google Search Console data
         run: npm run seo:fetch
         env:
@@ -92,12 +92,12 @@ jobs:
       - name: Generate sitemap
         run: npm run seo:sitemap
         env:
-          SITE_URL: https://www.videotext.io
+          SITE_URL: https://videotext.io
 
       - name: Validate sitemap
         run: npm run seo:validate-sitemap
         env:
-          SITE_URL: https://www.videotext.io
+          SITE_URL: https://videotext.io
 
       - name: Create SEO branch and PR
         uses: peter-evans/create-pull-request@v6

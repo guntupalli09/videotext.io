@@ -2,11 +2,6 @@
 /**
  * KPI monitor for SEO ops.
  * Reads Search Console API JSON output and emits ranked actions for impressions, CTR, and ranking movement.
- *
- * Usage:
- *   npx tsx scripts/seo/kpi-monitor.ts
- * Optional env:
- *   GSC_INPUT_JSON=scripts/seo/data/gsc-latest.json
  */
 
 import * as fs from 'fs'
@@ -157,8 +152,8 @@ function buildActions(queries: QueryRow[], pages: PageRow[]): ActionItem[] {
       priority: 'P0',
       type: 'CTR_REWRITE',
       target: q.query,
-      reason: 'High impressions but low CTR → rewrite title/meta',
-      metric: `ctr=${q.ctr.toFixed(2)}%, imp=${q.impressions}`,
+      reason: 'High visibility but weak CTR → rewrite title/meta with proof',
+      metric: `ctr=${q.ctr.toFixed(2)}%, imp=${q.impressions}, pos=${q.position.toFixed(2)}`,
     })
   }
 
@@ -173,7 +168,19 @@ function buildActions(queries: QueryRow[], pages: PageRow[]): ActionItem[] {
       type: 'INTENT_REMAP',
       target: p.page,
       reason: 'Impressions but no clicks → mismatch intent or weak CTA',
-      metric: `imp=${p.impressions}, ctr=${p.ctr.toFixed(2)}%`,
+      metric: `imp=${p.impressions}, ctr=${p.ctr.toFixed(2)}%, pos=${p.position.toFixed(2)}`,
+    })
+  }
+
+  // P0: Canonical drift detection
+  const canonicalSplit = pages.filter((p) => p.page.includes('https://www.videotext.io/'))
+  if (canonicalSplit.length > 0) {
+    actions.push({
+      priority: 'P0',
+      type: 'TECHNICAL',
+      target: 'domain canonicalization',
+      reason: 'Detected www URLs indexed → enforce non-www canonical + redirects',
+      metric: `www_pages=${canonicalSplit.length}`,
     })
   }
 

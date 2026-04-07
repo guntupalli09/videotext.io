@@ -7,7 +7,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { CORE_PATHS, getSitemap2Paths } from './registry'
 
-const SITE_URL = process.env.SITE_URL || 'https://videotext.io'
+const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const PUBLIC_DIR = path.join(REPO_ROOT, 'client', 'public')
 
@@ -20,13 +20,37 @@ function escapeXml(s: string): string {
     .replace(/'/g, '&apos;')
 }
 
+function normalizeUrl(url: string): string {
+  return url
+    .replace('https://www.', 'https://')
+    .replace(/\/+$/, '')
+}
+
+function assertNoMixedDomains(urls: string[]): void {
+  const hasWww = urls.some((u) => u.includes('www.videotext.io'))
+  const hasNonWww = urls.some((u) => u.includes('https://videotext.io'))
+  if (hasWww && hasNonWww) {
+    throw new Error('Mixed www and non-www URLs detected — aborting sitemap generation')
+  }
+}
+
+function buildNormalizedLocs(paths: string[]): string[] {
+  const uniqueUrls = new Set<string>()
+  for (const p of paths.filter((x) => x !== '*')) {
+    const loc = p === '/' ? `${SITE_URL}/` : `${SITE_URL}${p}`
+    uniqueUrls.add(normalizeUrl(loc))
+  }
+  const urls = [...uniqueUrls]
+  assertNoMixedDomains(urls)
+  return urls
+}
+
 function buildUrlSet(paths: string[], today: string): string {
-  const urls = paths
-    .filter((p) => p !== '*')
-    .map((p) => {
-      const loc = p === '/' ? `${SITE_URL}/` : `${SITE_URL}${p}`
-      const priority = p === '/' ? '1.0' : p === '/pricing' ? '0.9' : p.startsWith('/video-to-') || p.startsWith('/mp4-') || p.startsWith('/youtube-') || p.startsWith('/transcribe-youtube') ? '0.9' : '0.8'
-      const changefreq = p === '/' ? 'weekly' : 'monthly'
+  const urls = buildNormalizedLocs(paths)
+    .map((loc) => {
+      const pathPart = loc === SITE_URL ? '/' : loc.slice(SITE_URL.length) || '/'
+      const priority = pathPart === '/' ? '1.0' : pathPart === '/pricing' ? '0.9' : pathPart.startsWith('/video-to-') || pathPart.startsWith('/mp4-') || pathPart.startsWith('/youtube-') || pathPart.startsWith('/transcribe-youtube') ? '0.9' : '0.8'
+      const changefreq = pathPart === '/' ? 'weekly' : 'monthly'
       return `  <url>
     <loc>${escapeXml(loc)}</loc>
     <lastmod>${today}</lastmod>
@@ -59,14 +83,16 @@ async function main(): Promise<void> {
   console.log('[SEO] Sitemap 2 (programmatic + other):', sitemap2Path, `(${sitemap2Paths.length} URLs)`)
 
   // Sitemap index — references both. Submit sitemap-index.xml or sitemap-core.xml first.
+  const indexLocs = [`${SITE_URL}/sitemap-core.xml`, `${SITE_URL}/sitemap-programmatic.xml`].map(normalizeUrl)
+  assertNoMixedDomains(indexLocs)
   const indexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>${SITE_URL}/sitemap-core.xml</loc>
+    <loc>${indexLocs[0]}</loc>
     <lastmod>${today}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>${SITE_URL}/sitemap-programmatic.xml</loc>
+    <loc>${indexLocs[1]}</loc>
     <lastmod>${today}</lastmod>
   </sitemap>
 </sitemapindex>
@@ -81,7 +107,7 @@ async function main(): Promise<void> {
 
   if (process.env.SITEMAP_PING !== '0' && process.env.SITEMAP_PING !== 'false') {
     // Ping with index; to submit core only first, use: SITEMAP_PING_URL=https://videotext.io/sitemap-core.xml
-    const pingUrl = process.env.SITEMAP_PING_URL || `${SITE_URL}/sitemap-index.xml`
+    const pingUrl = normalizeUrl(process.env.SITEMAP_PING_URL || `${SITE_URL}/sitemap-index.xml`)
     const pingUrls = [
       `https://www.google.com/ping?sitemap=${encodeURIComponent(pingUrl)}`,
       `https://www.bing.com/ping?sitemap=${encodeURIComponent(pingUrl)}`,
