@@ -51,6 +51,23 @@ export default function Footer() {
                 height={58}
               />
             </a>
+
+            {/* SubmitAITools Badge */}
+            <a
+              href="https://submitaitools.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex mt-3"
+              aria-label="Submit AI Tools"
+            >
+              <img
+                src="https://submitaitools.org/static_submitaitools/images/submitaitools.png"
+                alt="Submit AI Tools"
+                className="rounded-[10px]"
+                width={200}
+                height={60}
+              />
+            </a>
           </div>
 
           {/* Links */}
