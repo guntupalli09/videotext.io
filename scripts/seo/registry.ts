@@ -24,6 +24,13 @@ export const STATIC_ROUTES = [
   '/burn-subtitles',
   '/compress-video',
   '/batch-process',
+  '/transcription-benchmark',
+  '/accuracy-test',
+  '/best-transcription-tool',
+  '/fastest-transcription-software',
+  '/otter-vs-videotext',
+  '/descript-vs-videotext',
+  '/ai-transcription-tools',
 ]
 
 export function loadRoutesInventory(): string[] {
@@ -90,6 +97,13 @@ export const CORE_PATHS: string[] = [
   '/fix-subtitles',
   '/burn-subtitles',
   '/batch-process',
+  '/transcription-benchmark',
+  '/accuracy-test',
+  '/best-transcription-tool',
+  '/fastest-transcription-software',
+  '/otter-vs-videotext',
+  '/descript-vs-videotext',
+  '/ai-transcription-tools',
   '/mp4-to-text',
   '/mp4-to-srt',
   // Cluster A — Platform-specific (high-intent)
