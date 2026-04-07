@@ -15,6 +15,7 @@ import { sanitizeFilename } from '../utils/sanitizeFilename'
 import { assertPathWithinDir } from '../utils/assertPathWithinDir'
 import { isQueueAtHardLimit, isQueueAtSoftLimit, getSystemConcurrencyMultiplier } from '../utils/queueConfig'
 import { checkAndRecordUpload } from '../utils/uploadRateLimit'
+import { checkAndRecordGuestIpImport, extractClientIp } from '../utils/guestIpLimit'
 import { trackJobCreated } from '../utils/analytics'
 import { insertJobRecord } from '../lib/jobAnalytics'
 import { probeVideoDurationResult } from '../services/ffmpeg'
@@ -116,6 +117,15 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
         : user?.stripeCustomerId
           ? user.plan
           : 'free'
+
+    // Guest IP daily cap — prevents limit bypass via fresh guest UUIDs per request
+    if (userId.startsWith('guest_')) {
+      const clientIp = extractClientIp(req)
+      if (!await checkAndRecordGuestIpImport(clientIp)) {
+        if (req.file) try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
+        return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
+      }
+    }
 
     if (!await checkAndRecordUpload(rateLimitKey)) {
       res.setHeader('Retry-After', '60')
@@ -473,6 +483,14 @@ router.post('/dual', upload.fields([
           ? burnUser.plan
           : 'free'
 
+    // Guest IP daily cap
+    if (userId.startsWith('guest_')) {
+      const clientIp = extractClientIp(req)
+      if (!await checkAndRecordGuestIpImport(clientIp)) {
+        return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
+      }
+    }
+
     if (!await checkAndRecordUpload(userId)) {
       res.setHeader('Retry-After', '60')
       return res.status(429).json({ message: 'Too many uploads. Please wait a minute before trying again.' })
@@ -709,6 +727,14 @@ router.post('/init', async (req: Request, res: Response) => {
 
     if (user?.suspended) {
       return res.status(403).json({ message: 'Your account has been suspended. Please contact support.' })
+    }
+
+    // Guest IP daily cap
+    if (userId.startsWith('guest_')) {
+      const clientIp = extractClientIp(req)
+      if (!await checkAndRecordGuestIpImport(clientIp)) {
+        return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
+      }
     }
 
     if (!await checkAndRecordUpload(rateLimitKey)) {
