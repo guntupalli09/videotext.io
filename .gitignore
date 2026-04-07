@@ -51,6 +51,6 @@ server/scripts/verify-credentials.env
 
 
 .env.*
+!.env.example
 server/.env*
 client/.env*
-

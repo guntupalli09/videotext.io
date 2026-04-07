@@ -2,7 +2,7 @@
 /**
  * SEO health check for CI/schedule. Shell-mode: robots + sitemap + HTTP 200.
  * Strict-mode: plus title, meta description, canonical; FAQPage/BreadcrumbList must not be duplicated in ld+json.
- * Env: SITE_URL (canonical base; default https://www.videotext.io), BASE_URL (fetch base; default SITE_URL),
+ * Env: SITE_URL (canonical base; default https://videotext.io), BASE_URL (fetch base; default SITE_URL),
  *      SEO_HEALTH_MODE=shell|strict (default: strict if BASE_URL matches SITE_URL, else shell).
  * Exit: 0 on PASS, 1 on FAIL. Prints first failing URL and reason.
  */

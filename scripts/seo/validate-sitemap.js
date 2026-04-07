@@ -12,7 +12,12 @@ const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const INVENTORY_PATH = path.join(SCRIPT_DIR, 'routes-inventory.json')
 const SITEMAP_PATH = path.join(REPO_ROOT, 'client', 'public', 'sitemap.xml')
 
-const SITE_URL = process.env.SITE_URL || 'https://www.videotext.io'
+const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
+const CANONICAL_HOST = 'https://videotext.io'
+
+function normalizeUrl(url) {
+  return url.replace('https://www.', 'https://').replace(/\/+$/, '')
+}
 
 function main() {
   if (!fs.existsSync(INVENTORY_PATH)) {
@@ -26,7 +31,7 @@ function main() {
 
   const inventory = JSON.parse(fs.readFileSync(INVENTORY_PATH, 'utf8'))
   const expectedUrls = new Set(
-    inventory.map((p) => (p === '/' ? SITE_URL : `${SITE_URL}${p}`))
+    inventory.map((p) => normalizeUrl(p === '/' ? SITE_URL : `${SITE_URL}${p}`))
   )
 
   const xml = fs.readFileSync(SITEMAP_PATH, 'utf8')
@@ -34,7 +39,7 @@ function main() {
   const found = []
   let match
   while ((match = locRe.exec(xml)) !== null) {
-    found.push(match[1])
+    found.push(normalizeUrl(match[1]))
   }
 
   const foundSet = new Set(found)
@@ -42,6 +47,17 @@ function main() {
 
   if (found.length !== foundSet.size) {
     console.error('[validate-sitemap] Duplicate <loc> in sitemap')
+    failed = true
+  }
+
+  const hasWww = found.some((u) => u.includes('https://www.videotext.io'))
+  const hasNonWww = found.some((u) => u.startsWith('https://videotext.io'))
+  if (hasWww && hasNonWww) {
+    console.error('[validate-sitemap] Mixed www/non-www URLs detected in sitemap')
+    failed = true
+  }
+  if (found.some((u) => !u.startsWith(CANONICAL_HOST))) {
+    console.error('[validate-sitemap] Found non-canonical host in sitemap (expected https://videotext.io)')
     failed = true
   }
 

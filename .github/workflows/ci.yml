@@ -47,5 +47,5 @@ jobs:
         run: npm run seo:health
         env:
           BASE_URL: http://localhost:4173
-          SITE_URL: https://www.videotext.io
+          SITE_URL: https://videotext.io
           SEO_HEALTH_MODE: shell
