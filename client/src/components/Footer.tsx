@@ -3,16 +3,19 @@ import { getPopularFooterLinks } from '../lib/seoRegistry'
 
 export default function Footer() {
   const popularLinks = getPopularFooterLinks()
+
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          
           {/* Brand */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <img src="/logo.svg" alt="VideoText" width={32} height={32} className="h-8 w-8" />
               <span className="text-xl font-semibold text-white">VideoText</span>
             </div>
+
             <p className="text-sm text-gray-300">
               Turn speech into text: transcripts, subtitles, translation. For creators & teams. We don’t store your data.
             </p>
@@ -121,6 +124,7 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+
         </div>
 
         {/* Copyright */}
