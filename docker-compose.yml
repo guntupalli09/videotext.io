@@ -52,8 +52,7 @@ services:
       start_period: 15s
 
   api:
-    build: .
-    image: videotools-api
+    image: ghcr.io/guntupalli09/videotext.io:latest
     container_name: videotools-api
     restart: unless-stopped
     env_file: .env
@@ -91,7 +90,7 @@ services:
       start_period: 30s
 
   worker:
-    image: videotools-api
+    image: ghcr.io/guntupalli09/videotext.io:latest
     container_name: videotools-worker
     restart: unless-stopped
     env_file: .env
@@ -144,9 +143,7 @@ services:
   # Healthy: "[refresh-yt-cookies] OK — wrote N cookies to /cookies/youtube.txt"
   # Expired: "[refresh-yt-cookies] ERROR: Session expired — re-export cookies from your browser."
   cookie-refresher:
-    build:
-      context: .
-      dockerfile: Dockerfile.cookie-refresher
+    image: ghcr.io/guntupalli09/videotext.io-cookie-refresher:latest
     container_name: videotools-cookie-refresher
     restart: unless-stopped
     environment:

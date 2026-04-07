@@ -1,0 +1,79 @@
+# Builds and pushes Docker images to GitHub Container Registry (ghcr.io).
+# Runs on every push to main so the server never needs to build locally.
+#
+# Images produced:
+#   ghcr.io/guntupalli09/videotext.io:latest          (api + worker)
+#   ghcr.io/guntupalli09/videotext.io-cookie-refresher:latest
+#
+# Deploy on server: cd /opt/videotools && ./scripts/deploy.sh
+name: Publish Docker images
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish-api:
+    name: Build & push API image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/guntupalli09/videotext.io:latest
+            ghcr.io/guntupalli09/videotext.io:${{ github.sha }}
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+
+  publish-cookie-refresher:
+    name: Build & push cookie-refresher image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.cookie-refresher
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/guntupalli09/videotext.io-cookie-refresher:latest
+            ghcr.io/guntupalli09/videotext.io-cookie-refresher:${{ github.sha }}
+          cache-from: type=gha,scope=cookie-refresher
+          cache-to: type=gha,mode=max,scope=cookie-refresher
