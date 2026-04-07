@@ -104,8 +104,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
   useEffect(() => {
     if (status === 'completed' && !isLoggedIn()) {
-      const t = setTimeout(() => setShowAuthGate(true), 3000)
-      return () => clearTimeout(t)
+      setShowAuthGate(true)
+      setShowAuthModal(true)
     }
   }, [status])
 
@@ -190,7 +190,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
           setUploadPhase('processing')
           setUploadProgress(100)
-          if (jobStatus.result?.downloadUrl) {
+          if (isLoggedIn() && jobStatus.result?.downloadUrl) {
             try {
               const subtitleResponse = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
               const ct = subtitleResponse.headers.get('content-type') || ''
@@ -244,7 +244,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               setResult(s.result ?? null)
               trackAppEvent('transcription_completed', { toolId: 'video-to-subtitles' })
               // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
-              if (s.result?.downloadUrl) {
+              if (isLoggedIn() && s.result?.downloadUrl) {
                 try {
                   const res = await fetch(getAbsoluteDownloadUrl(s.result.downloadUrl))
                   const ct = res.headers.get('content-type') || ''
@@ -551,7 +551,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           const started = processingStartedAtRef.current ?? Date.now()
           const processingMs = Date.now() - started
           // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })
-          if (jobStatus.result?.downloadUrl) {
+          if (isLoggedIn() && jobStatus.result?.downloadUrl) {
             try {
               fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
                 .then((subtitleResponse) => {
