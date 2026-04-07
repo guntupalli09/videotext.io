@@ -3,21 +3,26 @@ import { getPopularFooterLinks } from '../lib/seoRegistry'
 
 export default function Footer() {
   const popularLinks = getPopularFooterLinks()
+
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          
           {/* Brand */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <img src="/logo.svg" alt="VideoText" width={32} height={32} className="h-8 w-8" />
               <span className="text-xl font-semibold text-white">VideoText</span>
             </div>
+
             <p className="text-sm text-gray-300">
               Turn speech into text: transcripts, subtitles, translation. For creators & teams. We don’t store your data.
             </p>
+
+            {/* LaunchBoosts Badge */}
             <a
-              href="https://launchboosts.com"
+              href="https://launchboosts.com/project/videotext"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex mt-4"
@@ -30,6 +35,8 @@ export default function Footer() {
                 height={54}
               />
             </a>
+
+            {/* IndieHunt Badge */}
             <a
               href="https://indiehunt.io/project/videotext"
               target="_blank"
@@ -68,6 +75,7 @@ export default function Footer() {
               <li><Link to="/changelog" className="hover:text-white transition-colors">Changelog</Link></li>
             </ul>
           </div>
+
           {/* Alternatives */}
           <div>
             <h3 className="text-white font-semibold mb-4">Alternatives</h3>
@@ -84,7 +92,8 @@ export default function Footer() {
               <li><Link to="/subly-alternative" className="hover:text-white transition-colors">Subly alternative</Link></li>
             </ul>
           </div>
-          {/* Core product URLs, free-tool hubs, proof — see getPopularFooterLinks() */}
+
+          {/* Product & resources */}
           <div>
             <h3 className="text-white font-semibold mb-4">Product & resources</h3>
             <ul className="space-y-2 text-sm">
@@ -102,16 +111,8 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">Legal</h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/privacy" className="hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="hover:text-white transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
+              <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
               <li>
                 <button
                   type="button"
@@ -123,6 +124,7 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+
         </div>
 
         {/* Copyright */}
