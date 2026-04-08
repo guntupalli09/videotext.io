@@ -93,6 +93,30 @@ async function ensureUserForStripeCustomer(
 async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void> {
   const session = event.data.object as Stripe.Checkout.Session
 
+  // AUDIT LOG: emit key identifiers so every completed checkout is traceable in server logs.
+  log.info({
+    msg: 'checkout.session.completed received',
+    sessionId: session.id,
+    paymentIntent: session.payment_intent ?? null,
+    customerId: session.customer ?? null,
+    customerEmail: session.customer_details?.email ?? null,
+    paymentStatus: session.payment_status,
+    subscriptionId: session.subscription ?? null,
+    plan: session.metadata?.plan ?? null,
+  })
+
+  // Guard: only activate plan when Stripe has confirmed payment.
+  // payment_status can be 'no_payment_required' for free trials or 100% promo codes —
+  // in those cases rely on invoice.payment_succeeded to handle plan activation.
+  if (session.payment_status !== 'paid' && session.payment_status !== 'no_payment_required') {
+    log.warn({
+      msg: 'checkout.session.completed skipped — payment not confirmed',
+      sessionId: session.id,
+      paymentStatus: session.payment_status,
+    })
+    return
+  }
+
   const stripeCustomerId = (session.customer as string) || ''
   if (!stripeCustomerId) {
     return

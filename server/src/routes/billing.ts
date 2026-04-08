@@ -156,6 +156,19 @@ router.post('/checkout', async (req: Request, res: Response) => {
 
       const session = await stripe.checkout.sessions.create(sessionParams)
 
+      // AUDIT LOG: emit key identifiers so every checkout session creation is traceable.
+      log.info({
+        msg: 'Stripe checkout session created',
+        sessionId: session.id,
+        paymentIntent: session.payment_intent ?? null,
+        customerId: session.customer ?? null,
+        customerEmail: session.customer_details?.email ?? checkoutEmail ?? null,
+        plan,
+        annual,
+        priceId,
+        mode: 'subscription',
+      })
+
       return res.json({ url: session.url })
     }
 

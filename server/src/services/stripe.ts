@@ -30,6 +30,12 @@ export function assertStripeConfig(): void {
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 assertStripeConfig()
 
+// AUDIT: log Stripe mode at startup so it is always visible in server logs.
+// If this prints TEST MODE and you are expecting live payments, your STRIPE_SECRET_KEY
+// starts with sk_test_ — swap it for your sk_live_ key.
+const stripeMode = stripeSecretKey?.startsWith('sk_live_') ? 'LIVE MODE' : 'TEST MODE'
+log.info({ msg: `Stripe initialised — ${stripeMode}`, mode: stripeMode })
+
 export const stripe = new Stripe(stripeSecretKey!, {
   apiVersion: '2026-01-28.clover',
 })
