@@ -84,6 +84,7 @@ const PodcastTranscriptionTool = lazy(() => import('./pages/PodcastTranscription
 const InterviewTranscriptionTool = lazy(() => import('./pages/InterviewTranscriptionTool'))
 const YoutubeVideoToTranscript = lazy(() => import('./pages/YoutubeVideoToTranscript'))
 const NotFound = lazy(() => import('./pages/NotFound'))
+const Status = lazy(() => import('./pages/Status'))
 const ShareTranscript = lazy(() => import('./pages/ShareTranscript'))
 // Free tools — client-side only, zero server dependency
 const FreeToolsIndex = lazy(() => import('./pages/tools/FreeToolsIndex'))
@@ -496,6 +497,7 @@ function App() {
             <Route path="/otter-vs-videotext" element={<OtterVsVideoText />} />
             <Route path="/descript-vs-videotext" element={<DescriptVsVideoText />} />
             <Route path="/ai-transcription-tools" element={<AiTranscriptionTools />} />
+            <Route path="/status" element={<Status />} />
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />

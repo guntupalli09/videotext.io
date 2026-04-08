@@ -194,6 +194,11 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'VideoText transcribes video to text in under 5 minutes with 98.5%+ word accuracy. Powered by OpenAI Whisper. Privacy-first: files deleted after processing. 127,000+ videos transcribed. Free tier available.',
   },
+  '/status': {
+    title: 'VideoText Status – System Status & Uptime',
+    description:
+      'Check real-time status, uptime, and incident history for VideoText services including Transcription API, Subtitle Generation, AI Summaries, and more.',
+  },
   '/open': {
     title: 'Open Stats — Accuracy, Speed & Transparency | VideoText',
     description:
@@ -405,6 +410,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/sonix-alternative': [{ name: 'Home', path: '/' }, { name: 'Sonix Alternative', path: '/sonix-alternative' }],
   '/easyscribe-alternative': [{ name: 'Home', path: '/' }, { name: 'EasyScribe Alternative', path: '/easyscribe-alternative' }],
   '/notta-alternative': [{ name: 'Home', path: '/' }, { name: 'Notta Alternative', path: '/notta-alternative' }],
+  '/status': [{ name: 'Home', path: '/' }, { name: 'Status', path: '/status' }],
   '/open': [{ name: 'Home', path: '/' }, { name: 'Open Stats', path: '/open' }],
   '/transcription-benchmark': [{ name: 'Home', path: '/' }, { name: 'Transcription Benchmark', path: '/transcription-benchmark' }],
   '/accuracy-test': [{ name: 'Home', path: '/' }, { name: 'Accuracy Test', path: '/accuracy-test' }],
