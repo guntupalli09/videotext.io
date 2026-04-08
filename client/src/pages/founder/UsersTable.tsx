@@ -1,5 +1,24 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import type { DashboardUser } from '../../lib/founderDashboard'
+
+const CSV_FIELDS: { header: string; get: (u: DashboardUser) => string }[] = [
+  { header: 'Email', get: (u) => u.email },
+  { header: 'Name', get: (u) => u.name ?? '' },
+  { header: 'Plan', get: (u) => u.plan },
+  { header: 'Jobs (30d)', get: (u) => String(u.jobCount30d) },
+  { header: 'Total Jobs', get: (u) => String(u.totalJobs) },
+  { header: 'Last Active', get: (u) => u.lastActiveAt ? new Date(u.lastActiveAt).toISOString() : '' },
+  { header: 'Signed Up', get: (u) => new Date(u.createdAt).toISOString() },
+  { header: 'UTM Source', get: (u) => u.utmSource ?? '' },
+  { header: 'First Referrer', get: (u) => u.firstReferrer ?? '' },
+]
+
+function escapeCSV(value: string): string {
+  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`
+  }
+  return value
+}
 
 const PLAN_COLORS: Record<string, string> = {
   free: 'bg-zinc-700 text-zinc-300',
@@ -67,6 +86,21 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
     else { setSortKey(key); setSortDir('desc') }
   }
 
+  const exportCSV = useCallback(() => {
+    const header = CSV_FIELDS.map((f) => f.header).join(',')
+    const rows = filtered.map((u) =>
+      CSV_FIELDS.map((f) => escapeCSV(f.get(u))).join(',')
+    )
+    const csv = [header, ...rows].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `users-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [filtered])
+
   function SortIcon({ k }: { k: SortKey }) {
     if (sortKey !== k) return <span className="text-zinc-600 ml-1">↕</span>
     return <span className="text-violet-400 ml-1">{sortDir === 'desc' ? '↓' : '↑'}</span>
@@ -94,6 +128,16 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
           ))}
         </select>
         <span className="text-sm text-zinc-500 self-center">{filtered.length} users</span>
+        <button
+          onClick={exportCSV}
+          className="flex items-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-zinc-300 hover:text-white transition-colors"
+          title="Export visible rows as CSV"
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M8 2v8m0 0L5 7m3 3l3-3M2 12h12" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Export CSV
+        </button>
       </div>
 
       {/* Table */}
