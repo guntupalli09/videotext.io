@@ -83,9 +83,6 @@ const AiTranscriptionWorkflow = lazy(() => import('./pages/AiTranscriptionWorkfl
 const PodcastTranscriptionTool = lazy(() => import('./pages/PodcastTranscriptionTool'))
 const InterviewTranscriptionTool = lazy(() => import('./pages/InterviewTranscriptionTool'))
 const YoutubeVideoToTranscript = lazy(() => import('./pages/YoutubeVideoToTranscript'))
-const OtterVsVideoText = lazy(() => import('./pages/OtterVsVideoText'))
-const DescriptVsVideoText = lazy(() => import('./pages/DescriptVsVideoText'))
-const AiTranscriptionTools = lazy(() => import('./pages/AiTranscriptionTools'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const ShareTranscript = lazy(() => import('./pages/ShareTranscript'))
 // Free tools — client-side only, zero server dependency
