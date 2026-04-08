@@ -186,6 +186,7 @@ export default function CitationPage(props: CitationPageProps) {
           <Link to="/video-to-transcript" className="text-violet-700 font-medium hover:underline">Video to Transcript tool</Link> ·{' '}
           <Link to="/best-otter-alternatives" className="text-violet-700 font-medium hover:underline">Best Otter alternatives</Link> ·{' '}
           <Link to="/best-descript-alternatives" className="text-violet-700 font-medium hover:underline">Best Descript alternatives</Link>
+          <Link to="/video-to-transcript" className="text-violet-700 font-medium hover:underline">Video to Transcript tool</Link>
         </section>
       </div>
     </div>

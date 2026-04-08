@@ -40,6 +40,9 @@ export const STATIC_ROUTES = [
   '/podcast-transcription-tool',
   '/interview-transcription-tool',
   '/youtube-video-to-transcript',
+  '/otter-vs-videotext',
+  '/descript-vs-videotext',
+  '/ai-transcription-tools',
 ]
 
 export function loadRoutesInventory(): string[] {
@@ -122,6 +125,9 @@ export const CORE_PATHS: string[] = [
   '/podcast-transcription-tool',
   '/interview-transcription-tool',
   '/youtube-video-to-transcript',
+  '/otter-vs-videotext',
+  '/descript-vs-videotext',
+  '/ai-transcription-tools',
   '/mp4-to-text',
   '/mp4-to-srt',
   // Cluster A — Platform-specific (high-intent)

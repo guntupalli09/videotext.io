@@ -422,18 +422,20 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           setUploadPhase('processing')
           setUploadProgress(100)
           const res = jobStatus.result
-          if (res?.segments?.length) {
-            const textFromSegments = res.segments.map((s: { text: string }) => s.text).join('\n\n')
-            setFullTranscript(textFromSegments)
-            setTranscriptPreview(textFromSegments.substring(0, 500))
-          } else if (res?.downloadUrl) {
-            try {
-              const transcriptResponse = await fetch(getAbsoluteDownloadUrl(res.downloadUrl))
-              const transcriptText = await transcriptResponse.text()
-              setTranscriptPreview(transcriptText.substring(0, 500))
-              setFullTranscript(transcriptText)
-            } catch {
-              // ignore (e.g. ZIP file)
+          if (isLoggedIn()) {
+            if (res?.segments?.length) {
+              const textFromSegments = res.segments.map((s: { text: string }) => s.text).join('\n\n')
+              setFullTranscript(textFromSegments)
+              setTranscriptPreview(textFromSegments.substring(0, 500))
+            } else if (res?.downloadUrl) {
+              try {
+                const transcriptResponse = await fetch(getAbsoluteDownloadUrl(res.downloadUrl))
+                const transcriptText = await transcriptResponse.text()
+                setTranscriptPreview(transcriptText.substring(0, 500))
+                setFullTranscript(transcriptText)
+              } catch {
+                // ignore (e.g. ZIP file)
+              }
             }
           }
           invalidateUsageCache()
@@ -485,18 +487,20 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               setResult(s.result ?? null)
               trackAppEvent('transcription_completed', { toolId: 'video-to-transcript' })
               // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
-              if (s.result?.segments?.length) {
-                const textFromSegments = s.result.segments.map((seg: { text: string }) => seg.text).join('\n\n')
-                setFullTranscript(textFromSegments)
-                setTranscriptPreview(textFromSegments.substring(0, 500))
-              } else if (s.result?.downloadUrl) {
-                try {
-                  const res = await fetch(getAbsoluteDownloadUrl(s.result.downloadUrl))
-                  const text = await res.text()
-                  setTranscriptPreview(text.substring(0, 500))
-                  setFullTranscript(text)
-                } catch {
-                  // ignore
+              if (isLoggedIn()) {
+                if (s.result?.segments?.length) {
+                  const textFromSegments = s.result.segments.map((seg: { text: string }) => seg.text).join('\n\n')
+                  setFullTranscript(textFromSegments)
+                  setTranscriptPreview(textFromSegments.substring(0, 500))
+                } else if (s.result?.downloadUrl) {
+                  try {
+                    const res = await fetch(getAbsoluteDownloadUrl(s.result.downloadUrl))
+                    const text = await res.text()
+                    setTranscriptPreview(text.substring(0, 500))
+                    setFullTranscript(text)
+                  } catch {
+                    // ignore
+                  }
                 }
               }
               invalidateUsageCache()
@@ -594,12 +598,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   //   if (status === 'completed' && selectedFile) workflow.setVideo(selectedFile)
   // }, [status, selectedFile])
 
-  // Show auth gate 3 seconds after job completes so the user gets a taste of their result.
-  // Users can see live partial transcription during processing but results are gated.
+  // Show auth gate immediately when job completes for non-logged-in users.
   useEffect(() => {
     if (status === 'completed' && !isLoggedIn()) {
-      const t = setTimeout(() => setShowAuthGate(true), 3000)
-      return () => clearTimeout(t)
+      setShowAuthGate(true)
+      setShowAuthModal(true)
     }
   }, [status])
 
@@ -866,21 +869,23 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
             // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
-            if (res?.segments?.length) {
-              const textFromSegments = res.segments.map((s: { text: string }) => s.text).join('\n\n')
-              setFullTranscript(textFromSegments)
-              setTranscriptPreview(textFromSegments.substring(0, 500))
-            } else if (res?.downloadUrl) {
-              try {
-                fetch(getAbsoluteDownloadUrl(res.downloadUrl))
-                  .then((transcriptResponse) => transcriptResponse.text())
-                  .then((transcriptText) => {
-                    setTranscriptPreview(transcriptText.substring(0, 500))
-                    setFullTranscript(transcriptText)
-                  })
-                  .catch(() => {})
-              } catch {
-                // Ignore
+            if (isLoggedIn()) {
+              if (res?.segments?.length) {
+                const textFromSegments = res.segments.map((s: { text: string }) => s.text).join('\n\n')
+                setFullTranscript(textFromSegments)
+                setTranscriptPreview(textFromSegments.substring(0, 500))
+              } else if (res?.downloadUrl) {
+                try {
+                  fetch(getAbsoluteDownloadUrl(res.downloadUrl))
+                    .then((transcriptResponse) => transcriptResponse.text())
+                    .then((transcriptText) => {
+                      setTranscriptPreview(transcriptText.substring(0, 500))
+                      setFullTranscript(transcriptText)
+                    })
+                    .catch(() => {})
+                } catch {
+                  // Ignore
+                }
               }
             }
             incrementUsage('video-to-transcript')
@@ -1104,15 +1109,17 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
             // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
-            if (res?.segments?.length) {
-              const text = res.segments.map((s: { text: string }) => s.text).join('\n\n')
-              setFullTranscript(text)
-              setTranscriptPreview(text.substring(0, 500))
-            } else if (res?.downloadUrl) {
-              fetch(getAbsoluteDownloadUrl(res.downloadUrl))
-                .then((r) => r.text())
-                .then((t) => { setTranscriptPreview(t.substring(0, 500)); setFullTranscript(t) })
-                .catch(() => {})
+            if (isLoggedIn()) {
+              if (res?.segments?.length) {
+                const text = res.segments.map((s: { text: string }) => s.text).join('\n\n')
+                setFullTranscript(text)
+                setTranscriptPreview(text.substring(0, 500))
+              } else if (res?.downloadUrl) {
+                fetch(getAbsoluteDownloadUrl(res.downloadUrl))
+                  .then((r) => r.text())
+                  .then((t) => { setTranscriptPreview(t.substring(0, 500)); setFullTranscript(t) })
+                  .catch(() => {})
+              }
             }
             incrementUsage('video-to-transcript')
             invalidateUsageCache()

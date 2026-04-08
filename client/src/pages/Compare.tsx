@@ -1118,6 +1118,9 @@ export default function Compare() {
             <Link to="/videotext-vs-rev" className="text-violet-600 dark:text-violet-400 hover:underline">VideoText vs Rev</Link>
             <Link to="/best-otter-alternatives" className="text-violet-600 dark:text-violet-400 hover:underline">Best Otter alternatives</Link>
             <Link to="/best-descript-alternatives" className="text-violet-600 dark:text-violet-400 hover:underline">Best Descript alternatives</Link>
+            <Link to="/otter-vs-videotext" className="text-violet-600 dark:text-violet-400 hover:underline">Otter vs VideoText</Link>
+            <Link to="/descript-vs-videotext" className="text-violet-600 dark:text-violet-400 hover:underline">Descript vs VideoText</Link>
+            <Link to="/ai-transcription-tools" className="text-violet-600 dark:text-violet-400 hover:underline">AI transcription tools</Link>
             <Link to="/transcription-benchmark" className="text-violet-600 dark:text-violet-400 hover:underline">Transcription benchmark</Link>
             <Link to="/accuracy-test" className="text-violet-600 dark:text-violet-400 hover:underline">Accuracy test</Link>
           </div>

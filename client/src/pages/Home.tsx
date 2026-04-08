@@ -292,6 +292,9 @@ export default function Home() {
               { label: 'Podcast transcription tool', path: '/podcast-transcription-tool' },
               { label: 'Interview transcription tool', path: '/interview-transcription-tool' },
               { label: 'YouTube video to transcript', path: '/youtube-video-to-transcript' },
+              { label: 'Otter vs VideoText', path: '/otter-vs-videotext' },
+              { label: 'Descript vs VideoText', path: '/descript-vs-videotext' },
+              { label: 'AI transcription tools', path: '/ai-transcription-tools' },
               { label: 'Transcription benchmark', path: '/transcription-benchmark' },
             ].map((item) => (
               <Link key={item.path} to={item.path} className="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 text-sm font-semibold text-gray-800 dark:text-gray-200 hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300">

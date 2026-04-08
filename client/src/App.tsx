@@ -83,6 +83,9 @@ const AiTranscriptionWorkflow = lazy(() => import('./pages/AiTranscriptionWorkfl
 const PodcastTranscriptionTool = lazy(() => import('./pages/PodcastTranscriptionTool'))
 const InterviewTranscriptionTool = lazy(() => import('./pages/InterviewTranscriptionTool'))
 const YoutubeVideoToTranscript = lazy(() => import('./pages/YoutubeVideoToTranscript'))
+const OtterVsVideoText = lazy(() => import('./pages/OtterVsVideoText'))
+const DescriptVsVideoText = lazy(() => import('./pages/DescriptVsVideoText'))
+const AiTranscriptionTools = lazy(() => import('./pages/AiTranscriptionTools'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const ShareTranscript = lazy(() => import('./pages/ShareTranscript'))
 // Free tools — client-side only, zero server dependency
@@ -493,6 +496,9 @@ function App() {
             <Route path="/podcast-transcription-tool" element={<PodcastTranscriptionTool />} />
             <Route path="/interview-transcription-tool" element={<InterviewTranscriptionTool />} />
             <Route path="/youtube-video-to-transcript" element={<YoutubeVideoToTranscript />} />
+            <Route path="/otter-vs-videotext" element={<OtterVsVideoText />} />
+            <Route path="/descript-vs-videotext" element={<DescriptVsVideoText />} />
+            <Route path="/ai-transcription-tools" element={<AiTranscriptionTools />} />
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />
