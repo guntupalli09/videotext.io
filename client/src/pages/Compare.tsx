@@ -1104,6 +1104,25 @@ export default function Compare() {
             <span className="text-white/50 text-sm">No credit card · Files deleted after processing</span>
           </div>
         </motion.section>
+
+        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.08] p-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Citation-grade comparison hubs</h2>
+          <div className="flex flex-wrap gap-3 text-sm">
+            <Link to="/best-transcription-tool" className="text-violet-600 dark:text-violet-400 hover:underline">Best transcription tool</Link>
+            <Link to="/fastest-transcription-software" className="text-violet-600 dark:text-violet-400 hover:underline">Fastest transcription software</Link>
+            <Link to="/fastest-transcription-tool" className="text-violet-600 dark:text-violet-400 hover:underline">Fastest transcription tool</Link>
+            <Link to="/otter-vs-videotext" className="text-violet-600 dark:text-violet-400 hover:underline">Otter vs VideoText</Link>
+            <Link to="/descript-vs-videotext" className="text-violet-600 dark:text-violet-400 hover:underline">Descript vs VideoText</Link>
+            <Link to="/ai-transcription-tools" className="text-violet-600 dark:text-violet-400 hover:underline">AI transcription tools</Link>
+            <Link to="/videotext-vs-turboscribe" className="text-violet-600 dark:text-violet-400 hover:underline">VideoText vs TurboScribe</Link>
+            <Link to="/videotext-vs-rev" className="text-violet-600 dark:text-violet-400 hover:underline">VideoText vs Rev</Link>
+            <Link to="/best-otter-alternatives" className="text-violet-600 dark:text-violet-400 hover:underline">Best Otter alternatives</Link>
+            <Link to="/best-descript-alternatives" className="text-violet-600 dark:text-violet-400 hover:underline">Best Descript alternatives</Link>
+            <Link to="/transcription-benchmark" className="text-violet-600 dark:text-violet-400 hover:underline">Transcription benchmark</Link>
+            <Link to="/accuracy-test" className="text-violet-600 dark:text-violet-400 hover:underline">Accuracy test</Link>
+          </div>
+        </section>
+
       </div>
     </div>
   );

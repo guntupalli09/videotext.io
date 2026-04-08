@@ -283,12 +283,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/best-transcription-tool</loc>
-    <lastmod>2026-04-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://videotext.io/video-to-transcription</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>monthly</changefreq>
@@ -301,19 +295,7 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://videotext.io/podcast-transcription-tool</loc>
-    <lastmod>2026-04-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://videotext.io/meeting-transcription-tool</loc>
-    <lastmod>2026-04-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://videotext.io/interview-transcription-tool</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -332,12 +314,6 @@
   </url>
   <url>
     <loc>https://videotext.io/best-podcast-transcription-tool</loc>
-    <lastmod>2026-04-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://videotext.io/fastest-transcription-tool</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -554,12 +530,6 @@
   </url>
   <url>
     <loc>https://videotext.io/youtube-video-subtitles</loc>
-    <lastmod>2026-04-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://videotext.io/youtube-video-to-transcript</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
