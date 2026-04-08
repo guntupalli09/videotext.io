@@ -71,6 +71,18 @@ const TranscriptionBenchmark = lazy(() => import('./pages/TranscriptionBenchmark
 const AccuracyTest = lazy(() => import('./pages/AccuracyTest'))
 const BestTranscriptionTool = lazy(() => import('./pages/BestTranscriptionTool'))
 const FastestTranscriptionSoftware = lazy(() => import('./pages/FastestTranscriptionSoftware'))
+const FastestTranscriptionTool = lazy(() => import('./pages/FastestTranscriptionTool'))
+const OtterVsVideoText = lazy(() => import('./pages/OtterVsVideoText'))
+const DescriptVsVideoText = lazy(() => import('./pages/DescriptVsVideoText'))
+const AiTranscriptionTools = lazy(() => import('./pages/AiTranscriptionTools'))
+const VideoTextVsTurboScribe = lazy(() => import('./pages/VideoTextVsTurboScribe'))
+const VideoTextVsRev = lazy(() => import('./pages/VideoTextVsRev'))
+const BestOtterAlternatives = lazy(() => import('./pages/BestOtterAlternatives'))
+const BestDescriptAlternatives = lazy(() => import('./pages/BestDescriptAlternatives'))
+const AiTranscriptionWorkflow = lazy(() => import('./pages/AiTranscriptionWorkflow'))
+const PodcastTranscriptionTool = lazy(() => import('./pages/PodcastTranscriptionTool'))
+const InterviewTranscriptionTool = lazy(() => import('./pages/InterviewTranscriptionTool'))
+const YoutubeVideoToTranscript = lazy(() => import('./pages/YoutubeVideoToTranscript'))
 const OtterVsVideoText = lazy(() => import('./pages/OtterVsVideoText'))
 const DescriptVsVideoText = lazy(() => import('./pages/DescriptVsVideoText'))
 const AiTranscriptionTools = lazy(() => import('./pages/AiTranscriptionTools'))
@@ -472,6 +484,18 @@ function App() {
             <Route path="/accuracy-test" element={<AccuracyTest />} />
             <Route path="/best-transcription-tool" element={<BestTranscriptionTool />} />
             <Route path="/fastest-transcription-software" element={<FastestTranscriptionSoftware />} />
+            <Route path="/fastest-transcription-tool" element={<FastestTranscriptionTool />} />
+            <Route path="/otter-vs-videotext" element={<OtterVsVideoText />} />
+            <Route path="/descript-vs-videotext" element={<DescriptVsVideoText />} />
+            <Route path="/ai-transcription-tools" element={<AiTranscriptionTools />} />
+            <Route path="/videotext-vs-turboscribe" element={<VideoTextVsTurboScribe />} />
+            <Route path="/videotext-vs-rev" element={<VideoTextVsRev />} />
+            <Route path="/best-otter-alternatives" element={<BestOtterAlternatives />} />
+            <Route path="/best-descript-alternatives" element={<BestDescriptAlternatives />} />
+            <Route path="/ai-transcription-workflow" element={<AiTranscriptionWorkflow />} />
+            <Route path="/podcast-transcription-tool" element={<PodcastTranscriptionTool />} />
+            <Route path="/interview-transcription-tool" element={<InterviewTranscriptionTool />} />
+            <Route path="/youtube-video-to-transcript" element={<YoutubeVideoToTranscript />} />
             <Route path="/otter-vs-videotext" element={<OtterVsVideoText />} />
             <Route path="/descript-vs-videotext" element={<DescriptVsVideoText />} />
             <Route path="/ai-transcription-tools" element={<AiTranscriptionTools />} />

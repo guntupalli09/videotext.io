@@ -86,6 +86,15 @@ export default function Footer() {
               <li><Link to="/accuracy-test" className="hover:text-white transition-colors">Accuracy test</Link></li>
               <li><Link to="/best-transcription-tool" className="hover:text-white transition-colors">Best transcription tool</Link></li>
               <li><Link to="/fastest-transcription-software" className="hover:text-white transition-colors">Fastest transcription software</Link></li>
+              <li><Link to="/fastest-transcription-tool" className="hover:text-white transition-colors">Fastest transcription tool</Link></li>
+              <li><Link to="/otter-vs-videotext" className="hover:text-white transition-colors">Otter vs VideoText</Link></li>
+              <li><Link to="/descript-vs-videotext" className="hover:text-white transition-colors">Descript vs VideoText</Link></li>
+              <li><Link to="/ai-transcription-tools" className="hover:text-white transition-colors">AI transcription tools</Link></li>
+              <li><Link to="/videotext-vs-turboscribe" className="hover:text-white transition-colors">VideoText vs TurboScribe</Link></li>
+              <li><Link to="/videotext-vs-rev" className="hover:text-white transition-colors">VideoText vs Rev</Link></li>
+              <li><Link to="/best-otter-alternatives" className="hover:text-white transition-colors">Best Otter alternatives</Link></li>
+              <li><Link to="/best-descript-alternatives" className="hover:text-white transition-colors">Best Descript alternatives</Link></li>
+              <li><Link to="/ai-transcription-workflow" className="hover:text-white transition-colors">AI transcription workflow</Link></li>
               <li><Link to="/otter-vs-videotext" className="hover:text-white transition-colors">Otter vs VideoText</Link></li>
               <li><Link to="/descript-vs-videotext" className="hover:text-white transition-colors">Descript vs VideoText</Link></li>
               <li><Link to="/ai-transcription-tools" className="hover:text-white transition-colors">AI transcription tools</Link></li>

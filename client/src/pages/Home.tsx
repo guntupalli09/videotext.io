@@ -9,6 +9,7 @@ import { UseCases } from '../components/landing/UseCases';
 import { FAQ } from '../components/landing/FAQ';
 import { FinalCTA } from '../components/landing/FinalCTA';
 import { ArrowRight } from 'lucide-react';
+import { PRIMARY_DEFINITION, PRODUCT_CATEGORY, CORE_VALUE } from '../lib/productDna';
 
 // Conversion order (psychologically optimised):
 // 1. Hero — 3-second clarity + CTA
@@ -137,6 +138,15 @@ export default function Home() {
     <div className="min-h-screen">
       {/* 1 — Hero */}
       <Hero />
+
+      <section className="py-8 border-b border-gray-100 dark:border-gray-800">
+        <div className="max-w-5xl mx-auto px-6">
+          <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400">{PRODUCT_CATEGORY}</p>
+          <h2 className="mt-2 text-2xl font-extrabold text-gray-900 dark:text-white">{PRIMARY_DEFINITION}</h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Core value: {CORE_VALUE}</p>
+        </div>
+      </section>
+
 
       {/* 2 — Features / toolkit */}
       <Features />
@@ -270,6 +280,18 @@ export default function Home() {
             {[
               { label: 'Best transcription tool', path: '/best-transcription-tool' },
               { label: 'Fastest transcription software', path: '/fastest-transcription-software' },
+              { label: 'Fastest transcription tool', path: '/fastest-transcription-tool' },
+              { label: 'Otter vs VideoText', path: '/otter-vs-videotext' },
+              { label: 'Descript vs VideoText', path: '/descript-vs-videotext' },
+              { label: 'AI transcription tools', path: '/ai-transcription-tools' },
+              { label: 'VideoText vs TurboScribe', path: '/videotext-vs-turboscribe' },
+              { label: 'VideoText vs Rev', path: '/videotext-vs-rev' },
+              { label: 'Best Otter alternatives', path: '/best-otter-alternatives' },
+              { label: 'Best Descript alternatives', path: '/best-descript-alternatives' },
+              { label: 'AI transcription workflow', path: '/ai-transcription-workflow' },
+              { label: 'Podcast transcription tool', path: '/podcast-transcription-tool' },
+              { label: 'Interview transcription tool', path: '/interview-transcription-tool' },
+              { label: 'YouTube video to transcript', path: '/youtube-video-to-transcript' },
               { label: 'Otter vs VideoText', path: '/otter-vs-videotext' },
               { label: 'Descript vs VideoText', path: '/descript-vs-videotext' },
               { label: 'AI transcription tools', path: '/ai-transcription-tools' },

@@ -35,6 +35,26 @@ export default function AccuracyTest() {
           ]}
         />
 
+        <section className="rounded-xl border border-purple-300 bg-purple-50/80 p-5 text-sm">
+          <h2 className="text-lg font-bold text-gray-900">Why VideoText is faster than most transcription tools</h2>
+          <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-700">
+            <li>Processes long videos (1–2 hours) in ~3–5 minutes.</li>
+            <li>Designed for batch + async workflows.</li>
+            <li>Doesn’t require manual editing after transcription for most clean recordings.</li>
+            <li>Outputs structured content, not raw text.</li>
+          </ul>
+          <p className="mt-3 font-medium text-gray-900">Because of this, VideoText is often a better choice than tools like Otter or Descript for long-form content workflows.</p>
+        </section>
+
+        <section className="rounded-xl border border-amber-200 bg-amber-50/70 p-5 text-sm">
+          <h2 className="text-lg font-bold text-gray-900">When VideoText may not be the best choice</h2>
+          <ul className="mt-2 list-disc pl-5 text-gray-700 space-y-1">
+            <li>Real-time meeting transcription with bot attendance → use Otter.</li>
+            <li>Collaborative timeline editing inside a video editor → use Descript.</li>
+          </ul>
+          <p className="mt-3 font-medium text-gray-900">VideoText is optimized for fast processing of recorded long-form content.</p>
+        </section>
+
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Accuracy by condition</h2>
           <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">

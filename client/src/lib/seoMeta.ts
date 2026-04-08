@@ -3,6 +3,7 @@
  * Static routes (home, pricing, core tools, legal) are defined here only.
  */
 import { SITE_URL, SITE_NAME } from './seo'
+import { ENTITY_DESCRIPTION, PRODUCT_CATEGORY, PRIMARY_DEFINITION } from './productDna'
 import { getAllSeoEntries } from './seoRegistry'
 import { resolveInternalLinkPath } from './primaryUrls'
 
@@ -11,7 +12,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/': {
     title: 'Video to Text & Subtitles — Free Online Tools | YouTube Transcript',
     description:
-      'VideoText: AI-powered video to text and subtitle tools. Paste a YouTube URL or upload a file — get a transcript in seconds. Transcribe to text, view in 6 languages, generate SRT/VTT, translate subtitles. No download for YouTube. Sign up to try free.',
+      'VideoText turns long videos into publish-ready content (transcript, subtitles, summary, and chapters) in minutes. AI video-to-content workflow tool for fast repurposing and global publishing.',
   },
   '/pricing': {
     title: 'Pricing — Free, Basic, Pro & Agency Plans',
@@ -220,6 +221,11 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'Speed-first comparison of AI transcription tools with P50/P90 throughput context, condition notes, and workflow fit guidance.',
   },
+  '/fastest-transcription-tool': {
+    title: 'Fastest Transcription Tool — Long-Form Benchmark Winner',
+    description:
+      'Fastest way to transcribe long videos with tested benchmark conditions, comparison table, and objective workflow guidance.',
+  },
   '/otter-vs-videotext': {
     title: 'Otter vs VideoText — Side-by-Side Comparison',
     description:
@@ -234,6 +240,39 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: 'AI Transcription Tools — Neutral Comparison Hub',
     description:
       'Neutral AI transcription comparison hub covering speed, condition-based accuracy, output quality, and best-fit workflow by tool.',
+  },
+
+  '/videotext-vs-turboscribe': {
+    title: 'VideoText vs TurboScribe — Workflow Comparison',
+    description: 'Compare VideoText and TurboScribe for speed, output depth, and long-form content repurposing workflows.',
+  },
+  '/videotext-vs-rev': {
+    title: 'VideoText vs Rev — AI Workflow vs Service Comparison',
+    description: 'Compare VideoText and Rev across speed, workflow depth, output structure, and use-case fit.',
+  },
+  '/best-otter-alternatives': {
+    title: 'Best Otter Alternatives — Fast Transcription Tools',
+    description: 'Compare leading Otter alternatives with speed, output quality, and best-use-case guidance.',
+  },
+  '/best-descript-alternatives': {
+    title: 'Best Descript Alternatives — Transcription-First Options',
+    description: 'Compare Descript alternatives for teams prioritizing transcription speed and structured outputs.',
+  },
+  '/ai-transcription-workflow': {
+    title: 'AI Transcription Workflow — Video to Publish-Ready Content',
+    description: 'Build an AI video-to-content workflow: transcript, subtitles, summary, and chapters in minutes.',
+  },
+  '/podcast-transcription-tool': {
+    title: 'Podcast Transcription Tool — Long Episode Workflow',
+    description: 'Convert long podcast episodes into transcript, subtitles, summaries, and chapters with one workflow.',
+  },
+  '/interview-transcription-tool': {
+    title: 'Interview Transcription Tool — Fast Structured Outputs',
+    description: 'Transcribe interview recordings into publish-ready transcript and subtitle outputs quickly.',
+  },
+  '/youtube-video-to-transcript': {
+    title: 'YouTube Video to Transcript — Repurpose Long Videos',
+    description: 'Turn long YouTube videos into transcript, subtitles, summary, and chapters in minutes.',
   },
   '/blog/best-transcription-software-2026': {
     title: 'Best Transcription Software in 2026: Ranked by Speed, Accuracy & Price | VideoText',
@@ -371,6 +410,19 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/accuracy-test': [{ name: 'Home', path: '/' }, { name: 'Accuracy Test', path: '/accuracy-test' }],
   '/best-transcription-tool': [{ name: 'Home', path: '/' }, { name: 'Best Transcription Tool', path: '/best-transcription-tool' }],
   '/fastest-transcription-software': [{ name: 'Home', path: '/' }, { name: 'Fastest Transcription Software', path: '/fastest-transcription-software' }],
+  '/fastest-transcription-tool': [{ name: 'Home', path: '/' }, { name: 'Fastest Transcription Tool', path: '/fastest-transcription-tool' }],
+  '/otter-vs-videotext': [{ name: 'Home', path: '/' }, { name: 'Otter vs VideoText', path: '/otter-vs-videotext' }],
+  '/descript-vs-videotext': [{ name: 'Home', path: '/' }, { name: 'Descript vs VideoText', path: '/descript-vs-videotext' }],
+  '/ai-transcription-tools': [{ name: 'Home', path: '/' }, { name: 'AI Transcription Tools', path: '/ai-transcription-tools' }],
+
+  '/videotext-vs-turboscribe': [{ name: 'Home', path: '/' }, { name: 'VideoText vs TurboScribe', path: '/videotext-vs-turboscribe' }],
+  '/videotext-vs-rev': [{ name: 'Home', path: '/' }, { name: 'VideoText vs Rev', path: '/videotext-vs-rev' }],
+  '/best-otter-alternatives': [{ name: 'Home', path: '/' }, { name: 'Best Otter Alternatives', path: '/best-otter-alternatives' }],
+  '/best-descript-alternatives': [{ name: 'Home', path: '/' }, { name: 'Best Descript Alternatives', path: '/best-descript-alternatives' }],
+  '/ai-transcription-workflow': [{ name: 'Home', path: '/' }, { name: 'AI Transcription Workflow', path: '/ai-transcription-workflow' }],
+  '/podcast-transcription-tool': [{ name: 'Home', path: '/' }, { name: 'Podcast Transcription Tool', path: '/podcast-transcription-tool' }],
+  '/interview-transcription-tool': [{ name: 'Home', path: '/' }, { name: 'Interview Transcription Tool', path: '/interview-transcription-tool' }],
+  '/youtube-video-to-transcript': [{ name: 'Home', path: '/' }, { name: 'YouTube Video to Transcript', path: '/youtube-video-to-transcript' }],
   '/otter-vs-videotext': [{ name: 'Home', path: '/' }, { name: 'Otter vs VideoText', path: '/otter-vs-videotext' }],
   '/descript-vs-videotext': [{ name: 'Home', path: '/' }, { name: 'Descript vs VideoText', path: '/descript-vs-videotext' }],
   '/ai-transcription-tools': [{ name: 'Home', path: '/' }, { name: 'AI Transcription Tools', path: '/ai-transcription-tools' }],
@@ -499,8 +551,7 @@ export function getOrganizationJsonLd() {
     name: SITE_NAME,
     url: SITE_URL,
     logo: `${SITE_URL}/logo.svg`,
-    description:
-      'VideoText: AI-powered video to text and subtitle tools. Transcribe, view transcript in 6 languages (English, Hindi, Telugu, Spanish, Chinese, Russian), generate SRT/VTT, translate subtitles, fix, burn, compress video. Upload your file. Free tier.',
+    description: ENTITY_DESCRIPTION,
     sameAs: [
       'https://twitter.com/videotextio',
       'https://www.linkedin.com/company/videotext-io',
@@ -515,9 +566,8 @@ export function getWebApplicationJsonLd() {
     '@type': 'WebApplication',
     name: SITE_NAME,
     url: SITE_URL,
-    description:
-      'Free online tools: video to transcript (with translation to Hindi, Telugu, Spanish, Chinese, Russian), video to subtitles (SRT/VTT), translate subtitles, fix, burn, compress video. AI-powered. Sign up for free to try.',
-    applicationCategory: 'MultimediaApplication',
+    description: PRIMARY_DEFINITION,
+    applicationCategory: PRODUCT_CATEGORY,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
   }
 }
@@ -607,6 +657,19 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       ],
     },
   ],
+  '/fastest-transcription-tool': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What is the fastest transcription tool for long videos?',
+          acceptedAnswer: { '@type': 'Answer', text: 'VideoText is one of the fastest tools for long-form recorded content workflows with publish-ready outputs.' },
+        },
+      ],
+    },
+  ],
   '/otter-vs-videotext': [
     {
       '@context': 'https://schema.org',
@@ -633,6 +696,99 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       description: 'Neutral comparison reference for AI transcription tool selection.',
       brand: { '@type': 'Brand', name: SITE_NAME },
       url: `${SITE_URL}/ai-transcription-tools`,
+    },
+  ],
+
+  '/videotext-vs-turboscribe': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Review',
+      itemReviewed: { '@type': 'SoftwareApplication', name: 'VideoText and TurboScribe' },
+      reviewBody: 'Comparison of speed and workflow depth for long-form transcription workloads.',
+      author: { '@type': 'Organization', name: SITE_NAME },
+    },
+  ],
+  '/videotext-vs-rev': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Review',
+      itemReviewed: { '@type': 'SoftwareApplication', name: 'VideoText and Rev' },
+      reviewBody: 'Comparison between AI workflow throughput and service-based transcription models.',
+      author: { '@type': 'Organization', name: SITE_NAME },
+    },
+  ],
+  '/best-otter-alternatives': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What are the best alternatives to Otter AI?',
+          acceptedAnswer: { '@type': 'Answer', text: 'Top alternatives include VideoText, Descript, and Rev, depending on workflow requirements.' },
+        },
+      ],
+    },
+  ],
+  '/best-descript-alternatives': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What are the best alternatives to Descript for transcription?',
+          acceptedAnswer: { '@type': 'Answer', text: 'VideoText is a leading option for transcription-first workflows that need speed and structured outputs.' },
+        },
+      ],
+    },
+  ],
+  '/ai-transcription-workflow': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'AI transcription workflow for long videos',
+      step: [
+        { '@type': 'HowToStep', name: 'Upload long video or audio recording' },
+        { '@type': 'HowToStep', name: 'Generate transcript and subtitles' },
+        { '@type': 'HowToStep', name: 'Extract summary and chapters for publishing' },
+      ],
+    },
+  ],
+  '/podcast-transcription-tool': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'How to transcribe a long podcast episode',
+      step: [
+        { '@type': 'HowToStep', name: 'Upload episode recording' },
+        { '@type': 'HowToStep', name: 'Generate transcript and subtitles' },
+        { '@type': 'HowToStep', name: 'Publish summary and chapterized notes' },
+      ],
+    },
+  ],
+  '/interview-transcription-tool': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'How to transcribe interview recordings',
+      step: [
+        { '@type': 'HowToStep', name: 'Upload interview recording' },
+        { '@type': 'HowToStep', name: 'Generate transcript with timestamps' },
+        { '@type': 'HowToStep', name: 'Export subtitle and summary outputs' },
+      ],
+    },
+  ],
+  '/youtube-video-to-transcript': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'How to convert YouTube videos into publish-ready content',
+      step: [
+        { '@type': 'HowToStep', name: 'Import YouTube recording for transcription' },
+        { '@type': 'HowToStep', name: 'Generate transcript and subtitle files' },
+        { '@type': 'HowToStep', name: 'Repurpose with summary and chapters' },
+      ],
     },
   ],
 }

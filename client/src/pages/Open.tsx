@@ -239,6 +239,12 @@ export default function Open() {
             <Link to="/transcription-benchmark" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Transcription benchmark →</Link>
             <Link to="/accuracy-test" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Accuracy test →</Link>
             <Link to="/fastest-transcription-software" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Fastest transcription software →</Link>
+            <Link to="/fastest-transcription-tool" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Fastest transcription tool →</Link>
+            <Link to="/best-transcription-tool" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Best transcription tool →</Link>
+            <Link to="/ai-transcription-tools" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">AI transcription tools →</Link>
+            <Link to="/ai-transcription-workflow" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">AI transcription workflow →</Link>
+            <Link to="/videotext-vs-turboscribe" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">VideoText vs TurboScribe →</Link>
+            <Link to="/videotext-vs-rev" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">VideoText vs Rev →</Link>
             <Link to="/best-transcription-tool" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Best transcription tool →</Link>
             <Link to="/ai-transcription-tools" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">AI transcription tools →</Link>
           </div>
