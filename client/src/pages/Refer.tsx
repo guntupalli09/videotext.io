@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Gift, Copy, Check, ExternalLink, Sparkles, Users, Clock } from 'lucide-react'
+import { Gift, Copy, Check, ExternalLink, Sparkles, Users, Download } from 'lucide-react'
 import { api } from '../lib/api'
 import { isLoggedIn } from '../lib/auth'
 import { trackEvent } from '../lib/analytics'
@@ -9,9 +9,9 @@ import toast from 'react-hot-toast'
 interface ReferralData {
   code: string
   link: string
-  bonusMinutesPerReferral: number
+  bonusImportsPerReferral: number
   successfulReferrals: number
-  bonusEarned: number
+  bonusImportsEarned: number
 }
 
 export default function Refer() {
@@ -58,7 +58,7 @@ export default function Refer() {
 
   const shareOnX = () => {
     if (!data) return
-    const text = `I use VideoText to transcribe videos in seconds — way faster than anything else I've tried. Get 45 free bonus minutes with my link:`
+    const text = `I use VideoText to transcribe videos in seconds — way faster than anything else I've tried. Get 3 bonus imports free with my link:`
     const url = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(data.link)}`
     window.open(url, '_blank', 'noopener')
     trackEvent('referral_shared', { platform: 'twitter' })
@@ -74,10 +74,10 @@ export default function Refer() {
             <Gift className="w-8 h-8" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-            Give 45 min, get 45 min
+            Give 3 imports, get 3 imports
           </h1>
           <p className="mt-3 text-gray-500 dark:text-gray-400 text-base max-w-sm mx-auto">
-            Share VideoText with a friend. When they upgrade to any paid plan, you both get <strong className="text-gray-800 dark:text-gray-200">45 free bonus minutes</strong>.
+            Share VideoText with a friend. When they upgrade to any paid plan, you both get <strong className="text-gray-800 dark:text-gray-200">3 bonus imports</strong> added to your daily allowance.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function Refer() {
           {[
             { icon: ExternalLink, label: 'Share your link', desc: 'Copy and send it' },
             { icon: Users, label: 'Friend upgrades', desc: 'Any paid plan' },
-            { icon: Clock, label: 'Both get 45 min', desc: 'Added instantly' },
+            { icon: Download, label: 'Both get 3 imports', desc: 'Added instantly' },
           ].map(({ icon: Icon, label, desc }, i) => (
             <div key={i} className="text-center p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
               <div className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 mb-2">
@@ -114,7 +114,7 @@ export default function Refer() {
                   <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <p className="text-sm text-emerald-800 dark:text-emerald-300">
                     <strong>{data.successfulReferrals} successful referral{data.successfulReferrals !== 1 ? 's' : ''}</strong> — you've earned{' '}
-                    <strong>{data.bonusEarned} bonus minutes</strong> so far!
+                    <strong>{data.bonusImportsEarned} bonus import{data.bonusImportsEarned !== 1 ? 's' : ''}</strong> so far!
                   </p>
                 </div>
               )}
@@ -174,7 +174,7 @@ export default function Refer() {
           /* Not logged in — prompt to sign in or upgrade */
           <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-8 text-center space-y-4">
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              Sign in or upgrade to get your unique referral link and start earning bonus minutes.
+              Sign in to get your unique referral link and start earning bonus imports.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
@@ -188,7 +188,7 @@ export default function Refer() {
                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-violet-500/25"
               >
                 <Sparkles className="w-4 h-4" />
-                Upgrade to Pro
+                See pricing
               </Link>
             </div>
           </div>
@@ -196,7 +196,7 @@ export default function Refer() {
 
         {/* Terms */}
         <p className="mt-6 text-center text-xs text-gray-400 dark:text-gray-500">
-          Bonus minutes are added to your monthly allowance and expire with your billing period.
+          Bonus imports extend your daily free import cap and reset with your monthly usage.
           Referral bonus applies once per account. Self-referral is not permitted.
         </p>
       </div>

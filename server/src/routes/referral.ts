@@ -21,8 +21,8 @@ const router = express.Router()
 
 const redis = createRedisClient('client')
 
-/** Bonus minutes granted to both referrer and referred user. */
-const REFERRAL_BONUS_MINUTES = 45
+/** Bonus imports granted to both referrer and referred user. */
+const REFERRAL_BONUS_IMPORTS = 3
 
 /** Generate a short, URL-safe referral code (8 uppercase alphanumeric chars). */
 function generateCode(): string {
@@ -38,13 +38,18 @@ async function getOrCreateCode(userId: string): Promise<string> {
   return code
 }
 
-/** Add bonus minutes to a user's usageThisMonth JSON. */
-async function grantBonusMinutes(userId: string, minutes: number): Promise<void> {
+/**
+ * Add bonus imports to a user's usageThisMonth JSON.
+ * `bonusImports` extends the free-plan daily cap (normally 3) so the user
+ * can import more videos without upgrading. Persists until monthly reset.
+ * Has no effect on Pro/Business (already unlimited).
+ */
+export async function grantBonusImports(userId: string, count: number): Promise<void> {
   const user = await getUser(userId)
   if (!user) return
   const usage = user.usageThisMonth as Record<string, unknown>
-  const current = typeof usage.bonusMinutes === 'number' ? usage.bonusMinutes : 0
-  ;(user.usageThisMonth as Record<string, unknown>).bonusMinutes = current + minutes
+  const current = typeof usage.bonusImports === 'number' ? usage.bonusImports : 0
+  ;(user.usageThisMonth as Record<string, unknown>).bonusImports = current + count
   await saveUser(user)
 }
 
@@ -61,9 +66,9 @@ router.get('/code', async (req: Request, res: Response) => {
     return res.json({
       code,
       link: `https://videotext.io/?ref=${code}`,
-      bonusMinutesPerReferral: REFERRAL_BONUS_MINUTES,
+      bonusImportsPerReferral: REFERRAL_BONUS_IMPORTS,
       successfulReferrals,
-      bonusEarned: successfulReferrals * REFERRAL_BONUS_MINUTES,
+      bonusImportsEarned: successfulReferrals * REFERRAL_BONUS_IMPORTS,
     })
   } catch (error: unknown) {
     log.error({ msg: 'referral code error', error: (error as Error)?.message })
@@ -116,10 +121,11 @@ router.post('/claim', async (req: Request, res: Response) => {
 
     log.info({ msg: 'referral: claiming bonus', claimantId, referrerId, code: upperCode })
 
-    // Grant bonus to both parties
+    // Grant bonus imports to both parties (meaningful for free-plan users;
+    // no-op for Pro/Business which are already unlimited)
     await Promise.all([
-      grantBonusMinutes(claimantId, REFERRAL_BONUS_MINUTES),
-      grantBonusMinutes(referrerId, REFERRAL_BONUS_MINUTES),
+      grantBonusImports(claimantId, REFERRAL_BONUS_IMPORTS),
+      grantBonusImports(referrerId, REFERRAL_BONUS_IMPORTS),
     ])
 
     // Track the claim
@@ -128,8 +134,8 @@ router.post('/claim', async (req: Request, res: Response) => {
 
     return res.json({
       success: true,
-      bonusMinutes: REFERRAL_BONUS_MINUTES,
-      message: `You and your referrer each received ${REFERRAL_BONUS_MINUTES} bonus minutes!`,
+      bonusImports: REFERRAL_BONUS_IMPORTS,
+      message: `You and your referrer each received ${REFERRAL_BONUS_IMPORTS} bonus imports!`,
     })
   } catch (error: unknown) {
     log.error({ msg: 'referral claim error', error: (error as Error)?.message })

@@ -190,9 +190,12 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       if (dailyMinutesReset) await atomicResetDailyMinutesIfNeeded(user.id, now, user.usageThisMonth.dailyMinutesTodayResetDate!)
     }
 
-    // Free plan: 3 imports per day (resets at midnight UTC)
+    // Free plan: 3 imports per day (resets at midnight UTC) + any bonus imports earned via referrals/sharing
     const dailyCap = getMaxDailyImports(user.plan)
-    if (dailyCap !== null && (user.usageThisMonth.importCountToday ?? 0) >= dailyCap) {
+    const bonusImports = typeof (user.usageThisMonth as Record<string, unknown>).bonusImports === 'number'
+      ? (user.usageThisMonth as Record<string, unknown>).bonusImports as number
+      : 0
+    if (dailyCap !== null && (user.usageThisMonth.importCountToday ?? 0) >= dailyCap + bonusImports) {
       if (req.file) {
         try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
       }

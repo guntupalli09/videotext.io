@@ -197,10 +197,12 @@ router.post('/:slug/revoke', async (req: Request, res: Response) => {
 /**
  * POST /api/shares/unlock — share-to-unlock: free users share a result and earn 2 bonus imports.
  * Body: { sessionId: string }
- * Tracked per sessionId in Redis to prevent abuse (1 unlock per session).
+ * Tracked per sessionId in Redis (1 unlock per session).
+ * If the user is logged in, bonus imports are persisted to their account.
  */
 import Redis from 'ioredis'
 import { createRedisClient } from '../utils/redis'
+import { grantBonusImports } from './referral'
 
 const unlockRedis = createRedisClient('client')
 const UNLOCK_BONUS_IMPORTS = 2
@@ -218,7 +220,14 @@ router.post('/unlock', async (req: Request, res: Response) => {
       return res.status(200).json({ alreadyClaimed: true, bonusImports: 0, message: 'Bonus already claimed for this session.' })
     }
     await unlockRedis.set(key, '1', 'EX', 30 * 24 * 60 * 60) // 30 days TTL
-    log.info({ msg: 'shareUnlock: bonus granted', sessionId: sessionId.slice(0, 12) })
+
+    // If logged in, persist bonus imports to their account
+    const auth = getAuthFromRequest(req)
+    if (auth?.userId) {
+      await grantBonusImports(auth.userId, UNLOCK_BONUS_IMPORTS).catch(() => { /* non-blocking */ })
+    }
+
+    log.info({ msg: 'shareUnlock: bonus granted', sessionId: sessionId.slice(0, 12), userId: auth?.userId })
     return res.json({ success: true, bonusImports: UNLOCK_BONUS_IMPORTS })
   } catch (error: unknown) {
     log.error({ msg: 'shareUnlock error', error: (error as Error)?.message })
