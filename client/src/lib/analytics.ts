@@ -114,6 +114,15 @@ export type AnalyticsEvent =
   | 'process_another_clicked'      // props: { tool }
   | 'recording_started'
   | 'recording_stopped'            // props: { duration_seconds }
+  // Viral / referral mechanics
+  | 'repurpose_generate_clicked'   // user clicked generate in RepurposePanel
+  | 'repurpose_generated'          // repurpose API call succeeded; props: { jobId }
+  | 'repurpose_copied'             // user copied repurposed content; props: { tab }
+  | 'share_unlock_claimed'         // share-to-unlock bonus claimed; props: { sessionId }
+  | 'share_unlock_shared'          // user shared link via share-to-unlock
+  | 'api_key_created'              // user created a developer API key
+  | 'referral_link_copied'         // user copied referral link; props: { type }
+  | 'referral_shared'              // user shared referral link; props: { platform }
 
 export function trackEvent(event: AnalyticsEvent, props?: Record<string, unknown>): void {
   if (import.meta.env.DEV) {

@@ -2636,7 +2636,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 {leftWorkspaceTab === 'repurpose' ? (
                   <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                     <RepurposePanel
-                      jobId={jobId}
+                      jobId={currentJobId || getPersistedJobId(location.pathname)}
                       isPaidPlan={isPaidPlan}
                     />
                   </div>
