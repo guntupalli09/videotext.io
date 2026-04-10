@@ -1,7 +1,15 @@
+import { useState, useRef } from 'react'
 import type { MutableRefObject, RefObject } from 'react'
 import type { Segment } from '../../lib/srtExport'
 
-type Item = { speaker: string; text: string; isDiarized: boolean }
+type Item = {
+  /** Resolved display name ("Alice" or "Speaker 1") */
+  speaker: string
+  /** Raw backend label ("SPEAKER_00") — used as the key for renaming */
+  rawSpeaker: string
+  text: string
+  isDiarized: boolean
+}
 
 export default function SpeakerSegmentsPanel(props: {
   data: Item[]
@@ -13,6 +21,7 @@ export default function SpeakerSegmentsPanel(props: {
   diarizationWasRequested: boolean
   speakerSegmentRefsRef: MutableRefObject<Map<number, HTMLDivElement>>
   audioRef: RefObject<HTMLAudioElement | null>
+  onRenameSpeaker?: (rawSpeaker: string, newName: string) => void
 }) {
   const {
     data,
@@ -24,6 +33,7 @@ export default function SpeakerSegmentsPanel(props: {
     diarizationWasRequested,
     speakerSegmentRefsRef,
     audioRef,
+    onRenameSpeaker,
   } = props
 
   const speakerColors: string[] = [
@@ -42,9 +52,23 @@ export default function SpeakerSegmentsPanel(props: {
     'text-amber-600 dark:text-amber-400',
     'text-fuchsia-600 dark:text-fuchsia-400',
   ]
+
+  // Inline rename state — tracks which raw speaker label is being edited
+  const [editingRaw, setEditingRaw] = useState<string | null>(null)
+  const [draftName, setDraftName] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const commitRename = () => {
+    if (editingRaw !== null) {
+      const trimmed = draftName.trim()
+      if (trimmed && onRenameSpeaker) onRenameSpeaker(editingRaw, trimmed)
+      setEditingRaw(null)
+    }
+  }
+
   const hasMultipleSpeakers = data.length > 0 && data.some((d) => d.isDiarized)
-  const uniqueSpeakers = [...new Set(data.map((d) => d.speaker))]
-  const speakerColorIdx = (name: string) => uniqueSpeakers.indexOf(name) % speakerColors.length
+  const uniqueSpeakers = [...new Set(data.map((d) => d.rawSpeaker))]
+  const speakerColorIdx = (rawName: string) => uniqueSpeakers.indexOf(rawName) % speakerColors.length
 
   if (!data.length) {
     return (
@@ -67,7 +91,7 @@ export default function SpeakerSegmentsPanel(props: {
       </h3>
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 shrink-0">
         {hasMultipleSpeakers
-          ? 'Each distinct voice is shown as Speaker 1, Speaker 2, and so on.'
+          ? 'Click a speaker label to rename it — names carry through to all exports.'
           : diarizationWasRequested
             ? 'Speaker identification ran but could not detect multiple voices — try again if that is unexpected.'
             : 'Enable speaker labels before transcribing to see turns.'}
@@ -76,9 +100,11 @@ export default function SpeakerSegmentsPanel(props: {
         {data.map((item, i) => {
           const seg = segments?.[i]
           const isActive = i === activeSegIdx
-          const colorClass = speakerColors[speakerColorIdx(item.speaker)]
-          const textColorClass = speakerTextColors[speakerColorIdx(item.speaker)]
+          const colorClass = speakerColors[speakerColorIdx(item.rawSpeaker)]
+          const textColorClass = speakerTextColors[speakerColorIdx(item.rawSpeaker)]
           const ts = seg ? `${Math.floor(seg.start / 60)}:${String(Math.floor(seg.start % 60)).padStart(2, '0')}` : null
+          const isEditingThis = editingRaw === item.rawSpeaker
+
           return (
             <div
               key={i}
@@ -87,12 +113,13 @@ export default function SpeakerSegmentsPanel(props: {
                 else speakerSegmentRefsRef.current.delete(i)
               }}
               onClick={() => {
+                if (isEditingThis) return
                 if (!audioRef.current || !seg) return
                 audioRef.current.currentTime = seg.start
                 void audioRef.current.play().catch(() => {})
               }}
               className={`flex gap-3 items-start border-l-2 pl-3 py-2 rounded-r-xl transition-all ${
-                audioObjectUrl ? 'cursor-pointer' : ''
+                audioObjectUrl && !isEditingThis ? 'cursor-pointer' : ''
               } ${
                 isActive
                   ? `${colorClass} shadow-sm`
@@ -100,9 +127,39 @@ export default function SpeakerSegmentsPanel(props: {
               }`}
             >
               <div className="shrink-0 flex flex-col items-end gap-0.5 pt-0.5 w-16">
-                <span className={`text-[11px] font-semibold uppercase truncate ${isActive ? textColorClass : 'text-gray-400 dark:text-gray-500'}`}>
-                  {item.speaker}
-                </span>
+                {/* Speaker label — click to rename when diarized */}
+                {isEditingThis ? (
+                  <input
+                    ref={inputRef}
+                    value={draftName}
+                    autoFocus
+                    onChange={(e) => setDraftName(e.target.value)}
+                    onBlur={commitRename}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') { e.preventDefault(); commitRename() }
+                      if (e.key === 'Escape') { e.preventDefault(); setEditingRaw(null) }
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    maxLength={32}
+                    className={`text-[11px] font-semibold uppercase w-16 bg-transparent border-b border-current outline-none truncate ${textColorClass}`}
+                    aria-label="Rename speaker"
+                  />
+                ) : (
+                  <span
+                    className={`text-[11px] font-semibold uppercase truncate max-w-full ${
+                      isActive ? textColorClass : 'text-gray-400 dark:text-gray-500'
+                    } ${item.isDiarized && onRenameSpeaker ? 'cursor-text hover:opacity-70' : ''}`}
+                    title={item.isDiarized && onRenameSpeaker ? 'Click to rename' : undefined}
+                    onClick={(e) => {
+                      if (!item.isDiarized || !onRenameSpeaker) return
+                      e.stopPropagation()
+                      setEditingRaw(item.rawSpeaker)
+                      setDraftName(item.speaker)
+                    }}
+                  >
+                    {item.speaker}
+                  </span>
+                )}
                 {ts && (
                   <span className={`text-[10px] font-mono ${isActive ? textColorClass + ' opacity-70' : 'text-gray-300 dark:text-gray-600'}`}>
                     {ts}
