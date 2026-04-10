@@ -14,7 +14,6 @@
  */
 import express, { Request, Response } from 'express'
 import crypto from 'crypto'
-import Redis from 'ioredis'
 import Bull from 'bull'
 import { getAuthFromRequest } from '../utils/auth'
 import { getUser } from '../models/User'
@@ -29,6 +28,21 @@ const redis = createRedisClient('client')
 
 const KEY_PREFIX = 'vtk_'
 const MAX_KEYS_PER_USER = 5
+
+// Module-level Bull queue — one connection, reused across all requests.
+const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379'
+const fileQueue = new Bull('video-processing', redisUrl)
+
+/** Block private/loopback IPs to prevent SSRF. */
+function isBlockedUrl(rawUrl: string): boolean {
+  try {
+    const { hostname } = new URL(rawUrl)
+    // Block localhost, loopback, private ranges, link-local, metadata endpoints
+    return /^(localhost|127\.|0\.0\.0\.0|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|169\.254\.|::1$|\[::1\]|fc|fd)/.test(hostname)
+  } catch {
+    return true // treat unparseable as blocked
+  }
+}
 
 interface ApiKeyRecord {
   key: string
@@ -127,9 +141,12 @@ router.post('/keys', async (req: Request, res: Response) => {
       minutesUsed: 0,
     }
 
+    const maskedKey = record.key.slice(0, 8) + '…' + record.key.slice(-4)
     await redis.set(`apikey:${key}`, JSON.stringify(record))
-    const updated = [...existing, { ...record, key: record.key.slice(0, 8) + '…' + record.key.slice(-4) }]
-    await saveUserKeys(auth.userId, updated.map(k => ({ ...k, key: k.key.includes('…') ? k.key : k.key.slice(0, 8) + '…' + k.key.slice(-4) })))
+    // Store reverse-lookup so revocation can find the full key by label
+    await redis.set(`apikeyref:${auth.userId}:${label}`, key)
+    const updated = [...existing, { ...record, key: maskedKey }]
+    await saveUserKeys(auth.userId, updated)
 
     log.info({ msg: 'publicApi: created API key', userId: auth.userId, label })
 
@@ -198,9 +215,12 @@ router.post('/transcribe', requireApiKey as unknown as express.RequestHandler, a
       return res.status(400).json({ error: 'url is required. Provide a YouTube URL or a direct video/audio URL.' })
     }
 
-    // Validate that it's a recognizable URL
+    // Validate URL and block private/internal addresses (SSRF)
     try { new URL(url) } catch {
       return res.status(400).json({ error: 'Invalid URL.' })
+    }
+    if (isBlockedUrl(url)) {
+      return res.status(400).json({ error: 'URL not allowed.' })
     }
 
     // Check user plan / limits
@@ -209,10 +229,6 @@ router.post('/transcribe', requireApiKey as unknown as express.RequestHandler, a
     if (user.plan === 'free') {
       return res.status(403).json({ error: 'API access requires Pro or Business plan.', upgrade: true })
     }
-
-    // Enqueue the job via the internal upload/youtube route — reuse the same Bull queue
-    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379'
-    const queue = new Bull('video-processing', redisUrl)
 
     const jobId = crypto.randomUUID()
     const jobData = {
@@ -229,7 +245,7 @@ router.post('/transcribe', requireApiKey as unknown as express.RequestHandler, a
       source: 'public_api',
     }
 
-    await queue.add(jobData, {
+    await fileQueue.add(jobData, {
       jobId,
       priority: user.plan === 'business' ? 30 : 10,
       attempts: 2,

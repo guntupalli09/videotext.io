@@ -8,7 +8,7 @@
 import express, { Request, Response } from 'express'
 import OpenAI from 'openai'
 import { getJobById, type JobData } from '../workers/videoProcessor'
-import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
+import { getAuthFromRequest } from '../utils/auth'
 import { getUser } from '../models/User'
 import { getLogger } from '../lib/logger'
 
@@ -29,7 +29,6 @@ function trimTranscript(text: string): string {
 router.post('/:jobId/repurpose', async (req: Request, res: Response) => {
   try {
     const { jobId } = req.params
-    const userId = getEffectiveUserId(req)
 
     // Auth required for repurpose (Pro/Business feature)
     const auth = getAuthFromRequest(req)
@@ -55,7 +54,7 @@ router.post('/:jobId/repurpose', async (req: Request, res: Response) => {
 
     const jobData = job.data as JobData
     const jobUserId = jobData?.userId
-    if (userId != null && jobUserId != null && userId !== jobUserId) {
+    if (jobUserId && jobUserId !== auth.userId) {
       return res.status(403).json({ message: 'Access denied.' })
     }
 
@@ -127,7 +126,7 @@ Return ONLY the JSON object. No extra text.`
     })
   } catch (error: unknown) {
     log.error({ msg: 'repurpose error', error: (error as Error)?.message ?? String(error) })
-    return res.status(500).json({ message: (error as Error)?.message || 'Failed to generate content. Please try again.' })
+    return res.status(500).json({ message: 'Failed to generate content. Please try again.' })
   }
 })
 
