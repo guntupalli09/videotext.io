@@ -31,6 +31,9 @@ import shareRoutes from './routes/share'
 import feedbackSystemRoutes from './routes/feedbackSystem'
 import adminDashboardRoutes, { clearDashboardCache } from './routes/adminDashboard'
 import adminSupportRoutes, { runAlertChecks, maybeSendDailyDigest } from './routes/adminSupport'
+import repurposeRoutes from './routes/repurpose'
+import referralRoutes from './routes/referral'
+import publicApiRoutes from './routes/publicApi'
 import { runRecompute } from './services/recomputeMetrics'
 import { pushLogEntry } from './lib/logRing'
 import { purgeOldStripeEvents } from './models/StripeEventLog'
@@ -232,6 +235,9 @@ app.use('/api/feedback', feedbackSystemRoutes)
 app.use('/api/admin/feedback', feedbackSystemRoutes)
 app.use('/api/admin', adminDashboardRoutes)
 app.use('/api/admin', adminSupportRoutes)
+app.use('/api/job', repurposeRoutes)
+app.use('/api/referral', referralRoutes)
+app.use('/api/v1', publicApiRoutes)
 
 // Health and ops (no /api prefix)
 app.use(healthRoutes)

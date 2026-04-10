@@ -83,6 +83,7 @@ const AiTranscriptionWorkflow = lazy(() => import('./pages/AiTranscriptionWorkfl
 const PodcastTranscriptionTool = lazy(() => import('./pages/PodcastTranscriptionTool'))
 const InterviewTranscriptionTool = lazy(() => import('./pages/InterviewTranscriptionTool'))
 const YoutubeVideoToTranscript = lazy(() => import('./pages/YoutubeVideoToTranscript'))
+const Developers = lazy(() => import('./pages/Developers'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const Status = lazy(() => import('./pages/Status'))
 const ShareTranscript = lazy(() => import('./pages/ShareTranscript'))
@@ -498,6 +499,8 @@ function App() {
             <Route path="/descript-vs-videotext" element={<DescriptVsVideoText />} />
             <Route path="/ai-transcription-tools" element={<AiTranscriptionTools />} />
             <Route path="/status" element={<Status />} />
+            <Route path="/developers" element={<Developers />} />
+            <Route path="/api-docs" element={<Developers />} />
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript />} />

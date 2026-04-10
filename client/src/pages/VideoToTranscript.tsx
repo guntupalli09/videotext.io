@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Copy, Gem } from 'lucide-react'
+import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Copy, Gem, Zap } from 'lucide-react'
 import FailedState from '../components/FailedState'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
@@ -14,6 +14,8 @@ import { ProcessingProgress } from '../components/figma/ProcessingProgress'
 import { ResultSkeleton } from '../components/figma/ResultSkeleton'
 import { TranscriptResult } from '../components/figma/TranscriptResult'
 import TranscriptSharePanel from '../components/TranscriptSharePanel'
+import RepurposePanel from '../components/RepurposePanel'
+import ShareToUnlock from '../components/ShareToUnlock'
 import SpeakerSegmentsPanel from '../components/videoTranscript/SpeakerSegmentsPanel'
 import PinnedAudioPlayerBar from '../components/transcript/PinnedAudioPlayerBar'
 import { getActiveSegmentIndexAtTime } from '../lib/segmentSync'
@@ -116,8 +118,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [currentJobId, setCurrentJobId] = useState<string | null>(null)
   const [fileFromWorkflow, setFileFromWorkflow] = useState(false)
   const uploadAbortRef = useRef<AbortController | null>(null)
-  /** Results workspace: main reading column (Transcript vs Speakers). Summary / chapters / exports live in the sidebar. */
-  const [leftWorkspaceTab, setLeftWorkspaceTab] = useState<'transcript' | 'speakers'>('transcript')
+  /** Results workspace: main reading column (Transcript vs Speakers vs Repurpose). Summary / chapters / exports live in the sidebar. */
+  const [leftWorkspaceTab, setLeftWorkspaceTab] = useState<'transcript' | 'speakers' | 'repurpose'>('transcript')
   const [translationLanguage, setTranslationLanguage] = useState<string | null>(null)
   const [translatedCache, setTranslatedCache] = useState<Record<string, string>>({})
   const [translateEnabled, setTranslateEnabled] = useState(false)
@@ -1288,6 +1290,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setPartialSegments([])
     setLeftWorkspaceTab('transcript')
     setIncludeSummary(true)
+
     setIncludeChapters(true)
     setExportFormats(['txt'])
     setSpeakerDiarization(false)
@@ -2495,6 +2498,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             className={`space-y-6 ${audioObjectUrl ? 'pb-24 sm:pb-28' : ''}`}
             hidden={showAuthGate && !isLoggedIn()}
           >
+            {/* Share-to-unlock: free users earn 2 bonus imports by sharing */}
+            <ShareToUnlock jobId={currentJobId || getPersistedJobId(location.pathname)} fileName={selectedFile?.name || result?.fileName} />
+
             {/* Result header + primary actions */}
             <TranscriptResult
               fileName={
@@ -2611,8 +2617,30 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     Speakers
                     {!isPaidPlan && <Gem className="w-3.5 h-3.5 text-violet-500 shrink-0 opacity-80" aria-hidden />}
                   </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={leftWorkspaceTab === 'repurpose'}
+                    onClick={() => setLeftWorkspaceTab('repurpose')}
+                    className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg border-b-2 -mb-px transition-colors inline-flex items-center gap-1.5 ${
+                      leftWorkspaceTab === 'repurpose'
+                        ? 'border-violet-600 text-gray-900 dark:text-white bg-white dark:bg-gray-900'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                    }`}
+                  >
+                    <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" aria-hidden />
+                    Repurpose
+                    {!isPaidPlan && <Gem className="w-3.5 h-3.5 text-violet-500 shrink-0 opacity-80" aria-hidden />}
+                  </button>
                 </div>
-                {leftWorkspaceTab === 'speakers' ? (
+                {leftWorkspaceTab === 'repurpose' ? (
+                  <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+                    <RepurposePanel
+                      jobId={jobId}
+                      isPaidPlan={isPaidPlan}
+                    />
+                  </div>
+                ) : leftWorkspaceTab === 'speakers' ? (
                   <div className="p-5 flex-1 min-h-0 flex flex-col overflow-hidden">
                     <SpeakerSegmentsPanel
                       data={getSpeakersData()}

@@ -194,4 +194,36 @@ router.post('/:slug/revoke', async (req: Request, res: Response) => {
   }
 })
 
+/**
+ * POST /api/shares/unlock — share-to-unlock: free users share a result and earn 2 bonus imports.
+ * Body: { sessionId: string }
+ * Tracked per sessionId in Redis to prevent abuse (1 unlock per session).
+ */
+import Redis from 'ioredis'
+import { createRedisClient } from '../utils/redis'
+
+const unlockRedis = createRedisClient('client')
+const UNLOCK_BONUS_IMPORTS = 2
+
+router.post('/unlock', async (req: Request, res: Response) => {
+  try {
+    const { sessionId } = req.body as { sessionId?: string }
+    if (!sessionId || typeof sessionId !== 'string' || sessionId.length < 8) {
+      return res.status(400).json({ message: 'sessionId required.' })
+    }
+    // Idempotent: one unlock per session
+    const key = `shareunlock:${sessionId}`
+    const already = await unlockRedis.get(key)
+    if (already) {
+      return res.status(200).json({ alreadyClaimed: true, bonusImports: 0, message: 'Bonus already claimed for this session.' })
+    }
+    await unlockRedis.set(key, '1', 'EX', 30 * 24 * 60 * 60) // 30 days TTL
+    log.info({ msg: 'shareUnlock: bonus granted', sessionId: sessionId.slice(0, 12) })
+    return res.json({ success: true, bonusImports: UNLOCK_BONUS_IMPORTS })
+  } catch (error: unknown) {
+    log.error({ msg: 'shareUnlock error', error: (error as Error)?.message })
+    return res.status(500).json({ message: 'Failed to claim share bonus.' })
+  }
+})
+
 export default router

@@ -144,6 +144,21 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'VideoText changelog: new features, performance improvements, and bug fixes. Updated every release. See what has shipped.',
   },
+  '/developers': {
+    title: 'VideoText API — Video Transcription for Developers',
+    description:
+      'VideoText REST API: submit a YouTube URL or video link, get a transcript in seconds. 5× cheaper than AWS Transcribe. Simple async job model. Pro and Business plans.',
+  },
+  '/api-docs': {
+    title: 'VideoText API Docs — Transcription REST API',
+    description:
+      'REST API documentation for VideoText. POST /api/v1/transcribe, GET /api/v1/jobs/:id. Speaker diarization, summaries, chapters. API key authentication.',
+  },
+  '/refer': {
+    title: 'Refer & Earn — Give 45 Min, Get 45 Min | VideoText',
+    description:
+      'Share VideoText with a friend. When they upgrade to any paid plan, you both receive 45 free bonus minutes. No limits on referrals.',
+  },
   '/compare': {
     title: 'VideoText vs Descript, Otter.ai & Trint — Full Comparison',
     description:

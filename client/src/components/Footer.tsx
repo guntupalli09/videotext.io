@@ -99,6 +99,8 @@ export default function Footer() {
               <li><Link to="/descript-vs-videotext" className="hover:text-white transition-colors">Descript vs VideoText</Link></li>
               <li><Link to="/ai-transcription-tools" className="hover:text-white transition-colors">AI transcription tools</Link></li>
               <li><Link to="/changelog" className="hover:text-white transition-colors">Changelog</Link></li>
+              <li><Link to="/developers" className="hover:text-white transition-colors">API &amp; Developers</Link></li>
+              <li><Link to="/refer" className="hover:text-white transition-colors">Refer &amp; earn</Link></li>
             </ul>
           </div>
 

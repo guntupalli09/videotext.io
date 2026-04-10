@@ -147,11 +147,11 @@ export default function Pricing() {
           )}
         </div>
 
-        {/* 2-column grid: Free + Pro */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
+        {/* 3-column grid: Free + Pro + Business */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-4xl mx-auto">
 
           {/* FREE */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('free') ? 'border-violet-300 dark:border-violet-600 ring-2 ring-violet-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-6 transition-shadow hover:shadow-md ${isCurrentPlan('free') ? 'border-violet-300 dark:border-violet-600 ring-2 ring-violet-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
             {isCurrentPlan('free') && (
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
                 Current Plan
@@ -162,7 +162,7 @@ export default function Pricing() {
               <div className="mt-2 flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-gray-900 dark:text-white">$0</span>
               </div>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Try it today — no credit card</p>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Try it — no credit card</p>
             </div>
 
             <ul className="space-y-3 flex-1 mb-7">
@@ -186,7 +186,7 @@ export default function Pricing() {
           </div>
 
           {/* PRO */}
-          <div className={`relative flex flex-col bg-gray-900 dark:bg-white rounded-2xl p-7 shadow-xl shadow-violet-500/10 ring-2 ${isCurrentPlan('pro') ? 'ring-violet-400' : 'ring-violet-500'}`}>
+          <div className={`relative flex flex-col bg-gray-900 dark:bg-white rounded-2xl p-6 shadow-xl shadow-violet-500/10 ring-2 ${isCurrentPlan('pro') ? 'ring-violet-400' : 'ring-violet-500'}`}>
             <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
               {isCurrentPlan('pro') ? 'Current Plan' : 'Most Popular'}
             </span>
@@ -208,10 +208,11 @@ export default function Pricing() {
                 'No watermark',
                 'Up to 2 hours per video',
                 'AI summary, chapters & speaker labels',
+                'Social content repurposing (X, LinkedIn)',
                 'Translation in 70+ languages',
-                'Share read-only transcript links (original & translated)',
-                'Batch process multiple videos at once',
-                'Faster processing & queue priority',
+                'Share read-only transcript links',
+                'Batch process up to 20 videos',
+                'Faster processing & priority queue',
               ].map((f) => (
                 <li key={f} className="flex items-start gap-2.5 text-sm text-gray-100 dark:text-gray-800">
                   <svg className="w-4 h-4 shrink-0 text-violet-400 dark:text-violet-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
@@ -234,36 +235,46 @@ export default function Pricing() {
             </button>
           </div>
 
-          {/*
-          BUSINESS — commented out until we have traction
-
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-sm p-7 ${isCurrentPlan('business') ? 'border-violet-400 ring-2 ring-violet-500/30' : 'border-gray-200 dark:border-gray-700'}`}>
+          {/* BUSINESS */}
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-sm p-6 ${isCurrentPlan('business') ? 'border-violet-400 ring-2 ring-violet-500/30' : 'border-gray-200 dark:border-gray-700'}`}>
             {isCurrentPlan('business') && (
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">Current Plan</span>
             )}
+            {!isCurrentPlan('business') && (
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">Teams &amp; Agencies</span>
+            )}
             <div className="mb-5">
-              <h3 className="text-base font-semibold text-gray-500 uppercase tracking-wide">Business</h3>
+              <h3 className="text-base font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Business</h3>
               <div className="mt-2 flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-gray-900 dark:text-white">$49</span>
-                <span className="text-sm text-gray-500">/ mo</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">/ mo</span>
               </div>
-              <p className="mt-2 text-sm text-gray-500">Teams &amp; agencies. Zero throttling.</p>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Scale without limits</p>
             </div>
-            <ul className="space-y-3 flex-1 mb-7 text-sm text-gray-700 dark:text-gray-300">
-              <li>Everything in Pro</li>
-              <li>Up to 4 hours per video</li>
-              <li>100-video batches · 10 languages</li>
-              <li>8 concurrent jobs · Dedicated queue</li>
+            <ul className="space-y-3 flex-1 mb-7">
+              {[
+                'Everything in Pro',
+                'Up to 4 hours per video',
+                '8 concurrent jobs — zero throttling',
+                'Batch up to 100 videos at once',
+                '10 output languages per job',
+                'API access (coming soon)',
+                'Priority support',
+              ].map((f) => (
+                <li key={f} className={row}>
+                  <Check />
+                  <span>{f}</span>
+                </li>
+              ))}
             </ul>
             <button
               onClick={() => isCurrentPlan('business') ? handleManageSubscription() : handleSubscribe('business', false)}
               disabled={(isCurrentPlan('business') && portalLoading) || directCheckoutLoading}
-              className="w-full py-3 rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm transition-colors disabled:opacity-60"
+              className="w-full py-3 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white font-semibold text-sm transition-colors disabled:opacity-60"
             >
-              {isCurrentPlan('business') ? (portalLoading ? 'Opening…' : 'Manage subscription') : 'Start Business — $49/mo'}
+              {isCurrentPlan('business') ? (portalLoading ? 'Opening…' : 'Manage subscription') : directCheckoutLoading ? 'Redirecting…' : 'Start Business — $49/mo'}
             </button>
           </div>
-          */}
 
         </div>
 
