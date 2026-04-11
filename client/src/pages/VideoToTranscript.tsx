@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Copy, Gem } from 'lucide-react'
+import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Gem } from 'lucide-react'
 import FailedState from '../components/FailedState'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
@@ -2672,8 +2672,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 ) : (
               <div className="p-6 flex flex-col flex-1 min-h-0">
                 {/* Panel header with translation sub-tabs inline */}
-                <div className="flex items-center justify-between gap-4 mb-4">
-                  <span className="text-lg font-semibold text-gray-900 dark:text-white shrink-0">Transcript</span>
+                <div className="flex items-center justify-end gap-4 mb-4">
                   {/* Translation tabs — right-aligned, shown when translation is ready */}
                   {translateEnabled && translationLanguage && (
                     <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
@@ -2731,14 +2730,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       {transcriptEditMode ? 'Done' : 'Edit'}
                     </button>
                   )}
+                  <button
+                    type="button"
+                    onClick={handleCopyToClipboard}
+                    className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
+                  >
+                    Copy
+                  </button>
                   <div className="flex flex-wrap gap-2 lg:hidden">
-                    <button
-                      type="button"
-                      onClick={handleCopyToClipboard}
-                      className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
-                    >
-                      Copy
-                    </button>
                     <button
                       type="button"
                       onClick={handleExportSrt}
@@ -2831,18 +2830,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               <aside className="space-y-4 lg:sticky lg:top-24 self-start min-w-0">
                 {(() => {
                   const schema = getSummarySchema()
-                  const text = displayTranscript || fullTranscript || transcriptPreview || ''
-                  const wordCount = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0
-                  const lastSeg = result?.segments?.length ? result.segments[result.segments.length - 1] : null
-                  const durSec =
-                    audioDuration > 0 ? audioDuration : (lastSeg?.end ?? youtubeDurationSec ?? 0)
-                  const formatDur = (sec: number) => {
-                    if (!sec || sec <= 0) return '—'
-                    const m = Math.floor(sec / 60)
-                    const s = Math.floor(sec % 60)
-                    if (m === 0) return `${s} sec`
-                    return `${m} min ${s} sec`
-                  }
                   const previewBullets = [
                     ...(schema.bullets?.length ? schema.bullets.slice(0, 4) : []),
                     ...(!schema.bullets?.length ? (schema.key_points?.slice(0, 4) ?? []) : []),
@@ -2850,7 +2837,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   const chapters = getChaptersData()
                   const highlights = getHighlightsData()
                   const keywords = getKeywordsData()
-                  const speakerTags = [...new Set(getSpeakersData().map((d) => d.speaker))]
                   const detailCls =
                     'group rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/60 dark:bg-gray-950/40 overflow-hidden'
                   const summaryCls =
@@ -2859,7 +2845,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <>
                       <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
                         <div className="flex items-center justify-between gap-2 mb-2">
-                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Summary</h3>
+                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Full summary</h3>
                           {result?.summary ? (
                             <span className="text-[10px] font-medium uppercase tracking-wide text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/40 px-2 py-0.5 rounded-full">
                               AI-generated
@@ -2867,13 +2853,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           ) : null}
                         </div>
                         {previewBullets.length > 0 ? (
-                          <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1.5 list-disc pl-4">
+                          <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1.5 list-disc pl-4 leading-relaxed">
                             {previewBullets.map((b, i) => (
                               <li key={i}>{b}</li>
                             ))}
                           </ul>
                         ) : schema.summary ? (
-                          <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-6">{schema.summary}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{schema.summary}</p>
                         ) : isPaidPlan ? (
                           <p className="text-xs text-gray-500 dark:text-gray-400">No summary for this transcript yet.</p>
                         ) : (
@@ -3024,77 +3010,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           </div>
                         )}
                       </div>
-                      <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
-                        <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Stats</p>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Duration</p>
-                            <p className="font-semibold text-gray-900 dark:text-white tabular-nums">{formatDur(durSec)}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Word count</p>
-                            <p className="font-semibold text-gray-900 dark:text-white tabular-nums">{wordCount.toLocaleString()}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-1 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => void handleCopyToClipboard()}
-                          className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                        >
-                          <Copy className="w-3.5 h-3.5 shrink-0 opacity-70" />
-                          Copy
-                        </button>
-                      </div>
-                      <details className={detailCls}>
-                        <summary className={summaryCls}>
-                          <span>Full summary</span>
-                          <ChevronRight className="w-4 h-4 text-gray-400 transition-transform group-open:rotate-90 shrink-0" aria-hidden />
-                        </summary>
-                        <div className="px-4 pb-3 text-xs text-gray-600 dark:text-gray-300 space-y-2 border-t border-gray-100 dark:border-gray-800 pt-3">
-                          {schema.summary ? (
-                            <p className="whitespace-pre-wrap">{schema.summary}</p>
-                          ) : (
-                            <p className="text-gray-500">No full summary paragraph available.</p>
-                          )}
-                          {schema.action_items?.length ? (
-                            <div>
-                              <p className="font-semibold text-gray-800 dark:text-gray-200 mb-1">Action items</p>
-                              <ul className="list-disc pl-4 space-y-1">
-                                {schema.action_items.map((x, i) => (
-                                  <li key={i}>{x}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          ) : null}
-                        </div>
-                      </details>
-                      <details className={detailCls}>
-                        <summary className={summaryCls}>
-                          <span>Speakers</span>
-                          <ChevronRight className="w-4 h-4 text-gray-400 transition-transform group-open:rotate-90 shrink-0" aria-hidden />
-                        </summary>
-                        <div className="px-4 pb-3 border-t border-gray-100 dark:border-gray-800 pt-3 space-y-2">
-                          <div className="flex flex-wrap gap-1.5">
-                            {speakerTags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="text-[11px] px-2 py-0.5 rounded-full bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setLeftWorkspaceTab('speakers')}
-                            className="text-xs font-medium text-violet-600 dark:text-violet-400 hover:underline"
-                          >
-                            Open speaker timeline →
-                          </button>
-                        </div>
-                      </details>
                       <details className={detailCls}>
                         <summary className={summaryCls}>
                           <span>Chapters</span>
