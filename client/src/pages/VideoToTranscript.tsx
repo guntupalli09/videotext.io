@@ -41,7 +41,6 @@ import { segmentsToSrt, segmentsToVtt, formatTimestamp, type Segment } from '../
 import {
   type SpeakerNameMap,
   withResolvedSpeakers,
-  buildTxt,
   buildCsv,
   buildJson,
   buildNotion,
@@ -1656,51 +1655,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
   }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode])
 
-  const handleQuickTxtExport = useCallback(() => {
-    // Use structured speaker-aware TXT when segments exist; fall back to plain text
-    const structured = editableSegments?.length
-      ? buildTxt(editableSegments, speakerNameMap)
-      : (exportTranscriptText || fullTranscript || '').trim()
-    const content = structured.trim()
-    if (!content) {
-      toast.error('Nothing to export')
-      return
-    }
-    const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
-    const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
-    if (freeUsedAll) {
-      toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.')
-      return
-    }
-    const stem = exportFileStem(selectedFile?.name, 'video')
-    const desc =
-      transcriptView === 'translated' && translationLanguage
-        ? `transcript_translated_${targetLangFileSlug(translationLanguage)}`
-        : `transcript_export_original_${langCodeForFile(exportSourceLangCode)}`
-    const file = joinExportFilename(stem, desc, '.txt')
-    const payload = isPaidPlan ? content : content + FREE_EXPORT_WATERMARK
-    if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
-    const blob = new Blob([payload], { type: 'text/plain;charset=utf-8' })
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = file
-    a.click()
-    URL.revokeObjectURL(a.href)
-    try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'txt', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
-    toast.success(isPaidPlan ? 'TXT downloaded' : 'TXT downloaded (with watermark)')
-  }, [
-    editableSegments,
-    speakerNameMap,
-    exportTranscriptText,
-    fullTranscript,
-    isPaidPlan,
-    freeExportsUsed,
-    selectedFile?.name,
-    transcriptView,
-    translationLanguage,
-    exportSourceLangCode,
-  ])
-
   // Search: match in segments (if any) or paragraphs; return { index, snippet, startTime? }
   const _searchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
@@ -3083,15 +3037,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           </div>
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => void handleDownloadTranscript()}
-                        className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold shadow-sm flex items-center justify-center gap-2 transition-colors"
-                      >
-                        <Download className="w-4 h-4 shrink-0" strokeWidth={2} />
-                        Download transcript
-                      </button>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 gap-2">
                         <button
                           type="button"
                           onClick={() => void handleCopyToClipboard()}
@@ -3099,27 +3045,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         >
                           <Copy className="w-3.5 h-3.5 shrink-0 opacity-70" />
                           Copy
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleExportSrt}
-                          className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                        >
-                          SRT
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleExportVtt}
-                          className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                        >
-                          VTT
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleQuickTxtExport}
-                          className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                        >
-                          TXT
                         </button>
                       </div>
                       <details className={detailCls}>
