@@ -2630,7 +2630,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               fileSize={result.fileName ? undefined : undefined}
               transcript={displayTranscript || fullTranscript || transcriptPreview || ''}
-              onDownload={handleDownloadTranscript}
+              onDownload={handleQuickTxtExport}
               onProcessAnother={handleProcessAnother}
 
               onExportSrt={handleExportSrt}
@@ -3005,7 +3005,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       </div>
                       <button
                         type="button"
-                        onClick={() => void handleDownloadTranscript()}
+                        onClick={handleQuickTxtExport}
                         className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold shadow-sm flex items-center justify-center gap-2 transition-colors"
                       >
                         <Download className="w-4 h-4 shrink-0" strokeWidth={2} />
@@ -3214,7 +3214,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             : `Free plan: download any 2 exports with watermark (${freeExportsUsed}/2 used). Upgrade for unlimited downloads.`}
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {(['json', 'csv', 'notion', 'text'] as const).map((format) => {
+                          {(['json', 'csv', 'notion'] as const).map((format) => {
                             const schema = getSummarySchema()
                             const chapters = getChaptersData()
                             const highlights = getHighlightsData()
@@ -3230,9 +3230,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                               }
                               if (format === 'notion') {
                                 return buildNotion(segsForFormat, speakerNameMap)
-                              }
-                              if (format === 'text') {
-                                return exportTranscriptText
                               }
                               return ''
                             }
@@ -3273,12 +3270,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 ? 'Download with watermark'
                                 : '2/2 used'
                             const canClick = isPaidPlan || freeCanDownload
-                            const label = format === 'json' ? 'JSON' : format === 'csv' ? 'CSV' : format === 'notion' ? 'Notion' : 'Text'
+                            const label = format === 'json' ? 'JSON' : format === 'csv' ? 'CSV' : 'Notion'
                             const formatMeta: Record<string, { color: string; dot: string; ext: string }> = {
                               json: { color: 'bg-amber-50 ring-amber-100', dot: 'bg-amber-400', ext: '.json' },
                               csv:  { color: 'bg-emerald-50 ring-emerald-100', dot: 'bg-emerald-400', ext: '.csv' },
                               notion: { color: 'bg-gray-50 ring-gray-100', dot: 'bg-gray-400', ext: '.json' },
-                              text: { color: 'bg-blue-50 ring-blue-100', dot: 'bg-blue-400', ext: '.txt' },
                             }
                             const meta = formatMeta[format] ?? { color: 'bg-gray-50 ring-gray-100', dot: 'bg-gray-400', ext: '' }
                             return (
