@@ -2637,33 +2637,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               showNextSteps={false}
             />
 
-            {status === 'completed' &&
-              result &&
-              (() => {
-                const jid = currentJobId || getPersistedJobId(location.pathname)
-                const jtok = getPersistedJobToken(location.pathname)
-                const orig = (fullTranscript || transcriptPreview || '').trim()
-                if (!jid || !jtok || !orig) return null
-                return (
-                  <TranscriptSharePanel
-                    jobId={jid}
-                    jobToken={jtok}
-                    sourceTool="video-to-transcript"
-                    title={selectedFile?.name || result.fileName || 'Transcript'}
-                    originalFullText={fullTranscript || transcriptPreview || ''}
-                    translatedFullText={
-                      translationLanguage && translatedCache[translationLanguage] != null
-                        ? translatedCache[translationLanguage]
-                        : null
-                    }
-                    translationLanguage={translationLanguage}
-                    segments={result.segments}
-                    translatedSegments={translatedSegments ?? undefined}
-                    summary={result.summary}
-                  />
-                )
-              })()}
-
             {/* ── Transcript stats pills ── */}
             {(() => {
               const text = displayTranscript || fullTranscript || transcriptPreview || ''
@@ -3260,6 +3233,34 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           )}
                         </ul>
                       </details>
+                      {status === 'completed' &&
+                        result &&
+                        (() => {
+                          const jid = currentJobId || getPersistedJobId(location.pathname)
+                          const jtok = getPersistedJobToken(location.pathname)
+                          const orig = (fullTranscript || transcriptPreview || '').trim()
+                          if (!jid || !jtok || !orig) return null
+                          return (
+                            <div className="pt-1">
+                              <TranscriptSharePanel
+                                jobId={jid}
+                                jobToken={jtok}
+                                sourceTool="video-to-transcript"
+                                title={selectedFile?.name || result.fileName || 'Transcript'}
+                                originalFullText={fullTranscript || transcriptPreview || ''}
+                                translatedFullText={
+                                  translationLanguage && translatedCache[translationLanguage] != null
+                                    ? translatedCache[translationLanguage]
+                                    : null
+                                }
+                                translationLanguage={translationLanguage}
+                                segments={result.segments}
+                                translatedSegments={translatedSegments ?? undefined}
+                                summary={result.summary}
+                              />
+                            </div>
+                          )
+                        })()}
                     </>
                   )
                 })()}
