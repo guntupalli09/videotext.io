@@ -2692,7 +2692,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             })()}
 
             {/* Main workspace: transcript / speakers (left) + insight rail (right) */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] xl:grid-cols-[minmax(0,1fr)_340px] items-start">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(380px,500px)] xl:grid-cols-[minmax(0,1fr)_540px] items-start">
               <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden flex flex-col min-h-[min(62vh,640px)]">
                 <div
                   className="flex shrink-0 border-b border-gray-100 dark:border-gray-800 bg-gray-50/90 dark:bg-gray-950/50 px-2 pt-2 gap-1"
