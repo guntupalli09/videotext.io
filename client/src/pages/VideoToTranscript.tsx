@@ -1366,30 +1366,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     youtubeStageAtFailureRef.current = null
   }
 
-  const getDownloadUrl = () => {
-    if (!result?.downloadUrl) return ''
-    return getAbsoluteDownloadUrl(result.downloadUrl)
-  }
-
-  const handleDownloadTranscript = useCallback(async () => {
-    const url = getDownloadUrl()
-    if (!url) return
-    try {
-      const token = getAuthToken()
-      const res = await fetch(url + '?wm=1', {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
-      const blob = await res.blob()
-      const a = document.createElement('a')
-      a.href = URL.createObjectURL(blob)
-      a.download = result?.fileName ?? 'transcript.txt'
-      a.click()
-      URL.revokeObjectURL(a.href)
-      try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'txt' }) } catch { /* non-blocking */ }
-    } catch {
-      toast.error('Download failed')
-    }
-  }, [result?.downloadUrl, result?.fileName])
 
   // Phase 1 – scroll transcript to segment index; switch to Transcript branch first so segment is mounted
   const scrollToSegment = useCallback((index: number) => {
