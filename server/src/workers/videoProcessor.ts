@@ -55,7 +55,7 @@ import { createPartialWriter, deleteJobPartial } from '../utils/jobPartial'
 import { setJobSummary } from '../utils/jobSummary'
 import { waitForFileStable } from '../utils/fileStable'
 import { registerActiveFiles, deregisterActiveFiles } from '../utils/activeFiles'
-import { DEFER_SUMMARY, PROCESSING_V2, STREAM_PROGRESS, WORKER_CONCURRENCY_V2, YOUTUBE_QUEUE_SEPARATION } from '../utils/featureFlags'
+import { PROCESSING_V2, STREAM_PROGRESS, WORKER_CONCURRENCY_V2, YOUTUBE_QUEUE_SEPARATION } from '../utils/featureFlags'
 import { MAX_GLOBAL_WORKERS, PAID_TIER_RESERVATION_QUEUE_THRESHOLD } from '../utils/queueConfig'
 import {
   trackProcessingStarted,
@@ -900,7 +900,8 @@ async function processJob(job: import('bull').Job<JobData>) {
           let chapters: { title: string; startTime: number; endTime?: number }[] | undefined
 
           if (includeSummary || (includeChapters && segments.length > 0)) {
-            if (DEFER_SUMMARY && redis) {
+            // Fast path by default: return transcript first, compute summary/chapters asynchronously when Redis is available.
+            if (redis) {
               summary = undefined
               chapters = undefined
               const fullTextForDefer = fullText
@@ -937,7 +938,7 @@ async function processJob(job: import('bull').Job<JobData>) {
               log.info({ msg: 'summary_completed', durationMs: Date.now() - summaryStartMs, hasSummary: !!summary, chapterCount: chapters?.length ?? 0 })
             }
           }
-          if (DEFER_SUMMARY && !STREAM_PROGRESS) await job.progress(55)
+          if (redis && !STREAM_PROGRESS) await job.progress(55)
 
           if (STREAM_PROGRESS) await job.progress(60)
           await job.progress(70)

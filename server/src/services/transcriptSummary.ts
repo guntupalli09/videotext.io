@@ -33,29 +33,117 @@ export async function generateSummary(
   if (!transcriptText?.trim()) {
     return { summary: '', bullets: [], actionItems: options?.includeActionItems ? [] : undefined }
   }
-  const truncated = transcriptText.length > 28000 ? transcriptText.slice(0, 28000) + '\n[...truncated]' : transcriptText
-  const sys = `You are a concise assistant. Given a transcript, output valid JSON only, no markdown. Keys: "summary" (2-4 sentence paragraph), "bullets" (array of 3-7 key points), and optionally "actionItems" (array of action items or decisions, if present in the transcript).`
-  const user = `Transcript:\n${truncated}\n\nOutput JSON with keys: summary, bullets${options?.includeActionItems ? ', actionItems' : ''}.`
-  const completion = await openai.chat.completions.create({
+  const chunks = chunkTranscriptForSummary(transcriptText, { targetTokens: 1900, overlapRatio: 0.15 })
+  if (chunks.length === 0) {
+    return { summary: '', bullets: [], actionItems: options?.includeActionItems ? [] : undefined }
+  }
+
+  const totalWords = chunks.reduce((acc, c) => acc + c.wordCount, 0) || 1
+  const chunkSummaries = await Promise.all(
+    chunks.map(async (chunk, i) => {
+      const bullets = await summarizeChunkToBullets(chunk.text)
+      return {
+        index: i,
+        wordCount: chunk.wordCount,
+        dominanceWeight: Number((chunk.wordCount / totalWords).toFixed(4)),
+        bullets,
+      }
+    })
+  )
+
+  const reducePayload = chunkSummaries.map((c) => ({
+    chunk_index: c.index,
+    dominance_weight: c.dominanceWeight,
+    chunk_word_count: c.wordCount,
+    bullets: c.bullets,
+  }))
+
+  const reduceSystemPrompt = [
+    'You are a senior editorial summarizer.',
+    'Combine chunk-level notes into one complete transcript summary.',
+    'This is the FINAL REDUCE stage.',
+    'Prioritize dominant content over intro material and promotional chatter.',
+    'Capture ALL major themes across the full transcript.',
+    'Output 5-8 bullets, no repetition, no fluff, no generic filler.',
+    'Bullets must reflect the entire transcript, not just the beginning.',
+    'Output valid JSON only with keys: "summary", "bullets", "actionItems".',
+    '"summary" should be a concise 3-5 sentence paragraph.',
+    '"actionItems" should include only explicit actions/decisions if present, else [].',
+  ].join(' ')
+
+  const reduceUserPrompt = `Chunk summaries with dominance weights:\n${JSON.stringify(reducePayload)}`
+  const reduced = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
-      { role: 'system', content: sys },
-      { role: 'user', content: user },
+      { role: 'system', content: reduceSystemPrompt },
+      { role: 'user', content: reduceUserPrompt },
     ],
     response_format: { type: 'json_object' },
-    temperature: 0.3,
+    temperature: 0.2,
   })
-  const raw = completion.choices[0]?.message?.content
+
+  const raw = reduced.choices[0]?.message?.content
   if (!raw) return { summary: '', bullets: [], actionItems: options?.includeActionItems ? [] : undefined }
   try {
     const parsed = JSON.parse(raw) as { summary?: string; bullets?: string[]; actionItems?: string[] }
     return {
       summary: typeof parsed.summary === 'string' ? parsed.summary : '',
-      bullets: Array.isArray(parsed.bullets) ? parsed.bullets : [],
+      bullets: Array.isArray(parsed.bullets) ? parsed.bullets.slice(0, 8) : [],
       actionItems: options?.includeActionItems && Array.isArray(parsed.actionItems) ? parsed.actionItems : undefined,
     }
   } catch {
     return { summary: '', bullets: [], actionItems: options?.includeActionItems ? [] : undefined }
+  }
+}
+
+type SummaryChunk = { text: string; wordCount: number }
+
+function chunkTranscriptForSummary(
+  transcriptText: string,
+  options?: { targetTokens?: number; overlapRatio?: number }
+): SummaryChunk[] {
+  const targetTokens = Math.max(1500, Math.min(2500, options?.targetTokens ?? 1900))
+  const overlapRatio = Math.max(0.1, Math.min(0.2, options?.overlapRatio ?? 0.15))
+  const words = transcriptText.trim().split(/\s+/).filter(Boolean)
+  if (!words.length) return []
+  // Rough conversion: 1 token ~= 0.75 words
+  const targetWords = Math.floor(targetTokens * 0.75)
+  const overlapWords = Math.max(1, Math.floor(targetWords * overlapRatio))
+  const step = Math.max(1, targetWords - overlapWords)
+
+  const chunks: SummaryChunk[] = []
+  for (let start = 0; start < words.length; start += step) {
+    const end = Math.min(words.length, start + targetWords)
+    const slice = words.slice(start, end)
+    if (!slice.length) continue
+    chunks.push({ text: slice.join(' '), wordCount: slice.length })
+    if (end >= words.length) break
+  }
+  return chunks
+}
+
+async function summarizeChunkToBullets(chunkText: string): Promise<string[]> {
+  if (!chunkText.trim()) return []
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      {
+        role: 'system',
+        content:
+          'Summarize this transcript chunk into 3-5 concise factual bullets. Focus on substantive content. Output JSON only: {"bullets": string[]}.',
+      },
+      { role: 'user', content: chunkText },
+    ],
+    response_format: { type: 'json_object' },
+    temperature: 0.2,
+  })
+  const raw = completion.choices[0]?.message?.content
+  if (!raw) return []
+  try {
+    const parsed = JSON.parse(raw) as { bullets?: string[] }
+    return Array.isArray(parsed.bullets) ? parsed.bullets.slice(0, 5) : []
+  } catch {
+    return []
   }
 }
 
