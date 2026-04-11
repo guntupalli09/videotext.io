@@ -56,7 +56,12 @@ export function segmentsToSrt(segments: Segment[]): string {
 /**
  * Converts segments to WebVTT format.
  * When segments carry a resolved `speaker` field AND there are multiple distinct
- * speakers, each cue uses the native VTT voice tag `<v SpeakerName>`.
+ * speakers, each cue is prefixed with `[SpeakerName]: ` (bracket format).
+ *
+ * We intentionally avoid the native `<v SpeakerName>` VTT voice tag because many
+ * media players and subtitle tools silently strip or ignore it, causing speaker
+ * labels to disappear without any error. The bracket prefix is universally
+ * readable in all players and editors.
  */
 export function segmentsToVtt(segments: Segment[]): string {
   const addSpeaker = hasMultipleSpeakers(segments)
@@ -66,7 +71,7 @@ export function segmentsToVtt(segments: Segment[]): string {
       const start = formatVttTime(seg.start)
       const end = formatVttTime(seg.end)
       const text = seg.text.trim() || ' '
-      const line = addSpeaker && seg.speaker ? `<v ${seg.speaker}>${text}` : text
+      const line = addSpeaker && seg.speaker ? `[${seg.speaker}]: ${text}` : text
       return `${start} --> ${end}\n${line}\n`
     })
     .join('\n')

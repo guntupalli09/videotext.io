@@ -41,12 +41,14 @@ import { segmentsToSrt, segmentsToVtt, formatTimestamp, type Segment } from '../
 import {
   type SpeakerNameMap,
   withResolvedSpeakers,
+  buildTxt,
   buildCsv,
   buildJson,
   buildNotion,
   buildFullTranscript,
   saveEditsToStorage,
   loadEditsFromStorage,
+  computeTranscriptHash,
   exportToPdf,
   exportToDocx,
 } from '../lib/transcriptExport'
@@ -116,6 +118,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [editableSegments, setEditableSegments] = useState<Segment[] | null>(null)
   /** Maps raw backend speaker labels ("SPEAKER_00") → user-defined names ("Alice"). */
   const [speakerNameMap, setSpeakerNameMap] = useState<SpeakerNameMap>({})
+  /** Timestamp of the last successful localStorage save — drives the "Saved" indicator. */
+  const [editsSavedAt, setEditsSavedAt] = useState<number | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
   const [showAuthGate, setShowAuthGate] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
@@ -370,8 +374,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   // Restore from localStorage when the same job is reopened (zero-server-retention: edits stay on device).
   useEffect(() => {
     if (result?.segments?.length) {
-      // Attempt to restore previously saved edits for this job
-      const saved = currentJobId ? loadEditsFromStorage(currentJobId) : null
+      // Hash the original segments so we can reject stale edits if the transcript was re-processed.
+      const hash = computeTranscriptHash(result.segments)
+      const saved = currentJobId ? loadEditsFromStorage(currentJobId, hash) : null
       if (saved?.segments?.length === result.segments.length) {
         setEditableSegments(saved.segments)
         setSpeakerNameMap(saved.speakerNameMap ?? {})
@@ -385,6 +390,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       setEditableSegments(null)
       setSpeakerNameMap({})
     }
+    setEditsSavedAt(null)
     setTranscriptEditMode(false)
   }, [result?.segments, currentJobId])
 
@@ -395,10 +401,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     if (!currentJobId || !editableSegments?.length) return
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     saveTimerRef.current = setTimeout(() => {
-      saveEditsToStorage(currentJobId, editableSegments, speakerNameMap)
+      const hash = result?.segments ? computeTranscriptHash(result.segments) : '0'
+      saveEditsToStorage(currentJobId, editableSegments, speakerNameMap, hash)
+      setEditsSavedAt(Date.now())
     }, 1500)
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current) }
-  }, [editableSegments, speakerNameMap, currentJobId])
+  }, [editableSegments, speakerNameMap, currentJobId, result?.segments])
 
   /** Rename a speaker: maps raw backend label → user-defined name. */
   const handleRenameSpeaker = useCallback((rawSpeaker: string, newName: string) => {
@@ -1398,30 +1406,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     youtubeStageAtFailureRef.current = null
   }
 
-  const getDownloadUrl = () => {
-    if (!result?.downloadUrl) return ''
-    return getAbsoluteDownloadUrl(result.downloadUrl)
-  }
-
-  const handleDownloadTranscript = useCallback(async () => {
-    const url = getDownloadUrl()
-    if (!url) return
-    try {
-      const token = getAuthToken()
-      const res = await fetch(url + '?wm=1', {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
-      const blob = await res.blob()
-      const a = document.createElement('a')
-      a.href = URL.createObjectURL(blob)
-      a.download = result?.fileName ?? 'transcript.txt'
-      a.click()
-      URL.revokeObjectURL(a.href)
-      try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'txt' }) } catch { /* non-blocking */ }
-    } catch {
-      toast.error('Download failed')
-    }
-  }, [result?.downloadUrl, result?.fileName])
 
   // Phase 1 – scroll transcript to segment index; switch to Transcript branch first so segment is mounted
   const scrollToSegment = useCallback((index: number) => {
@@ -1606,15 +1590,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     [editableSegments, fullTranscript],
   )
 
-  /**
-   * Export-ready text: uses translated content when the user is on the translated tab,
-   * otherwise uses editedFullTranscript.
-   */
-  const exportTranscriptText =
-    transcriptView === 'translated' && translationLanguage && translatedCache[translationLanguage] != null
-      ? translatedCache[translationLanguage]
-      : editedFullTranscript
-
   const displayTranscript =
     transcriptView === 'translated' && translationLanguage && translatedCache[translationLanguage] != null
       ? translatedCache[translationLanguage]
@@ -1658,6 +1633,45 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       trackEvent('ai_summary_teaser_shown', { tool: 'video-to-transcript' })
     }
   }, [status, result, isPaidPlan])
+
+  /** Single TXT download — speaker-aware, uses edited segments. Zero server round-trip. */
+  const handleQuickTxtExport = useCallback(() => {
+    const structured = editableSegments?.length
+      ? buildTxt(editableSegments, speakerNameMap)
+      : (editedFullTranscript || fullTranscript || '').trim()
+    const content = structured.trim()
+    if (!content) { toast.error('Nothing to export'); return }
+    const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
+    const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
+    if (freeUsedAll) { toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.'); return }
+    const stem = exportFileStem(selectedFile?.name, 'video')
+    const desc =
+      transcriptView === 'translated' && translationLanguage
+        ? `transcript_translated_${targetLangFileSlug(translationLanguage)}`
+        : `transcript_export_original_${langCodeForFile(exportSourceLangCode)}`
+    const file = joinExportFilename(stem, desc, '.txt')
+    const payload = isPaidPlan ? content : content + FREE_EXPORT_WATERMARK
+    if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
+    const blob = new Blob([payload], { type: 'text/plain;charset=utf-8' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = file
+    a.click()
+    URL.revokeObjectURL(a.href)
+    try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'txt', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
+    toast.success(isPaidPlan ? 'TXT downloaded' : 'TXT downloaded (with watermark)')
+  }, [
+    editableSegments,
+    speakerNameMap,
+    editedFullTranscript,
+    fullTranscript,
+    isPaidPlan,
+    freeExportsUsed,
+    selectedFile?.name,
+    transcriptView,
+    translationLanguage,
+    exportSourceLangCode,
+  ])
 
   /** Client-side PDF generation — zero server round-trip, respects edits and renamed speakers. */
   const handleExportPdf = useCallback(async () => {
@@ -2617,7 +2631,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               fileSize={result.fileName ? undefined : undefined}
               transcript={displayTranscript || fullTranscript || transcriptPreview || ''}
-              onDownload={handleDownloadTranscript}
+              onDownload={handleQuickTxtExport}
               onProcessAnother={handleProcessAnother}
 
               onExportSrt={handleExportSrt}
@@ -2770,6 +2784,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       {transcriptEditMode ? 'Done' : 'Edit'}
                     </button>
                   )}
+                  {/* "Saved" indicator — appears after the 1.5 s auto-save debounce fires */}
+                  {editsSavedAt && (
+                    <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 select-none" aria-live="polite">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" aria-hidden />
+                      Saved
+                    </span>
+                  )}
                   <button
                     type="button"
                     onClick={handleCopyToClipboard}
@@ -2813,10 +2834,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       ))}
                     </div>
                   ) : result?.segments?.length ? (() => {
-                    // Use translated segments when on translated tab (timestamps from original)
+                    // Read-mode: use editableSegments so edits are visible immediately after
+                    // clicking "Done". Fall back to result.segments if editableSegments is null
+                    // (shouldn't happen once a result exists, but guards against edge cases).
+                    // Translated view overrides text but keeps original timestamps via origSeg below.
                     const segs = transcriptView === 'translated' && translatedSegments
                       ? translatedSegments
-                      : result.segments
+                      : (editableSegments ?? result.segments)
                     // Group segments into paragraphs of ~5 for readability
                     const groups: { seg: typeof segs[0]; globalIndex: number }[][] = []
                     const PARA_SIZE = 5
@@ -2963,7 +2987,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                         ? buildCsv(segsForFormat, speakerNameMap)
                                         : format === 'notion'
                                           ? buildNotion(segsForFormat, speakerNameMap)
-                                          : exportTranscriptText
+                                          : buildTxt(segsForFormat, speakerNameMap)
                                   const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
                                   const freeCanDownload = !isPaidPlan && freeExportsUsed < 2
                                   const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
