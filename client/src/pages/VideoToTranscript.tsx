@@ -19,7 +19,7 @@ import PinnedAudioPlayerBar from '../components/transcript/PinnedAudioPlayerBar'
 import { getActiveSegmentIndexAtTime } from '../lib/segmentSync'
 import { Checkbox } from '../components/figma/FormControls'
 import { incrementUsage } from '../lib/usage'
-import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, invalidateUsageCache, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, submitYoutubeUrl, isYoutubeUrl, claimGuestJob, uploadBatch, getBatchStatus, getBatchDownloadUrl, type YoutubeUploadResponse, type BatchStatus } from '../lib/api'
+import { uploadFileWithProgress, getJobStatus, getJobDeferredSummary, subscribeJobStatus, getCurrentUsage, invalidateUsageCache, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, submitYoutubeUrl, isYoutubeUrl, claimGuestJob, uploadBatch, getBatchStatus, getBatchDownloadUrl, type YoutubeUploadResponse, type BatchStatus } from '../lib/api'
 import { getFailureMessage } from '../lib/failureMessage'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
@@ -122,6 +122,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
+  const [isSummaryHydrating, setIsSummaryHydrating] = useState(false)
   const [isRehydrating, setIsRehydrating] = useState(false)
   const [processingStartedAt, setProcessingStartedAt] = useState<number | null>(null)
   const [, setElapsedMs] = useState(0)
@@ -325,6 +326,45 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setAudioIsPlaying(false)
     audioPlaybackTimeRef.current = 0
   }, [result?.audioUrl, status])
+
+  useEffect(() => {
+    if (status !== 'completed' || !currentJobId) {
+      setIsSummaryHydrating(false)
+      return
+    }
+    if (result?.summary?.summary || (result?.summary?.bullets?.length ?? 0) > 0) {
+      setIsSummaryHydrating(false)
+      return
+    }
+    let cancelled = false
+    setIsSummaryHydrating(true)
+    const jobToken = getPersistedJobToken(location.pathname) || undefined
+    const poll = async () => {
+      try {
+        const deferred = await getJobDeferredSummary(currentJobId, jobToken ? { jobToken } : undefined)
+        if (cancelled) return
+        if (deferred.summary || deferred.chapters) {
+          setResult((prev) => {
+            if (!prev) return prev
+            return {
+              ...prev,
+              ...(deferred.summary ? { summary: deferred.summary as { summary: string; bullets: string[]; actionItems?: string[] } } : {}),
+              ...(deferred.chapters ? { chapters: deferred.chapters } : {}),
+            }
+          })
+          setIsSummaryHydrating(false)
+        }
+      } catch {
+        // Keep polling until summary is ready.
+      }
+    }
+    void poll()
+    const timer = setInterval(() => { void poll() }, 2000)
+    return () => {
+      cancelled = true
+      clearInterval(timer)
+    }
+  }, [status, currentJobId, location.pathname, result?.summary])
 
   // Sync editable segments from result. Preserve speaker field so exports can apply speaker names.
   // Restore from localStorage when the same job is reopened (zero-server-retention: edits stay on device).
@@ -2831,8 +2871,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 {(() => {
                   const schema = getSummarySchema()
                   const previewBullets = [
-                    ...(schema.bullets?.length ? schema.bullets.slice(0, 4) : []),
-                    ...(!schema.bullets?.length ? (schema.key_points?.slice(0, 4) ?? []) : []),
+                    ...(schema.bullets?.length ? schema.bullets : []),
+                    ...(!schema.bullets?.length ? (schema.key_points ?? []) : []),
                   ]
                   const chapters = getChaptersData()
                   const highlights = getHighlightsData()
@@ -2852,14 +2892,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             </span>
                           ) : null}
                         </div>
-                        {previewBullets.length > 0 ? (
-                          <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1.5 list-disc pl-4 leading-relaxed">
-                            {previewBullets.map((b, i) => (
-                              <li key={i}>{b}</li>
-                            ))}
-                          </ul>
-                        ) : schema.summary ? (
+                        {schema.summary ? (
                           <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{schema.summary}</p>
+                        ) : isSummaryHydrating ? (
+                          <div className="flex items-center gap-2 text-xs text-violet-600 dark:text-violet-400">
+                            <span className="w-3 h-3 rounded-full border-2 border-violet-500 border-t-transparent animate-spin shrink-0" />
+                            Generating summary…
+                          </div>
                         ) : isPaidPlan ? (
                           <p className="text-xs text-gray-500 dark:text-gray-400">No summary for this transcript yet.</p>
                         ) : (
@@ -2885,6 +2924,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             </div>
                           </div>
                         )}
+                        {previewBullets.length > 0 ? (
+                          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                            <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-2">Key bullets</p>
+                            <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1.5 list-disc pl-4">
+                              {previewBullets.map((b, i) => (
+                                <li key={i}>{b}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : null}
                       </div>
                       <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
                         <div className="flex items-center justify-between gap-2 mb-3">

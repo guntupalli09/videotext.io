@@ -1236,6 +1236,24 @@ export async function getJobStatus(jobId: string, options?: { jobToken?: string 
   return response.json()
 }
 
+export async function getJobDeferredSummary(
+  jobId: string,
+  options?: { jobToken?: string }
+): Promise<{ summary?: { summary?: string; bullets?: string[]; actionItems?: string[] }; chapters?: { title: string; startTime: number; endTime?: number }[] }> {
+  let path = `/api/job/${jobId}/summary`
+  if (options?.jobToken) {
+    path += `?jobToken=${encodeURIComponent(options.jobToken)}`
+  }
+  const response = await api(path, { timeout: API_GET_TIMEOUT_MS })
+  if (response.status === 404) {
+    throw new SessionExpiredError('Session expired. Please upload again.')
+  }
+  if (!response.ok) {
+    throw new Error('Failed to get deferred summary')
+  }
+  return response.json()
+}
+
 /**
  * Optional SSE subscription for job status and partials. Same payload shape as getJobStatus.
  * On SSE error or unsupported, falls back to polling automatically. Call the returned function to stop.
