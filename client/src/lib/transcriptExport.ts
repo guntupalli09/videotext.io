@@ -388,9 +388,30 @@ const LS_VERSION = 1
 
 interface PersistedEdits {
   version: number
+  /**
+   * Fingerprint of the ORIGINAL segments at save time.
+   * Used to reject stale edits when the transcript has changed (e.g. re-processed).
+   * Built from segment count + total char count + first/last segment text snippet.
+   */
+  transcriptHash: string
   segments: Segment[]
   speakerNameMap: SpeakerNameMap
   savedAt: number
+}
+
+/**
+ * Lightweight fingerprint of the original transcript segments.
+ * Not cryptographic — only needs to catch the common cases:
+ *   • re-processing the same file (different text → different hash)
+ *   • diarization toggled (different speaker field count)
+ */
+export function computeTranscriptHash(segments: Segment[]): string {
+  const n = segments.length
+  if (n === 0) return '0'
+  const totalChars = segments.reduce((acc, s) => acc + s.text.length, 0)
+  const first = segments[0].text.slice(0, 24).replace(/\s+/g, ' ')
+  const last = segments[n - 1].text.slice(0, 24).replace(/\s+/g, ' ')
+  return `${n}:${totalChars}:${first}|${last}`
 }
 
 export function lsKey(jobId: string): string {
@@ -401,21 +422,30 @@ export function saveEditsToStorage(
   jobId: string,
   segments: Segment[],
   speakerNameMap: SpeakerNameMap,
+  transcriptHash: string,
 ): void {
   try {
-    const payload: PersistedEdits = { version: LS_VERSION, segments, speakerNameMap, savedAt: Date.now() }
+    const payload: PersistedEdits = { version: LS_VERSION, transcriptHash, segments, speakerNameMap, savedAt: Date.now() }
     localStorage.setItem(lsKey(jobId), JSON.stringify(payload))
   } catch {
     // Storage full or unavailable — silently ignore (edits still work in-session)
   }
 }
 
-export function loadEditsFromStorage(jobId: string): PersistedEdits | null {
+/**
+ * Loads persisted edits for a job.
+ * Returns null when:
+ *   • nothing saved
+ *   • version mismatch (old schema)
+ *   • transcriptHash mismatch (transcript was re-processed — stale edits must be discarded)
+ */
+export function loadEditsFromStorage(jobId: string, expectedHash: string): PersistedEdits | null {
   try {
     const raw = localStorage.getItem(lsKey(jobId))
     if (!raw) return null
     const parsed = JSON.parse(raw) as PersistedEdits
     if (parsed.version !== LS_VERSION) return null
+    if (parsed.transcriptHash !== expectedHash) return null
     return parsed
   } catch {
     return null

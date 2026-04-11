@@ -48,6 +48,7 @@ import {
   buildFullTranscript,
   saveEditsToStorage,
   loadEditsFromStorage,
+  computeTranscriptHash,
   exportToPdf,
   exportToDocx,
 } from '../lib/transcriptExport'
@@ -117,6 +118,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [editableSegments, setEditableSegments] = useState<Segment[] | null>(null)
   /** Maps raw backend speaker labels ("SPEAKER_00") → user-defined names ("Alice"). */
   const [speakerNameMap, setSpeakerNameMap] = useState<SpeakerNameMap>({})
+  /** Timestamp of the last successful localStorage save — drives the "Saved" indicator. */
+  const [editsSavedAt, setEditsSavedAt] = useState<number | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
   const [showAuthGate, setShowAuthGate] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
@@ -331,8 +334,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   // Restore from localStorage when the same job is reopened (zero-server-retention: edits stay on device).
   useEffect(() => {
     if (result?.segments?.length) {
-      // Attempt to restore previously saved edits for this job
-      const saved = currentJobId ? loadEditsFromStorage(currentJobId) : null
+      // Hash the original segments so we can reject stale edits if the transcript was re-processed.
+      const hash = computeTranscriptHash(result.segments)
+      const saved = currentJobId ? loadEditsFromStorage(currentJobId, hash) : null
       if (saved?.segments?.length === result.segments.length) {
         setEditableSegments(saved.segments)
         setSpeakerNameMap(saved.speakerNameMap ?? {})
@@ -346,6 +350,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       setEditableSegments(null)
       setSpeakerNameMap({})
     }
+    setEditsSavedAt(null)
     setTranscriptEditMode(false)
   }, [result?.segments, currentJobId])
 
@@ -356,10 +361,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     if (!currentJobId || !editableSegments?.length) return
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     saveTimerRef.current = setTimeout(() => {
-      saveEditsToStorage(currentJobId, editableSegments, speakerNameMap)
+      const hash = result?.segments ? computeTranscriptHash(result.segments) : '0'
+      saveEditsToStorage(currentJobId, editableSegments, speakerNameMap, hash)
+      setEditsSavedAt(Date.now())
     }, 1500)
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current) }
-  }, [editableSegments, speakerNameMap, currentJobId])
+  }, [editableSegments, speakerNameMap, currentJobId, result?.segments])
 
   /** Rename a speaker: maps raw backend label → user-defined name. */
   const handleRenameSpeaker = useCallback((rawSpeaker: string, newName: string) => {
@@ -2804,6 +2811,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       {transcriptEditMode ? 'Done' : 'Edit'}
                     </button>
                   )}
+                  {/* "Saved" indicator — appears after the 1.5 s auto-save debounce fires */}
+                  {editsSavedAt && (
+                    <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 select-none" aria-live="polite">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" aria-hidden />
+                      Saved
+                    </span>
+                  )}
                   <div className="flex flex-wrap gap-2 lg:hidden">
                     <button
                       type="button"
@@ -2847,10 +2861,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       ))}
                     </div>
                   ) : result?.segments?.length ? (() => {
-                    // Use translated segments when on translated tab (timestamps from original)
+                    // Read-mode: use editableSegments so edits are visible immediately after
+                    // clicking "Done". Fall back to result.segments if editableSegments is null
+                    // (shouldn't happen once a result exists, but guards against edge cases).
+                    // Translated view overrides text but keeps original timestamps via origSeg below.
                     const segs = transcriptView === 'translated' && translatedSegments
                       ? translatedSegments
-                      : result.segments
+                      : (editableSegments ?? result.segments)
                     // Group segments into paragraphs of ~5 for readability
                     const groups: { seg: typeof segs[0]; globalIndex: number }[][] = []
                     const PARA_SIZE = 5
