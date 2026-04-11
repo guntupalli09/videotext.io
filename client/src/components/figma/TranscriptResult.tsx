@@ -88,7 +88,8 @@ export function TranscriptResult({
           <button
             type="button"
             onClick={onProcessAnother}
-            className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors whitespace-nowrap"
+            className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-violet-700 dark:text-violet-200 bg-violet-100/90 dark:bg-violet-900/40 border border-violet-300/70 dark:border-violet-600/60 hover:bg-violet-200 dark:hover:bg-violet-800/50 shadow-sm transition-colors whitespace-nowrap"
+            aria-label="Start a new file"
           >
             + New file
           </button>
