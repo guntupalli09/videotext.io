@@ -35,6 +35,10 @@ export default function Signup() {
         try { localStorage.setItem('videotext:guestJobUsed', '1') } catch { /* ignore */ }
       }
       try { identifyUser(result.userId, { plan: result.plan, email: result.email }) } catch { /* non-blocking */ }
+      try {
+        const event = result.isNewUser ? 'google_signup_completed' : 'google_login_completed'
+        trackEvent(event, { plan: result.plan })
+      } catch { /* non-blocking */ }
       window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
       navigate(returnTo, { replace: true })
       window.location.reload()
@@ -53,6 +57,7 @@ export default function Signup() {
     try {
       await sendOtp(email)
       setStep('otp')
+      try { trackEvent('otp_requested', { method: 'email' }) } catch { /* non-blocking */ }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to send code')
     } finally {
@@ -68,7 +73,9 @@ export default function Signup() {
       const { token } = await verifyOtp(email, otpCode)
       setVerificationToken(token)
       setStep('password')
+      try { trackEvent('otp_verified') } catch { /* non-blocking */ }
     } catch (err: unknown) {
+      try { trackEvent('otp_failed', { reason: 'invalid_code' }) } catch { /* non-blocking */ }
       setError(err instanceof Error ? err.message : 'Invalid or expired code')
     } finally {
       setLoading(false)

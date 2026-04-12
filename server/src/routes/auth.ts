@@ -11,6 +11,15 @@ import { getPlanLimits } from '../utils/limits'
 import { getLogger } from '../lib/logger'
 import { incrementResendCounter } from '../lib/apiCreditsCache'
 import { prisma } from '../db'
+import {
+  trackOtpRequested,
+  trackOtpVerified,
+  trackOtpFailed,
+  trackPasswordResetCompleted,
+  trackPasswordSetupCompleted,
+  trackGoogleAuthCompleted,
+  trackDemoLoginStarted,
+} from '../utils/analytics'
 
 const log = getLogger('api')
 
@@ -151,6 +160,7 @@ router.post('/send-otp', otpSendLimit, async (req: Request, res: Response) => {
     const code = generateOTP()
     await storeOTP(normalized, code)
     await sendOTPEmail(normalized, code)
+    trackOtpRequested({ email: normalized, is_new_user: !existingUser })
     res.json({ ok: true, message: 'Verification code sent.' })
   } catch (error: any) {
     log.error({ msg: 'send-otp error', error: (error as Error)?.message ?? String(error) })
@@ -169,12 +179,15 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
 
     const storedCode = await getOTP(normalized)
     if (!storedCode) {
+      trackOtpFailed({ email: normalized, reason: 'expired' })
       return res.status(400).json({ message: 'Invalid or expired code. Request a new one.' })
     }
     if (storedCode !== enteredCode) {
+      trackOtpFailed({ email: normalized, reason: 'invalid_code' })
       return res.status(400).json({ message: 'Invalid code.' })
     }
     await deleteOTP(normalized)
+    trackOtpVerified({ email: normalized })
     const token = signEmailVerificationToken(normalized)
     res.json({ ok: true, token, email: normalized })
   } catch (error: any) {
@@ -221,6 +234,7 @@ router.post('/setup-password', async (req: Request, res: Response) => {
     user.passwordSetupExpiresAt = undefined
     user.updatedAt = new Date()
     await saveUser(user)
+    trackPasswordSetupCompleted({ user_id: user.id, plan: user.plan })
 
     const jwt = signAuthToken(user)
     return res.json({ token: jwt })
@@ -424,6 +438,7 @@ router.post('/reset-password', async (req: Request, res: Response) => {
     user.passwordResetExpiresAt = undefined
     user.updatedAt = new Date()
     await saveUser(user)
+    trackPasswordResetCompleted({ user_id: user.id })
 
     res.json({ ok: true, message: 'Password updated. You can now log in.' })
   } catch (error: any) {
@@ -548,6 +563,7 @@ router.post('/demo', demoRateLimit, async (req: Request, res: Response) => {
     } as User
     await saveUser(user)
     log.info({ msg: 'Demo session created', user: demoEmail, ip: req.ip })
+    trackDemoLoginStarted({ demo_user_id: user.id })
 
     const token = signAuthToken(user, { isDemo: true })
     return res.json({ token, userId: user.id, plan: user.plan, email: user.email, isDemo: true })
@@ -615,8 +631,10 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
     const email = tokenInfo.email.toLowerCase().trim()
     const googleName = tokenInfo.name || [tokenInfo.given_name, tokenInfo.family_name].filter(Boolean).join(' ') || null
     let user = await getUserByEmail(email)
+    let isNewUser = false
 
     if (!user) {
+      isNewUser = true
       // New user — create account. passwordHash is a random unusable value (Google is the auth provider).
       const now = new Date()
       const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
@@ -667,8 +685,9 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
       log.info({ msg: 'Google OAuth existing user login', email })
     }
 
+    trackGoogleAuthCompleted({ user_id: user.id, plan: user.plan, is_new_user: isNewUser })
     const token = signAuthToken(user)
-    return res.json({ token, userId: user.id, plan: user.plan, email: user.email, name: user.name ?? null })
+    return res.json({ token, userId: user.id, plan: user.plan, email: user.email, name: user.name ?? null, isNewUser })
   } catch (error: unknown) {
     log.error({ msg: 'google-auth error', error: (error as Error)?.message ?? String(error) })
     return res.status(500).json({ message: 'Google login failed.' })

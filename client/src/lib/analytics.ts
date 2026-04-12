@@ -114,6 +114,30 @@ export type AnalyticsEvent =
   | 'process_another_clicked'      // props: { tool }
   | 'recording_started'
   | 'recording_stopped'            // props: { duration_seconds }
+  // Churn & billing lifecycle (server-fired; typed here for reference & client use)
+  | 'subscription_cancelled'       // cancelled via portal; props: { plan, cancel_at }
+  | 'subscription_deleted'         // subscription fully ended; props: { plan }
+  | 'subscription_renewed'         // billing cycle renewed; props: { plan, mrr_cents }
+  | 'payment_failed'               // Stripe payment declined; props: { plan, error_code }
+  // OTP & deep-funnel auth
+  | 'otp_requested'                // email OTP sent; props: { method: 'email' }
+  | 'otp_verified'                 // OTP entered correctly
+  | 'otp_failed'                   // OTP wrong or expired; props: { reason }
+  | 'google_login_completed'       // existing user logged in via Google; props: { plan }
+  | 'google_signup_completed'      // new account created via Google; props: { plan }
+  | 'user_logged_out'              // user explicitly logged out
+  | 'password_reset_completed'     // password reset via link
+  | 'password_setup_completed'     // new paid user set their password; props: { plan }
+  | 'demo_login_completed'         // demo session started
+  // Error & validation funnel
+  | 'file_validation_failed'       // file rejected before upload; props: { tool, reason, file_type }
+  | 'processing_error_shown'       // error state shown to user; props: { tool, error_type }
+  | 'job_timed_out'                // client detected hung job; props: { tool, job_id }
+  // Feature adoption
+  | 'subtitle_editor_opened'       // subtitle editor panel opened; props: { tool }
+  | 'batch_job_created'            // batch upload submitted; props: { tool, file_count }
+  // Engagement
+  | 'result_page_time_spent'       // time before first action; props: { tool, seconds, action }
 
 export function trackEvent(event: AnalyticsEvent, props?: Record<string, unknown>): void {
   if (import.meta.env.DEV) {

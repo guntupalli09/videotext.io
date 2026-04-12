@@ -15,6 +15,13 @@ import { computeNormalizedMonthlyCentsFromInvoice } from '../utils/stripeMrr'
 import { generatePasswordSetupToken } from '../utils/auth'
 import { hasProcessedStripeEvent, markStripeEventProcessed } from '../models/StripeEventLog'
 import { getLogger } from '../lib/logger'
+import {
+  trackSubscriptionCancelled,
+  trackSubscriptionCancellationReversed,
+  trackSubscriptionDeleted,
+  trackSubscriptionRenewed,
+  trackPaymentFailed,
+} from '../utils/analytics'
 
 const log = getLogger('api')
 
@@ -222,6 +229,16 @@ async function handleInvoicePaymentSucceeded(event: Stripe.Event): Promise<void>
   user.updatedAt = new Date()
   await saveUser(user)
 
+  if (activePlan) {
+    const mrrData = computeNormalizedMonthlyCentsFromInvoice(invoice)
+    trackSubscriptionRenewed({
+      user_id: user.id,
+      plan: activePlan,
+      mrr_cents: mrrData.normalizedMonthlyCents,
+      billing_interval: mrrData.billingInterval ?? undefined,
+    })
+  }
+
   try {
     const plan = activePlan ?? user.plan
     const mrr = computeNormalizedMonthlyCentsFromInvoice(invoice)
@@ -273,6 +290,11 @@ async function handleCustomerSubscriptionUpdated(event: Stripe.Event): Promise<v
     }
     user.updatedAt = new Date()
     await saveUser(user)
+    trackSubscriptionCancelled({
+      user_id: user.id,
+      plan: user.plan,
+      cancel_at: new Date(cancelAt),
+    })
   } else if (user.usageThisMonth.subscriptionCancelingAt) {
     // Cancellation was reversed (e.g. user re-subscribed) — clear the flag
     user.usageThisMonth = {
@@ -281,6 +303,7 @@ async function handleCustomerSubscriptionUpdated(event: Stripe.Event): Promise<v
     }
     user.updatedAt = new Date()
     await saveUser(user)
+    trackSubscriptionCancellationReversed({ user_id: user.id, plan: user.plan })
   }
 }
 
@@ -315,6 +338,8 @@ async function handleCustomerSubscriptionDeleted(event: Stripe.Event): Promise<v
   user.updatedAt = new Date()
   await saveUser(user)
 
+  trackSubscriptionDeleted({ user_id: user.id, plan: user.plan, period_end: endDate })
+
   try {
     await prisma.subscriptionSnapshot.create({
       data: {
@@ -334,6 +359,25 @@ async function handleCustomerSubscriptionDeleted(event: Stripe.Event): Promise<v
   } catch (err) {
     log.warn({ msg: 'SubscriptionSnapshot insert failed (customer.subscription.deleted)', error: (err as Error)?.message ?? String(err) })
   }
+}
+
+async function handleInvoicePaymentFailed(event: Stripe.Event): Promise<void> {
+  const invoice = event.data.object as Stripe.Invoice & {
+    last_payment_error?: { code?: string; message?: string }
+  }
+  const stripeCustomerId = (invoice.customer as string) || ''
+  if (!stripeCustomerId) return
+
+  const user = await getUserByStripeCustomerId(stripeCustomerId)
+  if (!user) return
+
+  const err = invoice.last_payment_error
+  trackPaymentFailed({
+    user_id: user.id,
+    plan: user.plan,
+    ...(err?.code && { error_code: err.code }),
+    ...(err?.message && { error_message: err.message }),
+  })
 }
 
 export async function stripeWebhookHandler(req: Request, res: Response) {
@@ -374,6 +418,9 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
         break
       case 'customer.subscription.deleted':
         await handleCustomerSubscriptionDeleted(event)
+        break
+      case 'invoice.payment_failed':
+        await handleInvoicePaymentFailed(event)
         break
       default:
         // Ignore all other event types
