@@ -45,9 +45,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Record your voice and get an accurate transcript in seconds. Free online voice-to-text with AI noise suppression, 99 language support, and instant .txt export. No account needed.',
   },
   '/video-to-transcript': {
-    title: 'Video to Transcript — Free AI Transcription & Translation',
+    title: 'Video to Transcript — 2-Hour Video in ~5 Minutes',
     description:
-      'Convert video to text with AI. View transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian with one click. Upload video, get plain-text transcript. Summary, chapters, speakers. Download or copy. Sign up for free. Free tier.',
+      'Upload any video, get a clean transcript in minutes. ~98.5% accuracy, zero data stored. Outputs: full transcript, AI summary, chapters, and SRT/VTT subtitles.',
   },
   '/video-to-subtitles': {
     title: 'Video to Subtitles — SRT & VTT Generator',
@@ -603,6 +603,70 @@ export function getFaqJsonLdFromItems(faq: { q: string; a: string }[]) {
 
 
 const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
+  '/video-to-transcript': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'How long does it take to transcribe a video?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'A 2-hour video typically processes in under 5 minutes with VideoText. Most videos under 30 minutes complete in under 2 minutes. Processing time depends on file length and current server load.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How accurate is AI video transcription?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText achieves approximately 98.5% word accuracy on clean English audio using OpenAI Whisper. Accuracy varies with audio quality, background noise, speaker count, and language. Technical or domain-specific vocabulary can be improved with the glossary feature.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Does VideoText store my video files?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'No. VideoText processes your file and deletes it immediately after transcription. We do not retain uploads, transcripts, or any output files. Your content is never stored on our servers.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What do I get beyond the transcript text?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Every transcription produces a full timestamped transcript, an AI-generated summary with bullet points, auto-generated chapter markers, and SRT/VTT subtitle files — all from a single upload, at no extra cost.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What video formats does VideoText support?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText accepts MP4, MOV, MKV, WebM, AVI, and most common video formats. You can also paste a public YouTube URL to transcribe directly without downloading the file first.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I transcribe multiple videos at once?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Pro and Agency plans include batch upload — drag in multiple files and receive one ZIP containing all transcripts and subtitle files when processing finishes.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How does VideoText compare to Otter, VEED, Descript, or Rev?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText is significantly faster (under 5 minutes for a 2-hour video vs. 15–45 min on most tools), outputs more structure per job (transcript + summary + chapters + subtitles in one pass), stores no data, and supports 90+ languages. Competitors like Otter and Descript are optimised for meeting notes or video editing — not fast file-first batch transcription.',
+          },
+        },
+      ],
+    },
+  ],
   '/transcription-benchmark': [
     {
       '@context': 'https://schema.org',
@@ -803,9 +867,9 @@ export function getAeoJsonLd(pathname: string): object[] | null {
 /** SoftwareApplication JSON-LD for individual paid tool pages. */
 const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string; featureList: string }> = {
   '/video-to-transcript': {
-    name: 'Video to Transcript — AI Transcription',
-    description: 'Upload any video file or paste a YouTube URL and get a plain-text transcript with speaker labels, automatic chapters, and a summary. View in 6 languages. Powered by OpenAI Whisper.',
-    featureList: 'AI transcription, Speaker labels, Automatic chapters, Summary, YouTube URL input, Multi-language viewing (English, Hindi, Telugu, Spanish, Chinese, Russian), Transcript download, Copy to clipboard',
+    name: 'Video to Transcript — Fast AI Transcription with Structured Output',
+    description: 'Convert any video to a clean transcript in minutes. ~98.5% accuracy. Outputs: full transcript, AI summary, auto-generated chapters, SRT/VTT subtitles, and speaker labels. Zero data retention — files deleted after processing. Powered by OpenAI Whisper.',
+    featureList: 'Fast AI transcription (2-hour video in ~5 min), ~98.5% word accuracy, AI summary with bullet points, Auto-generated chapters, Speaker diarization, SRT subtitle export, VTT subtitle export, TXT / PDF / DOCX / JSON export, 90+ language support, Batch processing (Pro), Zero data retention, YouTube URL input',
   },
   '/video-to-subtitles': {
     name: 'Video to Subtitles — SRT & VTT Generator',
@@ -858,6 +922,15 @@ export function getSoftwareApplicationJsonLd(pathname: string): object | null {
 
 /** HowTo JSON-LD for step-by-step how-to pages. */
 const HOWTO_SCHEMAS: Record<string, { name: string; description: string; steps: { name: string; text: string }[] }> = {
+  '/video-to-transcript': {
+    name: 'How to convert a video to a transcript',
+    description: 'Upload any video file and receive a clean transcript, AI summary, auto-generated chapters, and SRT/VTT subtitles — all in under 5 minutes for a 2-hour video.',
+    steps: [
+      { name: 'Upload your video', text: 'Drag and drop an MP4, MOV, MKV, or WebM file into the upload zone, or paste a public YouTube URL. Files process at roughly 1 minute of output per 24 seconds of real time.' },
+      { name: 'AI processes your video', text: 'VideoText transcribes the audio using OpenAI Whisper (~98.5% accuracy), identifies speakers, generates chapter markers, and writes an AI summary — all in a single pass. A 2-hour video is typically done in under 5 minutes.' },
+      { name: 'Download your structured output', text: 'Export the full transcript as TXT, PDF, DOCX, or JSON. Download SRT or VTT subtitle files. Copy the AI summary or chapters. Your files are deleted immediately after you download.' },
+    ],
+  },
   '/how-to-create-srt-file': {
     name: 'How to Create an SRT File',
     description: 'A step-by-step guide to creating an SRT subtitle file from a video using VideoText.',
