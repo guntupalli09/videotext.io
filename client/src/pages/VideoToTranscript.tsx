@@ -1709,6 +1709,42 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
   }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode])
 
+  /** Translated PDF — uses translatedSegments so the file is in the target language. */
+  const handleExportPdfTranslated = useCallback(async () => {
+    if (!translatedSegments?.length) { toast.error('Translation not ready yet'); return }
+    if (!isPaidPlan && freeExportsUsed >= 2) { toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.'); return }
+    const watermark = isPaidPlan ? undefined : 'Exported from VideoText (Free Plan) · videotext.io'
+    const slug = translationLanguage ? targetLangFileSlug(translationLanguage) : 'translated'
+    const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_translated_${slug}`, '.pdf')
+    try {
+      await exportToPdf(translatedSegments, speakerNameMap, filename, watermark)
+      if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
+      try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'pdf_translated', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
+      toast.success(isPaidPlan ? 'PDF downloaded' : 'PDF downloaded (with watermark)')
+    } catch (err) {
+      console.error('PDF generation failed:', err)
+      toast.error('PDF generation failed')
+    }
+  }, [translatedSegments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, translationLanguage])
+
+  /** Translated DOCX — uses translatedSegments so the file is in the target language. */
+  const handleExportDocxTranslated = useCallback(async () => {
+    if (!translatedSegments?.length) { toast.error('Translation not ready yet'); return }
+    if (!isPaidPlan && freeExportsUsed >= 2) { toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.'); return }
+    const watermark = isPaidPlan ? undefined : 'Exported from VideoText (Free Plan) · videotext.io'
+    const slug = translationLanguage ? targetLangFileSlug(translationLanguage) : 'translated'
+    const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_translated_${slug}`, '.docx')
+    try {
+      await exportToDocx(translatedSegments, speakerNameMap, filename, watermark)
+      if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
+      try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'docx_translated', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
+      toast.success(isPaidPlan ? 'DOCX downloaded' : 'DOCX downloaded (with watermark)')
+    } catch (err) {
+      console.error('DOCX generation failed:', err)
+      toast.error('DOCX generation failed')
+    }
+  }, [translatedSegments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, translationLanguage])
+
   // Search: match in segments (if any) or paragraphs; return { index, snippet, startTime? }
   const _searchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
@@ -3080,6 +3116,102 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 </button>
                               </div>
                             </div>
+
+                            {/* ── Translated exports — only shown when translate was enabled ── */}
+                            {translateEnabled && translationLanguage && (() => {
+                              const isReady = !!translatedSegments
+                              const langLabel = translationLanguage
+                              const slug = targetLangFileSlug(translationLanguage)
+                              const stem = exportFileStem(selectedFile?.name, 'video')
+                              const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
+                              const freeCanDownload = !isPaidPlan && freeExportsUsed < 2
+                              const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
+                              const canClick = isReady && (isPaidPlan || freeCanDownload)
+
+                              const makeStructuredHandler = (format: 'txt' | 'csv' | 'json' | 'notion') => () => {
+                                if (!translatedSegments) return
+                                const content =
+                                  format === 'json' ? buildJson(translatedSegments, speakerNameMap)
+                                  : format === 'csv' ? buildCsv(translatedSegments, speakerNameMap)
+                                  : format === 'notion' ? buildNotion(translatedSegments, speakerNameMap)
+                                  : buildTxt(translatedSegments, speakerNameMap)
+                                if (freeUsedAll) { toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.'); return }
+                                const mimeType = format === 'json' ? 'application/json' : 'text/plain'
+                                const ext = format === 'json' ? '.json' : format === 'csv' ? '.csv' : '.txt'
+                                const payload = isPaidPlan ? content : content + FREE_EXPORT_WATERMARK
+                                if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
+                                const blob = new Blob([payload], { type: mimeType })
+                                const a = document.createElement('a')
+                                a.href = URL.createObjectURL(blob)
+                                a.download = joinExportFilename(stem, `transcript_translated_${slug}`, ext)
+                                a.click()
+                                URL.revokeObjectURL(a.href)
+                                toast.success(isPaidPlan ? 'Download started' : 'Download started (with watermark)')
+                              }
+
+                              const makeSubtitleHandler = (fmt: 'srt' | 'vtt') => () => {
+                                if (!translatedSegments) return
+                                const resolved = withResolvedSpeakers(translatedSegments, speakerNameMap)
+                                const content = fmt === 'srt' ? segmentsToSrt(resolved) : segmentsToVtt(resolved)
+                                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+                                const a = document.createElement('a')
+                                a.href = URL.createObjectURL(blob)
+                                a.download = joinExportFilename(stem, `subtitles_translated_${slug}`, `.${fmt}`)
+                                a.click()
+                                URL.revokeObjectURL(a.href)
+                                toast.success(`${fmt.toUpperCase()} (translated) downloaded`)
+                              }
+
+                              const btnCls = (active: boolean) =>
+                                `rounded-lg border px-2 py-2 text-[11px] font-medium transition-colors ${
+                                  active
+                                    ? 'border-sky-200 dark:border-sky-700 text-sky-700 dark:text-sky-300 bg-sky-50/60 dark:bg-sky-950/30 hover:bg-sky-50 dark:hover:bg-sky-950/60'
+                                    : 'border-gray-200 dark:border-gray-700 text-gray-400 bg-gray-50 dark:bg-gray-800/50 cursor-not-allowed'
+                                }`
+
+                              return (
+                                <div className="border-t border-dashed border-gray-200 dark:border-gray-700 pt-3 space-y-3">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[10px] uppercase tracking-wide text-sky-600 dark:text-sky-400 font-semibold">
+                                      Translated · {langLabel}
+                                    </span>
+                                    {!isReady && (
+                                      <span className="text-[10px] text-gray-400 italic">translating…</span>
+                                    )}
+                                  </div>
+
+                                  {/* Structured */}
+                                  <div>
+                                    <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Structured</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      {(['txt', 'csv', 'json', 'notion'] as const).map((fmt) => (
+                                        <button key={fmt} type="button" disabled={!canClick} onClick={makeStructuredHandler(fmt)} className={btnCls(canClick)}>
+                                          {fmt.toUpperCase()}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  {/* Subtitles */}
+                                  <div>
+                                    <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Subtitles</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <button type="button" disabled={!canClick} onClick={makeSubtitleHandler('srt')} className={btnCls(canClick)}>SRT</button>
+                                      <button type="button" disabled={!canClick} onClick={makeSubtitleHandler('vtt')} className={btnCls(canClick)}>VTT</button>
+                                    </div>
+                                  </div>
+
+                                  {/* Documents */}
+                                  <div>
+                                    <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Documents</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <button type="button" disabled={!canClick} onClick={() => void handleExportPdfTranslated()} className={btnCls(canClick)}>PDF</button>
+                                      <button type="button" disabled={!canClick} onClick={() => void handleExportDocxTranslated()} className={btnCls(canClick)}>DOCX</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            })()}
                           </div>
                         )}
                       </div>
