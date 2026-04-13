@@ -45,9 +45,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Record your voice and get an accurate transcript in seconds. Free online voice-to-text with AI noise suppression, 99 language support, and instant .txt export. No account needed.',
   },
   '/video-to-transcript': {
-    title: 'Convert 2-Hour Video to Transcript in 5 Minutes | VideoText',
+    title: 'Convert 2-Hour Videos to Transcript in 5 Minutes (Not Hours) | VideoText',
     description:
-      'Turn long videos into clean transcripts in minutes. ~98.5% accurate, no data stored. Try it on your longest file.',
+      'Turn long videos into clean transcripts in minutes. ~98.5% accurate, no data stored. Try it on your longest video. See how fast it actually is.',
   },
   '/video-to-subtitles': {
     title: 'Video to Subtitles — SRT & VTT Generator',

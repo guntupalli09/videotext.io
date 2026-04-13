@@ -502,7 +502,7 @@ function App() {
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript
               seoH1="Convert Any Video to a Clean Transcript in Minutes"
-              seoIntro="Stop waiting hours for transcripts. Your longest video is done in minutes — ~98.5% accurate, zero data stored."
+              seoIntro="Most tools give you a transcript. VideoText gives you something you can actually use — done in minutes, not hours. ~98.5% accurate, nothing stored."
               faq={[
                 {
                   q: 'How long does it take to transcribe a video?',
@@ -540,6 +540,7 @@ function App() {
               seoDeepContent={{
                 proofPoints: [
                   'Real example: 1h 9m noisy podcast episode → full transcript in 4 minutes 11 seconds (March 2026 internal benchmark)',
+                  "That's ~16× faster than real-time playback.",
                   'A 2-hour video processes in under 5 minutes — roughly 1 output minute per 24 seconds of source audio',
                   '~98.5% word accuracy on clean English audio — powered by OpenAI Whisper, the same engine used by professional transcription services',
                   '90+ languages supported — including Hindi, Spanish, Chinese, Arabic, French, German, Japanese, and Portuguese',
