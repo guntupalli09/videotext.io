@@ -500,7 +500,116 @@ function App() {
             <Route path="/status" element={<Status />} />
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/s/:slug" element={<ShareTranscript />} />
-            <Route path="/video-to-transcript" element={<VideoToTranscript />} />
+            <Route path="/video-to-transcript" element={<VideoToTranscript
+              seoH1="Convert Any Video to a Clean Transcript in Minutes"
+              seoIntro="Most tools give you a transcript. VideoText gives you something you can actually use — done in minutes, not hours. ~98.5% accurate, nothing stored."
+              faq={[
+                {
+                  q: 'How long does it take to transcribe a video?',
+                  a: 'A 2-hour video typically processes in under 5 minutes. Most videos under 30 minutes finish in under 2 minutes. Processing time scales linearly with video length and current server load.',
+                },
+                {
+                  q: 'How accurate is VideoText transcription?',
+                  a: 'VideoText uses OpenAI Whisper and achieves approximately 98.5% word accuracy on clean English audio. Accuracy varies with background noise, audio quality, speaker count, and language. Use the Glossary field to improve accuracy for technical terminology.',
+                },
+                {
+                  q: 'Does VideoText store my video files?',
+                  a: 'No. Your file is processed and deleted immediately after transcription. We do not retain uploads, transcripts, or output files of any kind.',
+                },
+                {
+                  q: 'What formats can I export?',
+                  a: 'Transcript: TXT, PDF, DOCX, JSON. Subtitles: SRT and VTT. All exports are available after processing — no additional cost per format.',
+                },
+                {
+                  q: 'What video formats are supported?',
+                  a: 'MP4, MOV, MKV, WebM, AVI, and most common video formats. You can also paste a YouTube URL to transcribe without downloading the file.',
+                },
+                {
+                  q: 'Do I get more than just the transcript?',
+                  a: 'Yes. Every job outputs a full timestamped transcript, an AI-generated summary with bullet points, auto-generated chapter markers, and SRT/VTT subtitle files — all from one upload.',
+                },
+                {
+                  q: 'Can I transcribe multiple videos at once?',
+                  a: 'Yes, on Pro and Agency plans. Drag in multiple files and receive one ZIP with all transcripts and subtitle files when processing finishes.',
+                },
+                {
+                  q: 'How does VideoText compare to Otter, VEED, Descript, or Rev?',
+                  a: 'VideoText is faster (under 5 minutes for a 2-hour video), outputs more per job (transcript + summary + chapters + subtitles in one pass), stores no data, and supports 90+ languages. Otter and Descript are built for meetings and video editing — not fast file-first batch transcription.',
+                },
+              ]}
+              seoDeepContent={{
+                proofPoints: [
+                  'Real example: 1h 9m noisy podcast episode → full transcript in 4 minutes 11 seconds (March 2026 internal benchmark)',
+                  "That's ~16× faster than real-time playback.",
+                  'A 2-hour video processes in under 5 minutes — roughly 1 output minute per 24 seconds of source audio',
+                  '~98.5% word accuracy on clean English audio — powered by OpenAI Whisper, the same engine used by professional transcription services',
+                  '90+ languages supported — including Hindi, Spanish, Chinese, Arabic, French, German, Japanese, and Portuguese',
+                  'Zero data retention — files are processed and immediately deleted. We never store uploads, transcripts, or output files',
+                  'Structured output in one pass — transcript + AI summary + auto-generated chapters + SRT/VTT subtitles, not raw text only',
+                ],
+                workflowSteps: [
+                  {
+                    title: '1. Upload your video',
+                    detail: 'Drag and drop an MP4, MOV, MKV, or WebM file — or paste a public YouTube URL. No conversion needed. Files upload directly and processing starts immediately.',
+                  },
+                  {
+                    title: '2. AI transcribes + structures',
+                    detail: 'Our pipeline transcribes every word, labels speakers, identifies natural chapter breaks, and writes a summary — all in a single pass. A 2-hour recording is typically done in under 5 minutes.',
+                  },
+                  {
+                    title: '3. Download structured output',
+                    detail: 'Export the transcript as TXT, PDF, DOCX, or JSON. Download SRT and VTT subtitle files. Copy chapters or the AI summary. Your files are deleted from our servers the moment you\'re done.',
+                  },
+                ],
+                outputExamples: [
+                  {
+                    title: 'Full timestamped transcript',
+                    body: 'Every word, time-coded and searchable. Export as plain text, PDF, DOCX, or JSON. Paste into a blog post, article, or knowledge base without editing.',
+                  },
+                  {
+                    title: 'AI summary + chapters',
+                    body: 'A condensed summary and labeled chapter sections auto-extracted from the transcript. No editing required — usable directly as show notes, video descriptions, or meeting recaps.',
+                  },
+                  {
+                    title: 'SRT + VTT subtitles',
+                    body: 'Ready-to-upload subtitle files in both SRT and VTT format. Accurate timing, correct cue breaks. Upload directly to YouTube, Vimeo, or any platform that accepts external captions.',
+                  },
+                ],
+                comparisonRows: [
+                  { feature: 'Time to usable content', videotext: 'Minutes', alternatives: '30–90+ minutes' },
+                  { feature: 'Speed (2-hour video)', videotext: 'Under 5 min', alternatives: '15–45 min on most tools; queue-dependent on others' },
+                  { feature: 'Output per job', videotext: 'Transcript + summary + chapters + subtitles in one pass', alternatives: 'Transcript only; structured extras cost more or require manual work' },
+                  { feature: 'Data retention', videotext: 'Zero — files deleted after processing', alternatives: 'Files stored indefinitely on most platforms' },
+                  { feature: 'Language support', videotext: '90+ languages, full feature parity', alternatives: 'English-first; accuracy drops significantly in other languages' },
+                  { feature: 'Export formats', videotext: 'TXT, PDF, DOCX, JSON, SRT, VTT', alternatives: '1–2 formats standard; extras locked behind paid tiers' },
+                  { feature: 'Bulk processing', videotext: 'Batch upload — multiple files, one ZIP output (Pro)', alternatives: 'One file at a time on most tools; batch is expensive or unavailable' },
+                ],
+                useCases: [
+                  {
+                    title: 'YouTubers & video creators',
+                    body: 'Turn a 60-minute video into a transcript, SEO-ready description, chapter markers, and subtitle file — in the time it takes to make coffee. No editing. No copy-paste gymnastics.',
+                  },
+                  {
+                    title: 'Podcast producers',
+                    body: 'Get a clean, accurate transcript of any episode regardless of length. Use it for show notes, blog posts, episode search indexing, and newsletter copy.',
+                  },
+                  {
+                    title: 'Agencies & bulk operators',
+                    body: 'Process multiple client videos in one batch session. Export structured DOCX, PDF, or JSON outputs for downstream editorial and publishing workflows.',
+                  },
+                  {
+                    title: 'Researchers & journalists',
+                    body: 'Transcribe long-form interviews with speaker labels that identify who said what. Export for citation, quote-pulling, or archiving — with full timestamps.',
+                  },
+                  {
+                    title: 'Course creators & educators',
+                    body: 'Convert every lecture into searchable text, auto-generated chapters, and accurate subtitles. Improve accessibility, SEO, and student experience in one step.',
+                  },
+                ],
+                ctaText: 'Transcribe a video free',
+                ctaPath: '/pricing',
+              }}
+            />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
             <Route path="/batch-process" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/translate-subtitles" element={<TranslateSubtitles />} />

@@ -1890,6 +1890,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   }}
                   fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
                 />
+                <p className="text-xs text-center text-gray-400 dark:text-gray-500">
+                  Your files are processed and deleted. Nothing is stored. Ever.
+                </p>
                 {!batchUploadEligible() && (
                   <p className="text-sm text-center text-gray-500 dark:text-gray-400">
                     {isPaidPlan ? (
@@ -3436,7 +3439,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
           {seoDeepContent?.outputExamples?.length ? (
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-3">What your output looks like</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-1">This is what you get — not raw text, but ready-to-use content</h2>
+              <p className="text-sm text-gray-500 mb-3">Transcript, summary, chapters, and subtitles. All from one upload.</p>
               <div className="grid gap-3 md:grid-cols-3">
                 {seoDeepContent.outputExamples.map((example, idx) => (
                   <article key={`example-${idx}`} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
