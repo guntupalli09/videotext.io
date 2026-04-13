@@ -502,7 +502,7 @@ function App() {
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript
               seoH1="Convert Any Video to a Clean Transcript in Minutes"
-              seoIntro="~98.5% accuracy. Structured output: full transcript, AI summary, chapters, and SRT/VTT subtitles — not just raw text. Zero data retention."
+              seoIntro="Stop waiting hours for transcripts. Your longest video is done in minutes — ~98.5% accurate, zero data stored."
               faq={[
                 {
                   q: 'How long does it take to transcribe a video?',
@@ -539,9 +539,10 @@ function App() {
               ]}
               seoDeepContent={{
                 proofPoints: [
-                  'A 2-hour video processes in under 5 minutes — measured in internal March 2026 benchmarks at roughly 1 output minute per 24 seconds real time',
-                  '~98.5% word accuracy on clean English audio — powered by OpenAI Whisper, the same model used by professional transcription services',
-                  '90+ languages supported — including Hindi, Spanish, Chinese, Arabic, French, German, Japanese, Portuguese, and more',
+                  'Real example: 1h 9m noisy podcast episode → full transcript in 4 minutes 11 seconds (March 2026 internal benchmark)',
+                  'A 2-hour video processes in under 5 minutes — roughly 1 output minute per 24 seconds of source audio',
+                  '~98.5% word accuracy on clean English audio — powered by OpenAI Whisper, the same engine used by professional transcription services',
+                  '90+ languages supported — including Hindi, Spanish, Chinese, Arabic, French, German, Japanese, and Portuguese',
                   'Zero data retention — files are processed and immediately deleted. We never store uploads, transcripts, or output files',
                   'Structured output in one pass — transcript + AI summary + auto-generated chapters + SRT/VTT subtitles, not raw text only',
                 ],
@@ -574,7 +575,8 @@ function App() {
                   },
                 ],
                 comparisonRows: [
-                  { feature: 'Speed', videotext: '2-hour video in under 5 min', alternatives: '15–45 min on most tools; queue-dependent on others' },
+                  { feature: 'Time to usable content', videotext: 'Minutes', alternatives: '30–90+ minutes' },
+                  { feature: 'Speed (2-hour video)', videotext: 'Under 5 min', alternatives: '15–45 min on most tools; queue-dependent on others' },
                   { feature: 'Output per job', videotext: 'Transcript + summary + chapters + subtitles in one pass', alternatives: 'Transcript only; structured extras cost more or require manual work' },
                   { feature: 'Data retention', videotext: 'Zero — files deleted after processing', alternatives: 'Files stored indefinitely on most platforms' },
                   { feature: 'Language support', videotext: '90+ languages, full feature parity', alternatives: 'English-first; accuracy drops significantly in other languages' },
