@@ -1478,6 +1478,7 @@ export async function loginWithGoogle(credential: string): Promise<{
   userId: string
   plan: string
   email: string
+  isNewUser: boolean
 }> {
   const response = await api('/api/auth/google', {
     method: 'POST',
@@ -1492,7 +1493,7 @@ export async function loginWithGoogle(credential: string): Promise<{
   if (!data.token || !data.userId || data.plan == null) {
     throw new Error('Invalid Google login response')
   }
-  return { token: data.token, userId: data.userId, plan: data.plan, email: data.email || '' }
+  return { token: data.token, userId: data.userId, plan: data.plan, email: data.email || '', isNewUser: !!data.isNewUser }
 }
 
 // Usage APIs

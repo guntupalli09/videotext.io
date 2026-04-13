@@ -134,3 +134,126 @@ export function trackFirstPaidJobCompleted(params: {
     job_id: params.job_id,
   })
 }
+
+// ─── Billing & Churn ────────────────────────────────────────────────────────
+
+export function trackSubscriptionCancelled(params: {
+  user_id: string
+  plan: string
+  cancel_at: Date
+}): void {
+  capture('subscription_cancelled', params.user_id, {
+    user_id: params.user_id,
+    plan: params.plan,
+    cancel_at: params.cancel_at.toISOString(),
+    cancel_at_ts: Math.floor(params.cancel_at.getTime() / 1000),
+  })
+}
+
+export function trackSubscriptionCancellationReversed(params: {
+  user_id: string
+  plan: string
+}): void {
+  capture('subscription_cancellation_reversed', params.user_id, {
+    user_id: params.user_id,
+    plan: params.plan,
+  })
+}
+
+export function trackSubscriptionDeleted(params: {
+  user_id: string
+  plan: string
+  period_end: Date
+}): void {
+  capture('subscription_deleted', params.user_id, {
+    user_id: params.user_id,
+    plan: params.plan,
+    period_end: params.period_end.toISOString(),
+  })
+}
+
+export function trackSubscriptionRenewed(params: {
+  user_id: string
+  plan: string
+  mrr_cents: number
+  billing_interval?: string
+}): void {
+  capture('subscription_renewed', params.user_id, {
+    user_id: params.user_id,
+    plan: params.plan,
+    mrr_cents: params.mrr_cents,
+    ...(params.billing_interval && { billing_interval: params.billing_interval }),
+  })
+}
+
+export function trackPaymentFailed(params: {
+  user_id: string
+  plan: string
+  error_code?: string
+  error_message?: string
+}): void {
+  capture('payment_failed', params.user_id, {
+    user_id: params.user_id,
+    plan: params.plan,
+    ...(params.error_code && { error_code: params.error_code }),
+    ...(params.error_message && { error_message: params.error_message }),
+  })
+}
+
+// ─── Auth deep-funnel ───────────────────────────────────────────────────────
+
+/** Use email as distinctId pre-auth; PostHog merges the profile when identify() fires later. */
+export function trackOtpRequested(params: {
+  email: string
+  is_new_user: boolean
+}): void {
+  capture('otp_requested', params.email, {
+    method: 'email',
+    is_new_user: params.is_new_user,
+  })
+}
+
+export function trackOtpVerified(params: { email: string }): void {
+  capture('otp_verified', params.email, { method: 'email' })
+}
+
+export function trackOtpFailed(params: {
+  email: string
+  reason: 'invalid_code' | 'expired'
+}): void {
+  capture('otp_failed', params.email, { reason: params.reason })
+}
+
+export function trackPasswordResetCompleted(params: { user_id: string }): void {
+  capture('password_reset_completed', params.user_id, { user_id: params.user_id })
+}
+
+export function trackPasswordSetupCompleted(params: {
+  user_id: string
+  plan: string
+}): void {
+  capture('password_setup_completed', params.user_id, {
+    user_id: params.user_id,
+    plan: params.plan,
+  })
+}
+
+export function trackGoogleAuthCompleted(params: {
+  user_id: string
+  plan: string
+  is_new_user: boolean
+}): void {
+  const event = params.is_new_user ? 'google_signup_completed' : 'google_login_completed'
+  capture(event, params.user_id, {
+    user_id: params.user_id,
+    plan: params.plan,
+    method: 'google',
+  })
+}
+
+export function trackDemoLoginStarted(params: { demo_user_id: string }): void {
+  capture('demo_login_completed', params.demo_user_id, {
+    user_id: params.demo_user_id,
+    plan: 'pro',
+  })
+}

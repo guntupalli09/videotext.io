@@ -28,6 +28,10 @@ export default function Login() {
       const result = await loginWithGoogle(credential)
       storeLoginResult(result)
       try { identifyUser(result.userId, { plan: result.plan, email: result.email }) } catch { /* non-blocking */ }
+      try {
+        const event = result.isNewUser ? 'google_signup_completed' : 'google_login_completed'
+        trackEvent(event, { plan: result.plan })
+      } catch { /* non-blocking */ }
       window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
       navigate(returnTo, { replace: true })
       window.location.reload()
