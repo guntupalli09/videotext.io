@@ -390,6 +390,10 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: "Whisper AI Transcription Accuracy: What to Expect in 2026 | VideoText",
     description: "Real benchmark data on Whisper AI transcription accuracy by language, audio quality, and speaker count. Know what to expect before you process your video.",
   },
+  '/blog/how-to-translate-video-subtitles': {
+    title: "How to Translate Video Subtitles to Any Language | VideoText",
+    description: "Learn how to translate video subtitles in two ways: upload an SRT file or transcribe and translate from scratch. Covers YouTube, TikTok, eLearning, and more.",
+  },
 }
 
 /** Static breadcrumb items (non-SEO-registry routes). */
