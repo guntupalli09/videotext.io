@@ -442,6 +442,14 @@
       "angle": "Real benchmark data (our own internal tests). Accuracy by language, audio quality, speaker count. When Whisper is great vs where it struggles.",
       "tag": "Engineering",
       "target_intent": "informational"
+    },
+    {
+      "slug": "how-to-translate-video-subtitles",
+      "keyword": "how to translate video subtitles",
+      "title": "How to Translate Video Subtitles to Any Language",
+      "angle": "Two methods: translate existing SRT file vs transcribe and translate from scratch. Cover 5 common use cases (YouTube, TikTok, eLearning, meetings, docs).",
+      "tag": "Guide",
+      "target_intent": "informational"
     }
   ]
 }
