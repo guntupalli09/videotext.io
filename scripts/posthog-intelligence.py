@@ -546,7 +546,6 @@ def build() -> None:
                         "key": "job_completed", "event_type": "events",
                         "time_value": 14, "time_interval": "day",
                         "value": "performed",
-                        "count_operator": "gte", "count": 3,
                         "type": "behavioral",
                     }]},
                     {"type": "OR", "values": [{
