@@ -3401,11 +3401,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       />
 
       {hasDeepContent && (
-        <section className="mt-12 px-6 max-w-7xl mx-auto space-y-8" aria-label="Workflow proof and comparison">
+        <section className="mt-12 px-6 max-w-7xl mx-auto space-y-8 dark:text-gray-200" aria-label="Workflow proof and comparison">
           {seoDeepContent?.proofPoints?.length ? (
-            <div className="rounded-2xl border border-violet-200 bg-violet-50/60 p-5">
-              <h2 className="text-xl font-bold text-gray-900">Proof, not promises</h2>
-              <ul className="mt-3 space-y-2 list-disc pl-5 text-sm text-gray-700">
+            <div className="rounded-2xl border border-violet-200 bg-violet-50/60 p-5 dark:border-violet-500/40 dark:bg-violet-950/20">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Proof, not promises</h2>
+              <ul className="mt-3 space-y-2 list-disc pl-5 text-sm text-gray-700 dark:text-gray-300">
                 {seoDeepContent.proofPoints.map((point, idx) => (
                   <li key={`proof-${idx}`}>{point}</li>
                 ))}
@@ -3425,12 +3425,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
           {seoDeepContent?.workflowSteps?.length ? (
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-3">Step-by-step workflow</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">Step-by-step workflow</h2>
               <div className="grid gap-3 md:grid-cols-3">
                 {seoDeepContent.workflowSteps.map((step, idx) => (
-                  <article key={`step-${idx}`} className="rounded-xl border border-gray-200 bg-white p-4">
-                    <h3 className="font-semibold text-gray-900">{step.title}</h3>
-                    <p className="mt-1 text-sm text-gray-600">{step.detail}</p>
+                  <article key={`step-${idx}`} className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900/70">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">{step.title}</h3>
+                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{step.detail}</p>
                   </article>
                 ))}
               </div>
@@ -3439,13 +3439,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
           {seoDeepContent?.outputExamples?.length ? (
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-1">This is what you get — not raw text, but ready-to-use content</h2>
-              <p className="text-sm text-gray-500 mb-3">Transcript, summary, chapters, and subtitles. All from one upload.</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1">This is what you get — not raw text, but ready-to-use content</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Transcript, summary, chapters, and subtitles. All from one upload.</p>
               <div className="grid gap-3 md:grid-cols-3">
                 {seoDeepContent.outputExamples.map((example, idx) => (
-                  <article key={`example-${idx}`} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-                    <h3 className="font-semibold text-gray-900">{example.title}</h3>
-                    <p className="mt-1 text-sm text-gray-600">{example.body}</p>
+                  <article key={`example-${idx}`} className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/70">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">{example.title}</h3>
+                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{example.body}</p>
                   </article>
                 ))}
               </div>
@@ -3454,22 +3454,22 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
           {seoDeepContent?.comparisonRows?.length ? (
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-3">VideoText vs typical alternatives</h2>
-              <div className="overflow-x-auto rounded-xl border border-gray-200">
-                <table className="min-w-full text-sm">
-                  <thead className="bg-gray-50">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">VideoText vs typical alternatives</h2>
+              <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+                <table className="min-w-full text-sm dark:bg-gray-950/40">
+                  <thead className="bg-gray-50 dark:bg-gray-900/80">
                     <tr>
-                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Feature</th>
-                      <th className="px-4 py-3 text-left font-semibold text-gray-700">VideoText</th>
-                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Typical alternatives</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200">Feature</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200">VideoText</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200">Typical alternatives</th>
                     </tr>
                   </thead>
                   <tbody>
                     {seoDeepContent.comparisonRows.map((row, idx) => (
-                      <tr key={`cmp-${idx}`} className="border-t border-gray-200">
-                        <td className="px-4 py-3 font-medium text-gray-900">{row.feature}</td>
-                        <td className="px-4 py-3 text-gray-700">{row.videotext}</td>
-                        <td className="px-4 py-3 text-gray-600">{row.alternatives}</td>
+                      <tr key={`cmp-${idx}`} className="border-t border-gray-200 dark:border-gray-700">
+                        <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{row.feature}</td>
+                        <td className="px-4 py-3 text-gray-700 dark:text-gray-200">{row.videotext}</td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{row.alternatives}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -3480,12 +3480,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
           {seoDeepContent?.useCases?.length ? (
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-3">Who this page is built for</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">Who this page is built for</h2>
               <div className="grid gap-3 md:grid-cols-3">
                 {seoDeepContent.useCases.map((useCase, idx) => (
-                  <article key={`usecase-${idx}`} className="rounded-xl border border-gray-200 bg-white p-4">
-                    <h3 className="font-semibold text-gray-900">{useCase.title}</h3>
-                    <p className="mt-1 text-sm text-gray-600">{useCase.body}</p>
+                  <article key={`usecase-${idx}`} className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900/70">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">{useCase.title}</h3>
+                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{useCase.body}</p>
                   </article>
                 ))}
               </div>
@@ -3505,13 +3505,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       )}
 
       {faq.length > 0 && (
-        <section className="mt-12 pt-8 border-t border-gray-100/70 px-6 max-w-7xl mx-auto" aria-label="FAQ">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Frequently asked questions</h2>
+        <section className="mt-12 pt-8 border-t border-gray-100/70 dark:border-gray-800 px-6 max-w-7xl mx-auto" aria-label="FAQ">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Frequently asked questions</h2>
           <dl className="space-y-4">
             {faq.map((item, i) => (
               <div key={i}>
-                <dt className="font-medium text-gray-800">{item.q}</dt>
-                <dd className="mt-1 text-gray-600">{item.a}</dd>
+                <dt className="font-medium text-gray-800 dark:text-gray-100">{item.q}</dt>
+                <dd className="mt-1 text-gray-600 dark:text-gray-300">{item.a}</dd>
               </div>
             ))}
           </dl>
