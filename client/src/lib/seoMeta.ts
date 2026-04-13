@@ -674,10 +674,10 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
   '/transcription-benchmark': [
     {
       '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: 'VideoText Transcription Benchmark',
+      '@type': 'Article',
+      headline: 'VideoText Transcription Benchmark',
       description: 'Benchmark dataset and speed metrics for AI transcription throughput.',
-      brand: { '@type': 'Brand', name: SITE_NAME },
+      author: { '@type': 'Organization', name: SITE_NAME },
       url: `${SITE_URL}/transcription-benchmark`,
     },
     {
@@ -762,10 +762,10 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
   '/ai-transcription-tools': [
     {
       '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: 'AI Transcription Tools Comparison Hub',
+      '@type': 'Article',
+      headline: 'AI Transcription Tools Comparison Hub',
       description: 'Neutral comparison reference for AI transcription tool selection.',
-      brand: { '@type': 'Brand', name: SITE_NAME },
+      author: { '@type': 'Organization', name: SITE_NAME },
       url: `${SITE_URL}/ai-transcription-tools`,
     },
   ],
