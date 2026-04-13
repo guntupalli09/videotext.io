@@ -748,6 +748,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         ...(extraLangs.length > 0 ? { additionalLanguages: extraLangs } : {}),
       })
       const batchId = res.batchId
+      try { trackEvent('batch_job_created', { tool: 'video-to-transcript', file_count: batchFiles.length }) } catch { /* non-blocking */ }
       setBatchInfo({ batchId, status: 'queued', progress: { total: batchFiles.length, completed: 0, failed: 0, percentage: 0 }, estimatedTimeRemaining: 0, errors: [] })
       setStatus('processing')
       const poll = setInterval(async () => {

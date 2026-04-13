@@ -202,17 +202,20 @@ def trend(*events, breakdown: str | None = None, breakdown_type: str = "event",
     return {"kind": "InsightVizNode", "source": source}
 
 def funnel(*steps, window_days: int = 14, date_from: str = DATE) -> dict:
-    """FUNNELS InsightVizNode."""
+    """FUNNELS InsightVizNode. Step dicts may include 'properties' for step-level filters."""
     series = []
     for s in steps:
         if isinstance(s, str):
             series.append({"kind": "EventsNode", "event": s, "name": s})
         else:
-            series.append({
+            node: dict = {
                 "kind":  "EventsNode",
                 "event": s.get("id", s.get("event", "")),
                 "name":  s.get("name", s.get("id", "")),
-            })
+            }
+            if s.get("properties"):
+                node["properties"] = s["properties"]
+            series.append(node)
     return {
         "kind": "InsightVizNode",
         "source": {
@@ -556,6 +559,142 @@ def build() -> None:
             }
         },
     )
+
+    # ══════════════════════════════════════════════════════════════════
+    # DASHBOARD 5 — GROWTH & GUEST JOURNEY
+    # The "try before you sign up" mechanic is core to growth.
+    # This dashboard shows how well anonymous → paid is working.
+    # ══════════════════════════════════════════════════════════════════
+    print("\n── Dashboard 5: Growth & Guest Journey ─────────────────────")
+    d5 = make_dashboard(
+        "Growth & Guest Journey",
+        "Anonymous users who process a file, hit the auth wall, sign up, and (ideally) pay. "
+        "This 'try before signup' funnel is your primary growth mechanic. "
+        "Also tracks demo conversion and AI teaser performance.",
+    )
+
+    # Core guest-job conversion: anonymous user → auth gate → signup → activated
+    make_insight("Guest job conversion funnel (anon → signup → activated)", funnel(
+        "copy_gate_auth",          # anonymous user hit the copy/download auth wall
+        {"id": "signup_started", "name": "Signup started (guest job)",
+         "properties": [{"key": "from_guest_job", "type": "event",
+                         "value": [True], "operator": "exact"}]},
+        "signup_completed",
+        "job_completed",
+        window_days=1,             # tight window: this is a single session flow
+    ), [d5])
+
+    # Demo user path: instant pro access → do they ever convert to real account?
+    make_insight("Demo user conversion funnel", funnel(
+        "demo_login_completed",
+        "signup_started",
+        "signup_completed",
+        "plan_upgraded",
+        window_days=7,
+    ), [d5])
+
+    # Post-checkout onboarding: pay → set password → run first job
+    make_insight("Post-checkout onboarding funnel", funnel(
+        "plan_upgraded",
+        "password_setup_completed",
+        "first_paid_job_completed",
+        window_days=3,
+    ), [d5])
+
+    # AI teaser: does showing blurred summary nudge free users to upgrade?
+    make_insight("AI summary teaser → upgrade funnel", funnel(
+        "ai_summary_teaser_shown",
+        "upgrade_clicked",
+        "plan_upgraded",
+        window_days=3,
+    ), [d5])
+
+    # Volume of anonymous users hitting auth walls (demand signal for the free tier)
+    make_insight("Auth wall hits per day (copy_gate_auth)", trend(
+        {"id": "copy_gate_auth",  "name": "Copy gate (anon)",    "math": "total"},
+        {"id": "copy_gate_limit", "name": "Copy gate (free cap)", "math": "total"},
+    ), [d5])
+
+    # Signup channel mix — email OTP vs Google vs demo
+    make_insight("Signup channel mix over time", trend(
+        {"id": "signup_completed",        "name": "Email (OTP)",   "math": "total"},
+        {"id": "google_signup_completed", "name": "Google",         "math": "total"},
+        {"id": "demo_login_completed",    "name": "Demo session",   "math": "total"},
+    ), [d5])
+
+    # Which paywall reason most often triggers an upgrade? (use with Conversion Drivers)
+    make_insight("Paywall reason that leads to upgrade (paywall_shown by reason)", trend(
+        {"id": "paywall_shown", "name": "Paywall shown", "math": "total"},
+        breakdown="reason",
+    ), [d5])
+
+    # ══════════════════════════════════════════════════════════════════
+    # DASHBOARD 6 — TOOL INTELLIGENCE
+    # Which tools drive value, which hit the paywall, which lose users?
+    # ══════════════════════════════════════════════════════════════════
+    print("\n── Dashboard 6: Tool Intelligence ──────────────────────────")
+    d6 = make_dashboard(
+        "Tool Intelligence",
+        "Per-tool conversion, paywall pressure, and feature adoption. "
+        "Use this to find which tools are under-monetised, which need UX fixes, "
+        "and which drive the most long-term retention.",
+    )
+
+    # Voice recorder: start → stop → get a transcript (unique funnel, often mobile)
+    make_insight("Voice recorder funnel (record → transcript)", funnel(
+        "recording_started",
+        "recording_stopped",
+        "job_completed",
+        "result_downloaded",
+        window_days=1,
+    ), [d6])
+
+    # YouTube-specific pipeline: does URL input convert as well as file upload?
+    make_insight("YouTube URL pipeline funnel", funnel(
+        {"id": "file_selected", "name": "YouTube URL submitted",
+         "properties": [{"key": "source", "type": "event",
+                         "value": ["youtube"], "operator": "exact"}]},
+        "processing_started",
+        "job_completed",
+        "result_downloaded",
+        window_days=1,
+    ), [d6])
+
+    # Batch job adoption: how many Pro users actually use batch mode?
+    make_insight("Batch job creation vs regular jobs", trend(
+        {"id": "batch_job_created", "name": "Batch jobs",   "math": "total"},
+        {"id": "job_completed",     "name": "Regular jobs", "math": "total"},
+    ), [d6])
+
+    # Paywall pressure per tool — which tool gates users most?
+    make_insight("Paywall hits by tool", trend(
+        {"id": "paywall_shown", "name": "Paywall shown", "math": "total"},
+        breakdown="tool",
+    ), [d6])
+
+    # Format preference: do users prefer SRT or VTT? TXT or DOCX?
+    make_insight("Format selection breakdown (format_changed)", trend(
+        {"id": "format_changed", "name": "Format changed", "math": "total"},
+        breakdown="format",
+    ), [d6])
+
+    # Language selection: what languages do users transcribe/translate?
+    make_insight("Language selection breakdown (language_selected)", trend(
+        {"id": "language_selected", "name": "Language selected", "math": "total"},
+        breakdown="language",
+    ), [d6])
+
+    # Per-tool download rate: which tool results users actually keep?
+    make_insight("Downloads by tool type", trend(
+        {"id": "result_downloaded", "name": "Downloaded", "math": "total"},
+        breakdown="tool",
+    ), [d6])
+
+    # Tool discovery path: nav dropdown vs home page card
+    make_insight("Tool discovery source (nav vs feature card)", trend(
+        {"id": "tool_nav_clicked", "name": "Nav dropdown",    "math": "total"},
+        {"id": "tool_selected",    "name": "Feature card",    "math": "total"},
+    ), [d6])
 
     # ══════════════════════════════════════════════════════════════════
     print("\n" + "═" * 62)

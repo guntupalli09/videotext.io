@@ -802,7 +802,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                       ]
                 }
                 value={plan === 'free' ? 'srt' : format}
-                onChange={(v) => setFormat(v as 'srt' | 'vtt')}
+                onChange={(v) => {
+                  setFormat(v as 'srt' | 'vtt')
+                  try { trackEvent('format_changed', { tool: 'video-to-subtitles', format: v }) } catch { /* non-blocking */ }
+                }}
               />
               <Select
                 label="Language (optional)"
@@ -818,13 +821,19 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                   { value: 'ja', label: 'Japanese' },
                 ]}
                 value={language}
-                onChange={setLanguage}
+                onChange={(lang) => {
+                  setLanguage(lang)
+                  if (lang) try { trackEvent('language_selected', { tool: 'video-to-subtitles', language: lang }) } catch { /* non-blocking */ }
+                }}
               />
               {canMultiLanguage && (
                 <LanguageSelector
                   primaryLanguage={language || 'en'}
                   selected={additionalLanguages}
-                  onChange={setAdditionalLanguages}
+                  onChange={(langs) => {
+                    setAdditionalLanguages(langs)
+                    if (langs.length > 0) try { trackEvent('language_selected', { tool: 'video-to-subtitles', language: langs[langs.length - 1], additional: true }) } catch { /* non-blocking */ }
+                  }}
                   maxAdditional={maxAdditionalLanguages}
                 />
               )}
