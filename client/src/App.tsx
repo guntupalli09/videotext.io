@@ -156,6 +156,40 @@ function AppSeo() {
   // HowTo schema for how-to pages
   const howToSchema = getHowToJsonLd(pathname)
 
+  const dedupeAndMergeFaqSchemas = (schemas: object[]): object[] => {
+    const mergedFaqEntities: Array<Record<string, unknown>> = []
+    const nonFaqSchemas: object[] = []
+    const seenFaqKeys = new Set<string>()
+
+    for (const schema of schemas) {
+      const typedSchema = schema as { [key: string]: unknown }
+      if (typedSchema['@type'] === 'FAQPage') {
+        const entities = Array.isArray(typedSchema.mainEntity) ? typedSchema.mainEntity : []
+        for (const entity of entities) {
+          if (!entity || typeof entity !== 'object') continue
+          const q = (entity as { name?: unknown }).name
+          const text = (entity as { acceptedAnswer?: { text?: unknown } }).acceptedAnswer?.text
+          const dedupeKey = `${String(q ?? '')}::${String(text ?? '')}`
+          if (seenFaqKeys.has(dedupeKey)) continue
+          seenFaqKeys.add(dedupeKey)
+          mergedFaqEntities.push(entity as Record<string, unknown>)
+        }
+        continue
+      }
+      nonFaqSchemas.push(schema)
+    }
+
+    if (!mergedFaqEntities.length) return nonFaqSchemas
+    return [
+      ...nonFaqSchemas,
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: mergedFaqEntities,
+      },
+    ]
+  }
+
   const buildJsonLd = (): object[] | undefined => {
     if (is404) return undefined
     const schemas: object[] = []
@@ -168,7 +202,8 @@ function AppSeo() {
     if (!isBlogPost && seoEntry?.faq?.length) schemas.push(getFaqJsonLdFromItems(seoEntry.faq))
     const aeoSchemas = getAeoJsonLd(pathname)
     if (aeoSchemas?.length) schemas.push(...aeoSchemas)
-    return schemas.length ? schemas : undefined
+    const normalizedSchemas = dedupeAndMergeFaqSchemas(schemas)
+    return normalizedSchemas.length ? normalizedSchemas : undefined
   }
 
   const jsonLd = buildJsonLd()
