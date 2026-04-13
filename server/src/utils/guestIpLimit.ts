@@ -5,8 +5,8 @@
  * The counter expires automatically at the next midnight UTC so no
  * cleanup cron is required.
  *
- * Fails open (returns true) when Redis is unavailable so an outage
- * never blocks all uploads.
+ * Falls back to an in-memory counter when Redis is temporarily unavailable —
+ * the limit is ALWAYS enforced (never fails open).
  */
 import Redis from 'ioredis'
 import { getLogger } from '../lib/logger'
@@ -14,7 +14,7 @@ import type { Request } from 'express'
 
 const log = getLogger('api')
 
-const GUEST_DAILY_LIMIT = 3
+export const GUEST_DAILY_LIMIT = 3
 
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379'
 const guestIpRedis = new Redis(redisUrl, {
@@ -43,8 +43,40 @@ function todayUTCString(): string {
   return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`
 }
 
-function ipLimitKey(ip: string): string {
+export function ipLimitKey(ip: string): string {
   return `guest_ip_daily:${ip}:${todayUTCString()}`
+}
+
+/**
+ * In-memory fallback counters — used when Redis is temporarily unavailable.
+ * Not shared across server instances but prevents unlimited bypass during outages.
+ */
+const inMemFallback = new Map<string, { count: number; expiresAt: number }>()
+
+// Prune stale in-memory entries every 30 minutes so the map never grows unbounded.
+setInterval(() => {
+  const now = Date.now()
+  for (const [k, v] of inMemFallback) {
+    if (now > v.expiresAt) inMemFallback.delete(k)
+  }
+}, 30 * 60 * 1000).unref()
+
+function inMemIncr(key: string, ttlSec: number): number {
+  const now = Date.now()
+  const entry = inMemFallback.get(key)
+  if (!entry || now > entry.expiresAt) {
+    inMemFallback.set(key, { count: 1, expiresAt: now + ttlSec * 1000 })
+    return 1
+  }
+  entry.count++
+  return entry.count
+}
+
+function inMemGet(key: string): number {
+  const now = Date.now()
+  const entry = inMemFallback.get(key)
+  if (!entry || now > entry.expiresAt) return 0
+  return entry.count
 }
 
 /**
@@ -71,6 +103,8 @@ export function extractClientIp(req: Request): string {
  * Increment the guest IP counter for today.
  * Returns true if the upload is allowed (counter ≤ limit after increment).
  * Returns false if the daily limit has been reached.
+ *
+ * Falls back to in-memory counter when Redis is unavailable — NEVER fails open.
  */
 export async function checkAndRecordGuestIpImport(ip: string): Promise<boolean> {
   const key = ipLimitKey(ip)
@@ -83,7 +117,22 @@ export async function checkAndRecordGuestIpImport(ip: string): Promise<boolean> 
     const count = (results?.[0]?.[1] as number) ?? 1
     return count <= GUEST_DAILY_LIMIT
   } catch (err) {
-    log.warn({ msg: '[GuestIpLimit] Redis error, failing open', error: (err as Error).message })
-    return true
+    log.warn({ msg: '[GuestIpLimit] Redis error, using in-memory fallback', error: (err as Error).message })
+    const count = inMemIncr(key, ttl)
+    return count <= GUEST_DAILY_LIMIT
+  }
+}
+
+/**
+ * Read the current guest import count for an IP today (without incrementing).
+ * Used on signup to carry the guest's usage over to the new authenticated account.
+ */
+export async function getGuestIpImportCount(ip: string): Promise<number> {
+  const key = ipLimitKey(ip)
+  try {
+    const val = await guestIpRedis.get(key)
+    return val ? (parseInt(val, 10) || 0) : 0
+  } catch {
+    return inMemGet(key)
   }
 }

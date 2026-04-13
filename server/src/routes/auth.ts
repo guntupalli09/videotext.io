@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express'
 import rateLimit from 'express-rate-limit'
 import bcrypt from 'bcryptjs'
 import Redis from 'ioredis'
-import { getUserByEmail, getUserByPasswordToken, getUserByPasswordResetToken, saveUser } from '../models/User'
+import { getUserByEmail, getUserByPasswordToken, getUserByPasswordResetToken, saveUser, getUser } from '../models/User'
 import type { User } from '../models/User'
 import { signAuthToken, signEmailVerificationToken, verifyEmailVerificationToken, generatePasswordResetToken } from '../utils/auth'
 import { getPlanAndEmailForStripeCustomer } from '../services/stripe'
@@ -11,6 +11,7 @@ import { getPlanLimits } from '../utils/limits'
 import { getLogger } from '../lib/logger'
 import { incrementResendCounter } from '../lib/apiCreditsCache'
 import { prisma } from '../db'
+import { extractClientIp, getGuestIpImportCount, GUEST_DAILY_LIMIT } from '../utils/guestIpLimit'
 import {
   trackOtpRequested,
   trackOtpVerified,
@@ -73,6 +74,54 @@ function generateOTP(): string {
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+/**
+ * Merge a guest session into a newly-authenticated real user.
+ *
+ * 1. Reassigns all Job DB rows from the guest UUID to the real user so the
+ *    founder dashboard shows the correct email instead of guest_xx.
+ * 2. Reads the IP-based daily import counter and sets importCountToday on
+ *    the new account so the usage display reflects imports done as a guest
+ *    (e.g. "2 of 3 imports used today" after 1 guest import + signup).
+ *
+ * All errors are caught and logged — this must never block the auth response.
+ */
+async function mergeGuestToUser(guestUserId: string, realUserId: string, clientIp: string): Promise<void> {
+  // 1. Migrate Job DB records so they appear under the real user
+  try {
+    const updated = await prisma.job.updateMany({
+      where: { userId: guestUserId },
+      data: { userId: realUserId },
+    })
+    if (updated.count > 0) {
+      log.info({ msg: 'mergeGuestToUser: migrated jobs', guestUserId, realUserId, count: updated.count })
+    }
+  } catch (e) {
+    log.warn({ msg: 'mergeGuestToUser: job migration failed', error: (e as Error)?.message ?? String(e) })
+  }
+
+  // 2. Carry over today's import count from the guest IP counter
+  try {
+    const guestImportsToday = await getGuestIpImportCount(clientIp)
+    if (guestImportsToday > 0) {
+      const user = await getUser(realUserId)
+      if (user) {
+        // Use max() so we never double-count if the user already did authenticated imports today
+        const carry = Math.min(guestImportsToday, GUEST_DAILY_LIMIT)
+        user.usageThisMonth.importCountToday = Math.max(
+          user.usageThisMonth.importCountToday ?? 0,
+          carry
+        )
+        user.usageThisMonth.importCount = (user.usageThisMonth.importCount ?? 0) + carry
+        user.updatedAt = new Date()
+        await saveUser(user)
+        log.info({ msg: 'mergeGuestToUser: carried over imports', realUserId, carry })
+      }
+    }
+  } catch (e) {
+    log.warn({ msg: 'mergeGuestToUser: import carry-over failed', error: (e as Error)?.message ?? String(e) })
+  }
 }
 
 async function sendOTPEmail(email: string, code: string): Promise<void> {
@@ -249,15 +298,16 @@ interface SignupBody {
   password: string
 }
 
-/** Complete signup after OTP verification. Body: { verificationToken, password }. */
+/** Complete signup after OTP verification. Body: { verificationToken, password, guestUserId? }. */
 interface CompleteSignupBody {
   verificationToken: string
   password: string
+  guestUserId?: string
 }
 
 router.post('/complete-signup', async (req: Request, res: Response) => {
   try {
-    const { verificationToken, password } = req.body as CompleteSignupBody
+    const { verificationToken, password, guestUserId } = req.body as CompleteSignupBody
     if (!verificationToken || !password) {
       return res.status(400).json({ message: 'Verification token and password are required.' })
     }
@@ -316,6 +366,12 @@ router.post('/complete-signup', async (req: Request, res: Response) => {
     }
 
     await saveUser(user)
+
+    // Merge guest session (non-fatal — errors must not block the auth response)
+    if (guestUserId && typeof guestUserId === 'string' && guestUserId.startsWith('guest_')) {
+      mergeGuestToUser(guestUserId, user.id, extractClientIp(req)).catch(() => {})
+    }
+
     const jwt = signAuthToken(user)
     return res.status(201).json({
       token: jwt,
@@ -591,7 +647,7 @@ const googleAuthLimit = rateLimit({
  */
 router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
   try {
-    const { credential } = req.body as { credential?: string }
+    const { credential, guestUserId } = req.body as { credential?: string; guestUserId?: string }
     if (!credential || typeof credential !== 'string') {
       return res.status(400).json({ message: 'Google credential is required.' })
     }
@@ -683,6 +739,11 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
         await saveUser(user)
       }
       log.info({ msg: 'Google OAuth existing user login', email })
+    }
+
+    // Merge guest session for both new sign-ups and returning users (non-fatal)
+    if (guestUserId && typeof guestUserId === 'string' && guestUserId.startsWith('guest_')) {
+      mergeGuestToUser(guestUserId, user.id, extractClientIp(req)).catch(() => {})
     }
 
     trackGoogleAuthCompleted({ user_id: user.id, plan: user.plan, is_new_user: isNewUser })

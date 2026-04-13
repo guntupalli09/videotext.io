@@ -68,6 +68,29 @@ export function clearPersistedJobId(pathname: string, navigate: (path: string, o
   }
 }
 
+// ─── Guest user ID persistence ────────────────────────────────────────────────
+// When a guest uploads a file, the server mints a guest_${uuid} and returns it.
+// We store it in localStorage so on signup we can pass it back to the server,
+// which then migrates the guest jobs to the real account and carries over the
+// importCountToday so the usage display shows the correct count (e.g. "2 of 3").
+
+const GUEST_USER_ID_KEY = 'videotext:guestUserId'
+
+/** Persist the guest userId returned from an upload response. */
+export function persistGuestUserId(guestUserId: string): void {
+  try { localStorage.setItem(GUEST_USER_ID_KEY, guestUserId) } catch { /* ignore */ }
+}
+
+/** Retrieve the stored guest userId (null if none or already signed up). */
+export function getPersistedGuestUserId(): string | null {
+  try { return localStorage.getItem(GUEST_USER_ID_KEY) } catch { return null }
+}
+
+/** Remove the stored guest userId. Call on logout and after a successful signup merge. */
+export function clearPersistedGuestUserId(): void {
+  try { localStorage.removeItem(GUEST_USER_ID_KEY) } catch { /* ignore */ }
+}
+
 /** Clear all persisted job IDs and tokens from sessionStorage. Call on logout so results are not re-shown after reload. */
 export function clearAllPersistedJobs(): void {
   if (typeof sessionStorage === 'undefined') return

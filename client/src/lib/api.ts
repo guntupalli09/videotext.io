@@ -1,5 +1,6 @@
 import { API_ORIGIN } from './apiBase'
 import { trackEvent } from './analytics'
+import { persistGuestUserId, getPersistedGuestUserId } from './jobSession'
 
 /** True when requests hit same origin (e.g. Vite dev server) and are proxied to backend — use conservative chunking. */
 function isLikelyDevProxy(): boolean {
@@ -78,6 +79,8 @@ export interface UploadResponse {
   status: 'queued'
   /** Required for polling when not logged in; send with getJobStatus so status works. */
   jobToken?: string
+  /** Returned for guest uploads. Store and pass to signup so the server can merge the guest session. */
+  guestUserId?: string
 }
 
 /** Current stage of the YouTube 3-step pipeline (caption fetch → audio download → transcription). */
@@ -509,8 +512,9 @@ async function uploadFileChunked(
       }
       throw new Error(`${msg} (${initRes.status})`)
     }
-    const initData = (await initRes.json()) as { uploadId: string }
+    const initData = (await initRes.json()) as { uploadId: string; guestUserId?: string }
     uploadId = initData.uploadId
+    if (initData.guestUserId) persistGuestUserId(initData.guestUserId)
     uploadedChunks = []
     setChunkedUploadState({
       uploadId,
@@ -803,6 +807,7 @@ async function uploadFileChunked(
   const data = (await completeRes.json()) as UploadResponse
   if (!data?.jobId) throw new Error('Invalid upload response. Please retry.')
   clearChunkedUploadState()
+  if (data.guestUserId) persistGuestUserId(data.guestUserId)
   const uploadDurationMs = Date.now() - uploadStartMs
   trackUploadEvent('upload_completed', {
     job_id: data.jobId,
@@ -886,7 +891,8 @@ export function uploadFileWithProgress(
             upload_duration_ms: uploadDurationMs,
           })
           console.log('[UPLOAD_TIMING]', { file_size_bytes: file.size, upload_duration_ms: uploadDurationMs, tool_type: options.toolType, mode: 'xhr' })
-          resolve({ jobId: data.jobId, status: data.status ?? 'queued', jobToken: data.jobToken })
+          if (data.guestUserId) persistGuestUserId(data.guestUserId)
+          resolve({ jobId: data.jobId, status: data.status ?? 'queued', jobToken: data.jobToken, guestUserId: data.guestUserId })
           return
         }
         const err = data?.message || 'Upload failed'
@@ -984,6 +990,7 @@ export async function uploadFile(file: File, options: UploadOptions): Promise<Up
     upload_duration_ms: uploadDurationMs,
   })
   console.log('[UPLOAD_TIMING]', { file_size_bytes: file.size, upload_duration_ms: uploadDurationMs, tool_type: options.toolType, mode: 'fetch' })
+  if (data.guestUserId) persistGuestUserId(data.guestUserId)
   return data
 }
 
@@ -1170,7 +1177,8 @@ export function uploadDualFilesWithProgress(
       }
       if (xhr.status >= 200 && xhr.status < 300 && data?.jobId) {
         trackUploadEvent('upload_completed', { job_id: data.jobId, tool_type: toolType, file_size_bytes: videoFile.size, upload_mode: 'dual' })
-        resolve({ jobId: data.jobId, status: data.status ?? 'queued', jobToken: data.jobToken })
+        if (data.guestUserId) persistGuestUserId(data.guestUserId)
+        resolve({ jobId: data.jobId, status: data.status ?? 'queued', jobToken: data.jobToken, guestUserId: data.guestUserId })
         return
       }
       reject(new Error(data?.message || 'Upload failed'))
@@ -1450,10 +1458,11 @@ export async function completeSignup(verificationToken: string, password: string
   plan: string
   email: string
 }> {
+  const guestUserId = getPersistedGuestUserId()
   const response = await api('/api/auth/complete-signup', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ verificationToken, password }),
+    body: JSON.stringify({ verificationToken, password, ...(guestUserId && { guestUserId }) }),
   })
   if (!response.ok) {
     const err = await response.json().catch(() => ({ message: 'Signup failed' }))
@@ -1480,10 +1489,11 @@ export async function loginWithGoogle(credential: string): Promise<{
   email: string
   isNewUser: boolean
 }> {
+  const guestUserId = getPersistedGuestUserId()
   const response = await api('/api/auth/google', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ credential }),
+    body: JSON.stringify({ credential, ...(guestUserId && { guestUserId }) }),
   })
   if (!response.ok) {
     const err = await response.json().catch(() => ({ message: 'Google login failed' }))

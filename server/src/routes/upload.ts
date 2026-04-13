@@ -451,6 +451,7 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       jobId: job.id,
       status: 'queued',
       jobToken: (job.data as JobData)?.jobToken,
+      ...(userId.startsWith('guest_') && { guestUserId: userId }),
     })
   } catch (error: any) {
     uploadLog.error({ msg: 'Upload error', error: String(error) })
@@ -661,6 +662,7 @@ router.post('/dual', upload.fields([
       jobId: job.id,
       status: 'queued',
       jobToken: (job.data as JobData)?.jobToken,
+      ...(userId.startsWith('guest_') && { guestUserId: userId }),
     })
   } catch (error: any) {
     uploadLog.error({ msg: 'Upload error', error: String(error) })
@@ -820,7 +822,7 @@ router.post('/init', async (req: Request, res: Response) => {
       totalSizeBytes: totalSize,
     })
 
-    return res.json({ uploadId })
+    return res.json({ uploadId, ...(userId.startsWith('guest_') && { guestUserId: userId }) })
   } catch (error: any) {
     const msg = error?.message || String(error)
     const stack = error?.stack
@@ -1155,6 +1157,7 @@ router.post('/complete', async (req: Request, res: Response) => {
           jobId: job.id,
           status: 'queued',
           jobToken: (job.data as JobData)?.jobToken,
+          ...(meta.userId?.startsWith('guest_') && { guestUserId: meta.userId }),
         })
       } catch (error: any) {
         if (error?.statusCode === 400) {
