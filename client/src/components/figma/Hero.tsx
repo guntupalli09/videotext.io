@@ -77,8 +77,8 @@ function HeroDropzone() {
           relative cursor-pointer rounded-2xl border-2 border-dashed px-8 py-8
           flex flex-col items-center gap-3 transition-all duration-200 select-none
           ${dragging
-            ? 'border-violet-400 bg-violet-500/10 scale-[1.015]'
-            : 'border-white/20 bg-white/[0.03] hover:border-violet-400/60 hover:bg-violet-500/[0.06]'
+            ? 'border-violet-300 bg-violet-500/18 shadow-[0_0_0_1px_rgba(139,92,246,0.45),0_0_34px_rgba(139,92,246,0.34)] scale-[1.015]'
+            : 'border-violet-300/45 bg-gradient-to-b from-violet-500/18 to-indigo-500/12 shadow-[0_0_0_1px_rgba(139,92,246,0.28),0_12px_44px_rgba(48,21,114,0.45)] hover:border-violet-300/70 hover:from-violet-500/25 hover:to-indigo-500/16 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.45),0_0_38px_rgba(139,92,246,0.25)]'
           }
         `}
       >
@@ -115,7 +115,7 @@ function HeroDropzone() {
       {/* Record option */}
       <Link
         to="/voice-recorder"
-        className="group flex items-center gap-4 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:border-violet-500/40 hover:bg-violet-500/[0.06] px-5 py-3 transition-all duration-200"
+        className="group flex items-center gap-4 rounded-xl border border-violet-300/30 bg-gradient-to-b from-violet-500/14 to-indigo-500/12 shadow-[0_0_0_1px_rgba(139,92,246,0.2),0_10px_30px_rgba(48,21,114,0.35)] hover:border-violet-300/60 hover:from-violet-500/22 hover:to-indigo-500/16 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.42),0_0_30px_rgba(139,92,246,0.2)] px-5 py-3 transition-all duration-200"
       >
         <div className="w-9 h-9 rounded-xl bg-violet-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-500/25 transition-colors">
           <Mic className="w-4 h-4 text-violet-400" />
@@ -214,16 +214,17 @@ export function Hero() {
               bg: 'bg-amber-500/10',
             },
           ].map(({ icon: Icon, label, preview, color, bg }) => (
-            <div
+            <Link
               key={label}
-              className="rounded-xl border border-white/[0.07] bg-white/[0.03] p-3 text-center flex flex-col items-center gap-2"
+              to="/video-to-transcript"
+              className="group rounded-xl border border-white/[0.07] bg-white/[0.03] p-3 text-center flex flex-col items-center gap-2 transition-all duration-200 hover:border-violet-400/55 hover:bg-violet-500/[0.08]"
             >
-              <div className={`w-7 h-7 rounded-lg ${bg} flex items-center justify-center`}>
+              <div className={`w-7 h-7 rounded-lg ${bg} flex items-center justify-center transition-transform duration-200 group-hover:scale-105`}>
                 <Icon className={`w-3.5 h-3.5 ${color}`} />
               </div>
               <p className="text-[11px] font-bold text-white/80 leading-tight">{label}</p>
               <p className="text-[10px] text-white/30 leading-relaxed hidden sm:block">{preview}</p>
-            </div>
+            </Link>
           ))}
         </div>
 
