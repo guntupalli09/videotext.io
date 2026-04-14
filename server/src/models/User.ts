@@ -16,7 +16,10 @@ export interface UsageThisMonth {
   importCountTodayResetDate: Date
   dailyMinutesToday: number
   dailyMinutesTodayResetDate: Date
-  /** Set when user cancels mid-cycle (cancel_at_period_end). Access continues until this date. */
+  /**
+   * @deprecated Use User.cancelAtPeriodEnd + User.billingPeriodEnd instead.
+   * Kept for backward-compat reads from existing DB rows; no longer written.
+   */
   subscriptionCancelingAt?: Date
 }
 
@@ -50,6 +53,8 @@ export interface User {
   paymentMethodId?: string
   billingPeriodStart?: Date
   billingPeriodEnd?: Date
+  subscriptionStatus?: string   // active | past_due | canceled | trialing | incomplete
+  cancelAtPeriodEnd?: boolean
   passwordSetupToken?: string
   passwordSetupExpiresAt?: Date
   passwordSetupUsed?: boolean
@@ -86,6 +91,8 @@ function rowToUser(row: DbUser): User {
     paymentMethodId: row.paymentMethodId ?? undefined,
     billingPeriodStart: row.billingPeriodStart ?? undefined,
     billingPeriodEnd: row.billingPeriodEnd ?? undefined,
+    subscriptionStatus: (row as { subscriptionStatus?: string | null }).subscriptionStatus ?? undefined,
+    cancelAtPeriodEnd: (row as { cancelAtPeriodEnd?: boolean | null }).cancelAtPeriodEnd ?? false,
     passwordSetupToken: row.passwordSetupToken ?? undefined,
     passwordSetupExpiresAt: row.passwordSetupExpiresAt ?? undefined,
     passwordSetupUsed: row.passwordSetupUsed ?? false,
@@ -139,6 +146,8 @@ function userToDb(user: User) {
     paymentMethodId: user.paymentMethodId ?? null,
     billingPeriodStart: user.billingPeriodStart ?? null,
     billingPeriodEnd: user.billingPeriodEnd ?? null,
+    subscriptionStatus: user.subscriptionStatus ?? null,
+    cancelAtPeriodEnd: user.cancelAtPeriodEnd ?? false,
     passwordSetupToken: user.passwordSetupToken ?? null,
     passwordSetupExpiresAt: user.passwordSetupExpiresAt ?? null,
     passwordSetupUsed: user.passwordSetupUsed ?? false,

@@ -34,6 +34,7 @@ import adminSupportRoutes, { runAlertChecks, maybeSendDailyDigest } from './rout
 import { runRecompute } from './services/recomputeMetrics'
 import { pushLogEntry } from './lib/logRing'
 import { purgeOldStripeEvents } from './models/StripeEventLog'
+import { isAllowedOrigin, normalizeOrigin } from './utils/allowedOrigins'
 import { prisma } from './db'
 import { refreshApiCredits } from './lib/apiCreditsCache'
 import { createMagicLinkToken } from './routes/auth'
@@ -85,47 +86,10 @@ const generalLimiter = rateLimit({
   legacyHeaders: false,
 })
 
-// CORS: production allowlist + env CORS_ORIGINS (comma-separated) + any *.vercel.app; in dev allow any localhost/127.0.0.1/[::1] (any port)
-const allowedExactOrigins = new Set([
-  'https://videotext.io',
-  'https://www.videotext.io',
-])
-if (process.env.NODE_ENV !== 'production') {
-  allowedExactOrigins.add('http://localhost:3000')
-  allowedExactOrigins.add('http://127.0.0.1:3000')
-}
-const envOrigins = (process.env.CORS_ORIGINS || '').split(',').map((o) => o.trim()).filter(Boolean)
-envOrigins.forEach((o) => allowedExactOrigins.add(o))
-
-function normalizeOrigin(origin: string): string {
-  return origin.trim().replace(/\/$/, '') // trim and strip trailing slash
-}
-
-/** In dev, allow any origin that is localhost, 127.0.0.1, or [::1] (any port). */
-function isLocalOrigin(origin: string): boolean {
-  try {
-    const u = new URL(origin)
-    const host = u.hostname.toLowerCase()
-    return (
-      host === 'localhost' ||
-      host === '127.0.0.1' ||
-      host === '[::1]' ||
-      host === '::1'
-    )
-  } catch {
-    return false
-  }
-}
-
-function isAllowedOrigin(origin?: string) {
-  if (!origin) return true // curl, server-to-server
-  const norm = normalizeOrigin(origin)
-  if (allowedExactOrigins.has(norm)) return true
-  if (norm.endsWith('.vercel.app')) return true
-  // Always allow localhost/127.0.0.1 (any port) so local dev works even when NODE_ENV=production
-  if (isLocalOrigin(norm)) return true
-  return false
-}
+// CORS: allowlist is managed in utils/allowedOrigins.ts.
+// Production: explicit origins only (hardcoded set + CORS_ORIGINS env var).
+// Development: any localhost origin allowed.
+// The *.vercel.app wildcard has been removed — add preview URLs to CORS_ORIGINS instead.
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {

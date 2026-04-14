@@ -5,6 +5,7 @@ import { prisma } from '../db'
 import type { User, PlanType } from '../models/User'
 import { getPlanLimits } from '../utils/limits'
 import { getAuthFromRequest, getEffectiveUserId, verifyEmailVerificationToken, generatePasswordSetupToken, signAuthToken } from '../utils/auth'
+import { isAllowedOrigin, normalizeOrigin } from '../utils/allowedOrigins'
 import { getLogger } from '../lib/logger'
 
 const log = getLogger('api')
@@ -38,9 +39,15 @@ router.post('/checkout', async (req: Request, res: Response) => {
     const { mode, plan, returnToPath, email, stripeCustomerId, frontendOrigin, promotionCode, emailVerificationToken } =
       req.body as CheckoutRequestBody
 
-    // Frontend URL for Stripe success/cancel redirects. Client sends frontendOrigin; otherwise use BASE_URL (Hetzner).
+    // Security: validate frontendOrigin against the same allowlist as CORS.
+    // An unvalidated frontendOrigin would let an attacker redirect the Stripe
+    // success URL (containing session_id) to an attacker-controlled domain,
+    // allowing session token theft via GET /api/billing/session-details.
     const envOrigin = process.env.BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
-    const baseUrl = frontendOrigin || envOrigin || 'https://videotext.io'
+    const requestedOrigin = typeof frontendOrigin === 'string' ? normalizeOrigin(frontendOrigin) : null
+    const baseUrl = (requestedOrigin && isAllowedOrigin(requestedOrigin))
+      ? requestedOrigin
+      : envOrigin || 'https://videotext.io'
     const normalizedPath =
       typeof returnToPath === 'string' && returnToPath.startsWith('/')
         ? returnToPath
@@ -235,8 +242,15 @@ router.get('/session-details', async (req: Request, res: Response) => {
       expand: ['customer'],
     })
 
-    if (session.payment_status !== 'paid' && session.status !== 'complete') {
-      return res.status(400).json({ message: 'Session not paid or complete' })
+    // For async payment methods (ACH, SEPA, bank transfer) payment_status will
+    // be 'unpaid' even though the checkout completed.  We still return session
+    // info so the frontend can show a "payment pending" state, but we must NOT
+    // grant the paid plan — invoice.payment_succeeded will do that when the
+    // payment actually clears.
+    const paymentConfirmed = session.payment_status === 'paid'
+    const sessionComplete = session.status === 'complete'
+    if (!sessionComplete && !paymentConfirmed) {
+      return res.status(400).json({ message: 'Session not complete' })
     }
 
     const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id
@@ -246,18 +260,22 @@ router.get('/session-details', async (req: Request, res: Response) => {
 
     let user = await getUserByStripeCustomerId(customerId)
     if (!user) {
-      // Webhook may not have run yet. Try to find the existing account by email before creating a new one.
-      // This prevents showing "Set password" to users who already signed up with email+password.
+      // Webhook may not have run yet. Try to find the existing account by email
+      // before creating a new one — prevents showing "Set password" to users who
+      // already signed up with email+password.
       const sessionEmail = session.customer_details?.email
       if (sessionEmail) {
         const existingByEmail = await getUserByEmail(sessionEmail)
         if (existingByEmail) {
           existingByEmail.stripeCustomerId = customerId
-          // Apply the purchased plan so the user's account reflects the upgrade
-          const planFromMeta = session.metadata?.plan as PlanType | undefined
-          if (planFromMeta === 'basic' || planFromMeta === 'pro' || planFromMeta === 'agency' || planFromMeta === 'founding_workflow' || planFromMeta === 'business') {
-            existingByEmail.plan = planFromMeta
-            existingByEmail.limits = getPlanLimits(planFromMeta)
+          // Only grant the plan when Stripe has confirmed payment (card/immediate).
+          // For async methods (ACH, SEPA) invoice.payment_succeeded will do this.
+          if (paymentConfirmed) {
+            const planFromMeta = session.metadata?.plan as PlanType | undefined
+            if (planFromMeta === 'basic' || planFromMeta === 'pro' || planFromMeta === 'agency' || planFromMeta === 'founding_workflow' || planFromMeta === 'business') {
+              existingByEmail.plan = planFromMeta
+              existingByEmail.limits = getPlanLimits(planFromMeta)
+            }
           }
           existingByEmail.updatedAt = new Date()
           await saveUser(existingByEmail)
@@ -266,20 +284,27 @@ router.get('/session-details', async (req: Request, res: Response) => {
       }
     }
     if (!user) {
-      // Still not found — create a placeholder so the redirect works (webhook will fill in the rest).
+      // Still not found — create a placeholder so the redirect works.
+      // For async payments we create with plan='free'; invoice.payment_succeeded grants the real plan.
+      // For paid sessions we grant the plan from metadata (race condition safety for card payments).
       const email = session.customer_details?.email || `${customerId}@checkout.example.com`
       const planFromMeta = session.metadata?.plan as PlanType | undefined
-      const plan: PlanType =
-        planFromMeta === 'basic' || planFromMeta === 'pro' || planFromMeta === 'agency' || planFromMeta === 'founding_workflow' ? planFromMeta : 'pro'
+      const resolvedPlan: PlanType = paymentConfirmed &&
+        (planFromMeta === 'basic' || planFromMeta === 'pro' || planFromMeta === 'agency' ||
+         planFromMeta === 'founding_workflow' || planFromMeta === 'business')
+        ? planFromMeta
+        : 'free'
       const now = new Date()
-      const limits = getPlanLimits(plan)
+      const limits = getPlanLimits(resolvedPlan)
       user = {
         id: customerId,
         email,
         passwordHash: '',
-        plan,
+        plan: resolvedPlan,
         stripeCustomerId: customerId,
         subscriptionId: typeof session.subscription === 'string' ? session.subscription : undefined,
+        subscriptionStatus: paymentConfirmed ? 'active' : 'incomplete',
+        cancelAtPeriodEnd: false,
         billingPeriodStart: undefined,
         billingPeriodEnd: undefined,
         passwordSetupToken: undefined,
@@ -348,6 +373,8 @@ router.get('/session-details', async (req: Request, res: Response) => {
       plan: user.plan,
       email: user.email,
       token,
+      subscriptionStatus: user.subscriptionStatus ?? null,
+      paymentConfirmed,
       ...(passwordSetupToken && passwordSetupExpiresAt
         ? { passwordSetupToken, passwordSetupExpiresAt }
         : {}),
