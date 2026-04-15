@@ -4,7 +4,6 @@ import { stripe, getPlanFromPriceId } from '../services/stripe'
 import {
   getUserByStripeCustomerId,
   getUserByEmail,
-  getUserByPasswordToken,
   saveUser,
   User,
   PlanType,
@@ -13,7 +12,8 @@ import { prisma } from '../db'
 import { getPlanLimits } from '../utils/limits'
 import { computeNormalizedMonthlyCentsFromInvoice } from '../utils/stripeMrr'
 import { generatePasswordSetupToken } from '../utils/auth'
-import { hasProcessedStripeEvent, markStripeEventProcessed } from '../models/StripeEventLog'
+import { claimStripeEvent } from '../models/StripeEventLog'
+import { enforceSubscriptionState } from '../utils/subscriptionGuard'
 import { getLogger } from '../lib/logger'
 import {
   trackSubscriptionCancelled,
@@ -27,43 +27,52 @@ const log = getLogger('api')
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 /**
- * Get or create a user for this Stripe customer. If an account already exists
- * with the same email (e.g. user signed up with email then paid), we link that
- * account to Stripe so email login shows the correct plan on all devices.
+ * Find or create a User row for a Stripe customer.
+ *
+ * Lookup order:
+ *   1. By stripeCustomerId (exact)
+ *   2. By email (links an existing email-signup account to Stripe)
+ *   3. Create a placeholder (plan=free; invoice.payment_succeeded will grant the plan)
  */
 async function ensureUserForStripeCustomer(
   stripeCustomerId: string,
   emailHint?: string | null
 ): Promise<User> {
   const existingByStripe = await getUserByStripeCustomerId(stripeCustomerId)
-  if (existingByStripe) {
-    return existingByStripe
-  }
+  if (existingByStripe) return existingByStripe
 
-  const email = (emailHint || '').trim().toLowerCase()
+  const email = (emailHint ?? '').trim().toLowerCase()
   if (email) {
     const existingByEmail = await getUserByEmail(email)
     if (existingByEmail) {
       existingByEmail.stripeCustomerId = stripeCustomerId
       existingByEmail.updatedAt = new Date()
       await saveUser(existingByEmail)
+      log.info({
+        msg: 'stripe: linked existing email account to Stripe customer',
+        userId: existingByEmail.id,
+        stripeCustomerId,
+        email,
+      })
       return existingByEmail
     }
   }
 
   const now = new Date()
-  const fallbackEmail = email || `${stripeCustomerId}@example.com`
-  const defaultPlan: PlanType = 'free'
-  const limits = getPlanLimits(defaultPlan)
-
+  const fallbackEmail = email || `${stripeCustomerId}@stripe-placeholder.internal`
+  const limits = getPlanLimits('free')
   const user: User = {
     id: stripeCustomerId,
     email: fallbackEmail,
     passwordHash: '',
-    plan: defaultPlan,
+    plan: 'free',
     stripeCustomerId,
     subscriptionId: undefined,
+    subscriptionStatus: undefined,
+    cancelAtPeriodEnd: false,
     billingPeriodStart: undefined,
     billingPeriodEnd: undefined,
     passwordSetupToken: undefined,
@@ -83,70 +92,105 @@ async function ensureUserForStripeCustomer(
       dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
     },
     limits,
-    overagesThisMonth: {
-      minutes: 0,
-      languages: 0,
-      batches: 0,
-      totalCharge: 0,
-    },
+    overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
     createdAt: now,
     updatedAt: now,
   }
-
   await saveUser(user)
+  log.info({
+    msg: 'stripe: created placeholder user for Stripe customer',
+    userId: user.id,
+    stripeCustomerId,
+    email: fallbackEmail,
+  })
   return user
 }
 
-async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void> {
+/**
+ * Extract the BillingPlan from the first subscription item whose price ID we recognise.
+ * Returns null if none match (e.g. unrecognised price ID — operator must add it to env).
+ */
+function getPlanFromSubscriptionItems(items: Stripe.SubscriptionItem[]): PlanType | null {
+  for (const item of items) {
+    const priceId = typeof item.price === 'string' ? item.price : item.price?.id
+    if (!priceId) continue
+    const plan = getPlanFromPriceId(priceId)
+    if (plan) return plan
+  }
+  return null
+}
+
+// ─── Event handlers ───────────────────────────────────────────────────────────
+
+/**
+ * checkout.session.completed
+ *
+ * Fires immediately when the checkout UI finishes — for card payments this is
+ * synchronous with payment; for async methods (ACH, SEPA) payment_status may
+ * still be 'unpaid' here.
+ *
+ * Responsibilities:
+ *   - Link subscriptionId to the user record
+ *   - Set billingPeriodStart / billingPeriodEnd from the subscription
+ *   - Set subscriptionStatus = 'active' (paid) | 'incomplete' (async/unpaid)
+ *   - Issue passwordSetupToken for brand-new accounts
+ *   - DO NOT grant the plan here — invoice.payment_succeeded is authoritative
+ */
+async function handleCheckoutSessionCompleted(
+  event: Stripe.Event,
+  eventId: string
+): Promise<void> {
   const session = event.data.object as Stripe.Checkout.Session
 
-  const stripeCustomerId = (session.customer as string) || ''
+  const stripeCustomerId = typeof session.customer === 'string' ? session.customer : ''
   if (!stripeCustomerId) {
+    log.warn({ msg: 'stripe: checkout.session.completed — no customer id', eventId })
     return
   }
 
   const email =
-    session.customer_details?.email || (session.metadata && session.metadata.email) || null
-  const purchaseType = session.metadata?.purchaseType
-  const planFromMetadata = session.metadata?.plan as PlanType | undefined
+    session.customer_details?.email ||
+    (session.metadata?.email ?? null)
 
-  let user = await ensureUserForStripeCustomer(stripeCustomerId, email)
+  const user = await ensureUserForStripeCustomer(stripeCustomerId, email)
   const now = new Date()
 
-  // Link subscription and set billing period from Stripe (so "Resets" shows correct date, e.g. 1 month after purchase)
+  // Link the subscription and fetch its billing period
   if (session.mode === 'subscription' && typeof session.subscription === 'string') {
     user.subscriptionId = session.subscription
+
     try {
-      const subscription = (await stripe.subscriptions.retrieve(
-        session.subscription
-      )) as { current_period_end?: number; current_period_start?: number }
-      const periodEnd = subscription.current_period_end
-      if (periodEnd) {
-        const endDate = new Date(periodEnd * 1000)
-        user.billingPeriodStart = subscription.current_period_start
-          ? new Date(subscription.current_period_start * 1000)
+      const sub = await stripe.subscriptions.retrieve(session.subscription) as Stripe.Subscription & {
+        current_period_start?: number
+        current_period_end?: number
+      }
+      if (sub.current_period_end) {
+        user.billingPeriodEnd = new Date(sub.current_period_end * 1000)
+        user.billingPeriodStart = sub.current_period_start
+          ? new Date(sub.current_period_start * 1000)
           : undefined
-        user.billingPeriodEnd = endDate
         user.usageThisMonth = {
           ...user.usageThisMonth,
-          importCount: user.usageThisMonth.importCount ?? 0,
-          resetDate: endDate,
+          resetDate: user.billingPeriodEnd,
         }
       }
     } catch (e) {
-      log.warn({ msg: 'Stripe could not fetch subscription for billing period', error: (e as Error)?.message ?? String(e) })
+      log.warn({
+        msg: 'stripe: checkout.session.completed — could not fetch subscription for billing period',
+        eventId,
+        subscriptionId: session.subscription,
+        error: (e as Error).message,
+      })
     }
+
+    // payment_status reflects whether money has actually moved yet.
+    // 'paid' = card/immediate; 'unpaid' = ACH/SEPA/bank-transfer still pending.
+    // We set subscriptionStatus here so the UI can surface "payment pending" states.
+    user.subscriptionStatus =
+      session.payment_status === 'paid' ? 'active' : 'incomplete'
   }
 
-  // Activate subscription plan
-  if (purchaseType === 'subscription' && planFromMetadata) {
-    if (planFromMetadata === 'basic' || planFromMetadata === 'pro' || planFromMetadata === 'agency' || planFromMetadata === 'founding_workflow' || planFromMetadata === 'business') {
-      user.plan = planFromMetadata
-      user.limits = getPlanLimits(planFromMetadata)
-    }
-  }
-
-  // Generate password setup token for new paid users (only if not already set by session-details)
+  // Mint a one-time password-setup token for brand-new accounts (no hash yet).
   if (!user.passwordHash && !user.passwordSetupToken) {
     const { token, expiresAt } = generatePasswordSetupToken()
     user.passwordSetupToken = token
@@ -156,31 +200,62 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
 
   user.updatedAt = now
   await saveUser(user)
+
+  log.info({
+    msg: 'stripe: checkout.session.completed processed',
+    eventId,
+    userId: user.id,
+    stripeCustomerId,
+    paymentStatus: session.payment_status,
+    subscriptionId: user.subscriptionId,
+    subscriptionStatus: user.subscriptionStatus,
+  })
 }
 
-async function handleInvoicePaymentSucceeded(event: Stripe.Event): Promise<void> {
+/**
+ * invoice.payment_succeeded
+ *
+ * THE single authoritative source for granting paid-plan access.
+ * Fires for:
+ *   - Initial subscription payment (card: immediately after checkout; async: days later)
+ *   - Every recurring renewal
+ *   - Proration invoices from plan upgrades
+ *
+ * Responsibilities:
+ *   - Resolve plan from invoice line items (price ID → plan name)
+ *   - Grant that plan to the user
+ *   - Set subscriptionStatus = 'active' (clears past_due if recovering from failed payment)
+ *   - Update billingPeriodStart / billingPeriodEnd
+ *   - Reset monthly usage counters
+ *   - Create a SubscriptionSnapshot for MRR tracking
+ */
+async function handleInvoicePaymentSucceeded(
+  event: Stripe.Event,
+  eventId: string
+): Promise<void> {
   const invoice = event.data.object as Stripe.Invoice
 
-  const stripeCustomerId = (invoice.customer as string) || ''
+  const stripeCustomerId = typeof invoice.customer === 'string' ? invoice.customer : ''
   if (!stripeCustomerId) {
+    log.warn({ msg: 'stripe: invoice.payment_succeeded — no customer id', eventId })
     return
   }
 
-  let user = await ensureUserForStripeCustomer(
+  const user = await ensureUserForStripeCustomer(
     stripeCustomerId,
-    invoice.customer_email || undefined
+    invoice.customer_email ?? undefined
   )
 
-  // Determine active subscription plan from line items (Stripe API: pricing.price_details.price)
+  // ── Resolve plan from invoice line items ──────────────────────────────────
+  // Use the invoice's price details (Stripe 2026 API shape: pricing.price_details.price)
   let activePlan: PlanType | null = null
   for (const line of invoice.lines.data) {
-    const priceDetails = line.pricing?.price_details
-    const priceId =
-      !priceDetails
-        ? null
-        : typeof priceDetails.price === 'string'
-          ? priceDetails.price
-          : priceDetails.price?.id ?? null
+    const priceDetails = (line as { pricing?: { price_details?: { price?: string | { id: string } } } }).pricing?.price_details
+    const priceId = priceDetails
+      ? typeof priceDetails.price === 'string'
+        ? priceDetails.price
+        : priceDetails.price?.id ?? null
+      : null
     if (!priceId) continue
     const plan = getPlanFromPriceId(priceId)
     if (plan) {
@@ -189,12 +264,32 @@ async function handleInvoicePaymentSucceeded(event: Stripe.Event): Promise<void>
     }
   }
 
+  if (!activePlan) {
+    // This can happen when all price IDs on the invoice are unrecognised
+    // (e.g. operator changed prices without updating env vars).  Keep the
+    // existing plan so the user does not lose access, but log loudly.
+    log.error({
+      msg: 'stripe: invoice.payment_succeeded — no recognised price ID in line items; plan NOT updated',
+      eventId,
+      userId: user.id,
+      stripeCustomerId,
+      invoiceId: invoice.id,
+      lineItemPrices: invoice.lines.data.map((l) => {
+        const pd = (l as { pricing?: { price_details?: { price?: unknown } } }).pricing?.price_details
+        return pd?.price ?? null
+      }),
+    })
+  }
+
+  // ── Update plan, status, and billing period ───────────────────────────────
   if (activePlan) {
     user.plan = activePlan
     user.limits = getPlanLimits(activePlan)
   }
 
-  // Use Stripe timestamps ONLY for billing period
+  user.subscriptionStatus = 'active'
+  user.cancelAtPeriodEnd = false  // Recovering from past_due or completing a checkout clears this
+
   const periodStart =
     (invoice.lines.data[0]?.period?.start ??
       invoice.period_start ??
@@ -210,7 +305,7 @@ async function handleInvoicePaymentSucceeded(event: Stripe.Event): Promise<void>
   user.billingPeriodStart = startDate
   user.billingPeriodEnd = endDate
 
-  // Reset usage strictly using Stripe billing period (preserve importCount for model shape)
+  // ── Reset monthly usage for the new billing cycle ─────────────────────────
   user.usageThisMonth = {
     ...user.usageThisMonth,
     totalMinutes: 0,
@@ -221,13 +316,25 @@ async function handleInvoicePaymentSucceeded(event: Stripe.Event): Promise<void>
     importCount: user.usageThisMonth.importCount ?? 0,
     resetDate: endDate,
   }
-
-  // Clear overages for new cycle
-  user.overagesThisMonth.minutes = 0
-  user.overagesThisMonth.totalCharge = 0
+  user.overagesThisMonth = {
+    ...user.overagesThisMonth,
+    minutes: 0,
+    totalCharge: 0,
+  }
 
   user.updatedAt = new Date()
   await saveUser(user)
+
+  log.info({
+    msg: 'stripe: invoice.payment_succeeded processed',
+    eventId,
+    userId: user.id,
+    stripeCustomerId,
+    invoiceId: invoice.id,
+    plan: activePlan ?? user.plan,
+    billingPeriodStart: startDate.toISOString(),
+    billingPeriodEnd: endDate.toISOString(),
+  })
 
   if (activePlan) {
     const mrrData = computeNormalizedMonthlyCentsFromInvoice(invoice)
@@ -239,14 +346,14 @@ async function handleInvoicePaymentSucceeded(event: Stripe.Event): Promise<void>
     })
   }
 
+  // ── Create MRR snapshot (non-fatal on failure) ────────────────────────────
   try {
-    const plan = activePlan ?? user.plan
     const mrr = computeNormalizedMonthlyCentsFromInvoice(invoice)
     const currency = (invoice.currency ?? 'usd').toLowerCase()
     await prisma.subscriptionSnapshot.create({
       data: {
         userId: user.id,
-        plan,
+        plan: activePlan ?? user.plan,
         priceMonthly: mrr.normalizedMonthlyCents,
         currency,
         periodStart: startDate,
@@ -259,117 +366,55 @@ async function handleInvoicePaymentSucceeded(event: Stripe.Event): Promise<void>
       },
     })
   } catch (err) {
-    log.warn({ msg: 'SubscriptionSnapshot insert failed (invoice.payment_succeeded)', error: (err as Error)?.message ?? String(err) })
+    log.error({
+      msg: 'stripe: SubscriptionSnapshot insert failed (invoice.payment_succeeded) — MRR data missing',
+      eventId,
+      userId: user.id,
+      error: (err as Error).message,
+    })
   }
 }
 
 /**
- * Fires when a subscription is changed (e.g. user cancels via portal → cancel_at_period_end=true).
- * We store the cancellation date so the UI can show "Access until [date]" without instant downgrade.
- * The actual downgrade to Free happens in usage.ts when billingPeriodEnd passes.
+ * invoice.payment_failed
+ *
+ * Fires when a charge attempt fails (initial or renewal).
+ * Stripe will retry according to the Smart Retries / dunning schedule.
+ *
+ * We mark the subscription as past_due in our DB so:
+ *   - The UI can surface a "update payment method" banner
+ *   - Admin alerts can fire
+ * We do NOT remove plan access here — Stripe is still retrying.
+ * If all retries fail, Stripe fires customer.subscription.deleted and we
+ * downgrade there (via enforceSubscriptionState).
  */
-async function handleCustomerSubscriptionUpdated(event: Stripe.Event): Promise<void> {
-  const subscription = event.data.object as Stripe.Subscription & {
-    cancel_at_period_end?: boolean
-    cancel_at?: number | null
-    current_period_end?: number
+async function handleInvoicePaymentFailed(
+  event: Stripe.Event,
+  eventId: string
+): Promise<void> {
+  const invoice = event.data.object as Stripe.Invoice & {
+    last_payment_error?: { code?: string; message?: string }
   }
-  const stripeCustomerId = (subscription.customer as string) || ''
-  if (!stripeCustomerId) return
 
-  const user = await getUserByStripeCustomerId(stripeCustomerId)
-  if (!user) return
-
-  if (subscription.cancel_at_period_end) {
-    // User cancelled — keep plan active until period end, record the cancellation date
-    const cancelAt =
-      (subscription.cancel_at ?? subscription.current_period_end ?? Math.floor(Date.now() / 1000)) * 1000
-    user.usageThisMonth = {
-      ...user.usageThisMonth,
-      subscriptionCancelingAt: new Date(cancelAt),
-    }
-    user.updatedAt = new Date()
-    await saveUser(user)
-    trackSubscriptionCancelled({
-      user_id: user.id,
-      plan: user.plan,
-      cancel_at: new Date(cancelAt),
-    })
-  } else if (user.usageThisMonth.subscriptionCancelingAt) {
-    // Cancellation was reversed (e.g. user re-subscribed) — clear the flag
-    user.usageThisMonth = {
-      ...user.usageThisMonth,
-      subscriptionCancelingAt: undefined,
-    }
-    user.updatedAt = new Date()
-    await saveUser(user)
-    trackSubscriptionCancellationReversed({ user_id: user.id, plan: user.plan })
-  }
-}
-
-async function handleCustomerSubscriptionDeleted(event: Stripe.Event): Promise<void> {
-  const subscription = event.data.object as Stripe.Subscription & {
-    current_period_end?: number
-  }
-  const stripeCustomerId = (subscription.customer as string) || ''
+  const stripeCustomerId = typeof invoice.customer === 'string' ? invoice.customer : ''
   if (!stripeCustomerId) {
+    log.warn({ msg: 'stripe: invoice.payment_failed — no customer id', eventId })
     return
   }
 
   const user = await getUserByStripeCustomerId(stripeCustomerId)
   if (!user) {
+    log.warn({
+      msg: 'stripe: invoice.payment_failed — user not found for customer',
+      eventId,
+      stripeCustomerId,
+    })
     return
   }
 
-  const periodEnd =
-    (subscription.current_period_end ??
-      subscription.cancel_at ??
-      subscription.ended_at ??
-      Math.floor(Date.now() / 1000)) * 1000
-
-  const endDate = new Date(periodEnd)
-
-  // Keep access until period_end, but mark subscription as gone
-  const periodStart = user.billingPeriodStart ?? new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000)
-  const deletedSubscriptionId = subscription.id
-  user.subscriptionId = undefined
-  user.billingPeriodEnd = endDate
-  user.usageThisMonth.resetDate = endDate
+  user.subscriptionStatus = 'past_due'
   user.updatedAt = new Date()
   await saveUser(user)
-
-  trackSubscriptionDeleted({ user_id: user.id, plan: user.plan, period_end: endDate })
-
-  try {
-    await prisma.subscriptionSnapshot.create({
-      data: {
-        userId: user.id,
-        plan: user.plan,
-        priceMonthly: 0,
-        currency: 'usd',
-        periodStart,
-        periodEnd: endDate,
-        status: 'canceled',
-        stripeSubscriptionId: deletedSubscriptionId,
-        stripePriceId: null,
-        billingInterval: null,
-        intervalCount: null,
-      },
-    })
-  } catch (err) {
-    log.warn({ msg: 'SubscriptionSnapshot insert failed (customer.subscription.deleted)', error: (err as Error)?.message ?? String(err) })
-  }
-}
-
-async function handleInvoicePaymentFailed(event: Stripe.Event): Promise<void> {
-  const invoice = event.data.object as Stripe.Invoice & {
-    last_payment_error?: { code?: string; message?: string }
-  }
-  const stripeCustomerId = (invoice.customer as string) || ''
-  if (!stripeCustomerId) return
-
-  const user = await getUserByStripeCustomerId(stripeCustomerId)
-  if (!user) return
 
   const err = invoice.last_payment_error
   trackPaymentFailed({
@@ -378,60 +423,381 @@ async function handleInvoicePaymentFailed(event: Stripe.Event): Promise<void> {
     ...(err?.code && { error_code: err.code }),
     ...(err?.message && { error_message: err.message }),
   })
+
+  log.error({
+    msg: 'stripe: invoice.payment_failed — subscription marked past_due',
+    eventId,
+    userId: user.id,
+    stripeCustomerId,
+    invoiceId: invoice.id,
+    attemptCount: invoice.attempt_count,
+    nextPaymentAttempt: invoice.next_payment_attempt
+      ? new Date(invoice.next_payment_attempt * 1000).toISOString()
+      : null,
+    amountDueCents: invoice.amount_due,
+    currency: invoice.currency,
+  })
 }
 
+/**
+ * customer.subscription.created
+ *
+ * Fires when a new subscription object is created in Stripe.
+ * For checkouts this fires before checkout.session.completed, so we use it
+ * to eagerly link the subscriptionId and record the initial status.
+ * Plan grant still happens in invoice.payment_succeeded.
+ */
+async function handleCustomerSubscriptionCreated(
+  event: Stripe.Event,
+  eventId: string
+): Promise<void> {
+  const sub = event.data.object as Stripe.Subscription & {
+    current_period_start?: number
+    current_period_end?: number
+  }
+
+  const stripeCustomerId = typeof sub.customer === 'string' ? sub.customer : ''
+  if (!stripeCustomerId) return
+
+  const user = await getUserByStripeCustomerId(stripeCustomerId)
+  if (!user) {
+    // User row may not exist yet (checkout.session.completed creates it).
+    // That handler will set subscriptionId, so nothing to do here.
+    log.info({
+      msg: 'stripe: customer.subscription.created — user not found yet, will be created by checkout.session.completed',
+      eventId,
+      stripeCustomerId,
+      subscriptionId: sub.id,
+    })
+    return
+  }
+
+  user.subscriptionId = sub.id
+  user.subscriptionStatus = sub.status as string
+  user.cancelAtPeriodEnd = sub.cancel_at_period_end ?? false
+
+  if (sub.current_period_start) {
+    user.billingPeriodStart = new Date(sub.current_period_start * 1000)
+  }
+  if (sub.current_period_end) {
+    user.billingPeriodEnd = new Date(sub.current_period_end * 1000)
+    user.usageThisMonth = { ...user.usageThisMonth, resetDate: user.billingPeriodEnd }
+  }
+
+  user.updatedAt = new Date()
+  await saveUser(user)
+
+  log.info({
+    msg: 'stripe: customer.subscription.created processed',
+    eventId,
+    userId: user.id,
+    stripeCustomerId,
+    subscriptionId: sub.id,
+    status: sub.status,
+  })
+}
+
+/**
+ * customer.subscription.updated
+ *
+ * Fires on ANY subscription change: cancel, uncancel, plan upgrade/downgrade,
+ * trial end, billing cycle update, etc.
+ *
+ * Responsibilities:
+ *   - Sync subscriptionStatus from Stripe
+ *   - Sync cancelAtPeriodEnd
+ *   - Sync billingPeriodStart / billingPeriodEnd (they can change on plan switch)
+ *   - Detect plan change from subscription items and update plan immediately
+ *     (handles both portal downgrades and end-of-period transitions)
+ */
+async function handleCustomerSubscriptionUpdated(
+  event: Stripe.Event,
+  eventId: string
+): Promise<void> {
+  const sub = event.data.object as Stripe.Subscription & {
+    current_period_start?: number
+    current_period_end?: number
+  }
+
+  const stripeCustomerId = typeof sub.customer === 'string' ? sub.customer : ''
+  if (!stripeCustomerId) return
+
+  const user = await getUserByStripeCustomerId(stripeCustomerId)
+  if (!user) {
+    log.warn({
+      msg: 'stripe: customer.subscription.updated — user not found',
+      eventId,
+      stripeCustomerId,
+      subscriptionId: sub.id,
+    })
+    return
+  }
+
+  const previousStatus = user.subscriptionStatus
+  const previousPlan = user.plan
+  const previousCancelAtPeriodEnd = user.cancelAtPeriodEnd
+
+  // Sync subscription metadata
+  user.subscriptionId = sub.id
+  user.subscriptionStatus = sub.status as string
+  user.cancelAtPeriodEnd = sub.cancel_at_period_end ?? false
+
+  if (sub.current_period_start) {
+    user.billingPeriodStart = new Date(sub.current_period_start * 1000)
+  }
+  if (sub.current_period_end) {
+    user.billingPeriodEnd = new Date(sub.current_period_end * 1000)
+    user.usageThisMonth = { ...user.usageThisMonth, resetDate: user.billingPeriodEnd }
+  }
+
+  // Detect plan change from subscription items.
+  // If the price IDs changed (e.g. portal downgrade taking effect), update the plan.
+  // This covers end-of-period downgrades where no proration invoice is generated.
+  const planFromItems = getPlanFromSubscriptionItems(sub.items?.data ?? [])
+  if (planFromItems && planFromItems !== user.plan && user.plan !== 'founding_workflow') {
+    user.plan = planFromItems
+    user.limits = getPlanLimits(planFromItems)
+    log.info({
+      msg: 'stripe: customer.subscription.updated — plan changed via subscription items',
+      eventId,
+      userId: user.id,
+      stripeCustomerId,
+      previousPlan,
+      newPlan: planFromItems,
+    })
+  }
+
+  user.updatedAt = new Date()
+  await saveUser(user)
+
+  // Analytics: detect cancel / uncancel transitions
+  if (user.cancelAtPeriodEnd && !previousCancelAtPeriodEnd) {
+    const cancelAt = user.billingPeriodEnd ?? new Date()
+    trackSubscriptionCancelled({
+      user_id: user.id,
+      plan: user.plan,
+      cancel_at: cancelAt,
+    })
+  } else if (!user.cancelAtPeriodEnd && previousCancelAtPeriodEnd) {
+    trackSubscriptionCancellationReversed({ user_id: user.id, plan: user.plan })
+  }
+
+  log.info({
+    msg: 'stripe: customer.subscription.updated processed',
+    eventId,
+    userId: user.id,
+    stripeCustomerId,
+    subscriptionId: sub.id,
+    status: sub.status,
+    previousStatus,
+    cancelAtPeriodEnd: user.cancelAtPeriodEnd,
+    previousCancelAtPeriodEnd,
+    plan: user.plan,
+    previousPlan,
+  })
+}
+
+/**
+ * customer.subscription.deleted
+ *
+ * Fires when a subscription is fully canceled (either by the user, by Stripe
+ * after exhausting retries, or by the operator).
+ *
+ * Responsibilities:
+ *   - Clear subscriptionId (no active subscription)
+ *   - Set subscriptionStatus = 'canceled'
+ *   - If billingPeriodEnd has already passed → downgrade to free immediately
+ *   - If billingPeriodEnd is still in the future → keep the paid plan until
+ *     the period expires; enforceSubscriptionState() handles the lazy downgrade
+ *     when any route is next accessed
+ *   - Create a SubscriptionSnapshot with status='canceled' for MRR churn tracking
+ */
+async function handleCustomerSubscriptionDeleted(
+  event: Stripe.Event,
+  eventId: string
+): Promise<void> {
+  const sub = event.data.object as Stripe.Subscription & {
+    current_period_end?: number
+    cancel_at?: number | null
+    ended_at?: number | null
+  }
+
+  const stripeCustomerId = typeof sub.customer === 'string' ? sub.customer : ''
+  if (!stripeCustomerId) return
+
+  const user = await getUserByStripeCustomerId(stripeCustomerId)
+  if (!user) {
+    log.warn({
+      msg: 'stripe: customer.subscription.deleted — user not found',
+      eventId,
+      stripeCustomerId,
+      subscriptionId: sub.id,
+    })
+    return
+  }
+
+  const periodEndUnix =
+    sub.current_period_end ??
+    sub.cancel_at ??
+    sub.ended_at ??
+    Math.floor(Date.now() / 1000)
+  const periodEnd = new Date(periodEndUnix * 1000)
+  const periodStart = user.billingPeriodStart ?? new Date(periodEnd.getTime() - 30 * 24 * 60 * 60 * 1000)
+
+  const deletedSubscriptionId = sub.id
+  user.subscriptionId = undefined
+  user.subscriptionStatus = 'canceled'
+  user.cancelAtPeriodEnd = false
+  user.billingPeriodEnd = periodEnd
+
+  user.updatedAt = new Date()
+  await saveUser(user)
+
+  // Immediate downgrade if the billing period has already expired.
+  // If still within the grace period, enforceSubscriptionState handles it lazily
+  // but EAGERLY — it runs at the top of every resource-consuming route, so
+  // API-only users are covered without needing to hit GET /api/usage/current.
+  const now = new Date()
+  await enforceSubscriptionState(user, now)
+
+  log.info({
+    msg: 'stripe: customer.subscription.deleted processed',
+    eventId,
+    userId: user.id,
+    stripeCustomerId,
+    subscriptionId: deletedSubscriptionId,
+    periodEnd: periodEnd.toISOString(),
+    immediateDowngrade: periodEnd < now,
+    planAfter: user.plan,
+  })
+
+  trackSubscriptionDeleted({ user_id: user.id, plan: user.plan, period_end: periodEnd })
+
+  // MRR churn snapshot
+  try {
+    await prisma.subscriptionSnapshot.create({
+      data: {
+        userId: user.id,
+        plan: user.plan,
+        priceMonthly: 0,
+        currency: 'usd',
+        periodStart,
+        periodEnd,
+        status: 'canceled',
+        stripeSubscriptionId: deletedSubscriptionId,
+        stripePriceId: null,
+        billingInterval: null,
+        intervalCount: null,
+      },
+    })
+  } catch (err) {
+    log.error({
+      msg: 'stripe: SubscriptionSnapshot insert failed (customer.subscription.deleted) — MRR churn data missing',
+      eventId,
+      userId: user.id,
+      error: (err as Error).message,
+    })
+  }
+}
+
+// ─── Main webhook handler ─────────────────────────────────────────────────────
+
 export async function stripeWebhookHandler(req: Request, res: Response) {
+  // Guard: webhook secret must be configured before serving traffic
   if (!webhookSecret) {
-    log.error({ msg: 'STRIPE_WEBHOOK_SECRET is not configured.' })
+    log.error({ msg: 'stripe: STRIPE_WEBHOOK_SECRET is not set — webhook endpoint disabled' })
     return res.status(500).send('Webhook not configured')
   }
 
-  const sig = req.headers['stripe-signature'] as string | undefined
-  const buf = req.body as Buffer
+  // Reject requests without a Stripe-Signature header immediately
+  const sig = req.headers['stripe-signature']
+  if (!sig) {
+    log.warn({ msg: 'stripe: request missing Stripe-Signature header — rejected' })
+    return res.status(400).send('Missing Stripe-Signature header')
+  }
 
+  const buf = req.body as Buffer
   let event: Stripe.Event
 
   try {
-    // constructEvent verifies the HMAC-SHA256 signature using the webhook secret,
-    // rejecting any payload that wasn't sent by Stripe.
-    event = stripe.webhooks.constructEvent(buf, sig || '', webhookSecret)
-  } catch (err: any) {
-    log.error({ msg: 'Stripe webhook signature verification failed', error: (err as Error)?.message ?? String(err) })
-    return res.status(400).send(`Webhook Error: ${err.message}`)
+    // constructEvent verifies the HMAC-SHA256 signature over the raw body.
+    // Any tampered or replayed payload that doesn't match will throw here.
+    event = stripe.webhooks.constructEvent(buf, sig, webhookSecret)
+  } catch (err) {
+    log.error({
+      msg: 'stripe: webhook signature verification failed',
+      error: (err as Error).message,
+    })
+    return res.status(400).send(`Webhook Error: ${(err as Error).message}`)
   }
 
-  // Idempotency: skip if already processed (Postgres-backed, survives restarts)
-  if (await hasProcessedStripeEvent(event.id)) {
+  log.info({
+    msg: 'stripe: webhook received',
+    eventId: event.id,
+    eventType: event.type,
+  })
+
+  // ── Atomic idempotency claim ──────────────────────────────────────────────
+  // INSERT … ON CONFLICT DO NOTHING: exactly one instance across the fleet
+  // will get claimed === true.  All others skip immediately (return 200 so
+  // Stripe stops retrying this event).
+  const claimed = await claimStripeEvent(event)
+  if (!claimed) {
+    log.info({
+      msg: 'stripe: duplicate event skipped (already claimed by another instance)',
+      eventId: event.id,
+      eventType: event.type,
+    })
     return res.json({ received: true, duplicate: true })
   }
 
+  // ── Dispatch ──────────────────────────────────────────────────────────────
   try {
     switch (event.type) {
       case 'checkout.session.completed':
-        await handleCheckoutSessionCompleted(event)
+        await handleCheckoutSessionCompleted(event, event.id)
         break
+
       case 'invoice.payment_succeeded':
-        await handleInvoicePaymentSucceeded(event)
+        await handleInvoicePaymentSucceeded(event, event.id)
         break
-      case 'customer.subscription.updated':
-        await handleCustomerSubscriptionUpdated(event)
-        break
-      case 'customer.subscription.deleted':
-        await handleCustomerSubscriptionDeleted(event)
-        break
+
       case 'invoice.payment_failed':
-        await handleInvoicePaymentFailed(event)
+        await handleInvoicePaymentFailed(event, event.id)
         break
+
+      case 'customer.subscription.created':
+        await handleCustomerSubscriptionCreated(event, event.id)
+        break
+
+      case 'customer.subscription.updated':
+        await handleCustomerSubscriptionUpdated(event, event.id)
+        break
+
+      case 'customer.subscription.deleted':
+        await handleCustomerSubscriptionDeleted(event, event.id)
+        break
+
       default:
-        // Ignore all other event types
+        // Unhandled event types are silently acknowledged.
+        // Add handlers above as needed; do not error on unknown types.
+        log.info({ msg: 'stripe: unhandled event type (acknowledged)', eventId: event.id, eventType: event.type })
         break
     }
 
-    await markStripeEventProcessed(event)
+    log.info({ msg: 'stripe: webhook handled successfully', eventId: event.id, eventType: event.type })
     return res.json({ received: true })
-  } catch (error: any) {
-    log.error({ msg: 'Error handling Stripe webhook event', eventType: event.type, error: (error as Error)?.message ?? String(error) })
+  } catch (error) {
+    // On handler error Stripe will retry.  The event ID is already claimed in
+    // StripeEventLog, so retries will be treated as duplicates and skipped.
+    // To allow a retry to reprocess after a bug fix, delete the event row from
+    // StripeEventLog or use the Stripe Dashboard to resend the event with a new ID.
+    log.error({
+      msg: 'stripe: webhook handler threw — event will NOT be retried automatically',
+      eventId: event.id,
+      eventType: event.type,
+      error: (error as Error).message,
+    })
     return res.status(500).send('Webhook handler error')
   }
 }
-

@@ -3,10 +3,8 @@ import { getUser, saveUser, User, PlanType, atomicResetDailyImportIfNeeded, atom
 import { getPlanLimits, getJobPriority, isProSoftCapActive } from '../utils/limits'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
-import {
-  getPlanAndEmailForStripeCustomer,
-  getSubscriptionPeriodEnd,
-} from '../services/stripe'
+import { getPlanAndEmailForStripeCustomer } from '../services/stripe'
+import { enforceSubscriptionState } from '../utils/subscriptionGuard'
 
 const router = express.Router()
 
@@ -120,45 +118,13 @@ async function getOrCreateDemoUser(req: Request): Promise<User | null> {
   }
 
   if (user) {
-    // Sync billing period from Stripe for paid users with subscription (fixes wrong reset date e.g. 28/2 instead of 14/3)
-    if (user.subscriptionId) {
-      const period = await getSubscriptionPeriodEnd(user.subscriptionId)
-      if (period && period.currentPeriodEnd > now) {
-        const resetTime = period.currentPeriodEnd.getTime()
-        const currentResetTime = user.usageThisMonth.resetDate.getTime()
-        if (!user.billingPeriodEnd || Math.abs(currentResetTime - resetTime) > 60_000) {
-          user.billingPeriodEnd = period.currentPeriodEnd
-          user.billingPeriodStart = period.currentPeriodStart
-          user.usageThisMonth = { ...user.usageThisMonth, importCount: user.usageThisMonth.importCount ?? 0, resetDate: period.currentPeriodEnd }
-          user.updatedAt = now
-          await saveUser(user)
-        }
-      }
-    }
-    // Stripe-driven reset: if a paid user with billingPeriodEnd and no active subscription
-    // has passed their period end, downgrade them to Free.
-    // founding_workflow is a permanent plan — never auto-downgrade it.
-    if (user.plan !== 'founding_workflow' && user.billingPeriodEnd && user.billingPeriodEnd < now && !user.subscriptionId) {
-      user.plan = 'free'
-      user.limits = getPlanLimits('free')
-      // Downgrade to free: reset usage; importCount resets monthly on the 1st
-      user.usageThisMonth = {
-        totalMinutes: 0,
-        videoCount: 0,
-        batchCount: 0,
-        languageCount: 0,
-        translatedMinutes: 0,
-        importCount: 0,
-        resetDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
-        importCountToday: 0,
-        importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
-        dailyMinutesToday: 0,
-        dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
-      }
-      user.overagesThisMonth = { minutes: 0, languages: 0, batches: 0, totalCharge: 0 }
-      user.updatedAt = now
-      await saveUser(user)
-    } else if (resetUserUsageIfNeeded(user, now)) {
+    // Enforce subscription state from DB (no live Stripe API call).
+    // Webhook handlers keep billingPeriodEnd, subscriptionId, and subscriptionStatus
+    // up-to-date, so no polling is needed here.  This call will downgrade the user
+    // to free immediately if their billing period has expired and subscription is gone.
+    await enforceSubscriptionState(user, now)
+
+    if (resetUserUsageIfNeeded(user, now)) {
       await saveUser(user)
     } else {
       const dailyImportReset = resetDailyImportIfNeeded(user, now)
@@ -229,13 +195,13 @@ router.get('/current', async (req: Request, res: Response) => {
     const softCapActive = isProSoftCapActive(plan, usage.dailyMinutesToday ?? 0)
     const billingPeriodEnd = user!.billingPeriodEnd
     const resetDate = billingPeriodEnd ?? user!.usageThisMonth.resetDate
-    const subscriptionCancelingAt = usage.subscriptionCancelingAt
     res.json({
       plan,
       email: displayEmail,
       quotaType: 'unlimited',
       softCapActive,
-      subscriptionCancelingAt: subscriptionCancelingAt?.toISOString() ?? null,
+      subscriptionStatus: user!.subscriptionStatus ?? null,
+      cancelAtPeriodEnd: user!.cancelAtPeriodEnd ?? false,
       limits: {
         maxLanguages: limits.maxLanguages,
         batchEnabled: limits.batchEnabled,

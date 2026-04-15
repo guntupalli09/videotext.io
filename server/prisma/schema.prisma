@@ -19,6 +19,8 @@ model User {
   paymentMethodId          String?
   billingPeriodStart       DateTime?
   billingPeriodEnd         DateTime?
+  subscriptionStatus       String?   // active | past_due | canceled | trialing | incomplete
+  cancelAtPeriodEnd        Boolean   @default(false)
   passwordSetupToken       String?
   passwordSetupExpiresAt   DateTime?
   passwordSetupUsed        Boolean  @default(false)
