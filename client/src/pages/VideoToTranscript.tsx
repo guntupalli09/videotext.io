@@ -748,6 +748,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         ...(extraLangs.length > 0 ? { additionalLanguages: extraLangs } : {}),
       })
       const batchId = res.batchId
+      try {
+        trackEvent('batch_job_created', { file_count: batchFiles.length, tool: 'video-to-transcript' })
+      } catch {
+        // non-blocking
+      }
       setBatchInfo({ batchId, status: 'queued', progress: { total: batchFiles.length, completed: 0, failed: 0, percentage: 0 }, estimatedTimeRemaining: 0, errors: [] })
       setStatus('processing')
       const poll = setInterval(async () => {
@@ -865,12 +870,22 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         setStatus('idle')
         toast.error(preflight.reason ?? 'Video exceeds plan limits.')
         trackEvent('paywall_shown', { tool: 'video-to-transcript', reason: 'preflight' })
+        try {
+          trackEvent('file_validation_failed', { tool: 'video-to-transcript', reason: preflight.reason ?? 'plan_limit', validation_type: 'preflight' })
+        } catch {
+          // non-blocking
+        }
         return
       }
     } catch (e) {
       uploadAbortRef.current = null
       setStatus('idle')
       toast.error('Could not validate video. Try again.')
+      try {
+        trackEvent('file_validation_failed', { tool: 'video-to-transcript', reason: 'probe_failed', validation_type: 'preflight' })
+      } catch {
+        // non-blocking
+      }
       return
     }
 
@@ -1029,6 +1044,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           setFailedMessage(msg)
           setStatus('failed')
           // texJobFailed(msg)
+          try {
+            const errorType = msg?.includes('quota') || msg?.includes('longer than') ? 'quota_exceeded'
+              : msg?.includes('codec') || msg?.includes('Unsupported') ? 'unsupported_format'
+              : 'processing_failed'
+            trackEvent('processing_error_shown', { tool: 'video-to-transcript', error_type: errorType, job_id: response.jobId })
+          } catch {
+            // non-blocking
+          }
           toast.error('Processing failed. Please try again.')
         } else if (jobStatus.status === 'processing' && jobStatus.partialVersion != null && jobStatus.partialVersion > lastPartialVersionRef.current) {
           lastPartialVersionRef.current = jobStatus.partialVersion
@@ -1087,6 +1110,29 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         setFailedMessage(msg)
         setStatus('failed')
         // texJobFailed(msg)
+        const errorMsg = error instanceof Error ? error.message : ''
+        const isFileTooLarge = errorMsg.includes('plan limit') || errorMsg.includes('Upgrade for larger')
+        const isUnsupportedFormat = errorMsg.includes('codec') || errorMsg.includes('Unsupported') || errorMsg.includes('not supported')
+        if (isFileTooLarge || isUnsupportedFormat) {
+          try {
+            trackEvent('file_validation_failed', {
+              tool: 'video-to-transcript',
+              reason: errorMsg.slice(0, 120),
+              validation_type: isFileTooLarge ? 'file_too_large' : 'unsupported_format',
+            })
+          } catch {
+            // non-blocking
+          }
+        }
+        try {
+          const errorType = isNetworkError(error) ? 'network_error'
+            : isUnsupportedFormat ? 'unsupported_format'
+            : isFileTooLarge ? 'file_too_large'
+            : 'upload_failed'
+          trackEvent('processing_error_shown', { tool: 'video-to-transcript', error_type: errorType })
+        } catch {
+          // non-blocking
+        }
       }
       toast.error(getUserFacingMessage(error))
     }

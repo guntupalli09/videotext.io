@@ -116,6 +116,18 @@ export function trackProcessingFailed(params: {
   })
 }
 
+export function trackJobTimedOut(params: {
+  job_id: string
+  user_id?: string
+  tool_type: string
+}): void {
+  capture('job_timed_out', params.job_id, {
+    job_id: params.job_id,
+    user_id: params.user_id ?? 'anonymous',
+    tool_type: params.tool_type,
+  })
+}
+
 /**
  * Fired once per paid user when they complete their first job after upgrading.
  * Enables the PostHog funnel: plan_upgraded → first_paid_job_completed.
