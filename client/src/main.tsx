@@ -42,6 +42,10 @@ const posthogOptions = {
   defaults: '2026-01-30',
   person_profiles: 'identified_only' as const,
   capture_pageview: false, // App.tsx sends $pageview on SPA route changes
+  session_recording: {
+    maskAllInputs: true,     // mask email, OTP, file name inputs — PII protection
+    maskTextSelector: '[data-ph-mask]', // opt-in masking via data-ph-mask attribute
+  },
 } as const
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

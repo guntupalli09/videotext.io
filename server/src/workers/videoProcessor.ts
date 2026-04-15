@@ -61,6 +61,7 @@ import {
   trackProcessingStarted,
   trackProcessingFinished,
   trackProcessingFailed,
+  trackJobTimedOut,
   trackFirstPaidJobCompleted,
 } from '../utils/analytics'
 import {
@@ -1826,6 +1827,17 @@ async function processJob(job: import('bull').Job<JobData>) {
       })
     } catch {
       // non-blocking
+    }
+    if (err?.message?.includes('exceeded maximum runtime')) {
+      try {
+        trackJobTimedOut({
+          job_id: String(jobId),
+          user_id: data.userId ?? undefined,
+          tool_type: data.toolType,
+        })
+      } catch {
+        // non-blocking
+      }
     }
     try {
       await updateJobFailed(String(jobId), err?.message)
