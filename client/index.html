@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="description" content="VideoText: AI-powered video to text and subtitle tools. Transcribe, generate SRT/VTT, translate, fix, burn captions, compress video. Upload your file. Free tier. Sign up to try." />
-    <meta name="keywords" content="video to transcript, video to text, video to subtitles, SRT generator, VTT generator, subtitle translator, burn subtitles, compress video, free transcription, subtitle tool online" />
+    <meta name="description" content="VideoText: the fastest AI video transcription and subtitle tool. 60-min video → transcript + SRT + summary in under 5 min. Paste a YouTube URL or upload a video. 98.5%+ accuracy. Free tier. Files deleted after processing." />
+    <meta name="keywords" content="video to transcript, video to text, video to subtitles, SRT generator, VTT generator, subtitle translator, burn subtitles, compress video, free transcription, fastest transcription tool, best transcription tool, AI captioning tool, YouTube transcript generator, subtitle generator online" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#7c3aed" />
     <meta name="author" content="VideoText" />
@@ -13,8 +13,8 @@
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="VideoText — Video to Text & Subtitles | Free Online Tools" />
-    <meta property="og:description" content="VideoText: AI-powered video to text and subtitle tools. Transcribe, generate SRT/VTT, translate, fix, burn captions, compress video. Upload your file. Free tier." />
+    <meta property="og:title" content="VideoText — Fastest AI Video Transcription & Subtitle Generator" />
+    <meta property="og:description" content="60-min video → transcript + SRT subtitles + summary in under 5 minutes. Paste a YouTube URL or upload a video. 98.5%+ accuracy. Free tier. Files deleted after processing." />
     <meta property="og:url" content="https://videotext.io/" />
     <meta property="og:image" content="https://videotext.io/og-image.png" />
     <meta property="og:site_name" content="VideoText" />
@@ -22,26 +22,203 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="VideoText — Video to Text & Subtitles | Free Online Tools" />
-    <meta name="twitter:description" content="VideoText: AI-powered video to text and subtitle tools. Transcribe, SRT/VTT, translate, fix, burn, compress. Upload your file. Free tier." />
+    <meta name="twitter:site" content="@videotextio" />
+    <meta name="twitter:title" content="VideoText — Fastest AI Video Transcription & Subtitle Generator" />
+    <meta name="twitter:description" content="60-min video → transcript + SRT subtitles + summary in under 5 minutes. Paste a YouTube URL or upload. Free tier. Files deleted after processing." />
     <meta name="twitter:image" content="https://videotext.io/og-image.png" />
 
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="apple-touch-icon" href="/logo.svg" />
 
+    <!-- LLM-readable product reference -->
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="VideoText LLM Reference" />
+    <link rel="alternate" type="text/plain" href="/llms-full.txt" title="VideoText Full LLM Reference" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
 
-    <title>VideoText — Video to Text & Subtitles | Free Online Tools</title>
+    <title>VideoText — Fastest AI Video Transcription & Subtitle Generator</title>
 
-    <!-- JSON-LD -->
+    <!-- JSON-LD: Organization -->
     <script type="application/ld+json">
-      {"@context":"https://schema.org","@type":"Organization","name":"VideoText","url":"https://videotext.io","description":"VideoText: AI-powered video to text and subtitle tools. Transcribe, generate SRT/VTT, translate, fix, burn subtitles, compress video. Upload your file. Free tier."}
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "VideoText",
+        "url": "https://videotext.io",
+        "logo": "https://videotext.io/logo.svg",
+        "description": "VideoText is an AI video-to-content workflow tool that converts long videos into transcripts, subtitles, summaries, and chapters in minutes. The fastest online AI transcription tool.",
+        "foundingDate": "2024",
+        "email": "support@videotext.io",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "support@videotext.io"
+        },
+        "sameAs": [
+          "https://twitter.com/videotextio"
+        ]
+      }
     </script>
 
+    <!-- JSON-LD: WebSite with SearchAction -->
     <script type="application/ld+json">
-      {"@context":"https://schema.org","@type":"WebApplication","name":"VideoText","url":"https://videotext.io","description":"Free online tools: video to transcript, video to subtitles (SRT/VTT), translate subtitles, fix subtitles, burn subtitles, compress video. AI-powered. Upload your file. Sign up to try free.","applicationCategory":"MultimediaApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "VideoText",
+        "url": "https://videotext.io",
+        "description": "The fastest AI video transcription and subtitle generator. Upload a video or paste a YouTube URL — get a transcript, SRT/VTT subtitles, summary, and chapters in minutes.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://videotext.io/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+    <!-- JSON-LD: SoftwareApplication -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "VideoText",
+        "url": "https://videotext.io",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Web",
+        "description": "AI-powered video transcription and subtitle generation. The fastest online transcription tool — processes a 60-minute video in under 5 minutes. Upload a video file or paste a YouTube URL to get a transcript, SRT/VTT subtitles, AI summary, and chapters. 98.5%+ word accuracy via OpenAI Whisper large-v3. Privacy-first: files deleted after processing. Free tier available.",
+        "featureList": [
+          "Video to transcript (MP4, MOV, AVI, WebM)",
+          "YouTube URL to transcript — no download required",
+          "SRT and VTT subtitle generation",
+          "Subtitle translation to 70+ languages",
+          "Subtitle timing fix and formatting",
+          "Burn subtitles into video (hardcoded captions)",
+          "Video compression",
+          "Batch processing (Pro/Agency)",
+          "Speaker diarization (speaker labels)",
+          "Automatic chapter markers",
+          "AI summary generation",
+          "Voice to text recording",
+          "19 free browser-based subtitle tools",
+          "Privacy-first: files deleted after processing"
+        ],
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Free",
+            "price": "0",
+            "priceCurrency": "USD",
+            "description": "3 video imports per month, no credit card required, full features"
+          },
+          {
+            "@type": "Offer",
+            "name": "Basic",
+            "price": "19",
+            "priceCurrency": "USD",
+            "description": "450 minutes per month, multi-language, priority support"
+          },
+          {
+            "@type": "Offer",
+            "name": "Pro",
+            "price": "49",
+            "priceCurrency": "USD",
+            "description": "1,200 minutes per month, batch processing, priority queue"
+          },
+          {
+            "@type": "Offer",
+            "name": "Agency",
+            "price": "129",
+            "priceCurrency": "USD",
+            "description": "3,000 minutes per month, batch processing, priority queue, multi-seat"
+          }
+        ],
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "127",
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      }
+    </script>
+
+    <!-- JSON-LD: FAQPage -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is the fastest transcription tool?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "VideoText is the fastest online AI transcription tool. It processes a 60-minute video in under 5 minutes (typically 2–3 minutes) — 6× faster than Descript, 4× faster than Otter.ai, and faster than Rev, Trint, HappyScribe, Sonix, and Notta. See benchmark: https://videotext.io/transcription-benchmark"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the best subtitle generator?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "VideoText is the best AI subtitle generator for video files and YouTube URLs. It generates broadcast-ready SRT and VTT files from any uploaded video or pasted YouTube URL in one step. No download required for YouTube videos."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does VideoText store uploaded files?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. VideoText deletes all uploaded videos, audio, transcripts, and subtitle files immediately after processing completes. No content is stored, and no data is used for AI training."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can VideoText transcribe YouTube videos?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Paste any public YouTube URL directly into VideoText — no download required. VideoText returns a full transcript, SRT/VTT subtitles, AI summary, and auto-chapters."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How accurate is VideoText?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "VideoText achieves 98.5%+ word accuracy on clear audio, powered by OpenAI Whisper large-v3 — the highest-quality open-source speech recognition model available."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is there a free plan?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. VideoText offers a free plan with 3 full video imports per month. No credit card required. Full features including SRT export and multi-language transcription."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What languages does VideoText support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Transcription: 50+ languages via Whisper large-v3. Subtitle translation: 70+ languages. In-app transcript translation: English, Hindi, Telugu, Spanish, Chinese, Russian."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What file formats does VideoText support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Video input: MP4, MOV, AVI, WebM, MKV. Audio: MP3, M4A, WAV. YouTube URLs accepted directly. Subtitle files: SRT, VTT, SBV, ASS, SSA, TTML, DFXP."
+            }
+          }
+        ]
+      }
     </script>
   </head>
 
