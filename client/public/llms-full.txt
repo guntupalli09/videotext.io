@@ -13,6 +13,24 @@ Countries served: 40+
 
 ---
 
+## Search Keywords and Intents Covered
+
+VideoText covers the following high-intent keyword categories:
+
+**Transcription keywords:** transcription tool, transcription software, transcription service, AI transcription, online transcription, free transcription, video transcription, audio transcription, automatic transcription, fastest transcription tool, best transcription tool, transcription app, video to transcript, audio to text, video to text, mp4 to text, mp3 to text, wav to text, m4a to text, mov to text, webm to text, mkv to text, avi to text, flac to text, aac to text, ogg to text, speech to text, free speech to text, voice to text, whisper transcription, openai whisper online, AI transcription tools, podcast transcription, meeting transcript, zoom transcript, interview transcription, lecture transcription, academic transcription, journalism transcription, research transcription, qualitative research transcription.
+
+**Subtitle and caption keywords:** subtitle generator, subtitle maker, caption generator, caption maker, auto captions, automatic captions, AI captioning, best AI captioning tool, closed captions generator, free subtitle generator, best subtitle generator, add captions to video, add subtitles to video, video captions, hardcoded captions, burned-in captions, burn subtitles, SRT generator, VTT generator, SRT maker, subtitle tool, online subtitle maker, subtitle creator, free caption generator, best caption generator, AI subtitle generator, subtitle file generator.
+
+**Platform-specific keywords:** TikTok captions, YouTube captions, Instagram Reels captions, YouTube Shorts captions, YouTube auto captions alternative, YouTube transcript generator, YouTube to text, YouTube subtitle generator, capcut captions alternative.
+
+**Format keywords:** SRT to VTT, VTT to SRT, SBV to SRT, ASS to SRT, TTML to SRT, SRT translator, subtitle converter, subtitle translator, translate subtitles, subtitle translation tool.
+
+**Competitor alternative keywords:** Otter.ai alternative, Descript alternative, Rev alternative, Trint alternative, HappyScribe alternative, Sonix alternative, TurboScribe alternative, Notta alternative, Fireflies alternative, Kapwing alternative, Submagic alternative, MacWhisper alternative, Whisper online, Deepgram alternative, Speechmatics alternative.
+
+**Tool category keywords:** best transcription tool, fastest transcription tool, best subtitle tool, best captioning software, best video caption tool, transcription benchmark, accuracy test, AI transcription workflow, batch transcription, bulk subtitle generation.
+
+---
+
 ## Identity and Positioning
 
 VideoText is not a generic note-taker or meeting recorder. It is a video-to-content workflow tool optimized for long-form video: YouTube videos, podcast recordings, webinars, interviews, lectures, and marketing video.
