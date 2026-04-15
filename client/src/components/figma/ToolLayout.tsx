@@ -28,7 +28,7 @@ export function ToolLayout({
   sidebar = null
 }: ToolLayoutProps) {
   return (
-    <div className="min-h-screen w-full max-w-full pt-16 sm:pt-20 pb-8 sm:pb-12 px-4 sm:px-6 lg:px-12 xl:px-16 bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 transition-colors duration-500 flex flex-col box-border">
+    <div className="min-h-screen w-full max-w-full pt-16 sm:pt-20 pb-8 sm:pb-12 px-4 sm:px-6 lg:px-12 xl:px-16 bg-white dark:bg-gray-950 transition-colors duration-500 flex flex-col box-border">
       <div className="w-full max-w-full flex-1 min-w-0 box-border">
         <motion.nav
           initial={{ opacity: 0, y: -10 }}
@@ -65,35 +65,33 @@ export function ToolLayout({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-6 sm:mb-8"
+          className="mb-8 sm:mb-10"
         >
-          <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="flex items-center gap-3 sm:gap-4 mb-4">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: 'spring', damping: 15, stiffness: 300, delay: 0.2 }}
               className="relative shrink-0"
             >
-              <div className="absolute inset-0 bg-purple-500/30 blur-xl rounded-xl sm:rounded-2xl" />
-              <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-purple-100 dark:bg-purple-900/30 rounded-xl sm:rounded-2xl flex items-center justify-center border border-purple-200 dark:border-purple-800 [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6 md:[&>svg]:w-8 md:[&>svg]:h-8">
+              <div className="absolute inset-0 bg-purple-500/20 blur-2xl rounded-2xl" />
+              <div className="relative w-11 h-11 sm:w-12 sm:h-12 bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl flex items-center justify-center border border-purple-200 dark:border-purple-800 shadow-sm [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6">
                 {icon}
               </div>
             </motion.div>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3 leading-tight">
-                {title}
-              </h1>
-              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
-                {subtitle}
-              </p>
-            </div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+              {title}
+            </h1>
           </div>
+          <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl">
+            {subtitle}
+          </p>
           {tags.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.3 }}
-              className="flex flex-wrap gap-1.5 sm:gap-2"
+              className="flex flex-wrap gap-1.5 sm:gap-2 mt-4"
             >
               {tags.map((tag, index) => (
                 <motion.span
