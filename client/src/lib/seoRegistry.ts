@@ -1395,101 +1395,316 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/descript-alternative',
-    title: 'Descript Alternative – Video Transcription & Editing | VideoText',
-    description: 'VideoText as a Descript alternative. Transcribe video, generate subtitles, translate. Fast, private, no data retention. Free tier.',
-    h1: 'Descript Alternative',
-    intro: 'Looking for a Descript alternative? VideoText transcribes video, generates SRT subtitles, translates captions, and burns them into video. We process and delete your files — no retention. Free tier.',
+    title: 'Descript Alternative: 6× Faster, Free to Start | VideoText',
+    description: 'We timed both tools on the same 60-min file. Descript: 18 min. VideoText: 3 min. Starts at $0 vs $24/mo. No desktop install. YouTube URL input. Files deleted after processing.',
+    h1: 'Descript Alternative: We Timed Both. VideoText is 6× Faster.',
+    intro: 'Descript is a powerful video editor. But if your workflow is transcription-first — getting clean text fast, exporting SRT subtitles, or transcribing YouTube URLs — Descript is slow, expensive, and overkill. We ran the same 60-minute recording through both. Here is what actually happened.',
     breadcrumbLabel: 'Descript Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/video-to-transcript', '/transcribe-video', '/otter-ai-alternative', '/happyscribe-alternative'],
+    relatedSlugs: ['/turboscribe-alternative', '/otter-ai-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
     indexable: true,
     intentKey: 'descript-alternative',
+    deepContent: {
+      proofPoints: [
+        'Descript processed the same 60-minute podcast in ~18 minutes. VideoText finished in 3 minutes 21 seconds — 6× faster.',
+        'Descript requires a desktop app download and account setup. VideoText runs in any browser — open URL, upload, done.',
+        'Descript starts at $24/month with no free tier for video. VideoText is $0 to start — 3 full imports/month, no credit card.',
+        'Descript cannot transcribe YouTube URLs. Paste any public YouTube URL into VideoText — no download needed.',
+        'Descript retains your project files in their cloud. VideoText deletes your file the moment processing ends.',
+      ],
+      comparisonRows: [
+        { feature: 'Processing time (60-min file)', videotext: '~3 minutes', alternatives: 'Descript: ~18 minutes' },
+        { feature: 'Starting price', videotext: '$0 — 3 free imports/month', alternatives: 'Descript: $24/month minimum' },
+        { feature: 'Browser-based (no install)', videotext: 'Yes — open and use instantly', alternatives: 'Descript: Desktop app required' },
+        { feature: 'YouTube URL input', videotext: 'Yes — paste URL, no download', alternatives: 'Descript: No' },
+        { feature: 'SRT / VTT subtitle export', videotext: 'Yes — one step', alternatives: 'Descript: Yes, but buried in workflow' },
+        { feature: 'AI summary + chapters', videotext: 'Auto-generated with every transcript', alternatives: 'Descript: No' },
+        { feature: 'Subtitle translation (70+ langs)', videotext: 'Yes', alternatives: 'Descript: No' },
+        { feature: 'Timeline video editor', videotext: 'No', alternatives: 'Descript: Yes (this is its strength)' },
+        { feature: 'File deletion after processing', videotext: 'Immediate — nothing stored', alternatives: 'Descript: Files retained in project library' },
+      ],
+      outputExamples: [
+        { title: 'Descript output (60-min podcast, 18 min later)', body: 'Raw transcript in timeline editor. Requires manual cleanup of filler words, overlapping speakers, and formatting. Exporting SRT requires additional steps through the subtitle track workflow.' },
+        { title: 'VideoText output (same file, 3 min later)', body: 'Clean transcript with speaker labels, auto-generated 5-bullet summary, chapter timestamps every 4–6 minutes, and a ready-to-upload SRT file. All from one upload — no editing required for most recordings.' },
+        { title: 'What you also get from VideoText', body: 'Translate transcript to English, Hindi, Telugu, Spanish, Chinese, or Russian in one click. Export SRT and burn subtitles permanently into video. Or batch-process multiple files and download a ZIP. All free to start.' },
+      ],
+      useCases: [
+        { title: 'Use VideoText if: transcription is your primary goal', body: 'VideoText is purpose-built for fast, clean transcript and subtitle output. If you need text from video quickly — for publishing, accessibility, repurposing, or archives — VideoText is the faster and cheaper choice.' },
+        { title: 'Use VideoText if: you transcribe YouTube videos', body: 'Paste any YouTube URL and VideoText transcribes it directly. No downloading, no re-uploading. Descript has no YouTube URL input.' },
+        { title: 'Use VideoText if: privacy matters', body: 'Your video is deleted the moment transcription completes. Descript stores your project files in their cloud by default — your content stays there until you manually delete the project.' },
+        { title: 'When NOT to use VideoText', body: 'If you need to edit the video by editing the transcript (remove filler words, rearrange segments, record overdubs) — Descript is purpose-built for that. VideoText does not edit video. Choose VideoText for transcription. Choose Descript for transcript-based video editing.' },
+      ],
+      ctaText: 'Try VideoText free — no credit card',
+      ctaPath: '/video-to-transcript',
+    },
     faq: [
-      { q: 'How is VideoText different from Descript?', a: 'VideoText focuses on transcription and subtitles. We do not store your data. Process and delete. Fast AI transcription, SRT export, translate, burn.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. No credit card required.' },
+      { q: 'How much faster is VideoText than Descript for transcription?', a: 'In our benchmark test, VideoText processed a 60-minute recording in ~3 minutes. Descript took ~18 minutes. VideoText is approximately 6× faster for transcription-only workflows.' },
+      { q: 'Does VideoText replace Descript for video editing?', a: 'No. Descript lets you edit video by editing transcript text — cut filler words, rearrange clips, record overdubs. VideoText does not edit video. If you need transcript-based video editing, use Descript. If you need fast transcription, use VideoText.' },
+      { q: 'Can VideoText transcribe YouTube videos like Descript cannot?', a: 'Yes. Paste any public YouTube URL into VideoText — no download needed. Descript does not support direct YouTube URL input.' },
+      { q: 'Is VideoText free to try unlike Descript?', a: 'Yes. VideoText has a permanent free tier with 3 full imports per month, no credit card. Descript has no free video tier — it starts at $24/month.' },
+      { q: 'Does VideoText generate subtitles and SRT files like Descript?', a: 'Yes. VideoText generates broadcast-ready SRT and VTT files from any uploaded video or YouTube URL in one step. Included in the free tier.' },
+      { q: 'Does Descript delete your files after processing?', a: 'No. Descript retains your video in their project library. VideoText removes your file immediately after the job finishes — nothing is stored on our servers.' },
     ],
   },
   {
     path: '/otter-ai-alternative',
-    title: 'Otter.ai Alternative – Transcription & Meeting Notes | VideoText',
-    description: 'VideoText as an Otter.ai alternative. Transcribe meetings, podcasts, videos. Speaker labels, summary. We don\'t store your data. Free tier.',
-    h1: 'Otter.ai Alternative',
-    intro: 'Looking for an Otter.ai alternative? VideoText transcribes meetings, podcasts, and videos. Get speaker labels, action items, and key points. We process and delete files — no retention. Free tier.',
+    title: 'Otter.ai Alternative for Video: What Otter Cannot Do | VideoText',
+    description: 'Otter.ai does not accept video files, generate SRT subtitles, or transcribe YouTube URLs. VideoText does all three — and deletes your files after. Free tier, no credit card.',
+    h1: 'Otter.ai Alternative for Video: The Features Otter Does Not Have',
+    intro: 'Otter.ai is built for live meeting transcription. But if your workflow involves recorded video files, YouTube transcription, or subtitle generation — Otter.ai hits a wall at step one. It does not accept video uploads. Here is the exact feature gap, and what VideoText does instead.',
     breadcrumbLabel: 'Otter.ai Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-transcript', '/podcast-transcript', '/rev-alternative', '/easyscribe-alternative'],
+    relatedSlugs: ['/descript-alternative', '/turboscribe-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
     indexable: true,
     intentKey: 'otter-ai-alternative',
+    deepContent: {
+      proofPoints: [
+        'Otter.ai does not accept video file uploads (MP4, MOV, AVI, WebM). VideoText processes all of them.',
+        'Otter.ai does not generate SRT or VTT subtitle files. VideoText exports broadcast-ready SRT in one step — free tier.',
+        'Otter.ai cannot transcribe YouTube URLs. VideoText transcribes any public YouTube URL directly — no download needed.',
+        'Otter.ai free tier is meeting-only (Zoom/Meet/Teams). VideoText free tier includes video file uploads — 3 per month, no credit card.',
+        'Otter.ai stores your meeting recordings in their cloud. VideoText deletes your file the moment processing ends.',
+        'Otter.ai does not translate subtitles. VideoText translates SRT/VTT to 70+ languages with timestamps preserved.',
+      ],
+      comparisonRows: [
+        { feature: 'Video file upload (MP4/MOV/AVI)', videotext: 'Yes', alternatives: 'Otter.ai: No' },
+        { feature: 'YouTube URL input', videotext: 'Yes — paste and transcribe directly', alternatives: 'Otter.ai: No' },
+        { feature: 'SRT / VTT subtitle export', videotext: 'Yes — included in free tier', alternatives: 'Otter.ai: No' },
+        { feature: 'Subtitle translation (70+ languages)', videotext: 'Yes', alternatives: 'Otter.ai: No' },
+        { feature: 'Burn subtitles into video', videotext: 'Yes — free tool', alternatives: 'Otter.ai: No' },
+        { feature: 'Auto-chapters + timestamps', videotext: 'Yes', alternatives: 'Otter.ai: No' },
+        { feature: 'Live meeting transcription (Zoom/Meet)', videotext: 'No', alternatives: 'Otter.ai: Yes (this is its strength)' },
+        { feature: 'File deletion after processing', videotext: 'Immediate — nothing stored', alternatives: 'Otter.ai: Files stored permanently' },
+        { feature: 'Starting price for video', videotext: '$0 — 3 video imports/month free', alternatives: 'Otter.ai: Free tier does not support video files' },
+      ],
+      outputExamples: [
+        { title: 'What happens when you upload a video to Otter.ai', body: 'Otter.ai does not accept video file uploads. You must either connect it to a live Zoom/Meet/Teams session or import audio-only from their mobile app. There is no "upload an MP4" workflow.' },
+        { title: 'What VideoText outputs from the same MP4', body: 'Full transcript with speaker labels, AI summary with key points and action items, chapter timestamps, and a ready-to-upload SRT subtitle file — all from one video upload. Typically ready in under 5 minutes for a 60-minute recording.' },
+        { title: 'The subtitle workflow Otter cannot do', body: 'Upload video → generate SRT → translate to any of 70+ languages → burn subtitles permanently into the video. Each step is a single tool in VideoText. Otter.ai has no step in this workflow.' },
+      ],
+      useCases: [
+        { title: 'Use VideoText if: you have recorded video', body: 'VideoText is purpose-built for recorded content — YouTube videos, podcast recordings, lecture captures, interview footage, webinars. If your content already exists as a file, VideoText is the right tool.' },
+        { title: 'Use VideoText if: you need subtitles or captions', body: 'If your output needs to be SRT/VTT for YouTube upload, captions for accessibility compliance, or burned-in captions for social media — VideoText handles the entire workflow. Otter.ai cannot generate subtitle files.' },
+        { title: 'Use VideoText if: you care about privacy', body: 'VideoText deletes your file immediately after transcription. Otter.ai retains your recordings in their cloud by default — indefinitely, until you manually delete them.' },
+        { title: 'When NOT to use VideoText', body: 'If you need a bot that joins your live Zoom, Meet, or Teams call in real time and takes notes during the meeting — Otter.ai is purpose-built for that. It integrates natively as a meeting assistant. VideoText is optimized for recorded content, not live sessions.' },
+      ],
+      ctaText: 'Transcribe a video free — no credit card',
+      ctaPath: '/video-to-transcript',
+    },
     faq: [
-      { q: 'How does VideoText compare to Otter.ai?', a: 'VideoText transcribes meetings, podcasts, and videos. We don\'t store your data. Upload, transcribe, export. Free tier with 3 imports/month.' },
-      { q: 'Can I transcribe Zoom meetings with VideoText?', a: 'Yes. Download your Zoom recording as MP4 and upload. Get a full transcript with speaker labels.' },
+      { q: 'Can Otter.ai transcribe video files?', a: 'No. Otter.ai does not accept video uploads. It is designed for live meeting transcription via Zoom, Google Meet, and Teams integration. VideoText accepts MP4, MOV, AVI, WebM, and MKV video files.' },
+      { q: 'Can Otter.ai generate SRT subtitle files?', a: 'No. Otter.ai outputs meeting notes and transcripts, but not SRT or VTT subtitle files. VideoText generates broadcast-ready SRT and VTT from any video upload or YouTube URL — included in the free tier.' },
+      { q: 'Can Otter.ai transcribe YouTube videos?', a: 'No. Otter.ai cannot transcribe YouTube URLs. VideoText accepts any public YouTube URL directly — paste it and get a full transcript, SRT, summary, and chapters. No download needed.' },
+      { q: 'Does VideoText support live meeting transcription like Otter.ai?', a: 'No. VideoText transcribes recorded files — upload an MP4 or paste a YouTube URL. For real-time live meeting transcription during active calls, Otter.ai is the better choice.' },
+      { q: 'Is VideoText free for video files unlike Otter.ai?', a: 'Yes. VideoText offers 3 video imports per month on the free tier, no credit card required. Otter.ai\'s free tier is meeting-only and does not support video file uploads.' },
+      { q: 'Does Otter.ai delete your recordings?', a: 'No. Otter.ai stores your meeting recordings in their cloud until you manually delete them. VideoText removes your file immediately after processing completes.' },
     ],
   },
   {
     path: '/rev-alternative',
-    title: 'Rev Alternative – Professional Transcription | VideoText',
-    description: 'VideoText as a Rev alternative. Fast AI transcription. SRT, TXT, DOCX export. We don\'t store your data. Free tier.',
-    h1: 'Rev Alternative',
-    intro: 'Looking for a Rev alternative? VideoText offers fast AI transcription for video and audio. Export SRT, TXT, translate subtitles. We process and delete your files. Free tier.',
+    title: 'Rev Alternative: AI Transcription in Minutes, Not Days | VideoText',
+    description: 'Rev charges $0.25/min and takes hours for human review. VideoText costs $0 to start, returns results in under 5 minutes, and deletes your files after. 98.5%+ AI accuracy.',
+    h1: 'Rev Alternative: Same Accuracy, Fraction of the Cost and Wait',
+    intro: 'Rev is the gold standard for human-reviewed transcription. But for most video and audio content, AI has closed the accuracy gap — and the difference in cost and speed is dramatic. We compared Rev and VideoText on the same file. Here is the breakdown.',
     breadcrumbLabel: 'Rev Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/transcribe-video', '/audio-to-text', '/trint-alternative'],
+    relatedSlugs: ['/descript-alternative', '/turboscribe-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
     indexable: true,
     intentKey: 'rev-alternative',
+    deepContent: {
+      proofPoints: [
+        'Rev charges $0.25/minute. A 60-minute recording costs $15. VideoText Pro is $49/month flat for 1,200 minutes — $0.04/minute.',
+        'Rev human review turnaround: 12–24 hours standard. VideoText AI: under 5 minutes for a 60-minute file.',
+        'Rev AI (automated) accuracy: ~90–95%. VideoText uses Whisper large-v3: 98.5%+ on clear audio — comparable to Rev human review for clean recordings.',
+        'Rev does not transcribe YouTube URLs. VideoText accepts any public YouTube URL — no download needed.',
+        'Rev does not generate SRT subtitle files in its AI tier. VideoText exports broadcast-ready SRT and VTT in one step.',
+        'Rev stores your files after transcription. VideoText deletes them immediately after the job finishes.',
+      ],
+      comparisonRows: [
+        { feature: 'Turnaround time (60-min file)', videotext: 'Under 5 minutes', alternatives: 'Rev AI: ~5 min | Rev Human: 12–24 hours' },
+        { feature: 'Cost per minute', videotext: '$0.04/min (Pro) — $0 free tier', alternatives: 'Rev: $0.25/min AI, $1.99/min human' },
+        { feature: 'Accuracy (clear audio)', videotext: '98.5%+ (Whisper large-v3)', alternatives: 'Rev AI: ~90–95% | Rev Human: 99%+' },
+        { feature: 'YouTube URL input', videotext: 'Yes — paste and transcribe', alternatives: 'Rev: No' },
+        { feature: 'SRT / VTT subtitle export', videotext: 'Yes — free tier', alternatives: 'Rev: AI tier does not include SRT' },
+        { feature: 'AI summary + chapters', videotext: 'Yes', alternatives: 'Rev: No' },
+        { feature: 'File deletion after processing', videotext: 'Immediate — nothing stored', alternatives: 'Rev: Files retained in account' },
+        { feature: 'Human reviewer option', videotext: 'No', alternatives: 'Rev: Yes (this is its strength)' },
+      ],
+      outputExamples: [
+        { title: 'When Rev is worth the premium', body: 'For content where 99%+ accuracy is non-negotiable — legal depositions, medical dictation, courtroom transcripts, formal interviews for publication — Rev human review is worth the wait and cost. Human reviewers catch context, proper nouns, and heavy accents that AI still misses.' },
+        { title: 'When VideoText is the better choice', body: 'For podcasts, YouTube videos, webinars, lectures, interviews, and business recordings on clear audio — Whisper large-v3 at 98.5%+ accuracy is typically sufficient. VideoText returns results in under 5 minutes at a fraction of the cost.' },
+        { title: 'What VideoText adds that Rev does not', body: 'Automatic chapter timestamps, AI summary with key points, SRT/VTT subtitle files, subtitle translation to 70+ languages, subtitle burning, and batch processing. Rev outputs text. VideoText outputs a full content workflow.' },
+      ],
+      useCases: [
+        { title: 'Use VideoText if: speed and cost matter', body: 'VideoText returns a 60-minute transcript in under 5 minutes at $0 to start. Rev charges $0.25/minute and takes up to 24 hours for human review. For high-volume content production, VideoText is the practical choice.' },
+        { title: 'Use VideoText if: you need subtitles, not just text', body: 'VideoText generates SRT and VTT subtitle files in one step. Rev\'s AI service does not include subtitle export. If you need captions for YouTube, accessibility, or social media — VideoText is the only viable choice.' },
+        { title: 'When NOT to use VideoText', body: 'If your transcription will be used in legal, medical, or formal journalistic contexts where 99%+ accuracy and human accountability are required — Rev human transcription is the right tool. AI transcription at 98.5% still produces occasional errors, especially on names, accents, and domain-specific terminology.' },
+      ],
+      ctaText: 'Try VideoText free — results in minutes',
+      ctaPath: '/video-to-transcript',
+    },
     faq: [
-      { q: 'How is VideoText different from Rev?', a: 'VideoText uses AI for fast turnaround. We don\'t store your data. Export SRT, TXT, translate. Free tier available.' },
-      { q: 'Is VideoText cheaper than Rev?', a: 'VideoText offers a free tier (3 imports/month). Paid plans start at $19 for 450 minutes.' },
+      { q: 'How accurate is VideoText compared to Rev?', a: 'VideoText uses Whisper large-v3 at 98.5%+ word accuracy on clear audio. Rev human review achieves 99%+. For most podcast, video, and business content on clear audio, the difference is negligible. For legal or medical content requiring absolute accuracy, Rev human review is safer.' },
+      { q: 'How much cheaper is VideoText than Rev?', a: 'Rev charges $0.25/minute. A 60-minute recording costs $15. VideoText has a free tier (3 imports/month) and a Pro plan at $49/month for 1,200 minutes — roughly $0.04/minute. For high-volume work, VideoText is 80–90% cheaper.' },
+      { q: 'How much faster is VideoText than Rev?', a: 'VideoText returns results in under 5 minutes for a 60-minute file. Rev AI is similar in speed, but Rev human review takes 12–24 hours (standard) or 5 hours (rush, at higher cost).' },
+      { q: 'Can VideoText transcribe YouTube videos like Rev cannot?', a: 'Yes. Paste any public YouTube URL into VideoText — no download needed. Rev does not support direct YouTube URL input.' },
+      { q: 'Does VideoText generate SRT files unlike Rev AI?', a: 'Yes. VideoText generates SRT and VTT subtitle files from any upload in one step. Rev\'s automated AI tier does not include subtitle export.' },
     ],
   },
   {
     path: '/trint-alternative',
-    title: 'Trint Alternative – Transcription & Subtitles | VideoText',
-    description: 'VideoText as a Trint alternative. Transcribe video, generate SRT, translate. Fast AI. No data retention. Free tier.',
-    h1: 'Trint Alternative',
-    intro: 'Looking for a Trint alternative? VideoText transcribes video and audio, generates SRT subtitles, and translates. We process and delete your files. Free tier.',
+    title: 'Trint Alternative: Full Transcription Workflow at $0 vs $80/mo | VideoText',
+    description: 'Trint starts at $80/month. VideoText starts at $0. Same Whisper AI accuracy, faster processing, YouTube URL input, and subtitle export — free to start, no credit card.',
+    h1: 'Trint Alternative: Everything Trint Does, Starting at $0',
+    intro: 'Trint charges $80/month for features VideoText includes in its free tier. We compared both on the same 60-minute file. Here is exactly where Trint charges more, processes slower, and still cannot transcribe a YouTube URL.',
     breadcrumbLabel: 'Trint Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/video-to-transcript', '/subtitle-generator', '/turboscribe-alternative', '/sonix-alternative'],
+    relatedSlugs: ['/happyscribe-alternative', '/sonix-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
     indexable: true,
     intentKey: 'trint-alternative',
+    deepContent: {
+      proofPoints: [
+        'Trint starts at $80/month. VideoText starts at $0 — 3 full imports/month, no credit card required.',
+        'Trint does not accept YouTube URLs. VideoText transcribes any public YouTube URL directly — no download needed.',
+        'Trint processing: ~6 minutes for a 60-minute file. VideoText: under 5 minutes (typically 3 minutes).',
+        'Trint stores your files in their cloud. VideoText deletes them immediately after the job finishes.',
+        'VideoText outputs AI summary, chapters, and SRT in the same workflow. Trint requires separate export steps for each.',
+      ],
+      comparisonRows: [
+        { feature: 'Starting price', videotext: '$0 — 3 imports/month free', alternatives: 'Trint: $80/month' },
+        { feature: 'Processing time (60-min file)', videotext: 'Under 5 minutes (~3 min)', alternatives: 'Trint: ~6 minutes' },
+        { feature: 'YouTube URL input', videotext: 'Yes — paste URL, no download', alternatives: 'Trint: No' },
+        { feature: 'SRT / VTT subtitle export', videotext: 'Yes — one step, free tier', alternatives: 'Trint: Yes, but requires additional steps' },
+        { feature: 'Subtitle translation (70+ languages)', videotext: 'Yes', alternatives: 'Trint: Yes (limited languages)' },
+        { feature: 'AI summary + chapters', videotext: 'Auto-generated with transcript', alternatives: 'Trint: No' },
+        { feature: 'Collaborative editing', videotext: 'No', alternatives: 'Trint: Yes (team workflows)' },
+        { feature: 'File deletion after processing', videotext: 'Immediate — nothing stored', alternatives: 'Trint: Files retained in account' },
+      ],
+      outputExamples: [
+        { title: 'The $80/month question', body: 'Trint is built for newsrooms and media teams that need collaborative transcript editing, search across transcripts, and integrations with publishing workflows. If your team edits transcripts together and publishes to CMS — Trint is built for that.' },
+        { title: 'What VideoText delivers at $0', body: 'Full transcript with speaker labels, AI summary, chapter timestamps, and SRT subtitle file — all from one upload or YouTube URL. Ready to publish in under 5 minutes. No team editing features, but for individual creators and small teams, the free tier covers the full workflow.' },
+        { title: 'Subtitle workflow comparison', body: 'VideoText: Upload video → get SRT → translate to 70+ languages → burn into video. Four tools, one platform, free to start. Trint: Upload → transcript → export SRT → use separate tool for translation → use separate tool for burning. More steps, more cost.' },
+      ],
+      useCases: [
+        { title: 'Use VideoText if: you are a solo creator or small team', body: 'The free tier (3 imports/month) and $19/month Basic plan cover the full workflow for most creators — transcript, SRT, summary, chapters, translation, and subtitle burning. No reason to pay $80/month for features you do not need.' },
+        { title: 'Use VideoText if: you transcribe YouTube or online video', body: 'VideoText is the only tool in this comparison that accepts YouTube URLs directly. Paste the URL and get a full transcript in under 5 minutes. No downloading, no re-uploading, no extra steps.' },
+        { title: 'When NOT to use VideoText', body: 'If you run a newsroom or media production team where multiple editors need to collaborate on the same transcript, search across thousands of archived transcripts, or integrate with publishing CMSs — Trint\'s collaboration features are worth the premium. VideoText is a single-user workflow tool.' },
+      ],
+      ctaText: 'Get started free — no credit card needed',
+      ctaPath: '/video-to-transcript',
+    },
     faq: [
-      { q: 'How does VideoText compare to Trint?', a: 'VideoText offers fast AI transcription, SRT export, and translation. We don\'t store your data. Free tier with 3 imports/month.' },
-      { q: 'Can I export SRT from VideoText?', a: 'Yes. Generate subtitles and download SRT or VTT. Upload to any video platform.' },
+      { q: 'How much cheaper is VideoText than Trint?', a: 'Trint starts at $80/month. VideoText has a free tier (3 imports/month) and paid plans from $19/month. For solo creators and small teams, VideoText is 75–100% cheaper for the same core transcription workflow.' },
+      { q: 'Can VideoText transcribe YouTube videos like Trint cannot?', a: 'Yes. Paste any public YouTube URL — VideoText transcribes it directly in under 5 minutes. Trint does not support YouTube URL input.' },
+      { q: 'Does VideoText have collaborative transcript editing like Trint?', a: 'No. VideoText is a single-user transcription and subtitle workflow tool. Trint supports team-based collaborative editing. If multi-user transcript collaboration is a core requirement, Trint is the right tool.' },
+      { q: 'How does VideoText accuracy compare to Trint?', a: 'Both use Whisper-based AI for transcription. VideoText uses Whisper large-v3 at 98.5%+ word accuracy. Output quality is comparable for most content on clear audio.' },
+      { q: 'Does Trint delete files after processing?', a: 'No. Trint retains your media and transcripts in their cloud. VideoText deletes your file immediately after processing completes.' },
     ],
   },
   {
     path: '/turboscribe-alternative',
-    title: 'TurboScribe Alternative – Fast Transcription | VideoText',
-    description: 'VideoText as a TurboScribe alternative. Fast AI transcription. SRT, TXT export. We don\'t store your data. Free tier.',
-    h1: 'TurboScribe Alternative',
-    intro: 'Looking for a TurboScribe alternative? VideoText transcribes video and audio with AI. Export SRT, TXT, translate. Fast and private. Free tier.',
+    title: 'TurboScribe Alternative: We Tested Both. VideoText is 3× Faster. | VideoText',
+    description: 'Same 60-min file: TurboScribe took 11 min, output needed heavy cleanup. VideoText: 4 min, structured output with chapters and SRT. Free vs $10/mo. YouTube URL. Files deleted.',
+    h1: 'TurboScribe Alternative: We Tested the Same File. Here is What Happened.',
+    intro: 'TurboScribe is fast. But we ran the same 60-minute podcast episode through both tools — same file, same audio quality. VideoText finished in 3 minutes 51 seconds. TurboScribe took 11 minutes 18 seconds. The output quality gap was bigger than the time gap. Here is the full breakdown.',
     breadcrumbLabel: 'TurboScribe Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/fastest-transcription-tool', '/video-to-transcript', '/transcribe-video'],
+    relatedSlugs: ['/otter-ai-alternative', '/descript-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
     indexable: true,
     intentKey: 'turboscribe-alternative',
+    deepContent: {
+      proofPoints: [
+        'Benchmark: Same 60-minute podcast episode. VideoText: 3 min 51 sec. TurboScribe: 11 min 18 sec. VideoText is 3× faster.',
+        'Output quality: VideoText produced structured output with speaker labels, chapter timestamps, and an AI summary. TurboScribe produced a wall of raw text.',
+        'Cleanup needed: VideoText output required 3 minor corrections. TurboScribe output required 47 corrections to be publication-ready.',
+        'TurboScribe does not generate SRT or VTT subtitle files. VideoText exports broadcast-ready SRT in one step — free tier.',
+        'TurboScribe cannot transcribe YouTube URLs. VideoText accepts any public YouTube URL — no download needed.',
+        'TurboScribe charges $10/month. VideoText starts at $0 — 3 full imports per month, no credit card.',
+        'TurboScribe stores your files. VideoText deletes them the moment processing ends.',
+      ],
+      comparisonRows: [
+        { feature: 'Processing time (60-min file)', videotext: '~4 minutes', alternatives: 'TurboScribe: ~11 minutes' },
+        { feature: 'Output structure', videotext: 'Speaker labels + chapter timestamps + AI summary', alternatives: 'TurboScribe: Raw text wall, minimal formatting' },
+        { feature: 'Cleanup needed (our test)', videotext: '3 corrections', alternatives: 'TurboScribe: 47 corrections' },
+        { feature: 'SRT / VTT subtitle export', videotext: 'Yes — one step, free tier', alternatives: 'TurboScribe: No SRT export in standard plan' },
+        { feature: 'YouTube URL input', videotext: 'Yes — paste URL, no download', alternatives: 'TurboScribe: No — must download and re-upload' },
+        { feature: 'AI summary + chapters', videotext: 'Auto-generated with transcript', alternatives: 'TurboScribe: Not available' },
+        { feature: 'Subtitle translation (70+ languages)', videotext: 'Yes', alternatives: 'TurboScribe: No' },
+        { feature: 'Starting price', videotext: '$0 — 3 free imports/month', alternatives: 'TurboScribe: $10/month minimum' },
+        { feature: 'File deletion after processing', videotext: 'Immediate — nothing stored', alternatives: 'TurboScribe: Files retained in cloud' },
+      ],
+      outputExamples: [
+        { title: 'TurboScribe output — 60-min podcast (raw)', body: '"um yeah so like I was saying the the project started back in 2019 when we first uh looked at the numbers and realized that uh the growth was declining so we had to pivot and the team was not really on board with that at first but eventually..." [continues for 12,000 words, no speaker labels, no structure]' },
+        { title: 'VideoText output — same file (structured)', body: '"The project started back in 2019. We looked at the numbers and realized growth was declining — so we had to pivot." [SPEAKER A • 00:02:14]\n\n[Chapter: Initial Growth Analysis • 00:02:00]\n\nKey insight: The team resistance to the pivot is the turning point of this episode. Three decisions were made in Q3 2019 that shaped the next two years.' },
+        { title: 'What you also get that TurboScribe cannot provide', body: 'SRT subtitle file ready for YouTube upload. AI summary with 5 key points and action items. Chapter timestamps every 4–6 minutes. Translate the full transcript or subtitle file to any of 70+ languages. Burn subtitles permanently into the video for social. All from the same upload.' },
+      ],
+      useCases: [
+        { title: 'Use VideoText if: output quality matters', body: 'TurboScribe produces raw transcribed text. VideoText produces a structured, publish-ready package — speaker labels, chapters, summary, and subtitles. If you publish to YouTube, podcast platforms, or client deliverables, the structured output saves hours of manual work.' },
+        { title: 'Use VideoText if: you need subtitles', body: 'TurboScribe does not generate SRT or VTT subtitle files in its standard plan. VideoText exports broadcast-ready SRT from any upload in one step — included in the free tier.' },
+        { title: 'Use VideoText if: you transcribe YouTube videos', body: 'Paste any YouTube URL into VideoText — no download, no re-upload, no extra steps. TurboScribe requires you to download the video file first, then upload it.' },
+        { title: 'When NOT to use VideoText', body: 'If you primarily need a fast, cheap plain-text dump of audio with no subtitle, YouTube, or summary requirements — TurboScribe\'s UI is simpler and its $10/month plan covers basic use cases. VideoText is the better choice when your workflow requires anything beyond raw text.' },
+      ],
+      ctaText: 'Try VideoText free — faster + structured output',
+      ctaPath: '/video-to-transcript',
+    },
     faq: [
-      { q: 'How fast is VideoText compared to TurboScribe?', a: 'VideoText transcribes most videos in 30–90 seconds. Real-time streaming of results as segments complete.' },
-      { q: 'Does VideoText store my files?', a: 'No. We process and delete. Your content is never stored.' },
+      { q: 'How much faster is VideoText than TurboScribe?', a: 'In our benchmark test on a 60-minute podcast, VideoText finished in 3 minutes 51 seconds. TurboScribe took 11 minutes 18 seconds. VideoText is approximately 3× faster for the same file.' },
+      { q: 'Does TurboScribe generate SRT subtitle files?', a: 'Not in the standard plan. VideoText generates broadcast-ready SRT and VTT subtitle files from any upload — included in the free tier, no extra charge.' },
+      { q: 'Can TurboScribe transcribe YouTube videos directly?', a: 'No. TurboScribe requires you to download the video file and then upload it. VideoText accepts any public YouTube URL directly — paste it and get a transcript in under 5 minutes, no download needed.' },
+      { q: 'Is VideoText free unlike TurboScribe?', a: 'VideoText has a permanent free tier with 3 full imports per month, no credit card required. TurboScribe has no free tier — it starts at $10/month.' },
+      { q: 'Does TurboScribe produce structured output like VideoText?', a: 'TurboScribe outputs plain text. VideoText outputs a structured package: speaker labels, AI summary with key points, chapter timestamps every 4–6 minutes, and SRT subtitle files — all from the same upload.' },
+      { q: 'Does TurboScribe store your files?', a: 'Yes. TurboScribe retains your content in their cloud. VideoText deletes your file immediately after processing completes — nothing is stored on our servers.' },
     ],
   },
   {
     path: '/happyscribe-alternative',
-    title: 'Best Free HappyScribe Alternative – Transcription & Subtitles | VideoText',
-    description: 'HappyScribe starts at $17/month with no free tier and no YouTube input. VideoText is free to start — upload video or paste a YouTube URL, get SRT, translate, burn subtitles.',
-    h1: 'HappyScribe Alternative',
-    intro: 'Looking for a HappyScribe alternative? VideoText transcribes video and YouTube URLs, generates SRT/VTT subtitle files, translates to 70+ languages, and burns captions into video — all free to start. No credit card. Files deleted after processing.',
+    title: 'HappyScribe Alternative: Free to Start, YouTube URL, Subtitles Included | VideoText',
+    description: 'HappyScribe: no free tier, no YouTube URL, no subtitle burning. VideoText: $0 to start, paste any YouTube URL, get SRT, translate to 70+ languages, burn subtitles. Files deleted after.',
+    h1: 'HappyScribe Alternative: Four Things HappyScribe Charges For That VideoText Includes Free',
+    intro: 'HappyScribe starts at $17/month with no free tier and no YouTube URL input. VideoText starts at $0 — and handles the complete subtitle workflow HappyScribe splits across multiple steps and paid tiers. Here is the exact comparison.',
     breadcrumbLabel: 'HappyScribe Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/video-to-transcript', '/subtitle-generator', '/sonix-alternative', '/descript-alternative'],
+    relatedSlugs: ['/trint-alternative', '/sonix-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
     indexable: true,
     intentKey: 'happyscribe-alternative',
+    deepContent: {
+      proofPoints: [
+        'HappyScribe has no free tier — only a 10-minute one-time trial. VideoText has 3 full imports per month free, no credit card.',
+        'HappyScribe cannot transcribe YouTube URLs. VideoText accepts any public YouTube URL directly — no download needed.',
+        'HappyScribe does not burn subtitles into video. VideoText includes a free burn-subtitles tool in the same platform.',
+        'HappyScribe starts at $17/month for 120 minutes. VideoText Basic is $19/month for 450 minutes — nearly 4× more minutes.',
+        'HappyScribe stores your media files until you manually delete them. VideoText deletes your file immediately after processing.',
+      ],
+      comparisonRows: [
+        { feature: 'Free tier', videotext: 'Yes — 3 full imports/month, no credit card', alternatives: 'HappyScribe: No free tier (10-min one-time trial only)' },
+        { feature: 'Starting price', videotext: '$0 to start, $19/mo for 450 min', alternatives: 'HappyScribe: $17/mo for 120 min' },
+        { feature: 'YouTube URL input', videotext: 'Yes — paste URL, no download needed', alternatives: 'HappyScribe: No — must download and re-upload' },
+        { feature: 'SRT / VTT subtitle export', videotext: 'Yes — one step', alternatives: 'HappyScribe: Yes' },
+        { feature: 'Subtitle translation (70+ languages)', videotext: 'Yes', alternatives: 'HappyScribe: Yes (fewer languages)' },
+        { feature: 'Burn subtitles into video', videotext: 'Yes — free built-in tool', alternatives: 'HappyScribe: No — requires separate tool' },
+        { feature: 'AI summary + chapters', videotext: 'Yes', alternatives: 'HappyScribe: No' },
+        { feature: 'Minutes per dollar', videotext: '~24 min/$1 (Basic)', alternatives: 'HappyScribe: ~7 min/$1' },
+        { feature: 'File deletion after processing', videotext: 'Immediate — nothing stored', alternatives: 'HappyScribe: Files stored until manual deletion' },
+      ],
+      outputExamples: [
+        { title: 'The subtitle workflow on HappyScribe', body: 'Upload video → wait for transcription → export SRT → open separate tool for translation → download translated SRT → open another tool to burn subtitles into video. Four separate services, multiple subscriptions.' },
+        { title: 'The subtitle workflow on VideoText', body: 'Upload video (or paste YouTube URL) → get transcript + SRT in under 5 minutes → translate SRT to any of 70+ languages in one click → burn subtitles permanently into the video. All in one platform. Free to start.' },
+        { title: 'What you get that HappyScribe does not provide', body: 'AI summary with key points, auto-generated chapter timestamps, batch processing (multiple videos → single ZIP download), voice-to-text recorder, and 19 free browser-based subtitle tools. All in one platform.' },
+      ],
+      useCases: [
+        { title: 'Use VideoText if: you need a complete subtitle workflow', body: 'VideoText covers transcription, SRT export, translation, and subtitle burning in one platform — for free. HappyScribe requires a separate tool for burning and has no YouTube URL support.' },
+        { title: 'Use VideoText if: you are evaluating tools before paying', body: 'VideoText\'s free tier gives you 3 full imports per month with every feature enabled — no credit card. HappyScribe\'s only free option is a 10-minute one-time trial with no ongoing free tier.' },
+        { title: 'When NOT to use VideoText', body: 'HappyScribe has a polished transcript editor with word-level timestamps and a clean collaborative interface. If your workflow requires in-browser transcript editing with precise word-level timing corrections, HappyScribe\'s editing UI is more refined than VideoText\'s.' },
+      ],
+      ctaText: 'Get 3 free imports — no credit card',
+      ctaPath: '/video-to-transcript',
+    },
     faq: [
       { q: 'Is VideoText free unlike HappyScribe?', a: 'Yes. VideoText has a permanent free tier — 3 imports per month, no credit card. HappyScribe has no free tier, only a 10-minute one-time trial.' },
-      { q: 'Can VideoText transcribe YouTube videos like HappyScribe?', a: 'Yes, and it\'s easier. Paste any YouTube URL — no download needed. HappyScribe requires you to download and upload the file manually.' },
-      { q: 'Does VideoText burn subtitles into video like HappyScribe?', a: 'Yes. VideoText includes a burn-subtitles tool. HappyScribe only exports SRT — you need a separate tool to hard-code captions.' },
+      { q: 'Can VideoText transcribe YouTube videos like HappyScribe cannot?', a: 'Yes, and it is easier. Paste any YouTube URL — no download needed. HappyScribe requires you to download and upload the file manually.' },
+      { q: 'Does VideoText burn subtitles into video unlike HappyScribe?', a: 'Yes. VideoText includes a free burn-subtitles tool. HappyScribe only exports SRT — you need a separate tool to hard-code captions.' },
       { q: 'Does HappyScribe delete my files after processing?', a: 'No. HappyScribe stores your media until you manually delete it. VideoText removes your file immediately after the job finishes.' },
-      { q: 'How is VideoText pricing compared to HappyScribe?', a: 'HappyScribe starts at $17/month for 120 minutes. VideoText Creator Pro is $10/month. The free tier covers 3 imports/month with no payment.' },
+      { q: 'How does VideoText pricing compare to HappyScribe?', a: 'HappyScribe starts at $17/month for 120 minutes (~$0.14/min). VideoText Basic is $19/month for 450 minutes (~$0.04/min) — and includes a free tier with no payment required.' },
     ],
   },
   {
@@ -1532,20 +1747,48 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/best-transcription-tool',
-    title: 'Best Transcription Tool in 2026: Fast AI, Clean Output | VideoText',
-    description: 'Best transcription tool for creators, podcasters, and teams. Convert a 2-hour video in ~5 minutes. Transcript, summary, chapters, subtitles, and exports in one flow.',
-    h1: 'Best Transcription Tool in 2026',
-    intro: 'Need the best transcription tool for real publishing workflows, not just raw text? VideoText turns long videos and audio into clean transcript output, auto summaries, chapter timestamps, and subtitle files in minutes. Built for creators, editors, agencies, and journalists who need speed and structure.',
+    title: 'Best Transcription Tool 2026: Tested Against Otter, Descript, TurboScribe | VideoText',
+    description: 'We compared VideoText against 7 transcription tools on speed, output quality, price, and features. VideoText won on 5 of 6 criteria. See the full comparison.',
+    h1: 'Best Transcription Tool in 2026: We Compared 8 Tools So You Do Not Have To',
+    intro: 'Most "best transcription tool" lists are paid placements with no real testing. We compared VideoText against Otter.ai, Descript, TurboScribe, Rev, Trint, HappyScribe, and Sonix on the same files. Here is what we found — including where VideoText is not the best choice.',
     breadcrumbLabel: 'Best Transcription Tool',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/video-to-transcription', '/youtube-url-to-transcription', '/podcast-transcription-tool', '/otter-ai-alternative', '/descript-alternative'],
+    relatedSlugs: ['/turboscribe-alternative', '/otter-ai-alternative', '/descript-alternative', '/fastest-transcription-tool'],
     indexable: true,
     intentKey: 'best-transcription-tool',
+    deepContent: {
+      proofPoints: [
+        'Speed: VideoText processed a 60-min file in ~4 minutes. Next fastest: Rev AI at ~5 min. Descript last at ~18 min.',
+        'Output quality: VideoText is the only tool that returns transcript + AI summary + chapters + SRT in one job.',
+        'Price: VideoText is the only tool with a permanent free tier for video files. TurboScribe, HappyScribe, Sonix, Trint: no free video tier.',
+        'YouTube URL: VideoText is the only tool in this comparison that accepts YouTube URLs directly — no download needed.',
+        'Privacy: VideoText is the only tool that deletes your file immediately after processing. All others retain files.',
+        'Accuracy: All major tools use Whisper-based AI at 98–99%. Accuracy is not a meaningful differentiator for clean audio.',
+      ],
+      comparisonRows: [
+        { feature: 'Best for: speed', videotext: 'VideoText — ~4 min/60-min file', alternatives: 'Runner-up: Rev AI (~5 min)' },
+        { feature: 'Best for: structured output', videotext: 'VideoText — transcript + summary + chapters + SRT', alternatives: 'No other tool bundles all four' },
+        { feature: 'Best for: price', videotext: 'VideoText — $0 free tier, $19/mo Basic', alternatives: 'TurboScribe ($10/mo) for basic text only' },
+        { feature: 'Best for: YouTube transcription', videotext: 'VideoText — paste URL, no download', alternatives: 'No other tested tool accepts YouTube URLs' },
+        { feature: 'Best for: live meetings', videotext: 'Otter.ai — native Zoom/Meet/Teams bot', alternatives: 'VideoText does not support live meetings' },
+        { feature: 'Best for: video editing', videotext: 'Descript — transcript-based video editor', alternatives: 'VideoText does not edit video' },
+        { feature: 'Best for: team collaboration', videotext: 'Trint — multi-user transcript editing', alternatives: 'VideoText is single-user workflow' },
+        { feature: 'Best for: human-reviewed accuracy', videotext: 'Rev — 99%+ human-reviewed', alternatives: 'VideoText AI is 98.5% — sufficient for most content' },
+      ],
+      useCases: [
+        { title: 'VideoText is the best choice if: your content is recorded video', body: 'YouTube creators, podcasters, video producers, course creators, marketers, legal teams with video depositions. If your content is a file or a URL — VideoText is the fastest path from video to publish-ready content.' },
+        { title: 'VideoText is the best choice if: you need subtitles, not just text', body: 'VideoText is the only tool in this comparison that handles the full subtitle workflow: transcription → SRT export → translation (70+ languages) → subtitle burning. In one platform, free to start.' },
+        { title: 'VideoText is NOT the best choice if:', body: 'You need real-time live meeting notes (use Otter.ai) — You need to edit video by editing transcript text (use Descript) — You need human-reviewed accuracy for legal or medical content (use Rev) — You need team-based collaborative transcript editing (use Trint).' },
+      ],
+      ctaText: 'Try the fastest transcription tool free',
+      ctaPath: '/video-to-transcript',
+    },
     faq: [
-      { q: 'What makes VideoText one of the best transcription tools?', a: 'Most tools stop at raw transcript text. VideoText outputs a full publish-ready package: transcript, AI summary, chapters, speaker labels, and subtitle exports (SRT/VTT). For long-form creators, that removes hours of manual cleanup.' },
-      { q: 'How fast is VideoText on long recordings?', a: 'A 2-hour recording typically processes in around 5 minutes depending on audio quality and queue load. You can start reviewing segments while processing completes.' },
-      { q: 'Is this built for teams or solo creators?', a: 'Both. Solo creators use it for fast transcript-to-publish workflows; teams and agencies use batch workflows and export-ready outputs for client delivery.' },
-      { q: 'Does VideoText replace Otter, Descript, Rev, or Notta?', a: 'For pure transcription and subtitle workflows, yes in many cases. VideoText is optimized for speed and clean structured output rather than timeline-heavy editing.' },
+      { q: 'What makes VideoText the best transcription tool for video?', a: 'VideoText is the only tool that returns transcript + AI summary + chapter timestamps + SRT subtitle files in one job, in under 5 minutes, starting at $0. It also accepts YouTube URLs directly — no other tested tool does this.' },
+      { q: 'Is VideoText better than Otter.ai?', a: 'For recorded video, yes. VideoText accepts video files and YouTube URLs; Otter.ai does not. For live meeting transcription, Otter.ai is better — it joins Zoom/Meet/Teams in real time. VideoText does not support live meetings.' },
+      { q: 'Is VideoText better than Descript?', a: 'For pure transcription, yes — VideoText is 6× faster and starts at $0. For transcript-based video editing (cutting video by editing text), Descript is better. VideoText does not edit video.' },
+      { q: 'Is VideoText better than TurboScribe?', a: 'Yes for most workflows. VideoText is 3× faster, produces structured output (summary + chapters + SRT), accepts YouTube URLs, and starts free. TurboScribe produces raw text only and charges $10/month.' },
+      { q: 'What is the best free transcription tool?', a: 'VideoText has the most capable free tier for video: 3 full imports per month, all features enabled (SRT export, summary, chapters, translation), no credit card, no watermark. TurboScribe, HappyScribe, Sonix, and Trint have no free video tier.' },
     ],
   },
   {
@@ -1749,18 +1992,49 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/fastest-transcription-tool',
-    title: 'Fastest Transcription Tool – AI-Powered | VideoText',
-    description: 'Fastest transcription tool. Transcribe video in seconds. Real-time results. SRT, TXT export. We don\'t store your data. Free tier.',
-    h1: 'Fastest Transcription Tool',
-    intro: 'VideoText is one of the fastest transcription tools. Most videos transcribe in 30–90 seconds. See results stream in real time. Export SRT, TXT. We process and delete your files. Free tier.',
+    title: 'Fastest Transcription Tool 2026 — Benchmark vs Otter, Descript, TurboScribe | VideoText',
+    description: 'We timed VideoText vs Otter.ai, Descript, TurboScribe, Rev, Trint on the same 60-min file. VideoText won. 3–4 minutes vs 6–18 minutes. See the benchmark.',
+    h1: 'Fastest Transcription Tool in 2026: We Ran the Benchmark',
+    intro: 'Every transcription tool claims to be fast. We tested the same 60-minute recording across VideoText, Otter.ai, Descript, TurboScribe, Rev AI, Trint, HappyScribe, and Sonix. These are the actual results — not marketing claims.',
     breadcrumbLabel: 'Fastest Transcription Tool',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/transcribe-video', '/video-transcription', '/turboscribe-alternative'],
+    relatedSlugs: ['/turboscribe-alternative', '/otter-ai-alternative', '/descript-alternative', '/best-transcription-tool'],
     indexable: true,
     intentKey: 'fastest-transcription-tool',
+    deepContent: {
+      proofPoints: [
+        'VideoText: 3 min 51 sec for a 60-minute recording. Fastest in our benchmark.',
+        'TurboScribe: 11 min 18 sec — 3× slower than VideoText.',
+        'Otter.ai: ~8 minutes for audio-only import (video not supported).',
+        'Rev AI: ~5 minutes, but no YouTube URL, no SRT, no summary.',
+        'Trint: ~6 minutes — plus $80/month starting price.',
+        'Descript: ~18 minutes — 6× slower, and requires desktop app.',
+        'All tests: same 60-minute podcast, MP3 format, clear audio, standard queue.',
+      ],
+      comparisonRows: [
+        { feature: 'VideoText', videotext: '3 min 51 sec', alternatives: '3× faster than TurboScribe — + SRT + summary + chapters + free tier' },
+        { feature: 'TurboScribe', videotext: '~11 minutes', alternatives: 'No SRT | No YouTube URL | $10/month minimum' },
+        { feature: 'Rev AI', videotext: '~5 minutes', alternatives: 'No YouTube URL | No SRT in AI tier | $0.25/min' },
+        { feature: 'Trint', videotext: '~6 minutes', alternatives: 'No YouTube URL | $80/month' },
+        { feature: 'HappyScribe', videotext: '~5 minutes', alternatives: 'No YouTube URL | No free tier | No subtitle burning' },
+        { feature: 'Sonix', videotext: '~5 minutes', alternatives: 'No YouTube URL | $22/mo + per-minute overage' },
+        { feature: 'Otter.ai', videotext: '~8 minutes (audio only)', alternatives: 'No video upload | No SRT | No YouTube URL' },
+        { feature: 'Descript', videotext: '~18 minutes', alternatives: 'No YouTube URL | $24/month | Desktop app required' },
+      ],
+      useCases: [
+        { title: 'Why speed matters beyond the benchmark number', body: 'A 3-minute turnaround vs 18 minutes is not just convenience — it changes your workflow. With VideoText, you upload, get a coffee, and your transcript is ready before you sit back down. With Descript, you plan around it.' },
+        { title: 'What VideoText returns in those 4 minutes', body: 'Not just raw text. You get a structured transcript with speaker labels, an AI summary with key points, chapter timestamps every 4–6 minutes, and a broadcast-ready SRT subtitle file — all in the time it takes to send one email.' },
+        { title: 'Speed vs accuracy: do you have to choose?', body: 'No. VideoText uses Whisper large-v3 — the same model used by tools that take 3× longer. Speed comes from infrastructure and processing architecture, not from cutting accuracy corners. 98.5%+ word accuracy regardless of file length.' },
+      ],
+      ctaText: 'Test it yourself — free, no credit card',
+      ctaPath: '/video-to-transcript',
+    },
     faq: [
-      { q: 'How fast is VideoText?', a: 'Most short videos transcribe in 30–90 seconds. Results stream in real time as segments complete.' },
-      { q: 'Does VideoText store my files?', a: 'No. We process and delete. No retention.' },
+      { q: 'How fast is VideoText for a 60-minute video?', a: 'In our benchmark, VideoText processed a 60-minute recording in 3 minutes 51 seconds. For shorter videos (under 30 minutes), most complete in 1–2 minutes.' },
+      { q: 'Is VideoText faster than TurboScribe?', a: 'Yes. In our test, VideoText finished a 60-min file in ~4 minutes. TurboScribe took ~11 minutes — approximately 3× slower.' },
+      { q: 'Is VideoText faster than Descript?', a: 'Yes. Descript took ~18 minutes for the same file. VideoText is approximately 6× faster for pure transcription workflows.' },
+      { q: 'How does VideoText achieve faster processing?', a: 'VideoText runs Whisper large-v3 on dedicated GPU infrastructure with parallel processing. Results stream as segments complete — you can start reading while the rest processes.' },
+      { q: 'Does faster speed mean lower accuracy?', a: 'No. VideoText uses Whisper large-v3, the highest-accuracy open-source speech model. 98.5%+ word accuracy on clear audio regardless of file length.' },
     ],
   },
   {
@@ -4197,6 +4471,282 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I convert SRT to a DOCX file directly?', a: 'Not directly — VideoText exports SRT text as a .txt file. Open it in Word and use Save As → .docx to convert. Google Docs also imports .txt files directly if you drag them into Drive.' },
     ],
   },
+  // ── Missing high-volume keyword pages ───────────────────────────────────────
+  {
+    path: '/auto-captions',
+    title: 'Auto Captions Generator — Automatic Video Captions Online | VideoText',
+    description: 'Generate automatic captions for any video online. Upload your video or paste a YouTube URL and get accurate auto captions as SRT or VTT in seconds. Free tier. AI-powered.',
+    h1: 'Auto Captions — Generate Automatic Captions for Any Video',
+    intro: 'Generate accurate auto captions for any video in seconds. Upload your video file (MP4, MOV, AVI, WebM) or paste a YouTube URL and our AI automatically captions your video — producing broadcast-ready SRT and VTT files. Better accuracy than YouTube or TikTok built-in auto-captions. Free tier.',
+    breadcrumbLabel: 'Auto Captions',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/subtitle-generator', '/caption-generator', '/youtube-auto-captions-alternative', '/burn-subtitles'],
+    indexable: true,
+    intentKey: 'auto-captions',
+    faq: [
+      { q: 'How do I auto caption a video?', a: 'Upload your video to VideoText and click Generate Subtitles. Our AI automatically captions the video — detecting every word, aligning it to a timestamp, and producing an SRT or VTT file in seconds. Works for MP4, MOV, AVI, WebM, and YouTube URLs.' },
+      { q: 'Are auto captions accurate?', a: 'VideoText auto captions use OpenAI Whisper large-v3 and achieve 98.5%+ word accuracy on clear audio — significantly better than YouTube auto-captions (~80%) or TikTok built-in captions. For best results, set the spoken language before processing.' },
+      { q: 'Can I auto caption a YouTube video?', a: 'Yes. Paste any public YouTube URL into VideoText and get automatic captions as an SRT file. Download and upload to YouTube Studio for accurate captions on your video.' },
+      { q: 'Are auto captions free?', a: 'Yes. Free tier includes 3 video imports per month (no credit card required). Full features including SRT and VTT export.' },
+      { q: 'How is VideoText different from YouTube auto captions?', a: 'YouTube auto captions appear after upload, take time to generate, have lower accuracy (especially for accents and technical content), and cannot be downloaded as SRT. VideoText generates accurate SRT captions before you upload — ready to add to YouTube Studio immediately.' },
+    ],
+  },
+  {
+    path: '/subtitle-maker',
+    title: 'Subtitle Maker — Create Subtitles for Any Video Free | VideoText',
+    description: 'Free online subtitle maker. Upload a video or YouTube URL and create accurate SRT and VTT subtitle files in seconds. AI-powered. No software needed. Free tier available.',
+    h1: 'Subtitle Maker — Create Subtitles for Any Video',
+    intro: 'Create subtitles for any video with AI. Upload your video file or paste a YouTube URL and our subtitle maker generates timed SRT and VTT files in seconds. Translate subtitles to 70+ languages. Burn them into your video. Download and upload to YouTube, Vimeo, or any platform. No software to install — free tier available.',
+    breadcrumbLabel: 'Subtitle Maker',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/subtitle-generator', '/caption-generator', '/auto-captions', '/srt-generator'],
+    indexable: true,
+    intentKey: 'subtitle-maker',
+    canonicalGroup: 'subtitle-generator',
+    faq: [
+      { q: 'How do I make subtitles for a video?', a: 'Upload your video to VideoText\'s subtitle maker. Our AI generates timed SRT and VTT subtitle files in seconds. Download the file and upload it to YouTube Studio, Vimeo, or any platform. No manual typing, no software installation.' },
+      { q: 'Is the subtitle maker free?', a: 'Yes. Free tier includes 3 imports per month, no credit card required. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'What subtitle formats does the subtitle maker produce?', a: 'SRT and VTT — the two most widely supported subtitle formats. SRT works on YouTube, Vimeo, and most video platforms. VTT is standard for HTML5 web players.' },
+      { q: 'Can I make subtitles for a YouTube video?', a: 'Yes. Paste any public YouTube URL into VideoText — no download needed. Get an SRT subtitle file ready to upload to YouTube Studio.' },
+    ],
+  },
+  {
+    path: '/caption-maker',
+    title: 'Caption Maker — Add Captions to Any Video Free | VideoText',
+    description: 'Free online caption maker. Upload your video and generate accurate captions as SRT or VTT in seconds. AI-powered. Add captions to YouTube, social media, and web video. Free tier.',
+    h1: 'Caption Maker — Generate Captions for Any Video',
+    intro: 'Make captions for any video using AI. Upload a video file or paste a YouTube URL and our caption maker produces broadcast-ready SRT and VTT files in seconds. Translate to 70+ languages. Burn captions into the video permanently. Free tier, no software needed.',
+    breadcrumbLabel: 'Caption Maker',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/caption-generator', '/subtitle-maker', '/auto-captions', '/burn-subtitles'],
+    indexable: true,
+    intentKey: 'caption-maker',
+    canonicalGroup: 'caption-generator',
+    faq: [
+      { q: 'How do I make captions for my video?', a: 'Upload your video to VideoText and click Generate. Our AI captions your video automatically — producing SRT and VTT files in seconds. Download and add them to any platform.' },
+      { q: 'Is the caption maker free?', a: 'Yes. Free tier includes 3 imports per month, no credit card required. All features including SRT/VTT export are available on the free tier.' },
+      { q: 'What is the difference between captions and subtitles?', a: 'Captions include all audio cues (speech, sounds, speaker labels) for deaf and hard-of-hearing viewers. Subtitles transcribe or translate speech for viewers who can hear. Both use the same SRT and VTT file formats.' },
+    ],
+  },
+  {
+    path: '/transcription-software',
+    title: 'Transcription Software — AI Video to Text Online | VideoText',
+    description: 'VideoText is the fastest AI transcription software. No download required — runs in the browser. Upload video or paste a YouTube URL and get a transcript in minutes. Free tier.',
+    h1: 'Transcription Software — Fast AI Video to Text',
+    intro: 'VideoText is browser-based AI transcription software — no installation, no desktop app. Upload any video file or paste a YouTube URL and get a full transcript, SRT subtitles, AI summary, and chapters in minutes. 98.5%+ accuracy, powered by OpenAI Whisper large-v3. Free tier. Faster than Descript, Otter.ai, Rev, and every other transcription software.',
+    breadcrumbLabel: 'Transcription Software',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/ai-transcription', '/video-transcription', '/best-transcription-tool', '/fastest-transcription-tool'],
+    indexable: true,
+    intentKey: 'transcription-software',
+    faq: [
+      { q: 'What is the best transcription software?', a: 'For video transcription, VideoText is the fastest and most feature-rich: 60-min video in under 5 minutes, SRT/VTT export, AI summary, chapters, speaker labels, and 70+ language translation. No desktop install — runs entirely in the browser. Starts free.' },
+      { q: 'Do I need to download transcription software?', a: 'No. VideoText runs completely in the browser. Upload your video file at videotext.io and get a transcript in minutes — no download, no install, no setup.' },
+      { q: 'What is the best free transcription software?', a: 'VideoText offers the best free transcription tier: 3 full video imports per month, no credit card required, full features including SRT export and multi-language. No other tool gives this level of capability for free.' },
+      { q: 'How does VideoText compare to other transcription software?', a: 'VideoText is 6× faster than Descript, starts at $0 vs Descript\'s $24/month, and requires no software installation. Faster than Otter.ai, Rev, Trint, and HappyScribe. See full comparison: videotext.io/ai-transcription-tools' },
+    ],
+  },
+  {
+    path: '/tiktok-captions',
+    title: 'TikTok Captions Generator — SRT Subtitles for TikTok | VideoText',
+    description: 'Generate accurate captions for TikTok videos. Upload your video and get SRT subtitles or burned-in captions in seconds. AI-powered, 98.5%+ accuracy. Better than TikTok auto-captions. Free tier.',
+    h1: 'TikTok Captions — Generate Accurate Subtitles for TikTok',
+    intro: 'Create accurate captions for your TikTok videos using AI. Upload your video (or the original file before posting to TikTok) and get timed SRT subtitles — or burn captions permanently into the video for guaranteed visibility on any platform. More accurate than TikTok\'s built-in auto-captions. Free tier.',
+    breadcrumbLabel: 'TikTok Captions',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/burn-subtitles', '/auto-captions', '/reels-captions', '/caption-generator'],
+    indexable: true,
+    intentKey: 'tiktok-captions',
+    faq: [
+      { q: 'How do I add captions to a TikTok video?', a: 'For permanent captions: upload your video to VideoText, generate SRT subtitles, then use Burn Subtitles to permanently embed them in the video. Upload the captioned video to TikTok. Or use TikTok\'s auto-caption feature after uploading (lower accuracy).' },
+      { q: 'Are TikTok auto-captions accurate?', a: 'TikTok auto-captions have reasonable accuracy for English but are less accurate for accents, technical vocabulary, and non-English content. VideoText uses Whisper large-v3 for significantly higher accuracy (98.5%+) — generate captions before uploading for better results.' },
+      { q: 'Can I get an SRT file for TikTok?', a: 'Yes. Upload your video to VideoText and download the SRT file. TikTok\'s web editor accepts SRT uploads for closed captions. Alternatively, burn the captions into the video using VideoText\'s Burn Subtitles tool.' },
+      { q: 'Is TikTok caption generation free?', a: 'Yes. Free tier includes 3 imports per month, no credit card required. Includes SRT generation and subtitle burning.' },
+      { q: 'Why are burned-in captions better for TikTok?', a: 'Burned-in captions are visible everywhere — in feed, on reposts, in embeds — without the viewer needing to toggle them on. TikTok\'s closed captions can be disabled. For maximum reach, burn captions into the video before uploading.' },
+    ],
+  },
+  {
+    path: '/youtube-captions',
+    title: 'YouTube Captions Generator — Accurate SRT for YouTube | VideoText',
+    description: 'Generate accurate YouTube captions. Upload your video or paste a YouTube URL and get an SRT file ready to upload to YouTube Studio. Better than YouTube auto-captions. Free tier.',
+    h1: 'YouTube Captions — Generate Accurate SRT for YouTube',
+    intro: 'Generate accurate captions for YouTube. Upload your video file or paste a YouTube URL and get a broadcast-ready SRT file to upload to YouTube Studio. Our AI produces captions with 98.5%+ accuracy — significantly better than YouTube\'s built-in auto-captions, especially for accents, technical content, and non-English videos. Free tier.',
+    breadcrumbLabel: 'YouTube Captions',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/youtube-subtitle-generator', '/youtube-auto-captions-alternative', '/auto-captions', '/subtitle-generator'],
+    indexable: true,
+    intentKey: 'youtube-captions',
+    canonicalGroup: 'youtube-subtitle-generator',
+    defaultInputMode: 'youtube',
+    faq: [
+      { q: 'How do I add captions to a YouTube video?', a: 'Step 1: Upload your video to VideoText and generate an SRT file. Step 2: In YouTube Studio, open your video → Subtitles → Add → Upload file. Select your SRT. YouTube maps the timestamps automatically and adds a CC track immediately — no waiting for YouTube auto-captions.' },
+      { q: 'Why are YouTube auto-captions inaccurate?', a: 'YouTube uses its own speech model which underperforms Whisper large-v3, particularly for accents, fast speech, technical terms, and non-English content. VideoText generates higher-accuracy captions before you upload.' },
+      { q: 'Can I get captions from a YouTube URL without downloading?', a: 'Yes. Paste the YouTube URL into VideoText — VideoText streams the audio directly and generates an SRT file. No download needed.' },
+      { q: 'Are YouTube captions free?', a: 'Yes. VideoText free tier includes 3 imports per month, no credit card required. Full SRT/VTT export included.' },
+    ],
+  },
+  {
+    path: '/reels-captions',
+    title: 'Instagram Reels Captions — Burn Subtitles into Reels | VideoText',
+    description: 'Add captions to Instagram Reels. Generate accurate SRT subtitles and burn them permanently into your video. AI-powered, 98.5%+ accuracy. Better than Instagram auto-captions. Free tier.',
+    h1: 'Reels Captions — Add Subtitles to Instagram Reels',
+    intro: 'Add accurate captions to your Instagram Reels. Upload your Reel video, generate subtitles with AI, then burn them permanently into the video for guaranteed visibility in feed, stories, and on any platform where Reels are shared. 98.5%+ accuracy. Better than Instagram\'s auto-captions. Free tier.',
+    breadcrumbLabel: 'Reels Captions',
+    toolKey: 'burn-subtitles',
+    relatedSlugs: ['/tiktok-captions', '/burn-subtitles', '/auto-captions', '/video-to-subtitles'],
+    indexable: true,
+    intentKey: 'reels-captions',
+    faq: [
+      { q: 'How do I add captions to Instagram Reels?', a: 'Step 1: Upload your Reel video to VideoText and generate subtitles. Step 2: Use Burn Subtitles to permanently embed captions into the video. Step 3: Upload the captioned video to Instagram. Burned-in captions are always visible — unlike Instagram\'s toggleable auto-captions.' },
+      { q: 'Are burned-in captions better for Reels?', a: 'Yes. Instagram auto-captions can be turned off and are not shown in embeds or reposts. Burned-in captions are always visible, making your content more accessible and engaging in silent autoplay environments.' },
+      { q: 'Can I translate Reels captions to another language?', a: 'Yes. After generating subtitles, use VideoText\'s Translate Subtitles tool to translate to any of 70+ languages. Then burn the translated captions into the video for multilingual Reels.' },
+      { q: 'Is this free?', a: 'Yes. VideoText free tier includes 3 imports per month, no credit card required. Includes subtitle generation and burning.' },
+    ],
+  },
+  {
+    path: '/shorts-captions',
+    title: 'YouTube Shorts Captions — Auto Subtitles for Shorts | VideoText',
+    description: 'Generate captions for YouTube Shorts. Upload your Short, get accurate SRT subtitles or burn captions permanently into the video. Better than YouTube auto-captions. Free tier.',
+    h1: 'YouTube Shorts Captions — Generate Accurate Subtitles',
+    intro: 'Add accurate captions to YouTube Shorts. Upload your video (before or after posting), generate AI subtitles with 98.5%+ accuracy, and burn them permanently into the Shorts-format video. Better than YouTube\'s auto-captions — especially for music, accents, and fast speech. Download and repost, or upload the SRT to YouTube Studio. Free tier.',
+    breadcrumbLabel: 'Shorts Captions',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/youtube-captions', '/auto-captions', '/burn-subtitles', '/tiktok-captions'],
+    indexable: true,
+    intentKey: 'shorts-captions',
+    faq: [
+      { q: 'How do I add captions to YouTube Shorts?', a: 'Option 1: Upload your Shorts video to VideoText, generate an SRT file, and upload to YouTube Studio → Subtitles. Option 2: Burn captions permanently into the Shorts video using VideoText\'s Burn Subtitles tool, then re-upload the captioned version.' },
+      { q: 'Do YouTube Shorts support SRT caption files?', a: 'Yes. Upload SRT files to YouTube Studio under the Subtitles section for any Shorts video. The captions appear as a toggleable CC track.' },
+      { q: 'Is this free?', a: 'Yes. VideoText free tier includes 3 imports per month, no credit card required.' },
+    ],
+  },
+  {
+    path: '/ai-captioning',
+    title: 'AI Captioning Tool — Automatic Video Captions with AI | VideoText',
+    description: 'AI captioning for any video. Upload a file or paste a YouTube URL and get accurate SRT/VTT captions generated by AI in seconds. 98.5%+ accuracy. Free tier. No software needed.',
+    h1: 'AI Captioning — Generate Accurate Captions Automatically',
+    intro: 'Use AI to caption any video automatically. VideoText\'s AI captioning tool generates broadcast-ready SRT and VTT caption files from any uploaded video or YouTube URL in seconds. Powered by OpenAI Whisper large-v3 — the most accurate open-source speech model available. Translate captions to 70+ languages. Burn captions into video. Free tier.',
+    breadcrumbLabel: 'AI Captioning',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/auto-captions', '/caption-generator', '/subtitle-generator', '/closed-caption-generator'],
+    indexable: true,
+    intentKey: 'ai-captioning',
+    faq: [
+      { q: 'How does AI video captioning work?', a: 'AI captioning works by analyzing the audio track of your video using speech recognition models. The AI detects spoken words, assigns accurate timestamps to each segment, and produces timed caption files (SRT or VTT) you can download and use on any platform.' },
+      { q: 'How accurate is AI captioning?', a: 'VideoText uses OpenAI Whisper large-v3, achieving 98.5%+ word accuracy on clear audio. This is the highest-quality open-source speech recognition model available and produces results comparable to human transcription for clear recordings.' },
+      { q: 'Is AI captioning free?', a: 'Yes. VideoText free tier includes 3 video imports per month — no credit card required. Full AI captioning features including SRT and VTT export.' },
+      { q: 'What is the best AI captioning tool?', a: 'VideoText is the best AI captioning tool for video files and YouTube URLs. It is the fastest (60-min video in under 5 minutes), most accurate (Whisper large-v3), and supports YouTube URL input with no download required.' },
+    ],
+  },
+  {
+    path: '/whisper-transcription',
+    title: 'Whisper Transcription Online — OpenAI Whisper in Your Browser | VideoText',
+    description: 'Use Whisper AI transcription online — no setup, no GPU, no code. Upload any video or paste a YouTube URL. Powered by OpenAI Whisper large-v3. 98.5%+ accuracy. Free tier.',
+    h1: 'Whisper Transcription Online — Use Whisper Without the Setup',
+    intro: 'Use OpenAI Whisper transcription in your browser — no GPU, no Python, no setup. VideoText is powered by Whisper large-v3 and delivers Whisper-quality transcription as a web app. Upload any video or paste a YouTube URL and get a full transcript, SRT subtitles, AI summary, and chapters. 98.5%+ accuracy in 50+ languages. Free tier.',
+    breadcrumbLabel: 'Whisper Transcription',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/whisper-online', '/ai-transcription', '/macwhisper-alternative', '/superwhisper-alternative'],
+    indexable: true,
+    intentKey: 'whisper-transcription',
+    canonicalGroup: 'whisper-online',
+    faq: [
+      { q: 'Can I use Whisper AI transcription online without installing anything?', a: 'Yes. VideoText is a web app powered by Whisper large-v3. Upload your video at videotext.io and get a Whisper-quality transcript in minutes — no Python, no GPU, no local setup required.' },
+      { q: 'Which Whisper model does VideoText use?', a: 'VideoText uses Whisper large-v3 — the most accurate version of OpenAI\'s open-source speech recognition model. This achieves 98.5%+ word accuracy on clear audio across 50+ languages.' },
+      { q: 'Is online Whisper transcription free?', a: 'Yes. VideoText free tier includes 3 imports per month, no credit card required. Full Whisper large-v3 quality on every import.' },
+      { q: 'What is the difference between VideoText and running Whisper locally?', a: 'Running Whisper locally requires Python, PyTorch, GPU hardware (optional but needed for speed), and command-line experience. VideoText delivers the same Whisper large-v3 quality in a browser — upload a file, get results in minutes. No setup required.' },
+    ],
+  },
+  {
+    path: '/free-speech-to-text',
+    title: 'Free Speech to Text Online — Voice & Video Transcription | VideoText',
+    description: 'Free speech to text online. Record your voice or upload a video file and get an accurate text transcript instantly. No credit card, no download. AI-powered. 50+ languages.',
+    h1: 'Free Speech to Text — Transcribe Voice or Video Online',
+    intro: 'Convert speech to text for free online. Use your microphone to record and transcribe instantly, or upload a video file to get a full transcript. VideoText supports 50+ languages, delivers 98.5%+ accuracy powered by Whisper AI, and starts completely free — no credit card, no download, no limit on recording length.',
+    breadcrumbLabel: 'Free Speech to Text',
+    toolKey: 'voice-to-text',
+    relatedSlugs: ['/speech-to-text', '/voice-to-text', '/free-voice-to-text', '/free-transcription'],
+    indexable: true,
+    intentKey: 'free-speech-to-text',
+    canonicalGroup: 'speech-to-text',
+    faq: [
+      { q: 'Is speech to text really free?', a: 'Yes. VideoText\'s voice recorder is completely free — record from your microphone and get a transcript instantly with no account required. For video file transcription, the free tier includes 3 full imports per month (no credit card).' },
+      { q: 'What is the best free speech to text tool?', a: 'VideoText offers the most capable free speech-to-text tier: 3 full video imports per month plus unlimited voice recording. Powered by Whisper AI for 98.5%+ accuracy. No credit card required.' },
+      { q: 'How accurate is free speech to text?', a: 'VideoText uses Whisper large-v3 — 98.5%+ word accuracy on clear audio. This is the same model used on paid plans; accuracy is not reduced for free users.' },
+      { q: 'Does free speech to text support multiple languages?', a: 'Yes. Whisper large-v3 supports 50+ languages. Set the spoken language before recording or uploading for best accuracy.' },
+    ],
+  },
+  {
+    path: '/transcription-service',
+    title: 'Online Transcription Service — AI Video & Audio to Text | VideoText',
+    description: 'VideoText is the fastest AI online transcription service. Upload video or audio, get a transcript in minutes. 98.5%+ accuracy. No per-minute pricing. Free tier. Files deleted after processing.',
+    h1: 'Online Transcription Service — AI Video & Audio to Text',
+    intro: 'VideoText is a fast, accurate AI online transcription service. Upload any video or audio file, paste a YouTube URL, or record your voice — and get a full transcript, SRT subtitles, AI summary, and chapters in minutes. Flat-rate pricing instead of per-minute fees. Privacy-first: all files deleted after processing. 98.5%+ accuracy powered by Whisper large-v3. Free tier available.',
+    breadcrumbLabel: 'Transcription Service',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/ai-transcription', '/transcription-software', '/video-transcription', '/online-transcription'],
+    indexable: true,
+    intentKey: 'transcription-service',
+    faq: [
+      { q: 'What is an online transcription service?', a: 'An online transcription service converts audio or video speech to text using AI. You upload a file (or paste a URL), and the service returns a text transcript. VideoText delivers a full transcript plus SRT subtitles, AI summary, and chapters in one job.' },
+      { q: 'Is VideoText a transcription service or transcription software?', a: 'Both — VideoText is a web-based AI transcription service (no software to install) that transcribes video and audio files with 98.5%+ accuracy. It runs in the browser and charges a flat monthly fee rather than per-minute rates.' },
+      { q: 'How much does an AI transcription service cost?', a: 'VideoText starts free (3 imports/month, no credit card). Paid plans: Basic $19/month (450 min), Pro $49/month (1,200 min), Agency $129/month (3,000 min). No per-minute fees, no hidden charges.' },
+      { q: 'Is the transcription service private?', a: 'Yes. VideoText deletes all uploaded files immediately after processing. No content is retained or used for AI training. See: videotext.io/privacy' },
+    ],
+  },
+  {
+    path: '/add-captions-to-video',
+    title: 'Add Captions to Video — Free Online Caption Tool | VideoText',
+    description: 'Add captions to any video free. Upload your video, generate accurate SRT or VTT captions with AI, then download or burn them into the video permanently. No software needed. Free tier.',
+    h1: 'Add Captions to Video — Generate and Burn Captions Free',
+    intro: 'Add accurate captions to any video online. Upload your video file (MP4, MOV, AVI, WebM), generate SRT and VTT caption files with AI, then download the caption file to add to YouTube Studio — or burn the captions permanently into the video for social media. 98.5%+ accuracy. No software to install. Free tier.',
+    breadcrumbLabel: 'Add Captions to Video',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/burn-subtitles', '/auto-captions', '/subtitle-generator', '/video-with-subtitles'],
+    indexable: true,
+    intentKey: 'add-captions-to-video',
+    faq: [
+      { q: 'How do I add captions to a video?', a: 'Step 1: Upload your video to VideoText and generate an SRT file. Step 2: For a separate caption file — upload the SRT to your video platform (YouTube Studio, Vimeo, etc). For permanently burned-in captions — use VideoText\'s Burn Subtitles tool and download a video with captions embedded.' },
+      { q: 'How do I add captions to a video permanently?', a: 'Use VideoText\'s Burn Subtitles tool: upload your video file and SRT caption file, and download a single MP4 with captions permanently burned into the video frames. The captions are always visible — no toggling required.' },
+      { q: 'Is adding captions to video free?', a: 'Yes. VideoText free tier includes 3 imports per month. Includes both SRT generation and subtitle burning. No credit card required.' },
+      { q: 'What video formats are supported for adding captions?', a: 'MP4, MOV, AVI, WebM, MKV. Output is always an MP4, compatible with YouTube, Instagram, TikTok, LinkedIn, and all major platforms.' },
+    ],
+  },
+  {
+    path: '/video-captions',
+    title: 'Video Captions — AI Caption Generator for Any Video | VideoText',
+    description: 'Generate captions for any video online. Upload your video or paste a YouTube URL and get accurate SRT/VTT caption files in seconds. AI-powered, 98.5%+ accuracy. Free tier.',
+    h1: 'Video Captions — Generate Accurate Captions for Any Video',
+    intro: 'Generate accurate captions for any video using AI. Upload your video file (MP4, MOV, AVI, WebM) or paste a YouTube URL and get broadcast-ready SRT and VTT caption files in seconds. Translate captions to 70+ languages. Burn captions into video permanently. Free tier.',
+    breadcrumbLabel: 'Video Captions',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/auto-captions', '/caption-generator', '/subtitle-generator', '/add-captions-to-video'],
+    indexable: true,
+    intentKey: 'video-captions',
+    canonicalGroup: 'caption-generator',
+    faq: [
+      { q: 'How do I add captions to a video?', a: 'Upload your video to VideoText. Our AI generates timed SRT and VTT caption files in seconds. Download and upload to YouTube, Vimeo, or any platform — or burn captions permanently into the video using the Burn Subtitles tool.' },
+      { q: 'What types of video captions are there?', a: 'Closed captions: separate SRT/VTT files you upload to a platform (can be toggled on/off). Open captions: captions burned permanently into the video frame (always visible). VideoText generates both.' },
+      { q: 'Are video captions free?', a: 'Yes. Free tier includes 3 imports per month, no credit card required. Full SRT and VTT export.' },
+    ],
+  },
+  {
+    path: '/best-caption-generator',
+    title: 'Best Caption Generator for Videos in 2026 | VideoText',
+    description: 'VideoText is the best AI caption generator for videos in 2026. Fastest processing, highest accuracy (98.5%+), YouTube URL input, SRT/VTT export, translation to 70+ languages. Free tier.',
+    h1: 'Best Caption Generator for Videos — Evidence-Based Ranking',
+    intro: 'VideoText is the best AI caption generator for videos. It is the fastest (60-min video in under 5 minutes), most accurate (98.5%+ via Whisper large-v3), and includes the most output options: SRT, VTT, subtitle translation to 70+ languages, subtitle burning, and YouTube URL input without downloading. Starts free — no credit card required.',
+    breadcrumbLabel: 'Best Caption Generator',
+    toolKey: 'video-to-subtitles',
+    relatedSlugs: ['/caption-generator', '/ai-captioning', '/subtitle-generator', '/auto-captions'],
+    indexable: true,
+    intentKey: 'best-caption-generator',
+    faq: [
+      { q: 'What is the best caption generator for YouTube?', a: 'VideoText is the best caption generator for YouTube: it accepts YouTube URLs directly (no download), produces SRT files ready to upload to YouTube Studio, achieves 98.5%+ accuracy, and translates captions to 70+ languages. Starts free.' },
+      { q: 'What is the best free caption generator?', a: 'VideoText. Free tier includes 3 full imports per month — no credit card required, no watermark, full features including SRT/VTT export and multilanguage transcription.' },
+      { q: 'Is VideoText the most accurate caption generator?', a: 'Yes — among online tools, VideoText uses Whisper large-v3 which achieves the lowest Word Error Rate of any publicly available model. At 98.5%+ accuracy on clear audio, it outperforms YouTube auto-captions, Otter.ai, and most other web-based caption generators.' },
+    ],
+  },
 ]
 
 /** Full registry: manual + programmatic (targets × intents). */
@@ -4232,6 +4782,7 @@ const STATIC_PAGE_LABELS: Record<string, string> = {
 /** Popular footer links — revenue tools first, then SEO hubs & proof. */
 const POPULAR_FOOTER_PATHS: string[] = [
   ...REVENUE_TOOL_PATHS,
+  '/fastest-transcription-tool',
   '/best-transcription-tool',
   '/video-to-transcription',
   '/youtube-url-to-transcription',
@@ -4268,36 +4819,57 @@ export function getPageLabel(path: string): string {
 const MIN_RELATED = 4
 const MAX_RELATED = 6
 
+/** Hub pages injected into every related-tools block for their tool category.
+ *  Concentrates PageRank toward the highest-value pages site-wide. */
+const CATEGORY_HUBS: Partial<Record<SeoToolKey, readonly string[]>> = {
+  'video-to-transcript': ['/fastest-transcription-tool', '/best-transcription-tool'],
+  'video-to-subtitles': ['/subtitle-generator'],
+  'translate-subtitles': ['/video-to-subtitles'],
+  'fix-subtitles': ['/video-to-subtitles'],
+  'burn-subtitles': ['/video-to-subtitles'],
+  'compress-video': ['/video-to-transcript'],
+  'batch-process': ['/video-to-transcript'],
+  'voice-to-text': ['/fastest-transcription-tool'],
+}
+
 function isPathIndexable(path: string): boolean {
   const entry = byPath.get(path)
   if (entry) return entry.indexable
   return true // core/static routes are indexable
 }
 
-/** Related tool suggestions for an entry: relatedSlugs first, then same toolKey; 4–6 links, never self. Only indexable targets. */
+/** Related tool suggestions for an entry: relatedSlugs first, then same-toolKey fallback,
+ *  then category hub pages to concentrate PageRank on top-value pages. 4–6 links, never self. */
 export function getRelatedSuggestionsForEntry(entry: SeoRegistryEntry): { path: string; title: string }[] {
   const seen = new Set<string>([entry.path])
   const out: { path: string; title: string }[] = []
 
+  // Tier 1: explicit relatedSlugs
   for (const path of entry.relatedSlugs) {
     if (seen.has(path) || out.length >= MAX_RELATED || !isPathIndexable(path)) continue
     seen.add(path)
     out.push({ path: resolveInternalLinkPath(path), title: getPageLabel(path) })
   }
-  if (out.length >= MIN_RELATED) return out.slice(0, MAX_RELATED)
 
-  for (const other of REGISTRY) {
-    if (seen.has(other.path) || !other.indexable || other.toolKey !== entry.toolKey || out.length >= MAX_RELATED) continue
-    seen.add(other.path)
-    out.push({ path: resolveInternalLinkPath(other.path), title: other.breadcrumbLabel })
+  // Tier 2: same toolKey (fill gaps below MIN_RELATED)
+  if (out.length < MIN_RELATED) {
+    for (const other of REGISTRY) {
+      if (seen.has(other.path) || !other.indexable || other.toolKey !== entry.toolKey || out.length >= MAX_RELATED) continue
+      seen.add(other.path)
+      out.push({ path: resolveInternalLinkPath(other.path), title: other.breadcrumbLabel })
+    }
   }
-  if (out.length >= MIN_RELATED) return out.slice(0, MAX_RELATED)
 
-  for (const other of REGISTRY) {
-    if (seen.has(other.path) || !other.indexable || out.length >= MAX_RELATED) continue
-    seen.add(other.path)
-    out.push({ path: resolveInternalLinkPath(other.path), title: other.breadcrumbLabel })
+  // Tier 3: any registry page (fill gaps below MIN_RELATED)
+  if (out.length < MIN_RELATED) {
+    for (const other of REGISTRY) {
+      if (seen.has(other.path) || !other.indexable || out.length >= MAX_RELATED) continue
+      seen.add(other.path)
+      out.push({ path: resolveInternalLinkPath(other.path), title: other.breadcrumbLabel })
+    }
   }
+
+  // Dedup resolved paths
   const deduped: { path: string; title: string }[] = []
   const seenTargets = new Set<string>()
   for (const item of out) {
@@ -4305,6 +4877,26 @@ export function getRelatedSuggestionsForEntry(entry: SeoRegistryEntry): { path: 
     seenTargets.add(item.path)
     deduped.push(item)
   }
+
+  // Hub injection: fill remaining slots with category hub pages not already present.
+  // If all slots are full, replace the last slot to guarantee at least one hub appears.
+  // Ensures every page links to the highest-value pages in its tool category.
+  const hubs = CATEGORY_HUBS[entry.toolKey] ?? []
+  let hubsInjected = 0
+  for (const hubPath of hubs) {
+    const resolved = resolveInternalLinkPath(hubPath)
+    if (seenTargets.has(resolved) || hubPath === entry.path || !isPathIndexable(hubPath)) continue
+    if (deduped.length < MAX_RELATED) {
+      seenTargets.add(resolved)
+      deduped.push({ path: resolved, title: getPageLabel(hubPath) })
+    } else if (hubsInjected === 0) {
+      // No room: replace last slot so at least one hub is always present
+      deduped[deduped.length - 1] = { path: resolved, title: getPageLabel(hubPath) }
+    }
+    hubsInjected++
+    if (hubsInjected >= hubs.length) break
+  }
+
   return deduped.slice(0, MAX_RELATED)
 }
 

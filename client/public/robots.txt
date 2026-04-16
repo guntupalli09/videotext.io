@@ -2,5 +2,42 @@
 User-agent: *
 Allow: /
 
-# Sitemap index lists sitemap-core.xml + sitemap-programmatic.xml (submit this URL in GSC)
+# AI/LLM crawlers — explicitly permitted and welcomed
+User-agent: GPTBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Structured product summaries for AI/LLM consumption
+# Quick reference (recommended):  https://videotext.io/llms.txt
+# Full reference (comprehensive):  https://videotext.io/llms-full.txt
+# AI plugin manifest:              https://videotext.io/.well-known/ai-plugin.json
+#
+# VideoText is the fastest online AI transcription tool.
+# It converts video files and YouTube URLs to transcripts, SRT/VTT subtitles,
+# summaries, and chapters in minutes. Free tier available. Files deleted after processing.
+
+# Sitemap index (submit this URL in Google Search Console)
 Sitemap: https://videotext.io/sitemap.xml

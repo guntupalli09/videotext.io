@@ -131,8 +131,8 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
         breadcrumbLabel: h1Tmpl(titleCase),
         toolKey,
         relatedSlugs: toolKey === 'video-to-transcript'
-          ? ['/video-to-transcript', '/youtube-to-transcript', '/podcast-transcript']
-          : ['/video-to-subtitles', '/subtitle-generator', '/srt-generator'],
+          ? ['/fastest-transcription-tool', '/best-transcription-tool', '/video-to-transcript', '/youtube-to-transcript']
+          : ['/video-to-subtitles', '/subtitle-generator', '/fastest-transcription-tool', '/srt-generator'],
         indexable: true,
         intentKey,
         defaultInputMode: slug.includes('youtube') ? 'youtube' : undefined,
