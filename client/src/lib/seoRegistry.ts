@@ -43,6 +43,14 @@ export interface SeoDeepContent {
   ctaPath?: string
 }
 
+export interface SeoTutorialContent {
+  steps?: SeoWorkflowStep[]
+  formatExample?: string[]
+  commonMistakes?: string[]
+  ctaText?: string
+  ctaPath?: string
+}
+
 export type SeoToolKey =
   | 'video-to-transcript'
   | 'video-to-subtitles'
@@ -84,6 +92,8 @@ export interface SeoRegistryEntry {
   defaultInputMode?: 'youtube'
   /** Optional deep content sections for high-priority ranking pages. */
   deepContent?: SeoDeepContent
+  /** Optional tutorial blocks for instructional landing pages (e.g. how-to pages). */
+  tutorialContent?: SeoTutorialContent
 }
 
 const MANUAL_REGISTRY: SeoRegistryEntry[] = [
@@ -309,7 +319,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Convert meeting recordings to text in seconds. Upload a video, get a transcript, then view it in English, Hindi, Telugu, Spanish, Chinese, or Russian. Use Speakers and Summary for who said what and key points.',
     breadcrumbLabel: 'Meeting Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/youtube-to-transcript', '/video-to-subtitles'],
+    relatedSlugs: ['/google-meet-transcript', '/zoom-meeting-transcript', '/teams-meeting-transcript', '/video-to-subtitles'],
     indexable: true,
     intentKey: 'meeting-transcript',
     faq: [
@@ -329,7 +339,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Get video transcripts with speaker-style grouping. Transcribe, then open the Speakers branch and optionally view the transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian.',
     breadcrumbLabel: 'Speaker Diarization',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/video-to-subtitles'],
+    relatedSlugs: ['/google-meet-transcript', '/meeting-transcript', '/video-to-subtitles'],
     indexable: true,
     intentKey: 'speaker-diarization',
     faq: [
@@ -896,18 +906,55 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     ],
   },
   {
-    path: '/zoom-recording-transcript',
-    title: 'Zoom Recording Transcript – Convert Calls to Text | VideoText',
+    path: '/zoom-meeting-transcript',
+    title: 'Zoom Meeting Transcript in Minutes | VideoText',
     description:
-      'Transcribe Zoom recordings to text. Upload your Zoom MP4 and get a transcript with speaker labels, action items, and chapter navigation. Free. No Zoom integration required.',
-    h1: 'Zoom Recording Transcript — Convert Calls to Text',
+      'Turn any Zoom meeting recording into a transcript in minutes. Download the Zoom recording, upload it here, and get text, subtitles, summaries, and exports — no bot required.',
+    h1: 'Zoom Meeting Transcript',
     intro:
-      'Transcribe any Zoom recording to text in seconds. Download your meeting as MP4 from Zoom, upload it here, and get a full transcript. Use the Speakers branch for who-said-what, Summary for action items and decisions, and Chapters to jump by section. No Zoom account integration required. Free tier.',
-    breadcrumbLabel: 'Zoom Recording Transcript',
+      'Transcribe Zoom meeting recordings with a post-meeting upload workflow: download the Zoom file, upload it here, and get transcript text plus structured outputs. No live bot joining, no Zoom integration setup.',
+    breadcrumbLabel: 'Zoom Meeting Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-transcript', '/google-meet-transcript', '/teams-meeting-transcript', '/speaker-diarization'],
+    relatedSlugs: ['/meeting-recording-to-transcript', '/meeting-transcription-tool', '/google-meet-transcript', '/speaker-diarization'],
     indexable: true,
-    intentKey: 'zoom-recording-transcript',
+    intentKey: 'zoom-meeting-transcript',
+    deepContent: {
+      proofPoints: [
+        'Built for Zoom recording files after the meeting ends — not for live meeting bots.',
+        'Upload Zoom cloud/local MP4 recordings directly; no format conversion is usually required.',
+        'Single workflow output: transcript text, speaker-labeled view, summaries, subtitles, and exports.',
+      ],
+      workflowSteps: [
+        {
+          title: '1. Record your meeting in Zoom',
+          detail: 'Use Zoom cloud or local recording as usual. This page is for the recording file after the call.',
+        },
+        {
+          title: '2. Download the Zoom recording',
+          detail: 'Get the MP4 from Zoom cloud recordings or your local Zoom recording folder.',
+        },
+        {
+          title: '3. Upload for transcript + outputs',
+          detail: 'Upload the file here to generate transcript text, summary-ready notes, subtitles, and exportable files.',
+        },
+      ],
+      outputExamples: [
+        {
+          title: 'Searchable Zoom meeting transcript',
+          body: 'Get full transcript text you can scan quickly for decisions, blockers, and follow-ups.',
+        },
+        {
+          title: 'Speaker-separated conversation view',
+          body: 'Use speaker labeling to review who said what during long discussions and handoffs.',
+        },
+        {
+          title: 'Subtitles + exports',
+          body: 'Download subtitle and transcript exports for downstream documentation, recaps, and publishing workflows.',
+        },
+      ],
+      ctaText: 'Transcribe Zoom meeting',
+      ctaPath: '/video-to-transcript?source=zoom-meeting',
+    },
     faq: [
       { q: 'How do I transcribe a Zoom recording to text?', a: 'Download your Zoom meeting as an MP4 file — from Zoom\'s cloud recording page or the local Zoom recordings folder on your computer. Upload the MP4 here and our AI produces a full text transcript. Most 60-minute Zoom calls transcribe in 5–8 minutes. No Zoom account connection or integration is required.' },
       { q: 'Does it label speakers from a Zoom call?', a: 'Yes. After transcribing, open the Speakers branch to see the transcript organized by speaker turn (Speaker 1, Speaker 2, etc.). This works well for Zoom calls with two to six participants. For the clearest speaker separation, use a Zoom recording where each participant has a separate audio track if available.' },
@@ -916,6 +963,49 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does it work without Zoom\'s built-in transcription feature?', a: 'Yes. Zoom\'s built-in transcription requires a Business or Enterprise account and must be enabled before the meeting. VideoText works from any Zoom MP4 recording regardless of your Zoom plan — upload the file and get a transcript immediately.' },
       { q: 'Can I compare Zoom vs Google Meet vs Teams recordings?', a: 'All three recording formats (Zoom MP4, Google Meet MP4, Teams MP4) are supported equally. The transcript quality is the same across platforms — it depends on audio quality of the recording, not the source platform.' },
       { q: 'Is Zoom recording transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st) after signing up for free. A typical 30–60 minute Zoom call fits within this limit. Paid plans start at $19/month for 450 minutes.' },
+    ],
+  },
+  {
+    path: '/meeting-recording-to-transcript',
+    title: 'Meeting Recording to Transcript | VideoText',
+    description: 'Convert any meeting recording to transcript text in minutes. Upload Zoom, Google Meet, Teams, or webinar recordings and get transcript, subtitles, speaker labels, summary, and exports.',
+    h1: 'Meeting Recording to Transcript',
+    intro: 'Turn post-meeting recording files into structured transcript outputs fast. Download your recording from Zoom, Google Meet, Teams, or webinar tools, upload it here, and get transcript text, speaker labels, summary output, subtitles, and exports in one shared flow.',
+    breadcrumbLabel: 'Meeting Recording to Transcript',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/google-meet-transcript', '/zoom-meeting-transcript', '/meeting-transcription-tool', '/teams-meeting-transcript'],
+    indexable: true,
+    intentKey: 'meeting-recording-to-transcript',
+    deepContent: {
+      proofPoints: [
+        'Platform-agnostic workflow: if you can download the meeting recording file, you can transcribe it here.',
+        'No live bot joins your call. This is strictly post-meeting, file-based transcription.',
+        'One upload can produce transcript text, subtitle files, summary outputs, and speaker-labeled review views.',
+      ],
+      workflowSteps: [
+        { title: '1. Download your meeting recording', detail: 'Export or download the recording file from your meeting platform (Zoom, Google Meet, Teams, webinars).' },
+        { title: '2. Upload the recording file', detail: 'Drag in the downloaded recording file and start transcription in the same shared workflow used across the product.' },
+        { title: '3. Review transcript and export outputs', detail: 'Use transcript text for notes, summary output for recap drafts, and subtitle/export files for handoff and publishing.' },
+      ],
+      outputExamples: [
+        { title: 'Transcript for meeting notes', body: 'Search and scan long meeting recordings without replaying the full call.' },
+        { title: 'Speaker-labeled view', body: 'Understand contributions and handoffs quickly for project updates and accountability.' },
+        { title: 'Subtitles and shareable exports', body: 'Download output formats for internal docs, customer recaps, and async updates.' },
+      ],
+      useCases: [
+        { title: 'Weekly team syncs', body: 'Generate reusable transcripts and summaries so decisions are searchable later.' },
+        { title: 'Customer and sales calls', body: 'Capture exact phrasing and action items without manual note-taking overhead.' },
+        { title: 'Ops and implementation handoffs', body: 'Convert long recordings into concise text assets for cross-functional teams.' },
+      ],
+      ctaText: 'Upload meeting recording',
+      ctaPath: '/video-to-transcript?source=meeting-recording',
+    },
+    faq: [
+      { q: 'Can I convert any meeting recording to transcript text?', a: 'Yes. If you can download the meeting recording file, you can upload it here and generate transcript output.' },
+      { q: 'Does this support Zoom, Google Meet, and Teams recordings?', a: 'Yes. The workflow is file-based and supports recordings downloaded from major meeting platforms.' },
+      { q: 'Do I need a live meeting bot?', a: 'No. This flow works after the meeting ends. There is no live bot auto-join requirement.' },
+      { q: 'Can I export subtitles and speaker-labeled transcript output?', a: 'Yes. Subtitle exports and speaker-labeled transcript views are available in the same shared transcription flow.' },
+      { q: 'Is this the same tool as your video transcription page?', a: 'Yes. This page is an intent-specific entry point into the same existing uploader and transcription tool.' },
     ],
   },
   {
@@ -928,7 +1018,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Transcribe interviews to text online — accurately and quickly. Upload your interview video (MP4, MOV, AVI, or WebM) or audio (MP3, WAV, M4A) and get a clean transcript in seconds. Use the Speakers branch to separate interviewer and interviewee, and Translate to share the transcript in 6 languages. Perfect for journalists, researchers, HR teams, and documentary filmmakers. Free tier.',
     breadcrumbLabel: 'Interview Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/speaker-diarization', '/podcast-transcript', '/zoom-recording-transcript', '/mp3-to-text'],
+    relatedSlugs: ['/speaker-diarization', '/podcast-transcript', '/zoom-meeting-transcript', '/mp3-to-text'],
     indexable: true,
     intentKey: 'interview-transcription',
     faq: [
@@ -1256,7 +1346,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Transcribe webinar recordings to text. Upload your MP4, MOV, or WebM file. Get a full transcript with chapters and keywords. Export SRT, TXT, or translate. Free tier.',
     breadcrumbLabel: 'Webinar Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-transcript', '/lecture-transcription', '/zoom-recording-transcript'],
+    relatedSlugs: ['/meeting-transcript', '/lecture-transcription', '/zoom-meeting-transcript'],
     indexable: true,
     intentKey: 'webinar-transcription',
     faq: [
@@ -1272,7 +1362,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Transcribe meeting recordings to text. Upload MP4, MOV, or WebM. Get speaker labels, action items, and key points. Export SRT, TXT. Free tier.',
     breadcrumbLabel: 'Meeting Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-transcript', '/zoom-recording-transcript', '/speaker-diarization'],
+    relatedSlugs: ['/meeting-transcript', '/zoom-meeting-transcript', '/speaker-diarization'],
     indexable: true,
     intentKey: 'meeting-transcription',
     faq: [
@@ -1908,14 +1998,38 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   {
     path: '/meeting-transcription-tool',
     title: 'Meeting Transcription Tool with Summaries & Action Items | VideoText',
-    description: 'Convert Zoom, Teams, and webinar recordings into searchable transcripts with structured summaries and action points. Faster than manual meeting notes.',
+    description: 'Meeting transcription tool for recorded calls. Upload Zoom, Google Meet, Teams, and webinar files to get transcript text, speaker labels, summaries, subtitles, and exports.',
     h1: 'Meeting Transcription Tool',
-    intro: 'Upload meeting recordings and get structured outputs your team can act on: transcript text, speaker turns, concise summaries, and action-item friendly notes.',
+    intro: 'Use one transcription tool for recorded meetings across Zoom, Google Meet, Teams, and webinar platforms. Upload the meeting recording file and generate transcript text, speaker-separated review, summary output, subtitles, and exports without manual cleanup loops.',
     breadcrumbLabel: 'Meeting Transcription Tool',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-transcript', '/meeting-transcription', '/zoom-recording-transcript', '/microsoft-teams-alternative', '/best-transcription-tool'],
+    relatedSlugs: ['/meeting-recording-to-transcript', '/google-meet-transcript', '/zoom-meeting-transcript', '/meeting-transcription', '/best-transcription-tool'],
     indexable: true,
     intentKey: 'meeting-transcription-tool',
+    deepContent: {
+      proofPoints: [
+        'Designed for post-meeting recording uploads, not live meeting bots or auto-join workflows.',
+        'Supports recordings downloaded from Zoom, Google Meet, Microsoft Teams, and webinar tools.',
+        'Combines transcript, summary, speaker review, subtitle outputs, and exports in one workflow.',
+      ],
+      workflowSteps: [
+        { title: '1. Download meeting recording', detail: 'Export the recording from your meeting platform once the call is complete.' },
+        { title: '2. Upload into the transcription tool', detail: 'Use this uploader flow to process the recording file and generate structured text output.' },
+        { title: '3. Share transcript outputs with your team', detail: 'Use transcript and summary outputs for notes, follow-ups, and searchable internal documentation.' },
+      ],
+      comparisonRows: [
+        { feature: 'Manual note taking', videotext: 'Upload once, get structured outputs automatically', alternatives: 'High effort with inconsistent detail capture' },
+        { feature: 'Cross-platform workflow', videotext: 'One tool for Zoom, Meet, Teams, webinar recordings', alternatives: 'Different setup per platform' },
+        { feature: 'Post-call speed', videotext: 'Transcript and recap outputs in minutes', alternatives: 'Manual recap takes significantly longer' },
+      ],
+      useCases: [
+        { title: 'Customer success teams', body: 'Create accurate handoff notes from implementation and support calls.' },
+        { title: 'Sales and RevOps', body: 'Review call language quickly with searchable transcript output.' },
+        { title: 'Product and engineering teams', body: 'Turn sync recordings into action-oriented recaps without replaying the full meeting.' },
+      ],
+      ctaText: 'Upload meeting recording now',
+      ctaPath: '/video-to-transcript?source=meeting-recording',
+    },
     faq: [
       { q: 'Can I transcribe Zoom or Teams recordings?', a: 'Yes. Export the meeting as MP4, upload it to VideoText, and get a searchable transcript plus structured summary output.' },
       { q: 'Does this help with action items?', a: 'Yes. Summaries and chapter-style sections make follow-ups easier than raw transcript blocks.' },
@@ -2101,7 +2215,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Transcribe Loom screen recordings and video messages to text. Download your Loom video as MP4, upload it here, and get a full transcript in seconds. Use the Speakers branch to separate speakers, Summary for key decisions, and Chapters to navigate by topic. Free tier.',
     breadcrumbLabel: 'Loom Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/screen-recording-transcript', '/zoom-recording-transcript', '/meeting-transcript', '/video-to-transcript'],
+    relatedSlugs: ['/screen-recording-transcript', '/zoom-meeting-transcript', '/meeting-transcript', '/video-to-transcript'],
     indexable: true,
     intentKey: 'loom-transcription',
     faq: [
@@ -2114,22 +2228,86 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/google-meet-transcript',
-    title: 'Google Meet Transcript – Transcribe Meet Recordings | VideoText',
-    description: 'Transcribe Google Meet recordings to text. Download the Meet recording, upload here, and get a full transcript with speaker labels and action items. Free tier.',
-    h1: 'Google Meet Transcript — Transcribe Recordings Online',
-    intro: 'Transcribe Google Meet recordings to text in seconds. Download your meeting recording from Google Drive, upload the MP4 here, and get a full transcript. Use Speakers for who-said-what, Summary for action items and decisions, and Chapters to navigate the meeting by topic. Free tier, no credit card.',
+    title: 'Google Meet Transcript in Minutes | VideoText',
+    description: 'Turn any Google Meet recording into a transcript in minutes. Download the recording, upload it here, and get clean text, subtitles, summaries, and exports — no bot required.',
+    h1: 'Google Meet Transcript',
+    intro: 'Turn any Google Meet recording into a transcript in minutes — no bot, no manual cleanup. Record in Google Meet, download the meeting file, then upload it here to get searchable text, subtitles, summaries, and export-ready output.',
     breadcrumbLabel: 'Google Meet Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/teams-meeting-transcript', '/zoom-recording-transcript', '/meeting-transcript', '/speaker-diarization'],
+    relatedSlugs: ['/teams-meeting-transcript', '/zoom-meeting-transcript', '/meeting-transcript', '/speaker-diarization'],
     indexable: true,
     intentKey: 'google-meet-transcript',
+    deepContent: {
+      proofPoints: [
+        'Built for post-meeting workflow: download your Google Meet recording, then upload the file here for fast transcription.',
+        'No meeting bot required. Nothing joins your live call and there is no calendar integration to configure.',
+        'One upload can produce transcript text, speaker-labeled segments, subtitle files, summary highlights, and export formats.',
+        'Google Meet recordings from Drive are typically MP4 and can be uploaded directly — no pre-conversion workflow required.',
+        'Practical speed baseline: many 30–60 minute recorded meetings complete in minutes, not real-time playback length.',
+      ],
+      workflowSteps: [
+        {
+          title: '1. Record your meeting in Google Meet',
+          detail: 'Run the meeting normally and save the recording. This page is designed for the recording file after your call ends.',
+        },
+        {
+          title: '2. Download the recording file',
+          detail: 'Open Google Drive → Meet Recordings, find the file, and download the MP4 to your computer before uploading.',
+        },
+        {
+          title: '3. Upload to get transcript + outputs',
+          detail: 'Upload the recording here to generate transcript text, summaries, speaker labels, subtitles, and exportable files in one flow.',
+        },
+      ],
+      outputExamples: [
+        {
+          title: 'Clean transcript text',
+          body: 'Get a readable transcript you can search, copy, and share as notes, documentation, or follow-up content.',
+        },
+        {
+          title: 'Subtitles and exports',
+          body: 'Download subtitle files and transcript exports for downstream publishing, editing, compliance, or archive workflows.',
+        },
+        {
+          title: 'Meeting recap structure',
+          body: 'Use speaker labeling and structured summary output to turn long recordings into quick action-oriented recaps.',
+        },
+        {
+          title: 'Shareable follow-up assets',
+          body: 'Convert one Google Meet recording into notes-ready text, subtitle files for clips, and handoff-friendly exports for your team.',
+        },
+      ],
+      comparisonRows: [
+        { feature: 'Input method', videotext: 'Upload a Google Meet MP4 recording', alternatives: 'Often mixed assumptions about live bots or calendar access' },
+        { feature: 'Live meeting dependency', videotext: 'None — works after the meeting ends', alternatives: 'Some tools require attending the meeting live' },
+        { feature: 'Output depth', videotext: 'Transcript + summary + speaker view + subtitle exports', alternatives: 'Transcript-only output is common' },
+        { feature: 'Workflow clarity', videotext: 'Record → download from Drive → upload here', alternatives: 'Platform-specific setup and admin dependencies vary' },
+      ],
+      useCases: [
+        {
+          title: 'Team syncs and project updates',
+          body: 'Convert recurring Google Meet recordings into searchable history for decisions, blockers, and next steps.',
+        },
+        {
+          title: 'Customer calls and demos',
+          body: 'Capture important customer language from recorded Meet sessions and repurpose it into internal notes.',
+        },
+        {
+          title: 'Interviews and research meetings',
+          body: 'Turn recorded conversations into transcript-first material that is easier to quote, analyze, and summarize.',
+        },
+      ],
+      ctaText: 'Upload Google Meet recording',
+      ctaPath: '/video-to-transcript?source=google-meet',
+    },
     faq: [
-      { q: 'How do I transcribe a Google Meet recording?', a: 'Google Meet saves recordings to your Google Drive. Open Drive, find the recording, download it as MP4, and upload it here. Our AI produces a full text transcript. Most 60-minute calls transcribe in 5–8 minutes.' },
-      { q: "Does Google Meet have a built-in transcript?", a: "Google Meet offers live captions and post-meeting transcripts on Workspace Business and Enterprise plans. If you don't have those plans, or if you want speaker-labeled text with a summary and chapters, VideoText provides that from any Meet recording download." },
-      { q: 'Can I get speaker labels from a Google Meet transcript?', a: 'Yes. After transcribing, open the Speakers branch. Each participant\'s speech is grouped by speaker turn. For the clearest separation, ensure participants were not muted for long stretches and that audio quality is good.' },
-      { q: 'Can I get action items from the meeting transcript?', a: 'Yes. The Summary branch automatically extracts key decisions, action items, and main points. Copy and paste directly into your team\'s Slack, Notion, or email as meeting notes.' },
-      { q: 'Is Google Meet transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try. Paid plans start at $19/month for 450 minutes.' },
-      { q: 'What format does Google Meet save recordings in?', a: 'Google Meet saves recordings as MP4 files to Google Drive. Download the MP4 and upload it directly. No conversion needed.' },
+      { q: 'Can I transcribe a Google Meet recording?', a: 'Yes. Download the Google Meet recording file (typically MP4) from Google Drive, then upload it here to generate a transcript.' },
+      { q: 'Do I need a bot to join my Google Meet call?', a: 'No. This is a recording-upload workflow. Nothing joins your live meeting and no bot is required.' },
+      { q: 'Does this work for MP4 Google Meet recordings?', a: 'Yes. Google Meet recordings are typically MP4, which works directly in this uploader flow.' },
+      { q: 'Can I export subtitles or a speaker-labeled transcript?', a: 'Yes. After processing, you can access subtitle exports and transcript outputs, including speaker-labeled views when enabled.' },
+      { q: 'Is this a native Google Meet integration?', a: 'No. There is no direct Google Meet or Google Drive integration in this flow. You download first, then upload here.' },
+      { q: 'How fast is transcription for Google Meet recordings?', a: 'Most recordings process in minutes. Exact timing depends on recording length, audio quality, and current processing load.' },
+      { q: 'Can I transcribe a Google Meet recording without enabling live captions?', a: 'Yes. As long as you have the recording file, you can upload it and generate a transcript after the meeting — regardless of whether live captions were enabled during the call.' },
     ],
   },
   {
@@ -2140,7 +2318,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Transcribe Microsoft Teams recordings to text. Download the meeting recording from Teams or SharePoint, upload the MP4 here, and get a full transcript in seconds. Speaker labels, action item summary, chapter navigation — all available after a single upload. Free tier.',
     breadcrumbLabel: 'Teams Meeting Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/google-meet-transcript', '/zoom-recording-transcript', '/meeting-transcript', '/speaker-diarization'],
+    relatedSlugs: ['/google-meet-transcript', '/zoom-meeting-transcript', '/meeting-transcript', '/speaker-diarization'],
     indexable: true,
     intentKey: 'teams-meeting-transcript',
     faq: [
@@ -2198,7 +2376,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Transcribe any screen recording to text. Upload your screen recording file (MP4, WebM, MOV) and get a full AI-powered transcript in seconds. Works with recordings from Loom, OBS, QuickTime, Zoom, Screenflow, Camtasia, and any other screen recording tool. Free tier.',
     breadcrumbLabel: 'Screen Recording Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/loom-transcription', '/zoom-recording-transcript', '/webm-to-text', '/video-to-transcript'],
+    relatedSlugs: ['/loom-transcription', '/zoom-meeting-transcript', '/webm-to-text', '/video-to-transcript'],
     indexable: true,
     intentKey: 'screen-recording-transcript',
     faq: [
@@ -2408,7 +2586,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Looking for a Fireflies.ai alternative? VideoText transcribes meetings from any recording file — no bot, no calendar access, no integrations required. Upload your MP4 and get a transcript with speaker labels, action items, and chapter navigation. We process and delete your files. Free tier.',
     breadcrumbLabel: 'Fireflies.ai Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-transcript', '/zoom-recording-transcript', '/otter-ai-alternative', '/google-meet-transcript'],
+    relatedSlugs: ['/meeting-transcript', '/zoom-meeting-transcript', '/otter-ai-alternative', '/google-meet-transcript'],
     indexable: true,
     intentKey: 'fireflies-alternative',
     faq: [
@@ -2759,7 +2937,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       '/keyword-indexed-transcript',
       '/video-chapters-generator',
       '/best-transcription-tool-for-students',
-      '/zoom-recording-transcript',
+      '/zoom-meeting-transcript',
     ],
     indexable: true,
     intentKey: 'transcription-for-students',
@@ -3090,7 +3268,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Zoom's built-in AI Companion transcription is locked to Business/Enterprise plans and keeps your recordings in Zoom's cloud. VideoText is a drop-in replacement: download your Zoom MP4, upload it here, and get a speaker-labeled transcript in minutes — no Zoom account, no cloud lock-in. Files deleted after processing. Free tier.",
     breadcrumbLabel: 'Zoom Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/zoom-recording-transcript', '/microsoft-teams-alternative', '/webex-alternative', '/meeting-transcript'],
+    relatedSlugs: ['/zoom-meeting-transcript', '/microsoft-teams-alternative', '/webex-alternative', '/meeting-transcript'],
     indexable: true,
     intentKey: 'zoom-alternative',
     faq: [
@@ -3189,7 +3367,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Transcribe Cisco WebEx meeting recordings to searchable text. Download your WebEx meeting as MP4, upload it to VideoText, and get a full transcript with speaker labels, action item summary, and keyword index — no WebEx enterprise plan required. Free tier.',
     breadcrumbLabel: 'WebEx Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/webex-alternative', '/zoom-recording-transcript', '/meeting-transcript', '/teams-meeting-transcript'],
+    relatedSlugs: ['/webex-alternative', '/zoom-meeting-transcript', '/meeting-transcript', '/teams-meeting-transcript'],
     indexable: true,
     intentKey: 'webex-transcription',
     faq: [
@@ -3229,7 +3407,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Tactiq is a browser extension that transcribes live Google Meet, Zoom, and Teams calls in real time. It requires you to be present during the call — you cannot go back and transcribe a recording you forgot to capture live. VideoText works the other way: upload any past recording (MP4, MP3, etc.) and get a full transcript with speakers, summary, and chapters. No browser extension, no live call required. Free tier.",
     breadcrumbLabel: 'Tactiq Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/notta-alternative', '/otter-ai-alternative', '/zoom-recording-transcript', '/meeting-transcript'],
+    relatedSlugs: ['/notta-alternative', '/otter-ai-alternative', '/zoom-meeting-transcript', '/meeting-transcript'],
     indexable: true,
     intentKey: 'tactiq-alternative',
     faq: [
@@ -3248,7 +3426,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Krisp is primarily a noise-cancellation app that added live meeting transcription. It runs as a background audio driver on your computer and processes audio in real time. VideoText is the simpler alternative for transcribing recorded meetings: upload the MP4 or audio file, get a full speaker-labeled transcript in minutes. No software to install, no microphone access required. Files deleted after processing. Free tier.",
     breadcrumbLabel: 'Krisp Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/notta-alternative', '/granola-alternative', '/meeting-transcript', '/zoom-recording-transcript'],
+    relatedSlugs: ['/notta-alternative', '/granola-alternative', '/meeting-transcript', '/zoom-meeting-transcript'],
     indexable: true,
     intentKey: 'krisp-alternative',
     faq: [
@@ -3389,7 +3567,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'MacWhisper is a polished Mac app that runs Whisper transcription locally on your machine. It requires macOS, enough storage for model files, and time to download Whisper models. VideoText gives you the same Whisper large-v3 accuracy in the browser — no Mac required, no downloads, no local GPU. Upload your file and get the transcript in seconds. Free tier.',
     breadcrumbLabel: 'MacWhisper Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/superwhisper-alternative', '/whisper-online', '/whisperx-alternative', '/video-to-transcript'],
+    relatedSlugs: ['/buzz-alternative', '/whisper-online', '/whisperx-alternative', '/video-to-transcript'],
     indexable: true,
     intentKey: 'macwhisper-alternative',
     faq: [
@@ -3409,7 +3587,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Superwhisper is a real-time dictation app for Mac and iOS — it transcribes as you speak. It is designed for dictating text, not for transcribing existing recordings. VideoText handles the other use case: upload any recording file (interview, lecture, meeting) and get a full transcript with speakers, summary, and chapters. Free tier, browser-based. Also covers: Whisper Notes, Gravity Notes, and similar dictation-first Whisper apps.",
     breadcrumbLabel: 'Superwhisper Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/macwhisper-alternative', '/whisper-online', '/whisperx-alternative', '/audio-to-text'],
+    relatedSlugs: ['/macwhisper-alternative', '/whisper-online', '/buzz-alternative', '/audio-to-text'],
     indexable: true,
     intentKey: 'superwhisper-alternative',
     faq: [
@@ -3439,17 +3617,38 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/buzz-alternative',
-    title: 'Best Buzz Transcription App Alternative – Browser-Based Whisper | VideoText',
+    title: 'Best Buzz Alternative in 2026 (Speed, Exports, Workflow) | VideoText',
     description:
-      'Buzz is a macOS/Linux desktop app for offline Whisper transcription. VideoText gives you Whisper large-v3 accuracy in the browser — no download, no local models, works on any OS. Free tier.',
-    h1: 'Buzz Alternative — Whisper Transcription Without a Desktop App',
+      'Looking for a Buzz alternative? Compare desktop Buzz vs VideoText on speed, transcript quality, exports, summaries, subtitles, and workflow fit before you switch.',
+    h1: 'Buzz Alternative — Should You Switch?',
     intro:
-      "Buzz is an open-source desktop app for macOS and Linux that runs Whisper transcription locally. It requires downloading Whisper model files and only runs on Mac or Linux (not Windows). VideoText is the browser-based alternative: same Whisper large-v3 accuracy, works on any OS, no downloads, no local storage of model files. Free tier.",
+      "If Buzz feels too manual for day-to-day transcription, here's the short answer: Buzz is excellent for local, offline transcription. VideoText is better when you want faster throughput, structured outputs (transcript + subtitles + summary), and a browser workflow your team can use without installing models. This page compares both directly so you can pick the right fit.",
     breadcrumbLabel: 'Buzz Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/macwhisper-alternative', '/whisper-online', '/superwhisper-alternative', '/video-to-transcript'],
+    relatedSlugs: ['/macwhisper-alternative', '/whisper-online', '/descript-alternative', '/video-to-transcript'],
     indexable: true,
     intentKey: 'buzz-alternative',
+    deepContent: {
+      proofPoints: [
+        'Buzz is local-first: good for offline workflows, but setup and model downloads add friction.',
+        'VideoText is browser-first: upload and process immediately without local model management.',
+        'Both can deliver strong Whisper-level transcript quality; workflow and output depth are the deciding factors.',
+      ],
+      comparisonRows: [
+        { feature: 'Processing model', videotext: 'Whisper large-v3 cloud workflow', alternatives: 'Local Whisper models managed on your machine' },
+        { feature: 'Setup time', videotext: 'No install, start in browser', alternatives: 'Install app + download models first' },
+        { feature: 'Outputs per run', videotext: 'Transcript, summary, chapters, subtitle exports', alternatives: 'Primarily transcript-focused output' },
+        { feature: 'Cross-device collaboration', videotext: 'Shared browser workflow', alternatives: 'Single-device local workflow by default' },
+        { feature: 'Best fit', videotext: 'Teams and high-throughput creators', alternatives: 'Offline, local-only transcription users' },
+      ],
+      outputExamples: [
+        { title: 'Transcript + subtitles in one pass', body: 'Generate readable transcript text and subtitle exports without running separate tools.' },
+        { title: 'Faster handoff workflow', body: 'Move from recording to shareable outputs quickly when you need recap content the same day.' },
+        { title: 'Structured recap outputs', body: 'Use summaries and chapterized output to reduce manual cleanup after transcription.' },
+      ],
+      ctaText: 'Try the Buzz alternative workflow',
+      ctaPath: '/video-to-transcript?source=buzz-alternative',
+    },
     faq: [
       { q: 'Does VideoText work on Windows unlike Buzz?', a: 'Yes. VideoText is browser-based and works on Windows, Mac, and Linux. Buzz supports macOS and Linux only.' },
       { q: 'Is VideoText free like Buzz?', a: 'Yes. VideoText free tier: 3 imports/month. Buzz is free and open-source but requires local setup and model downloads.' },
@@ -4245,7 +4444,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Looking for a MeetGeek alternative? MeetGeek uses a meeting bot that joins your live calls. VideoText transcribes recorded meeting files — upload any Zoom, Teams, or Google Meet MP4 export and get a full transcript with speaker labels, AI-generated action items, and SRT/VTT subtitle files. No bot, no calendar integration required.',
     breadcrumbLabel: 'MeetGeek Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/zoom-recording-transcript', '/meeting-transcript', '/google-meet-transcript', '/fireflies-alternative'],
+    relatedSlugs: ['/zoom-meeting-transcript', '/meeting-transcript', '/google-meet-transcript', '/fireflies-alternative'],
     indexable: true,
     intentKey: 'meetgeek-alternative',
     faq: [
@@ -4417,21 +4616,50 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
 
   {
     path: '/how-to-create-srt-file',
-    title: 'How to Create an SRT File — 3 Ways Explained | VideoText',
-    description: 'Learn how to create an SRT subtitle file. Three methods: AI generation from video, manual creation, and conversion from other formats. Free tools included.',
-    h1: 'How to Create an SRT File — 3 Methods',
-    intro: 'An SRT file is a plain text file that pairs subtitle text with timestamps. You can create one three ways: (1) generate it automatically from a video using AI, (2) write one manually in a text editor, or (3) convert an existing subtitle file from another format (VTT, SBV, ASS). The fastest and most accurate method for video content is AI generation — upload your video and get an SRT file in under 2 minutes.',
+    title: 'How to Create an SRT File (With Format Example + Mistakes to Avoid) | VideoText',
+    description: 'Step-by-step tutorial for creating SRT subtitle files: manual format, sample SRT block, common timestamp mistakes, and faster AI workflow.',
+    h1: 'How to Create an SRT File (Step by Step)',
+    intro: 'To create an SRT file correctly, you need the exact block structure: subtitle number, start/end timestamps, subtitle text, then a blank line. This guide covers the manual method with a real format example, common validation mistakes (timing overlaps, bad timestamp separators, missing blank lines), and the faster AI workflow for long videos.',
     breadcrumbLabel: 'How to Create SRT File',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/subtitle-generator', '/srt-generator', '/video-to-srt', '/srt-to-vtt'],
+    relatedSlugs: ['/subtitle-generator', '/srt-generator', '/video-to-srt', '/how-to-add-subtitles-to-mp4'],
     indexable: true,
     intentKey: 'how-to-create-srt-file',
+    tutorialContent: {
+      steps: [
+        { title: '1. Start with correct SRT structure', detail: 'Each subtitle entry needs: sequence number, timestamp line, subtitle text, then one blank line before the next entry.' },
+        { title: '2. Use valid timestamp syntax', detail: 'Use HH:MM:SS,mmm --> HH:MM:SS,mmm. Keep commas for milliseconds and use --> exactly.' },
+        { title: '3. Keep subtitle lines readable', detail: 'Avoid very long lines. Split into natural phrases so captions stay readable on mobile screens.' },
+        { title: '4. Validate timing overlaps', detail: 'Ensure each caption starts after the previous one ends and check that cue durations are long enough to read.' },
+        { title: '5. Use AI generation for long videos', detail: 'For full videos, auto-generate SRT first, then edit only mistakes instead of writing every timestamp manually.' },
+      ],
+      formatExample: [
+        '1',
+        '00:00:01,000 --> 00:00:03,200',
+        'Welcome to this SRT tutorial.',
+        '',
+        '2',
+        '00:00:03,500 --> 00:00:06,000',
+        'Each subtitle block needs a blank line after it.',
+      ],
+      commonMistakes: [
+        'Using periods instead of commas in milliseconds (00:00:01.200 is invalid for SRT).',
+        'Using -> instead of --> between timestamps.',
+        'Missing blank lines between subtitle blocks.',
+        'Overlapping cues where one subtitle starts before the previous one ends.',
+        'Saving with non-UTF-8 encoding, which can break non-English characters.',
+      ],
+      ctaText: 'Generate SRT from video now',
+      ctaPath: '/video-to-subtitles',
+    },
     faq: [
       { q: 'What is an SRT file?', a: 'An SRT (SubRip Text) file is a plain text file that stores subtitles with timestamps. Each subtitle block has three parts: a sequential number, a timestamp line (start --> end), and the subtitle text. Example: 1 / 00:00:01,000 --> 00:00:03,000 / Hello world. SRT is the most widely supported subtitle format in the world.' },
       { q: 'How do I create an SRT file from a video?', a: 'Upload your video to VideoText (or paste a YouTube URL). The AI transcribes the audio and generates a precisely timed SRT file. Download the SRT and it\'s ready to use. This is far faster than writing timestamps manually.' },
       { q: 'Can I create an SRT file manually?', a: 'Yes. Open a text editor (Notepad, TextEdit, VS Code). Write each subtitle block in this format: a number on line 1, timestamps on line 2 (00:00:01,000 --> 00:00:03,500), text on line 3, then a blank line. Save the file with .srt extension. Ensure encoding is UTF-8.' },
       { q: 'How do I create an SRT from a VTT or SBV file?', a: 'Use our free converters: VTT to SRT Converter or SBV to SRT Converter. Upload the file and download the converted SRT instantly.' },
       { q: 'How do I add an SRT file to a YouTube video?', a: 'In YouTube Studio, go to your video → Subtitles → Add Language → select the language → Upload file → select your SRT. YouTube will import the timestamps and text exactly as written.' },
+      { q: 'What is a valid SRT timestamp format?', a: 'Use this exact style: HH:MM:SS,mmm --> HH:MM:SS,mmm. Use commas for milliseconds, not periods. Example: 00:01:12,400 --> 00:01:15,200.' },
+      { q: 'What are the most common SRT formatting mistakes?', a: 'The most common mistakes are missing blank lines between subtitle blocks, overlapping timestamps, invalid arrows (using -> instead of -->), and wrong millisecond separators.' },
     ],
   },
   {

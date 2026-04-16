@@ -88,6 +88,34 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const { seoH1, seoIntro, faq = [], seoDeepContent } = props
   const location = useLocation()
   const navigate = useNavigate()
+  const sourceParam = useMemo(() => new URLSearchParams(location.search).get('source') || '', [location.search])
+  const sourceMessage = useMemo(() => {
+    if (sourceParam === 'google-meet') {
+      return {
+        title: 'Google Meet recording flow',
+        body: 'Download your Google Meet recording file first, then upload it here to generate transcript text, subtitles, and summary outputs.',
+      }
+    }
+    if (sourceParam === 'zoom-meeting') {
+      return {
+        title: 'Zoom meeting recording flow',
+        body: 'Download your Zoom recording (cloud or local) and upload it here to generate transcript text, subtitles, and meeting recap outputs.',
+      }
+    }
+    if (sourceParam === 'meeting-recording') {
+      return {
+        title: 'Meeting recording upload flow',
+        body: 'Upload your downloaded meeting recording file (Zoom, Meet, Teams, webinar) to generate transcript text, subtitle exports, and summary outputs.',
+      }
+    }
+    if (sourceParam === 'buzz-alternative') {
+      return {
+        title: 'Buzz alternative workflow',
+        body: 'Upload your recording here to get transcript, summary, and subtitle-ready outputs without local model setup or desktop app installs.',
+      }
+    }
+    return null
+  }, [sourceParam])
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [trimStart, setTrimStart] = useState<number | null>(null)
   const [trimEnd, setTrimEnd] = useState<number | null>(null)
@@ -1921,6 +1949,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         </p>
                       </div>
                     </div>
+                  </div>
+                )}
+                {sourceMessage && (
+                  <div className="rounded-xl border border-emerald-200/70 bg-emerald-50/80 dark:border-emerald-800/60 dark:bg-emerald-950/25 px-4 py-3">
+                    <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                      {sourceMessage.title}
+                    </p>
+                    <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-200/90">
+                      {sourceMessage.body}
+                    </p>
                   </div>
                 )}
                 <UploadZone

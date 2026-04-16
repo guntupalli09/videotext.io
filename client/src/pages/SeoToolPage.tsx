@@ -66,6 +66,9 @@ export default function SeoToolPage() {
     faq: entry.faq,
     seoDeepContent: entry.deepContent,
   }
+  if (entry.toolKey === 'video-to-subtitles' && entry.tutorialContent) {
+    toolProps.seoTutorial = entry.tutorialContent
+  }
   if (entry.toolKey === 'video-to-transcript' && entry.defaultInputMode === 'youtube') {
     toolProps.defaultInputMode = 'youtube'
   }

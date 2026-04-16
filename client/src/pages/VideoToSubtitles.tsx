@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2, Lock } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
@@ -39,10 +39,17 @@ export type VideoToSubtitlesSeoProps = {
   seoH1?: string
   seoIntro?: string
   faq?: { q: string; a: string }[]
+  seoTutorial?: {
+    steps?: { title: string; detail: string }[]
+    formatExample?: string[]
+    commonMistakes?: string[]
+    ctaText?: string
+    ctaPath?: string
+  }
 }
 
 export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
-  const { seoH1, seoIntro, faq = [] } = props
+  const { seoH1, seoIntro, faq = [], seoTutorial } = props
   const location = useLocation()
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -1160,6 +1167,53 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           window.location.reload()
         }}
       />
+
+      {(seoTutorial?.steps?.length || seoTutorial?.formatExample?.length || seoTutorial?.commonMistakes?.length) && (
+        <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4 space-y-6" aria-label="Tutorial">
+          {seoTutorial?.steps?.length && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Step-by-step tutorial</h2>
+              <ol className="space-y-4">
+                {seoTutorial.steps.map((step, i) => (
+                  <li key={i}>
+                    <h3 className="font-semibold text-gray-800">{step.title}</h3>
+                    <p className="text-gray-600 mt-1">{step.detail}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+
+          {seoTutorial?.formatExample?.length && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-3">Valid SRT format example</h2>
+              <pre className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-700 overflow-x-auto">
+                {seoTutorial.formatExample.join('\n')}
+              </pre>
+            </div>
+          )}
+
+          {seoTutorial?.commonMistakes?.length && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-3">Common SRT mistakes to avoid</h2>
+              <ul className="list-disc pl-5 space-y-2 text-gray-600">
+                {seoTutorial.commonMistakes.map((mistake, i) => (
+                  <li key={i}>{mistake}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {seoTutorial?.ctaText && seoTutorial?.ctaPath && (
+            <div className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-4">
+              <p className="text-sm text-gray-700 mb-2">Manual SRT editing works for short clips. For longer videos, generate subtitles automatically and edit only what needs review.</p>
+              <Link to={seoTutorial.ctaPath} className="inline-flex items-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700">
+                {seoTutorial.ctaText}
+              </Link>
+            </div>
+          )}
+        </section>
+      )}
 
       {faq.length > 0 && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
