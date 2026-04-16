@@ -70,28 +70,50 @@ export default function NottaAlternativePage() {
             <span className="text-[12px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Notta Alternative</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
-            The best{' '}
+            A practical{' '}
             <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
               Notta alternative
             </span>{' '}
-            — no 3-minute file limit
+            for meeting files and post-call outputs
           </h1>
-          <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl mx-auto mb-8">
-            Notta's free tier caps every transcription at 3 minutes. VideoText has no per-file duration limit — upload a 2-hour interview or 90-minute lecture and get the full transcript. Free tier, SRT export included.
+          <p className="text-lg text-gray-500 dark:text-white/45 max-w-3xl mx-auto mb-8">
+            Use this page if you’re deciding between a meeting notes assistant and a simpler file-first workflow after the call. Notta is strong for live meeting capture and searchable note history. VideoText is stronger when you need clean transcript outputs from recorded files, subtitle exports, and fast handoff assets without bot attendance.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link to="/video-to-transcript">
+            <Link to="/video-to-transcript?source=notta-alternative">
               <span className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all">
-                Try VideoText free
+                Compare your next meeting file
                 <ChevronRight className="w-4 h-4" />
               </span>
             </Link>
-            <span className="text-sm text-gray-400">No credit card · No per-file time limit</span>
+            <span className="text-sm text-gray-400">No credit card · No bot required · File-first workflow</span>
           </div>
         </div>
       </section>
 
       <div className="max-w-4xl mx-auto px-6 pb-24 space-y-16">
+
+        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Should you switch from Notta?</h2>
+          <div className="grid sm:grid-cols-2 gap-5 text-sm">
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Switch to VideoText if you need:</h3>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                <li>• Post-meeting transcript packages from downloaded recordings.</li>
+                <li>• SRT/VTT outputs, chaptered summaries, and export-ready files.</li>
+                <li>• A no-bot workflow for clients or internal teams that avoid call attendees.</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Stay with Notta if you need:</h3>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                <li>• Live assistant behavior during meetings.</li>
+                <li>• Real-time note capture and ongoing searchable meeting archive.</li>
+                <li>• A workflow centered on in-call capture instead of post-call production.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
         {/* Why people look for a Notta alternative */}
         <section>
@@ -146,6 +168,20 @@ export default function NottaAlternativePage() {
           </p>
         </section>
 
+        <section>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Workflow simplicity vs meeting-assistant depth</h2>
+          <div className="grid sm:grid-cols-2 gap-5">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Notta approach</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Designed for ongoing note capture and searchable meeting history, especially when your process depends on in-meeting tooling.</p>
+            </div>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">VideoText approach</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Designed for upload-after-call simplicity: recorded file in, transcript + summary + chapters + subtitle exports out, ready for handoff.</p>
+            </div>
+          </div>
+        </section>
+
         {/* Key advantages */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
@@ -163,6 +199,20 @@ export default function NottaAlternativePage() {
           ))}
         </section>
 
+        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">More meeting-tool alternatives</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Notta, Otter, and Fireflies often overlap for meeting users. Use these pages to compare tradeoffs clearly.</p>
+          <div className="flex flex-wrap gap-3 text-sm">
+            <Link to="/otter-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Otter alternative</Link>
+            <Link to="/fireflies-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Fireflies alternative</Link>
+            <Link to="/meeting-transcription-tool" className="text-purple-600 dark:text-purple-400 hover:underline">Meeting transcription tool</Link>
+            <Link to="/meeting-recording-to-transcript" className="text-purple-600 dark:text-purple-400 hover:underline">Meeting recording to transcript</Link>
+            <Link to="/google-meet-transcript" className="text-purple-600 dark:text-purple-400 hover:underline">Google Meet transcript</Link>
+            <Link to="/zoom-meeting-transcript" className="text-purple-600 dark:text-purple-400 hover:underline">Zoom meeting transcript</Link>
+            <Link to="/blog/best-transcription-software-2026" className="text-purple-600 dark:text-purple-400 hover:underline">Best transcription software 2026</Link>
+          </div>
+        </section>
+
         {/* FAQ */}
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
@@ -178,11 +228,11 @@ export default function NottaAlternativePage() {
 
         {/* CTA */}
         <section className="bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Transcribe the full recording, not just 3 minutes</h2>
-          <p className="text-white/70 mb-8 max-w-xl mx-auto">Upload any length of video or audio. Get a complete speaker-labelled transcript with SRT export — no per-file time cap, no credit card.</p>
-          <Link to="/video-to-transcript">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Upload one recorded meeting and compare output quality</h2>
+          <p className="text-white/70 mb-8 max-w-xl mx-auto">Use your next call recording to compare transcript readability, summary usefulness, chapter structure, and export coverage in one run.</p>
+          <Link to="/video-to-transcript?source=notta-alternative">
             <span className="inline-flex items-center gap-2 bg-white text-purple-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">
-              Try VideoText free
+              Start a no-bot comparison
               <ChevronRight className="w-4 h-4" />
             </span>
           </Link>

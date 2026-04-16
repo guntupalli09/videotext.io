@@ -1,5 +1,5 @@
 /**
- * SEO landing page: /otter-ai-alternative
+ * SEO landing page: /otter-alternative
  * Targets: "otter ai alternative", "otter.ai alternative", "free otter ai alternative"
  */
 import { Link } from 'react-router-dom'
@@ -63,28 +63,50 @@ export default function OtterAiAlternativePage() {
             <span className="text-[12px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Otter.ai Alternative</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
-            The best{' '}
+            Switch from Otter when your workflow is{' '}
             <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-              Otter.ai alternative
+              post-recording and export-first
             </span>{' '}
-            for video files
+            instead of live-assistant-first
           </h1>
-          <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl mx-auto mb-8">
-            Otter.ai is built for live meetings — not video files or subtitles. VideoText transcribes any MP4, MOV, or YouTube URL in minutes, then exports SRT, VTT, or plain text. Free tier available.
+          <p className="text-lg text-gray-500 dark:text-white/45 max-w-3xl mx-auto mb-8">
+            This page is for teams that like Otter’s meeting search and note workflow but need stronger outputs from recorded calls. Otter is strong for live assistant capture. VideoText is stronger when your next step is publishing, sharing, or repurposing recorded meetings into transcript, summary, chapters, and subtitle exports.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link to="/video-to-transcript">
+            <Link to="/video-to-transcript?source=otter-alternative">
               <span className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all">
-                Try VideoText free
+                Compare your next meeting recording
                 <ChevronRight className="w-4 h-4" />
               </span>
             </Link>
-            <span className="text-sm text-gray-400">No credit card · Files deleted after processing</span>
+            <span className="text-sm text-gray-400">No credit card · No live bot required</span>
           </div>
         </div>
       </section>
 
       <div className="max-w-4xl mx-auto px-6 pb-24 space-y-16">
+
+        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Should you stay with Otter or switch?</h2>
+          <div className="grid sm:grid-cols-2 gap-5 text-sm">
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Stay with Otter if you need:</h3>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                <li>• Live assistant behavior during meetings.</li>
+                <li>• Search across ongoing meeting history in one place.</li>
+                <li>• A workflow centered on in-call capture and notes.</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Switch to VideoText if you need:</h3>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                <li>• Post-call file processing with export-ready outputs.</li>
+                <li>• Subtitle workflows (SRT/VTT + translation + burn).</li>
+                <li>• Simple upload-after-meeting execution without bot access.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
         {/* Why people leave Otter */}
         <section>
@@ -139,6 +161,20 @@ export default function OtterAiAlternativePage() {
           </p>
         </section>
 
+        <section>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Meeting notes vs production-ready deliverables</h2>
+          <div className="grid sm:grid-cols-2 gap-5">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Otter workflow</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Great for searchable conversation history and live note workflows. Less aligned with subtitle/export-heavy post-production tasks.</p>
+            </div>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">VideoText workflow</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Built for recording-to-output execution: transcript, summary, chapters, and export files for handoff or publishing after the meeting ends.</p>
+            </div>
+          </div>
+        </section>
+
         {/* Key advantages */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
@@ -156,6 +192,19 @@ export default function OtterAiAlternativePage() {
           ))}
         </section>
 
+        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Compare nearby switch paths</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Otter switch intent is close to Notta and Fireflies intent. These pages help users pick by workflow, not hype.</p>
+          <div className="flex flex-wrap gap-3 text-sm">
+            <Link to="/notta-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Notta alternative</Link>
+            <Link to="/fireflies-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Fireflies alternative</Link>
+            <Link to="/meeting-transcription-tool" className="text-purple-600 dark:text-purple-400 hover:underline">Meeting transcription tool</Link>
+            <Link to="/meeting-recording-to-transcript" className="text-purple-600 dark:text-purple-400 hover:underline">Meeting recording to transcript</Link>
+            <Link to="/transcription-benchmark" className="text-purple-600 dark:text-purple-400 hover:underline">Transcription benchmark</Link>
+            <Link to="/blog/best-transcription-software-2026" className="text-purple-600 dark:text-purple-400 hover:underline">Best transcription software 2026</Link>
+          </div>
+        </section>
+
         {/* FAQ */}
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
@@ -171,11 +220,11 @@ export default function OtterAiAlternativePage() {
 
         {/* CTA */}
         <section className="bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Transcribe your first video in 2 minutes</h2>
-          <p className="text-white/70 mb-8 max-w-xl mx-auto">Upload any video or paste a YouTube URL. Get a transcript or subtitle file. No meeting bot needed — just the recording.</p>
-          <Link to="/video-to-transcript">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Try a no-bot workflow on your next call recording</h2>
+          <p className="text-white/70 mb-8 max-w-xl mx-auto">Upload the file after your meeting and compare how quickly you get a usable transcript package for recaps, subtitles, and handoffs.</p>
+          <Link to="/video-to-transcript?source=otter-alternative">
             <span className="inline-flex items-center gap-2 bg-white text-purple-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">
-              Try VideoText free
+              Start your no-bot test
               <ChevronRight className="w-4 h-4" />
             </span>
           </Link>

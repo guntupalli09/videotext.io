@@ -63,28 +63,50 @@ export default function RevAlternativePage() {
             <span className="text-[12px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Rev Alternative</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
-            The best{' '}
+            A credible{' '}
             <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
               Rev alternative
             </span>{' '}
-            with flat-rate pricing
+            for teams choosing speed over human-review turnaround
           </h1>
-          <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl mx-auto mb-8">
-            Rev charges $0.25/minute for AI transcription. VideoText starts free and scales to $10/month — no per-minute surprises. Same Whisper AI accuracy, plus subtitle export, translation, and burning.
+          <p className="text-lg text-gray-500 dark:text-white/45 max-w-3xl mx-auto mb-8">
+            This page is for buyers deciding between Rev’s service model and a self-serve AI workflow. If you need human-reviewed transcripts for legal, medical, or publication-critical work, Rev can still be the right answer. If your priority is fast post-recording output for content, marketing, education, or internal ops, VideoText is usually the faster and lower-friction path.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link to="/video-to-transcript">
+            <Link to="/video-to-transcript?source=rev-alternative">
               <span className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all">
-                Try VideoText free
+                Compare Rev vs VideoText on your next file
                 <ChevronRight className="w-4 h-4" />
               </span>
             </Link>
-            <span className="text-sm text-gray-400">No credit card · Files deleted after processing</span>
+            <span className="text-sm text-gray-400">No credit card · Honest tradeoffs included</span>
           </div>
         </div>
       </section>
 
       <div className="max-w-4xl mx-auto px-6 pb-24 space-y-16">
+
+        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">How to decide quickly: Rev or VideoText?</h2>
+          <div className="grid sm:grid-cols-2 gap-5 text-sm">
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Choose VideoText when you need:</h3>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                <li>• Fast self-serve turnaround for recorded files.</li>
+                <li>• Structured output (summary, chapters, subtitle exports) in one run.</li>
+                <li>• Predictable flat-rate pricing instead of per-minute variability.</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Choose Rev when you need:</h3>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                <li>• Human-reviewed transcripts with premium accuracy expectations.</li>
+                <li>• Workflows where legal/compliance tolerance for AI errors is low.</li>
+                <li>• Service-backed review rather than pure self-serve automation.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
         {/* Cost comparison callout */}
         <section className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-2xl p-6">
@@ -133,6 +155,20 @@ export default function RevAlternativePage() {
           </p>
         </section>
 
+        <section>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Output and effort tradeoff</h2>
+          <div className="grid sm:grid-cols-2 gap-5">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Rev</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Strong for high-stakes accuracy with human review, but slower and often more expensive for high-volume content operations.</p>
+            </div>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">VideoText</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Strong for fast transcript-to-publish workflows with summary, chapters, and subtitle exports in one pass. No human-review tier.</p>
+            </div>
+          </div>
+        </section>
+
         {/* Key advantages */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
@@ -150,6 +186,18 @@ export default function RevAlternativePage() {
           ))}
         </section>
 
+        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Alternative pages in this cluster</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Rev is strong for human-verified work. For faster AI-first workflows, compare these options.</p>
+          <div className="flex flex-wrap gap-3 text-sm">
+            <Link to="/trint-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Trint alternative</Link>
+            <Link to="/notta-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Notta alternative</Link>
+            <Link to="/fireflies-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Fireflies alternative</Link>
+            <Link to="/best-transcription-tool" className="text-purple-600 dark:text-purple-400 hover:underline">Best transcription tool</Link>
+            <Link to="/transcription-benchmark" className="text-purple-600 dark:text-purple-400 hover:underline">Transcription benchmark</Link>
+          </div>
+        </section>
+
         {/* FAQ */}
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
@@ -165,11 +213,11 @@ export default function RevAlternativePage() {
 
         {/* CTA */}
         <section className="bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Stop paying per minute</h2>
-          <p className="text-white/70 mb-8 max-w-xl mx-auto">VideoText is free to try, $10/month to get 450 minutes. No per-minute billing. No surprise invoices.</p>
-          <Link to="/video-to-transcript">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Run a real Rev-style test in minutes</h2>
+          <p className="text-white/70 mb-8 max-w-xl mx-auto">Use one of your typical files and compare turnaround, export readiness, and total effort before deciding where to migrate.</p>
+          <Link to="/video-to-transcript?source=rev-alternative">
             <span className="inline-flex items-center gap-2 bg-white text-purple-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">
-              Try VideoText free
+              Start your comparison run
               <ChevronRight className="w-4 h-4" />
             </span>
           </Link>

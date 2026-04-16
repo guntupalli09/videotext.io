@@ -97,6 +97,11 @@ export default function TranscriptionBenchmark() {
             <Link to="/fastest-transcription-software" className="text-violet-700 hover:underline">Fastest transcription software</Link>
             <Link to="/otter-vs-videotext" className="text-violet-700 hover:underline">Otter vs VideoText</Link>
             <Link to="/descript-vs-videotext" className="text-violet-700 hover:underline">Descript vs VideoText</Link>
+            <Link to="/notta-alternative" className="text-violet-700 hover:underline">Notta alternative</Link>
+            <Link to="/otter-alternative" className="text-violet-700 hover:underline">Otter alternative</Link>
+            <Link to="/fireflies-alternative" className="text-violet-700 hover:underline">Fireflies alternative</Link>
+            <Link to="/trint-alternative" className="text-violet-700 hover:underline">Trint alternative</Link>
+            <Link to="/rev-alternative" className="text-violet-700 hover:underline">Rev alternative</Link>
             <Link to="/ai-transcription-tools" className="text-violet-700 hover:underline">AI transcription tools</Link>
           </div>
         </section>

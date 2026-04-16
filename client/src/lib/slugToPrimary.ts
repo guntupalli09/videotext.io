@@ -59,4 +59,5 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'translate-video': '/translate-subtitles',
   'video-translation': '/translate-subtitles',
   'bulk-video-transcription': '/batch-process',
+  'otter-ai-alternative': '/otter-alternative',
 }

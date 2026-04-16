@@ -114,6 +114,20 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         body: 'Upload your recording here to get transcript, summary, and subtitle-ready outputs without local model setup or desktop app installs.',
       }
     }
+    if (sourceParam === 'trint-alternative' || sourceParam === 'rev-alternative' || sourceParam === 'notta-alternative' || sourceParam === 'otter-alternative' || sourceParam === 'fireflies-alternative') {
+      const labels: Record<string, string> = {
+        'trint-alternative': 'Trint',
+        'rev-alternative': 'Rev',
+        'notta-alternative': 'Notta',
+        'otter-alternative': 'Otter',
+        'fireflies-alternative': 'Fireflies',
+      }
+      const source = labels[sourceParam] || 'competitor'
+      return {
+        title: `${source} switch workflow`,
+        body: `Upload your recording here to test the same file in VideoText and compare transcript quality, summary depth, chapters, and export outputs in one run.`,
+      }
+    }
     return null
   }, [sourceParam])
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
