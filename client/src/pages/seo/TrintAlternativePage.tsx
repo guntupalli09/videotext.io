@@ -63,28 +63,51 @@ export default function TrintAlternativePage() {
             <span className="text-[12px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Trint Alternative</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
-            A cheaper{' '}
+            Switch from Trint if you need a faster, simpler{' '}
             <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-              Trint alternative
+              file-first transcription workflow
             </span>{' '}
-            that starts free
+            with lower cost to start
           </h1>
-          <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl mx-auto mb-8">
-            Trint starts at $80/month and is built for enterprise broadcast teams. VideoText gives you the same AI transcription quality, subtitle export, and multi-language support — starting free, with plans from $10/month.
+          <p className="text-lg text-gray-500 dark:text-white/45 max-w-3xl mx-auto mb-8">
+            This page is for solo creators, podcast teams, and marketing/video ops teams that tried Trint and felt the workflow was heavier than needed. Trint is strong for collaborative newsroom editing. VideoText is stronger when your priority is post-recording speed: upload a file (or a YouTube URL), get transcript + summary + chapters + subtitle exports, and move on.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link to="/video-to-transcript">
+            <Link to="/video-to-transcript?source=trint-alternative">
               <span className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all">
-                Try VideoText free
+                Run your next Trint file in VideoText
                 <ChevronRight className="w-4 h-4" />
               </span>
             </Link>
-            <span className="text-sm text-gray-400">No credit card · Files deleted after processing</span>
+            <span className="text-sm text-gray-400">No credit card · Clear tradeoffs · Files deleted after processing</span>
           </div>
         </div>
       </section>
 
       <div className="max-w-4xl mx-auto px-6 pb-24 space-y-16">
+
+        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Should you switch from Trint?</h2>
+          <div className="grid sm:grid-cols-2 gap-5 text-sm">
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Switch to VideoText if you want:</h3>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                <li>• Faster self-serve transcription without enterprise-style overhead.</li>
+                <li>• One-pass output (transcript, summary, chapters, SRT/VTT exports).</li>
+                <li>• File-first processing for recorded content and YouTube URLs.</li>
+                <li>• Lower entry cost before committing team-wide.</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Stay with Trint if you need:</h3>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                <li>• Multi-editor transcript collaboration inside one shared workspace.</li>
+                <li>• Newsroom-style review and publishing workflows at team scale.</li>
+                <li>• A workflow centered on editing/transcript collaboration over export speed.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
         {/* Why people leave Trint */}
         <section>
@@ -105,6 +128,20 @@ export default function TrintAlternativePage() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Workflow differences that matter in real projects</h2>
+          <div className="grid sm:grid-cols-2 gap-5">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Trint-style workflow</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Best when teams need shared transcript editing and enterprise process controls. Tradeoff: higher starting price and more workflow steps for simple transcript-to-export jobs.</p>
+            </div>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">VideoText workflow</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Best when one person or a small team needs fast, structured output from recorded files. Tradeoff: no multi-user transcript collaboration layer.</p>
+            </div>
+          </div>
         </section>
 
         {/* Comparison table */}
@@ -145,6 +182,19 @@ export default function TrintAlternativePage() {
           ))}
         </section>
 
+        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Compare your next-best options</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">If Trint feels heavy for your workflow, compare other file-first options before you switch.</p>
+          <div className="flex flex-wrap gap-3 text-sm">
+            <Link to="/rev-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Rev alternative</Link>
+            <Link to="/notta-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Notta alternative</Link>
+            <Link to="/otter-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Otter alternative</Link>
+            <Link to="/best-transcription-tool" className="text-purple-600 dark:text-purple-400 hover:underline">Best transcription tool</Link>
+            <Link to="/transcription-benchmark" className="text-purple-600 dark:text-purple-400 hover:underline">Transcription benchmark</Link>
+            <Link to="/blog/best-transcription-software-2026" className="text-purple-600 dark:text-purple-400 hover:underline">Best transcription software 2026</Link>
+          </div>
+        </section>
+
         {/* FAQ */}
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
@@ -160,11 +210,11 @@ export default function TrintAlternativePage() {
 
         {/* CTA */}
         <section className="bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Get started in 2 minutes — free</h2>
-          <p className="text-white/70 mb-8 max-w-xl mx-auto">No enterprise sales call. No $80/month minimum. Just upload a video or paste a YouTube URL and get your transcript.</p>
-          <Link to="/video-to-transcript">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Test a real Trint job before you switch</h2>
+          <p className="text-white/70 mb-8 max-w-xl mx-auto">Upload one of your normal recordings and compare speed, output structure, and export readiness directly in your own workflow.</p>
+          <Link to="/video-to-transcript?source=trint-alternative">
             <span className="inline-flex items-center gap-2 bg-white text-purple-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">
-              Try VideoText free
+              Compare with your own file
               <ChevronRight className="w-4 h-4" />
             </span>
           </Link>

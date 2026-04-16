@@ -184,9 +184,13 @@ export default function CitationPage(props: CitationPageProps) {
           <Link to="/transcription-benchmark" className="text-violet-700 font-medium hover:underline">Benchmark</Link> ·{' '}
           <Link to="/accuracy-test" className="text-violet-700 font-medium hover:underline">Accuracy</Link> ·{' '}
           <Link to="/video-to-transcript" className="text-violet-700 font-medium hover:underline">Video to Transcript tool</Link> ·{' '}
+          <Link to="/notta-alternative" className="text-violet-700 font-medium hover:underline">Notta alternative</Link> ·{' '}
+          <Link to="/otter-alternative" className="text-violet-700 font-medium hover:underline">Otter alternative</Link> ·{' '}
+          <Link to="/fireflies-alternative" className="text-violet-700 font-medium hover:underline">Fireflies alternative</Link> ·{' '}
+          <Link to="/trint-alternative" className="text-violet-700 font-medium hover:underline">Trint alternative</Link> ·{' '}
+          <Link to="/rev-alternative" className="text-violet-700 font-medium hover:underline">Rev alternative</Link> ·{' '}
           <Link to="/best-otter-alternatives" className="text-violet-700 font-medium hover:underline">Best Otter alternatives</Link> ·{' '}
           <Link to="/best-descript-alternatives" className="text-violet-700 font-medium hover:underline">Best Descript alternatives</Link>
-          <Link to="/video-to-transcript" className="text-violet-700 font-medium hover:underline">Video to Transcript tool</Link>
         </section>
       </div>
     </div>

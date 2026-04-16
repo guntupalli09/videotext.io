@@ -915,7 +915,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Transcribe Zoom meeting recordings with a post-meeting upload workflow: download the Zoom file, upload it here, and get transcript text plus structured outputs. No live bot joining, no Zoom integration setup.',
     breadcrumbLabel: 'Zoom Meeting Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-recording-to-transcript', '/meeting-transcription-tool', '/google-meet-transcript', '/speaker-diarization'],
+    relatedSlugs: ['/meeting-recording-to-transcript', '/meeting-transcription-tool', '/google-meet-transcript', '/otter-alternative'],
     indexable: true,
     intentKey: 'zoom-meeting-transcript',
     deepContent: {
@@ -973,7 +973,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Turn post-meeting recording files into structured transcript outputs fast. Download your recording from Zoom, Google Meet, Teams, or webinar tools, upload it here, and get transcript text, speaker labels, summary output, subtitles, and exports in one shared flow.',
     breadcrumbLabel: 'Meeting Recording to Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/google-meet-transcript', '/zoom-meeting-transcript', '/meeting-transcription-tool', '/teams-meeting-transcript'],
+    relatedSlugs: ['/google-meet-transcript', '/zoom-meeting-transcript', '/meeting-transcription-tool', '/fireflies-alternative'],
     indexable: true,
     intentKey: 'meeting-recording-to-transcript',
     deepContent: {
@@ -1491,7 +1491,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Descript is a powerful video editor. But if your workflow is transcription-first — getting clean text fast, exporting SRT subtitles, or transcribing YouTube URLs — Descript is slow, expensive, and overkill. We ran the same 60-minute recording through both. Here is what actually happened.',
     breadcrumbLabel: 'Descript Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/turboscribe-alternative', '/otter-ai-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
+    relatedSlugs: ['/turboscribe-alternative', '/otter-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
     indexable: true,
     intentKey: 'descript-alternative',
     deepContent: {
@@ -1537,16 +1537,16 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     ],
   },
   {
-    path: '/otter-ai-alternative',
-    title: 'Otter.ai Alternative for Video: What Otter Cannot Do | VideoText',
-    description: 'Otter.ai does not accept video files, generate SRT subtitles, or transcribe YouTube URLs. VideoText does all three — and deletes your files after. Free tier, no credit card.',
-    h1: 'Otter.ai Alternative for Video: The Features Otter Does Not Have',
-    intro: 'Otter.ai is built for live meeting transcription. But if your workflow involves recorded video files, YouTube transcription, or subtitle generation — Otter.ai hits a wall at step one. It does not accept video uploads. Here is the exact feature gap, and what VideoText does instead.',
-    breadcrumbLabel: 'Otter.ai Alternative',
+    path: '/otter-alternative',
+    title: 'Otter Alternative (2026): Meeting Assistant vs File-First Workflow | VideoText',
+    description: 'Compare Otter vs VideoText for meeting-heavy teams: live assistant notes vs post-recording transcript outputs, exports, and handoff speed.',
+    h1: 'Otter Alternative: Better for Post-Recording Output, Not Live Bot Capture',
+    intro: 'If your team is comparing Otter with a file-first workflow, decide by job-to-be-done. Otter is strong for live meeting assistant behavior and searchable conversation history. VideoText is stronger for post-meeting recording uploads and structured output delivery.',
+    breadcrumbLabel: 'Otter Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/descript-alternative', '/turboscribe-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
+    relatedSlugs: ['/notta-alternative', '/fireflies-alternative', '/meeting-transcription-tool', '/meeting-recording-to-transcript'],
     indexable: true,
-    intentKey: 'otter-ai-alternative',
+    intentKey: 'otter-alternative',
     deepContent: {
       proofPoints: [
         'Otter.ai does not accept video file uploads (MP4, MOV, AVI, WebM). VideoText processes all of them.',
@@ -1579,7 +1579,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         { title: 'When NOT to use VideoText', body: 'If you need a bot that joins your live Zoom, Meet, or Teams call in real time and takes notes during the meeting — Otter.ai is purpose-built for that. It integrates natively as a meeting assistant. VideoText is optimized for recorded content, not live sessions.' },
       ],
       ctaText: 'Transcribe a video free — no credit card',
-      ctaPath: '/video-to-transcript',
+      ctaPath: '/video-to-transcript?source=otter-alternative',
     },
     faq: [
       { q: 'Can Otter.ai transcribe video files?', a: 'No. Otter.ai does not accept video uploads. It is designed for live meeting transcription via Zoom, Google Meet, and Teams integration. VideoText accepts MP4, MOV, AVI, WebM, and MKV video files.' },
@@ -1592,10 +1592,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/rev-alternative',
-    title: 'Rev Alternative: AI Transcription in Minutes, Not Days | VideoText',
-    description: 'Rev charges $0.25/min and takes hours for human review. VideoText costs $0 to start, returns results in under 5 minutes, and deletes your files after. 98.5%+ AI accuracy.',
-    h1: 'Rev Alternative: Same Accuracy, Fraction of the Cost and Wait',
-    intro: 'Rev is the gold standard for human-reviewed transcription. But for most video and audio content, AI has closed the accuracy gap — and the difference in cost and speed is dramatic. We compared Rev and VideoText on the same file. Here is the breakdown.',
+    title: 'Rev Alternative (2026): Human Review vs Fast Self-Serve Workflow | VideoText',
+    description: 'Compare Rev vs VideoText by decision criteria: human-reviewed accuracy, turnaround, output depth, and cost model. Built for real switching decisions.',
+    h1: 'Rev Alternative: Choose by Accuracy Risk, Turnaround, and Workflow Fit',
+    intro: 'Considering a switch from Rev? This comparison is for teams balancing turnaround speed, accuracy risk tolerance, and output requirements. Rev is strongest when human review is mandatory. VideoText is stronger when fast self-serve transcription and structured exports are the main goal.',
     breadcrumbLabel: 'Rev Alternative',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/descript-alternative', '/turboscribe-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
@@ -1631,7 +1631,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         { title: 'When NOT to use VideoText', body: 'If your transcription will be used in legal, medical, or formal journalistic contexts where 99%+ accuracy and human accountability are required — Rev human transcription is the right tool. AI transcription at 98.5% still produces occasional errors, especially on names, accents, and domain-specific terminology.' },
       ],
       ctaText: 'Try VideoText free — results in minutes',
-      ctaPath: '/video-to-transcript',
+      ctaPath: '/video-to-transcript?source=rev-alternative',
     },
     faq: [
       { q: 'How accurate is VideoText compared to Rev?', a: 'VideoText uses Whisper large-v3 at 98.5%+ word accuracy on clear audio. Rev human review achieves 99%+. For most podcast, video, and business content on clear audio, the difference is negligible. For legal or medical content requiring absolute accuracy, Rev human review is safer.' },
@@ -1643,10 +1643,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/trint-alternative',
-    title: 'Trint Alternative: Full Transcription Workflow at $0 vs $80/mo | VideoText',
-    description: 'Trint starts at $80/month. VideoText starts at $0. Same Whisper AI accuracy, faster processing, YouTube URL input, and subtitle export — free to start, no credit card.',
-    h1: 'Trint Alternative: Everything Trint Does, Starting at $0',
-    intro: 'Trint charges $80/month for features VideoText includes in its free tier. We compared both on the same 60-minute file. Here is exactly where Trint charges more, processes slower, and still cannot transcribe a YouTube URL.',
+    title: 'Trint Alternative (2026): Team Editing vs File-First Transcription | VideoText',
+    description: 'Compare Trint vs VideoText by workflow fit: collaborative editing, turnaround, output depth, and cost to start. Designed for real switching intent.',
+    h1: 'Trint Alternative: Better for File-First Teams, Not Newsroom Editing',
+    intro: 'Thinking about switching from Trint? Use this page to decide by workflow, not marketing claims. Trint is strong for collaborative newsroom editing. VideoText is stronger for fast post-recording transcription, subtitle exports, and self-serve turnaround at a lower entry cost.',
     breadcrumbLabel: 'Trint Alternative',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/happyscribe-alternative', '/sonix-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
@@ -1681,7 +1681,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         { title: 'When NOT to use VideoText', body: 'If you run a newsroom or media production team where multiple editors need to collaborate on the same transcript, search across thousands of archived transcripts, or integrate with publishing CMSs — Trint\'s collaboration features are worth the premium. VideoText is a single-user workflow tool.' },
       ],
       ctaText: 'Get started free — no credit card needed',
-      ctaPath: '/video-to-transcript',
+      ctaPath: '/video-to-transcript?source=trint-alternative',
     },
     faq: [
       { q: 'How much cheaper is VideoText than Trint?', a: 'Trint starts at $80/month. VideoText has a free tier (3 imports/month) and paid plans from $19/month. For solo creators and small teams, VideoText is 75–100% cheaper for the same core transcription workflow.' },
@@ -1699,7 +1699,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'TurboScribe is fast. But we ran the same 60-minute podcast episode through both tools — same file, same audio quality. VideoText finished in 3 minutes 51 seconds. TurboScribe took 11 minutes 18 seconds. The output quality gap was bigger than the time gap. Here is the full breakdown.',
     breadcrumbLabel: 'TurboScribe Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/otter-ai-alternative', '/descript-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
+    relatedSlugs: ['/otter-alternative', '/descript-alternative', '/fastest-transcription-tool', '/best-transcription-tool'],
     indexable: true,
     intentKey: 'turboscribe-alternative',
     deepContent: {
@@ -1843,7 +1843,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Most "best transcription tool" lists are paid placements with no real testing. We compared VideoText against Otter.ai, Descript, TurboScribe, Rev, Trint, HappyScribe, and Sonix on the same files. Here is what we found — including where VideoText is not the best choice.',
     breadcrumbLabel: 'Best Transcription Tool',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/turboscribe-alternative', '/otter-ai-alternative', '/descript-alternative', '/fastest-transcription-tool'],
+    relatedSlugs: ['/turboscribe-alternative', '/otter-alternative', '/descript-alternative', '/fastest-transcription-tool'],
     indexable: true,
     intentKey: 'best-transcription-tool',
     deepContent: {
@@ -2003,7 +2003,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Use one transcription tool for recorded meetings across Zoom, Google Meet, Teams, and webinar platforms. Upload the meeting recording file and generate transcript text, speaker-separated review, summary output, subtitles, and exports without manual cleanup loops.',
     breadcrumbLabel: 'Meeting Transcription Tool',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-recording-to-transcript', '/google-meet-transcript', '/zoom-meeting-transcript', '/meeting-transcription', '/best-transcription-tool'],
+    relatedSlugs: ['/meeting-recording-to-transcript', '/google-meet-transcript', '/zoom-meeting-transcript', '/otter-alternative', '/notta-alternative'],
     indexable: true,
     intentKey: 'meeting-transcription-tool',
     deepContent: {
@@ -2112,7 +2112,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Every transcription tool claims to be fast. We tested the same 60-minute recording across VideoText, Otter.ai, Descript, TurboScribe, Rev AI, Trint, HappyScribe, and Sonix. These are the actual results — not marketing claims.',
     breadcrumbLabel: 'Fastest Transcription Tool',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/turboscribe-alternative', '/otter-ai-alternative', '/descript-alternative', '/best-transcription-tool'],
+    relatedSlugs: ['/turboscribe-alternative', '/otter-alternative', '/descript-alternative', '/best-transcription-tool'],
     indexable: true,
     intentKey: 'fastest-transcription-tool',
     deepContent: {
@@ -2234,7 +2234,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Turn any Google Meet recording into a transcript in minutes — no bot, no manual cleanup. Record in Google Meet, download the meeting file, then upload it here to get searchable text, subtitles, summaries, and export-ready output.',
     breadcrumbLabel: 'Google Meet Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/teams-meeting-transcript', '/zoom-meeting-transcript', '/meeting-transcript', '/speaker-diarization'],
+    relatedSlugs: ['/teams-meeting-transcript', '/zoom-meeting-transcript', '/meeting-transcript', '/notta-alternative'],
     indexable: true,
     intentKey: 'google-meet-transcript',
     deepContent: {
@@ -2580,13 +2580,13 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   // ── Cluster C: Competitor Alternative Pages ──────────────────────────────────
   {
     path: '/fireflies-alternative',
-    title: 'Fireflies.ai Alternative – Better Meeting Transcription | VideoText',
-    description: 'VideoText as a Fireflies.ai alternative. Transcribe meetings from any recording file. No bot joining your calls. Speaker labels, action items, SRT export. Free tier.',
-    h1: 'Fireflies.ai Alternative',
-    intro: 'Looking for a Fireflies.ai alternative? VideoText transcribes meetings from any recording file — no bot, no calendar access, no integrations required. Upload your MP4 and get a transcript with speaker labels, action items, and chapter navigation. We process and delete your files. Free tier.',
-    breadcrumbLabel: 'Fireflies.ai Alternative',
+    title: 'Fireflies Alternative (2026): No-Bot Meeting Workflow for Recorded Calls | VideoText',
+    description: 'Compare Fireflies and VideoText by workflow fit: bot-first in-call notes vs no-bot post-recording transcription with structured outputs.',
+    h1: 'Fireflies Alternative: Choose No-Bot Post-Meeting Processing When Exports Matter',
+    intro: 'Switching from Fireflies is usually about workflow preference, not feature count. If you need live bot participation during meetings, Fireflies is a fit. If you prefer processing completed recordings without bot attendance, VideoText gives a cleaner file-first path.',
+    breadcrumbLabel: 'Fireflies Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-transcript', '/zoom-meeting-transcript', '/otter-ai-alternative', '/google-meet-transcript'],
+    relatedSlugs: ['/notta-alternative', '/otter-alternative', '/meeting-transcription-tool', '/meeting-recording-to-transcript'],
     indexable: true,
     intentKey: 'fireflies-alternative',
     faq: [
@@ -2714,7 +2714,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Looking for an AssemblyAI alternative without API integration? VideoText provides browser-based transcription powered by Whisper — upload a file and get results immediately, no API key, no code, no developer setup. Speaker labels, SRT/VTT export, multi-language support. Free tier.',
     breadcrumbLabel: 'AssemblyAI Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/whisper-online', '/ai-transcription', '/otter-ai-alternative', '/video-to-transcript'],
+    relatedSlugs: ['/whisper-online', '/ai-transcription', '/otter-alternative', '/video-to-transcript'],
     indexable: true,
     intentKey: 'assembly-ai-alternative',
     faq: [
@@ -3379,15 +3379,15 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   // ── Cluster H: AI Meeting Notes Alternatives ────────────────────────────────
   {
     path: '/notta-alternative',
-    title: 'Best Notta Alternative – Transcription Without Monthly Limits | VideoText',
+    title: 'Notta Alternative (2026): Meeting Notes Assistant vs File-First Outputs | VideoText',
     description:
-      "Notta's free tier limits you to 3 minutes per transcription and 120 minutes/month. VideoText has no per-file time cap on any tier. Upload full-length interviews, lectures, and meetings. Free tier.",
-    h1: 'Notta Alternative — Transcribe Without Per-File Time Caps',
+      "Compare Notta and VideoText for meeting-heavy teams: live notes/search workflows vs post-recording transcript, summary, chapter, and export workflows.",
+    h1: 'Notta Alternative — Better for Recorded Meeting Outputs and Simpler Handoffs',
     intro:
-      "Notta is a popular AI meeting transcription tool, but its free tier caps each transcription at 3 minutes and limits you to 120 minutes per month. VideoText has no per-file time limit — upload a 2-hour interview or a 90-minute lecture on the free tier. Speaker labels, summary, chapters, keyword index. Files deleted after processing. Free tier with 3 full imports per month.",
+      "Use this page to choose between two different meeting workflows. Notta is built around live meeting note capture and searchable archives. VideoText is built for post-meeting recordings where you need transcript quality, structured summaries, chaptering, and export-ready outputs.",
     breadcrumbLabel: 'Notta Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/otter-ai-alternative', '/tactiq-alternative', '/meeting-transcript', '/interview-transcription'],
+    relatedSlugs: ['/otter-alternative', '/fireflies-alternative', '/meeting-transcription-tool', '/meeting-recording-to-transcript'],
     indexable: true,
     intentKey: 'notta-alternative',
     faq: [
@@ -3407,7 +3407,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Tactiq is a browser extension that transcribes live Google Meet, Zoom, and Teams calls in real time. It requires you to be present during the call — you cannot go back and transcribe a recording you forgot to capture live. VideoText works the other way: upload any past recording (MP4, MP3, etc.) and get a full transcript with speakers, summary, and chapters. No browser extension, no live call required. Free tier.",
     breadcrumbLabel: 'Tactiq Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/notta-alternative', '/otter-ai-alternative', '/zoom-meeting-transcript', '/meeting-transcript'],
+    relatedSlugs: ['/notta-alternative', '/otter-alternative', '/zoom-meeting-transcript', '/meeting-transcript'],
     indexable: true,
     intentKey: 'tactiq-alternative',
     faq: [
@@ -4115,7 +4115,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Record your voice directly in the browser and get an accurate text transcript instantly. Click the microphone, speak for up to 5 minutes, and VideoText transcribes your voice with AI. No app download, no software to install — works on any device. Free tier included.',
     breadcrumbLabel: 'Voice to Text',
     toolKey: 'voice-to-text',
-    relatedSlugs: ['/speech-to-text', '/voice-recorder-online', '/dictation-tool', '/voice-memo-to-text', '/otter-ai-alternative', '/dragon-dictate-alternative'],
+    relatedSlugs: ['/speech-to-text', '/voice-recorder-online', '/dictation-tool', '/voice-memo-to-text', '/otter-alternative', '/dragon-dictate-alternative'],
     indexable: true,
     intentKey: 'voice-to-text',
     faq: [
@@ -4344,7 +4344,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'VideoText is a free alternative to Speechify for voice recording and transcription. While Speechify focuses on text-to-speech (reading content aloud), VideoText does the opposite — converting your voice recordings to text using Whisper AI. No subscription required for basic use.',
     breadcrumbLabel: 'Speechify Alternative',
     toolKey: 'voice-to-text',
-    relatedSlugs: ['/voice-to-text', '/dictation-tool', '/dragon-dictate-alternative', '/otter-ai-alternative'],
+    relatedSlugs: ['/voice-to-text', '/dictation-tool', '/dragon-dictate-alternative', '/otter-alternative'],
     indexable: true,
     intentKey: 'speechify-alternative',
     faq: [

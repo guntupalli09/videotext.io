@@ -65,6 +65,7 @@ const PanoptoAlternative = lazy(() => import('./pages/seo/PanoptoAlternativePage
 const MacWhisperAlternative = lazy(() => import('./pages/seo/MacWhisperAlternativePage'))
 const DeepgramAlternative = lazy(() => import('./pages/seo/DeepgramAlternativePage'))
 const TactiqAlternative = lazy(() => import('./pages/seo/TactiqAlternativePage'))
+const FirefliesAlternative = lazy(() => import('./pages/seo/FirefliesAlternativePage'))
 const About = lazy(() => import('./pages/AboutPage'))
 const Open = lazy(() => import('./pages/Open'))
 const TranscriptionBenchmark = lazy(() => import('./pages/TranscriptionBenchmark'))
@@ -497,7 +498,8 @@ function App() {
             <Route path="/blog/:slug" element={<Blog />} />
             <Route path="/compare" element={<Compare />} />
             <Route path="/descript-alternative" element={<DescriptAlternative />} />
-            <Route path="/otter-ai-alternative" element={<OtterAiAlternative />} />
+            <Route path="/otter-alternative" element={<OtterAiAlternative />} />
+            <Route path="/otter-ai-alternative" element={<Navigate to="/otter-alternative" replace />} />
             <Route path="/trint-alternative" element={<TrintAlternative />} />
             <Route path="/rev-alternative" element={<RevAlternative />} />
             <Route path="/happyscribe-alternative" element={<HappyScribeAlternative />} />
@@ -511,6 +513,7 @@ function App() {
             <Route path="/macwhisper-alternative" element={<MacWhisperAlternative />} />
             <Route path="/deepgram-alternative" element={<DeepgramAlternative />} />
             <Route path="/tactiq-alternative" element={<TactiqAlternative />} />
+            <Route path="/fireflies-alternative" element={<FirefliesAlternative />} />
             <Route path="/about" element={<About />} />
             <Route path="/open" element={<Open />} />
             <Route path="/transcription-benchmark" element={<TranscriptionBenchmark />} />
