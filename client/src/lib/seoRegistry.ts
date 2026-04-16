@@ -4508,6 +4508,7 @@ const STATIC_PAGE_LABELS: Record<string, string> = {
 /** Popular footer links — revenue tools first, then SEO hubs & proof. */
 const POPULAR_FOOTER_PATHS: string[] = [
   ...REVENUE_TOOL_PATHS,
+  '/fastest-transcription-tool',
   '/best-transcription-tool',
   '/video-to-transcription',
   '/youtube-url-to-transcription',
@@ -4544,36 +4545,57 @@ export function getPageLabel(path: string): string {
 const MIN_RELATED = 4
 const MAX_RELATED = 6
 
+/** Hub pages injected into every related-tools block for their tool category.
+ *  Concentrates PageRank toward the highest-value pages site-wide. */
+const CATEGORY_HUBS: Partial<Record<SeoToolKey, readonly string[]>> = {
+  'video-to-transcript': ['/fastest-transcription-tool', '/best-transcription-tool'],
+  'video-to-subtitles': ['/subtitle-generator'],
+  'translate-subtitles': ['/video-to-subtitles'],
+  'fix-subtitles': ['/video-to-subtitles'],
+  'burn-subtitles': ['/video-to-subtitles'],
+  'compress-video': ['/video-to-transcript'],
+  'batch-process': ['/video-to-transcript'],
+  'voice-to-text': ['/fastest-transcription-tool'],
+}
+
 function isPathIndexable(path: string): boolean {
   const entry = byPath.get(path)
   if (entry) return entry.indexable
   return true // core/static routes are indexable
 }
 
-/** Related tool suggestions for an entry: relatedSlugs first, then same toolKey; 4–6 links, never self. Only indexable targets. */
+/** Related tool suggestions for an entry: relatedSlugs first, then same-toolKey fallback,
+ *  then category hub pages to concentrate PageRank on top-value pages. 4–6 links, never self. */
 export function getRelatedSuggestionsForEntry(entry: SeoRegistryEntry): { path: string; title: string }[] {
   const seen = new Set<string>([entry.path])
   const out: { path: string; title: string }[] = []
 
+  // Tier 1: explicit relatedSlugs
   for (const path of entry.relatedSlugs) {
     if (seen.has(path) || out.length >= MAX_RELATED || !isPathIndexable(path)) continue
     seen.add(path)
     out.push({ path: resolveInternalLinkPath(path), title: getPageLabel(path) })
   }
-  if (out.length >= MIN_RELATED) return out.slice(0, MAX_RELATED)
 
-  for (const other of REGISTRY) {
-    if (seen.has(other.path) || !other.indexable || other.toolKey !== entry.toolKey || out.length >= MAX_RELATED) continue
-    seen.add(other.path)
-    out.push({ path: resolveInternalLinkPath(other.path), title: other.breadcrumbLabel })
+  // Tier 2: same toolKey (fill gaps below MIN_RELATED)
+  if (out.length < MIN_RELATED) {
+    for (const other of REGISTRY) {
+      if (seen.has(other.path) || !other.indexable || other.toolKey !== entry.toolKey || out.length >= MAX_RELATED) continue
+      seen.add(other.path)
+      out.push({ path: resolveInternalLinkPath(other.path), title: other.breadcrumbLabel })
+    }
   }
-  if (out.length >= MIN_RELATED) return out.slice(0, MAX_RELATED)
 
-  for (const other of REGISTRY) {
-    if (seen.has(other.path) || !other.indexable || out.length >= MAX_RELATED) continue
-    seen.add(other.path)
-    out.push({ path: resolveInternalLinkPath(other.path), title: other.breadcrumbLabel })
+  // Tier 3: any registry page (fill gaps below MIN_RELATED)
+  if (out.length < MIN_RELATED) {
+    for (const other of REGISTRY) {
+      if (seen.has(other.path) || !other.indexable || out.length >= MAX_RELATED) continue
+      seen.add(other.path)
+      out.push({ path: resolveInternalLinkPath(other.path), title: other.breadcrumbLabel })
+    }
   }
+
+  // Dedup resolved paths
   const deduped: { path: string; title: string }[] = []
   const seenTargets = new Set<string>()
   for (const item of out) {
@@ -4581,6 +4603,26 @@ export function getRelatedSuggestionsForEntry(entry: SeoRegistryEntry): { path: 
     seenTargets.add(item.path)
     deduped.push(item)
   }
+
+  // Hub injection: fill remaining slots with category hub pages not already present.
+  // If all slots are full, replace the last slot to guarantee at least one hub appears.
+  // Ensures every page links to the highest-value pages in its tool category.
+  const hubs = CATEGORY_HUBS[entry.toolKey] ?? []
+  let hubsInjected = 0
+  for (const hubPath of hubs) {
+    const resolved = resolveInternalLinkPath(hubPath)
+    if (seenTargets.has(resolved) || hubPath === entry.path || !isPathIndexable(hubPath)) continue
+    if (deduped.length < MAX_RELATED) {
+      seenTargets.add(resolved)
+      deduped.push({ path: resolved, title: getPageLabel(hubPath) })
+    } else if (hubsInjected === 0) {
+      // No room: replace last slot so at least one hub is always present
+      deduped[deduped.length - 1] = { path: resolved, title: getPageLabel(hubPath) }
+    }
+    hubsInjected++
+    if (hubsInjected >= hubs.length) break
+  }
+
   return deduped.slice(0, MAX_RELATED)
 }
 
