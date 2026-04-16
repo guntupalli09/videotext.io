@@ -3,7 +3,7 @@ import { getUser, saveUser, User, PlanType, atomicResetDailyImportIfNeeded, atom
 import { getPlanLimits, getJobPriority, isProSoftCapActive } from '../utils/limits'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
-import { getPlanAndEmailForStripeCustomer } from '../services/stripe'
+import { getPlanAndEmailForStripeCustomer, getSubscriptionPeriodEnd } from '../services/stripe'
 import { enforceSubscriptionState } from '../utils/subscriptionGuard'
 
 const router = express.Router()
@@ -254,4 +254,3 @@ router.get('/current', async (req: Request, res: Response) => {
 })
 
 export default router
-
