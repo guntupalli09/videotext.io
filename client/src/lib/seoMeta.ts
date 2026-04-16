@@ -280,9 +280,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Turn long YouTube videos into transcript, subtitles, summary, and chapters in minutes.',
   },
   '/blog/best-transcription-software-2026': {
-    title: 'Best Transcription Software in 2026: Ranked by Speed, Accuracy & Price | VideoText',
+    title: 'Best Transcription Software in 2026 (Tested for Real Workflows) | VideoText',
     description:
-      'We tested 8 transcription tools — VideoText, Otter.ai, Descript, Trint, Rev, Whisper, and more. Here is which tool wins for each use case.',
+      'Workflow-first ranking of top transcription software in 2026: speed-to-output, quality, exports, privacy model, and real cost by use case.',
   },
   '/blog/best-video-captioning-tools-2026': {
     title: 'Best Video Captioning Tools for Content Creators in 2026 | VideoText',
@@ -523,7 +523,7 @@ export const BLOG_POST_DATES: Record<string, { datePublished: string; dateModifi
   '/blog/how-we-handle-support':               { datePublished: '2026-03-01', dateModified: '2026-03-01' },
   '/blog/why-we-delete-your-files':            { datePublished: '2026-02-26', dateModified: '2026-02-26' },
   '/blog/processing-speed-breakdown':          { datePublished: '2026-02-25', dateModified: '2026-02-25' },
-  '/blog/best-transcription-software-2026':   { datePublished: '2026-03-14', dateModified: '2026-03-14' },
+  '/blog/best-transcription-software-2026':   { datePublished: '2026-03-14', dateModified: '2026-04-16' },
   '/blog/best-video-captioning-tools-2026':   { datePublished: '2026-03-13', dateModified: '2026-03-13' },
   '/blog/how-to-get-youtube-transcript':       { datePublished: '2026-03-14', dateModified: '2026-03-14' },
   '/blog/how-to-transcribe-audio-to-text-free':{ datePublished: '2026-03-12', dateModified: '2026-03-12' },
@@ -935,15 +935,55 @@ const HOWTO_SCHEMAS: Record<string, { name: string; description: string; steps: 
       { name: 'Download your structured output', text: 'Export the full transcript as TXT, PDF, DOCX, or JSON. Download SRT or VTT subtitle files. Copy the AI summary or chapters. Your files are deleted immediately after you download.' },
     ],
   },
+  '/google-meet-transcript': {
+    name: 'How to transcribe a Google Meet recording',
+    description: 'Record in Google Meet, download the recording from Google Drive, and upload it to VideoText for transcript, summary, and subtitle outputs.',
+    steps: [
+      { name: 'Record your meeting in Google Meet', text: 'Finish your meeting and ensure the recording is saved to Google Drive. This workflow is for post-meeting recording files, not live meeting capture.' },
+      { name: 'Download the recording MP4 from Google Drive', text: 'Open Google Drive, locate the Meet recording, and download the MP4 file to your device.' },
+      { name: 'Upload the recording to VideoText', text: 'Use the Google Meet Transcript page uploader to process the file and generate transcript text, speaker-labeled view, summary output, and subtitle exports.' },
+      { name: 'Review and export outputs', text: 'Copy transcript text for notes, download subtitle files, and export structured outputs for follow-up and documentation workflows.' },
+    ],
+  },
+  '/zoom-meeting-transcript': {
+    name: 'How to transcribe a Zoom meeting recording',
+    description: 'Download your Zoom meeting recording and upload it to VideoText to generate transcript, summary, and subtitle outputs.',
+    steps: [
+      { name: 'Record your meeting in Zoom', text: 'Use local or cloud recording in Zoom and wait for the recording file to be available.' },
+      { name: 'Download the Zoom recording file', text: 'Download the MP4 from Zoom cloud recordings or your local Zoom recordings folder.' },
+      { name: 'Upload to VideoText', text: 'Upload the downloaded Zoom recording file to the shared transcription tool flow.' },
+      { name: 'Use transcript outputs', text: 'Review transcript text, summary output, speaker-labeled view, and subtitle exports for follow-up.' },
+    ],
+  },
+  '/meeting-recording-to-transcript': {
+    name: 'How to convert a meeting recording to transcript text',
+    description: 'Download meeting recordings from Zoom, Google Meet, Teams, or webinars and upload the file for transcript outputs in VideoText.',
+    steps: [
+      { name: 'Download your meeting recording', text: 'Export or download the recording file from your meeting platform after the call.' },
+      { name: 'Upload the file into VideoText', text: 'Use the meeting recording uploader flow to start transcript processing.' },
+      { name: 'Review transcript and summary outputs', text: 'Use generated transcript text and structured summary output for team notes and handoffs.' },
+      { name: 'Export subtitles and files', text: 'Download subtitle and transcript export files for downstream workflows.' },
+    ],
+  },
+  '/meeting-transcription-tool': {
+    name: 'How to use a meeting transcription tool for recorded calls',
+    description: 'Upload recorded meetings to generate transcript text, speaker labels, summaries, subtitles, and exports in one workflow.',
+    steps: [
+      { name: 'Download the meeting recording', text: 'Get the recording file from Zoom, Google Meet, Teams, or webinar software.' },
+      { name: 'Upload the recording file', text: 'Upload the file into the shared transcription tool used by meeting-focused pages.' },
+      { name: 'Generate and review transcript output', text: 'Review transcript text, speaker-separated sections, and summary output for key actions.' },
+      { name: 'Share exports with stakeholders', text: 'Export files for notes, recaps, captioning, and searchable documentation.' },
+    ],
+  },
   '/how-to-create-srt-file': {
     name: 'How to Create an SRT File',
-    description: 'A step-by-step guide to creating an SRT subtitle file from a video using VideoText.',
+    description: 'A practical tutorial for creating SRT subtitle files manually and with AI generation, including valid timestamp format and validation checks.',
     steps: [
-      { name: 'Sign up for VideoText', text: 'Go to videotext.io and sign up for a free account. No credit card required. You get 3 free imports per month.' },
-      { name: 'Upload your video or paste a YouTube URL', text: 'On the Video to Subtitles page, upload your video file (MP4, MOV, AVI, WebM) or paste a public YouTube URL directly.' },
-      { name: 'Select your language', text: 'Choose the spoken language of the video. VideoText supports 70+ languages via OpenAI Whisper.' },
-      { name: 'Generate subtitles', text: 'Click Generate. VideoText transcribes the audio and creates time-coded subtitle cues. A 60-minute video takes under 5 minutes.' },
-      { name: 'Download the SRT file', text: 'Click Download SRT. The file is saved to your device in standard SubRip (.srt) format, ready to upload to YouTube, Vimeo, or any video player.' },
+      { name: 'Understand valid SRT block format', text: 'Each subtitle block must include: sequence number, timestamp line in HH:MM:SS,mmm --> HH:MM:SS,mmm format, subtitle text, then one blank line.' },
+      { name: 'Create SRT manually in a text editor', text: 'Use Notepad, TextEdit, or VS Code. Write each block with proper numbering and timestamps. Save using UTF-8 encoding with .srt extension.' },
+      { name: 'Validate and fix common errors', text: 'Check for overlapping timestamps, missing blank lines, invalid arrows, and wrong millisecond separators before uploading your subtitle file.' },
+      { name: 'Use AI generation for faster workflows', text: 'For full videos, upload your file to VideoText Video to Subtitles and auto-generate SRT instead of manually timing each subtitle line.' },
+      { name: 'Download and test the subtitle file', text: 'Open the SRT in a player or upload to YouTube/Vimeo to verify timing sync and readability before publishing.' },
     ],
   },
   '/how-to-add-subtitles-to-mp4': {

@@ -647,6 +647,8 @@ function App() {
             />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
             <Route path="/batch-process" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/zoom-recording-transcript" element={<Navigate to="/zoom-meeting-transcript" replace />} />
+            <Route path="/transcribe-meeting-recording" element={<Navigate to="/meeting-recording-to-transcript" replace />} />
             <Route path="/translate-subtitles" element={<TranslateSubtitles />} />
             <Route path="/translation" element={<TranslateSubtitles />} />
             <Route path="/fix-subtitles" element={<FixSubtitles />} />
