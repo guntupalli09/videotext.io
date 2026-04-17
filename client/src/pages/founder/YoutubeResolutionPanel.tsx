@@ -22,6 +22,16 @@ export default function YoutubeResolutionPanel({ data }: { data?: DashboardYoutu
         <Metric label="Patched" value={`${data.patchResolvedPct.toFixed(1)}%`} />
         <Metric label="Fallback ASR" value={`${data.fallbackPct.toFixed(1)}%`} danger={data.fallbackPct > 10} />
         <Metric label="Avg confidence" value={data.avgConfidence != null ? `${(data.avgConfidence * 100).toFixed(1)}%` : '—'} />
+        <Metric label="Degraded exec" value={`${data.degradedExecutionPct.toFixed(1)}%`} danger={data.degradedExecutionPct > 1} />
+        <Metric label="High cost jobs" value={`${data.highCostPct.toFixed(1)}%`} danger={data.highCostPct > 20} />
+        <Metric label="Queue timeout rate" value={`${(data.queueTimeoutRate * 100).toFixed(1)}%`} danger={data.queueTimeoutRate > 0.1} />
+        <Metric label="Retry success" value={data.retrySuccessRate != null ? `${(data.retrySuccessRate * 100).toFixed(1)}%` : '—'} danger={data.retrySuccessRate != null && data.retrySuccessRate < 0.3} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <Metric label="Retry rate" value={`${(data.retryRate * 100).toFixed(1)}%`} />
+        <Metric label="Avg retry delay" value={data.avgRetryDelayMs != null ? `${Math.round(data.avgRetryDelayMs)} ms` : '—'} />
+        <Metric label="Circuit trips" value={String(data.circuitBreakerTriggers)} danger={data.circuitBreakerTriggers > 0} />
       </div>
 
       <div>

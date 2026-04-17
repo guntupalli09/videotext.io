@@ -263,17 +263,21 @@ export interface JobData {
   youtubeCaptionSource?: 'timedtext' | 'player_api' | 'ytdlp'
   youtubeCaptionSourceDetail?: string
   /** Final YouTube resolution path for observability and client trust. */
-  youtubeResolutionPath?: 'captions' | 'caption_patch' | 'audio_transcription'
+  youtubeResolutionPath?: 'caption' | 'caption_patch' | 'audio_cookies' | 'audio_proxy' | 'failed'
   /** Missing windows to patch via gap-only ASR when caption decision is PATCH. */
   captionPatchWindows?: CaptionPatchWindow[]
   /** Failure taxonomy and fallback chain for YouTube ingest observability. */
-  youtubeErrorCode?: 'NO_CAPTIONS' | 'GEO_BLOCKED' | 'LOGIN_REQUIRED' | 'VIDEO_UNAVAILABLE' | 'STREAM_BLOCKED' | 'PROXY_POOL_DEGRADED' | 'STREAM_TIMEOUT' | 'UNKNOWN'
+  youtubeErrorCode?: 'NO_CAPTIONS' | 'AUTH_REQUIRED' | 'GEO_BLOCKED' | 'RATE_LIMITED' | 'QUEUE_TIMEOUT' | 'STREAM_ERROR' | 'UNKNOWN'
   fallbackHistory?: string[]
   youtubeAttempts?: YoutubeAttemptRecord[]
   youtubeProxyUsed?: boolean
   youtubeProxyId?: string
   youtubeDecisionScore?: number
   youtubeConfidence?: number
+  degradedExecution?: boolean
+  costEstimate?: number
+  highCost?: boolean
+  queueTimeoutRetryCount?: number
   /** Pre-computed transcript from YouTube captions; skips Whisper. */
   precomputedTranscript?: { fullText: string; segments: { start: number; end: number; text: string }[] }
   /** Set to true after usage is counted; persisted to Redis via job.update() to prevent double-counting on retry. */
@@ -495,7 +499,7 @@ async function recordYoutubeResolutionMetric(
   const source = data.youtubeCaptionSource || 'none'
   const errorCode = data.youtubeErrorCode || 'none'
   const patch = path === 'caption_patch' ? 1 : 0
-  const fallback = path === 'audio_transcription' ? 1 : 0
+  const fallback = path === 'audio_cookies' ? 1 : 0
   const attempts = data.youtubeAttempts || []
   const proxyUsed = attempts.some((a) => a.type === 'proxy' && a.result === 'success') ? 1 : 0
   const failedAfterProxy = attempts.some((a) => a.type === 'proxy' && a.result === 'fail') ? 1 : 0
@@ -507,6 +511,8 @@ async function recordYoutubeResolutionMetric(
   const confidenceScaled = typeof data.youtubeConfidence === 'number'
     ? Math.round(Math.max(0, Math.min(1, data.youtubeConfidence)) * 1000)
     : 0
+  const degradedExecution = data.degradedExecution ? 1 : 0
+  const highCost = data.highCost ? 1 : 0
 
   try {
     await redis
@@ -525,6 +531,8 @@ async function recordYoutubeResolutionMetric(
       .hincrby(key, 'latency_cookies_ms', Math.round(cookiesLatency))
       .hincrby(key, 'latency_proxy_ms', Math.round(proxyLatency))
       .hincrby(key, 'confidence_sum_scaled', confidenceScaled)
+      .hincrby(key, 'degraded_execution_count', degradedExecution)
+      .hincrby(key, 'high_cost_count', highCost)
       .expire(key, 45 * 24 * 60 * 60)
       .exec()
 
@@ -591,12 +599,13 @@ async function recordYoutubeResolutionMetric(
 
 const classifyYoutubeErrorCode = (msg: string): JobData['youtubeErrorCode'] => {
   const m = msg.toLowerCase()
-  if (m.includes('timed out')) return 'STREAM_TIMEOUT'
-  if (m.includes('private') || m.includes('unavailable') || m.includes('removed')) return 'VIDEO_UNAVAILABLE'
-  if (m.includes('sign in') || m.includes('bot')) return 'LOGIN_REQUIRED'
+  if (m.includes('sign in') || m.includes('bot') || m.includes('login')) return 'AUTH_REQUIRED'
   if (m.includes('region') || m.includes('geo')) return 'GEO_BLOCKED'
-  if (m.includes('403') || m.includes('429') || m.includes('signature') || m.includes('no video formats found')) return 'STREAM_BLOCKED'
-  if (m.includes('proxy pool degraded')) return 'PROXY_POOL_DEGRADED'
+  if (m.includes('429') || m.includes('rate limit') || m.includes('too many requests')) return 'RATE_LIMITED'
+  if (m.includes('queue_timeout') || m.includes('queue timeout') || m.includes('semaphore acquire timeout')) return 'QUEUE_TIMEOUT'
+  if (m.includes('private') || m.includes('unavailable') || m.includes('removed')) return 'STREAM_ERROR'
+  if (m.includes('timed out') || m.includes('timeout')) return 'STREAM_ERROR'
+  if (m.includes('403') || m.includes('signature') || m.includes('no video formats found')) return 'STREAM_ERROR'
   if (m.includes('no captions')) return 'NO_CAPTIONS'
   return 'UNKNOWN'
 }
@@ -604,10 +613,159 @@ const classifyYoutubeErrorCode = (msg: string): JobData['youtubeErrorCode'] => {
 const deriveAttemptErrorCode = (attempts?: YoutubeAttemptRecord[]): JobData['youtubeErrorCode'] | undefined => {
   const lastFailure = [...(attempts || [])].reverse().find((a) => a.result === 'fail' && a.errorCode)
   if (!lastFailure?.errorCode) return undefined
-  if (lastFailure.errorCode === 'UNKNOWN' || lastFailure.errorCode === 'NO_CAPTIONS' || lastFailure.errorCode === 'GEO_BLOCKED' || lastFailure.errorCode === 'LOGIN_REQUIRED' || lastFailure.errorCode === 'STREAM_BLOCKED' || lastFailure.errorCode === 'PROXY_POOL_DEGRADED' || lastFailure.errorCode === 'STREAM_TIMEOUT') {
+  if (lastFailure.errorCode === 'UNKNOWN' || lastFailure.errorCode === 'NO_CAPTIONS' || lastFailure.errorCode === 'AUTH_REQUIRED' || lastFailure.errorCode === 'GEO_BLOCKED' || lastFailure.errorCode === 'RATE_LIMITED' || lastFailure.errorCode === 'QUEUE_TIMEOUT' || lastFailure.errorCode === 'STREAM_ERROR') {
     return lastFailure.errorCode as JobData['youtubeErrorCode']
   }
   return undefined
+}
+
+const isQueueTimeoutError = (msg: string): boolean => {
+  const m = msg.toLowerCase()
+  return m.includes('queue_timeout') || m.includes('queue timeout') || m.includes('semaphore acquire timeout')
+}
+
+function clamp01(v: number): number {
+  return Math.max(0, Math.min(1, v))
+}
+
+function retryMetricMinuteKey(kind: string, now = Date.now()): string {
+  const minuteBucket = Math.floor(now / 60_000)
+  return `metrics:yt:retry:${kind}:${minuteBucket}`
+}
+
+async function computeQueuePressure(
+  redis: import('ioredis').Redis,
+  log: ReturnType<typeof withJobContext>,
+  queueTimeoutRate: number
+): Promise<number> {
+  const counts = await audioQueue.getJobCounts('waiting', 'active', 'delayed')
+  const queueDepth = (counts.waiting || 0) + (counts.active || 0) + (counts.delayed || 0)
+  const queueCapacity = Math.max(1, parseInt(process.env.YT_AUDIO_QUEUE_CAPACITY || String(AUDIO_CONCURRENCY * 20), 10))
+  const maxPermits = Math.max(1, parseInt(process.env.YT_DLP_GLOBAL_MAX_PERMITS || process.env.YT_DLP_MAX_CONCURRENCY || '4', 10))
+  const activePermits = Number(await redis.zcard('yt_dlp_global_semaphore:leases').catch(() => 0))
+  const queueDepthRatio = queueDepth / queueCapacity
+  const permitUtilization = activePermits / maxPermits
+  const pressureScore = clamp01(
+    0.4 * queueDepthRatio +
+    0.3 * permitUtilization +
+    0.3 * queueTimeoutRate
+  )
+  log.info({ msg: 'queue_pressure', queueDepth, queueCapacity, queueDepthRatio, activePermits, maxPermits, permitUtilization, queueTimeoutRate, pressureScore })
+  return pressureScore
+}
+
+function computeAdaptiveQueueDelayMs(pressureScore: number): number {
+  const baseDelay = 5_000 + Math.floor(Math.random() * 10_000)
+  const maxDelay = 45_000
+  const scaled = Math.min(maxDelay, Math.round(baseDelay * (1 + pressureScore * 2)))
+  const jitterFactor = 0.75 + (Math.random() * 0.5) // ±25%
+  return Math.max(5_000, Math.min(maxDelay, Math.round(scaled * jitterFactor)))
+}
+
+async function requeueOnQueueTimeout(
+  job: import('bull').Job<JobData>,
+  data: JobData,
+  log: ReturnType<typeof withJobContext>
+): Promise<boolean> {
+  const redis = (job as any).queue?.client as import('ioredis').Redis | undefined
+  if (redis) {
+    await redis
+      .multi()
+      .incr(retryMetricMinuteKey('queue_timeout'))
+      .expire(retryMetricMinuteKey('queue_timeout'), 2 * 60)
+      .exec()
+      .catch(() => {})
+  }
+  const currentRetries = data.queueTimeoutRetryCount || 0
+  let maxRetries = 2
+  if (currentRetries >= maxRetries) return false
+
+  let delayMs = 10_000
+  let pressureScore = 0
+  let queueTimeoutRate = 0
+  let retrySuccessRate = 1
+  if (redis) {
+    const retriesInLastMinute = Number(await redis.get(retryMetricMinuteKey('scheduled')).catch(() => '0') || 0)
+    const queueTimeoutEvents = Number(await redis.get(retryMetricMinuteKey('queue_timeout')).catch(() => '0') || 0)
+    const audioAttempts = Number(await redis.get(retryMetricMinuteKey('attempts')).catch(() => '0') || 0)
+    queueTimeoutRate = audioAttempts > 0 ? queueTimeoutEvents / audioAttempts : 0
+    pressureScore = await computeQueuePressure(redis, log, queueTimeoutRate).catch(() => 0)
+
+    const successfulRetries = Number(await redis.get('metrics:yt:retry:success').catch(() => '0') || 0)
+    const totalRetries = Number(await redis.get('metrics:yt:retry:count').catch(() => '0') || 0)
+    retrySuccessRate = totalRetries > 0 ? successfulRetries / totalRetries : 1
+    if (totalRetries >= 10 && retrySuccessRate < 0.3) {
+      maxRetries = 1
+      if (currentRetries >= maxRetries) {
+        log.warn({
+          msg: 'retry_feedback_suppressed',
+          jobId: String(job.id),
+          retry_success_rate: retrySuccessRate,
+          successfulRetries,
+          totalRetries,
+          maxRetries,
+        })
+        return false
+      }
+    }
+
+    const circuitOpenUntil = Number(await redis.get('yt:retry:circuit:open_until').catch(() => '0') || 0)
+    const now = Date.now()
+    const circuitThreshold = Math.max(10, parseInt(process.env.YT_RETRY_CIRCUIT_THRESHOLD_PER_MIN || '25', 10))
+    if (circuitOpenUntil > now || (pressureScore > 0.9 && retriesInLastMinute > circuitThreshold)) {
+      const cooldownMs = Math.max(30_000, Math.min(60_000, parseInt(process.env.YT_RETRY_CIRCUIT_COOLDOWN_MS || '45000', 10)))
+      const openUntil = now + cooldownMs
+      await redis.set('yt:retry:circuit:open_until', String(openUntil), 'PX', cooldownMs).catch(() => {})
+      await redis.incr('metrics:yt:retry:circuit_breaker_triggers').catch(() => {})
+      await redis.expire('metrics:yt:retry:circuit_breaker_triggers', 24 * 60 * 60).catch(() => {})
+      log.error({
+        msg: 'retry_circuit_open',
+        jobId: String(job.id),
+        retries_in_last_minute: retriesInLastMinute,
+        queue_timeout_rate: queueTimeoutRate,
+        pressureScore,
+        openUntil,
+      })
+      return false
+    }
+    delayMs = computeAdaptiveQueueDelayMs(pressureScore)
+    if (totalRetries >= 10 && retrySuccessRate < 0.3) {
+      delayMs = Math.min(45_000, Math.round(delayMs * 1.5))
+    }
+  } else {
+    delayMs = computeAdaptiveQueueDelayMs(0)
+  }
+
+  const nextData: JobData = {
+    ...data,
+    queueTimeoutRetryCount: currentRetries + 1,
+    youtubeErrorCode: 'QUEUE_TIMEOUT',
+    fallbackHistory: [...(data.fallbackHistory || []), `queue_timeout_retry:${currentRetries + 1}`],
+  }
+  await audioQueue.add(nextData, {
+    jobId: `${data.jobToken ?? String(job.id)}:qt:${currentRetries + 1}:${Date.now()}`,
+    delay: delayMs,
+    attempts: 1,
+    removeOnComplete: true,
+    removeOnFail: true,
+    priority: typeof (job.opts as any)?.priority === 'number'
+      ? Math.max(1, Number((job.opts as any).priority) - 1)
+      : undefined,
+  })
+  if (redis) {
+    await redis
+      .multi()
+      .incr(retryMetricMinuteKey('scheduled'))
+      .expire(retryMetricMinuteKey('scheduled'), 2 * 60)
+      .incrbyfloat('metrics:yt:retry:delay_sum_ms', delayMs)
+      .incr('metrics:yt:retry:count')
+      .expire('metrics:yt:retry:delay_sum_ms', 24 * 60 * 60)
+      .expire('metrics:yt:retry:count', 24 * 60 * 60)
+      .exec()
+      .catch(() => {})
+  }
+  log.warn({ msg: 'queue_retry_scheduled', jobId: String(job.id), retryCount: currentRetries + 1, delayMs, pressureScore, queue_timeout_rate: queueTimeoutRate, retry_success_rate: retrySuccessRate, maxRetries })
+  return true
 }
 
 async function processCaptionJob(job: import('bull').Job<JobData>): Promise<unknown> {
@@ -658,7 +816,7 @@ async function processCaptionJob(job: import('bull').Job<JobData>): Promise<unkn
     ;(data as any).precomputedTranscript = captions
     ;(data as any).youtubeCaptionSource = captions.source
     ;(data as any).youtubeCaptionSourceDetail = captions.sourceDetail
-    ;(data as any).youtubeResolutionPath = 'captions'
+    ;(data as any).youtubeResolutionPath = 'caption'
     ;(data as any).youtubeDecisionScore = decision.score
     ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), `captions:accept:${captions.source}`]
     ;(data as any).filePath = ''
@@ -666,7 +824,7 @@ async function processCaptionJob(job: import('bull').Job<JobData>): Promise<unkn
     ;(data as any).originalName = (data.youtubeTitle || 'youtube_video').replace(/[^\w\s.\-]/g, '_').trim() + '.wav'
     ;(data as any).toolType = 'video-to-transcript'
     ;(data as any).youtubeUrl = undefined
-    log.info({ msg: 'caption_job_completed', source: 'captions', jobId: String(job.id) })
+    log.info({ msg: 'caption_job_completed', source: 'caption', jobId: String(job.id) })
     return processJob(job)
   }
   if (captions && decision?.action === 'patch') {
@@ -690,11 +848,14 @@ async function processCaptionJob(job: import('bull').Job<JobData>): Promise<unkn
   }
   if (redis) await setJobStage(redis, job.id, 'downloading_audio')
   log.info({ msg: 'caption_handoff_to_audio', jobId: String(job.id) })
+  if (!captions) {
+    ;(data as any).youtubeErrorCode = 'NO_CAPTIONS'
+  }
   const nextData: JobData = {
     ...data,
     toolType: 'youtube-audio-to-transcript',
     youtubeFallbackToAudio: true,
-    youtubeResolutionPath: 'audio_transcription',
+    youtubeResolutionPath: 'audio_cookies',
     youtubeDecisionScore: decision?.score,
     fallbackHistory: [...(data.fallbackHistory || []), 'captions:fallback', 'audio:full_transcription'],
     youtubeAttempts: data.youtubeAttempts,
@@ -713,18 +874,40 @@ async function processAudioJob(job: import('bull').Job<JobData>): Promise<unknow
   updateJobStarted(String(job.id)).catch(() => {})
   log.info({ msg: 'audio_job_started', jobId: String(job.id) })
   const redis = (job as any).queue?.client as import('ioredis').Redis | undefined
+  if (redis) {
+    await redis
+      .multi()
+      .incr(retryMetricMinuteKey('attempts'))
+      .expire(retryMetricMinuteKey('attempts'), 2 * 60)
+      .exec()
+      .catch(() => {})
+  }
   if (redis) await setJobStage(redis, job.id, 'downloading_audio')
   const ytAudioPath = path.join(tempDir, `${uuidv4()}_yt_audio.wav`)
   log.info({ msg: 'audio_download_start', jobId: String(job.id), youtubeUrl: data.youtubeUrl?.slice(0, 50) })
   const ytCollector: YoutubeAttemptCollector = { attempts: [] }
   try {
-    await streamYoutubeAudioToFile(data.youtubeUrl!, ytAudioPath, ytCollector)
+    const ytResolution = await streamYoutubeAudioToFile(data.youtubeUrl!, ytAudioPath, ytCollector)
     ;(data as any).youtubeAttempts = [...(data.youtubeAttempts || []), ...(ytCollector.attempts || [])]
     if (ytCollector.proxyUsed) {
       ;(data as any).youtubeProxyUsed = true
       ;(data as any).youtubeProxyId = ytCollector.proxyId
     }
+    ;(data as any).youtubeResolutionPath = ytResolution.resolutionPath
+    ;(data as any).youtubeErrorCode = ytResolution.errorCode ?? undefined
+    ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), ...ytResolution.fallbackHistory]
+    ;(data as any).youtubeDecisionScore = ytResolution.confidence
+    ;(data as any).degradedExecution = ytResolution.degradedExecution
+    ;(data as any).costEstimate = ytResolution.costEstimate
     log.info({ msg: 'audio_download_done', jobId: String(job.id) })
+    if (redis && (data.queueTimeoutRetryCount || 0) > 0) {
+      await redis
+        .multi()
+        .incr('metrics:yt:retry:success')
+        .expire('metrics:yt:retry:success', 24 * 60 * 60)
+        .exec()
+        .catch(() => {})
+    }
   } catch (err: any) {
     log.error({ msg: 'yt_stream_failed', error: err.message })
     ;(data as any).youtubeAttempts = [...(data.youtubeAttempts || []), ...(ytCollector.attempts || [])]
@@ -733,6 +916,10 @@ async function processAudioJob(job: import('bull').Job<JobData>): Promise<unknow
       ;(data as any).youtubeProxyId = ytCollector.proxyId
     }
     ;(data as any).youtubeErrorCode = deriveAttemptErrorCode(ytCollector.attempts) || classifyYoutubeErrorCode(err.message)
+    if (isQueueTimeoutError(err.message)) {
+      const requeued = await requeueOnQueueTimeout(job, data, log)
+      if (requeued) return HANDED_OFF
+    }
     throw new Error(`YouTube audio extraction failed: ${err.message}`)
   }
   const nextData: JobData = {
@@ -743,7 +930,7 @@ async function processAudioJob(job: import('bull').Job<JobData>): Promise<unknow
     toolType: 'video-to-transcript',
     youtubeUrl: undefined,
     youtubeFallbackToAudio: true,
-    youtubeResolutionPath: data.youtubeResolutionPath || 'audio_transcription',
+    youtubeResolutionPath: data.youtubeResolutionPath || 'failed',
     fallbackHistory: [...(data.fallbackHistory || []), 'audio:downloaded'],
     youtubeAttempts: data.youtubeAttempts,
     youtubeProxyUsed: data.youtubeProxyUsed,
@@ -819,13 +1006,24 @@ async function processJob(job: import('bull').Job<JobData>) {
   ): number => {
     const depthPenalty = Math.min((fallbackHistory?.length ?? 0) * 0.04, 0.25)
     const baseByPath =
-      resolutionPath === 'captions'
+      resolutionPath === 'caption'
         ? 0.9
         : resolutionPath === 'caption_patch'
           ? 0.78
           : 0.62
     const scoreBoost = typeof decisionScore === 'number' ? (decisionScore - 0.5) * 0.25 : 0
     return Math.max(0, Math.min(1, baseByPath + scoreBoost - depthPenalty))
+  }
+
+  const computeYoutubeCostEstimate = (
+    resolutionPath: JobData['youtubeResolutionPath'],
+    usedTranscription: boolean
+  ): number => {
+    if (resolutionPath === 'caption' && !usedTranscription) return 0
+    if (resolutionPath === 'audio_cookies') return usedTranscription ? 3 : 1
+    if (resolutionPath === 'audio_proxy') return usedTranscription ? 4 : 2
+    if (resolutionPath === 'caption_patch') return 4
+    return usedTranscription ? 4 : 2
   }
 
   const run = async (): Promise<any> => {
@@ -907,7 +1105,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             ;(data as any).precomputedTranscript = captions
             ;(data as any).youtubeCaptionSource = captions.source
             ;(data as any).youtubeCaptionSourceDetail = captions.sourceDetail
-            ;(data as any).youtubeResolutionPath = 'captions'
+            ;(data as any).youtubeResolutionPath = 'caption'
             ;(data as any).youtubeDecisionScore = decision.score
             ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), `captions:accept:${captions.source}`]
             ;(data as any).filePath = ''
@@ -921,12 +1119,34 @@ async function processJob(job: import('bull').Job<JobData>) {
             if (redis) await setJobStage(redis, jobId, 'downloading_audio')
             const ytAudioPath = path.join(tempDir, `${uuidv4()}_yt_audio.wav`)
             const ytAudioCollector: YoutubeAttemptCollector = { attempts: [] }
+            if (redis) {
+              await redis
+                .multi()
+                .incr(retryMetricMinuteKey('attempts'))
+                .expire(retryMetricMinuteKey('attempts'), 2 * 60)
+                .exec()
+                .catch(() => {})
+            }
             try {
-              await streamYoutubeAudioToFile(data.youtubeUrl!, ytAudioPath, ytAudioCollector)
+              const ytResolution = await streamYoutubeAudioToFile(data.youtubeUrl!, ytAudioPath, ytAudioCollector)
               ;(data as any).youtubeAttempts = [...(data.youtubeAttempts || []), ...(ytAudioCollector.attempts || [])]
               if (ytAudioCollector.proxyUsed) {
                 ;(data as any).youtubeProxyUsed = true
                 ;(data as any).youtubeProxyId = ytAudioCollector.proxyId
+              }
+              ;(data as any).youtubeResolutionPath = ytResolution.resolutionPath
+              ;(data as any).youtubeErrorCode = ytResolution.errorCode ?? undefined
+              ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), ...ytResolution.fallbackHistory]
+              ;(data as any).youtubeDecisionScore = ytResolution.confidence
+              ;(data as any).degradedExecution = ytResolution.degradedExecution
+              ;(data as any).costEstimate = ytResolution.costEstimate
+              if (redis && (data.queueTimeoutRetryCount || 0) > 0) {
+                await redis
+                  .multi()
+                  .incr('metrics:yt:retry:success')
+                  .expire('metrics:yt:retry:success', 24 * 60 * 60)
+                  .exec()
+                  .catch(() => {})
               }
             } catch (err: any) {
               log.error({ msg: 'yt_stream_failed', error: err.message, youtubeUrl: data.youtubeUrl?.slice(0, 50) })
@@ -936,6 +1156,10 @@ async function processJob(job: import('bull').Job<JobData>) {
                 ;(data as any).youtubeProxyId = ytAudioCollector.proxyId
               }
               ;(data as any).youtubeErrorCode = deriveAttemptErrorCode(ytAudioCollector.attempts) || classifyYoutubeErrorCode(err.message)
+              if (isQueueTimeoutError(err.message)) {
+                const requeued = await requeueOnQueueTimeout(job, data, log)
+                if (requeued) return HANDED_OFF
+              }
               throw new Error(`YouTube audio download failed: ${err.message}. The video may be private, age-restricted, or unavailable in your region.`)
             }
             log.info({ msg: 'yt_stream_done', ytAudioPath })
@@ -956,9 +1180,9 @@ async function processJob(job: import('bull').Job<JobData>) {
               ;(data as any).youtubeDecisionScore = decision.score
               ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), `captions:patch:${captions.source}`, `gap_windows:${decision.patchWindows.length}`, 'audio:downloaded']
             } else {
-              ;(data as any).youtubeResolutionPath = 'audio_transcription'
-              ;(data as any).youtubeDecisionScore = decision?.score
-              ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), 'captions:fallback', 'audio:downloaded', 'asr:full']
+              ;(data as any).youtubeResolutionPath = data.youtubeResolutionPath || 'failed'
+              ;(data as any).youtubeDecisionScore = data.youtubeDecisionScore ?? decision?.score
+              ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), 'audio:downloaded', 'asr:full']
             }
           }
           await job.progress(20)
@@ -1363,6 +1587,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             ...(data.youtubeAttempts && data.youtubeAttempts.length > 0 && { attempts: data.youtubeAttempts }),
             ...(data.youtubeProxyUsed !== undefined && { proxyUsed: !!data.youtubeProxyUsed }),
             ...(data.youtubeProxyId && { proxyId: data.youtubeProxyId }),
+            ...(data.degradedExecution !== undefined && { degradedExecution: !!data.degradedExecution }),
           }
           if (data.youtubeResolutionPath) {
             const confidence = computeYoutubeConfidence(
@@ -1370,8 +1595,21 @@ async function processJob(job: import('bull').Job<JobData>) {
               data.fallbackHistory,
               data.youtubeDecisionScore
             )
+            const costEstimate = data.costEstimate ?? computeYoutubeCostEstimate(
+              data.youtubeResolutionPath,
+              !data.precomputedTranscript
+            )
+            const highCostThreshold = Math.max(3, parseInt(process.env.YOUTUBE_HIGH_COST_THRESHOLD || '3', 10))
+            const highCost = costEstimate > highCostThreshold
             ;(data as any).youtubeConfidence = confidence
+            ;(data as any).costEstimate = costEstimate
+            ;(data as any).highCost = highCost
             ;(result as any).confidence = confidence
+            ;(result as any).costEstimate = costEstimate
+            ;(result as any).highCost = highCost
+            if (highCost) {
+              log.warn({ msg: 'high_cost_job', jobId: String(jobId), resolutionPath: data.youtubeResolutionPath, costEstimate, threshold: highCostThreshold })
+            }
           }
           log.info({
             msg: 'yt_resolution_metrics',
@@ -1384,6 +1622,9 @@ async function processJob(job: import('bull').Job<JobData>) {
             attemptsCount: data.youtubeAttempts?.length ?? 0,
             proxyUsed: (data.youtubeAttempts || []).some((a) => a.type === 'proxy' && a.result === 'success'),
             failedAfterProxy: (data.youtubeAttempts || []).some((a) => a.type === 'proxy' && a.result === 'fail'),
+            costEstimate: data.costEstimate ?? (data.youtubeResolutionPath ? computeYoutubeCostEstimate(data.youtubeResolutionPath, !data.precomputedTranscript) : null),
+            highCost: data.highCost ?? false,
+            degradedExecution: !!data.degradedExecution,
           })
           if (redis) await recordYoutubeResolutionMetric(redis, data)
 

@@ -44,11 +44,11 @@ export type YoutubeAttemptType = 'direct' | 'cookies' | 'proxy'
 export type YoutubeAttemptResult = 'success' | 'fail'
 export type YoutubeErrorCode =
   | 'NO_CAPTIONS'
+  | 'AUTH_REQUIRED'
   | 'GEO_BLOCKED'
-  | 'LOGIN_REQUIRED'
-  | 'STREAM_BLOCKED'
-  | 'PROXY_POOL_DEGRADED'
-  | 'STREAM_TIMEOUT'
+  | 'RATE_LIMITED'
+  | 'QUEUE_TIMEOUT'
+  | 'STREAM_ERROR'
   | 'UNKNOWN'
 
 export interface YoutubeAttemptRecord {
@@ -65,6 +65,15 @@ export interface YoutubeAttemptCollector {
   attempts?: YoutubeAttemptRecord[]
   proxyUsed?: boolean
   proxyId?: string
+}
+
+export interface YoutubeResolutionResult {
+  resolutionPath: 'caption' | 'caption_patch' | 'audio_cookies' | 'audio_proxy' | 'failed'
+  errorCode: YoutubeErrorCode | null
+  fallbackHistory: string[]
+  confidence: number
+  degradedExecution: boolean
+  costEstimate: number
 }
 
 /** Resolve FFmpeg binary: prefer FFMPEG_PATH env (Docker-installed binary), else npm installer. */
@@ -281,24 +290,22 @@ function extractYtDlpErrorMessage(stderr: string, exitCode: number): string {
 
 function classifyYoutubeFailure(msg: string): YoutubeErrorCode {
   const m = msg.toLowerCase()
+  if (m.includes('sign in') || m.includes('confirm you\'re not a bot') || m.includes('login')) return 'AUTH_REQUIRED'
+  if (m.includes('region') || m.includes('geo') || m.includes('country')) return 'GEO_BLOCKED'
+  if (m.includes('http error 429') || m.includes('too many requests') || m.includes('rate limit')) return 'RATE_LIMITED'
+  if (m.includes('queue timeout') || m.includes('semaphore acquire timeout')) return 'QUEUE_TIMEOUT'
   if (
     m.includes('timed out') ||
     m.includes('timeout') ||
     m.includes('connection reset') ||
-    m.includes('network is unreachable')
-  ) return 'STREAM_TIMEOUT'
-  if (m.includes('sign in') || m.includes('confirm you\'re not a bot') || m.includes('login')) return 'LOGIN_REQUIRED'
-  if (m.includes('region') || m.includes('geo') || m.includes('country')) return 'GEO_BLOCKED'
-  if (
+    m.includes('network is unreachable') ||
     m.includes('http error 403') ||
-    m.includes('http error 429') ||
     m.includes('unable to extract player') ||
     m.includes('signature') ||
     m.includes('no video formats found') ||
     m.includes('requested format is not available') ||
     m.includes('forbidden')
-  ) return 'STREAM_BLOCKED'
-  if (m.includes('proxy pool degraded')) return 'PROXY_POOL_DEGRADED'
+  ) return 'STREAM_ERROR'
   return 'UNKNOWN'
 }
 
@@ -309,6 +316,13 @@ function recordAttempt(
   if (!collector) return
   collector.attempts = collector.attempts || []
   collector.attempts.push(attempt)
+}
+
+function estimateYoutubePathCost(path: YoutubeResolutionResult['resolutionPath']): number {
+  if (path === 'caption') return 0
+  if (path === 'audio_cookies') return 1
+  if (path === 'audio_proxy') return 2
+  return 3
 }
 
 /**
@@ -346,7 +360,7 @@ function ytDlpArgs(
 
 async function getMetadataViaYtDlp(url: string): Promise<YoutubeMetadata> {
   const cleanUrl = normalizeYoutubeUrl(url)
-  const permit = await acquireGlobalYtDlpPermit('metadata')
+  const permit = await acquireGlobalYtDlpPermit({ context: 'metadata', expectedDurationMs: 90_000, jobId: cleanUrl.slice(-16) })
   await applyYtRequestPacingSeeded(`metadata:${cleanUrl}`)
   const raw = await new Promise<string>((resolve, reject) => {
     let stdout = ''
@@ -748,7 +762,7 @@ async function fetchCaptionsViaPlayerApiClient(
     // Detect bot-check / login-required responses (HTTP 200 but no usable data)
     const playabilityStatus = playerData?.playabilityStatus?.status as string | undefined
     if (playabilityStatus && playabilityStatus !== 'OK' && playabilityStatus !== 'LIVE_STREAM_OFFLINE') {
-      log.warn({
+      log.info({
         msg: 'yt_player_api_blocked',
         videoId,
         clientName,
@@ -811,207 +825,24 @@ async function fetchCaptionsViaPlayerApiClient(
 }
 
 /**
- * Fetch caption tracks from YouTube player API with client rotation.
- * Tries WEB, ANDROID, TVHTML5, IOS until one succeeds.
- */
-async function fetchCaptionsViaPlayerApi(
-  videoId: string,
-  language?: string,
-  defaultLanguage?: string
-): Promise<YoutubeCaptionResult | null> {
-  for (const clientName of Object.keys(YT_CLIENTS) as YtClientName[]) {
-    const result = await fetchCaptionsViaPlayerApiClient(videoId, language, clientName, defaultLanguage)
-    if (result) return result
-  }
-  log.debug({ msg: 'yt_player_api_all_clients_failed', videoId })
-  return null
-}
-
-// ─── Fallback: yt-dlp caption fetch ──────────────────────────────────────────
-
-/** Hard timeout for yt-dlp caption fetch (20 seconds). If captions exist they were
- *  already retrieved via timedtext or player API; yt-dlp is a last-resort fallback
- *  that rarely succeeds from datacenter IPs, so fail fast. */
-const CAPTION_YTDLP_TIMEOUT_MS = 20_000
-
-async function fetchCaptionsViaYtDlp(
-  cleanUrl: string,
-  outputDir: string,
-  language?: string,
-  defaultLanguage?: string,
-  collector?: YoutubeAttemptCollector
-): Promise<YoutubeCaptionResult | null> {
-  const workspace = path.join(outputDir, `ytcap_${randomUUID()}`)
-  try { fs.mkdirSync(workspace, { recursive: true }) } catch { /* ignore */ }
-  const outTemplate = path.join(workspace, 'yt_%(id)s_%(language)s')
-  const langOrder = getCaptionLanguageOrder(language, defaultLanguage)
-  const subLangs = langOrder.map((l) => `${l},${l}.*`).join(',') + ',en-US'
-  const cookiesFile = process.env.YOUTUBE_COOKIES_FILE
-  const hasCookies = !!(cookiesFile && fs.existsSync(cookiesFile))
-  const hasProxy = !!(process.env.YOUTUBE_PROXY?.trim() || process.env.YOUTUBE_PROXY_POOL?.trim())
-  const skipCookies = process.env.YOUTUBE_SKIP_COOKIES === 'true' || process.env.YOUTUBE_SKIP_COOKIES === '1'
-  const matrix: Array<{ type: YoutubeAttemptType; useCookies: boolean; useProxy: boolean }> = [
-    { type: 'direct', useCookies: false, useProxy: false },
-    { type: 'cookies', useCookies: hasCookies && !skipCookies, useProxy: false },
-    { type: 'proxy', useCookies: hasCookies && !skipCookies, useProxy: true },
-  ]
-  const available = matrix.filter((m) => {
-    if (m.type === 'direct') return true
-    if (m.type === 'cookies') return hasCookies && !skipCookies
-    return hasProxy
-  })
-
-  try {
-    for (const step of available) {
-      const startedAt = Date.now()
-      const permit = await acquireGlobalYtDlpPermit(`captions:${step.type}`)
-      await applyYtRequestPacingSeeded(`captions:${step.type}:${cleanUrl}`)
-      const selectedProxy = step.type === 'proxy' ? await selectYoutubeProxy() : null
-      const proxyId = selectedProxy?.id
-      if (step.type === 'proxy' && hasProxy && !selectedProxy && await isProxyPoolDegraded()) {
-        recordAttempt(collector, {
-          stage: 'captions',
-          type: step.type,
-          result: 'fail',
-          success: false,
-          latencyMs: Date.now() - startedAt,
-          errorCode: 'PROXY_POOL_DEGRADED',
-        })
-        break
-      }
-      try {
-        const result = await new Promise<YoutubeCaptionResult | null>((resolve) => {
-          let settled = false
-          let activeProc: import('child_process').ChildProcess | null = null
-          const done = (res: YoutubeCaptionResult | null) => {
-            if (settled) return
-            settled = true
-            clearTimeout(timeoutHandle)
-            resolve(res)
-          }
-          const timeoutHandle = setTimeout(() => {
-            try { activeProc?.kill('SIGKILL') } catch { /* ignore */ }
-            done(null)
-          }, CAPTION_YTDLP_TIMEOUT_MS)
-
-          const proc = spawn(YT_DLP_BIN, ytDlpArgs([
-            '--write-auto-sub',
-            '--write-sub',
-            '--skip-download',
-            '--no-playlist',
-            '--no-warnings',
-            '--sub-langs', subLangs,
-            '--convert-subs', 'vtt',
-            '-o', outTemplate,
-            '--socket-timeout', '15',
-            cleanUrl,
-          ], step.useCookies, step.useProxy, selectedProxy?.url))
-          activeProc = proc
-          let stderr = ''
-          proc.stdout.on('data', () => {})
-          proc.stderr.on('data', (chunk: Buffer) => { stderr += chunk.toString() })
-          proc.on('error', () => done(null))
-          proc.on('close', (code) => {
-            if (code !== 0 && code !== null) {
-              const msg = extractYtDlpErrorMessage(stderr, code)
-              const errorCode = classifyYoutubeFailure(msg)
-              recordAttempt(collector, {
-                stage: 'captions',
-                type: step.type,
-                result: 'fail',
-                success: false,
-                latencyMs: Date.now() - startedAt,
-                proxyId,
-                errorCode,
-              })
-              if (proxyId) recordYoutubeProxyResult(proxyId, false).catch(() => {})
-              return done(null)
-            }
-            const files = fs.readdirSync(workspace)
-              .filter((f) => f.endsWith('.vtt') && f.startsWith('yt_'))
-              .map((f) => {
-                const full = path.join(workspace, f)
-                const stat = fs.statSync(full)
-                return { file: f, full, size: stat.size }
-              })
-              .sort((a, b) => (b.size - a.size) || a.file.localeCompare(b.file))
-            if (files.length === 0) {
-              recordAttempt(collector, {
-                stage: 'captions',
-                type: step.type,
-                result: 'fail',
-                success: false,
-                latencyMs: Date.now() - startedAt,
-                proxyId,
-                errorCode: 'NO_CAPTIONS',
-              })
-              if (proxyId) recordYoutubeProxyResult(proxyId, false).catch(() => {})
-              return done(null)
-            }
-            const vttPath = files[0].full
-            try {
-              const content = fs.readFileSync(vttPath, 'utf-8')
-              const segments = parseVttToSegments(content)
-              if (segments.length === 0) {
-                recordAttempt(collector, {
-                  stage: 'captions',
-                  type: step.type,
-                  result: 'fail',
-                  success: false,
-                  latencyMs: Date.now() - startedAt,
-                  proxyId,
-                  errorCode: 'NO_CAPTIONS',
-                })
-                if (proxyId) recordYoutubeProxyResult(proxyId, false).catch(() => {})
-                return done(null)
-              }
-              const fullText = segments.map((s) => s.text).join(' ').replace(/\s+/g, ' ').trim()
-              recordAttempt(collector, {
-                stage: 'captions',
-                type: step.type,
-                result: 'success',
-                success: true,
-                latencyMs: Date.now() - startedAt,
-                proxyId,
-              })
-              if (collector && proxyId) {
-                collector.proxyUsed = true
-                collector.proxyId = proxyId
-              }
-              if (proxyId) recordYoutubeProxyResult(proxyId, true).catch(() => {})
-              done({ fullText, segments, source: 'ytdlp', sourceDetail: step.type })
-            } catch {
-              done(null)
-            }
-          })
-        })
-        if (result) return result
-      } finally {
-        await permit.release()
-      }
-    }
-    return null
-  } finally {
-    try { fs.rmSync(workspace, { recursive: true, force: true }) } catch { /* ignore */ }
-  }
-}
-
-/**
  * Fetch YouTube captions without downloading video/audio.
  *
- * Strategy (same as Descript / Turboscribe):
- *   1. Player API + timedtext in parallel — accept first valid result.
- *   2. yt-dlp fallback — sub-langs: requested → en → original (caption language order).
+ * Strict deterministic strategy:
+ *   1. timedtext by language order
+ *   2. player API WEB
+ *   3. player API ANDROID
+ *   4. player API TVHTML5
+ *   5. player API IOS
  *
- * Returns null when no captions are available → caller falls back to audio download + Whisper.
+ * Returns null when no captions are available. Caller then moves to yt-dlp cookies path.
  */
 export async function fetchYoutubeCaptions(
   url: string,
-  outputDir: string,
+  _outputDir: string,
   language?: string,
   videoDurationSec?: number,
   defaultLanguage?: string,
-  collector?: YoutubeAttemptCollector
+  _collector?: YoutubeAttemptCollector
 ): Promise<YoutubeCaptionResult | null> {
   const cleanUrl = normalizeYoutubeUrl(url)
   const videoId = extractYoutubeVideoId(cleanUrl)
@@ -1019,7 +850,7 @@ export async function fetchYoutubeCaptions(
   const minCoverage = Number(process.env.YOUTUBE_CAPTION_MIN_COVERAGE) || 0.7
   const duration = videoDurationSec ?? 0
 
-  if (!videoId) return fetchCaptionsViaYtDlp(cleanUrl, outputDir, language, defaultLanguage, collector)
+  if (!videoId) return null
 
   // Fast path: timedtext first — single HTTP GET, typically 1–3s when captions exist
   for (const lang of langOrder) {
@@ -1040,13 +871,9 @@ export async function fetchYoutubeCaptions(
     }
   }
 
-  // Try remaining player clients (ANDROID, TVHTML5, IOS) in parallel — worst-case ~8s, not 24s
-  const [android, tv, ios] = await Promise.all([
-    fetchCaptionsViaPlayerApiClient(videoId, language, 'ANDROID', defaultLanguage),
-    fetchCaptionsViaPlayerApiClient(videoId, language, 'TVHTML5', defaultLanguage),
-    fetchCaptionsViaPlayerApiClient(videoId, language, 'IOS', defaultLanguage),
-  ])
-  for (const result of [android, tv, ios]) {
+  // Strict deterministic order: WEB -> ANDROID -> TVHTML5 -> IOS (sequential only).
+  for (const client of ['ANDROID', 'TVHTML5', 'IOS'] as const) {
+    const result = await fetchCaptionsViaPlayerApiClient(videoId, language, client, defaultLanguage)
     if (!result) continue
     const validation = validateCaptionQuality(result.segments, duration)
     if (validation.valid || (validation.coverage >= minCoverage && validation.segmentCount >= 10)) {
@@ -1054,7 +881,7 @@ export async function fetchYoutubeCaptions(
     }
   }
 
-  return fetchCaptionsViaYtDlp(cleanUrl, outputDir, language, defaultLanguage, collector)
+  return null
 }
 
 // ─── Audio Streaming ─────────────────────────────────────────────────────────
@@ -1065,81 +892,113 @@ const STREAM_TIMEOUT_MS = 10 * 60 * 1000
 /**
  * Stream YouTube audio directly into FFmpeg and write a 16 kHz mono WAV to outputPath.
  *
- * Strategy: try without cookies first (avoids "page needs to be reloaded" from stale cookies).
- * On bot/sign-in errors, retry with cookies if YOUTUBE_COOKIES_FILE exists.
+ * Deterministic strategy:
+ *   1) cookies (direct)
+ *   2) proxy fallback only for AUTH_REQUIRED / GEO_BLOCKED
  */
 export async function streamYoutubeAudioToFile(
   url: string,
   outputPath: string,
   collector?: YoutubeAttemptCollector
-): Promise<void> {
+): Promise<YoutubeResolutionResult> {
   const cleanUrl = normalizeYoutubeUrl(url)
   const skipCookies = process.env.YOUTUBE_SKIP_COOKIES === 'true' || process.env.YOUTUBE_SKIP_COOKIES === '1'
   const cookiesFile = process.env.YOUTUBE_COOKIES_FILE
   const hasCookies = !!(cookiesFile && fs.existsSync(cookiesFile))
   const hasProxy = !!(process.env.YOUTUBE_PROXY?.trim() || process.env.YOUTUBE_PROXY_POOL?.trim())
-  const matrix: Array<{ type: YoutubeAttemptType; useCookies: boolean; useProxy: boolean }> = [
-    { type: 'direct', useCookies: false, useProxy: false },
-    { type: 'cookies', useCookies: true, useProxy: false },
-    { type: 'proxy', useCookies: hasCookies && !skipCookies, useProxy: true },
-  ]
-  const available = matrix.filter((m) => {
-    if (m.type === 'direct') return true
-    if (m.type === 'cookies') return hasCookies && !skipCookies
-    return hasProxy
-  })
+  const startedAt = Date.now()
+  const fallbackHistory: string[] = ['caption:fallback', 'audio:cookies']
+  const useCookies = hasCookies && !skipCookies
+  let degradedExecution = false
 
-  let lastError: Error | null = null
-  for (const step of available) {
-    const startedAt = Date.now()
-    const selectedProxy = step.type === 'proxy' ? await selectYoutubeProxy() : null
-    const proxyId = selectedProxy?.id
-    if (step.type === 'proxy' && hasProxy && !selectedProxy && await isProxyPoolDegraded()) {
-      recordAttempt(collector, {
-        stage: 'audio',
-        type: step.type,
-        result: 'fail',
-        success: false,
-        latencyMs: Date.now() - startedAt,
-        errorCode: 'PROXY_POOL_DEGRADED',
-      })
-      break
+  log.info({ msg: 'yt_path_transition', from: 'caption', to: 'audio_cookies', hasCookies })
+  const cookiesAttemptStarted = Date.now()
+  try {
+    degradedExecution = await doStreamYoutubeAudio(cleanUrl, outputPath, useCookies, false)
+    recordAttempt(collector, {
+      stage: 'audio',
+      type: 'cookies',
+      result: 'success',
+      success: true,
+      latencyMs: Date.now() - cookiesAttemptStarted,
+    })
+    const costEstimate = estimateYoutubePathCost('audio_cookies')
+    log.info({ msg: 'yt_resolution_metrics', path_used: 'audio_cookies', fallback_depth: fallbackHistory.length, proxy_used: false, error_code: null, degraded_execution: degradedExecution, cost_estimate: costEstimate, latency_ms: Date.now() - startedAt })
+    return { resolutionPath: 'audio_cookies', errorCode: null, fallbackHistory, confidence: 0.72, degradedExecution, costEstimate }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    const errorCode = classifyYoutubeFailure(msg)
+    recordAttempt(collector, {
+      stage: 'audio',
+      type: 'cookies',
+      result: 'fail',
+      success: false,
+      latencyMs: Date.now() - cookiesAttemptStarted,
+      errorCode,
+    })
+
+    if (errorCode !== 'AUTH_REQUIRED' && errorCode !== 'GEO_BLOCKED') {
+      if (errorCode === 'STREAM_ERROR') log.warn({ msg: 'yt_stream_stderr', scope: 'cookies', error: msg.slice(0, 500) })
+      log.info({ msg: 'yt_resolution_metrics', path_used: 'failed', fallback_depth: fallbackHistory.length, proxy_used: false, error_code: errorCode, degraded_execution: degradedExecution, cost_estimate: estimateYoutubePathCost('failed'), latency_ms: Date.now() - startedAt })
+      throw new Error(`YouTube audio extraction failed [${errorCode}]`)
     }
+
+    if (!hasProxy) {
+      if (errorCode === 'AUTH_REQUIRED') log.error({ msg: 'AUTH_REQUIRED', stage: 'audio_cookies_final' })
+      log.info({ msg: 'yt_resolution_metrics', path_used: 'failed', fallback_depth: fallbackHistory.length, proxy_used: false, error_code: errorCode, degraded_execution: degradedExecution, cost_estimate: estimateYoutubePathCost('failed'), latency_ms: Date.now() - startedAt })
+      throw new Error(`YouTube audio extraction failed [${errorCode}]`)
+    }
+
+    fallbackHistory.push('audio:proxy')
+    log.info({ msg: 'yt_path_transition', from: 'audio_cookies', to: 'audio_proxy', reason: errorCode })
+    const proxyAttemptStarted = Date.now()
+    const proxyMode = useCookies ? 'cookie_proxy' : 'proxy_only'
+    log.info({ msg: 'yt_proxy_mode_selected', proxy_mode: proxyMode })
+    const selectedProxy = await selectYoutubeProxy()
+    if (!selectedProxy) {
+      if (await isProxyPoolDegraded()) log.warn({ msg: 'yt_proxy_pool_degraded', stage: 'audio_proxy' })
+      log.error({ msg: 'PROXY_FAILED', reason: 'proxy_unavailable' })
+      log.info({ msg: 'yt_resolution_metrics', path_used: 'failed', fallback_depth: fallbackHistory.length, proxy_used: true, error_code: 'STREAM_ERROR', degraded_execution: degradedExecution, cost_estimate: estimateYoutubePathCost('failed'), latency_ms: Date.now() - startedAt })
+      throw new Error('YouTube audio extraction failed [STREAM_ERROR]')
+    }
+
     try {
-      await doStreamYoutubeAudio(cleanUrl, outputPath, step.useCookies, step.useProxy, selectedProxy?.url)
-      if (step.useProxy) log.info({ msg: 'yt_proxy_used', url: cleanUrl.slice(0, 50) })
+      degradedExecution = await doStreamYoutubeAudio(cleanUrl, outputPath, useCookies, true, selectedProxy.url)
       recordAttempt(collector, {
         stage: 'audio',
-        type: step.type,
+        type: 'proxy',
         result: 'success',
         success: true,
-        latencyMs: Date.now() - startedAt,
-        proxyId,
+        latencyMs: Date.now() - proxyAttemptStarted,
+        proxyId: selectedProxy.id,
       })
-      if (collector && proxyId) {
+      if (collector) {
         collector.proxyUsed = true
-        collector.proxyId = proxyId
+        collector.proxyId = selectedProxy.id
       }
-      if (proxyId) recordYoutubeProxyResult(proxyId, true).catch(() => {})
-      return
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err)
-      const errorCode = classifyYoutubeFailure(msg)
+      recordYoutubeProxyResult(selectedProxy.id, true).catch(() => {})
+      const costEstimate = estimateYoutubePathCost('audio_proxy')
+      log.info({ msg: 'yt_resolution_metrics', path_used: 'audio_proxy', fallback_depth: fallbackHistory.length, proxy_used: true, error_code: null, degraded_execution: degradedExecution, cost_estimate: costEstimate, latency_ms: Date.now() - startedAt })
+      return { resolutionPath: 'audio_proxy', errorCode: null, fallbackHistory, confidence: 0.64, degradedExecution, costEstimate }
+    } catch (proxyErr) {
+      const proxyMsg = proxyErr instanceof Error ? proxyErr.message : String(proxyErr)
+      const proxyCode = classifyYoutubeFailure(proxyMsg)
       recordAttempt(collector, {
         stage: 'audio',
-        type: step.type,
+        type: 'proxy',
         result: 'fail',
         success: false,
-        latencyMs: Date.now() - startedAt,
-        proxyId,
-        errorCode,
+        latencyMs: Date.now() - proxyAttemptStarted,
+        proxyId: selectedProxy.id,
+        errorCode: proxyCode,
       })
-      if (proxyId) recordYoutubeProxyResult(proxyId, false).catch(() => {})
-      lastError = err instanceof Error ? err : new Error(msg)
-      if (errorCode === 'UNKNOWN') break
+      recordYoutubeProxyResult(selectedProxy.id, false).catch(() => {})
+      log.error({ msg: 'PROXY_FAILED', reason: proxyCode, proxyId: selectedProxy.id })
+      if (proxyCode === 'AUTH_REQUIRED') log.error({ msg: 'AUTH_REQUIRED', stage: 'audio_proxy_final', proxyId: selectedProxy.id })
+      log.info({ msg: 'yt_resolution_metrics', path_used: 'failed', fallback_depth: fallbackHistory.length, proxy_used: true, error_code: proxyCode, degraded_execution: degradedExecution, cost_estimate: estimateYoutubePathCost('failed'), latency_ms: Date.now() - startedAt })
+      throw new Error(`YouTube audio extraction failed [${proxyCode}]`)
     }
   }
-  throw lastError ?? new Error('YouTube audio extraction failed')
 }
 
 function doStreamYoutubeAudio(
@@ -1148,12 +1007,13 @@ function doStreamYoutubeAudio(
   useCookies: boolean,
   useProxy: boolean,
   proxyUrl?: string
-): Promise<void> {
+): Promise<boolean> {
   return new Promise((resolve, reject) => {
     let settled = false
     let releasePermit: (() => Promise<void>) | null = null
     let leaseMonitor: NodeJS.Timeout | null = null
     let ytProc: import('child_process').ChildProcess | null = null
+    let degradedExecution = false
     const done = (err?: Error) => {
       if (settled) return
       settled = true
@@ -1167,7 +1027,7 @@ function doStreamYoutubeAudio(
         releasePermit = null
       }
       if (err) reject(err)
-      else resolve()
+      else resolve(degradedExecution)
     }
 
     // Hard timeout: reject so the worker can fail + retry rather than hang forever
@@ -1219,14 +1079,29 @@ function doStreamYoutubeAudio(
     })
 
     // ── 2. Stream audio-only from YouTube via yt-dlp → FFmpeg stdin ──────────
-    acquireGlobalYtDlpPermit('audio').then(async (permit) => {
+    const acquireTimeoutMs = Math.max(30_000, Math.min(60_000, parseInt(process.env.YT_DLP_SEMAPHORE_ACQUIRE_MAX_WAIT_MS || '45000', 10)))
+    const acquireTimeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`yt-dlp semaphore queue timeout after ${acquireTimeoutMs}ms`)), acquireTimeoutMs)
+    )
+    Promise.race([
+      acquireGlobalYtDlpPermit({ context: 'audio', expectedDurationMs: STREAM_TIMEOUT_MS, jobId: url.slice(-16) }),
+      acquireTimeout,
+    ]).then(async (permit) => {
       releasePermit = permit.release
       leaseMonitor = setInterval(() => {
         if (permit.isLeaseValid()) return
-        log.error({ msg: 'yt_stream_lease_lost_abort', outputPath })
-        try { ytProc?.kill('SIGKILL') } catch { /* ignore */ }
-        try { ffmpegProc.kill('SIGKILL') } catch { /* ignore */ }
-        done(new Error('yt-dlp global semaphore lease lost; stream aborted to prevent over-concurrency'))
+        degradedExecution = true
+        log.error({
+          msg: 'semaphore_lease_lost',
+          degraded_execution: true,
+          outputPath,
+          workerId: permit.workerId,
+          leaseId: permit.leaseId,
+          jobId: permit.jobId,
+          ttlMs: permit.ttlMs,
+        })
+        clearInterval(leaseMonitor!)
+        leaseMonitor = null
       }, 5_000)
       leaseMonitor.unref?.()
       await applyYtRequestPacingSeeded(`audio:${url}`)
@@ -1263,12 +1138,16 @@ function doStreamYoutubeAudio(
           log.error({ msg: 'yt_stream_stderr', stderr: stderr.slice(-2000), url: url.slice(0, 80) })
           try { ffmpegProc.stdin!.destroy() } catch { /* ignore */ }
           done(new Error(`yt-dlp error: ${msg}`))
+          return
+        }
+        if (degradedExecution) {
+          log.warn({ msg: 'yt_stream_completed_in_degraded_execution', outputPath, jobId: permit.jobId, leaseId: permit.leaseId })
         }
       })
 
       // ── 3. Pipe yt-dlp stdout → FFmpeg stdin ─────────────────────────────────
       ytProc.stdout!.pipe(ffmpegProc.stdin!)
-    }).catch((err) => done(new Error(`yt-dlp limiter error: ${String(err)}`)))
+    }).catch((err) => done(new Error(`yt-dlp limiter error: ${String(err).includes('queue timeout') ? `QUEUE_TIMEOUT: ${String(err)}` : String(err)}`)))
 
     log.info({ msg: 'yt_stream_started', url: url.slice(0, 50) })
   })

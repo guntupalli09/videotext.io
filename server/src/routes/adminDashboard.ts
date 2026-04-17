@@ -28,6 +28,13 @@ type YoutubeResolutionMetrics = {
   patchResolvedPct: number
   fallbackPct: number
   avgConfidence: number | null
+  degradedExecutionPct: number
+  highCostPct: number
+  retryRate: number
+  avgRetryDelayMs: number | null
+  retrySuccessRate: number | null
+  queueTimeoutRate: number
+  circuitBreakerTriggers: number
   byPath: Array<{ path: string; count: number }>
   bySource: Array<{ source: string; count: number }>
   byError: Array<{ error: string; count: number }>
@@ -55,12 +62,16 @@ async function getYoutubeResolutionMetrics(redis: import('ioredis').Redis): Prom
   const byError = new Map<string, number>()
   let total = 0
   let confidenceSumScaled = 0
+  let degradedExecutionCount = 0
+  let highCostCount = 0
 
   for (const entry of rows || []) {
     const bucket = (entry?.[1] || {}) as Record<string, string>
     if (!bucket) continue
     total += Number(bucket.total || 0)
     confidenceSumScaled += Number(bucket.confidence_sum_scaled || 0)
+    degradedExecutionCount += Number(bucket.degraded_execution_count || 0)
+    highCostCount += Number(bucket.high_cost_count || 0)
     for (const [k, v] of Object.entries(bucket)) {
       const n = Number(v || 0)
       if (!Number.isFinite(n) || n <= 0) continue
@@ -70,9 +81,14 @@ async function getYoutubeResolutionMetrics(redis: import('ioredis').Redis): Prom
     }
   }
 
-  const captions = byPath.get('captions') || 0
+  const captions = byPath.get('caption') || 0
   const patch = byPath.get('caption_patch') || 0
-  const fallback = byPath.get('audio_transcription') || 0
+  const fallback = (byPath.get('audio_cookies') || 0) + (byPath.get('audio_proxy') || 0) + (byPath.get('failed') || 0)
+  const retryCount = Number(await redis.get('metrics:yt:retry:count').catch(() => '0') || 0)
+  const retrySuccess = Number(await redis.get('metrics:yt:retry:success').catch(() => '0') || 0)
+  const retryDelaySum = Number(await redis.get('metrics:yt:retry:delay_sum_ms').catch(() => '0') || 0)
+  const circuitBreakerTriggers = Number(await redis.get('metrics:yt:retry:circuit_breaker_triggers').catch(() => '0') || 0)
+  const queueTimeoutCount = byError.get('QUEUE_TIMEOUT') || 0
   const pct = (v: number) => total > 0 ? Math.round((v / total) * 1000) / 10 : 0
   return {
     total,
@@ -80,6 +96,13 @@ async function getYoutubeResolutionMetrics(redis: import('ioredis').Redis): Prom
     patchResolvedPct: pct(patch),
     fallbackPct: pct(fallback),
     avgConfidence: total > 0 ? Math.round((confidenceSumScaled / total) / 10) / 100 : null,
+    degradedExecutionPct: pct(degradedExecutionCount),
+    highCostPct: pct(highCostCount),
+    retryRate: total > 0 ? Math.round((retryCount / total) * 1000) / 1000 : 0,
+    avgRetryDelayMs: retryCount > 0 ? Math.round(retryDelaySum / retryCount) : null,
+    retrySuccessRate: retryCount > 0 ? Math.round((retrySuccess / retryCount) * 1000) / 1000 : null,
+    queueTimeoutRate: total > 0 ? Math.round((queueTimeoutCount / total) * 1000) / 1000 : 0,
+    circuitBreakerTriggers,
     byPath: [...byPath.entries()].map(([path, count]) => ({ path, count })).sort((a, b) => b.count - a.count),
     bySource: [...bySource.entries()].map(([source, count]) => ({ source, count })).sort((a, b) => b.count - a.count),
     byError: [...byError.entries()].map(([error, count]) => ({ error, count })).sort((a, b) => b.count - a.count),
