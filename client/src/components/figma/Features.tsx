@@ -30,6 +30,7 @@ const SPOTLIGHT_TOOLS = [
     gradient: 'from-violet-500 to-indigo-600',
     glowColor: 'rgba(139,92,246,0.08)',
     href: '/video-to-transcript',
+    cta: 'Upload a video, get transcript',
     outputPreview: [
       { time: '00:00', text: "Welcome back to the channel. Today we're diving into..." },
       { time: '00:08', text: 'The strategy that changed everything for my workflow was...' },
@@ -49,6 +50,7 @@ const SPOTLIGHT_TOOLS = [
     gradient: 'from-purple-500 to-violet-600',
     glowColor: 'rgba(168,85,247,0.08)',
     href: '/voice-recorder',
+    cta: 'Record your audio, get transcript',
     outputPreview: [
       { time: '00:03', text: 'Welcome everyone, today we are going to cover...' },
       { time: '00:11', text: 'The key insight that changed how I approach this is...' },
@@ -68,6 +70,7 @@ const SPOTLIGHT_TOOLS = [
     gradient: 'from-red-500 to-rose-600',
     glowColor: 'rgba(239,68,68,0.08)',
     href: '/youtube-transcript-generator',
+    cta: 'Paste URL, get transcript',
     outputPreview: [
       { time: '00:00', text: "Hey everyone! Welcome back to the channel. In today's video..." },
       { time: '00:12', text: "We're covering the three biggest mistakes I see creators make..." },
@@ -212,7 +215,7 @@ function SpotlightCard({ tool, index }: { tool: (typeof SPOTLIGHT_TOOLS)[0]; ind
 
             {/* CTA */}
             <div className="flex items-center gap-1.5 text-sm font-bold text-violet-600 dark:text-violet-400 group-hover:gap-3 transition-all">
-              Try it free
+              {tool.cta}
               <ArrowRight className="w-4 h-4" />
             </div>
           </div>
