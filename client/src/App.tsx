@@ -539,8 +539,8 @@ function App() {
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript
-              seoH1="Convert Any Video to a Clean Transcript in Minutes"
-              seoIntro="Most tools give you a transcript. VideoText gives you something you can actually use — done in minutes, not hours. ~98.5% accurate, nothing stored."
+              seoH1="Video to Text and Transcript Software for Real Production Workflows"
+              seoIntro="Convert video to text fast, then leave with outputs you can publish: transcript, summary, chapters, and subtitle files. Built for recorded-file workflows, not meeting-bot archives."
               faq={[
                 {
                   q: 'How long does it take to transcribe a video?',
@@ -644,8 +644,8 @@ function App() {
                     body: 'Convert every lecture into searchable text, auto-generated chapters, and accurate subtitles. Improve accessibility, SEO, and student experience in one step.',
                   },
                 ],
-                ctaText: 'Transcribe a video free',
-                ctaPath: '/pricing',
+                ctaText: 'Start with your first video',
+                ctaPath: '/video-to-transcript',
               }}
             />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />

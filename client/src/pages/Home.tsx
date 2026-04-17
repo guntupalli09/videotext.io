@@ -174,18 +174,17 @@ export default function Home() {
               High-intent guides
             </p>
             <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white font-display transition-colors duration-500">
-              Start with the exact transcription workflow you need
+              Choose your workflow path (without competing with the core tool page)
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-3xl transition-colors duration-500">
-              These pages are built for specific outcomes: YouTube URL transcription, podcast show-note workflows,
-              interview transcripts, and comparison pages for switching from Otter/Descript/Rev-style tools.
+              Primary action for broad intent is <span className="font-semibold text-gray-700 dark:text-gray-200">Video to Transcript</span>. These supporting pages handle specific contexts like comparisons, meetings, and YouTube source workflows.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
-              { label: 'Best Transcription Tool', path: '/best-transcription-tool', desc: 'Compare speed, output quality, and workflow fit' },
-              { label: 'Video to Transcription', path: '/video-to-transcription', desc: 'Convert long video into transcript + chapters fast' },
+              { label: 'Video to Transcript (Primary)', path: '/video-to-transcript', desc: 'Main page for broad video-to-text and transcript intent' },
+              { label: 'Best Transcription Tool', path: '/best-transcription-tool', desc: 'Decision support by speed, outputs, and workflow fit' },
               { label: 'YouTube URL to Transcription', path: '/youtube-url-to-transcription', desc: 'Paste a link and get structured output in minutes' },
               { label: 'Podcast Transcription Tool', path: '/podcast-transcription-tool', desc: 'Create show notes, clips, and searchable transcript assets' },
               { label: 'Meeting Transcription Tool', path: '/meeting-transcription-tool', desc: 'Turn calls into summaries, transcripts, and follow-ups' },
@@ -278,9 +277,10 @@ export default function Home() {
       <section className="py-10 border-t border-gray-100 dark:border-gray-800">
         <div className="max-w-5xl mx-auto px-6">
           <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">Answer hubs</p>
-          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">Transcription comparison & benchmark hubs</h2>
+          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">Comparison and benchmark pages (secondary to the core tool)</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {[
+              { label: 'Video to transcript (core tool)', path: '/video-to-transcript' },
               { label: 'Best transcription tool', path: '/best-transcription-tool' },
               { label: 'Fastest transcription software', path: '/fastest-transcription-software' },
               { label: 'Fastest transcription tool', path: '/fastest-transcription-tool' },
@@ -295,9 +295,6 @@ export default function Home() {
               { label: 'Podcast transcription tool', path: '/podcast-transcription-tool' },
               { label: 'Interview transcription tool', path: '/interview-transcription-tool' },
               { label: 'YouTube video to transcript', path: '/youtube-video-to-transcript' },
-              { label: 'Otter vs VideoText', path: '/otter-vs-videotext' },
-              { label: 'Descript vs VideoText', path: '/descript-vs-videotext' },
-              { label: 'AI transcription tools', path: '/ai-transcription-tools' },
               { label: 'Transcription benchmark', path: '/transcription-benchmark' },
             ].map((item) => (
               <Link key={item.path} to={item.path} className="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 text-sm font-semibold text-gray-800 dark:text-gray-200 hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300">
