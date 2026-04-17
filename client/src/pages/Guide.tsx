@@ -15,6 +15,7 @@ import {
 
 const TOOL_ICONS = {
   'Voice → Text': Mic,
+  'YouTube → Transcript': FileText,
   'Video → Transcript': FileText,
   'Video → Subtitles': MessageSquare,
   'Translate Subtitles': Languages,
@@ -39,6 +40,7 @@ interface ToolGuide {
 /** URL-safe id for in-page anchors. */
 const TOOL_SLUGS: Record<ToolKey, string> = {
   'Voice → Text': 'voice-recorder',
+  'YouTube → Transcript': 'youtube-transcript',
   'Video → Transcript': 'video-to-transcript',
   'Video → Subtitles': 'video-to-subtitles',
   'Translate Subtitles': 'translate-subtitles',
@@ -79,6 +81,37 @@ const TOOL_GUIDES: ToolGuide[] = [
     ],
   },
   {
+    key: 'YouTube → Transcript',
+    path: '/youtube-transcript-generator',
+    title: 'YouTube → Transcript',
+    shortDesc: 'Paste any YouTube URL and get a full transcript instantly. No download required. Works with any public YouTube video.',
+    howTo: [
+      'Copy the URL from any public YouTube video (youtube.com or youtu.be links work).',
+      'Paste the URL into the input field on the YouTube → Transcript tool.',
+      'Optionally set the spoken language — auto-detect works but manual improves accuracy for non-English content.',
+      'Click Generate Transcript. VideoText streams the audio directly from YouTube servers (no download step) and transcription starts within seconds.',
+      'When done, explore the result tabs: Transcript (full text with timestamps), Speakers (Pro — who said what), Summary (Pro — key points + chapters), and Exports.',
+      'Pro tip: select "Also translate to" before starting to get a side-by-side translation in 70+ languages.',
+      'Copy text or download (TXT, SRT, VTT on all plans; JSON/DOCX/PDF/CSV/Notion on Pro). On Pro, use Share with a link to send a read-only transcript page (original or translated) — viewers do not need to log in.',
+    ],
+    expected: [
+      { label: 'Input', detail: 'Public YouTube URL (youtube.com or youtu.be). Does not work with private or age-restricted videos.' },
+      { label: 'Processing time', detail: '~1 minute per 10 minutes of video. A typical 20-minute video finishes in 2-3 minutes. No download wait.' },
+      { label: 'Duration limits', detail: 'Free: 30 min max per video; Pro: 2 h per video.' },
+    ],
+    features: [
+      'No download required — paste URL directly.',
+      'Full transcript with timestamps (all plans).',
+      'AI Summary: bullet-point key points and chapter markers — Pro only.',
+      'AI Chapters: auto-generated timestamped section headings — Pro only.',
+      'Speaker diarization: automatically identify who said what — Pro only.',
+      'Translate to 70+ languages: get a full translation alongside the original — Pro only.',
+      'Export as TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.',
+      'Shareable read-only links (Pro): send a transcript URL — viewers do not need to log in.',
+      'Perfect for repurposing: one YouTube video becomes blog posts, social snippets, newsletters, chapters, and SEO content.',
+    ],
+  },
+  {
     key: 'Video → Transcript',
     path: '/video-to-transcript',
     title: 'Video → Transcript',
@@ -94,17 +127,17 @@ const TOOL_GUIDES: ToolGuide[] = [
     ],
     expected: [
       { label: 'Input', detail: 'Video file (MP4, MOV, AVI, WebM).' },
-      { label: 'Duration limits', detail: 'Free: 30 min max per video (3 imports total); Basic: 45 min; Pro: 2 h; Agency: 4 h. Longer videos may be rejected at upload.' },
-      { label: 'File size', detail: 'Free: 2 GB; Basic: 5 GB; Pro: 10 GB; Agency: 20 GB.' },
+      { label: 'Duration limits', detail: 'Free: 30 min max per video; Pro: 2 h per video. Longer videos may be rejected at upload.' },
+      { label: 'File size', detail: 'Free: 2 GB; Pro: 10 GB.' },
     ],
     features: [
       'Full transcript with timestamps and editable segments (all plans).',
       'AI Summary: bullet-point key points and action items — Pro only.',
       'AI Chapters: auto-generated timestamped section headings — Pro only.',
-      'Speaker diarization: who said what (Speaker 1, 2, …) — Pro only.',
-      '"Also translate to" checkbox: get a full translation of the transcript in 70+ languages alongside the original — Pro only.',
+      'Speaker diarization: automatically identify who said what — Pro only.',
+      'Translate to 70+ languages: get a full translation alongside the original — Pro only.',
       'Export as TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.',
-      'Shareable links (Pro): from the result screen, copy a URL to a read-only transcript page — original or translated separately.',
+      'Shareable read-only links (Pro): send a transcript URL — viewers do not need to log in.',
     ],
   },
   {
@@ -122,13 +155,13 @@ const TOOL_GUIDES: ToolGuide[] = [
     ],
     expected: [
       { label: 'Input', detail: 'Video file. Same duration and size limits as Video → Transcript.' },
-      { label: 'Languages', detail: 'Free: 1; Basic: 2; Pro: 5; Agency: 10. Additional languages are generated in one job and returned as a ZIP.' },
+      { label: 'Languages', detail: 'Free: 1 language; Pro: 70+ languages. Multi-language outputs are generated in one job and returned as a ZIP.' },
     ],
     features: [
-      'SRT and VTT output; optional multi-language ZIP.',
+      'SRT and VTT output; optional multi-language ZIP on Pro.',
       'In-app translation viewer for reading/copy (plain text).',
       'Format conversion (SRT/VTT/TXT) from the result panel.',
-      'Validation warnings (e.g. long lines, gaps) shown when relevant; processing is not blocked.',
+      'Validation warnings (e.g. long lines, gaps) shown when relevant.',
     ],
   },
   {
@@ -217,32 +250,32 @@ const TOOL_GUIDES: ToolGuide[] = [
     key: 'Batch Processing',
     path: '/batch-process',
     title: 'Batch Processing',
-    shortDesc: 'Process multiple videos to subtitles in one go. Pro and Agency only.',
+    shortDesc: 'Process multiple videos in one go. Pro only.',
     howTo: [
       'Upload multiple video files (or use the batch upload area).',
-      'Set primary language and, on supported plans, additional languages.',
-      'Start the batch. We process each video and pack results into one ZIP (SRT + derived VTT; errors logged in error_log.txt if any).',
+      'Set primary language and add additional languages if needed.',
+      'Start the batch. We process each video in parallel and pack results into one ZIP (SRT + derived VTT + transcripts + summaries; errors logged in error_log.txt if any).',
       'Download the batch ZIP when all jobs complete.',
     ],
     expected: [
-      { label: 'Availability', detail: 'Pro and Agency only. Free and Basic do not have batch access.' },
-      { label: 'Limits', detail: 'Pro: up to 20 videos, 60 min total duration. Agency: up to 100 videos, 300 min total.' },
-      { label: 'Output', detail: 'One ZIP per batch with one subtitle set per video; multi-language adds more files per video.' },
+      { label: 'Availability', detail: 'Pro only. Free plan does not have batch access.' },
+      { label: 'Limits', detail: 'Pro: unlimited videos, unlimited total duration. Process at your own pace.' },
+      { label: 'Output', detail: 'One ZIP per batch with transcripts, subtitles, summaries, and chapters per video; multi-language adds more files per video.' },
     ],
     features: [
-      'One upload, one ZIP: all SRT (and VTT) in a single download.',
-      'Same quality and options as Video → Subtitles per video.',
+      'One upload, one ZIP: all transcripts and subtitles in a single download.',
+      'Parallel processing: multiple videos at once (faster than sequential).',
+      'Full outputs: transcripts, SRT/VTT, AI summary, chapters, and speaker labels.',
       'Error log included in ZIP when some videos fail.',
+      'Perfect for teams and content creators who produce volume.',
     ],
   },
 ]
 
 /** Plan limits at a glance (authoritative summary; exact values in server/utils/limits.ts). */
 const PLAN_LIMITS = [
-  { plan: 'Free', minutes: '3 imports/month', maxDuration: '30 min', maxSize: '2 GB', languages: '1', batch: '-', aiFeatures: '-' },
-  { plan: 'Basic', minutes: '450/month', maxDuration: '45 min', maxSize: '5 GB', languages: '2', batch: '-', aiFeatures: '-' },
-  { plan: 'Pro', minutes: '1,200/month', maxDuration: '2 h', maxSize: '10 GB', languages: '5', batch: '20 videos', aiFeatures: 'Summary, Chapters, Speakers, Translation' },
-  { plan: 'Agency', minutes: '3,000/month', maxDuration: '4 h', maxSize: '20 GB', languages: '10', batch: '100 videos', aiFeatures: 'All Pro features' },
+  { plan: 'Free', minutes: '3 imports/day', maxDuration: '30 min', maxSize: '2 GB', languages: '1', batch: '-', aiFeatures: '-' },
+  { plan: 'Pro', minutes: 'Unlimited', maxDuration: '2 h', maxSize: '10 GB', languages: '70+', batch: 'Unlimited', aiFeatures: 'Summary, Chapters, Speakers, Translation' },
 ]
 
 export default function Guide() {
@@ -265,7 +298,7 @@ export default function Guide() {
 
         <p className="text-gray-700 mb-6">
           This guide is the full &quot;How it works&quot; reference for VideoText. Step-by-step: how each tool works,
-          what inputs we expect, and what you get. All tools require file uploads (MP4, MOV, AVI, WebM). For billing and limits, see{' '}
+          what inputs we expect, and what you get. Most tools accept file uploads (MP4, MOV, AVI, WebM); YouTube → Transcript accepts direct URL input (no download needed). For billing and limits, see{' '}
           <Link to="/pricing" className="text-violet-600 hover:text-violet-700 font-medium">Pricing</Link>; for privacy, see our{' '}
           <Link to="/faq" className="text-violet-600 hover:text-violet-700 font-medium">FAQ</Link> and{' '}
           <Link to="/privacy" className="text-violet-600 hover:text-violet-700 font-medium">Privacy Policy</Link>. Ask Tex (bottom-right) for quick answers about any tool or plan.
@@ -275,7 +308,7 @@ export default function Guide() {
         <div className="mb-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
             { who: 'Voice notes', want: 'Record any idea or meeting in browser, get transcript instantly. No file needed.', path: '#voice-recorder' },
-            { who: 'YouTubers', want: 'Transcript + AI chapters + multi-language subtitles burned into video', path: '#video-to-transcript' },
+            { who: 'YouTubers', want: 'Paste YouTube URL, get transcript + AI chapters + multi-language subtitles. No download.', path: '#youtube-transcript' },
             { who: 'Podcast editors', want: 'Transcript + speaker labels + AI summary + chapters — all in one job', path: '#video-to-transcript' },
             { who: 'Social media creators', want: 'Subtitles burned in for silent autoplay. Translate to reach global audiences.', path: '#burn-subtitles' },
             { who: 'Teams & agencies', want: 'Batch process 20–100 videos in one go, download ZIP with SRT per video', path: '#batch-process' },
