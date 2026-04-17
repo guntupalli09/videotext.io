@@ -124,6 +124,7 @@ function RouteFallback() {
 /** Wraps route content with 200ms fade+translate on route change (CSS only). */
 function RouteTransitionLayout() {
   const { pathname } = useLocation()
+  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
   return (
     <div key={pathname} className="route-transition-enter w-full min-w-0">
       <Outlet />
