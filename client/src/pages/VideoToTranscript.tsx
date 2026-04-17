@@ -79,7 +79,7 @@ export type VideoToTranscriptSeoProps = {
     outputExamples?: { title: string; body: string }[]
     comparisonRows?: { feature: string; videotext: string; alternatives: string }[]
     useCases?: { title: string; body: string }[]
-    visualProof?: { title: string; body: string }[]
+    visualProof?: { title: string; body: string; image?: string }[]
     technicalExplanation?: { title: string; body: string }[]
     ctaText?: string
     ctaPath?: string
