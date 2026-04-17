@@ -4,6 +4,7 @@ import pLimit from 'p-limit'
 import fs from 'fs'
 import path from 'path'
 import { convertAudioToWav, extractAudio, extractAudioToWav, extractAndSplitAudio, extractAndSplitAudioExtractionFirst, EXTRACTION_FIRST_CHUNK_SEC, getVideoDuration, splitAudioIntoChunks, NO_AUDIO_STREAM_ERROR } from './ffmpeg'
+import { trimVideoSegment } from './trimming'
 import { PROCESSING_V2 } from '../utils/featureFlags'
 import { toSRT, toVTT } from '../utils/srtParser'
 import type { SubtitleEntry } from '../utils/srtParser'
@@ -651,4 +652,37 @@ export async function transcribeVideoVerbose(
     if (whisperWavPath) try { if (fs.existsSync(whisperWavPath)) fs.unlinkSync(whisperWavPath) } catch { /* ignore */ }
     throw error
   }
+}
+
+/** Transcribe only missing audio windows and return absolute-time segments. */
+export async function transcribeAudioGapWindows(
+  audioPath: string,
+  windows: { start: number; end: number }[],
+  language?: string,
+  prompt?: string
+): Promise<WhisperSegment[]> {
+  const mergedWindows = [...windows]
+    .filter((w) => Number.isFinite(w.start) && Number.isFinite(w.end) && w.end - w.start >= 3)
+    .sort((a, b) => a.start - b.start)
+
+  const segments: WhisperSegment[] = []
+  for (const window of mergedWindows) {
+    const trimmed = await trimVideoSegment({
+      inputPath: audioPath,
+      startTime: window.start,
+      endTime: window.end,
+    })
+    try {
+      const result = await transcribeChunkVerbose(trimmed.outputPath, window.start, language, prompt)
+      if (result.segments.length > 0) segments.push(...result.segments)
+    } finally {
+      try {
+        if (fs.existsSync(trimmed.outputPath)) fs.unlinkSync(trimmed.outputPath)
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+
+  return segments.sort((a, b) => a.start - b.start)
 }

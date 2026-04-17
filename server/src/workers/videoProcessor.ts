@@ -5,7 +5,7 @@ import Queue from 'bull'
 import path from 'path'
 import fs from 'fs'
 import archiver from 'archiver'
-import { transcribeVideo, transcribeVideoVerbose } from '../services/transcription'
+import { transcribeVideo, transcribeVideoVerbose, transcribeAudioGapWindows } from '../services/transcription'
 import { translateSubtitleFile, translateSubtitles, detectLanguageConsistency, translatePreservingLines } from '../services/translation'
 import { fixSubtitleFile, validateSubtitleFile } from '../services/subtitles'
 import { generateSummary, generateChapters } from '../services/transcriptSummary'
@@ -74,7 +74,15 @@ import {
 import { withJobContext, withJobContextFull, getLogger } from '../lib/logger'
 import { initSentry, captureJobError } from '../lib/sentry'
 import { pushLogEntry } from '../lib/logRing'
-import { streamYoutubeAudioToFile, fetchYoutubeCaptions, validateCaptionQuality } from '../services/youtube'
+import {
+  streamYoutubeAudioToFile,
+  fetchYoutubeCaptions,
+  evaluateCaptionDecision,
+  type CaptionPatchWindow,
+  type YoutubeAttemptCollector,
+  type YoutubeAttemptRecord,
+} from '../services/youtube'
+import { resetProxyPoolState } from '../utils/youtubeProxyPool'
 import { v4 as uuidv4 } from 'uuid'
 
 /**
@@ -251,6 +259,21 @@ export interface JobData {
   youtubeDefaultLanguage?: string
   /** Set when YouTube fell back to audio download (observability). */
   youtubeFallbackToAudio?: boolean
+  /** Caption source used when YouTube captions are accepted. */
+  youtubeCaptionSource?: 'timedtext' | 'player_api' | 'ytdlp'
+  youtubeCaptionSourceDetail?: string
+  /** Final YouTube resolution path for observability and client trust. */
+  youtubeResolutionPath?: 'captions' | 'caption_patch' | 'audio_transcription'
+  /** Missing windows to patch via gap-only ASR when caption decision is PATCH. */
+  captionPatchWindows?: CaptionPatchWindow[]
+  /** Failure taxonomy and fallback chain for YouTube ingest observability. */
+  youtubeErrorCode?: 'NO_CAPTIONS' | 'GEO_BLOCKED' | 'LOGIN_REQUIRED' | 'VIDEO_UNAVAILABLE' | 'STREAM_BLOCKED' | 'PROXY_POOL_DEGRADED' | 'STREAM_TIMEOUT' | 'UNKNOWN'
+  fallbackHistory?: string[]
+  youtubeAttempts?: YoutubeAttemptRecord[]
+  youtubeProxyUsed?: boolean
+  youtubeProxyId?: string
+  youtubeDecisionScore?: number
+  youtubeConfidence?: number
   /** Pre-computed transcript from YouTube captions; skips Whisper. */
   precomputedTranscript?: { fullText: string; segments: { start: number; end: number; text: string }[] }
   /** Set to true after usage is counted; persisted to Redis via job.update() to prevent double-counting on retry. */
@@ -437,9 +460,155 @@ const RUNTIME_QUEUE_THRESHOLD = 20
 const RUNTIME_CHECK_INTERVAL_MS = 15 * 1000
 
 const HANDED_OFF = { __handedOff: true } as const
-const CAPTION_CONCURRENCY = Math.max(20, parseInt(process.env.CAPTION_CONCURRENCY || '20', 10))
-const AUDIO_CONCURRENCY = Math.max(1, Math.min(5, parseInt(process.env.AUDIO_CONCURRENCY || '4', 10)))
+const YT_DLP_GLOBAL_CAP = Math.max(1, parseInt(process.env.YT_DLP_GLOBAL_MAX_PERMITS || process.env.YT_DLP_MAX_CONCURRENCY || '4', 10))
+const CAPTION_CONCURRENCY = Math.max(
+  1,
+  Math.min(
+    YT_DLP_GLOBAL_CAP,
+    parseInt(process.env.CAPTION_CONCURRENCY || String(YT_DLP_GLOBAL_CAP), 10)
+  )
+)
+const AUDIO_CONCURRENCY = Math.max(
+  1,
+  Math.min(
+    YT_DLP_GLOBAL_CAP,
+    parseInt(process.env.AUDIO_CONCURRENCY || String(Math.min(2, YT_DLP_GLOBAL_CAP)), 10)
+  )
+)
 const TRANSCRIPTION_CONCURRENCY = Math.max(1, Math.min(2, parseInt(process.env.TRANSCRIPTION_CONCURRENCY || '2', 10)))
+const YT_METRIC_KEY_PREFIX = 'metrics:yt:resolution:'
+
+function ytMetricDayKey(d = new Date()): string {
+  const y = d.getUTCFullYear()
+  const m = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(d.getUTCDate()).padStart(2, '0')
+  return `${YT_METRIC_KEY_PREFIX}${y}-${m}-${day}`
+}
+
+async function recordYoutubeResolutionMetric(
+  redis: import('ioredis').Redis,
+  data: JobData
+): Promise<void> {
+  if (!data.youtubeResolutionPath) return
+  const key = ytMetricDayKey()
+  const path = data.youtubeResolutionPath
+  const source = data.youtubeCaptionSource || 'none'
+  const errorCode = data.youtubeErrorCode || 'none'
+  const patch = path === 'caption_patch' ? 1 : 0
+  const fallback = path === 'audio_transcription' ? 1 : 0
+  const attempts = data.youtubeAttempts || []
+  const proxyUsed = attempts.some((a) => a.type === 'proxy' && a.result === 'success') ? 1 : 0
+  const failedAfterProxy = attempts.some((a) => a.type === 'proxy' && a.result === 'fail') ? 1 : 0
+  const attemptsCount = attempts.length
+  const hasProxyAttempt = attempts.some((a) => a.type === 'proxy') ? 1 : 0
+  const directLatency = attempts.filter((a) => a.type === 'direct').reduce((sum, a) => sum + a.latencyMs, 0)
+  const cookiesLatency = attempts.filter((a) => a.type === 'cookies').reduce((sum, a) => sum + a.latencyMs, 0)
+  const proxyLatency = attempts.filter((a) => a.type === 'proxy').reduce((sum, a) => sum + a.latencyMs, 0)
+  const confidenceScaled = typeof data.youtubeConfidence === 'number'
+    ? Math.round(Math.max(0, Math.min(1, data.youtubeConfidence)) * 1000)
+    : 0
+
+  try {
+    await redis
+      .multi()
+      .hincrby(key, 'total', 1)
+      .hincrby(key, `path:${path}`, 1)
+      .hincrby(key, `source:${source}`, 1)
+      .hincrby(key, `error:${errorCode}`, 1)
+      .hincrby(key, 'patch_count', patch)
+      .hincrby(key, 'fallback_count', fallback)
+      .hincrby(key, 'proxy_used', proxyUsed)
+      .hincrby(key, 'failed_after_proxy', failedAfterProxy)
+      .hincrby(key, 'proxy_attempt_jobs', hasProxyAttempt)
+      .hincrby(key, 'attempts_count', attemptsCount)
+      .hincrby(key, 'latency_direct_ms', Math.round(directLatency))
+      .hincrby(key, 'latency_cookies_ms', Math.round(cookiesLatency))
+      .hincrby(key, 'latency_proxy_ms', Math.round(proxyLatency))
+      .hincrby(key, 'confidence_sum_scaled', confidenceScaled)
+      .expire(key, 45 * 24 * 60 * 60)
+      .exec()
+
+    if (attempts.length > 0) {
+      const perProxy = new Map<string, { success: number; fail: number }>()
+      for (const attempt of attempts) {
+        if (attempt.type !== 'proxy' || !attempt.proxyId) continue
+        const current = perProxy.get(attempt.proxyId) || { success: 0, fail: 0 }
+        if (attempt.success) current.success += 1
+        else current.fail += 1
+        perProxy.set(attempt.proxyId, current)
+      }
+      if (perProxy.size > 0) {
+        const metrics = redis.multi()
+        for (const [proxyId, v] of perProxy) {
+          metrics.hincrby(key, `proxy:${proxyId}:success`, v.success)
+          metrics.hincrby(key, `proxy:${proxyId}:fail`, v.fail)
+        }
+        await metrics.exec()
+      }
+    }
+
+    const totals = await redis.hmget(key, 'total', 'proxy_used', 'failed_after_proxy')
+    const totalJobs = Number(totals[0] || 0)
+    const proxyUsedJobs = Number(totals[1] || 0)
+    const proxyFailJobs = Number(totals[2] || 0)
+    const proxyUsagePct = totalJobs > 0 ? proxyUsedJobs / totalJobs : 0
+    const proxyFailPct = proxyUsedJobs > 0 ? proxyFailJobs / proxyUsedJobs : 0
+    if (proxyUsagePct > 0.3 || proxyFailPct > 0.2) {
+      const baseCap = Math.max(1, parseInt(process.env.YT_DLP_GLOBAL_MAX_PERMITS || process.env.YT_DLP_MAX_CONCURRENCY || '4', 10))
+      const reducedCap = Math.max(1, Math.floor(baseCap / 2))
+      await redis.hset(
+        key,
+        'degradation_flag',
+        '1',
+        'degradation_reason',
+        proxyUsagePct > 0.3 ? 'proxy_usage_high' : 'proxy_failure_high'
+      )
+      await redis
+        .multi()
+        .set('yt_dlp_global_semaphore:max_permits_dynamic', String(reducedCap), 'EX', 15 * 60)
+        .set('yt_alert:youtube_degradation', JSON.stringify({
+          at: new Date().toISOString(),
+          proxyUsagePct,
+          proxyFailPct,
+          reducedCap,
+        }), 'EX', 60 * 60)
+        .exec()
+      workerLog.error({
+        msg: 'yt_system_degradation_alert',
+        proxyUsagePct: Math.round(proxyUsagePct * 1000) / 1000,
+        proxyFailPct: Math.round(proxyFailPct * 1000) / 1000,
+        reducedCap,
+      })
+      await resetProxyPoolState()
+    } else {
+      const baseCap = Math.max(1, parseInt(process.env.YT_DLP_GLOBAL_MAX_PERMITS || process.env.YT_DLP_MAX_CONCURRENCY || '4', 10))
+      await redis.set('yt_dlp_global_semaphore:max_permits_dynamic', String(baseCap), 'EX', 15 * 60)
+    }
+  } catch {
+    /* non-blocking */
+  }
+}
+
+const classifyYoutubeErrorCode = (msg: string): JobData['youtubeErrorCode'] => {
+  const m = msg.toLowerCase()
+  if (m.includes('timed out')) return 'STREAM_TIMEOUT'
+  if (m.includes('private') || m.includes('unavailable') || m.includes('removed')) return 'VIDEO_UNAVAILABLE'
+  if (m.includes('sign in') || m.includes('bot')) return 'LOGIN_REQUIRED'
+  if (m.includes('region') || m.includes('geo')) return 'GEO_BLOCKED'
+  if (m.includes('403') || m.includes('429') || m.includes('signature') || m.includes('no video formats found')) return 'STREAM_BLOCKED'
+  if (m.includes('proxy pool degraded')) return 'PROXY_POOL_DEGRADED'
+  if (m.includes('no captions')) return 'NO_CAPTIONS'
+  return 'UNKNOWN'
+}
+
+const deriveAttemptErrorCode = (attempts?: YoutubeAttemptRecord[]): JobData['youtubeErrorCode'] | undefined => {
+  const lastFailure = [...(attempts || [])].reverse().find((a) => a.result === 'fail' && a.errorCode)
+  if (!lastFailure?.errorCode) return undefined
+  if (lastFailure.errorCode === 'UNKNOWN' || lastFailure.errorCode === 'NO_CAPTIONS' || lastFailure.errorCode === 'GEO_BLOCKED' || lastFailure.errorCode === 'LOGIN_REQUIRED' || lastFailure.errorCode === 'STREAM_BLOCKED' || lastFailure.errorCode === 'PROXY_POOL_DEGRADED' || lastFailure.errorCode === 'STREAM_TIMEOUT') {
+    return lastFailure.errorCode as JobData['youtubeErrorCode']
+  }
+  return undefined
+}
 
 async function processCaptionJob(job: import('bull').Job<JobData>): Promise<unknown> {
   const data = job.data as JobData
@@ -452,18 +621,46 @@ async function processCaptionJob(job: import('bull').Job<JobData>): Promise<unkn
   if (redis) await setJobStage(redis, job.id, 'fetching_captions')
   const options = data.options
   log.info({ msg: 'caption_fetch_start', jobId: String(job.id) })
-  const captions = await fetchYoutubeCaptions(data.youtubeUrl!, tempDir, options?.language as string | undefined, data.youtubeDurationSec ?? undefined, data.youtubeDefaultLanguage)
-  log.info({ msg: 'caption_fetch_done', jobId: String(job.id), hasCaptions: !!captions, segmentCount: captions?.segments?.length ?? 0 })
-  const minCoverage = Number(process.env.YOUTUBE_CAPTION_MIN_COVERAGE) || 0.7
-  const validation = captions ? validateCaptionQuality(captions.segments, data.youtubeDurationSec ?? 0) : null
-  const useCaptions = captions && (validation?.valid || (validation && validation.coverage >= minCoverage && validation.segmentCount >= 10))
-  if (!useCaptions && captions && validation) {
-    log.info({ msg: 'yt_captions_rejected', coverage: Math.round(validation.coverage * 100) / 100, maxGap: Math.round(validation.maxGap * 10) / 10, segmentCount: validation.segmentCount })
+  const ytCollector: YoutubeAttemptCollector = { attempts: [] }
+  const captions = await fetchYoutubeCaptions(
+    data.youtubeUrl!,
+    tempDir,
+    options?.language as string | undefined,
+    data.youtubeDurationSec ?? undefined,
+    data.youtubeDefaultLanguage,
+    ytCollector
+  )
+  ;(data as any).youtubeAttempts = [...(data.youtubeAttempts || []), ...(ytCollector.attempts || [])]
+  if (ytCollector.proxyUsed) {
+    ;(data as any).youtubeProxyUsed = true
+    ;(data as any).youtubeProxyId = ytCollector.proxyId
   }
-  log.info({ msg: 'caption_validation_done', jobId: String(job.id), useCaptions: !!useCaptions, validation: validation ? { valid: validation.valid, coverage: validation.coverage } : null })
-  if (useCaptions) {
+  const derivedCaptionError = deriveAttemptErrorCode(ytCollector.attempts)
+  if (derivedCaptionError && !captions) {
+    ;(data as any).youtubeErrorCode = derivedCaptionError
+  }
+  log.info({ msg: 'caption_fetch_done', jobId: String(job.id), hasCaptions: !!captions, segmentCount: captions?.segments?.length ?? 0 })
+  const decision = captions ? evaluateCaptionDecision(captions, data.youtubeDurationSec ?? 0, options?.language as string | undefined) : null
+  log.info({
+    msg: 'caption_decision_done',
+    jobId: String(job.id),
+    action: decision?.action ?? 'fallback',
+    score: decision ? Math.round(decision.score * 1000) / 1000 : 0,
+    coverage: decision ? Math.round(decision.coverage * 1000) / 1000 : 0,
+    alignment: decision ? Math.round(decision.alignmentScore * 1000) / 1000 : 0,
+    duplicationPenalty: decision ? Math.round(decision.duplicationPenalty * 1000) / 1000 : 0,
+    languageConsistency: decision ? Math.round(decision.languageConsistency * 1000) / 1000 : 0,
+    maxGap: decision ? Math.round(decision.maxGap * 10) / 10 : 0,
+    patchWindowCount: decision?.patchWindows.length ?? 0,
+  })
+  if (captions && decision?.action === 'accept') {
     log.info({ msg: 'caption_using_captions', jobId: String(job.id) })
     ;(data as any).precomputedTranscript = captions
+    ;(data as any).youtubeCaptionSource = captions.source
+    ;(data as any).youtubeCaptionSourceDetail = captions.sourceDetail
+    ;(data as any).youtubeResolutionPath = 'captions'
+    ;(data as any).youtubeDecisionScore = decision.score
+    ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), `captions:accept:${captions.source}`]
     ;(data as any).filePath = ''
     ;(data as any).inputType = 'audio'
     ;(data as any).originalName = (data.youtubeTitle || 'youtube_video').replace(/[^\w\s.\-]/g, '_').trim() + '.wav'
@@ -472,9 +669,38 @@ async function processCaptionJob(job: import('bull').Job<JobData>): Promise<unkn
     log.info({ msg: 'caption_job_completed', source: 'captions', jobId: String(job.id) })
     return processJob(job)
   }
+  if (captions && decision?.action === 'patch') {
+    if (redis) await setJobStage(redis, job.id, 'downloading_audio')
+    log.info({ msg: 'caption_handoff_to_gap_patch', jobId: String(job.id), windowCount: decision.patchWindows.length })
+    const nextData: JobData = {
+      ...data,
+      toolType: 'youtube-audio-to-transcript',
+      youtubeFallbackToAudio: true,
+      youtubeResolutionPath: 'caption_patch',
+      precomputedTranscript: captions,
+      youtubeCaptionSource: captions.source,
+      youtubeCaptionSourceDetail: captions.sourceDetail,
+      captionPatchWindows: decision.patchWindows,
+      youtubeDecisionScore: decision.score,
+      fallbackHistory: [...(data.fallbackHistory || []), `captions:patch:${captions.source}`, `gap_windows:${decision.patchWindows.length}`],
+    }
+    await audioQueue.add(nextData, { jobId: data.jobToken ?? String(job.id), attempts: 3, backoff: { type: 'exponential' as const, delay: 2000 } })
+    log.info({ msg: 'caption_job_completed', source: 'handoff_gap_patch', jobId: String(job.id) })
+    return HANDED_OFF
+  }
   if (redis) await setJobStage(redis, job.id, 'downloading_audio')
   log.info({ msg: 'caption_handoff_to_audio', jobId: String(job.id) })
-  const nextData: JobData = { ...data, toolType: 'youtube-audio-to-transcript', youtubeFallbackToAudio: true }
+  const nextData: JobData = {
+    ...data,
+    toolType: 'youtube-audio-to-transcript',
+    youtubeFallbackToAudio: true,
+    youtubeResolutionPath: 'audio_transcription',
+    youtubeDecisionScore: decision?.score,
+    fallbackHistory: [...(data.fallbackHistory || []), 'captions:fallback', 'audio:full_transcription'],
+    youtubeAttempts: data.youtubeAttempts,
+    youtubeProxyUsed: data.youtubeProxyUsed,
+    youtubeProxyId: data.youtubeProxyId,
+  }
   await audioQueue.add(nextData, { jobId: data.jobToken ?? String(job.id), attempts: 3, backoff: { type: 'exponential' as const, delay: 2000 } })
   log.info({ msg: 'caption_job_completed', source: 'handoff_audio', jobId: String(job.id) })
   return HANDED_OFF
@@ -490,11 +716,23 @@ async function processAudioJob(job: import('bull').Job<JobData>): Promise<unknow
   if (redis) await setJobStage(redis, job.id, 'downloading_audio')
   const ytAudioPath = path.join(tempDir, `${uuidv4()}_yt_audio.wav`)
   log.info({ msg: 'audio_download_start', jobId: String(job.id), youtubeUrl: data.youtubeUrl?.slice(0, 50) })
+  const ytCollector: YoutubeAttemptCollector = { attempts: [] }
   try {
-    await streamYoutubeAudioToFile(data.youtubeUrl!, ytAudioPath)
+    await streamYoutubeAudioToFile(data.youtubeUrl!, ytAudioPath, ytCollector)
+    ;(data as any).youtubeAttempts = [...(data.youtubeAttempts || []), ...(ytCollector.attempts || [])]
+    if (ytCollector.proxyUsed) {
+      ;(data as any).youtubeProxyUsed = true
+      ;(data as any).youtubeProxyId = ytCollector.proxyId
+    }
     log.info({ msg: 'audio_download_done', jobId: String(job.id) })
   } catch (err: any) {
     log.error({ msg: 'yt_stream_failed', error: err.message })
+    ;(data as any).youtubeAttempts = [...(data.youtubeAttempts || []), ...(ytCollector.attempts || [])]
+    if (ytCollector.proxyUsed) {
+      ;(data as any).youtubeProxyUsed = true
+      ;(data as any).youtubeProxyId = ytCollector.proxyId
+    }
+    ;(data as any).youtubeErrorCode = deriveAttemptErrorCode(ytCollector.attempts) || classifyYoutubeErrorCode(err.message)
     throw new Error(`YouTube audio extraction failed: ${err.message}`)
   }
   const nextData: JobData = {
@@ -505,6 +743,11 @@ async function processAudioJob(job: import('bull').Job<JobData>): Promise<unknow
     toolType: 'video-to-transcript',
     youtubeUrl: undefined,
     youtubeFallbackToAudio: true,
+    youtubeResolutionPath: data.youtubeResolutionPath || 'audio_transcription',
+    fallbackHistory: [...(data.fallbackHistory || []), 'audio:downloaded'],
+    youtubeAttempts: data.youtubeAttempts,
+    youtubeProxyUsed: data.youtubeProxyUsed,
+    youtubeProxyId: data.youtubeProxyId,
   }
   if (redis) await setJobStage(redis, job.id, 'transcribing')
   log.info({ msg: 'audio_handoff_to_transcription', jobId: String(job.id) })
@@ -530,6 +773,60 @@ async function processJob(job: import('bull').Job<JobData>) {
   const plan = (data.plan || 'free') as PlanType
   const maxRuntimeMs = getMaxJobRuntimeMinutes(plan) * 60 * 1000
   const processingStartMs = Date.now()
+
+  const mergeCaptionAndGapSegments = (
+    base: { start: number; end: number; text: string; speaker?: string }[],
+    gapSegments: { start: number; end: number; text: string; speaker?: string }[],
+    windows: CaptionPatchWindow[]
+  ) => {
+    const outside = base.filter((seg) => !windows.some((w) => seg.end > w.start && seg.start < w.end))
+    const merged = [...outside, ...gapSegments].sort((a, b) => a.start - b.start)
+    return merged
+  }
+
+  const normalizeSegmentText = (text: string): string => {
+    const compact = text.replace(/\s+/g, ' ').trim()
+    if (!compact) return compact
+    const punctuated = /[.!?]$/.test(compact) ? compact : `${compact}.`
+    return punctuated.charAt(0).toUpperCase() + punctuated.slice(1)
+  }
+
+  const smoothSegmentBoundaries = (
+    segs: { start: number; end: number; text: string; speaker?: string }[]
+  ) => {
+    const sorted = [...segs]
+      .map((s) => ({ ...s, text: normalizeSegmentText(s.text) }))
+      .sort((a, b) => a.start - b.start)
+    for (let i = 0; i < sorted.length; i++) {
+      const curr = sorted[i]
+      if (curr.end < curr.start) curr.end = curr.start
+      if (i < sorted.length - 1) {
+        const next = sorted[i + 1]
+        if (curr.end > next.start) {
+          const split = Math.max(curr.start, Math.min(next.start, (curr.end + next.start) / 2))
+          curr.end = split
+          next.start = split
+        }
+      }
+    }
+    return sorted
+  }
+
+  const computeYoutubeConfidence = (
+    resolutionPath: JobData['youtubeResolutionPath'],
+    fallbackHistory: string[] | undefined,
+    decisionScore?: number
+  ): number => {
+    const depthPenalty = Math.min((fallbackHistory?.length ?? 0) * 0.04, 0.25)
+    const baseByPath =
+      resolutionPath === 'captions'
+        ? 0.9
+        : resolutionPath === 'caption_patch'
+          ? 0.78
+          : 0.62
+    const scoreBoost = typeof decisionScore === 'number' ? (decisionScore - 0.5) * 0.25 : 0
+    return Math.max(0, Math.min(1, baseByPath + scoreBoost - depthPenalty))
+  }
 
   const run = async (): Promise<any> => {
     log.info({ msg: 'job_started' })
@@ -589,30 +886,30 @@ async function processJob(job: import('bull').Job<JobData>) {
           if (redis) await setJobStage(redis, jobId, 'fetching_captions')
 
           // Try captions first — skip Whisper if available (seconds vs minutes)
+          const ytCollector: YoutubeAttemptCollector = { attempts: [] }
           const captions = await fetchYoutubeCaptions(
             data.youtubeUrl!,
             tempDir,
             options?.language as string | undefined,
             data.youtubeDurationSec,
-            data.youtubeDefaultLanguage
+            data.youtubeDefaultLanguage,
+            ytCollector
           )
-          const minCoverage = Number(process.env.YOUTUBE_CAPTION_MIN_COVERAGE) || 0.7
-          const durationSec = data.youtubeDurationSec ?? 0
-          const captionValidation = captions ? validateCaptionQuality(captions.segments, durationSec) : null
-          const useCaptions = captions && (captionValidation?.valid || (captionValidation && captionValidation.coverage >= minCoverage && captionValidation.segmentCount >= 10))
-          if (!useCaptions && captions && captionValidation) {
-            log.info({
-              msg: 'yt_captions_low_coverage',
-              coverage: Math.round(captionValidation.coverage * 100) / 100,
-              minCoverage,
-              durationSec,
-              segmentCount: captionValidation.segmentCount,
-            })
+          ;(data as any).youtubeAttempts = [...(data.youtubeAttempts || []), ...(ytCollector.attempts || [])]
+          if (ytCollector.proxyUsed) {
+            ;(data as any).youtubeProxyUsed = true
+            ;(data as any).youtubeProxyId = ytCollector.proxyId
           }
-          if (useCaptions) {
+          const decision = captions ? evaluateCaptionDecision(captions, data.youtubeDurationSec ?? 0, options?.language as string | undefined) : null
+          if (captions && decision?.action === 'accept') {
             // Stage 3: transcribing from captions (no audio download needed)
             if (redis) await setJobStage(redis, jobId, 'transcribing')
             ;(data as any).precomputedTranscript = captions
+            ;(data as any).youtubeCaptionSource = captions.source
+            ;(data as any).youtubeCaptionSourceDetail = captions.sourceDetail
+            ;(data as any).youtubeResolutionPath = 'captions'
+            ;(data as any).youtubeDecisionScore = decision.score
+            ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), `captions:accept:${captions.source}`]
             ;(data as any).filePath = ''
             ;(data as any).inputType = 'audio'
             ;(data as any).originalName =
@@ -623,10 +920,22 @@ async function processJob(job: import('bull').Job<JobData>) {
             // Stage 2: downloading audio (captions unavailable or low coverage)
             if (redis) await setJobStage(redis, jobId, 'downloading_audio')
             const ytAudioPath = path.join(tempDir, `${uuidv4()}_yt_audio.wav`)
+            const ytAudioCollector: YoutubeAttemptCollector = { attempts: [] }
             try {
-              await streamYoutubeAudioToFile(data.youtubeUrl!, ytAudioPath)
+              await streamYoutubeAudioToFile(data.youtubeUrl!, ytAudioPath, ytAudioCollector)
+              ;(data as any).youtubeAttempts = [...(data.youtubeAttempts || []), ...(ytAudioCollector.attempts || [])]
+              if (ytAudioCollector.proxyUsed) {
+                ;(data as any).youtubeProxyUsed = true
+                ;(data as any).youtubeProxyId = ytAudioCollector.proxyId
+              }
             } catch (err: any) {
               log.error({ msg: 'yt_stream_failed', error: err.message, youtubeUrl: data.youtubeUrl?.slice(0, 50) })
+              ;(data as any).youtubeAttempts = [...(data.youtubeAttempts || []), ...(ytAudioCollector.attempts || [])]
+              if (ytAudioCollector.proxyUsed) {
+                ;(data as any).youtubeProxyUsed = true
+                ;(data as any).youtubeProxyId = ytAudioCollector.proxyId
+              }
+              ;(data as any).youtubeErrorCode = deriveAttemptErrorCode(ytAudioCollector.attempts) || classifyYoutubeErrorCode(err.message)
               throw new Error(`YouTube audio download failed: ${err.message}. The video may be private, age-restricted, or unavailable in your region.`)
             }
             log.info({ msg: 'yt_stream_done', ytAudioPath })
@@ -638,6 +947,19 @@ async function processJob(job: import('bull').Job<JobData>) {
               (data.youtubeTitle || 'youtube_video').replace(/[^\w\s.\-]/g, '_').trim() + '.wav'
             ;(data as any).toolType = 'video-to-transcript'
             ;(data as any).youtubeUrl = undefined
+            if (captions && decision?.action === 'patch') {
+              ;(data as any).precomputedTranscript = captions
+              ;(data as any).youtubeCaptionSource = captions.source
+              ;(data as any).youtubeCaptionSourceDetail = captions.sourceDetail
+              ;(data as any).captionPatchWindows = decision.patchWindows
+              ;(data as any).youtubeResolutionPath = 'caption_patch'
+              ;(data as any).youtubeDecisionScore = decision.score
+              ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), `captions:patch:${captions.source}`, `gap_windows:${decision.patchWindows.length}`, 'audio:downloaded']
+            } else {
+              ;(data as any).youtubeResolutionPath = 'audio_transcription'
+              ;(data as any).youtubeDecisionScore = decision?.score
+              ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), 'captions:fallback', 'audio:downloaded', 'asr:full']
+            }
           }
           await job.progress(20)
         }
@@ -673,6 +995,25 @@ async function processJob(job: import('bull').Job<JobData>) {
             fullText = data.precomputedTranscript.fullText
             segments = data.precomputedTranscript.segments.map((s) => ({ start: s.start, end: s.end, text: s.text }))
             totalVideoDurationSec = data.youtubeDurationSec ?? (segments.length > 0 ? Math.max(...segments.map((s) => s.end)) : 0)
+            if (data.captionPatchWindows && data.captionPatchWindows.length > 0 && data.filePath) {
+              const glossary = options?.glossary?.trim()
+              const patched = await transcribeAudioGapWindows(
+                data.filePath,
+                data.captionPatchWindows,
+                options?.language,
+                glossary
+              )
+              if (patched.length > 0) {
+                segments = mergeCaptionAndGapSegments(
+                  segments,
+                  patched.map((s) => ({ start: s.start, end: s.end, text: s.text })),
+                  data.captionPatchWindows
+                )
+                segments = smoothSegmentBoundaries(segments)
+                fullText = segments.map((s) => s.text).join(' ').replace(/\s+/g, ' ').trim()
+                ;(data as any).fallbackHistory = [...(data.fallbackHistory || []), `asr:gap_fill:${patched.length}`]
+              }
+            }
             if (redis) {
               partialWriter = createPartialWriter(redis, jobId)
               partialWriter.startDrain()
@@ -1014,7 +1355,37 @@ async function processJob(job: import('bull').Job<JobData>) {
             ...(STREAM_PROGRESS && { streamProgress: true }),
             // Server-transcoded AAC audio for the in-app player (null when extraction failed)
             ...(playbackAudioUrl && { audioUrl: playbackAudioUrl }),
+            ...(data.youtubeResolutionPath && { resolutionPath: data.youtubeResolutionPath }),
+            ...(data.youtubeCaptionSource && { captionSource: data.youtubeCaptionSource }),
+            ...(data.youtubeCaptionSourceDetail && { captionSourceDetail: data.youtubeCaptionSourceDetail }),
+            ...(data.youtubeErrorCode && { errorCode: data.youtubeErrorCode }),
+            ...(data.fallbackHistory && data.fallbackHistory.length > 0 && { fallbackHistory: data.fallbackHistory }),
+            ...(data.youtubeAttempts && data.youtubeAttempts.length > 0 && { attempts: data.youtubeAttempts }),
+            ...(data.youtubeProxyUsed !== undefined && { proxyUsed: !!data.youtubeProxyUsed }),
+            ...(data.youtubeProxyId && { proxyId: data.youtubeProxyId }),
           }
+          if (data.youtubeResolutionPath) {
+            const confidence = computeYoutubeConfidence(
+              data.youtubeResolutionPath,
+              data.fallbackHistory,
+              data.youtubeDecisionScore
+            )
+            ;(data as any).youtubeConfidence = confidence
+            ;(result as any).confidence = confidence
+          }
+          log.info({
+            msg: 'yt_resolution_metrics',
+            jobId: String(jobId),
+            resolutionPath: data.youtubeResolutionPath ?? 'non_youtube',
+            captionSource: data.youtubeCaptionSource ?? null,
+            fallbackSteps: data.fallbackHistory?.length ?? 0,
+            errorCode: data.youtubeErrorCode ?? null,
+            confidence: data.youtubeConfidence ?? null,
+            attemptsCount: data.youtubeAttempts?.length ?? 0,
+            proxyUsed: (data.youtubeAttempts || []).some((a) => a.type === 'proxy' && a.result === 'success'),
+            failedAfterProxy: (data.youtubeAttempts || []).some((a) => a.type === 'proxy' && a.result === 'fail'),
+          })
+          if (redis) await recordYoutubeResolutionMetric(redis, data)
 
           const outputPath = path.join(tempDir, primaryFileName)
           if (data.videoHash && userId) {

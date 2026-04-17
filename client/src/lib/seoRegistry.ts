@@ -1260,9 +1260,9 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   {
     path: '/youtube-transcript-generator',
     title: 'YouTube Transcript Generator – Convert YouTube Video to Text | VideoText',
-    description: 'Generate transcripts from YouTube videos instantly. Paste a URL and export SRT, TXT, or DOCX with VideoText.',
+    description: 'YouTube transcript generator for creators and teams. Paste a URL, generate structured transcript output, and export text or subtitles fast.',
     h1: 'YouTube Transcript Generator',
-    intro: 'Convert any YouTube video to a transcript with one click. Paste a youtube.com or youtu.be link — no download, no upload. AI transcription in seconds. Export as TXT, SRT, or translate to 70+ languages. Free tier.',
+    intro: 'Convert YouTube videos to clean transcript output quickly. Paste a youtube.com or youtu.be URL, generate transcript + summary + chapter-ready structure, and export in production-friendly formats.',
     breadcrumbLabel: 'YouTube Transcript Generator',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/youtube-to-transcript', '/video-to-subtitles', '/transcribe-youtube-video'],
@@ -1270,8 +1270,14 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'youtube-transcript-generator',
     defaultInputMode: 'youtube',
     faq: [
-      { q: 'How do I generate a transcript from a YouTube video?', a: 'Paste the YouTube URL into our tool and click Transcribe. We stream the audio and convert it to text with AI. Export as TXT, SRT, or DOCX.' },
-      { q: 'Is the YouTube transcript generator free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'How do I get a transcript from a YouTube video?', a: 'Paste the YouTube URL and click Generate Transcript. VideoText processes the source and returns structured transcript output you can read, copy, and export.' },
+      { q: 'Can I download YouTube subtitles in SRT or VTT?', a: 'Yes. After generation, export subtitle files in SRT or VTT format for upload and publishing workflows.' },
+      { q: 'Is this more useful than native YouTube captions?', a: 'For production workflows, yes. VideoText is built for transcript usability and structured outputs beyond raw caption viewing.' },
+      { q: 'Can I transcribe long YouTube videos?', a: 'Yes. Long videos and podcast-style content are supported, with processing time based on duration.' },
+      { q: 'Is the YouTube transcript generator free?', a: 'A free tier is available to test the workflow. Paid plans unlock larger usage and advanced features.' },
+      { q: 'Can I use transcripts for blogs and repurposed content?', a: 'Yes. This is a primary use case: convert one video into multiple publish-ready text assets.' },
+      { q: 'Does VideoText keep my transcript files forever?', a: 'No. The pipeline is designed for fast processing and cleanup, not long-term storage.' },
+      { q: 'How does VideoText compare with Descript, Otter, and Rev?', a: 'VideoText focuses on URL-first speed and structured transcript outputs that reduce manual cleanup work.' },
     ],
   },
   {

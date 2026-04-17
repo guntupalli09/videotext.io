@@ -83,7 +83,7 @@ const BestDescriptAlternatives = lazy(() => import('./pages/BestDescriptAlternat
 const AiTranscriptionWorkflow = lazy(() => import('./pages/AiTranscriptionWorkflow'))
 const PodcastTranscriptionTool = lazy(() => import('./pages/PodcastTranscriptionTool'))
 const InterviewTranscriptionTool = lazy(() => import('./pages/InterviewTranscriptionTool'))
-const YoutubeVideoToTranscript = lazy(() => import('./pages/YoutubeVideoToTranscript'))
+const YoutubeTranscriptGenerator = lazy(() => import('./pages/YoutubeTranscriptGenerator'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const Status = lazy(() => import('./pages/Status'))
 const ShareTranscript = lazy(() => import('./pages/ShareTranscript'))
@@ -531,7 +531,13 @@ function App() {
             <Route path="/ai-transcription-workflow" element={<AiTranscriptionWorkflow />} />
             <Route path="/podcast-transcription-tool" element={<PodcastTranscriptionTool />} />
             <Route path="/interview-transcription-tool" element={<InterviewTranscriptionTool />} />
-            <Route path="/youtube-video-to-transcript" element={<YoutubeVideoToTranscript />} />
+            <Route path="/youtube-transcript-generator" element={<YoutubeTranscriptGenerator />} />
+            <Route path="/youtube-url-to-transcription" element={<Navigate to="/youtube-transcript-generator" replace />} />
+            <Route path="/youtube-to-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
+            <Route path="/youtube-video-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
+            <Route path="/how-to-transcript-youtube" element={<Navigate to="/youtube-transcript-generator#how-it-works" replace />} />
+            <Route path="/youtube-transcript-editor" element={<Navigate to="/youtube-transcript-generator#export-options" replace />} />
+            <Route path="/youtube-video-to-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
             <Route path="/otter-vs-videotext" element={<OtterVsVideoText />} />
             <Route path="/descript-vs-videotext" element={<DescriptVsVideoText />} />
             <Route path="/ai-transcription-tools" element={<AiTranscriptionTools />} />

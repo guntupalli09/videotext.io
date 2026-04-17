@@ -39,6 +39,7 @@ import { prisma } from './db'
 import { refreshApiCredits } from './lib/apiCreditsCache'
 import { createMagicLinkToken } from './routes/auth'
 import { attachLiveTranscription } from './routes/liveTranscription'
+import { maybeRunYoutubeCanary } from './services/youtubeCanary'
 
 const log = getLogger('api')
 
@@ -277,6 +278,12 @@ const server = app.listen(PORT, () => {
       .then(() => log.info({ msg: 'API credits 3h refresh done' }))
       .catch((err) => log.warn({ msg: 'API credits refresh failed', error: (err as Error)?.message }))
   }, 3 * 60 * 60 * 1000)
+
+  // YouTube ingestion canary suite: runs once/day when enabled.
+  setInterval(() => {
+    maybeRunYoutubeCanary()
+      .catch((err) => log.warn({ msg: 'YouTube canary failed', error: (err as Error)?.message }))
+  }, 60 * 60 * 1000)
 
   // Daily quota reset email — fires once per day at 9 AM CST (15:00 UTC)
   // Sends free-plan users a magic-login email so they can open the tool in one click.

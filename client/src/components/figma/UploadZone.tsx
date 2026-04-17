@@ -166,7 +166,7 @@ export function UploadZone({
                 </div>
               </motion.div>
               <h3 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
-                {multiple ? 'Drag and drop your file(s)' : 'Drag and drop your file'}
+                {multiple ? 'Drag and drop your file(s)' : 'Upload a video or paste a URL (YouTube, Loom, etc.)'}
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-2 sm:mb-3 text-xs sm:text-sm">
                 or{' '}

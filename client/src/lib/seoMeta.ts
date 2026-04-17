@@ -99,6 +99,21 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'Generate subtitles automatically, fix timing issues, then burn them into the video permanently — all free, no desktop software required.',
   },
+  '/blog/best-way-to-get-youtube-transcript': {
+    title: 'Best Way to Get a YouTube Transcript | VideoText',
+    description:
+      'A practical workflow to turn any YouTube video into a clean transcript quickly, with structured outputs for SEO and content repurposing.',
+  },
+  '/blog/youtube-captions-vs-ai-transcription': {
+    title: 'YouTube Captions vs AI Transcription | VideoText',
+    description:
+      'Compare YouTube native captions and AI transcription workflows for speed, structure, and content repurposing outcomes.',
+  },
+  '/blog/how-to-download-youtube-subtitles': {
+    title: 'How to Download YouTube Subtitles and Reuse Them | VideoText',
+    description:
+      'Step-by-step guide to generating subtitle files that are usable across editing, publishing, and localization workflows.',
+  },
   '/blog/best-free-transcription-tools-2026': {
     title: 'Best Free Transcription Tools in 2026: An Honest Comparison | VideoText',
     description:
