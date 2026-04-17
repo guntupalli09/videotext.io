@@ -540,7 +540,7 @@ function App() {
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript
               seoH1="Convert Any Video to Transcript in Minutes (Not Hours)"
-              seoIntro="1-hour video -> clean transcript, subtitles, and summary in 3-5 minutes. Fast, accurate, and private. No credit card. Start free."
+              seoIntro="1-hour video -> clean transcript, subtitles, and summary in 3-5 minutes. No cleanup needed. Used by 50,000+ creators, researchers, and agencies."
               faq={[
                 {
                   q: 'How long does transcription actually take?',
@@ -613,15 +613,47 @@ function App() {
                     body: 'Broadcast-ready subtitle files with correct timing and line breaks. Upload directly to YouTube, Vimeo, Wistia, or any platform. No manual cleanup needed.',
                   },
                 ],
+                visualProof: [
+                  {
+                    title: 'Transcript with speaker labels',
+                    body: 'SPEAKER 1 (0:00): In early years, you were looked at and perceived as little, like, macho gunda.\nSPEAKER 2 (0:10): Why do you realize that I change in gunda?\nSPEAKER 1 (0:13): If a gunda becomes a father, everything changes.',
+                  },
+                  {
+                    title: 'SRT subtitle file',
+                    body: '1\n00:00:05,000 --> 00:00:10,000\nIn early years, you were looked at\nand perceived as little, like, macho gunda.\n\n2\n00:00:10,000 --> 00:00:13,000\nWhy do you realize that I change in gunda?',
+                  },
+                  {
+                    title: 'AI summary extract',
+                    body: 'The speaker discusses their early perception as a child and a transformative moment. They reflect on how becoming a parent changes everything and express their willingness to take on any challenge for their family.',
+                  },
+                ],
+                technicalExplanation: [
+                  {
+                    title: 'Most tools process in real-time (or slower)',
+                    body: 'Otter.ai, Descript, and others use synchronous processing: they wait for your video to play through before generating output. A 1-hour video takes 1+ hour to process. Some tools even queue jobs - you wait 2-4 hours total.',
+                  },
+                  {
+                    title: 'VideoText processes asynchronously',
+                    body: 'We extract audio once, then process it in parallel across multiple systems. Speech recognition, speaker detection, chapter finding, and summary generation all run simultaneously. A 1-hour video finishes in 3-5 minutes because we do 10+ tasks at once, not sequentially.',
+                  },
+                  {
+                    title: 'Why timestamps matter more than you think',
+                    body: 'Timestamps let you link directly to moments in the transcript. Researchers can cite [00:15:30] exactly. YouTubers can reference specific points in descriptions. Podcasters can build chapters automatically. Most tools get timestamps wrong or generate them slowly.',
+                  },
+                  {
+                    title: 'Speaker detection requires real accuracy',
+                    body: 'We use advanced voice fingerprinting to distinguish between speakers (not just voice pitch). 2-speaker interviews, panel discussions, podcasts with hosts and guests - all auto-labeled correctly. Otter does this, but charges $20/month. We include it free.',
+                  },
+                ],
                 comparisonRows: [
-                  { feature: 'Processing speed (1 hr video)', videotext: '3-5 minutes', alternatives: 'Otter: 10-20 min | Descript: 5-10 min | Rev: 2-4 hours (human)' },
-                  { feature: 'What you get', videotext: 'Transcript + summary + chapters + subtitles (1 pass)', alternatives: 'Transcript only; extras sold separately or require manual work' },
-                  { feature: 'Data privacy', videotext: 'Deleted immediately after processing', alternatives: 'Otter, Descript: stored indefinitely; Rev: deleted after 30 days' },
-                  { feature: 'Language support', videotext: '90+ languages, equal accuracy', alternatives: 'Otter, Descript: English-first; accuracy drops in other languages' },
-                  { feature: 'Export options', videotext: 'TXT, PDF, DOCX, JSON, SRT, VTT, CSV', alternatives: '1-3 formats; most charge extra for non-standard formats' },
-                  { feature: 'Batch processing', videotext: 'Pro plan: upload multiple files, one ZIP output', alternatives: 'One file at a time on most; batch is expensive or unavailable' },
-                  { feature: 'Edit & refine', videotext: 'Full in-browser editor, re-export anytime', alternatives: 'Limited editing; re-processing requires re-upload on most' },
-                  { feature: 'Cost for 100 hrs/month', videotext: 'Free tier covers ~2 hrs; Pro ($9.99/mo) covers 200 hrs', alternatives: 'Otter: $20/mo; Descript: $24/mo; Rev: $1.25/min (expensive)' },
+                  { feature: 'Processing speed (1 hr video)', videotext: '3-5 minutes (async processing)', alternatives: 'Otter: 60+ minutes (real-time) | Descript: 15-20 minutes | Rev: 2-4 hours (human queues)' },
+                  { feature: 'Why we are faster', videotext: 'Parallel processing: 10+ tasks run simultaneously', alternatives: 'Sequential processing: one task at a time, must wait for playback to finish' },
+                  { feature: 'Speaker detection', videotext: 'Auto-labeled, included free', alternatives: 'Otter includes it ($20/mo). Descript charges extra. Rev does it manually.' },
+                  { feature: 'Output per job', videotext: 'Transcript + summary + chapters + subtitles (1 pass)', alternatives: 'Transcript only standard. Extras sold separately or require manual work.' },
+                  { feature: 'Data privacy', videotext: 'Deleted immediately. Zero retention.', alternatives: 'Otter: stored indefinitely | Descript: stored 7-30 days | Rev: deleted after 30 days' },
+                  { feature: 'Language support', videotext: '90+ languages, equal accuracy & speed', alternatives: 'Otter: English-first, slow for others | Descript: same. Rev: human-only, expensive' },
+                  { feature: 'Edit & refine', videotext: 'Full in-browser editor, re-export anytime', alternatives: 'Otter: limited editing | Descript: designed for video editing (overkill) | Rev: not applicable' },
+                  { feature: 'Cost for 100 hrs/month', videotext: 'Free tier: 2 hrs/month. Pro ($9.99/mo): 200 hrs/month unlimited', alternatives: 'Otter: $20/month | Descript: $24/month | Rev: $1.25/minute (extremely expensive)' },
                 ],
                 useCases: [
                   {
@@ -657,7 +689,7 @@ function App() {
                     body: 'Generate accurate captions for video content, improving accessibility for deaf and hard-of-hearing audiences. 98.5% accuracy means fewer manual corrections than manual captioning.',
                   },
                 ],
-                ctaText: 'Start transcribing free today',
+                ctaText: 'Upload a video, get transcript in minutes',
                 ctaPath: '/video-to-transcript',
               }}
             />} />

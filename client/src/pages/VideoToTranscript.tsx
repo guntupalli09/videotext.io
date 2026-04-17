@@ -79,6 +79,8 @@ export type VideoToTranscriptSeoProps = {
     outputExamples?: { title: string; body: string }[]
     comparisonRows?: { feature: string; videotext: string; alternatives: string }[]
     useCases?: { title: string; body: string }[]
+    visualProof?: { title: string; body: string }[]
+    technicalExplanation?: { title: string; body: string }[]
     ctaText?: string
     ctaPath?: string
   }
@@ -3580,7 +3582,24 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             </div>
           ) : null}
 
-          {/* ── Workflow steps ── */}
+          {/* ── Visual proof ── */}
+          {seoDeepContent?.visualProof?.length ? (
+            <div>
+              <div className="mb-8">
+                <p className="text-xs font-semibold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">See the actual output</p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">This is generated automatically in minutes</h2>
+              </div>
+              <div className="grid gap-4 md:grid-cols-3">
+                {seoDeepContent.visualProof.map((proof, idx) => (
+                  <article key={`proof-${idx}`} className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-6 shadow-sm">
+                    <h3 className="mb-3 font-semibold text-gray-900 dark:text-gray-100">{proof.title}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 font-mono whitespace-pre-wrap text-xs leading-relaxed bg-gray-50 dark:bg-gray-950/50 p-3 rounded-lg border border-gray-200 dark:border-gray-800">{proof.body}</p>
+                  </article>
+                ))}
+              </div>
+              <p className="mt-6 text-sm text-center text-gray-600 dark:text-gray-400">No manual cleanup. No editing. Ready to use directly in your workflow.</p>
+            </div>
+          ) : null}
           {seoDeepContent?.workflowSteps?.length ? (
             <div>
               <div className="mb-8">
@@ -3649,6 +3668,24 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          ) : null}
+
+          {/* ── Technical explanation ── */}
+          {seoDeepContent?.technicalExplanation?.length ? (
+            <div>
+              <div className="mb-8">
+                <p className="text-xs font-semibold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">How it works</p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Why VideoText is faster than everyone else</h2>
+              </div>
+              <div className="space-y-4">
+                {seoDeepContent.technicalExplanation.map((tech, idx) => (
+                  <article key={`tech-${idx}`} className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-6 shadow-sm">
+                    <h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">{tech.title}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{tech.body}</p>
+                  </article>
+                ))}
               </div>
             </div>
           ) : null}
