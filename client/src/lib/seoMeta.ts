@@ -895,7 +895,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Is the YouTube transcript generator free?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Free tier gives you 2 hours/month (enough for 4 typical YouTube videos). Pro plan is $9.99/month for unlimited transcription.',
+            text: 'Yes. Free tier gives you 2 hours/month (enough for 4 typical YouTube videos). No credit card required. Pro plan is $9.99/month for unlimited transcription.',
           },
         },
         {
@@ -903,7 +903,15 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Can I download YouTube video subtitles with this tool?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Export transcript as SRT and VTT subtitle files. Upload directly to YouTube, Vimeo, or any video platform.',
+            text: 'Yes. Export transcript as SRT and VTT subtitle files. Upload directly to YouTube, Vimeo, or any video platform. Perfect for re-uploading and SEO.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Do I need to download the YouTube video first?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'No. That\'s the main advantage. Paste the YouTube URL directly — we stream the audio from YouTube servers. No download, no upload, no software needed. Instant processing.',
           },
         },
         {
@@ -911,7 +919,31 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Why is VideoText faster than YouTube auto-captions?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'YouTube captions are basic. VideoText generates: 98.5% accurate transcript, speaker labels, AI summary, chapter markers, and subtitle files. All in one pass.',
+            text: 'YouTube captions are generated at 70-80% accuracy in real-time. VideoText uses advanced offline AI (OpenAI Whisper) for 98.5% accuracy plus structured outputs: transcript, speaker labels, AI summary, chapter markers, and subtitle files — all in one pass.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I transcribe long YouTube videos (podcasts, webinars)?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Free tier handles up to 30 minutes per video. Basic plan: 45 minutes. Pro plan: 2 hours. Agency plan: 4 hours. Transcription speed: ~1 minute per 10 minutes of video.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What languages does the YouTube transcript generator support?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: '90+ languages. Just paste any YouTube video in any language — we auto-detect or let you select the language manually for better accuracy.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I use YouTube transcripts for blog posts or SEO?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Absolutely. Convert one YouTube video into: blog post (using transcript), social media snippets (using chapters), email newsletter content, knowledge base articles. Transcripts include exact timestamps for easy citing and linking.',
           },
         },
       ],
@@ -942,12 +974,12 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      name: 'YouTube Transcript Generator — Convert Video to Text Without Download',
-      description: 'Free YouTube transcript generator. Paste any YouTube video URL and get a complete transcript, SRT/VTT subtitles, AI summary, and chapter markers in 2-3 minutes. No downloading required. 98.5% accurate. Used by 50,000+ creators.',
+      name: 'Free YouTube Transcript Generator — No Download, Instant Results',
+      description: 'Free YouTube transcript generator. Paste any video URL — get complete transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in 2-3 minutes. No downloading required. 98.5% accurate. 50,000+ creators use VideoText.',
       applicationCategory: 'MultimediaApplication',
       operatingSystem: 'Web Browser',
       url: 'https://videotext.io/youtube-transcript-generator',
-      featureList: 'Paste YouTube URL (no download), 98.5% accuracy (OpenAI Whisper), Automatic transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters, Speaker diarization, 90+ language support, Free tier: 2 hours/month, Pro tier: unlimited transcription ($9.99/month), Zero data retention (files deleted after processing)',
+      featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 2 hours/month (no credit card), Pro tier: unlimited transcription ($9.99/month), Zero data retention (files deleted after processing), Batch processing (Pro/Agency)',
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: '4.9',
@@ -961,7 +993,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
             '@type': 'Offer',
             price: '0',
             priceCurrency: 'USD',
-            description: 'Free: 2 hours/month (4 typical videos)',
+            description: 'Free: 2 hours/month (no credit card required)',
             url: 'https://videotext.io/youtube-transcript-generator',
           },
           {
@@ -978,7 +1010,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
         name: 'VideoText',
         url: 'https://videotext.io',
         logo: 'https://videotext.io/logo.png',
-        sameAs: ['https://twitter.com/videotext_io'],
+        sameAs: ['https://twitter.com/videotextio'],
       },
     },
   ],
@@ -996,9 +1028,9 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
     featureList: 'Fast AI transcription (2-hour video in ~5 min), ~98.5% word accuracy, AI summary with bullet points, Auto-generated chapters, Speaker diarization, SRT subtitle export, VTT subtitle export, TXT / PDF / DOCX / JSON export, 90+ language support, Batch processing (Pro), Zero data retention, YouTube URL input',
   },
   '/youtube-transcript-generator': {
-    name: 'YouTube Transcript Generator — Convert Video to Text Without Download',
-    description: 'Free YouTube transcript generator. Paste any YouTube video URL and get a complete transcript, SRT/VTT subtitles, AI summary, and chapter markers in 2-3 minutes. No downloading required. 98.5% accurate. Used by 50,000+ creators.',
-    featureList: 'Paste YouTube URL (no download), 98.5% accuracy (OpenAI Whisper), Automatic transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters, Speaker diarization, 90+ language support, Free tier: 2 hours/month, Pro tier: unlimited transcription ($9.99/month), Zero data retention (files deleted after processing)',
+    name: 'Free YouTube Transcript Generator — No Download, Instant Results',
+    description: 'Free YouTube transcript generator. Paste any video URL — get complete transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in 2-3 minutes. No downloading required. 98.5% accurate. 50,000+ creators use VideoText.',
+    featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 2 hours/month (no credit card), Pro tier: unlimited transcription ($9.99/month), Zero data retention (files deleted after processing)',
   },
   '/video-to-subtitles': {
     name: 'Video to Subtitles — SRT & VTT Generator',
@@ -1120,6 +1152,17 @@ const HOWTO_SCHEMAS: Record<string, { name: string; description: string; steps: 
       { name: 'For soft subtitles: upload SRT to your platform', text: 'On YouTube, go to Subtitles in Studio and upload the .srt file. On Vimeo, use the Distribution > Subtitles panel. The SRT file links timing to dialogue without modifying the video.' },
       { name: 'For hard subtitles: use VideoText Burn Subtitles', text: 'Go to videotext.io/burn-subtitles. Upload your MP4 and your SRT file. VideoText renders the captions permanently into the video and returns a new MP4.' },
       { name: 'Download and publish', text: 'Download the output MP4. The subtitles are now visible on any device or player without the need to upload a separate SRT file.' },
+    ],
+  },
+  '/youtube-transcript-generator': {
+    name: 'How to get a YouTube video transcript',
+    description: 'Step-by-step guide to generating a transcript from any YouTube video. Paste URL, get clean transcript with timestamps, subtitles, and summary — no downloading required.',
+    steps: [
+      { name: 'Copy your YouTube video URL', text: 'Find any public YouTube video (youtube.com or youtu.be links work). Copy the full URL from the address bar. Works with long-form content like podcasts, lectures, webinars, and interviews.' },
+      { name: 'Paste URL into VideoText', text: 'Go to videotext.io/youtube-transcript-generator. Paste the YouTube URL into the input field. The tool validates instantly — you see if the video is accessible before processing.' },
+      { name: 'Start transcript generation', text: 'Click "Generate Transcript". VideoText streams the audio directly from YouTube servers (no download step). Processing time: ~1 minute per 10 minutes of video. A typical 20-minute video finishes in 2-3 minutes.' },
+      { name: 'Review and export transcript', text: 'View the clean transcript with [timestamps] and speaker labels. Export as TXT/PDF for notes or DOCX for editing. Download SRT/VTT subtitle files for re-uploading to YouTube or other platforms.' },
+      { name: 'Use outputs for SEO, content, or distribution', text: 'Repurpose transcript into blog posts, social snippets, email newsletters, or knowledge base articles. Subtitle files improve video SEO and accessibility on any platform.' },
     ],
   },
 }

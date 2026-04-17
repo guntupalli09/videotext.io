@@ -20,6 +20,7 @@ export interface SeoWorkflowStep {
 export interface SeoOutputExample {
   title: string
   body: string
+  image?: string
 }
 
 export interface SeoUseCase {
@@ -1261,10 +1262,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   // ── Phase 2: 30 high-intent SEO pages ──────────────────────────────────────────
   {
     path: '/youtube-transcript-generator',
-    title: 'YouTube Transcript Generator: Convert Videos to Text in Minutes',
-    description: 'Generate YouTube video transcripts instantly. No download needed. Paste URL, get transcript + subtitles + summary. 98.5% accurate. Free.',
-    h1: 'YouTube Transcript Generator',
-    intro: 'Convert any YouTube video to searchable text in 2-3 minutes. No downloading, no software. Paste URL -> get transcript, subtitles, summary, and chapters. All free.',
+    title: 'Free YouTube Transcript Generator — No Download, Instant Results',
+    description: 'Free YouTube transcript generator. Paste any video URL — get transcript, SRT/VTT subtitles, summary + chapters instantly. No downloading required. 98.5% accurate. 50,000+ creators use VideoText.',
+    h1: 'Free YouTube Transcript Generator',
+    intro: 'Convert any YouTube video to a clean, searchable transcript in 2-3 minutes. No download needed — paste the URL and get transcript + subtitles + summary + chapters, ready to export. Works with long-form YouTube content.',
     breadcrumbLabel: 'YouTube Transcript Generator',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/youtube-to-transcript', '/video-to-subtitles', '/transcribe-youtube-video'],
@@ -1273,13 +1274,16 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     defaultInputMode: 'youtube',
     faq: [
       { q: 'How do I get a transcript from a YouTube video?', a: 'Paste the video URL into our tool (youtube.com or youtu.be links work). Click Transcribe. Get full transcript + subtitles + summary in 2-3 minutes. No login required.' },
-      { q: 'Is the YouTube transcript generator free?', a: 'Yes. Free tier gives you 2 hours/month (enough for 4 typical YouTube videos). Pro plan is $9.99/month for unlimited transcription.' },
-      { q: 'Can I download YouTube video subtitles with this tool?', a: 'Yes. Export transcript as SRT and VTT subtitle files. Upload directly to YouTube, Vimeo, or any video platform.' },
-      { q: 'Why is VideoText faster than YouTube auto-captions?', a: 'YouTube captions are basic. VideoText generates: 98.5% accurate transcript, speaker labels, AI summary, chapter markers, and subtitle files. All in one pass.' },
+      { q: 'Is the YouTube transcript generator free?', a: 'Yes. Free tier gives you 2 hours/month (enough for 4 typical YouTube videos). No credit card required. Pro plan is $9.99/month for unlimited transcription.' },
+      { q: 'Do I need to download the YouTube video first?', a: 'No. That\'s the main advantage of VideoText. Paste the URL directly — we stream the audio from YouTube servers. No download step, no software install. Just copy, paste, and click Generate.' },
+      { q: 'Can I download YouTube video subtitles with this tool?', a: 'Yes. Export transcript as SRT and VTT subtitle files. Upload directly to YouTube, Vimeo, or any video platform. Perfect for re-uploading and improving video SEO.' },
+      { q: 'Why is VideoText faster than YouTube auto-captions?', a: 'YouTube captions are generated at 70-80% accuracy in real-time with basic formatting. VideoText generates: 98.5% accurate transcript, speaker labels, AI summary, chapter markers, and subtitle files. All in one pass.' },
       { q: 'Can I transcribe age-restricted or private YouTube videos?', a: 'Only public videos work. Download the video file locally first, then upload as MP4 or MOV to transcribe.' },
-      { q: 'What languages does YouTube transcript generator support?', a: '90+ languages supported with equal accuracy and speed. Auto-detect or select language before transcribing.' },
-      { q: 'How accurate is the transcript compared to YouTube captions?', a: 'VideoText achieves 98.5% accuracy (OpenAI Whisper) vs YouTube auto-captions at 70-80%. We also auto-label speakers and generate summaries.' },
-      { q: 'Can I use this for content research or citations?', a: 'Yes. Exact timestamps [00:15:30] let you quote and cite specific moments. Export as PDF or DOCX for academic/professional use.' },
+      { q: 'What languages does the YouTube transcript generator support?', a: '90+ languages supported with equal accuracy and speed. Auto-detect or select language manually for even better results. Works with podcasts, interviews, and multilingual content.' },
+      { q: 'How accurate is the transcript compared to YouTube captions?', a: 'VideoText achieves 98.5% accuracy (OpenAI Whisper large-v3) vs YouTube auto-captions at 70-80%. We also auto-label speakers, generate summaries, and detect chapters — YouTube cannot do this.' },
+      { q: 'Can I use YouTube transcripts for blog posts?', a: 'Yes. Convert one YouTube video into: blog post (using full transcript), social media snippets (using chapters), email newsletter content, knowledge base articles. Transcripts include timestamps for easy citing.' },
+      { q: 'Can I use this for content research or academic citations?', a: 'Yes. Exact timestamps [00:15:30] let you quote and cite specific moments. Export as PDF or DOCX for academic/professional use. Perfect for research papers and reports.' },
+      { q: 'Can I transcribe long YouTube videos like podcasts or webinars?', a: 'Yes. Free tier: 30 min/video. Pro: 2 hours/video. Agency: 4 hours/video. Processing speed: ~1 minute per 10 minutes of video. Long-form content fully supported.' },
     ],
     deepContent: {
       proofPoints: [
@@ -1321,16 +1325,24 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       ],
       visualProof: [
         {
-          title: 'Transcript with speaker labels',
-          body: 'HOST (0:00): Welcome to our channel. Today we discuss digital marketing.\nGUEST (0:45): Thanks for having me. I work as a content strategist.\nHOST (1:30): Tell us about your experience with SEO.',
+          title: 'AI-generated summary with key bullets — instant narrative overview',
+          image: '/full Summary.png',
+          body: 'Get an instant AI-generated summary highlighting key points, main topics, and actionable takeaways. Perfect for quick content understanding or creating show notes and blog post introductions without watching the entire video.',
         },
         {
-          title: 'SRT subtitle format (paste into YouTube)',
-          body: '1\n00:00:45,000 --> 00:00:50,000\nWelcome to our channel.\nToday we discuss digital marketing.\n\n2\n00:02:30,000 --> 00:02:35,000\nThanks for having me.',
+          title: 'Export in 8 formats: SRT, PDF, JSON, CSV, DOCX, NOTION, TEXT',
+          image: '/Exports.png',
+          body: 'Download your transcript in any format you need. SRT/VTT for YouTube and Vimeo. PDF/DOCX for sharing and publishing. JSON for developers. CSV for data analysis. NOTION for teams. TEXT for copying. All one-click exports.',
         },
         {
-          title: 'AI summary extract',
-          body: 'The host interviews a digital marketing expert about current trends. Key topics: SEO fundamentals, content strategy for 2026, paid advertising ROI, and building backlinks. Takeaway: content quality and distribution matter more than keyword stuffing.',
+          title: 'Searchable transcript with [HH:MM:SS] timestamps for exact citations',
+          image: '/Transcript.png',
+          body: 'Every line of transcript includes exact timestamps. Click any timestamp to jump to that moment in the video. Perfect for citing specific quotes, academic papers, research notes, and creating linked show notes with precise timing.',
+        },
+        {
+          title: 'Speaker diarization: "Who said what" — speaker labels on every line',
+          image: '/Speakers.png',
+          body: 'VideoText automatically identifies and labels different speakers. See who said what at a glance. Unlike YouTube captions which show generic [SPEAKER 1], we identify speakers by voice fingerprinting. Ideal for interviews, podcasts, panels, and multi-speaker content.',
         },
       ],
       technicalExplanation: [
@@ -1395,8 +1407,8 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
           body: 'Transcribe YouTube depositions, court hearings, or regulatory proceedings. Timestamp evidence for cases. Export for legal filing. Admissible as support documentation.',
         },
       ],
-      ctaText: 'Paste YouTube URL, get transcript in minutes',
-      ctaPath: '/video-to-transcript',
+      ctaText: 'Generate Free Transcript Now',
+      ctaPath: '/youtube-transcript-generator',
     },
   },
   {
