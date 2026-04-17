@@ -3589,11 +3589,23 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 <p className="text-xs font-semibold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">See the actual output</p>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">This is generated automatically in minutes</h2>
               </div>
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {seoDeepContent.visualProof.map((proof, idx) => (
-                  <article key={`proof-${idx}`} className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-6 shadow-sm">
-                    <h3 className="mb-3 font-semibold text-gray-900 dark:text-gray-100">{proof.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 font-mono whitespace-pre-wrap text-xs leading-relaxed bg-gray-50 dark:bg-gray-950/50 p-3 rounded-lg border border-gray-200 dark:border-gray-800">{proof.body}</p>
+                  <article key={`proof-${idx}`} className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    {proof.image && (
+                      <div className="relative bg-gray-100 dark:bg-gray-800 aspect-square overflow-hidden">
+                        <img
+                          src={proof.image}
+                          alt={proof.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <h3 className="mb-2 font-semibold text-sm text-gray-900 dark:text-gray-100 leading-snug">{proof.title}</h3>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{proof.body}</p>
+                    </div>
                   </article>
                 ))}
               </div>

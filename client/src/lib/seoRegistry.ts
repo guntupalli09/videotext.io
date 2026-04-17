@@ -20,6 +20,7 @@ export interface SeoWorkflowStep {
 export interface SeoOutputExample {
   title: string
   body: string
+  image?: string
 }
 
 export interface SeoUseCase {
@@ -1324,16 +1325,24 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       ],
       visualProof: [
         {
-          title: 'Transcript with speaker labels',
-          body: 'HOST (0:00): Welcome to our channel. Today we discuss digital marketing.\nGUEST (0:45): Thanks for having me. I work as a content strategist.\nHOST (1:30): Tell us about your experience with SEO.',
+          title: 'AI-generated summary with key bullets — instant narrative overview',
+          image: '/full Summary.png',
+          body: 'Get an instant AI-generated summary highlighting key points, main topics, and actionable takeaways. Perfect for quick content understanding or creating show notes and blog post introductions without watching the entire video.',
         },
         {
-          title: 'SRT subtitle format (paste into YouTube)',
-          body: '1\n00:00:45,000 --> 00:00:50,000\nWelcome to our channel.\nToday we discuss digital marketing.\n\n2\n00:02:30,000 --> 00:02:35,000\nThanks for having me.',
+          title: 'Export in 8 formats: SRT, PDF, JSON, CSV, DOCX, NOTION, TEXT',
+          image: '/Exports.png',
+          body: 'Download your transcript in any format you need. SRT/VTT for YouTube and Vimeo. PDF/DOCX for sharing and publishing. JSON for developers. CSV for data analysis. NOTION for teams. TEXT for copying. All one-click exports.',
         },
         {
-          title: 'AI summary extract',
-          body: 'The host interviews a digital marketing expert about current trends. Key topics: SEO fundamentals, content strategy for 2026, paid advertising ROI, and building backlinks. Takeaway: content quality and distribution matter more than keyword stuffing.',
+          title: 'Searchable transcript with [HH:MM:SS] timestamps for exact citations',
+          image: '/Transcript.png',
+          body: 'Every line of transcript includes exact timestamps. Click any timestamp to jump to that moment in the video. Perfect for citing specific quotes, academic papers, research notes, and creating linked show notes with precise timing.',
+        },
+        {
+          title: 'Speaker diarization: "Who said what" — speaker labels on every line',
+          image: '/Speakers.png',
+          body: 'VideoText automatically identifies and labels different speakers. See who said what at a glance. Unlike YouTube captions which show generic [SPEAKER 1], we identify speakers by voice fingerprinting. Ideal for interviews, podcasts, panels, and multi-speaker content.',
         },
       ],
       technicalExplanation: [
