@@ -34,8 +34,38 @@ import path from 'path'
 import { getLogger } from '../lib/logger'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
 import fs from 'fs'
+import { randomUUID } from 'crypto'
+import { acquireGlobalYtDlpPermit, applyYtRequestPacingSeeded } from '../utils/youtubeGlobalControl'
+import { isProxyPoolDegraded, recordYoutubeProxyResult, selectYoutubeProxy } from '../utils/youtubeProxyPool'
 
 const log = getLogger('worker')
+
+export type YoutubeAttemptType = 'direct' | 'cookies' | 'proxy'
+export type YoutubeAttemptResult = 'success' | 'fail'
+export type YoutubeErrorCode =
+  | 'NO_CAPTIONS'
+  | 'GEO_BLOCKED'
+  | 'LOGIN_REQUIRED'
+  | 'STREAM_BLOCKED'
+  | 'PROXY_POOL_DEGRADED'
+  | 'STREAM_TIMEOUT'
+  | 'UNKNOWN'
+
+export interface YoutubeAttemptRecord {
+  stage: 'captions' | 'audio'
+  type: YoutubeAttemptType
+  result: YoutubeAttemptResult
+  success: boolean
+  latencyMs: number
+  proxyId?: string
+  errorCode?: YoutubeErrorCode
+}
+
+export interface YoutubeAttemptCollector {
+  attempts?: YoutubeAttemptRecord[]
+  proxyUsed?: boolean
+  proxyId?: string
+}
 
 /** Resolve FFmpeg binary: prefer FFMPEG_PATH env (Docker-installed binary), else npm installer. */
 export const FFMPEG_BIN: string = (() => {
@@ -249,26 +279,36 @@ function extractYtDlpErrorMessage(stderr: string, exitCode: number): string {
   return first || `yt-dlp exited with code ${exitCode}`
 }
 
-const RETRYABLE_WITH_COOKIES = [
-  /page needs to be reloaded/i,
-  /sign in to confirm you're not a bot/i,
-  /sign in/i,
-  /http error 403/i,
-  /video unavailable/i,
-  /unable to extract/i,
-  /unable to extract player/i,
-]
-const NOT_RETRYABLE = [
-  /private video/i,
-  /video is private/i,
-  /deleted video/i,
-  /video has been removed/i,
-]
+function classifyYoutubeFailure(msg: string): YoutubeErrorCode {
+  const m = msg.toLowerCase()
+  if (
+    m.includes('timed out') ||
+    m.includes('timeout') ||
+    m.includes('connection reset') ||
+    m.includes('network is unreachable')
+  ) return 'STREAM_TIMEOUT'
+  if (m.includes('sign in') || m.includes('confirm you\'re not a bot') || m.includes('login')) return 'LOGIN_REQUIRED'
+  if (m.includes('region') || m.includes('geo') || m.includes('country')) return 'GEO_BLOCKED'
+  if (
+    m.includes('http error 403') ||
+    m.includes('http error 429') ||
+    m.includes('unable to extract player') ||
+    m.includes('signature') ||
+    m.includes('no video formats found') ||
+    m.includes('requested format is not available') ||
+    m.includes('forbidden')
+  ) return 'STREAM_BLOCKED'
+  if (m.includes('proxy pool degraded')) return 'PROXY_POOL_DEGRADED'
+  return 'UNKNOWN'
+}
 
-/** Errors that may be fixed by retrying with cookies. Skip retry for private/deleted. */
-function isRetryableWithCookiesError(msg: string): boolean {
-  if (NOT_RETRYABLE.some((r) => r.test(msg))) return false
-  return RETRYABLE_WITH_COOKIES.some((r) => r.test(msg))
+function recordAttempt(
+  collector: YoutubeAttemptCollector | undefined,
+  attempt: YoutubeAttemptRecord
+): void {
+  if (!collector) return
+  collector.attempts = collector.attempts || []
+  collector.attempts.push(attempt)
 }
 
 /**
@@ -280,7 +320,8 @@ function isRetryableWithCookiesError(msg: string): boolean {
 function ytDlpArgs(
   extra: string[],
   useCookiesOverride?: boolean,
-  useProxyOverride?: boolean
+  useProxyOverride?: boolean,
+  proxyUrlOverride?: string
 ): string[] {
   const skipCookies = process.env.YOUTUBE_SKIP_COOKIES === 'true' || process.env.YOUTUBE_SKIP_COOKIES === '1'
   const cookiesFile = process.env.YOUTUBE_COOKIES_FILE
@@ -288,7 +329,7 @@ function ytDlpArgs(
   const cookiesArgs = useCookies && cookiesFile && fs.existsSync(cookiesFile)
     ? ['--cookies', cookiesFile]
     : []
-  const proxyUrl = process.env.YOUTUBE_PROXY?.trim()
+  const proxyUrl = proxyUrlOverride ?? process.env.YOUTUBE_PROXY?.trim()
   const useProxy = useProxyOverride ?? true
   const proxyArgs = proxyUrl && useProxy ? ['--proxy', proxyUrl] : []
   // Only pass --js-runtimes if Deno is actually installed — avoids "deno not found" yt-dlp errors
@@ -305,6 +346,8 @@ function ytDlpArgs(
 
 async function getMetadataViaYtDlp(url: string): Promise<YoutubeMetadata> {
   const cleanUrl = normalizeYoutubeUrl(url)
+  const permit = await acquireGlobalYtDlpPermit('metadata')
+  await applyYtRequestPacingSeeded(`metadata:${cleanUrl}`)
   const raw = await new Promise<string>((resolve, reject) => {
     let stdout = ''
     let stderr = ''
@@ -325,7 +368,7 @@ async function getMetadataViaYtDlp(url: string): Promise<YoutubeMetadata> {
         resolve(stdout)
       }
     })
-  })
+  }).finally(() => permit.release())
 
   let info: Record<string, any>
   try { info = JSON.parse(raw) } catch { throw new Error('Failed to parse yt-dlp metadata output.') }
@@ -438,6 +481,153 @@ function parseVttToSegments(content: string): { start: number; end: number; text
 export interface YoutubeCaptionResult {
   fullText: string
   segments: { start: number; end: number; text: string }[]
+  source: 'timedtext' | 'player_api' | 'ytdlp'
+  sourceDetail?: string
+}
+
+export interface CaptionPatchWindow {
+  start: number
+  end: number
+}
+
+export interface CaptionDecision {
+  action: 'accept' | 'patch' | 'fallback'
+  score: number
+  coverage: number
+  segmentDensity: number
+  alignmentScore: number
+  duplicationPenalty: number
+  languageConsistency: number
+  maxGap: number
+  patchWindows: CaptionPatchWindow[]
+  reasons: string[]
+}
+
+function clamp01(v: number): number {
+  return Math.max(0, Math.min(1, v))
+}
+
+function buildCaptionPatchWindows(
+  segments: { start: number; end: number; text: string }[],
+  videoDurationSec: number
+): CaptionPatchWindow[] {
+  if (!videoDurationSec || videoDurationSec <= 0) return []
+  const sorted = [...segments].sort((a, b) => a.start - b.start)
+  const windows: CaptionPatchWindow[] = []
+  const minGapSec = Number(process.env.YOUTUBE_GAP_PATCH_MIN_SEC) || 10
+  let cursor = 0
+  for (const seg of sorted) {
+    if (seg.start - cursor >= minGapSec) {
+      windows.push({ start: cursor, end: seg.start })
+    }
+    cursor = Math.max(cursor, seg.end)
+  }
+  if (videoDurationSec - cursor >= minGapSec) {
+    windows.push({ start: cursor, end: videoDurationSec })
+  }
+  // keep the largest N windows to cap patch compute
+  const maxWindows = Math.max(1, parseInt(process.env.YOUTUBE_GAP_PATCH_MAX_WINDOWS || '8', 10))
+  return windows
+    .map((w) => ({ ...w, len: w.end - w.start }))
+    .sort((a, b) => b.len - a.len)
+    .slice(0, maxWindows)
+    .map(({ start, end }) => ({ start, end }))
+    .sort((a, b) => a.start - b.start)
+}
+
+/** Score caption quality and decide accept vs patch vs fallback. */
+export function evaluateCaptionDecision(
+  result: YoutubeCaptionResult,
+  videoDurationSec: number,
+  expectedLanguage?: string
+): CaptionDecision {
+  const quality = validateCaptionQuality(result.segments, videoDurationSec)
+  const minutes = Math.max(videoDurationSec / 60, 1)
+  // 12 segments/min is "dense enough" for near-complete spoken coverage in most long-form videos
+  const segmentDensity = clamp01((quality.segmentCount / minutes) / 12)
+  const gapPenalty = clamp01(quality.maxGap / 120)
+  const sorted = [...result.segments].sort((a, b) => a.start - b.start)
+  let overlapSec = 0
+  let cpsPenalty = 0
+  for (let i = 0; i < sorted.length; i++) {
+    const curr = sorted[i]
+    const dur = Math.max(0.05, curr.end - curr.start)
+    const cps = curr.text.length / dur
+    if (cps < 3 || cps > 28) cpsPenalty += 1
+    if (i < sorted.length - 1) {
+      const next = sorted[i + 1]
+      if (curr.end > next.start) overlapSec += curr.end - next.start
+    }
+  }
+  const overlapRatio = videoDurationSec > 0 ? clamp01(overlapSec / Math.max(videoDurationSec, 1)) : 0
+  const cpsPenaltyRatio = sorted.length > 0 ? clamp01(cpsPenalty / sorted.length) : 1
+  const alignmentScore = clamp01(1 - (0.7 * overlapRatio + 0.3 * cpsPenaltyRatio))
+
+  const normalizedTexts = result.segments
+    .map((s) => s.text.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '').replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+  const uniqueCount = new Set(normalizedTexts).size
+  const duplicationPenalty = normalizedTexts.length > 0
+    ? clamp01(1 - uniqueCount / normalizedTexts.length)
+    : 0
+
+  const expected = expectedLanguage?.split('-')[0].toLowerCase()
+  const sourceLang = result.sourceDetail?.split(':')[1]?.split('-')[0]?.toLowerCase()
+  const languageConsistency = !expected || !sourceLang
+    ? 0.85
+    : expected === sourceLang
+      ? 1
+      : sourceLang.startsWith(expected) || expected.startsWith(sourceLang)
+        ? 0.92
+        : 0.55
+
+  const sourceScore =
+    result.source === 'player_api'
+      ? 1
+      : result.source === 'timedtext'
+        ? 0.9
+        : 0.8
+  const score = clamp01(
+    0.33 * quality.coverage +
+    0.18 * segmentDensity +
+    0.16 * alignmentScore +
+    0.14 * languageConsistency +
+    0.10 * sourceScore -
+    0.14 * gapPenalty -
+    0.09 * duplicationPenalty
+  )
+
+  const acceptThreshold = Number(process.env.YOUTUBE_DECISION_ACCEPT_THRESHOLD) || 0.8
+  const patchThreshold = Number(process.env.YOUTUBE_DECISION_PATCH_THRESHOLD) || 0.5
+
+  const patchWindows = buildCaptionPatchWindows(result.segments, videoDurationSec)
+  const reasons: string[] = []
+  if (quality.coverage < 0.7) reasons.push('low_coverage')
+  if (quality.maxGap > 20) reasons.push('large_gaps')
+  if (quality.segmentCount < 10) reasons.push('low_segment_count')
+  if (segmentDensity < 0.5) reasons.push('low_density')
+  if (alignmentScore < 0.6) reasons.push('poor_alignment')
+  if (duplicationPenalty > 0.35) reasons.push('high_duplication')
+  if (languageConsistency < 0.7) reasons.push('language_mismatch')
+
+  const action = score >= acceptThreshold
+    ? 'accept'
+    : score >= patchThreshold && patchWindows.length > 0
+      ? 'patch'
+      : 'fallback'
+
+  return {
+    action,
+    score,
+    coverage: quality.coverage,
+    segmentDensity,
+    alignmentScore,
+    duplicationPenalty,
+    languageConsistency,
+    maxGap: quality.maxGap,
+    patchWindows,
+    reasons,
+  }
 }
 
 /** Language fallback order: requested → English → original → auto. */
@@ -493,7 +683,7 @@ async function fetchTimedtextCaptions(
     if (segments.length === 0) return null
     const fullText = segments.map((s) => s.text).join(' ').replace(/\s+/g, ' ').trim()
     log.info({ msg: 'yt_caption_timedtext_hit', videoId, language, segmentCount: segments.length })
-    return { fullText, segments }
+    return { fullText, segments, source: 'timedtext', sourceDetail: language }
   } catch {
     return null
   }
@@ -614,7 +804,7 @@ async function fetchCaptionsViaPlayerApiClient(
       kind: track.kind ?? 'manual',
       segmentCount: segments.length,
     })
-    return { fullText, segments }
+    return { fullText, segments, source: 'player_api', sourceDetail: `${clientName}:${track.languageCode}:${track.kind ?? 'manual'}` }
   } catch {
     return null
   }
@@ -648,67 +838,162 @@ async function fetchCaptionsViaYtDlp(
   cleanUrl: string,
   outputDir: string,
   language?: string,
-  defaultLanguage?: string
+  defaultLanguage?: string,
+  collector?: YoutubeAttemptCollector
 ): Promise<YoutubeCaptionResult | null> {
-  const outTemplate = path.join(outputDir, 'yt_%(id)s')
+  const workspace = path.join(outputDir, `ytcap_${randomUUID()}`)
+  try { fs.mkdirSync(workspace, { recursive: true }) } catch { /* ignore */ }
+  const outTemplate = path.join(workspace, 'yt_%(id)s_%(language)s')
   const langOrder = getCaptionLanguageOrder(language, defaultLanguage)
   const subLangs = langOrder.map((l) => `${l},${l}.*`).join(',') + ',en-US'
-
-  return new Promise((resolve) => {
-    let settled = false
-    const done = (result: YoutubeCaptionResult | null) => {
-      if (settled) return
-      settled = true
-      clearTimeout(timeoutHandle)
-      resolve(result)
-    }
-
-    // Hard timeout: kill yt-dlp if it hangs (Deno init stall, network hang, etc.)
-    const timeoutHandle = setTimeout(() => {
-      log.warn({ msg: 'yt_captions_ytdlp_timeout', url: cleanUrl.slice(0, 50) })
-      try { proc.kill('SIGKILL') } catch { /* ignore */ }
-      done(null)
-    }, CAPTION_YTDLP_TIMEOUT_MS)
-
-    let stderr = ''
-    // Pass false for useCookies — caption endpoints don't need cookies
-    const proc = spawn(YT_DLP_BIN, ytDlpArgs([
-      '--write-auto-sub',
-      '--write-sub',
-      '--skip-download',
-      '--no-playlist',
-      '--no-warnings',
-      '--sub-langs', subLangs,
-      '--convert-subs', 'vtt',
-      '-o', outTemplate,
-      '--socket-timeout', '15',
-      cleanUrl,
-    ], false))
-    proc.stdout.on('data', () => {})
-    proc.stderr.on('data', (chunk: Buffer) => { stderr += chunk.toString() })
-    proc.on('error', () => done(null))
-    proc.on('close', (code) => {
-      if (code !== 0 && code !== null) {
-        log.debug({ msg: 'yt_captions_ytdlp_unavailable', stderr: stderr.slice(-400) })
-        return done(null)
-      }
-      const files = fs.readdirSync(outputDir).filter((f) => f.endsWith('.vtt') && f.startsWith('yt_'))
-      if (files.length === 0) return done(null)
-      const vttPath = path.join(outputDir, files[0])
-      try {
-        const content = fs.readFileSync(vttPath, 'utf-8')
-        fs.unlinkSync(vttPath)
-        const segments = parseVttToSegments(content)
-        if (segments.length === 0) return done(null)
-        const fullText = segments.map((s) => s.text).join(' ').replace(/\s+/g, ' ').trim()
-        log.info({ msg: 'yt_caption_ytdlp_hit', segmentCount: segments.length, url: cleanUrl.slice(0, 50) })
-        done({ fullText, segments })
-      } catch {
-        try { fs.unlinkSync(vttPath) } catch { /* ignore */ }
-        done(null)
-      }
-    })
+  const cookiesFile = process.env.YOUTUBE_COOKIES_FILE
+  const hasCookies = !!(cookiesFile && fs.existsSync(cookiesFile))
+  const hasProxy = !!(process.env.YOUTUBE_PROXY?.trim() || process.env.YOUTUBE_PROXY_POOL?.trim())
+  const skipCookies = process.env.YOUTUBE_SKIP_COOKIES === 'true' || process.env.YOUTUBE_SKIP_COOKIES === '1'
+  const matrix: Array<{ type: YoutubeAttemptType; useCookies: boolean; useProxy: boolean }> = [
+    { type: 'direct', useCookies: false, useProxy: false },
+    { type: 'cookies', useCookies: hasCookies && !skipCookies, useProxy: false },
+    { type: 'proxy', useCookies: hasCookies && !skipCookies, useProxy: true },
+  ]
+  const available = matrix.filter((m) => {
+    if (m.type === 'direct') return true
+    if (m.type === 'cookies') return hasCookies && !skipCookies
+    return hasProxy
   })
+
+  try {
+    for (const step of available) {
+      const startedAt = Date.now()
+      const permit = await acquireGlobalYtDlpPermit(`captions:${step.type}`)
+      await applyYtRequestPacingSeeded(`captions:${step.type}:${cleanUrl}`)
+      const selectedProxy = step.type === 'proxy' ? await selectYoutubeProxy() : null
+      const proxyId = selectedProxy?.id
+      if (step.type === 'proxy' && hasProxy && !selectedProxy && await isProxyPoolDegraded()) {
+        recordAttempt(collector, {
+          stage: 'captions',
+          type: step.type,
+          result: 'fail',
+          success: false,
+          latencyMs: Date.now() - startedAt,
+          errorCode: 'PROXY_POOL_DEGRADED',
+        })
+        break
+      }
+      try {
+        const result = await new Promise<YoutubeCaptionResult | null>((resolve) => {
+          let settled = false
+          let activeProc: import('child_process').ChildProcess | null = null
+          const done = (res: YoutubeCaptionResult | null) => {
+            if (settled) return
+            settled = true
+            clearTimeout(timeoutHandle)
+            resolve(res)
+          }
+          const timeoutHandle = setTimeout(() => {
+            try { activeProc?.kill('SIGKILL') } catch { /* ignore */ }
+            done(null)
+          }, CAPTION_YTDLP_TIMEOUT_MS)
+
+          const proc = spawn(YT_DLP_BIN, ytDlpArgs([
+            '--write-auto-sub',
+            '--write-sub',
+            '--skip-download',
+            '--no-playlist',
+            '--no-warnings',
+            '--sub-langs', subLangs,
+            '--convert-subs', 'vtt',
+            '-o', outTemplate,
+            '--socket-timeout', '15',
+            cleanUrl,
+          ], step.useCookies, step.useProxy, selectedProxy?.url))
+          activeProc = proc
+          let stderr = ''
+          proc.stdout.on('data', () => {})
+          proc.stderr.on('data', (chunk: Buffer) => { stderr += chunk.toString() })
+          proc.on('error', () => done(null))
+          proc.on('close', (code) => {
+            if (code !== 0 && code !== null) {
+              const msg = extractYtDlpErrorMessage(stderr, code)
+              const errorCode = classifyYoutubeFailure(msg)
+              recordAttempt(collector, {
+                stage: 'captions',
+                type: step.type,
+                result: 'fail',
+                success: false,
+                latencyMs: Date.now() - startedAt,
+                proxyId,
+                errorCode,
+              })
+              if (proxyId) recordYoutubeProxyResult(proxyId, false).catch(() => {})
+              return done(null)
+            }
+            const files = fs.readdirSync(workspace)
+              .filter((f) => f.endsWith('.vtt') && f.startsWith('yt_'))
+              .map((f) => {
+                const full = path.join(workspace, f)
+                const stat = fs.statSync(full)
+                return { file: f, full, size: stat.size }
+              })
+              .sort((a, b) => (b.size - a.size) || a.file.localeCompare(b.file))
+            if (files.length === 0) {
+              recordAttempt(collector, {
+                stage: 'captions',
+                type: step.type,
+                result: 'fail',
+                success: false,
+                latencyMs: Date.now() - startedAt,
+                proxyId,
+                errorCode: 'NO_CAPTIONS',
+              })
+              if (proxyId) recordYoutubeProxyResult(proxyId, false).catch(() => {})
+              return done(null)
+            }
+            const vttPath = files[0].full
+            try {
+              const content = fs.readFileSync(vttPath, 'utf-8')
+              const segments = parseVttToSegments(content)
+              if (segments.length === 0) {
+                recordAttempt(collector, {
+                  stage: 'captions',
+                  type: step.type,
+                  result: 'fail',
+                  success: false,
+                  latencyMs: Date.now() - startedAt,
+                  proxyId,
+                  errorCode: 'NO_CAPTIONS',
+                })
+                if (proxyId) recordYoutubeProxyResult(proxyId, false).catch(() => {})
+                return done(null)
+              }
+              const fullText = segments.map((s) => s.text).join(' ').replace(/\s+/g, ' ').trim()
+              recordAttempt(collector, {
+                stage: 'captions',
+                type: step.type,
+                result: 'success',
+                success: true,
+                latencyMs: Date.now() - startedAt,
+                proxyId,
+              })
+              if (collector && proxyId) {
+                collector.proxyUsed = true
+                collector.proxyId = proxyId
+              }
+              if (proxyId) recordYoutubeProxyResult(proxyId, true).catch(() => {})
+              done({ fullText, segments, source: 'ytdlp', sourceDetail: step.type })
+            } catch {
+              done(null)
+            }
+          })
+        })
+        if (result) return result
+      } finally {
+        await permit.release()
+      }
+    }
+    return null
+  } finally {
+    try { fs.rmSync(workspace, { recursive: true, force: true }) } catch { /* ignore */ }
+  }
 }
 
 /**
@@ -725,7 +1010,8 @@ export async function fetchYoutubeCaptions(
   outputDir: string,
   language?: string,
   videoDurationSec?: number,
-  defaultLanguage?: string
+  defaultLanguage?: string,
+  collector?: YoutubeAttemptCollector
 ): Promise<YoutubeCaptionResult | null> {
   const cleanUrl = normalizeYoutubeUrl(url)
   const videoId = extractYoutubeVideoId(cleanUrl)
@@ -733,7 +1019,7 @@ export async function fetchYoutubeCaptions(
   const minCoverage = Number(process.env.YOUTUBE_CAPTION_MIN_COVERAGE) || 0.7
   const duration = videoDurationSec ?? 0
 
-  if (!videoId) return fetchCaptionsViaYtDlp(cleanUrl, outputDir, language, defaultLanguage)
+  if (!videoId) return fetchCaptionsViaYtDlp(cleanUrl, outputDir, language, defaultLanguage, collector)
 
   // Fast path: timedtext first — single HTTP GET, typically 1–3s when captions exist
   for (const lang of langOrder) {
@@ -768,7 +1054,7 @@ export async function fetchYoutubeCaptions(
     }
   }
 
-  return fetchCaptionsViaYtDlp(cleanUrl, outputDir, language, defaultLanguage)
+  return fetchCaptionsViaYtDlp(cleanUrl, outputDir, language, defaultLanguage, collector)
 }
 
 // ─── Audio Streaming ─────────────────────────────────────────────────────────
@@ -784,56 +1070,102 @@ const STREAM_TIMEOUT_MS = 10 * 60 * 1000
  */
 export async function streamYoutubeAudioToFile(
   url: string,
-  outputPath: string
+  outputPath: string,
+  collector?: YoutubeAttemptCollector
 ): Promise<void> {
   const cleanUrl = normalizeYoutubeUrl(url)
   const skipCookies = process.env.YOUTUBE_SKIP_COOKIES === 'true' || process.env.YOUTUBE_SKIP_COOKIES === '1'
   const cookiesFile = process.env.YOUTUBE_COOKIES_FILE
   const hasCookies = !!(cookiesFile && fs.existsSync(cookiesFile))
-  const hasProxy = !!(process.env.YOUTUBE_PROXY?.trim())
+  const hasProxy = !!(process.env.YOUTUBE_PROXY?.trim() || process.env.YOUTUBE_PROXY_POOL?.trim())
+  const matrix: Array<{ type: YoutubeAttemptType; useCookies: boolean; useProxy: boolean }> = [
+    { type: 'direct', useCookies: false, useProxy: false },
+    { type: 'cookies', useCookies: true, useProxy: false },
+    { type: 'proxy', useCookies: hasCookies && !skipCookies, useProxy: true },
+  ]
+  const available = matrix.filter((m) => {
+    if (m.type === 'direct') return true
+    if (m.type === 'cookies') return hasCookies && !skipCookies
+    return hasProxy
+  })
 
-  try {
-    await doStreamYoutubeAudio(cleanUrl, outputPath, false, false)
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err)
-    if (!isRetryableWithCookiesError(msg)) throw err
-    if (hasCookies && !skipCookies) {
-      try {
-        log.info({ msg: 'yt_retry_with_cookies', url: cleanUrl.slice(0, 50) })
-        await doStreamYoutubeAudio(cleanUrl, outputPath, true, false)
-        return
-      } catch {
-    if (hasProxy) {
-      log.info({ msg: 'yt_retry_with_proxy', url: cleanUrl.slice(0, 50) })
-      log.info({ msg: 'yt_proxy_used', url: cleanUrl.slice(0, 50) })
-      await doStreamYoutubeAudio(cleanUrl, outputPath, true, true)
-          return
-        }
-        throw err
+  let lastError: Error | null = null
+  for (const step of available) {
+    const startedAt = Date.now()
+    const selectedProxy = step.type === 'proxy' ? await selectYoutubeProxy() : null
+    const proxyId = selectedProxy?.id
+    if (step.type === 'proxy' && hasProxy && !selectedProxy && await isProxyPoolDegraded()) {
+      recordAttempt(collector, {
+        stage: 'audio',
+        type: step.type,
+        result: 'fail',
+        success: false,
+        latencyMs: Date.now() - startedAt,
+        errorCode: 'PROXY_POOL_DEGRADED',
+      })
+      break
+    }
+    try {
+      await doStreamYoutubeAudio(cleanUrl, outputPath, step.useCookies, step.useProxy, selectedProxy?.url)
+      if (step.useProxy) log.info({ msg: 'yt_proxy_used', url: cleanUrl.slice(0, 50) })
+      recordAttempt(collector, {
+        stage: 'audio',
+        type: step.type,
+        result: 'success',
+        success: true,
+        latencyMs: Date.now() - startedAt,
+        proxyId,
+      })
+      if (collector && proxyId) {
+        collector.proxyUsed = true
+        collector.proxyId = proxyId
       }
-    }
-    if (hasProxy) {
-      log.info({ msg: 'yt_retry_with_proxy', url: cleanUrl.slice(0, 50) })
-      log.info({ msg: 'yt_proxy_used', url: cleanUrl.slice(0, 50) })
-      await doStreamYoutubeAudio(cleanUrl, outputPath, false, true)
+      if (proxyId) recordYoutubeProxyResult(proxyId, true).catch(() => {})
       return
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      const errorCode = classifyYoutubeFailure(msg)
+      recordAttempt(collector, {
+        stage: 'audio',
+        type: step.type,
+        result: 'fail',
+        success: false,
+        latencyMs: Date.now() - startedAt,
+        proxyId,
+        errorCode,
+      })
+      if (proxyId) recordYoutubeProxyResult(proxyId, false).catch(() => {})
+      lastError = err instanceof Error ? err : new Error(msg)
+      if (errorCode === 'UNKNOWN') break
     }
-    throw err
   }
+  throw lastError ?? new Error('YouTube audio extraction failed')
 }
 
 function doStreamYoutubeAudio(
   url: string,
   outputPath: string,
   useCookies: boolean,
-  useProxy: boolean
+  useProxy: boolean,
+  proxyUrl?: string
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     let settled = false
+    let releasePermit: (() => Promise<void>) | null = null
+    let leaseMonitor: NodeJS.Timeout | null = null
+    let ytProc: import('child_process').ChildProcess | null = null
     const done = (err?: Error) => {
       if (settled) return
       settled = true
       clearTimeout(timeoutHandle)
+      if (leaseMonitor) {
+        clearInterval(leaseMonitor)
+        leaseMonitor = null
+      }
+      if (releasePermit) {
+        releasePermit().catch(() => {})
+        releasePermit = null
+      }
       if (err) reject(err)
       else resolve()
     }
@@ -841,6 +1173,7 @@ function doStreamYoutubeAudio(
     // Hard timeout: reject so the worker can fail + retry rather than hang forever
     const timeoutHandle = setTimeout(() => {
       log.error({ msg: 'yt_stream_timeout', outputPath })
+      try { ytProc?.kill('SIGKILL') } catch { /* ignore */ }
       try { ffmpegProc.kill('SIGKILL') } catch { /* ignore */ }
       done(new Error('YouTube stream timed out after 10 minutes'))
     }, STREAM_TIMEOUT_MS)
@@ -886,43 +1219,56 @@ function doStreamYoutubeAudio(
     })
 
     // ── 2. Stream audio-only from YouTube via yt-dlp → FFmpeg stdin ──────────
-    const ytProc = spawn(
-      YT_DLP_BIN,
-      ytDlpArgs(
-        [
-          '--no-playlist',
-          '--no-warnings',
-          '-f', 'bestaudio/best',
-          '-o', '-',
-          '--socket-timeout', '30',
-          url,
-        ],
-        useCookies,
-        useProxy
-      ),
-      { stdio: ['ignore', 'pipe', 'pipe'] }
-    )
+    acquireGlobalYtDlpPermit('audio').then(async (permit) => {
+      releasePermit = permit.release
+      leaseMonitor = setInterval(() => {
+        if (permit.isLeaseValid()) return
+        log.error({ msg: 'yt_stream_lease_lost_abort', outputPath })
+        try { ytProc?.kill('SIGKILL') } catch { /* ignore */ }
+        try { ffmpegProc.kill('SIGKILL') } catch { /* ignore */ }
+        done(new Error('yt-dlp global semaphore lease lost; stream aborted to prevent over-concurrency'))
+      }, 5_000)
+      leaseMonitor.unref?.()
+      await applyYtRequestPacingSeeded(`audio:${url}`)
+      ytProc = spawn(
+        YT_DLP_BIN,
+        ytDlpArgs(
+          [
+            '--no-playlist',
+            '--no-warnings',
+            '-f', 'bestaudio/best',
+            '-o', '-',
+            '--socket-timeout', '30',
+            url,
+          ],
+          useCookies,
+          useProxy,
+          proxyUrl
+        ),
+        { stdio: ['ignore', 'pipe', 'pipe'] }
+      )
 
-    const ytStderrChunks: string[] = []
-    ytProc.stderr.on('data', (chunk: Buffer) => ytStderrChunks.push(chunk.toString()))
+      const ytStderrChunks: string[] = []
+      ytProc.stderr!.on('data', (chunk: Buffer) => ytStderrChunks.push(chunk.toString()))
 
-    ytProc.on('error', (err) => {
-      try { ffmpegProc.stdin!.destroy() } catch { /* ignore */ }
-      done(new Error(`yt-dlp spawn error: ${err.message}`))
-    })
-
-    ytProc.on('close', (code) => {
-      if (code !== 0 && code !== null && !settled) {
-        const stderr = ytStderrChunks.join('')
-        const msg = extractYtDlpErrorMessage(stderr, code)
-        log.error({ msg: 'yt_stream_stderr', stderr: stderr.slice(-2000), url: url.slice(0, 80) })
+      ytProc.on('error', (err) => {
         try { ffmpegProc.stdin!.destroy() } catch { /* ignore */ }
-        done(new Error(`yt-dlp error: ${msg}`))
-      }
-    })
+        done(new Error(`yt-dlp spawn error: ${err.message}`))
+      })
 
-    // ── 3. Pipe yt-dlp stdout → FFmpeg stdin ─────────────────────────────────
-    ytProc.stdout.pipe(ffmpegProc.stdin!)
+      ytProc.on('close', (code) => {
+        if (code !== 0 && code !== null && !settled) {
+          const stderr = ytStderrChunks.join('')
+          const msg = extractYtDlpErrorMessage(stderr, code)
+          log.error({ msg: 'yt_stream_stderr', stderr: stderr.slice(-2000), url: url.slice(0, 80) })
+          try { ffmpegProc.stdin!.destroy() } catch { /* ignore */ }
+          done(new Error(`yt-dlp error: ${msg}`))
+        }
+      })
+
+      // ── 3. Pipe yt-dlp stdout → FFmpeg stdin ─────────────────────────────────
+      ytProc.stdout!.pipe(ffmpegProc.stdin!)
+    }).catch((err) => done(new Error(`yt-dlp limiter error: ${String(err)}`)))
 
     log.info({ msg: 'yt_stream_started', url: url.slice(0, 50) })
   })

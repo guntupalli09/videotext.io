@@ -177,7 +177,7 @@ export default function Home() {
               Choose your workflow path (without competing with the core tool page)
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-3xl transition-colors duration-500">
-              Primary action for broad intent is <span className="font-semibold text-gray-700 dark:text-gray-200">Video to Transcript</span>. These supporting pages handle specific contexts like comparisons, meetings, and YouTube source workflows.
+              Core entry points are <span className="font-semibold text-gray-700 dark:text-gray-200">Video to Transcript</span>, <span className="font-semibold text-gray-700 dark:text-gray-200">Voice to Text</span>, and <span className="font-semibold text-gray-700 dark:text-gray-200">YouTube Transcript Generator</span>. These supporting pages handle specific contexts like comparisons and meeting workflows.
             </p>
           </div>
 
@@ -185,7 +185,7 @@ export default function Home() {
             {[
               { label: 'Video to Transcript (Primary)', path: '/video-to-transcript', desc: 'Main page for broad video-to-text and transcript intent' },
               { label: 'Best Transcription Tool', path: '/best-transcription-tool', desc: 'Decision support by speed, outputs, and workflow fit' },
-              { label: 'YouTube URL to Transcription', path: '/youtube-url-to-transcription', desc: 'Paste a link and get structured output in minutes' },
+              { label: 'YouTube Transcript Generator (Primary)', path: '/youtube-transcript-generator', desc: 'Paste a YouTube link and generate transcript-ready output in minutes' },
               { label: 'Podcast Transcription Tool', path: '/podcast-transcription-tool', desc: 'Create show notes, clips, and searchable transcript assets' },
               { label: 'Meeting Transcription Tool', path: '/meeting-transcription-tool', desc: 'Turn calls into summaries, transcripts, and follow-ups' },
               { label: 'Google Meet Transcript', path: '/google-meet-transcript', desc: 'Download the Meet recording, upload, and get transcript outputs fast' },

@@ -66,12 +66,12 @@ function batchUploadEligible(): boolean {
   return ['pro', 'agency', 'business', 'founding_workflow'].includes(p)
 }
 
-/** Optional SEO overrides for alternate entry points (e.g. /video-to-text, /youtube-to-transcript). Do NOT duplicate logic here. */
+/** Optional SEO overrides for alternate entry points (e.g. /video-to-text, /youtube-transcript-generator). Do NOT duplicate logic here. */
 export type VideoToTranscriptSeoProps = {
   seoH1?: string
   seoIntro?: string
   faq?: { q: string; a: string }[]
-  /** Open YouTube URL tab by default (for /youtube-to-transcript SEO pages). */
+  /** Open YouTube URL tab by default (for /youtube-transcript-generator SEO pages). */
   defaultInputMode?: 'file' | 'youtube'
   seoDeepContent?: {
     proofPoints?: string[]
@@ -85,7 +85,7 @@ export type VideoToTranscriptSeoProps = {
 }
 
 export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {}) {
-  const { seoH1, seoIntro, faq = [], seoDeepContent } = props
+  const { seoH1, seoIntro, faq = [], seoDeepContent, defaultInputMode = 'file' } = props
   const location = useLocation()
   const navigate = useNavigate()
   const sourceParam = useMemo(() => new URLSearchParams(location.search).get('source') || '', [location.search])
@@ -281,7 +281,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   // ── YouTube URL input mode ──────────────────────────────────────────────────
   /** 'file' = drag-and-drop upload, 'youtube' = URL paste. Persists while idle. */
   // YouTube URL mode is temporarily disabled — always file upload
-  const [inputMode] = useState<'file' | 'youtube'>('file')
+  const [inputMode] = useState<'file' | 'youtube'>(defaultInputMode)
   /** Raw value of the YouTube URL text field. */
   const [youtubeUrlInput, setYoutubeUrlInput] = useState('')
   /** Metadata returned by the server after enqueueing the job (no extra round-trip). */

@@ -65,6 +65,92 @@ const POSTS: BlogPost[] = [
     ),
   },
   {
+    slug: 'best-way-to-get-youtube-transcript',
+    date: 'April 17, 2026',
+    title: 'Best way to get a YouTube transcript (without manual cleanup)',
+    summary: 'A practical guide to turning YouTube videos into clean transcript assets for SEO, repurposing, and publishing workflows.',
+    tag: 'YouTube',
+    readTime: '7 min read',
+    content: (
+      <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p>
+          If you search “best way to get YouTube transcript,” most advice still tells you to copy captions manually, clean punctuation by hand, and then reformat the text for actual use. That works for one short clip, but it breaks at scale. Teams publishing weekly videos, podcasts, webinars, and tutorials need a system that starts with a URL and ends with reusable content.
+        </p>
+        <p>
+          The fastest workflow is: paste URL, generate transcript, export structured outputs, repurpose into article sections and social snippets. That is why we built a dedicated YouTube Transcript Generator route instead of hiding YouTube inside a generic upload flow.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">What to optimize for (not just “get text”)</h3>
+        <ul className="list-disc pl-5 space-y-2">
+          <li><strong>Speed to first draft:</strong> You should move from URL to readable transcript quickly.</li>
+          <li><strong>Output quality:</strong> Transcript should be structured enough to publish with minimal editing.</li>
+          <li><strong>Repurposing workflow:</strong> You need chapter-ready sections, summary framing, and export options.</li>
+          <li><strong>Consistency:</strong> The process must work for every new video, not one-off hacks.</li>
+        </ul>
+        <p>
+          Try the dedicated workflow here: <a className="text-purple-600 dark:text-purple-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
+        </p>
+      </div>
+    ),
+  },
+  {
+    slug: 'youtube-captions-vs-ai-transcription',
+    date: 'April 17, 2026',
+    title: 'YouTube captions vs AI transcription: what actually saves time?',
+    summary: 'Native captions are useful, but AI transcription workflows win when you need structured outputs and fast repurposing.',
+    tag: 'Comparison',
+    readTime: '6 min read',
+    content: (
+      <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p>
+          YouTube captions are great for baseline accessibility. But for content teams, the goal is usually not just accessibility — it is production velocity. You need text you can turn into blog posts, FAQ blocks, social scripts, and campaign copy. Native caption tools were not built for that full workflow.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Where YouTube captions help</h3>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>Fast default subtitle layer for playback.</li>
+          <li>No extra setup if captions are already available.</li>
+          <li>Useful fallback when you only need basic on-platform viewing.</li>
+        </ul>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Where AI transcription workflows win</h3>
+        <ul className="list-disc pl-5 space-y-2">
+          <li><strong>Structured outputs:</strong> transcript + summary + chapters + subtitle exports.</li>
+          <li><strong>Repurposing speed:</strong> faster transition from video to text assets.</li>
+          <li><strong>Cross-tool workflow:</strong> cleaner handoff into CMS, docs, and content ops.</li>
+        </ul>
+        <p>
+          If your goal is to publish text derivatives quickly, use a dedicated URL-first workflow: <a className="text-purple-600 dark:text-purple-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
+        </p>
+      </div>
+    ),
+  },
+  {
+    slug: 'how-to-download-youtube-subtitles',
+    date: 'April 17, 2026',
+    title: 'How to download YouTube subtitles and keep them usable',
+    summary: 'Step-by-step guide to generating subtitle files you can actually reuse in editing, publishing, and localization.',
+    tag: 'Guide',
+    readTime: '5 min read',
+    content: (
+      <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p>
+          Downloading subtitles is easy. Downloading subtitles that are usable in production workflows is where most teams lose time. The main issues are inconsistent formatting, timing gaps, and missing structure for editing tools.
+        </p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Practical subtitle workflow</h3>
+        <ol className="list-decimal pl-5 space-y-2">
+          <li>Paste the video URL in a YouTube transcription workflow.</li>
+          <li>Generate transcript and subtitle outputs.</li>
+          <li>Export SRT or VTT depending on platform.</li>
+          <li>Use subtitle files for upload, editing, or translation workflows.</li>
+        </ol>
+        <p>
+          This keeps subtitle generation tied to transcript generation so your content and timing stay consistent across channels.
+        </p>
+        <p>
+          Start from here: <a className="text-purple-600 dark:text-purple-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
+        </p>
+      </div>
+    ),
+  },
+  {
     slug: 'how-to-transcribe-zoom-recording',
     date: 'March 7, 2026',
     title: 'How to transcribe a Zoom recording: step-by-step guide',

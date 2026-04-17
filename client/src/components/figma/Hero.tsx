@@ -11,6 +11,7 @@ import {
   Sparkles,
   List,
   Languages,
+  Link2,
 } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
 
@@ -129,6 +130,24 @@ function HeroDropzone() {
           </p>
         </div>
         <ChevronRight className="w-4 h-4 text-white/25 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+      </Link>
+
+      <Link
+        to="/youtube-transcript-generator"
+        className="mt-2 group flex items-center gap-4 rounded-xl border border-red-300/35 bg-gradient-to-b from-red-500/14 to-rose-500/10 shadow-[0_0_0_1px_rgba(239,68,68,0.2),0_10px_30px_rgba(127,29,29,0.25)] hover:border-red-300/65 hover:from-red-500/22 hover:to-rose-500/14 hover:shadow-[0_0_0_1px_rgba(239,68,68,0.35),0_0_30px_rgba(239,68,68,0.18)] px-5 py-3 transition-all duration-200"
+      >
+        <div className="w-9 h-9 rounded-xl bg-red-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-red-500/25 transition-colors">
+          <Link2 className="w-4 h-4 text-red-300" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-white font-semibold text-[13px] leading-tight">
+            Paste a YouTube URL — generate transcript instantly
+          </p>
+          <p className="text-white/35 text-[12px] mt-0.5">
+            Built for YouTube to text workflows: transcript, summary, chapters, exports
+          </p>
+        </div>
+        <ChevronRight className="w-4 h-4 text-white/25 group-hover:text-red-300 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
       </Link>
     </div>
   );
