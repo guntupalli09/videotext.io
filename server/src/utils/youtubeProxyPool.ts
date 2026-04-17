@@ -21,6 +21,11 @@ const FAIL_THRESHOLD = Math.max(2, parseInt(process.env.YT_PROXY_FAIL_THRESHOLD 
 const COOLDOWN_MIN = Math.max(1, parseInt(process.env.YT_PROXY_COOLDOWN_MINUTES || '10', 10))
 const POOL_DEGRADED_HEALTHY_RATIO = Math.max(0.05, Math.min(0.9, Number(process.env.YT_PROXY_POOL_MIN_HEALTHY_RATIO || '0.25')))
 const POOL_DEGRADED_TTL_MS = Math.max(60_000, parseInt(process.env.YT_PROXY_POOL_DEGRADED_TTL_MS || '300000', 10))
+const GLOBAL_DISABLE_RATE_WINDOW = Math.max(20, parseInt(process.env.YT_PROXY_GLOBAL_DISABLE_WINDOW || '60', 10))
+const GLOBAL_DISABLE_MIN_SUCCESS_RATE = Math.max(0.3, Math.min(0.95, Number(process.env.YT_PROXY_GLOBAL_DISABLE_MIN_SUCCESS_RATE || '0.7')))
+const GLOBAL_DISABLE_TTL_MS = Math.min(5 * 60_000, Math.max(2 * 60_000, parseInt(process.env.YT_PROXY_GLOBAL_DISABLE_TTL_MS || '180000', 10)))
+const GLOBAL_DISABLE_MIN_SAMPLE = Math.max(20, parseInt(process.env.YT_PROXY_GLOBAL_DISABLE_MIN_SAMPLE || '20', 10))
+const GLOBAL_DISABLE_DECAY = Math.max(0.75, Math.min(0.99, Number(process.env.YT_PROXY_GLOBAL_DISABLE_DECAY || '0.92')))
 
 export interface ProxyEndpoint {
   id: string
@@ -65,6 +70,14 @@ function keyPoolDegraded(): string {
   return 'yt_proxy:pool_degraded_until'
 }
 
+function keyGlobalDisable(): string {
+  return 'yt_proxy:global_disabled_until'
+}
+
+function keyRollingResults(): string {
+  return 'yt_proxy:rolling_results'
+}
+
 async function proxyHealth(proxyId: string): Promise<{ success: number; failure: number; cooldownUntil: number }> {
   try {
     const [stats, cooldownRaw] = await Promise.all([
@@ -95,6 +108,12 @@ export async function selectYoutubeProxy(): Promise<ProxySelection | null> {
     if (pool.length === 0) return null
 
     const now = Date.now()
+    const globalDisabledUntil = Number(await redis.get(keyGlobalDisable()).catch(() => '0') || 0)
+    if (globalDisabledUntil > now) return null
+    if (globalDisabledUntil > 0 && globalDisabledUntil <= now) {
+      await redis.del(keyGlobalDisable()).catch(() => {})
+      log.info({ msg: 'proxy_reenabled', at: now })
+    }
     const poolDegradedUntil = Number(await redis.get(keyPoolDegraded()).catch(() => '0') || 0)
     if (poolDegradedUntil > now) return null
 
@@ -137,6 +156,30 @@ export async function recordYoutubeProxyResult(proxyId: string, success: boolean
   const cooldownKey = keyCooldown(proxyId)
   const now = Date.now()
   try {
+    await redis
+      .multi()
+      .lpush(keyRollingResults(), success ? '1' : '0')
+      .ltrim(keyRollingResults(), 0, GLOBAL_DISABLE_RATE_WINDOW - 1)
+      .expire(keyRollingResults(), 24 * 60 * 60)
+      .exec()
+    const rolling = await redis.lrange(keyRollingResults(), 0, GLOBAL_DISABLE_RATE_WINDOW - 1)
+    const totalRolling = rolling.length
+    if (totalRolling >= GLOBAL_DISABLE_MIN_SAMPLE) {
+      let weightedSuccess = 0
+      let weightedTotal = 0
+      for (let i = 0; i < rolling.length; i++) {
+        const weight = Math.pow(GLOBAL_DISABLE_DECAY, i)
+        weightedTotal += weight
+        if (rolling[i] === '1') weightedSuccess += weight
+      }
+      const successRate = weightedTotal > 0 ? weightedSuccess / weightedTotal : 0
+      if (successRate < GLOBAL_DISABLE_MIN_SUCCESS_RATE) {
+        const disabledUntil = now + GLOBAL_DISABLE_TTL_MS
+        await redis.set(keyGlobalDisable(), String(disabledUntil), 'PX', GLOBAL_DISABLE_TTL_MS)
+        log.error({ msg: 'proxy_globally_disabled', successRate, weighted: true, totalRolling, threshold: GLOBAL_DISABLE_MIN_SUCCESS_RATE, disabledUntil })
+      }
+    }
+
     if (success) {
       await redis
         .multi()
@@ -169,6 +212,8 @@ export async function recordYoutubeProxyResult(proxyId: string, success: boolean
 
 export async function isProxyPoolDegraded(): Promise<boolean> {
   try {
+    const globalDisabledUntil = Number(await redis.get(keyGlobalDisable()).catch(() => '0') || 0)
+    if (globalDisabledUntil > Date.now()) return true
     const until = Number(await redis.get(keyPoolDegraded()).catch(() => '0') || 0)
     return until > Date.now()
   } catch {
@@ -180,7 +225,7 @@ export async function resetProxyPoolState(): Promise<void> {
   try {
     const pool = parseProxyPool()
     if (pool.length === 0) return
-    const keys = [keyPointer(), keyPoolDegraded(), ...pool.map((p) => keyCooldown(p.id))]
+    const keys = [keyPointer(), keyPoolDegraded(), keyGlobalDisable(), keyRollingResults(), ...pool.map((p) => keyCooldown(p.id))]
     await redis.del(...keys).catch(() => {})
   } catch {
     /* no-op */

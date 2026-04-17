@@ -186,6 +186,13 @@ export interface DashboardYoutubeResolution {
   patchResolvedPct: number
   fallbackPct: number
   avgConfidence: number | null
+  degradedExecutionPct: number
+  highCostPct: number
+  retryRate: number
+  avgRetryDelayMs: number | null
+  retrySuccessRate: number | null
+  queueTimeoutRate: number
+  circuitBreakerTriggers: number
   byPath: { path: string; count: number }[]
   bySource: { source: string; count: number }[]
   byError: { error: string; count: number }[]
