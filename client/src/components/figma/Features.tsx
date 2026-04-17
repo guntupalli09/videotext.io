@@ -10,6 +10,7 @@ import {
   FolderSync,
   ChevronRight,
   Mic,
+  Youtube,
   CheckCircle2,
   ArrowRight,
 } from 'lucide-react';
@@ -52,6 +53,25 @@ const SPOTLIGHT_TOOLS = [
       { time: '00:03', text: 'Welcome everyone, today we are going to cover...' },
       { time: '00:11', text: 'The key insight that changed how I approach this is...' },
       { time: '00:24', text: 'Let me break it down into three simple steps for you.' },
+    ],
+  },
+  {
+    id: 'youtube-transcript',
+    badge: 'No download needed',
+    badgeColor: 'bg-red-500/15 text-red-300 border border-red-500/20',
+    icon: Youtube,
+    name: 'YouTube → Transcript',
+    tagline: 'Paste a URL. Get the full transcript in seconds.',
+    description:
+      'Extract transcripts from any YouTube video — no download, no upload. Get the full text, AI summary, chapters, and export-ready output instantly.',
+    bullets: ['No video download required', 'AI summary & chapters included', 'Export TXT, PDF, DOCX, JSON', '99 languages · Translation to 70+'],
+    gradient: 'from-red-500 to-rose-600',
+    glowColor: 'rgba(239,68,68,0.08)',
+    href: '/youtube-transcript-generator',
+    outputPreview: [
+      { time: '00:00', text: "Hey everyone! Welcome back to the channel. In today's video..." },
+      { time: '00:12', text: "We're covering the three biggest mistakes I see creators make..." },
+      { time: '00:28', text: 'The first one is probably the most common, and easy to fix...' },
     ],
   },
 ];
@@ -258,12 +278,12 @@ export function Features() {
             <span className="block text-gray-300 dark:text-white/20 mt-1">Nothing you don't.</span>
           </h2>
           <p className="text-lg text-gray-500 dark:text-white/40 max-w-xl mx-auto transition-colors duration-500">
-            Eight purpose-built tools covering every stage of the video captioning pipeline. No bloated editor. No learning curve.
+            Upload a video, record your voice, or paste a YouTube URL — purpose-built tools for every stage of your workflow. No bloated editor. No learning curve.
           </p>
         </motion.div>
 
-        {/* Spotlight tools — 2 large cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* Spotlight tools — 3 equal cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {SPOTLIGHT_TOOLS.map((tool, i) => (
             <SpotlightCard key={tool.id} tool={tool} index={i} />
           ))}
