@@ -180,6 +180,17 @@ export interface DashboardCostMetrics {
   avgDurationSec: number | null
 }
 
+export interface DashboardYoutubeResolution {
+  total: number
+  captionsResolvedPct: number
+  patchResolvedPct: number
+  fallbackPct: number
+  avgConfidence: number | null
+  byPath: { path: string; count: number }[]
+  bySource: { source: string; count: number }[]
+  byError: { error: string; count: number }[]
+}
+
 export interface DashboardData {
   snapshot: DashboardSnapshot
   revenue: DashboardRevenue
@@ -197,6 +208,7 @@ export interface DashboardData {
   starDistribution: DashboardStarDist[]
   toolPerf: DashboardToolPerf[]
   costMetrics: DashboardCostMetrics | null
+  youtubeResolution?: DashboardYoutubeResolution
 }
 
 // ── API Credits types ─────────────────────────────────────────────────────────

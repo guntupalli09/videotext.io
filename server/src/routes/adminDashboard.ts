@@ -20,6 +20,71 @@ const adminDashboardRouter = express.Router()
 export default adminDashboardRouter
 
 const WORKER_HEARTBEAT_KEY = 'videotext:worker:heartbeat'
+const YT_METRIC_KEY_PREFIX = 'metrics:yt:resolution:'
+
+type YoutubeResolutionMetrics = {
+  total: number
+  captionsResolvedPct: number
+  patchResolvedPct: number
+  fallbackPct: number
+  avgConfidence: number | null
+  byPath: Array<{ path: string; count: number }>
+  bySource: Array<{ source: string; count: number }>
+  byError: Array<{ error: string; count: number }>
+}
+
+function ytMetricDayKeys(days = 30): string[] {
+  const keys: string[] = []
+  for (let i = 0; i < days; i++) {
+    const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+    const y = d.getUTCFullYear()
+    const m = String(d.getUTCMonth() + 1).padStart(2, '0')
+    const day = String(d.getUTCDate()).padStart(2, '0')
+    keys.push(`${YT_METRIC_KEY_PREFIX}${y}-${m}-${day}`)
+  }
+  return keys
+}
+
+async function getYoutubeResolutionMetrics(redis: import('ioredis').Redis): Promise<YoutubeResolutionMetrics> {
+  const keys = ytMetricDayKeys(30)
+  const pipe = redis.pipeline()
+  keys.forEach((k) => pipe.hgetall(k))
+  const rows = await pipe.exec()
+  const byPath = new Map<string, number>()
+  const bySource = new Map<string, number>()
+  const byError = new Map<string, number>()
+  let total = 0
+  let confidenceSumScaled = 0
+
+  for (const entry of rows || []) {
+    const bucket = (entry?.[1] || {}) as Record<string, string>
+    if (!bucket) continue
+    total += Number(bucket.total || 0)
+    confidenceSumScaled += Number(bucket.confidence_sum_scaled || 0)
+    for (const [k, v] of Object.entries(bucket)) {
+      const n = Number(v || 0)
+      if (!Number.isFinite(n) || n <= 0) continue
+      if (k.startsWith('path:')) byPath.set(k.slice(5), (byPath.get(k.slice(5)) || 0) + n)
+      if (k.startsWith('source:')) bySource.set(k.slice(7), (bySource.get(k.slice(7)) || 0) + n)
+      if (k.startsWith('error:')) byError.set(k.slice(6), (byError.get(k.slice(6)) || 0) + n)
+    }
+  }
+
+  const captions = byPath.get('captions') || 0
+  const patch = byPath.get('caption_patch') || 0
+  const fallback = byPath.get('audio_transcription') || 0
+  const pct = (v: number) => total > 0 ? Math.round((v / total) * 1000) / 10 : 0
+  return {
+    total,
+    captionsResolvedPct: pct(captions),
+    patchResolvedPct: pct(patch),
+    fallbackPct: pct(fallback),
+    avgConfidence: total > 0 ? Math.round((confidenceSumScaled / total) / 10) / 100 : null,
+    byPath: [...byPath.entries()].map(([path, count]) => ({ path, count })).sort((a, b) => b.count - a.count),
+    bySource: [...bySource.entries()].map(([source, count]) => ({ source, count })).sort((a, b) => b.count - a.count),
+    byError: [...byError.entries()].map(([error, count]) => ({ error, count })).sort((a, b) => b.count - a.count),
+  }
+}
 
 async function requireFounder(req: Request, res: Response): Promise<string | null> {
   const auth = getAuthFromRequest(req)
@@ -172,6 +237,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
       starDistribution,
       toolPerf,
       costMetrics,
+      youtubeResolution,
     ] = await Promise.all([
       prisma.dailyMetrics.findFirst({ orderBy: { date: 'desc' } }),
       prisma.monthlyMetrics.findMany({ orderBy: { monthStart: 'desc' }, take: 12 }),
@@ -344,6 +410,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
           AND "completedAt" >= ${thirtyDaysAgo}
           AND "whisperCostMicros" IS NOT NULL
       `,
+      getYoutubeResolutionMetrics(fileQueue.client),
     ])
 
     let snapshot: Record<string, unknown>
@@ -511,6 +578,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
           avgDurationSec: cm.avgDurationSec != null ? Math.round(cm.avgDurationSec) : null,
         }
       })(),
+      youtubeResolution,
     }
     cachedDashboard = response
     cacheTimestamp = Date.now()

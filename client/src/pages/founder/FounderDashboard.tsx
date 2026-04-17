@@ -22,6 +22,7 @@ import ApiCreditsPanel from './ApiCreditsPanel'
 import EmailUsagePanel from './EmailUsagePanel'
 import CostMetrics from './CostMetrics'
 import FeedbackSystemPanel from './FeedbackSystemPanel'
+import YoutubeResolutionPanel from './YoutubeResolutionPanel'
 
 const PLAN_COLORS: Record<string, string> = {
   free: 'text-zinc-400',
@@ -194,10 +195,11 @@ export default function FounderDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <ServerHealth />
             <FailureBreakdown failureReasons={data.failureReasons ?? []} />
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-              <h3 className="text-sm font-semibold text-white mb-4">Jobs by tool (30d)</h3>
-              <JobsByTool data={data.usage?.jobsByToolType ?? []} />
-            </div>
+            <YoutubeResolutionPanel data={data.youtubeResolution} />
+          </div>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 mt-4">
+            <h3 className="text-sm font-semibold text-white mb-4">Jobs by tool (30d)</h3>
+            <JobsByTool data={data.usage?.jobsByToolType ?? []} />
           </div>
           <div className="mt-4">
             <PerToolMetrics toolPerf={data.toolPerf ?? []} />

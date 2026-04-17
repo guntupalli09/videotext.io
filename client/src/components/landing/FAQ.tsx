@@ -22,7 +22,7 @@ const FAQS = [
   },
   {
     q: 'Can I transcribe a YouTube video?',
-    a: 'Yes — download the video and upload it directly. YouTube URL support (paste-and-go) is coming soon.',
+    a: 'Yes. Use the YouTube Transcript Generator, paste a public YouTube URL, and generate transcript output directly without downloading the video first.',
   },
   {
     q: 'What video and audio formats do you support?',
