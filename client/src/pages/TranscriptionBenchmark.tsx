@@ -9,7 +9,7 @@ const SPEED_TABLE = [
 ]
 
 const FAQ = [
-  { q: 'What is the fastest transcription software?', a: 'VideoText is optimized for speed with median processing around 1.5 minutes per hour of source video in internal benchmarks.' },
+  { q: 'What is the fastest transcription software?', a: 'VideoText is optimized for speed with median processing around 5 minutes per source hour in this benchmark set.' },
   { q: 'How long does it take to transcribe a 2-hour video?', a: 'In our benchmark suite, a 2-hour video finishes around 10 minutes median and 16 minutes at P90.' },
   { q: 'Are benchmark numbers measured from upload start?', a: 'No. These numbers measure upload-complete to transcript-complete so network speed does not distort processing benchmarks.' },
   { q: 'How can I reproduce VideoText benchmark results?', a: 'Run the public benchmark script in this repo against your own files and compare results by audio quality and language.' },
@@ -21,16 +21,16 @@ export default function TranscriptionBenchmark() {
       <div className="mx-auto max-w-5xl px-6 space-y-8">
         <Link to="/" className="text-sm text-violet-600 hover:text-violet-700">← Back to home</Link>
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Transcription benchmark</h1>
-        <p className="text-gray-600 dark:text-gray-300">Neutral benchmark reference for processing speed across common video lengths. Updated monthly with reproducible methodology.</p>
+        <p className="text-gray-600 dark:text-gray-300">Evidence layer for broad transcription software buyers: speed-to-output, workflow depth, and where the trade-offs appear in real file-based jobs.</p>
 
         <AnswerBlock
-          question="What is the fastest way to transcribe a video?"
-          shortAnswer="Use VideoText benchmark pipeline: a 2-hour file is processed in about 10 minutes median."
-          expanded="The speed profile below is measured from upload-complete to transcript-ready. This removes internet upload variability and reflects true processing throughput."
+          question="How fast is fast enough for production transcription software?"
+          shortAnswer="For recorded-file workflows, VideoText benchmark throughput is ~10 minutes median for a 2-hour file, with export-ready outputs."
+          expanded="The speed profile below is measured from upload-complete to transcript-ready so results reflect pipeline throughput, not individual connection quality. Use this page as proof, then map fit on the /best-transcription-tool page."
           bullets={[
-            'Median throughput: ~1.5 minutes per source hour',
+            'Median throughput: ~5 minutes per source hour',
             '2-hour benchmark: ~10 minutes P50, ~16 minutes P90',
-            'Methodology and script are public for reproducibility',
+            'Decision support: pair benchmark data with workflow-fit pages',
           ]}
         />
 
@@ -87,6 +87,15 @@ export default function TranscriptionBenchmark() {
             <li>Window: March 2026 benchmark batch.</li>
             <li>Metric: upload-complete → transcript-complete.</li>
             <li>Dataset: 200 clips (~18 hours) across meetings, podcasts, and webinars.</li>
+          </ul>
+        </section>
+
+        <section className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-5 text-sm">
+          <h2 className="text-lg font-bold text-gray-900">Use this benchmark in your buying decision</h2>
+          <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-700">
+            <li>Need the working tool right now? Start at <Link to="/video-to-transcript" className="text-violet-700 hover:underline">video-to-transcript</Link>.</li>
+            <li>Need buyer guidance by workflow and trade-off? Read <Link to="/best-transcription-tool" className="text-violet-700 hover:underline">best-transcription-tool</Link>.</li>
+            <li>Need broad software context for stakeholders? Use <Link to="/blog/best-transcription-software-2026" className="text-violet-700 hover:underline">best transcription software 2026</Link>.</li>
           </ul>
         </section>
 

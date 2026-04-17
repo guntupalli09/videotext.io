@@ -10,9 +10,9 @@ import { resolveInternalLinkPath } from './primaryUrls'
 /** Static (non-SEO-registry) routes: title + description. */
 const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> = {
   '/': {
-    title: 'Video to Text & Subtitles — Free Online Tools | YouTube Transcript',
+    title: 'Video to Text Transcription Software | Fast AI Transcript & Subtitles',
     description:
-      'VideoText turns long videos into publish-ready content (transcript, subtitles, summary, and chapters) in minutes. AI video-to-content workflow tool for fast repurposing and global publishing.',
+      'VideoText is AI transcription software for turning video to text, transcript, subtitles, summary, and chapters in one workflow. Start free and export TXT, DOCX, PDF, SRT, and VTT.',
   },
   '/pricing': {
     title: 'Pricing — Free, Basic, Pro & Agency Plans',
@@ -45,9 +45,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Record your voice and get an accurate transcript in seconds. Free online voice-to-text with AI noise suppression, 99 language support, and instant .txt export. No account needed.',
   },
   '/video-to-transcript': {
-    title: 'Convert 2-Hour Videos to Transcript in 5 Minutes (Not Hours) | VideoText',
+    title: 'Video to Text Converter: Fast AI Video to Transcript Software | VideoText',
     description:
-      'Turn long videos into clean transcripts in minutes. ~98.5% accurate, no data stored. Try it on your longest video. See how fast it actually is.',
+      'Convert video to text and downloadable transcripts in minutes. Built for fast file-based transcription with TXT, PDF, DOCX, SRT, and VTT outputs. Files are processed then deleted.',
   },
   '/video-to-subtitles': {
     title: 'Video to Subtitles — SRT & VTT Generator',
@@ -206,9 +206,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   },
 
   '/transcription-benchmark': {
-    title: 'Transcription Benchmark — Speed Tests & Methodology | VideoText',
+    title: 'Fastest Transcription Software? Benchmark Data & Methodology',
     description:
-      'Reference benchmark page for transcription speed: median and P90 processing time by video length, measured with reproducible methodology.',
+      'Benchmark reference for broad transcription software evaluation: median and P90 processing speed, output depth checks, and reproducible methodology by file length.',
   },
   '/accuracy-test': {
     title: 'Transcription Accuracy Test — Condition-Based Results | VideoText',
@@ -217,9 +217,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   },
 
   '/best-transcription-tool': {
-    title: 'Best Transcription Tool — Evidence-Based Comparison | VideoText',
+    title: 'Best Transcription Tool for Video to Text Workflows (2026)',
     description:
-      'Compare leading transcription tools using speed, accuracy, output quality, pricing, and best-use-case criteria with factual benchmark context.',
+      'Compare transcription tools for broad commercial intent: speed, transcript quality, exports, workflow friction, and trade-offs by use case.',
   },
   '/fastest-transcription-software': {
     title: 'Fastest Transcription Software — Benchmark Comparison | VideoText',
@@ -280,9 +280,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Turn long YouTube videos into transcript, subtitles, summary, and chapters in minutes.',
   },
   '/blog/best-transcription-software-2026': {
-    title: 'Best Transcription Software in 2026 (Tested for Real Workflows) | VideoText',
+    title: 'Best Transcription Software in 2026: Workflow-Based Comparison',
     description:
-      'Workflow-first ranking of top transcription software in 2026: speed-to-output, quality, exports, privacy model, and real cost by use case.',
+      'Commercial buyer guide to the best transcription software in 2026. Compare speed-to-output, export depth, privacy model, and real workflow trade-offs.',
   },
   '/blog/best-video-captioning-tools-2026': {
     title: 'Best Video Captioning Tools for Content Creators in 2026 | VideoText',
