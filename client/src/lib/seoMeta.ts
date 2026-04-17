@@ -962,6 +962,11 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
     description: 'Convert any video to a clean transcript in minutes. ~98.5% accuracy. Outputs: full transcript, AI summary, auto-generated chapters, SRT/VTT subtitles, and speaker labels. Zero data retention — files deleted after processing. Powered by OpenAI Whisper.',
     featureList: 'Fast AI transcription (2-hour video in ~5 min), ~98.5% word accuracy, AI summary with bullet points, Auto-generated chapters, Speaker diarization, SRT subtitle export, VTT subtitle export, TXT / PDF / DOCX / JSON export, 90+ language support, Batch processing (Pro), Zero data retention, YouTube URL input',
   },
+  '/youtube-transcript-generator': {
+    name: 'YouTube Transcript Generator — Convert Video to Text Without Download',
+    description: 'Free YouTube transcript generator. Paste any YouTube video URL and get a complete transcript, SRT/VTT subtitles, AI summary, and chapter markers in 2-3 minutes. No downloading required. 98.5% accurate. Used by 50,000+ creators.',
+    featureList: 'Paste YouTube URL (no download), 98.5% accuracy (OpenAI Whisper), Automatic transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters, Speaker diarization, 90+ language support, Free tier: 2 hours/month, Pro tier: unlimited transcription ($9.99/month), Zero data retention (files deleted after processing)',
+  },
   '/video-to-subtitles': {
     name: 'Video to Subtitles — SRT & VTT Generator',
     description: 'Generate broadcast-ready SRT and VTT subtitle files from any video with AI. Single or multi-language. Powered by OpenAI Whisper.',
