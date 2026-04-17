@@ -1987,6 +1987,22 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     </p>
                   </div>
                 )}
+                <div className="rounded-xl border border-violet-200/60 dark:border-violet-800/40 bg-gradient-to-br from-violet-50/40 to-purple-50/20 dark:from-violet-950/30 dark:to-purple-950/20 px-4 py-4 sm:px-6 sm:py-5">
+                  <div className="flex flex-wrap gap-4 sm:gap-6 justify-center sm:justify-start">
+                    <div className="flex flex-col items-start gap-1.5">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Accuracy</p>
+                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">98.5%</p>
+                    </div>
+                    <div className="flex flex-col items-start gap-1.5">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Languages</p>
+                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">90+</p>
+                    </div>
+                    <div className="flex flex-col items-start gap-1.5">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Data Stored</p>
+                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">None</p>
+                    </div>
+                  </div>
+                </div>
                 <div ref={uploadZoneRef}>
                   <UploadZone
                     immediateSelect
