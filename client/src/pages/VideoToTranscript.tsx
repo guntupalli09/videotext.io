@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Gem } from 'lucide-react'
+import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Gem, Upload } from 'lucide-react'
 import FailedState from '../components/FailedState'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
@@ -134,6 +134,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [trimStart, setTrimStart] = useState<number | null>(null)
   const [trimEnd, setTrimEnd] = useState<number | null>(null)
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
+  const [uploadZoneVisible, setUploadZoneVisible] = useState(true)
+  const uploadZoneRef = useRef<HTMLDivElement>(null)
   const [progress, setProgress] = useState(0)
   const [uploadPhase, setUploadPhase] = useState<'uploading' | 'processing'>('uploading')
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -219,6 +221,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     if (!audioObjectUrl) return
     syncVolumeFill()
   }, [audioObjectUrl, audioVolume, syncVolumeFill])
+
+  // Desktop performance fix: track upload zone visibility for sticky CTA
+  useEffect(() => {
+    if (!uploadZoneRef.current) return
+    const observer = new IntersectionObserver(([entry]) => {
+      setUploadZoneVisible(entry.isIntersecting)
+    }, { threshold: 0.1 })
+    observer.observe(uploadZoneRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   const handlePlaybackTime = useCallback(
     (t: number) => {
@@ -1975,19 +1987,37 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     </p>
                   </div>
                 )}
-                <UploadZone
-                  immediateSelect
-                  multiple
-                  onFileSelect={handleFileSelect}
-                  onFilesSelect={handleFilesSelect}
-                  initialFiles={selectedFile ? [selectedFile] : null}
-                  onRemove={() => {
-                    // if (fileFromWorkflow) workflow.clearVideo()
-                    setSelectedFile(null)
-                    setFileFromWorkflow(false)
-                  }}
-                  fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
-                />
+                <div className="rounded-xl border border-violet-200/60 dark:border-violet-800/40 bg-gradient-to-br from-violet-50/40 to-purple-50/20 dark:from-violet-950/30 dark:to-purple-950/20 px-4 py-4 sm:px-6 sm:py-5">
+                  <div className="flex flex-wrap gap-4 sm:gap-6 justify-center sm:justify-start">
+                    <div className="flex flex-col items-start gap-1.5">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Accuracy</p>
+                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">98.5%</p>
+                    </div>
+                    <div className="flex flex-col items-start gap-1.5">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Languages</p>
+                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">90+</p>
+                    </div>
+                    <div className="flex flex-col items-start gap-1.5">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Data Stored</p>
+                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">None</p>
+                    </div>
+                  </div>
+                </div>
+                <div ref={uploadZoneRef}>
+                  <UploadZone
+                    immediateSelect
+                    multiple
+                    onFileSelect={handleFileSelect}
+                    onFilesSelect={handleFilesSelect}
+                    initialFiles={selectedFile ? [selectedFile] : null}
+                    onRemove={() => {
+                      // if (fileFromWorkflow) workflow.clearVideo()
+                      setSelectedFile(null)
+                      setFileFromWorkflow(false)
+                    }}
+                    fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
+                  />
+                </div>
                 <p className="text-xs text-center text-gray-400 dark:text-gray-500">
                   Your files are processed and deleted. Nothing is stored. Ever.
                 </p>
@@ -3474,6 +3504,18 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           />
         )}
       </ToolLayout>
+
+      {/* Sticky upload CTA for desktop when user scrolls past the form (CTR fix) */}
+      {status === 'idle' && !selectedFile && !uploadZoneVisible && !isBatchMode && inputMode === 'file' && (
+        <button
+          onClick={() => uploadZoneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+          className="hidden lg:fixed lg:bottom-6 lg:right-6 lg:flex items-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all z-40"
+          aria-label="Scroll back to upload form"
+        >
+          <Upload className="w-5 h-5" />
+          <span className="font-medium">Upload File</span>
+        </button>
+      )}
 
       <PaywallModal
         isOpen={showPaywall}
