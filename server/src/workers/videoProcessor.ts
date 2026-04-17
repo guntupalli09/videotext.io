@@ -638,7 +638,7 @@ async function computeQueuePressure(
   log: ReturnType<typeof withJobContext>,
   queueTimeoutRate: number
 ): Promise<number> {
-  const counts = await audioQueue.getJobCounts('waiting', 'active', 'delayed')
+  const counts = await audioQueue.getJobCounts()
   const queueDepth = (counts.waiting || 0) + (counts.active || 0) + (counts.delayed || 0)
   const queueCapacity = Math.max(1, parseInt(process.env.YT_AUDIO_QUEUE_CAPACITY || String(AUDIO_CONCURRENCY * 20), 10))
   const maxPermits = Math.max(1, parseInt(process.env.YT_DLP_GLOBAL_MAX_PERMITS || process.env.YT_DLP_MAX_CONCURRENCY || '4', 10))
