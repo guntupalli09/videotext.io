@@ -305,6 +305,37 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 9.5 — Core Tools Grid */}
+      <section className="bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 py-12 transition-colors duration-500">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white mb-2">All VideoText features</h2>
+            <p className="text-gray-600 dark:text-gray-300">Master transcription, subtitles, translation, and more with integrated tools.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { label: 'Video to Transcript', path: '/video-to-transcript' },
+              { label: 'Video to Subtitles', path: '/video-to-subtitles' },
+              { label: 'Translate Subtitles', path: '/translate-subtitles' },
+              { label: 'Fix Subtitles', path: '/fix-subtitles' },
+              { label: 'Burn Subtitles', path: '/burn-subtitles' },
+              { label: 'Compress Video', path: '/compress-video' },
+              { label: 'Batch Process', path: '/batch-process' },
+              { label: 'YouTube Transcripts', path: '/youtube-transcript-generator' },
+            ].map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-transparent to-purple-50/20 dark:to-purple-900/10 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300 dark:hover:border-violet-600 transition-all"
+              >
+                {item.label} →
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 10 — Final CTA */}
       <FinalCTA />
     </div>

@@ -1105,6 +1105,43 @@ export default function Compare() {
           </div>
         </motion.section>
 
+        {/* Explore All Tools Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Explore all VideoText tools</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-8">From transcription to subtitles, compression to batch processing — all in one platform.</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { title: 'Video to Transcript', path: '/video-to-transcript', icon: '📝' },
+                { title: 'Video to Subtitles', path: '/video-to-subtitles', icon: '📺' },
+                { title: 'Translate Subtitles', path: '/translate-subtitles', icon: '🌐' },
+                { title: 'Fix Subtitles', path: '/fix-subtitles', icon: '✨' },
+                { title: 'Burn Subtitles', path: '/burn-subtitles', icon: '🔥' },
+                { title: 'Compress Video', path: '/compress-video', icon: '📦' },
+                { title: 'Batch Process', path: '/batch-process', icon: '⚡' },
+                { title: 'YouTube Transcripts', path: '/youtube-transcript-generator', icon: '▶️' },
+              ].map((tool) => (
+                <Link
+                  key={tool.path}
+                  to={tool.path}
+                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 p-4 border border-purple-200/30 dark:border-purple-500/20 hover:border-purple-400/50 dark:hover:border-purple-400/50 transition-all"
+                >
+                  <div className="flex items-start gap-3 mb-2">
+                    <span className="text-xl">{tool.icon}</span>
+                    <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{tool.title}</h3>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Try now →</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
         {/* Social Proof Section */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
