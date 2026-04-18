@@ -62,20 +62,60 @@ const EXISTING_PATHS = new Set([
   '/castmagic-alternative', '/riverside-alternative',
 ])
 
-/** Generate only the 37 intent pages (traffic generators).
- * Money pages come from manual registry (seoRegistry.ts).
+/** Generate intent pages with proper topical authority linking.
+ * Each page:
+ * - Links to 4-6 SIBLINGS (same cluster)
+ * - Links to HUB page (money page)
+ * - Links to RELATED tools (cross-cluster)
  */
 export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
   const entries: SeoRegistryEntry[] = []
   const seenPaths = new Set<string>(EXISTING_PATHS)
 
+  // Define topical clusters and sibling relationships
+  const clusters = {
+    'podcast|meeting|interview|webinar|lecture|zoom|google-meet|teams|video-interview': {
+      hub: '/video-to-transcript',
+      siblings: [
+        '/podcast-transcription', '/meeting-transcription', '/interview-transcription',
+        '/webinar-transcript', '/lecture-transcription', '/google-meet-transcript',
+        '/teams-meeting-transcript', '/zoom-recording-transcript',
+      ],
+    },
+    'korean|japanese|chinese|german|spanish|french|arabic|portuguese|hindi': {
+      hub: '/translate-subtitles',
+      siblings: [
+        '/korean-transcription', '/japanese-transcription', '/chinese-transcription',
+        '/german-transcription', '/spanish-transcription', '/french-transcription',
+        '/arabic-transcription', '/portuguese-transcription', '/hindi-transcription',
+      ],
+    },
+    'youtube|instagram|tiktok|loom|vimeo|riverside': {
+      hub: '/youtube-transcript-generator',
+      siblings: [
+        '/youtube-transcript', '/instagram-reel-transcript', '/tiktok-transcript',
+        '/loom-transcription', '/vimeo-transcription', '/riverside-transcription',
+      ],
+    },
+  }
+
+  // Helper to find cluster for a slug
+  function findCluster(slug: string) {
+    for (const [pattern, cluster] of Object.entries(clusters)) {
+      if (pattern.split('|').some(p => slug.includes(p))) {
+        return cluster
+      }
+    }
+    return { hub: '/video-to-transcript', siblings: [] }
+  }
+
   for (const target of transcriptionTargets) {
     const slug = targetToSlug(target)
 
-    // Only generate intent pages, not money pages
     if (!INTENT_PAGE_TARGETS.has(slug)) continue
 
     const titleCase = slugToTitle(slug)
+    const cluster = findCluster(slug)
 
     for (const { pattern, toolKey, titleTmpl, descTmpl, h1Tmpl } of INTENT_PATTERNS) {
       const path = pattern(slug)
@@ -84,10 +124,14 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
 
       const intentKey = path.slice(1).replace(/\//g, '-')
 
-      // CTA should point to the relevant money page
-      let ctaPath = '/video-to-transcript' // default
-      if (slug.includes('youtube')) ctaPath = '/youtube-transcript-generator'
-      if (slug.includes('korean') || slug.includes('japanese') || slug.includes('spanish')) ctaPath = '/translate-subtitles'
+      // Build related slugs: hub + siblings + cross-cluster tools
+      const relatedSlugs = [
+        cluster.hub, // Always link back to hub
+        // Link to 3-4 siblings (avoid linking to itself)
+        ...cluster.siblings.filter(s => s !== path).slice(0, 4),
+        // Cross-cluster: link to subtitle/translation tools
+        ...(slug.includes('language') || slug.includes('korean') ? ['/video-to-subtitles', '/translate-subtitles'] : ['/video-to-subtitles']),
+      ].filter((v, i, a) => a.indexOf(v) === i) // dedupe
 
       entries.push({
         path,
@@ -98,7 +142,7 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
         faq: DEFAULT_FAQ,
         breadcrumbLabel: h1Tmpl(titleCase),
         toolKey,
-        relatedSlugs: [ctaPath],  // Link to money page
+        relatedSlugs, // Hub + siblings + cross-cluster links
         indexable: true,
         intentKey,
       })

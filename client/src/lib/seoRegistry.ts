@@ -110,7 +110,16 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Turn any video into text in seconds. Upload a video, get a transcript, then view it in English, Hindi, Telugu, Spanish, Chinese, or Russian. Sign up for free to try.',
     breadcrumbLabel: 'Video to Text',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/youtube-to-transcript', '/video-to-subtitles'],
+    // Hub page: links to all major intent pages + other money pages
+    relatedSlugs: [
+      // Major use-case clusters
+      '/podcast-transcription', '/meeting-transcription', '/interview-transcription',
+      '/youtube-transcript', '/google-meet-transcript', '/webinar-transcript',
+      // Money pages (cross-sell)
+      '/youtube-to-transcript', '/video-to-subtitles', '/translate-subtitles',
+      // Competitor links
+      '/buzz-alternative', '/descript-alternative',
+    ],
     indexable: true,
     intentKey: 'video-to-text',
     faq: [
