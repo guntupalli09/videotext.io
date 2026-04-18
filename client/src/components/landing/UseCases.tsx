@@ -32,7 +32,7 @@ const USE_CASES = [
       'Translate into 70+ languages in one click',
     ],
     cta: 'Try podcast transcription',
-    href: '/podcast-transcript',
+    href: '/podcast-transcription',
     gradient: 'from-purple-600 to-indigo-600',
     bgGlow: 'from-purple-500/10 via-transparent to-transparent dark:from-purple-500/5',
     borderHover: 'hover:border-purple-200 dark:hover:border-purple-500/20',

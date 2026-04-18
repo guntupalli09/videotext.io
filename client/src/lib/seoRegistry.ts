@@ -131,7 +131,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Paste any YouTube URL and get a full transcript in seconds. No download, no file upload. Our worker streams the audio directly and transcribes it with AI. Works with public videos, playlists, shorts, and age-restricted content (with optional cookies). Same features as file upload: speakers, summary, chapters, translate to 6 languages.',
     breadcrumbLabel: 'YouTube to Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/video-to-subtitles', '/transcribe-video', '/meeting-transcript'],
+    relatedSlugs: ['/video-to-subtitles', '/transcribe-video', '/meeting-transcription'],
     indexable: true,
     intentKey: 'youtube-to-transcript',
     defaultInputMode: 'youtube',
@@ -152,7 +152,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Get a transcript from any YouTube video in seconds. Paste the URL — we stream the audio and transcribe it with AI. Download the text, generate SRT subtitles, or translate to 6 languages. No software to install, no file to upload.',
     breadcrumbLabel: 'YouTube Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/youtube-to-transcript', '/video-to-subtitles', '/podcast-transcript', '/subtitle-generator'],
+    relatedSlugs: ['/youtube-to-transcript', '/video-to-subtitles', '/podcast-transcription', '/subtitle-generator'],
     indexable: true,
     intentKey: 'youtube-transcript',
     canonicalGroup: 'youtube-transcript',
@@ -198,7 +198,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Transcribe any YouTube video for free. Paste the URL and get an accurate text transcript in seconds. Sign up for free. No download needed. Use the transcript for subtitles, blog posts, or translation.',
     breadcrumbLabel: 'Transcribe YouTube Video',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/youtube-to-transcript', '/free-transcription', '/podcast-transcript'],
+    relatedSlugs: ['/youtube-to-transcript', '/free-transcription', '/podcast-transcription'],
     indexable: true,
     intentKey: 'transcribe-youtube-video',
     canonicalGroup: 'youtube-transcript',
@@ -313,7 +313,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     ],
   },
   {
-    path: '/meeting-transcript',
+    path: '/meeting-transcription',
     title: 'Meeting Transcript — Turn Meetings into Text | VideoText',
     description:
       'Convert meeting recordings to text. Get a transcript in seconds, then view it in English, Hindi, Telugu, Spanish, Chinese, or Russian. Download or copy. Sign up for free to try.',
@@ -342,7 +342,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Get video transcripts with speaker-style grouping. Transcribe, then open the Speakers branch and optionally view the transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian.',
     breadcrumbLabel: 'Speaker Diarization',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/google-meet-transcript', '/meeting-transcript', '/video-to-subtitles'],
+    relatedSlugs: ['/google-meet-transcript', '/meeting-transcription', '/video-to-subtitles'],
     indexable: true,
     intentKey: 'speaker-diarization',
     faq: [
@@ -775,7 +775,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Transcribe any video to text in seconds. Upload your video file — MP4, MOV, AVI, or WebM — and get an accurate, readable transcript powered by AI. View the transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian. Use Speakers for who-said-what, Summary for key points, and Chapters to jump by section. Sign up for free to try.',
     breadcrumbLabel: 'Transcribe Video',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/youtube-to-transcript', '/video-to-text', '/mp4-to-text', '/meeting-transcript'],
+    relatedSlugs: ['/youtube-to-transcript', '/video-to-text', '/mp4-to-text', '/meeting-transcription'],
     indexable: true,
     intentKey: 'transcribe-video',
     faq: [
@@ -795,7 +795,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Get accurate video transcription online — free. Upload any video and receive a plain-text transcript in seconds. After transcribing, use the Speakers branch for speaker labels, Summary for key points, or Chapters to jump by section. Translate to English, Hindi, Telugu, Spanish, Chinese, or Russian in one click. Sign up for free to try.',
     breadcrumbLabel: 'Video Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/transcribe-video', '/video-to-text', '/meeting-transcript'],
+    relatedSlugs: ['/transcribe-video', '/video-to-text', '/meeting-transcription'],
     indexable: true,
     intentKey: 'video-transcription',
     faq: [
@@ -835,7 +835,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Transcribe video to text online — free. Upload any video file and get a transcript in seconds. Works for meetings, lectures, interviews, podcasts, and more. View in 6 languages and use built-in Speakers, Summary, and Chapters for structured output. No software to install, sign up for free.',
     breadcrumbLabel: 'Online Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/free-transcription', '/transcribe-video', '/meeting-transcript'],
+    relatedSlugs: ['/free-transcription', '/transcribe-video', '/meeting-transcription'],
     indexable: true,
     intentKey: 'online-transcription',
     faq: [
@@ -875,7 +875,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Turn audio into text online — free. Upload a video file containing your audio (MP4, MOV, AVI, or WebM) and get an accurate text transcript in seconds. Our AI extracts the speech and delivers a clean, readable transcript. View in 6 languages and download or copy the result. No signup for the free tier.',
     breadcrumbLabel: 'Audio to Text',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/transcribe-video', '/free-transcription', '/podcast-transcript'],
+    relatedSlugs: ['/transcribe-video', '/free-transcription', '/podcast-transcription'],
     indexable: true,
     intentKey: 'audio-to-text',
     faq: [
@@ -886,7 +886,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     ],
   },
   {
-    path: '/podcast-transcript',
+    path: '/podcast-transcription',
     title: 'Podcast Transcript – Transcribe Episodes Online | VideoText',
     description:
       'Get a transcript for any podcast episode. Upload your episode as an audio or video file and get accurate text in seconds. Free, AI-powered. Speaker labels, show notes, SRT export.',
@@ -1021,7 +1021,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Transcribe interviews to text online — accurately and quickly. Upload your interview video (MP4, MOV, AVI, or WebM) or audio (MP3, WAV, M4A) and get a clean transcript in seconds. Use the Speakers branch to separate interviewer and interviewee, and Translate to share the transcript in 6 languages. Perfect for journalists, researchers, HR teams, and documentary filmmakers. Free tier.',
     breadcrumbLabel: 'Interview Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/speaker-diarization', '/podcast-transcript', '/zoom-meeting-transcript', '/mp3-to-text'],
+    relatedSlugs: ['/speaker-diarization', '/podcast-transcription', '/zoom-meeting-transcript', '/mp3-to-text'],
     indexable: true,
     intentKey: 'interview-transcription',
     faq: [
@@ -1435,7 +1435,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Convert audio to text online. Upload a video file (MP4, MOV, AVI, WebM) and our AI transcribes the audio track to text. Export SRT, TXT, or translate to 6 languages. Free tier.',
     breadcrumbLabel: 'Audio to Text Converter',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/audio-to-text', '/podcast-transcript', '/meeting-transcript'],
+    relatedSlugs: ['/audio-to-text', '/podcast-transcription', '/meeting-transcription'],
     indexable: true,
     intentKey: 'audio-to-text-converter',
     faq: [
@@ -1467,7 +1467,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Transcribe podcast episodes to text in seconds. Upload your episode as MP4, MOV, or WebM. Get speaker labels, key takeaways, and translate to 6 languages. Free tier.',
     breadcrumbLabel: 'Podcast Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/podcast-transcript', '/audio-to-text', '/interview-transcription'],
+    relatedSlugs: ['/podcast-transcription', '/audio-to-text', '/interview-transcription'],
     indexable: true,
     intentKey: 'podcast-transcription',
     faq: [
@@ -1483,7 +1483,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Transcribe webinar recordings to text. Upload your MP4, MOV, or WebM file. Get a full transcript with chapters and keywords. Export SRT, TXT, or translate. Free tier.',
     breadcrumbLabel: 'Webinar Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-transcript', '/lecture-transcription', '/zoom-meeting-transcript'],
+    relatedSlugs: ['/meeting-transcription', '/lecture-transcription', '/zoom-meeting-transcript'],
     indexable: true,
     intentKey: 'webinar-transcription',
     faq: [
@@ -1499,7 +1499,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Transcribe meeting recordings to text. Upload MP4, MOV, or WebM. Get speaker labels, action items, and key points. Export SRT, TXT. Free tier.',
     breadcrumbLabel: 'Meeting Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-transcript', '/zoom-meeting-transcript', '/speaker-diarization'],
+    relatedSlugs: ['/meeting-transcription', '/zoom-meeting-transcript', '/speaker-diarization'],
     indexable: true,
     intentKey: 'meeting-transcription',
     faq: [
@@ -2093,7 +2093,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Turn podcast episodes into reusable assets quickly: searchable transcript text, chapter timestamps, key takeaways, and subtitle exports for clips. Built for weekly publishing cadence.',
     breadcrumbLabel: 'Podcast Transcription Tool',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/podcast-transcript', '/best-podcast-transcription-tool', '/fastest-transcription-tool', '/best-transcription-tool', '/audio-to-text'],
+    relatedSlugs: ['/podcast-transcription', '/best-podcast-transcription-tool', '/fastest-transcription-tool', '/best-transcription-tool', '/audio-to-text'],
     indexable: true,
     intentKey: 'podcast-transcription-tool',
     deepContent: {
@@ -2233,7 +2233,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'VideoText is among the best podcast transcription tools. Upload your episode as MP4 or MOV. Get speaker labels, key takeaways, translate to 6 languages. Free tier.',
     breadcrumbLabel: 'Best Podcast Transcription Tool',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/podcast-transcript', '/podcast-transcription', '/audio-to-text'],
+    relatedSlugs: ['/podcast-transcription', '/podcast-transcription', '/audio-to-text'],
     indexable: true,
     intentKey: 'best-podcast-transcription-tool',
     faq: [
@@ -2352,7 +2352,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Transcribe Loom screen recordings and video messages to text. Download your Loom video as MP4, upload it here, and get a full transcript in seconds. Use the Speakers branch to separate speakers, Summary for key decisions, and Chapters to navigate by topic. Free tier.',
     breadcrumbLabel: 'Loom Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/screen-recording-transcript', '/zoom-meeting-transcript', '/meeting-transcript', '/video-to-transcript'],
+    relatedSlugs: ['/screen-recording-transcript', '/zoom-meeting-transcript', '/meeting-transcription', '/video-to-transcript'],
     indexable: true,
     intentKey: 'loom-transcription',
     faq: [
@@ -2371,7 +2371,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Turn any Google Meet recording into a transcript in minutes — no bot, no manual cleanup. Record in Google Meet, download the meeting file, then upload it here to get searchable text, subtitles, summaries, and export-ready output.',
     breadcrumbLabel: 'Google Meet Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/teams-meeting-transcript', '/zoom-meeting-transcript', '/meeting-transcript', '/notta-alternative'],
+    relatedSlugs: ['/teams-meeting-transcript', '/zoom-meeting-transcript', '/meeting-transcription', '/notta-alternative'],
     indexable: true,
     intentKey: 'google-meet-transcript',
     deepContent: {
@@ -2455,7 +2455,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Transcribe Microsoft Teams recordings to text. Download the meeting recording from Teams or SharePoint, upload the MP4 here, and get a full transcript in seconds. Speaker labels, action item summary, chapter navigation — all available after a single upload. Free tier.',
     breadcrumbLabel: 'Teams Meeting Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/google-meet-transcript', '/zoom-meeting-transcript', '/meeting-transcript', '/speaker-diarization'],
+    relatedSlugs: ['/google-meet-transcript', '/zoom-meeting-transcript', '/meeting-transcription', '/speaker-diarization'],
     indexable: true,
     intentKey: 'teams-meeting-transcript',
     faq: [
@@ -2494,7 +2494,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Transcribe Riverside.fm podcast and interview recordings to text. Export your recording from Riverside, upload the video or audio here, and get a full transcript with speaker labels. Use Summary for show notes and Chapters to index your episode by topic. Free tier.',
     breadcrumbLabel: 'Riverside Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/podcast-transcript', '/loom-transcription', '/interview-transcription', '/video-to-transcript'],
+    relatedSlugs: ['/podcast-transcription', '/loom-transcription', '/interview-transcription', '/video-to-transcript'],
     indexable: true,
     intentKey: 'riverside-transcription',
     faq: [
@@ -2743,7 +2743,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Looking for a Riverside.fm alternative for transcription? VideoText transcribes any podcast or interview recording — from Riverside, Zoom, Squadcast, or any other source. Upload the video or audio file and get speaker-labeled text, summary show notes, and keyword indexing. Free tier.',
     breadcrumbLabel: 'Riverside.fm Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/podcast-transcript', '/interview-transcription', '/fireflies-alternative', '/descript-alternative'],
+    relatedSlugs: ['/podcast-transcription', '/interview-transcription', '/fireflies-alternative', '/descript-alternative'],
     indexable: true,
     intentKey: 'riverside-alternative',
     faq: [
@@ -2869,7 +2869,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Looking for a Castmagic alternative? VideoText transcribes podcast episodes, generates show notes via Summary, and exports speaker-labeled transcripts — without the full AI content generation suite. Simpler tool, simpler pricing. Free tier.',
     breadcrumbLabel: 'Castmagic Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/podcast-transcript', '/interview-transcription', '/riverside-alternative', '/descript-alternative'],
+    relatedSlugs: ['/podcast-transcription', '/interview-transcription', '/riverside-alternative', '/descript-alternative'],
     indexable: true,
     intentKey: 'castmagic-alternative',
     faq: [
@@ -2889,7 +2889,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Convert MP3 audio files to text in seconds. Upload your MP3 — podcast episode, interview, lecture, voice memo, or music with lyrics — and get a full AI-powered transcript. Export as plain text, SRT subtitle file, or VTT. Powered by Whisper. Free tier, no credit card.',
     breadcrumbLabel: 'MP3 to Text',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/audio-to-text', '/wav-to-text', '/podcast-transcript', '/video-to-transcript'],
+    relatedSlugs: ['/audio-to-text', '/wav-to-text', '/podcast-transcription', '/video-to-transcript'],
     indexable: true,
     intentKey: 'mp3-to-text',
     faq: [
@@ -3405,7 +3405,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Zoom's built-in AI Companion transcription is locked to Business/Enterprise plans and keeps your recordings in Zoom's cloud. VideoText is a drop-in replacement: download your Zoom MP4, upload it here, and get a speaker-labeled transcript in minutes — no Zoom account, no cloud lock-in. Files deleted after processing. Free tier.",
     breadcrumbLabel: 'Zoom Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/zoom-meeting-transcript', '/microsoft-teams-alternative', '/webex-alternative', '/meeting-transcript'],
+    relatedSlugs: ['/zoom-meeting-transcript', '/microsoft-teams-alternative', '/webex-alternative', '/meeting-transcription'],
     indexable: true,
     intentKey: 'zoom-alternative',
     faq: [
@@ -3426,7 +3426,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Microsoft Teams' AI transcription and meeting notes require Microsoft 365 Copilot — an add-on that costs $30/user/month on top of your existing 365 plan. VideoText transcribes any Teams recording without Copilot: download the meeting MP4, upload it here, and get speaker-labeled text in minutes. Free tier, no Microsoft account needed.",
     breadcrumbLabel: 'Microsoft Teams Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/zoom-alternative', '/webex-alternative', '/meeting-transcript', '/teams-meeting-transcript'],
+    relatedSlugs: ['/zoom-alternative', '/webex-alternative', '/meeting-transcription', '/teams-meeting-transcript'],
     indexable: true,
     intentKey: 'microsoft-teams-alternative',
     faq: [
@@ -3485,7 +3485,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Cisco WebEx transcription is bundled into enterprise plans and stores recordings in the WebEx cloud. VideoText is a simpler alternative: download your WebEx meeting recording as MP4, upload it here, and get a full speaker-labeled transcript with summary and keyword search. No WebEx account, no enterprise plan required. Files deleted after processing. Free tier.",
     breadcrumbLabel: 'WebEx Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/webex-transcription', '/zoom-alternative', '/microsoft-teams-alternative', '/meeting-transcript'],
+    relatedSlugs: ['/webex-transcription', '/zoom-alternative', '/microsoft-teams-alternative', '/meeting-transcription'],
     indexable: true,
     intentKey: 'webex-alternative',
     faq: [
@@ -3504,7 +3504,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Transcribe Cisco WebEx meeting recordings to searchable text. Download your WebEx meeting as MP4, upload it to VideoText, and get a full transcript with speaker labels, action item summary, and keyword index — no WebEx enterprise plan required. Free tier.',
     breadcrumbLabel: 'WebEx Transcription',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/webex-alternative', '/zoom-meeting-transcript', '/meeting-transcript', '/teams-meeting-transcript'],
+    relatedSlugs: ['/webex-alternative', '/zoom-meeting-transcript', '/meeting-transcription', '/teams-meeting-transcript'],
     indexable: true,
     intentKey: 'webex-transcription',
     faq: [
@@ -3544,7 +3544,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Tactiq is a browser extension that transcribes live Google Meet, Zoom, and Teams calls in real time. It requires you to be present during the call — you cannot go back and transcribe a recording you forgot to capture live. VideoText works the other way: upload any past recording (MP4, MP3, etc.) and get a full transcript with speakers, summary, and chapters. No browser extension, no live call required. Free tier.",
     breadcrumbLabel: 'Tactiq Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/notta-alternative', '/otter-alternative', '/zoom-meeting-transcript', '/meeting-transcript'],
+    relatedSlugs: ['/notta-alternative', '/otter-alternative', '/zoom-meeting-transcript', '/meeting-transcription'],
     indexable: true,
     intentKey: 'tactiq-alternative',
     faq: [
@@ -3563,7 +3563,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Krisp is primarily a noise-cancellation app that added live meeting transcription. It runs as a background audio driver on your computer and processes audio in real time. VideoText is the simpler alternative for transcribing recorded meetings: upload the MP4 or audio file, get a full speaker-labeled transcript in minutes. No software to install, no microphone access required. Files deleted after processing. Free tier.",
     breadcrumbLabel: 'Krisp Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/notta-alternative', '/granola-alternative', '/meeting-transcript', '/zoom-meeting-transcript'],
+    relatedSlugs: ['/notta-alternative', '/granola-alternative', '/meeting-transcription', '/zoom-meeting-transcript'],
     indexable: true,
     intentKey: 'krisp-alternative',
     faq: [
@@ -3582,7 +3582,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Granola is a Mac-only AI meeting notes app that listens to your computer's system audio in real time. It only works on Mac, only during live meetings, and requires you to keep it running in the background. VideoText works differently: upload any recording file from any device, and get a full speaker-labeled transcript with summary. Browser-based, no download, works on Mac, Windows, and Linux. Free tier.",
     breadcrumbLabel: 'Granola Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/krisp-alternative', '/notta-alternative', '/meeting-transcript', '/macwhisper-alternative'],
+    relatedSlugs: ['/krisp-alternative', '/notta-alternative', '/meeting-transcription', '/macwhisper-alternative'],
     indexable: true,
     intentKey: 'granola-alternative',
     faq: [
@@ -3601,7 +3601,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Hedy AI is a live meeting AI assistant that provides real-time coaching, feedback, and transcription during calls. VideoText handles the other side: upload any recorded meeting file and get a complete, speaker-labeled transcript with summary and keyword search. No live meeting integration required. Free tier.",
     breadcrumbLabel: 'Hedy AI Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/granola-alternative', '/notta-alternative', '/meeting-transcript', '/speaker-diarization'],
+    relatedSlugs: ['/granola-alternative', '/notta-alternative', '/meeting-transcription', '/speaker-diarization'],
     indexable: true,
     intentKey: 'hedy-ai-alternative',
     faq: [
@@ -3622,7 +3622,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Mem AI is an AI-powered knowledge base that integrates with meetings and notes. VideoText focuses specifically on transcription: upload any video or audio recording and get a full, speaker-labeled transcript in minutes. Export to TXT for pasting into Mem or any other note-taking tool. Free tier.",
     breadcrumbLabel: 'Mem AI Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/notta-alternative', '/granola-alternative', '/meeting-transcript', '/video-summary-generator'],
+    relatedSlugs: ['/notta-alternative', '/granola-alternative', '/meeting-transcription', '/video-summary-generator'],
     indexable: true,
     intentKey: 'mem-ai-alternative',
     faq: [
@@ -3662,7 +3662,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Glean is an enterprise-grade AI search and knowledge platform that connects to your organization's tools including meetings. It requires IT setup and enterprise pricing. VideoText provides the transcription piece directly: upload any meeting recording and get speaker-labeled text, summary, and keyword search — no enterprise deployment, no IT involvement. Free tier.",
     breadcrumbLabel: 'Glean Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/meeting-transcript', '/notta-alternative', '/video-summary-generator', '/keyword-indexed-transcript'],
+    relatedSlugs: ['/meeting-transcription', '/notta-alternative', '/video-summary-generator', '/keyword-indexed-transcript'],
     indexable: true,
     intentKey: 'glean-alternative',
     faq: [
@@ -4046,7 +4046,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Looking for a Scribe alternative? VideoText transcribes meetings, interviews, and recordings with Whisper large-v3 accuracy. Get speaker-labeled text, summary, chapters, and SRT export. Free tier, files deleted after processing.',
     breadcrumbLabel: 'Scribe Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/video-to-transcript', '/interview-transcription', '/meeting-transcript', '/turboscribe-alternative'],
+    relatedSlugs: ['/video-to-transcript', '/interview-transcription', '/meeting-transcription', '/turboscribe-alternative'],
     indexable: true,
     intentKey: 'scribe-alternative',
     faq: [
@@ -4067,7 +4067,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Spreaker provides podcast hosting with basic auto-transcription. If you need more — speaker-separated show notes, keyword-indexed transcripts, SRT caption files for your video podcast, or translations — VideoText covers it. Export your podcast episode as MP3 or MP4, upload it here, and get a complete transcript. Free tier.",
     breadcrumbLabel: 'Spreaker Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/podcast-transcript', '/podcast-transcription', '/speaker-diarization', '/audio-to-text'],
+    relatedSlugs: ['/podcast-transcription', '/podcast-transcription', '/speaker-diarization', '/audio-to-text'],
     indexable: true,
     intentKey: 'spreaker-alternative',
     faq: [
@@ -4088,7 +4088,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Headliner (now Eddy) is a podcast audiogram and marketing tool that includes basic transcription. VideoText focuses on the transcription workflow: upload your episode, get a full speaker-labeled transcript, auto-generated show notes (via Summary), and SRT captions for your video podcast. No video template required. Free tier.",
     breadcrumbLabel: 'Headliner Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/podcast-transcript', '/podcast-transcription', '/spreaker-alternative', '/speaker-diarization'],
+    relatedSlugs: ['/podcast-transcription', '/podcast-transcription', '/spreaker-alternative', '/speaker-diarization'],
     indexable: true,
     intentKey: 'headliner-alternative',
     faq: [
@@ -4581,7 +4581,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Looking for a MeetGeek alternative? MeetGeek uses a meeting bot that joins your live calls. VideoText transcribes recorded meeting files — upload any Zoom, Teams, or Google Meet MP4 export and get a full transcript with speaker labels, AI-generated action items, and SRT/VTT subtitle files. No bot, no calendar integration required.',
     breadcrumbLabel: 'MeetGeek Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/zoom-meeting-transcript', '/meeting-transcript', '/google-meet-transcript', '/fireflies-alternative'],
+    relatedSlugs: ['/zoom-meeting-transcript', '/meeting-transcription', '/google-meet-transcript', '/fireflies-alternative'],
     indexable: true,
     intentKey: 'meetgeek-alternative',
     faq: [

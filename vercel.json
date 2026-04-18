@@ -1308,6 +1308,166 @@
       "status": 301
     },
     {
+      "src": "/youtube-video-transcript",
+      "dest": "/youtube-video-transcription",
+      "status": 301
+    },
+    {
+      "src": "/podcast-transcript",
+      "dest": "/podcast-transcription",
+      "status": 301
+    },
+    {
+      "src": "/interview-transcript",
+      "dest": "/interview-transcription",
+      "status": 301
+    },
+    {
+      "src": "/meeting-transcript",
+      "dest": "/meeting-transcription",
+      "status": 301
+    },
+    {
+      "src": "/webinar-transcription",
+      "dest": "/webinar-transcript",
+      "status": 301
+    },
+    {
+      "src": "/lecture-transcript",
+      "dest": "/lecture-transcription",
+      "status": 301
+    },
+    {
+      "src": "/zoom-recording-transcript",
+      "dest": "/zoom-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/mp4-video-transcript",
+      "dest": "/mp4-video-transcription",
+      "status": 301
+    },
+    {
+      "src": "/audio-recording-transcript",
+      "dest": "/audio-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/online-course-transcript",
+      "dest": "/online-course-transcription",
+      "status": 301
+    },
+    {
+      "src": "/training-video-transcript",
+      "dest": "/training-video-transcription",
+      "status": 301
+    },
+    {
+      "src": "/presentation-transcript",
+      "dest": "/presentation-transcription",
+      "status": 301
+    },
+    {
+      "src": "/documentary-transcript",
+      "dest": "/documentary-transcription",
+      "status": 301
+    },
+    {
+      "src": "/video-podcast-transcript",
+      "dest": "/video-podcast-transcription",
+      "status": 301
+    },
+    {
+      "src": "/conference-talk-transcript",
+      "dest": "/conference-talk-transcription",
+      "status": 301
+    },
+    {
+      "src": "/speech-transcript",
+      "dest": "/speech-transcription",
+      "status": 301
+    },
+    {
+      "src": "/video-interview-transcript",
+      "dest": "/video-interview-transcription",
+      "status": 301
+    },
+    {
+      "src": "/product-demo-transcript",
+      "dest": "/product-demo-transcription",
+      "status": 301
+    },
+    {
+      "src": "/tutorial-video-transcript",
+      "dest": "/tutorial-video-transcription",
+      "status": 301
+    },
+    {
+      "src": "/marketing-video-transcript",
+      "dest": "/marketing-video-transcription",
+      "status": 301
+    },
+    {
+      "src": "/press-conference-transcription",
+      "dest": "/press-conference-transcript",
+      "status": 301
+    },
+    {
+      "src": "/class-recording-transcript",
+      "dest": "/class-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/research-interview-transcription",
+      "dest": "/research-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/news-interview-transcription",
+      "dest": "/news-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/field-recording-transcript",
+      "dest": "/field-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/dissertation-interview-transcript",
+      "dest": "/dissertation-interview-transcription",
+      "status": 301
+    },
+    {
+      "src": "/focus-group-recording-transcript",
+      "dest": "/focus-group-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/voice-recording-transcript",
+      "dest": "/voice-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/voice-memo-transcript",
+      "dest": "/voice-memo-transcription",
+      "status": 301
+    },
+    {
+      "src": "/voice-note-transcript",
+      "dest": "/voice-note-transcription",
+      "status": 301
+    },
+    {
+      "src": "/dictation-transcription",
+      "dest": "/dictation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-message-transcript",
+      "dest": "/voice-message-transcription",
+      "status": 301
+    },
+    {
       "handle": "filesystem"
     },
     {
