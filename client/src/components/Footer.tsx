@@ -52,20 +52,18 @@ export default function Footer() {
               />
             </a>
 
-            {/* SubmitAITools Badge */}
+            {/* Fazier Badge */}
             <a
-              href="https://submitaitools.org"
+              href="https://fazier.com"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex mt-3"
-              aria-label="Submit AI Tools"
+              aria-label="Fazier badge"
             >
               <img
-                src="https://submitaitools.org/static_submitaitools/images/submitaitools.png"
-                alt="Submit AI Tools"
-                className="rounded-[10px]"
-                width={200}
-                height={60}
+                src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light"
+                alt="Fazier badge"
+                width={120}
               />
             </a>
           </div>
