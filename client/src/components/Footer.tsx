@@ -66,6 +66,22 @@ export default function Footer() {
                 width={120}
               />
             </a>
+
+            {/* StartupHub.ai Badge */}
+            <a
+              href="https://www.startuphub.ai/startups/videotext"
+              target="_blank"
+              rel="dofollow"
+              className="inline-flex mt-3"
+              aria-label="Featured on StartupHub.ai"
+            >
+              <img
+                src="https://www.startuphub.ai/api/badge/e603447c-ae34-4126-93b9-46056d79719b?skin=classic&theme=dark"
+                alt="Featured on StartupHub.ai"
+                width={180}
+                height={50}
+              />
+            </a>
           </div>
 
           {/* Links */}
