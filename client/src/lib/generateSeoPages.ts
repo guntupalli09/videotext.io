@@ -6,6 +6,11 @@ import type { SeoRegistryEntry, FaqItem } from './seoRegistry'
 import { transcriptionTargets, targetToSlug, slugToTitle } from '../data/seoPages'
 
 /** Path patterns: (slug) => path. Slug is e.g. "youtube-video", "podcast". */
+/** Only keep 2 patterns per target to eliminate duplicate orphan pages.
+ * Removed patterns: transcribe-${s}, ${s}-to-text, generate-${s}-transcript, ${s}-subtitles,
+ * ${s}-to-transcript, convert-${s}-to-text, ${s}-to-transcription, transcript-from-${s}
+ * This reduces ~340 pages to ~68 pages and reclaims crawl budget.
+ */
 const INTENT_PATTERNS: Array<{
   pattern: (slug: string) => string
   toolKey: 'video-to-transcript' | 'video-to-subtitles'
@@ -14,55 +19,6 @@ const INTENT_PATTERNS: Array<{
   h1Tmpl: (target: string) => string
 }> = [
   {
-    pattern: (s) => `/transcribe-${s}`,
-    toolKey: 'video-to-transcript',
-    titleTmpl: (t) => `Transcribe ${t} to Text | VideoText`,
-    descTmpl: (t) => `Transcribe ${t} to text online. Upload your file or paste a URL. Get accurate transcripts. Export SRT, TXT. Free tier.`,
-    h1Tmpl: (t) => `Transcribe ${t} to Text`,
-  },
-  {
-    pattern: (s) => `/${s}-to-text`,
-    toolKey: 'video-to-transcript',
-    titleTmpl: (t) => `${t} to Text – Convert Online | VideoText`,
-    descTmpl: (t) => `Convert ${t} to text. Upload or paste URL. AI transcription. Export SRT, TXT. Free.`,
-    h1Tmpl: (t) => `${t} to Text`,
-  },
-  {
-    pattern: (s) => `/${s}-transcription`,
-    toolKey: 'video-to-transcript',
-    titleTmpl: (t) => `${t} Transcription – Online | VideoText`,
-    descTmpl: (t) => `Transcribe ${t} to text. Upload file. Get transcripts with speaker labels. Export SRT, TXT. Free tier.`,
-    h1Tmpl: (t) => `${t} Transcription`,
-  },
-  {
-    pattern: (s) => `/generate-${s}-transcript`,
-    toolKey: 'video-to-transcript',
-    titleTmpl: (t) => `Generate ${t} Transcript | VideoText`,
-    descTmpl: (t) => `Generate transcript from ${t}. Upload or paste URL. AI-powered. Export SRT, TXT, DOCX. Free.`,
-    h1Tmpl: (t) => `Generate ${t} Transcript`,
-  },
-  {
-    pattern: (s) => `/${s}-subtitles`,
-    toolKey: 'video-to-subtitles',
-    titleTmpl: (t) => `${t} Subtitles – Generate SRT | VideoText`,
-    descTmpl: (t) => `Generate subtitles from ${t}. Upload file. Get SRT/VTT. Export for YouTube, Vimeo. Free.`,
-    h1Tmpl: (t) => `${t} Subtitles`,
-  },
-  {
-    pattern: (s) => `/${s}-to-transcript`,
-    toolKey: 'video-to-transcript',
-    titleTmpl: (t) => `${t} to Transcript – Online | VideoText`,
-    descTmpl: (t) => `Convert ${t} to transcript. Upload or paste URL. AI transcription. Export SRT, TXT. Free.`,
-    h1Tmpl: (t) => `${t} to Transcript`,
-  },
-  {
-    pattern: (s) => `/convert-${s}-to-text`,
-    toolKey: 'video-to-transcript',
-    titleTmpl: (t) => `Convert ${t} to Text | VideoText`,
-    descTmpl: (t) => `Convert ${t} to text online. Upload file. Get transcript. Export SRT, TXT. Free tier.`,
-    h1Tmpl: (t) => `Convert ${t} to Text`,
-  },
-  {
     pattern: (s) => `/${s}-transcript`,
     toolKey: 'video-to-transcript',
     titleTmpl: (t) => `${t} Transcript – Get Text Online | VideoText`,
@@ -70,18 +26,11 @@ const INTENT_PATTERNS: Array<{
     h1Tmpl: (t) => `${t} Transcript`,
   },
   {
-    pattern: (s) => `/${s}-to-transcription`,
+    pattern: (s) => `/${s}-transcription`,
     toolKey: 'video-to-transcript',
-    titleTmpl: (t) => `${t} to Transcription | VideoText`,
-    descTmpl: (t) => `Transcribe ${t} to text. Upload file. Get accurate transcript. Export SRT, TXT. Free.`,
-    h1Tmpl: (t) => `${t} to Transcription`,
-  },
-  {
-    pattern: (s) => `/transcript-from-${s}`,
-    toolKey: 'video-to-transcript',
-    titleTmpl: (t) => `Transcript from ${t} | VideoText`,
-    descTmpl: (t) => `Get transcript from ${t}. Upload or paste URL. AI transcription. Export SRT, TXT, DOCX. Free.`,
-    h1Tmpl: (t) => `Transcript from ${t}`,
+    titleTmpl: (t) => `${t} Transcription – Online | VideoText`,
+    descTmpl: (t) => `Transcribe ${t} to text. Upload file. Get transcripts with speaker labels. Export SRT, TXT. Free tier.`,
+    h1Tmpl: (t) => `${t} Transcription`,
   },
 ]
 

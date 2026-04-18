@@ -5,19 +5,1314 @@
     {
       "source": "/index.html",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     },
     {
       "source": "/:path*/index.html",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     }
   ],
   "routes": [
-    { "src": "/otter-alternative", "dest": "/otter-ai-alternative", "status": 301 },
-    { "handle": "filesystem" },
-    { "src": "/((?!.*\\.).*)", "dest": "/index.html" }
+    {
+      "src": "/otter-alternative",
+      "dest": "/otter-ai-alternative",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-youtube-video",
+      "dest": "/youtube-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-video-to-text",
+      "dest": "/youtube-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-youtube-video-transcript",
+      "dest": "/youtube-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-video-subtitles",
+      "dest": "/youtube-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-video-to-transcript",
+      "dest": "/youtube-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-youtube-video-to-text",
+      "dest": "/youtube-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-video-to-transcription",
+      "dest": "/youtube-video-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-youtube-video",
+      "dest": "/youtube-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-podcast",
+      "dest": "/podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/podcast-to-text",
+      "dest": "/podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-podcast-transcript",
+      "dest": "/podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/podcast-subtitles",
+      "dest": "/podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/podcast-to-transcript",
+      "dest": "/podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-podcast-to-text",
+      "dest": "/podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/podcast-to-transcription",
+      "dest": "/podcast-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-podcast",
+      "dest": "/podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-interview",
+      "dest": "/interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/interview-to-text",
+      "dest": "/interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-interview-transcript",
+      "dest": "/interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/interview-subtitles",
+      "dest": "/interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/interview-to-transcript",
+      "dest": "/interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-interview-to-text",
+      "dest": "/interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/interview-to-transcription",
+      "dest": "/interview-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-interview",
+      "dest": "/interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-meeting",
+      "dest": "/meeting-transcript",
+      "status": 301
+    },
+    {
+      "src": "/meeting-to-text",
+      "dest": "/meeting-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-meeting-transcript",
+      "dest": "/meeting-transcript",
+      "status": 301
+    },
+    {
+      "src": "/meeting-subtitles",
+      "dest": "/meeting-transcript",
+      "status": 301
+    },
+    {
+      "src": "/meeting-to-transcript",
+      "dest": "/meeting-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-meeting-to-text",
+      "dest": "/meeting-transcript",
+      "status": 301
+    },
+    {
+      "src": "/meeting-to-transcription",
+      "dest": "/meeting-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-meeting",
+      "dest": "/meeting-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-webinar",
+      "dest": "/webinar-transcript",
+      "status": 301
+    },
+    {
+      "src": "/webinar-to-text",
+      "dest": "/webinar-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-webinar-transcript",
+      "dest": "/webinar-transcript",
+      "status": 301
+    },
+    {
+      "src": "/webinar-subtitles",
+      "dest": "/webinar-transcript",
+      "status": 301
+    },
+    {
+      "src": "/webinar-to-transcript",
+      "dest": "/webinar-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-webinar-to-text",
+      "dest": "/webinar-transcript",
+      "status": 301
+    },
+    {
+      "src": "/webinar-to-transcription",
+      "dest": "/webinar-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-webinar",
+      "dest": "/webinar-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-lecture",
+      "dest": "/lecture-transcript",
+      "status": 301
+    },
+    {
+      "src": "/lecture-to-text",
+      "dest": "/lecture-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-lecture-transcript",
+      "dest": "/lecture-transcript",
+      "status": 301
+    },
+    {
+      "src": "/lecture-subtitles",
+      "dest": "/lecture-transcript",
+      "status": 301
+    },
+    {
+      "src": "/lecture-to-transcript",
+      "dest": "/lecture-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-lecture-to-text",
+      "dest": "/lecture-transcript",
+      "status": 301
+    },
+    {
+      "src": "/lecture-to-transcription",
+      "dest": "/lecture-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-lecture",
+      "dest": "/lecture-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-zoom-recording",
+      "dest": "/zoom-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/zoom-recording-to-text",
+      "dest": "/zoom-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-zoom-recording-transcript",
+      "dest": "/zoom-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/zoom-recording-subtitles",
+      "dest": "/zoom-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/zoom-recording-to-transcript",
+      "dest": "/zoom-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-zoom-recording-to-text",
+      "dest": "/zoom-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/zoom-recording-to-transcription",
+      "dest": "/zoom-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-zoom-recording",
+      "dest": "/zoom-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-mp4-video",
+      "dest": "/mp4-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/mp4-video-to-text",
+      "dest": "/mp4-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-mp4-video-transcript",
+      "dest": "/mp4-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/mp4-video-subtitles",
+      "dest": "/mp4-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/mp4-video-to-transcript",
+      "dest": "/mp4-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-mp4-video-to-text",
+      "dest": "/mp4-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/mp4-video-to-transcription",
+      "dest": "/mp4-video-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-mp4-video",
+      "dest": "/mp4-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-audio-recording",
+      "dest": "/audio-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/audio-recording-to-text",
+      "dest": "/audio-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-audio-recording-transcript",
+      "dest": "/audio-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/audio-recording-subtitles",
+      "dest": "/audio-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/audio-recording-to-transcript",
+      "dest": "/audio-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-audio-recording-to-text",
+      "dest": "/audio-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/audio-recording-to-transcription",
+      "dest": "/audio-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-audio-recording",
+      "dest": "/audio-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-online-course",
+      "dest": "/online-course-transcript",
+      "status": 301
+    },
+    {
+      "src": "/online-course-to-text",
+      "dest": "/online-course-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-online-course-transcript",
+      "dest": "/online-course-transcript",
+      "status": 301
+    },
+    {
+      "src": "/online-course-subtitles",
+      "dest": "/online-course-transcript",
+      "status": 301
+    },
+    {
+      "src": "/online-course-to-transcript",
+      "dest": "/online-course-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-online-course-to-text",
+      "dest": "/online-course-transcript",
+      "status": 301
+    },
+    {
+      "src": "/online-course-to-transcription",
+      "dest": "/online-course-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-online-course",
+      "dest": "/online-course-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-training-video",
+      "dest": "/training-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/training-video-to-text",
+      "dest": "/training-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-training-video-transcript",
+      "dest": "/training-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/training-video-subtitles",
+      "dest": "/training-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/training-video-to-transcript",
+      "dest": "/training-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-training-video-to-text",
+      "dest": "/training-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/training-video-to-transcription",
+      "dest": "/training-video-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-training-video",
+      "dest": "/training-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-presentation",
+      "dest": "/presentation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/presentation-to-text",
+      "dest": "/presentation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-presentation-transcript",
+      "dest": "/presentation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/presentation-subtitles",
+      "dest": "/presentation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/presentation-to-transcript",
+      "dest": "/presentation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-presentation-to-text",
+      "dest": "/presentation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/presentation-to-transcription",
+      "dest": "/presentation-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-presentation",
+      "dest": "/presentation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-documentary",
+      "dest": "/documentary-transcript",
+      "status": 301
+    },
+    {
+      "src": "/documentary-to-text",
+      "dest": "/documentary-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-documentary-transcript",
+      "dest": "/documentary-transcript",
+      "status": 301
+    },
+    {
+      "src": "/documentary-subtitles",
+      "dest": "/documentary-transcript",
+      "status": 301
+    },
+    {
+      "src": "/documentary-to-transcript",
+      "dest": "/documentary-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-documentary-to-text",
+      "dest": "/documentary-transcript",
+      "status": 301
+    },
+    {
+      "src": "/documentary-to-transcription",
+      "dest": "/documentary-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-documentary",
+      "dest": "/documentary-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-video-podcast",
+      "dest": "/video-podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/video-podcast-to-text",
+      "dest": "/video-podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-video-podcast-transcript",
+      "dest": "/video-podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/video-podcast-subtitles",
+      "dest": "/video-podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/video-podcast-to-transcript",
+      "dest": "/video-podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-video-podcast-to-text",
+      "dest": "/video-podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/video-podcast-to-transcription",
+      "dest": "/video-podcast-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-video-podcast",
+      "dest": "/video-podcast-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-conference-talk",
+      "dest": "/conference-talk-transcript",
+      "status": 301
+    },
+    {
+      "src": "/conference-talk-to-text",
+      "dest": "/conference-talk-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-conference-talk-transcript",
+      "dest": "/conference-talk-transcript",
+      "status": 301
+    },
+    {
+      "src": "/conference-talk-subtitles",
+      "dest": "/conference-talk-transcript",
+      "status": 301
+    },
+    {
+      "src": "/conference-talk-to-transcript",
+      "dest": "/conference-talk-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-conference-talk-to-text",
+      "dest": "/conference-talk-transcript",
+      "status": 301
+    },
+    {
+      "src": "/conference-talk-to-transcription",
+      "dest": "/conference-talk-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-conference-talk",
+      "dest": "/conference-talk-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-speech",
+      "dest": "/speech-transcript",
+      "status": 301
+    },
+    {
+      "src": "/speech-to-text",
+      "dest": "/speech-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-speech-transcript",
+      "dest": "/speech-transcript",
+      "status": 301
+    },
+    {
+      "src": "/speech-subtitles",
+      "dest": "/speech-transcript",
+      "status": 301
+    },
+    {
+      "src": "/speech-to-transcript",
+      "dest": "/speech-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-speech-to-text",
+      "dest": "/speech-transcript",
+      "status": 301
+    },
+    {
+      "src": "/speech-to-transcription",
+      "dest": "/speech-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-speech",
+      "dest": "/speech-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-video-interview",
+      "dest": "/video-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/video-interview-to-text",
+      "dest": "/video-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-video-interview-transcript",
+      "dest": "/video-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/video-interview-subtitles",
+      "dest": "/video-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/video-interview-to-transcript",
+      "dest": "/video-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-video-interview-to-text",
+      "dest": "/video-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/video-interview-to-transcription",
+      "dest": "/video-interview-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-video-interview",
+      "dest": "/video-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-product-demo",
+      "dest": "/product-demo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/product-demo-to-text",
+      "dest": "/product-demo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-product-demo-transcript",
+      "dest": "/product-demo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/product-demo-subtitles",
+      "dest": "/product-demo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/product-demo-to-transcript",
+      "dest": "/product-demo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-product-demo-to-text",
+      "dest": "/product-demo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/product-demo-to-transcription",
+      "dest": "/product-demo-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-product-demo",
+      "dest": "/product-demo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-tutorial-video",
+      "dest": "/tutorial-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/tutorial-video-to-text",
+      "dest": "/tutorial-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-tutorial-video-transcript",
+      "dest": "/tutorial-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/tutorial-video-subtitles",
+      "dest": "/tutorial-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/tutorial-video-to-transcript",
+      "dest": "/tutorial-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-tutorial-video-to-text",
+      "dest": "/tutorial-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/tutorial-video-to-transcription",
+      "dest": "/tutorial-video-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-tutorial-video",
+      "dest": "/tutorial-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-marketing-video",
+      "dest": "/marketing-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/marketing-video-to-text",
+      "dest": "/marketing-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-marketing-video-transcript",
+      "dest": "/marketing-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/marketing-video-subtitles",
+      "dest": "/marketing-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/marketing-video-to-transcript",
+      "dest": "/marketing-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-marketing-video-to-text",
+      "dest": "/marketing-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/marketing-video-to-transcription",
+      "dest": "/marketing-video-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-marketing-video",
+      "dest": "/marketing-video-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-press-conference",
+      "dest": "/press-conference-transcript",
+      "status": 301
+    },
+    {
+      "src": "/press-conference-to-text",
+      "dest": "/press-conference-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-press-conference-transcript",
+      "dest": "/press-conference-transcript",
+      "status": 301
+    },
+    {
+      "src": "/press-conference-subtitles",
+      "dest": "/press-conference-transcript",
+      "status": 301
+    },
+    {
+      "src": "/press-conference-to-transcript",
+      "dest": "/press-conference-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-press-conference-to-text",
+      "dest": "/press-conference-transcript",
+      "status": 301
+    },
+    {
+      "src": "/press-conference-to-transcription",
+      "dest": "/press-conference-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-press-conference",
+      "dest": "/press-conference-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-class-recording",
+      "dest": "/class-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/class-recording-to-text",
+      "dest": "/class-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-class-recording-transcript",
+      "dest": "/class-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/class-recording-subtitles",
+      "dest": "/class-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/class-recording-to-transcript",
+      "dest": "/class-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-class-recording-to-text",
+      "dest": "/class-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/class-recording-to-transcription",
+      "dest": "/class-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-class-recording",
+      "dest": "/class-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-research-interview",
+      "dest": "/research-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/research-interview-to-text",
+      "dest": "/research-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-research-interview-transcript",
+      "dest": "/research-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/research-interview-subtitles",
+      "dest": "/research-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/research-interview-to-transcript",
+      "dest": "/research-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-research-interview-to-text",
+      "dest": "/research-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/research-interview-to-transcription",
+      "dest": "/research-interview-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-research-interview",
+      "dest": "/research-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-news-interview",
+      "dest": "/news-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/news-interview-to-text",
+      "dest": "/news-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-news-interview-transcript",
+      "dest": "/news-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/news-interview-subtitles",
+      "dest": "/news-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/news-interview-to-transcript",
+      "dest": "/news-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-news-interview-to-text",
+      "dest": "/news-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/news-interview-to-transcription",
+      "dest": "/news-interview-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-news-interview",
+      "dest": "/news-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-field-recording",
+      "dest": "/field-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/field-recording-to-text",
+      "dest": "/field-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-field-recording-transcript",
+      "dest": "/field-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/field-recording-subtitles",
+      "dest": "/field-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/field-recording-to-transcript",
+      "dest": "/field-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-field-recording-to-text",
+      "dest": "/field-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/field-recording-to-transcription",
+      "dest": "/field-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-field-recording",
+      "dest": "/field-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-dissertation-interview",
+      "dest": "/dissertation-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/dissertation-interview-to-text",
+      "dest": "/dissertation-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-dissertation-interview-transcript",
+      "dest": "/dissertation-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/dissertation-interview-subtitles",
+      "dest": "/dissertation-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/dissertation-interview-to-transcript",
+      "dest": "/dissertation-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-dissertation-interview-to-text",
+      "dest": "/dissertation-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/dissertation-interview-to-transcription",
+      "dest": "/dissertation-interview-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-dissertation-interview",
+      "dest": "/dissertation-interview-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-focus-group-recording",
+      "dest": "/focus-group-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/focus-group-recording-to-text",
+      "dest": "/focus-group-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-focus-group-recording-transcript",
+      "dest": "/focus-group-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/focus-group-recording-subtitles",
+      "dest": "/focus-group-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/focus-group-recording-to-transcript",
+      "dest": "/focus-group-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-focus-group-recording-to-text",
+      "dest": "/focus-group-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/focus-group-recording-to-transcription",
+      "dest": "/focus-group-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-focus-group-recording",
+      "dest": "/focus-group-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-voice-recording",
+      "dest": "/voice-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-recording-to-text",
+      "dest": "/voice-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-voice-recording-transcript",
+      "dest": "/voice-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-recording-subtitles",
+      "dest": "/voice-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-recording-to-transcript",
+      "dest": "/voice-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-voice-recording-to-text",
+      "dest": "/voice-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-recording-to-transcription",
+      "dest": "/voice-recording-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-voice-recording",
+      "dest": "/voice-recording-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-voice-memo",
+      "dest": "/voice-memo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-memo-to-text",
+      "dest": "/voice-memo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-voice-memo-transcript",
+      "dest": "/voice-memo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-memo-subtitles",
+      "dest": "/voice-memo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-memo-to-transcript",
+      "dest": "/voice-memo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-voice-memo-to-text",
+      "dest": "/voice-memo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-memo-to-transcription",
+      "dest": "/voice-memo-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-voice-memo",
+      "dest": "/voice-memo-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-voice-note",
+      "dest": "/voice-note-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-note-to-text",
+      "dest": "/voice-note-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-voice-note-transcript",
+      "dest": "/voice-note-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-note-subtitles",
+      "dest": "/voice-note-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-note-to-transcript",
+      "dest": "/voice-note-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-voice-note-to-text",
+      "dest": "/voice-note-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-note-to-transcription",
+      "dest": "/voice-note-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-voice-note",
+      "dest": "/voice-note-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-dictation",
+      "dest": "/dictation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/dictation-to-text",
+      "dest": "/dictation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-dictation-transcript",
+      "dest": "/dictation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/dictation-subtitles",
+      "dest": "/dictation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/dictation-to-transcript",
+      "dest": "/dictation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-dictation-to-text",
+      "dest": "/dictation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/dictation-to-transcription",
+      "dest": "/dictation-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-dictation",
+      "dest": "/dictation-transcript",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-voice-message",
+      "dest": "/voice-message-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-message-to-text",
+      "dest": "/voice-message-transcript",
+      "status": 301
+    },
+    {
+      "src": "/generate-voice-message-transcript",
+      "dest": "/voice-message-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-message-subtitles",
+      "dest": "/voice-message-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-message-to-transcript",
+      "dest": "/voice-message-transcript",
+      "status": 301
+    },
+    {
+      "src": "/convert-voice-message-to-text",
+      "dest": "/voice-message-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-message-to-transcription",
+      "dest": "/voice-message-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcript-from-voice-message",
+      "dest": "/voice-message-transcript",
+      "status": 301
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/((?!.*\\.).*)",
+      "dest": "/index.html"
+    }
   ]
 }
