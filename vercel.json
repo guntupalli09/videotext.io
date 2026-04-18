@@ -1468,6 +1468,556 @@
       "status": 301
     },
     {
+      "src": "/podcast-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/meeting-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/interview-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/webinar-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/lecture-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/zoom-recording-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/google-meet-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/google-meet-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/teams-meeting-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/teams-meeting-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/audio-recording-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/class-recording-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/research-interview-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/news-interview-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/press-conference-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/conference-talk-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/training-video-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/tutorial-video-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/presentation-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/documentary-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/video-podcast-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/product-demo-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/marketing-video-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/online-course-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/speech-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/mp4-video-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/mp4-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/avi-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/mov-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/mov-video-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/webm-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/webm-video-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/mkv-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/mkv-video-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/flac-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/flac-audio-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/wav-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/wav-audio-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/ogg-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/ogg-audio-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/m4a-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/m4a-audio-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/aac-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/aac-audio-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/field-recording-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/dissertation-interview-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/focus-group-recording-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/voice-recording-transcription",
+      "dest": "/voice-recorder",
+      "status": 301
+    },
+    {
+      "src": "/voice-memo-transcription",
+      "dest": "/voice-recorder",
+      "status": 301
+    },
+    {
+      "src": "/voice-note-transcription",
+      "dest": "/voice-recorder",
+      "status": 301
+    },
+    {
+      "src": "/voice-message-transcription",
+      "dest": "/voice-recorder",
+      "status": 301
+    },
+    {
+      "src": "/dictation-transcript",
+      "dest": "/voice-recorder",
+      "status": 301
+    },
+    {
+      "src": "/audio-to-text-converter",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-transcript",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
+      "src": "/youtube-transcription",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
+      "src": "/youtube-video-transcription",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
+      "src": "/instagram-reel-transcript",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
+      "src": "/instagram-reel-transcription",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
+      "src": "/tiktok-transcript",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
+      "src": "/tiktok-transcription",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
+      "src": "/tiktok-to-transcript",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
+      "src": "/tiktok-to-text",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-generator",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/auto-subtitle-generator",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/caption-generator",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/caption-maker",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/caption-video-online",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/add-captions-to-video",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/add-subtitles-to-video",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/generate-subtitles-from-video",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/srt-generator",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/vtt-generator",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/sbv-generator",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/srt-to-vtt",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/vtt-to-srt",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/srt-to-sbv",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/sbv-to-srt",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/srt-to-text",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/vtt-to-text",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/srt-to-word",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-translator",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/translate-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/korean-transcription",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/korean-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/japanese-transcription",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/japanese-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/chinese-transcription",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/chinese-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/german-transcription",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/german-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/spanish-transcription",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/spanish-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/french-transcription",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/french-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/arabic-transcription",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/arabic-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/portuguese-transcription",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/portuguese-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/hindi-transcription",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/hindi-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/italian-transcription",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/italian-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/fix-subtitles",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-editor",
+      "dest": "/fix-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/online-subtitle-editor",
+      "dest": "/fix-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-grammar-fixer",
+      "dest": "/fix-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-timing-fixer",
+      "dest": "/fix-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/burn-subtitles-into-video",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/compress-video",
+      "dest": "/compress-video",
+      "status": 301
+    },
+    {
+      "src": "/video-compressor",
+      "dest": "/compress-video",
+      "status": 301
+    },
+    {
       "handle": "filesystem"
     },
     {
