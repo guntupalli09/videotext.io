@@ -1105,6 +1105,37 @@ export default function Compare() {
           </div>
         </motion.section>
 
+        {/* Use-case specific tools */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Transcription for your specific use case</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Find the right tool for your exact needs — whether it's podcasts, meetings, YouTube, or any language.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { to: '/podcast-transcription', label: 'Podcast Transcription', desc: 'Transcribe podcasts with speaker labels and full timestamps.' },
+              { to: '/meeting-transcription', label: 'Meeting Transcription', desc: 'Record Zoom, Teams, Google Meet meetings and get instant transcripts.' },
+              { to: '/interview-transcription', label: 'Interview Transcription', desc: 'Capture every word from interviews with automatic speaker identification.' },
+              { to: '/youtube-transcript', label: 'YouTube Transcript', desc: 'Paste any YouTube URL and get a transcript in seconds.' },
+              { to: '/webinar-transcript', label: 'Webinar Transcript', desc: 'Transcribe webinars and export as SRT, TXT, or VTT subtitles.' },
+              { to: '/google-meet-transcript', label: 'Google Meet Transcript', desc: 'Record and transcribe Google Meet calls automatically.' },
+              { to: '/korean-transcription', label: 'Korean Transcription', desc: 'Transcribe Korean audio and video with high accuracy.' },
+              { to: '/spanish-transcription', label: 'Spanish Transcription', desc: 'Convert Spanish audio to text with full language support.' },
+              { to: '/video-to-subtitles', label: 'Video → Subtitles', desc: 'Generate SRT/VTT subtitles from any video file.' },
+            ].map(({ to, label, desc }) => (
+              <Link key={to} to={to} className="block bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-white/[0.08] rounded-xl p-4 hover:border-violet-300 dark:hover:border-violet-500 hover:shadow-md dark:hover:shadow-lg/20 transition-all">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{label}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{desc}</p>
+              </Link>
+            ))}
+          </div>
+        </motion.section>
+
         <section className="rounded-2xl border border-gray-200 dark:border-white/[0.08] p-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Citation-grade comparison hubs</h2>
           <div className="flex flex-wrap gap-3 text-sm">

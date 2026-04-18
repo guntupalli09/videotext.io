@@ -498,6 +498,29 @@ export default function Guide() {
           </div>
         </section>
 
+        {/* Popular use cases */}
+        <section className="mt-14">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Popular use cases</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[
+              { to: '/podcast-transcription', label: 'Podcast Transcription', desc: 'Get transcripts with speaker labels for podcasts.' },
+              { to: '/meeting-transcription', label: 'Meeting Transcription', desc: 'Transcribe Zoom, Teams, Google Meet meetings.' },
+              { to: '/interview-transcription', label: 'Interview Transcription', desc: 'Capture interviews with automatic speaker ID.' },
+              { to: '/youtube-transcript', label: 'YouTube Transcript', desc: 'Paste a URL and get a transcript instantly.' },
+              { to: '/webinar-transcript', label: 'Webinar Transcript', desc: 'Record and transcribe webinars with SRT export.' },
+              { to: '/google-meet-transcript', label: 'Google Meet Transcript', desc: 'Transcribe Google Meet calls automatically.' },
+              { to: '/korean-transcription', label: 'Korean Transcription', desc: 'High-accuracy Korean to text transcription.' },
+              { to: '/spanish-transcription', label: 'Spanish Transcription', desc: 'Transcribe Spanish audio and video files.' },
+              { to: '/video-to-subtitles', label: 'Video to Subtitles', desc: 'Generate SRT/VTT subtitles from any video.' },
+            ].map(({ to, label, desc }) => (
+              <Link key={to} to={to} className="block bg-gray-50 border border-gray-200 rounded-lg p-3 hover:border-violet-300 hover:bg-violet-50/30 transition-all">
+                <span className="text-sm font-semibold text-violet-600">{label}</span>
+                <p className="text-xs text-gray-600 mt-1">{desc}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         {/* Cross-links to related pages */}
         <section className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
