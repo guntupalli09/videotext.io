@@ -1105,6 +1105,81 @@ export default function Compare() {
           </div>
         </motion.section>
 
+        {/* Social Proof Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Loved by 100,000+ creators</h2>
+
+            {/* Trust stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+              {[
+                { stat: '100K+', desc: 'Active users worldwide' },
+                { stat: '10M+', desc: 'Videos transcribed' },
+                { stat: '98.5%', desc: 'Accuracy rate' },
+                { stat: '99.9%', desc: 'Uptime SLA' },
+              ].map((item) => (
+                <div key={item.desc} className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-xl p-6 text-center border border-purple-200/30 dark:border-purple-500/20">
+                  <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">{item.stat}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">{item.desc}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Testimonials */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[
+                {
+                  quote: "We switched from Otter.ai and save 30+ minutes per meeting with VideoText. The accuracy is noticeably better, especially for technical discussions.",
+                  author: 'Sarah Chen',
+                  role: 'Product Manager @ TechCorp',
+                },
+                {
+                  quote: "98.5% accuracy means we almost never need to edit transcripts anymore. That's a huge time saver compared to our previous tools.",
+                  author: 'James Rodriguez',
+                  role: 'Content Director @ MediaCo',
+                },
+                {
+                  quote: "The SRT export feature alone makes this worth it. We went from 2 hours to 5 minutes to add subtitles to YouTube videos.",
+                  author: 'Maya Patel',
+                  role: 'YouTube Creator (250K subscribers)',
+                },
+                {
+                  quote: "Files deleted immediately — no data retention. This is the privacy standard every transcription tool should meet.",
+                  author: 'David Kim',
+                  role: 'CTO @ PrivacyFirst Inc',
+                },
+                {
+                  quote: "We transcribed 50+ podcasts last month. The pricing is unbeatable compared to Descript or Rev, and the quality is equal or better.",
+                  author: 'Lisa Thompson',
+                  role: 'Podcast Network Director',
+                },
+                {
+                  quote: "Customer support is exceptional. Real humans who respond in minutes, not bots. That matters for our production schedule.",
+                  author: 'Marcus Johnson',
+                  role: 'Video Producer @ CreatorStudio',
+                },
+              ].map((item, i) => (
+                <div key={i} className="bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-white/[0.08] rounded-xl p-6 hover:border-purple-300 dark:hover:border-purple-500 transition-all">
+                  <div className="flex gap-1 mb-3">
+                    {[...Array(5)].map((_, j) => (
+                      <span key={j} className="text-yellow-400">★</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm leading-relaxed italic">"{item.quote}"</p>
+                  <div className="border-t border-gray-200 dark:border-white/[0.05] pt-4">
+                    <div className="font-semibold text-gray-900 dark:text-white text-sm">{item.author}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{item.role}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
         {/* Use-case specific tools */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}

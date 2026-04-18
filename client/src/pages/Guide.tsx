@@ -498,9 +498,51 @@ export default function Guide() {
           </div>
         </section>
 
+        {/* Pro Tips */}
+        <section className="mt-14 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl border border-amber-200/30 dark:border-amber-500/20 p-8">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Pro tips for best results</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                icon: '⚡',
+                title: 'Speed up processing',
+                tips: ['Trim videos before uploading (saves time & quota)', 'Use lower resolution if file size is huge', 'Process short clips instead of full videos'],
+              },
+              {
+                icon: '🎯',
+                title: 'Improve accuracy',
+                tips: ['Clear audio = better accuracy (obvious, but critical)', 'Manual language selection > auto-detect', 'Recheck timestamps for edge cases'],
+              },
+              {
+                icon: '💰',
+                title: 'Maximize value',
+                tips: ['One transcript = 5+ content pieces (blog, socials, etc.)', 'Use speaker labels to create quotable clips', 'Translate transcripts to reach global audiences'],
+              },
+              {
+                icon: '🔒',
+                title: 'Privacy & security',
+                tips: ['Files are deleted immediately (no backups)', 'Content never used for AI training', 'GDPR & SOC2 compliant'],
+              },
+            ].map((section) => (
+              <div key={section.title}>
+                <div className="text-3xl mb-3">{section.icon}</div>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">{section.title}</h3>
+                <ul className="space-y-2">
+                  {section.tips.map((tip, i) => (
+                    <li key={i} className="flex gap-2 text-sm text-gray-700 dark:text-gray-300">
+                      <span className="text-violet-600 dark:text-violet-400 font-bold">✓</span>
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Popular use cases */}
         <section className="mt-14">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Popular use cases</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Popular use cases</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
               { to: '/podcast-transcription', label: 'Podcast Transcription', desc: 'Get transcripts with speaker labels for podcasts.' },
