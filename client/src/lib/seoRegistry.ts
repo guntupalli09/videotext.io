@@ -5167,6 +5167,8 @@ const POPULAR_FOOTER_PATHS: string[] = [
   '/compress-video',
   '/tools',
   '/subtitle-tools',
+  '/transcription-tools',
+  '/alternatives',
   '/subtitle-resources',
   '/open',
   '/compare',
