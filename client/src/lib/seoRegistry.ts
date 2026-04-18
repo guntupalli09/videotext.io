@@ -208,7 +208,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Transcribe YouTube Video',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/youtube-to-transcript', '/free-transcription', '/podcast-transcription'],
-    indexable: true,
+    indexable: false,
     intentKey: 'transcribe-youtube-video',
     canonicalGroup: 'youtube-transcript',
     defaultInputMode: 'youtube',
@@ -250,7 +250,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'MP4 to Text',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'mp4-to-text',
     faq: [
       { q: 'Can I convert MP4 to text?', a: 'Yes. Upload your MP4 file and our AI extracts the spoken audio as plain text. We also support MOV, AVI, WebM, and MKV. The entire process — upload, extraction, transcription — runs automatically in the background and results appear within seconds for short videos.' },
@@ -270,7 +270,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'MP4 to SRT',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-transcript', '/translate-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'mp4-to-srt',
     faq: [
       { q: 'How do I get SRT subtitles from an MP4 file?', a: 'Upload your MP4 file, choose SRT as the output format, and click Generate. Our AI transcribes the speech and aligns each word to its timestamp, producing a timed SRT file you can download and upload directly to YouTube, Vimeo, or any video platform.' },
@@ -313,7 +313,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'SRT Translator',
     toolKey: 'translate-subtitles',
     relatedSlugs: ['/video-to-subtitles', '/fix-subtitles', '/burn-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'srt-translator',
     faq: [
       { q: 'What is an SRT translator?', a: 'An SRT translator converts the text inside an SRT or VTT subtitle file into another language while keeping every timestamp exactly as it was. You upload the subtitle file, select the target language, and download a translated version where the captions stay perfectly in sync with the video.' },
@@ -352,7 +352,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Speaker Diarization',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/google-meet-transcript', '/meeting-transcription', '/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'speaker-diarization',
     faq: [
       { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
@@ -371,7 +371,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Video Summary Generator',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'video-summary-generator',
     faq: [
       { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st).' },
@@ -390,7 +390,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Video Chapters Generator',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'video-chapters-generator',
     faq: [
       { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st).' },
@@ -409,7 +409,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Keyword Indexed Transcript',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'keyword-indexed-transcript',
     faq: [
       { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st).' },
@@ -428,7 +428,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'SRT to VTT',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-transcript', '/translate-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'srt-to-vtt',
     faq: [
       { q: 'How do I get VTT from video?', a: 'Upload your video, choose VTT as the format, and click Generate. You get a timed VTT file for web players.' },
@@ -447,7 +447,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Subtitle Converter',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-transcript', '/translate-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'subtitle-converter',
     faq: [
       { q: 'What formats are supported?', a: 'Generate SRT or VTT from video. After processing, you can convert to SRT, VTT, or plain text (TXT).' },
@@ -466,7 +466,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Subtitle Timing Fixer',
     toolKey: 'fix-subtitles',
     relatedSlugs: ['/translate-subtitles', '/burn-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'subtitle-timing-fixer',
     faq: [
       { q: 'What does the fixer do?', a: 'It fixes overlapping timestamps, long lines, and gaps in SRT/VTT files so they meet platform and readability rules.' },
@@ -485,7 +485,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Subtitle Validation',
     toolKey: 'fix-subtitles',
     relatedSlugs: ['/translate-subtitles', '/burn-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'subtitle-validation',
     faq: [
       { q: 'What does validation check?', a: 'Timing overlaps, line length, formatting. The tool reports issues and can fix them; you get a corrected SRT/VTT file.' },
@@ -504,7 +504,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Subtitle Translator',
     toolKey: 'translate-subtitles',
     relatedSlugs: ['/video-to-subtitles', '/fix-subtitles', '/burn-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'subtitle-translator',
     faq: [
       { q: 'What languages does the subtitle translator support?', a: 'The subtitle translator supports 70+ languages including Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, Turkish, Italian, Dutch, and more. Pick your target language from the dropdown before processing. The source language is detected automatically or you can set it manually for better accuracy.' },
@@ -523,7 +523,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Multilingual Subtitles',
     toolKey: 'translate-subtitles',
     relatedSlugs: ['/video-to-subtitles', '/fix-subtitles', '/burn-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'multilingual-subtitles',
     faq: [
       { q: 'Can I get subtitles in multiple languages from one file?', a: 'Yes. Upload your subtitle file once and translate it to different languages individually — each download is a separate file for one target language. Paid plans let you generate multiple language outputs in a single batch, which saves time for creators distributing content to international audiences.' },
@@ -542,7 +542,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Subtitle Language Checker',
     toolKey: 'translate-subtitles',
     relatedSlugs: ['/video-to-subtitles', '/fix-subtitles', '/burn-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'subtitle-language-checker',
     faq: [
       { q: 'What does the subtitle language checker do?', a: 'You upload an SRT or VTT subtitle file and choose a target language. The tool translates the captions so you can verify the content in the new language, check for translation quality, or use the file on a platform that requires a specific language. Your original file is unchanged.' },
@@ -561,7 +561,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Subtitle Grammar Fixer',
     toolKey: 'fix-subtitles',
     relatedSlugs: ['/translate-subtitles', '/burn-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'subtitle-grammar-fixer',
     faq: [
       { q: 'What does the subtitle grammar fixer do?', a: 'The subtitle grammar fixer corrects timing, formatting, and structural issues in SRT and VTT files. It fixes overlapping timestamps, lines that are too long for the screen, and spacing errors. Enable the grammar-fix option when processing to also improve caption text capitalization and punctuation.' },
@@ -580,7 +580,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Subtitle Line Break Fixer',
     toolKey: 'fix-subtitles',
     relatedSlugs: ['/translate-subtitles', '/burn-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'subtitle-line-break-fixer',
     faq: [
       { q: 'What does the subtitle line break fixer do?', a: 'The subtitle line break fixer splits caption lines that are too long to display properly and removes awkward mid-sentence breaks. It ensures captions meet platform limits — YouTube recommends a maximum of 42 characters per line — so subtitles are comfortable to read and display correctly on all screen sizes.' },
@@ -599,7 +599,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Hardcoded Captions',
     toolKey: 'burn-subtitles',
     relatedSlugs: ['/compress-video', '/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'hardcoded-captions',
     faq: [
       { q: 'What are hardcoded captions?', a: 'Hardcoded captions (also called burned-in or open captions) are subtitles permanently embedded into the video frame so they are always visible without the viewer toggling anything. Upload your video and an SRT or VTT file, and we produce a single MP4 with captions baked in — ready for Instagram, TikTok, or silent autoplay environments.' },
@@ -618,7 +618,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Video with Subtitles',
     toolKey: 'burn-subtitles',
     relatedSlugs: ['/compress-video', '/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'video-with-subtitles',
     faq: [
       { q: 'How do I add subtitles to a video permanently?', a: 'Upload your video (MP4, MOV, AVI, WebM, or MKV) and your SRT or VTT subtitle file. Our tool burns the captions into the video frames so they are always visible, and you download a single MP4 with subtitles permanently embedded. No video editing software or timeline work required.' },
@@ -637,7 +637,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Video Compressor',
     toolKey: 'compress-video',
     relatedSlugs: ['/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'video-compressor',
     faq: [
       { q: 'Is the video compressor free?', a: 'Yes. Free tier is available after signing up for free. Upload your video, choose a compression level, and download the smaller file at no cost within the monthly free limit. Paid plans unlock higher file size limits and priority processing so compressed videos are ready faster.' },
@@ -656,7 +656,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Reduce Video Size',
     toolKey: 'compress-video',
     relatedSlugs: ['/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'reduce-video-size',
     faq: [
       { q: 'Is reducing video file size free?', a: 'Yes. Free tier is available after signing up for free. Upload your video, select a compression level, and download the reduced file at no cost. Paid plans support larger input files and priority processing, which is useful for high-resolution footage or large batches of content.' },
@@ -675,7 +675,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Batch Video Processing',
     toolKey: 'batch-process',
     relatedSlugs: ['/video-to-transcript', '/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'batch-video-processing',
     faq: [
       { q: 'Is batch video processing free?', a: 'Batch processing is available on Pro and Agency plans. Free and Basic plans use single-file tools. Pro supports up to 20 videos per batch with a 60-minute total duration. Agency supports up to 100 videos with a 300-minute total, which covers full content calendars and client workflows.' },
@@ -694,7 +694,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Bulk Subtitle Export',
     toolKey: 'batch-process',
     relatedSlugs: ['/video-to-transcript', '/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'bulk-subtitle-export',
     faq: [
       { q: 'What is bulk subtitle export?', a: 'Upload multiple videos and get SRT subtitle files for all of them in one ZIP. Same as Batch Processing.' },
@@ -713,7 +713,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Bulk Transcript Export',
     toolKey: 'batch-process',
     relatedSlugs: ['/video-to-transcript', '/video-to-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'bulk-transcript-export',
     faq: [
       { q: 'What is bulk transcript export?', a: 'Upload multiple videos and get transcript/subtitle output for all in one ZIP. Same as Batch Processing.' },
