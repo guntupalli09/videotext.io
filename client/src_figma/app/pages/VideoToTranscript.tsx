@@ -291,15 +291,6 @@ Stop letting back pain kill your productivity every afternoon.`;
           setProcessingState('configure');
         }}
       />
-      <div className="mt-8 flex justify-center">
-        <a href="https://fazier.com" target="_blank" rel="noopener noreferrer">
-          <img
-            src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light"
-            width={120}
-            alt="Fazier badge"
-          />
-        </a>
-      </div>
     </ToolLayout>
   );
 }
