@@ -16,7 +16,7 @@ import { transcriptionTargets, targetToSlug, slugToTitle } from '../data/seoPage
 
 // Only these targets should generate intent pages (not money pages)
 const INTENT_PAGE_TARGETS = new Set([
-  'podcast', 'meeting', 'interview', 'webinar', 'lecture',
+  'podcast', 'meeting', 'interview', 'lecture',
   'zoom-recording', 'google-meet', 'teams-meeting', 'video-interview',
   'youtube-video', 'youtube', 'instagram-reel', 'tiktok', 'loom', 'vimeo', 'riverside',
   'korean', 'japanese', 'chinese', 'german', 'spanish', 'french', 'arabic', 'portuguese', 'hindi',
@@ -35,13 +35,6 @@ const INTENT_PATTERNS: Array<{
     titleTmpl: (t) => `${t} Transcription – Online | VideoText`,
     descTmpl: (t) => `Transcribe ${t} to text. Get transcripts with speaker labels. Export SRT, TXT. Free tier.`,
     h1Tmpl: (t) => `${t} Transcription`,
-  },
-  {
-    pattern: (s) => `/${s}-transcript`,
-    toolKey: 'video-to-transcript',
-    titleTmpl: (t) => `${t} Transcript – Get Text Online | VideoText`,
-    descTmpl: (t) => `Get transcript from ${t}. AI transcription. Export SRT, TXT. Free.`,
-    h1Tmpl: (t) => `${t} Transcript`,
   },
 ]
 
@@ -79,8 +72,8 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
       hub: '/video-to-transcript',
       siblings: [
         '/podcast-transcription', '/meeting-transcription', '/interview-transcription',
-        '/webinar-transcript', '/lecture-transcription', '/google-meet-transcript',
-        '/teams-meeting-transcript', '/zoom-recording-transcript',
+        '/webinar-transcription', '/lecture-transcription', '/google-meet-transcription',
+        '/teams-meeting-transcription', '/zoom-recording-transcription',
       ],
     },
     'korean|japanese|chinese|german|spanish|french|arabic|portuguese|hindi': {
@@ -94,7 +87,7 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
     'youtube|instagram|tiktok|loom|vimeo|riverside': {
       hub: '/youtube-transcript-generator',
       siblings: [
-        '/youtube-transcript', '/instagram-reel-transcript', '/tiktok-transcript',
+        '/youtube-transcription', '/instagram-reel-transcription', '/tiktok-transcription',
         '/loom-transcription', '/vimeo-transcription', '/riverside-transcription',
       ],
     },
