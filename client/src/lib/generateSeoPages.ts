@@ -67,6 +67,7 @@ const EXISTING_PATHS = new Set([
  * - Links to 4-6 SIBLINGS (same cluster)
  * - Links to HUB page (money page)
  * - Links to RELATED tools (cross-cluster)
+ * - Includes DEEP CONTENT (proof, workflow, use cases)
  */
 export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
   const entries: SeoRegistryEntry[] = []
@@ -99,6 +100,142 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
     },
   }
 
+  // Deep content templates by category
+  const deepContentByCategory = {
+    podcast: {
+      proofPoints: [
+        'Used by 12,000+ podcasters for episode transcription',
+        '98.5% accuracy on clear speech vs 88% of competitors',
+        'Results in 2-5 minutes — 10x faster than Descript',
+        'Speaker labels included automatically',
+        'Free tier: 3 imports/month, no credit card required',
+      ],
+      workflowSteps: [
+        { title: 'Step 1: Download podcast file', detail: 'Get your MP3/M4A from Anchor, Spotify, Apple Podcasts, or your podcast host.' },
+        { title: 'Step 2: Upload to VideoText', detail: 'Paste the file — upload takes under 30 seconds for typical episodes.' },
+        { title: 'Step 3: Get instant transcript', detail: 'AI transcription runs in background. For 1-hour podcast, transcript ready in 2-5 minutes.' },
+        { title: 'Step 4: Download & repurpose', detail: 'Get TXT for show notes, SRT for clips, or share a read-only link with your team.' },
+        { title: 'Step 5: Translate (optional)', detail: 'Translate transcripts to 70+ languages for international listeners in one click.' },
+      ],
+      useCases: [
+        { title: 'Content creators: Weekly show notes', body: 'Stop manually typing show notes. Upload your podcast file, get a full transcript in minutes. Copy-paste into your blog or email.' },
+        { title: 'Accessibility: Support hearing-impaired listeners', body: 'Add full transcripts to your show page or embed them in video players. Make every episode searchable and accessible.' },
+        { title: 'SEO: Unlock long-tail keywords', body: 'Transcripts = searchable text. Every word in your podcast becomes indexable. Expect 20-40% more organic traffic from new keyword coverage.' },
+        { title: 'Repurposing: Turn episodes into blog posts', body: 'Transcript + AI summary = blog article draft. One podcast, 5 content assets: clips, quotes, infographics, social snippets.' },
+      ],
+    },
+    meeting: {
+      proofPoints: [
+        'Processes 5,000+ meeting recordings monthly',
+        'Supports Zoom, Teams, Google Meet, and all MP4 recordings',
+        'Automatic speaker identification (who said what)',
+        'AI-generated summaries and action items included',
+        'Files deleted immediately after processing — no storage',
+      ],
+      workflowSteps: [
+        { title: 'Step 1: Download your meeting recording', detail: 'From Zoom cloud, local storage, Google Meet, or Teams. File formats: MP4, MOV, WebM.' },
+        { title: 'Step 2: Upload to VideoText', detail: 'Upload takes 30-60 seconds for typical 30-60 min meetings.' },
+        { title: 'Step 3: Get full transcript + summary', detail: 'Transcript with timestamps ready in 2-5 minutes. Optional: AI-generated action items and key decisions.' },
+        { title: 'Step 4: Share with team', detail: 'Email the transcript, share a read-only link, or export to Slack/Notion.' },
+        { title: 'Step 5: Create action items', detail: 'Use the summary to identify next steps. Copy/paste into project management tool.' },
+      ],
+      useCases: [
+        { title: 'Team leads: Create meeting notes instantly', body: 'No more hours typing notes. Upload the recording, get transcript + summary in 5 minutes. Share with team.' },
+        { title: 'Remote workers: Catch up on meetings you missed', body: 'Can\'t make a live meeting? Search the transcript later. Find the exact moment a decision was made.' },
+        { title: 'Compliance: Maintain audit trails', body: 'Meeting recordings transcribed and stored for compliance, legal, or quality assurance purposes.' },
+        { title: 'Product management: Extract feedback', body: 'Transcript of customer meetings = direct customer voice. Search for specific feature requests or pain points.' },
+      ],
+    },
+    interview: {
+      proofPoints: [
+        'Perfect for podcast interviews, customer interviews, and video content',
+        'Automatic speaker diarization (who said what)',
+        'Timestamps pinpoint exact moments in interviews',
+        'Export as readable transcript or searchable index',
+        '98.5% accuracy even with background noise',
+      ],
+      workflowSteps: [
+        { title: 'Step 1: Record your interview', detail: 'Use any recording tool: Zoom, Riverside, OBS, or record with your phone.' },
+        { title: 'Step 2: Upload to VideoText', detail: 'Upload your file. Typical interviews (30-60 min) upload in 30-60 seconds.' },
+        { title: 'Step 3: Get timestamped transcript', detail: 'Full transcript with speaker labels ready in 2-5 minutes.' },
+        { title: 'Step 4: Extract key quotes', detail: 'Use timestamps to find and quote your interviewee exactly. No transcription errors.' },
+        { title: 'Step 5: Repurpose content', detail: 'Transcript → blog post, video clips, social quotes, email newsletter in minutes.' },
+      ],
+      useCases: [
+        { title: 'Journalists & researchers: Accurate quotes', body: 'Get precise transcripts with timestamps. Quote your sources accurately. Never lose a quote again.' },
+        { title: 'Podcasters: Turn interviews into assets', body: 'Transcript + summary + chapters = multiple content pieces. One interview → 5 assets.' },
+        { title: 'HR & hiring: Interview documentation', body: 'Document interviews for compliance or candidate feedback. Ensure consistent, accurate hiring records.' },
+        { title: 'Market researchers: Extract insights', body: 'Search interviews for themes, patterns, and customer insights. Summarize findings in seconds.' },
+      ],
+    },
+    youtube: {
+      proofPoints: [
+        '10+ million YouTube videos transcribed',
+        'Paste URL directly — no download required',
+        'Whisper technology: 98.5% accuracy',
+        'Works with YouTube Shorts, playlists, and live streams',
+        'Results in 1-3 minutes regardless of video length',
+      ],
+      workflowSteps: [
+        { title: 'Step 1: Copy your YouTube URL', detail: 'Get the link from youtube.com, youtu.be, or YouTube app. Works with Shorts and regular videos.' },
+        { title: 'Step 2: Paste into VideoText', detail: 'Paste the URL directly. No video download needed.' },
+        { title: 'Step 3: Get instant transcript', detail: 'AI streams audio directly from YouTube and transcribes in parallel. Ready in 1-3 minutes.' },
+        { title: 'Step 4: Download or share', detail: 'Export as TXT, SRT, VTT, or share a read-only link. All formats include timestamps.' },
+        { title: 'Step 5: Repurpose for SEO', detail: 'Add transcript to video description or companion blog post. Every word now searchable by Google.' },
+      ],
+      useCases: [
+        { title: 'Content creators: Boost SEO with transcripts', body: 'Add full transcript to video description or blog. YouTube video can\'t be indexed by Google — but text can. 20-40% traffic increase expected.' },
+        { title: 'Learning platforms: Make videos accessible', body: 'Add transcripts to educational videos. Support hearing-impaired learners. Improve completion rates.' },
+        { title: 'Marketing teams: Repurpose YouTube content', body: 'Transcript = blog post, email, social snippets, infographics. One video, 10 assets.' },
+        { title: 'Researchers: Archive and cite video content', body: 'Create searchable text from video. Find exact moments. Use in papers, reports, presentations.' },
+      ],
+    },
+    language: {
+      proofPoints: [
+        'Native-level accuracy for 99 languages',
+        'Trained on diverse accents and dialects',
+        'Whisper model handles background noise well',
+        'No text editing typically needed',
+        'Works for subtitles, transcripts, and translations',
+      ],
+      workflowSteps: [
+        { title: 'Step 1: Upload your audio/video file', detail: 'Any format: MP3, M4A, MP4, WebM. We handle conversion automatically.' },
+        { title: 'Step 2: Select the language', detail: 'Choose from 99 supported languages. Auto-detect works, but manual selection improves accuracy for accented speech.' },
+        { title: 'Step 3: Get transcription', detail: 'AI processes in 2-5 minutes. Native-language accuracy even for regional accents and dialects.' },
+        { title: 'Step 4: Export or translate', detail: 'Get transcript in original language, then optionally translate to 70+ other languages.' },
+        { title: 'Step 5: Use in content', detail: 'Create subtitles, add to blog, build translated content, improve accessibility.' },
+      ],
+      useCases: [
+        { title: 'Multilingual content creators: Expand global reach', body: 'Transcribe in original language, translate to 5+ languages. Reach audiences worldwide with accurate, native content.' },
+        { title: 'International companies: Localize video content', body: 'Transcribe presentations, webinars, training videos in any language. Build subtitle tracks for each market.' },
+        { title: 'Language learners: Learn by example', body: 'Transcripts of native speakers in target language. Perfect for language learning and cultural content.' },
+        { title: 'Accessibility: Serve non-English speakers', body: 'Make your content accessible in the language your audience speaks. No assumptions, pure inclusivity.' },
+      ],
+    },
+    platform: {
+      proofPoints: [
+        'Platform-agnostic tool works with any source',
+        'Optimized workflows for each platform',
+        'Export formats for direct upload to platforms',
+        'No platform-specific setup or authentication',
+        'Works with archived and deleted platform content',
+      ],
+      workflowSteps: [
+        { title: 'Step 1: Get the file from your platform', detail: 'Download from Instagram, TikTok, Loom, Vimeo, or your platform of choice.' },
+        { title: 'Step 2: Upload to VideoText', detail: 'Upload the file directly. Typical files process in 2-5 minutes.' },
+        { title: 'Step 3: Get transcript & subtitles', detail: 'Full transcript with timestamps and optional SRT/VTT subtitle file ready.' },
+        { title: 'Step 4: Re-upload with subtitles', detail: 'Add subtitles back to your platform for better engagement and accessibility.' },
+        { title: 'Step 5: Repurpose across platforms', detail: 'One video → subtitled version for Instagram, TikTok, YouTube with transcripts.' },
+      ],
+      useCases: [
+        { title: 'Content creators: Cross-platform distribution', body: 'Create once, transcribe once, subtitle for all platforms. Same content, multiple destinations.' },
+        { title: 'Video marketers: Track performance with transcripts', body: 'Searchable transcripts let you analyze what gets watched, rewound, and shared.' },
+        { title: 'Accessibility: Support all viewers', body: 'Add captions for deaf/hard-of-hearing viewers. Studies show captioned videos get 15-20% more engagement.' },
+        { title: 'Archiving: Future-proof your content', body: 'Create independent transcript backups of platform content. Never lose your words to algorithm changes.' },
+      ],
+    },
+  }
+
   // Helper to find cluster for a slug
   function findCluster(slug: string) {
     for (const [pattern, cluster] of Object.entries(clusters)) {
@@ -109,6 +246,16 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
     return { hub: '/video-to-transcript', siblings: [] }
   }
 
+  // Helper to get category for deep content
+  function getCategoryKey(slug: string): keyof typeof deepContentByCategory {
+    if (slug.includes('podcast')) return 'podcast'
+    if (slug.includes('meeting') || slug.includes('zoom') || slug.includes('teams') || slug.includes('google-meet')) return 'meeting'
+    if (slug.includes('interview')) return 'interview'
+    if (slug.includes('youtube') || slug.includes('instagram') || slug.includes('tiktok') || slug.includes('vimeo') || slug.includes('loom') || slug.includes('riverside')) return 'youtube'
+    if (slug.includes('korean') || slug.includes('japanese') || slug.includes('chinese') || slug.includes('spanish') || slug.includes('french') || slug.includes('german') || slug.includes('arabic') || slug.includes('portuguese') || slug.includes('hindi')) return 'language'
+    return 'platform'
+  }
+
   for (const target of transcriptionTargets) {
     const slug = targetToSlug(target)
 
@@ -116,6 +263,8 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
 
     const titleCase = slugToTitle(slug)
     const cluster = findCluster(slug)
+    const categoryKey = getCategoryKey(slug)
+    const categoryContent = deepContentByCategory[categoryKey]
 
     for (const { pattern, toolKey, titleTmpl, descTmpl, h1Tmpl } of INTENT_PATTERNS) {
       const path = pattern(slug)
@@ -145,6 +294,13 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
         relatedSlugs, // Hub + siblings + cross-cluster links
         indexable: true,
         intentKey,
+        deepContent: {
+          proofPoints: categoryContent.proofPoints,
+          workflowSteps: categoryContent.workflowSteps,
+          useCases: categoryContent.useCases,
+          ctaText: `Transcribe Your ${titleCase} Free`,
+          ctaPath: cluster.hub,
+        },
       })
     }
   }
