@@ -5,19 +5,169 @@
     {
       "source": "/index.html",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     },
     {
       "source": "/:path*/index.html",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     }
   ],
   "routes": [
-    { "src": "/otter-alternative", "dest": "/otter-ai-alternative", "status": 301 },
-    { "handle": "filesystem" },
-    { "src": "/((?!.*\\.).*)", "dest": "/index.html" }
+    {
+      "src": "/podcast-transcript",
+      "dest": "/podcast-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-podcast",
+      "dest": "/podcast-transcription",
+      "status": 301
+    },
+    {
+      "src": "/podcast-to-text",
+      "dest": "/podcast-transcription",
+      "status": 301
+    },
+    {
+      "src": "/podcast-to-transcript",
+      "dest": "/podcast-transcription",
+      "status": 301
+    },
+    {
+      "src": "/convert-podcast-to-text",
+      "dest": "/podcast-transcription",
+      "status": 301
+    },
+    {
+      "src": "/meeting-transcript",
+      "dest": "/meeting-transcription",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-meeting",
+      "dest": "/meeting-transcription",
+      "status": 301
+    },
+    {
+      "src": "/meeting-to-text",
+      "dest": "/meeting-transcription",
+      "status": 301
+    },
+    {
+      "src": "/meeting-to-transcript",
+      "dest": "/meeting-transcription",
+      "status": 301
+    },
+    {
+      "src": "/interview-transcript",
+      "dest": "/interview-transcription",
+      "status": 301
+    },
+    {
+      "src": "/interview-to-text",
+      "dest": "/interview-transcription",
+      "status": 301
+    },
+    {
+      "src": "/interview-to-transcript",
+      "dest": "/interview-transcription",
+      "status": 301
+    },
+    {
+      "src": "/webinar-transcription",
+      "dest": "/webinar-transcript",
+      "status": 301
+    },
+    {
+      "src": "/webinar-to-text",
+      "dest": "/webinar-transcript",
+      "status": 301
+    },
+    {
+      "src": "/webinar-to-transcript",
+      "dest": "/webinar-transcript",
+      "status": 301
+    },
+    {
+      "src": "/lecture-transcript",
+      "dest": "/lecture-transcription",
+      "status": 301
+    },
+    {
+      "src": "/lecture-to-text",
+      "dest": "/lecture-transcription",
+      "status": 301
+    },
+    {
+      "src": "/youtube-transcript-transcription",
+      "dest": "/youtube-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-to-text",
+      "dest": "/youtube-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-video-transcript",
+      "dest": "/youtube-transcript",
+      "status": 301
+    },
+    {
+      "src": "/google-meet-transcription",
+      "dest": "/google-meet-transcript",
+      "status": 301
+    },
+    {
+      "src": "/google-meet-to-text",
+      "dest": "/google-meet-transcript",
+      "status": 301
+    },
+    {
+      "src": "/teams-meeting-transcription",
+      "dest": "/teams-meeting-transcript",
+      "status": 301
+    },
+    {
+      "src": "/microsoft-teams-transcript",
+      "dest": "/teams-meeting-transcript",
+      "status": 301
+    },
+    {
+      "src": "/korean-transcription-transcription",
+      "dest": "/korean-transcription",
+      "status": 301
+    },
+    {
+      "src": "/japanese-transcription-transcription",
+      "dest": "/japanese-transcription",
+      "status": 301
+    },
+    {
+      "src": "/spanish-transcription-transcription",
+      "dest": "/spanish-transcription",
+      "status": 301
+    },
+    {
+      "src": "/french-transcription-transcription",
+      "dest": "/french-transcription",
+      "status": 301
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/((?!.*\\.).*)",
+      "dest": "/index.html"
+    }
   ]
 }
