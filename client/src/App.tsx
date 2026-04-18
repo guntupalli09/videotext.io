@@ -50,6 +50,8 @@ const FounderDashboard = lazy(() => import('./pages/founder/FounderDashboard'))
 const Changelog = lazy(() => import('./pages/Changelog'))
 const Blog = lazy(() => import('./pages/Blog'))
 const Compare = lazy(() => import('./pages/Compare'))
+const AlternativesHub = lazy(() => import('./pages/AlternativesHub'))
+const TranscriptionToolsHub = lazy(() => import('./pages/TranscriptionToolsHub'))
 const DescriptAlternative = lazy(() => import('./pages/seo/DescriptAlternativePage'))
 const OtterAiAlternative = lazy(() => import('./pages/seo/OtterAiAlternativePage'))
 const TrintAlternative = lazy(() => import('./pages/seo/TrintAlternativePage'))
@@ -498,6 +500,8 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<Blog />} />
             <Route path="/compare" element={<Compare />} />
+            <Route path="/alternatives" element={<AlternativesHub />} />
+            <Route path="/transcription-tools" element={<TranscriptionToolsHub />} />
             <Route path="/descript-alternative" element={<DescriptAlternative />} />
             <Route path="/otter-alternative" element={<OtterAiAlternative />} />
             <Route path="/otter-ai-alternative" element={<Navigate to="/otter-alternative" replace />} />

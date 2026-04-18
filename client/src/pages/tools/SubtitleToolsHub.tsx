@@ -1,39 +1,76 @@
 import { Link } from 'react-router-dom'
+import { MessageSquare, Wand2, Languages, Wrench, Zap, ArrowRight } from 'lucide-react'
 import Seo from '../../components/Seo'
 import OpenStatsStrip from '../../components/OpenStatsStrip'
 
 const SUBTITLE_TOOLS = [
   {
-    category: 'Subtitle Converters',
-    tools: [
-      { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert SRT subtitles to WebVTT format for web video players' },
-      { label: 'VTT to SRT Converter', path: '/tools/vtt-to-srt', desc: 'Convert WebVTT files back to SRT for video editing and players' },
-      { label: 'SBV to SRT Converter', path: '/tools/sbv-to-srt', desc: 'Convert YouTube SBV caption files to standard SRT format' },
-      { label: 'SRT to SBV Converter', path: '/tools/srt-to-sbv', desc: 'Convert SRT subtitle files to YouTube\'s native SBV format' },
-      { label: 'ASS / SSA to SRT Converter', path: '/tools/ass-to-srt', desc: 'Strip ASS/SSA styling tags and convert to plain SRT' },
-      { label: 'TTML to SRT Converter', path: '/tools/ttml-to-srt', desc: 'Convert TTML, DFXP, or EBU-TT subtitle files to SRT' },
+    title: 'Subtitle Generators & Creators',
+    icon: MessageSquare,
+    description: 'Create subtitles from video or audio',
+    links: [
+      { path: '/video-to-subtitles', label: 'Video to Subtitles' },
+      { path: '/subtitle-generator', label: 'Subtitle Generator' },
+      { path: '/auto-subtitle-generator', label: 'Auto Subtitle Generator' },
+      { path: '/youtube-subtitle-generator', label: 'YouTube Subtitle Generator' },
+      { path: '/caption-video-online', label: 'Caption Video Online' },
+      { path: '/video-with-subtitles', label: 'Video with Subtitles' },
     ],
   },
   {
-    category: 'Subtitle Timing Tools',
-    tools: [
-      { label: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing', desc: 'Delay or advance all subtitle timestamps to fix sync issues' },
-      { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine two subtitle files with automatic offset calculation' },
+    title: 'Subtitle Editing & Fixing',
+    icon: Wrench,
+    description: 'Edit, fix, and improve existing subtitles',
+    links: [
+      { path: '/fix-subtitles', label: 'Fix Subtitles' },
+      { path: '/subtitle-timing-fixer', label: 'Subtitle Timing Fixer' },
+      { path: '/subtitle-line-break-fixer', label: 'Subtitle Line Break Fixer' },
+      { path: '/subtitle-grammar-fixer', label: 'Subtitle Grammar Fixer' },
+      { path: '/subtitle-language-checker', label: 'Subtitle Language Checker' },
     ],
   },
   {
-    category: 'Subtitle Analysis & Validation',
-    tools: [
-      { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check SRT/VTT files for timing gaps, overlaps, and format errors' },
-      { label: 'Subtitle Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Check CPS against Netflix, BBC, and EBU broadcast standards' },
-      { label: 'Subtitle Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Find subtitle lines that exceed Netflix and platform character limits' },
+    title: 'Subtitle Translation & Conversion',
+    icon: Languages,
+    description: 'Translate subtitles and convert formats',
+    links: [
+      { path: '/translate-subtitles', label: 'Translate Subtitles' },
+      { path: '/srt-translator', label: 'SRT Translator' },
+      { path: '/subtitle-translator', label: 'Subtitle Translator' },
+      { path: '/multilingual-subtitles', label: 'Multilingual Subtitles' },
+      { path: '/srt-to-vtt', label: 'SRT to VTT Converter' },
+      { path: '/subtitle-converter', label: 'Subtitle Converter' },
+      { path: '/tools/srt-to-vtt', label: 'Free SRT to VTT Tool' },
     ],
   },
   {
-    category: 'Subtitle Text Tools',
-    tools: [
-      { label: 'SRT to Plain Text', path: '/tools/srt-to-text', desc: 'Extract readable transcript text from SRT subtitle files' },
-      { label: 'Subtitle Word Counter', path: '/tools/subtitle-word-counter', desc: 'Count words, characters, cues, and speaking rate from subtitles' },
+    title: 'Subtitle Validation & Tools',
+    icon: Zap,
+    description: 'Check, validate, and analyze subtitles',
+    links: [
+      { path: '/subtitle-validator', label: 'Subtitle Validator' },
+      { path: '/subtitle-word-counter', label: 'Subtitle Word Counter' },
+      { path: '/subtitle-character-checker', label: 'Subtitle Character Checker' },
+      { path: '/subtitle-reading-speed', label: 'Subtitle Reading Speed' },
+      { path: '/tools/merge-srt-files', label: 'Merge SRT Files' },
+      { path: '/tools/srt-to-text', label: 'SRT to Text' },
+      { path: '/tools/srt-to-sbv', label: 'SRT to SBV' },
+      { path: '/tools/ass-to-srt', label: 'ASS to SRT' },
+      { path: '/tools/ttml-to-srt', label: 'TTML to SRT' },
+      { path: '/tools/shift-subtitle-timing', label: 'Shift Subtitle Timing' },
+    ],
+  },
+  {
+    title: 'Subtitle Standards & Reference',
+    icon: Wand2,
+    description: 'Learn subtitle formats and best practices',
+    links: [
+      { path: '/subtitle-resources', label: 'Subtitle Resources & Standards' },
+      { path: '/open-captions-vs-closed-captions', label: 'Open vs Closed Captions' },
+      { path: '/free-captions-and-subtitles', label: 'Free Captions & Subtitles' },
+      { path: '/ada-video-captions', label: 'ADA Video Captions' },
+      { path: '/sdh-subtitles', label: 'SDH Subtitles' },
+      { path: '/hardcoded-captions', label: 'Hardcoded Captions' },
     ],
   },
 ]
@@ -56,35 +93,52 @@ export default function SubtitleToolsHub() {
         canonicalPath="/subtitle-tools"
       />
       {/* Hero */}
-      <div className="bg-gradient-to-br from-violet-600 to-violet-800 text-white py-16 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-violet-200 text-sm font-semibold uppercase tracking-widest mb-3">Free Online Tools</p>
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">Free Subtitle Tools for Creators</h1>
-          <p className="text-lg text-violet-100 max-w-2xl mx-auto">SRT, VTT, timing, validation, and analysis — all browser-based, no account needed, no upload limits.</p>
+      <div className="bg-gradient-to-br from-pink-600 to-rose-800 text-white py-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
+            Subtitle Tools & Resources
+          </h1>
+          <p className="text-lg text-pink-100 max-w-2xl">
+            Complete toolkit for subtitle creation, translation, editing, and conversion. Perfect for creators, studios, and video professionals.
+          </p>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 py-12 space-y-12">
+      <div className="max-w-6xl mx-auto px-4 py-12">
         <OpenStatsStrip />
 
         {/* Tool Grid */}
-        {SUBTITLE_TOOLS.map((group) => (
-          <section key={group.category}>
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">{group.category}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {group.tools.map((tool) => (
-                <Link
-                  key={tool.path}
-                  to={tool.path}
-                  className="block rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:border-violet-400 hover:shadow-sm transition-all group"
-                >
-                  <p className="font-semibold text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-400 text-sm">{tool.label}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{tool.desc}</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 my-12">
+          {SUBTITLE_TOOLS.map((category, idx) => {
+            const Icon = category.icon
+            return (
+              <div key={idx} className="space-y-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                    <Icon className="w-6 h-6 text-pink-600" />
+                    {category.title}
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400">{category.description}</p>
+                </div>
+                <ul className="space-y-2">
+                  {category.links.map((link) => (
+                    <li key={link.path}>
+                      <Link
+                        to={link.path}
+                        className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-pink-400 dark:hover:border-pink-500 hover:bg-pink-50 dark:hover:bg-gray-800 transition-colors group"
+                      >
+                        <span className="text-gray-900 dark:text-gray-100 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">
+                          {link.label}
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-pink-600 transition-colors" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          })}
+        </div>
 
         {/* What are subtitle tools */}
         <section className="space-y-4">

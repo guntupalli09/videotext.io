@@ -86,50 +86,31 @@ export default function Footer() {
 
           {/* Links */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Links</h3>
+            <h3 className="text-white font-semibold mb-4">Navigation</h3>
             <ul className="space-y-2 text-sm">
               <li><Link to="/" className="hover:text-white transition-colors">All tools</Link></li>
+              <li><Link to="/guide" className="hover:text-white transition-colors">Guide</Link></li>
+              <li><Link to="/compare" className="hover:text-white transition-colors">Compare</Link></li>
+              <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
               <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
               <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
               <li><Link to="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
-              <li><Link to="/guide" className="hover:text-white transition-colors">Guide</Link></li>
-              <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
-              <li><Link to="/compare" className="hover:text-white transition-colors">Compare tools</Link></li>
               <li><Link to="/open" className="hover:text-white transition-colors">Open stats</Link></li>
-              <li><Link to="/transcription-benchmark" className="hover:text-white transition-colors">Transcription benchmark</Link></li>
-              <li><Link to="/accuracy-test" className="hover:text-white transition-colors">Accuracy test</Link></li>
-              <li><Link to="/best-transcription-tool" className="hover:text-white transition-colors">Best transcription tool</Link></li>
-              <li><Link to="/fastest-transcription-software" className="hover:text-white transition-colors">Fastest transcription software</Link></li>
-              <li><Link to="/fastest-transcription-tool" className="hover:text-white transition-colors">Fastest transcription tool</Link></li>
-              <li><Link to="/otter-vs-videotext" className="hover:text-white transition-colors">Otter vs VideoText</Link></li>
-              <li><Link to="/descript-vs-videotext" className="hover:text-white transition-colors">Descript vs VideoText</Link></li>
-              <li><Link to="/ai-transcription-tools" className="hover:text-white transition-colors">AI transcription tools</Link></li>
-              <li><Link to="/videotext-vs-turboscribe" className="hover:text-white transition-colors">VideoText vs TurboScribe</Link></li>
-              <li><Link to="/videotext-vs-rev" className="hover:text-white transition-colors">VideoText vs Rev</Link></li>
-              <li><Link to="/best-otter-alternatives" className="hover:text-white transition-colors">Best Otter alternatives</Link></li>
-              <li><Link to="/best-descript-alternatives" className="hover:text-white transition-colors">Best Descript alternatives</Link></li>
-              <li><Link to="/ai-transcription-workflow" className="hover:text-white transition-colors">AI transcription workflow</Link></li>
-              <li><Link to="/otter-vs-videotext" className="hover:text-white transition-colors">Otter vs VideoText</Link></li>
-              <li><Link to="/descript-vs-videotext" className="hover:text-white transition-colors">Descript vs VideoText</Link></li>
-              <li><Link to="/ai-transcription-tools" className="hover:text-white transition-colors">AI transcription tools</Link></li>
               <li><Link to="/changelog" className="hover:text-white transition-colors">Changelog</Link></li>
             </ul>
           </div>
 
-          {/* Alternatives */}
+          {/* Tools & Resources */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Alternatives</h3>
+            <h3 className="text-white font-semibold mb-4">Tools & Resources</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/descript-alternative" className="hover:text-white transition-colors">Descript alternative</Link></li>
-              <li><Link to="/otter-ai-alternative" className="hover:text-white transition-colors">Otter.ai alternative</Link></li>
-              <li><Link to="/trint-alternative" className="hover:text-white transition-colors">Trint alternative</Link></li>
-              <li><Link to="/rev-alternative" className="hover:text-white transition-colors">Rev alternative</Link></li>
-              <li><Link to="/happyscribe-alternative" className="hover:text-white transition-colors">HappyScribe alternative</Link></li>
-              <li><Link to="/sonix-alternative" className="hover:text-white transition-colors">Sonix alternative</Link></li>
-              <li><Link to="/easyscribe-alternative" className="hover:text-white transition-colors">EasyScribe alternative</Link></li>
-              <li><Link to="/notta-alternative" className="hover:text-white transition-colors">Notta alternative</Link></li>
-              <li><Link to="/tactiq-alternative" className="hover:text-white transition-colors">Tactiq alternative</Link></li>
-              <li><Link to="/subly-alternative" className="hover:text-white transition-colors">Subly alternative</Link></li>
+              <li><Link to="/transcription-tools" className="hover:text-white transition-colors">Transcription tools</Link></li>
+              <li><Link to="/subtitle-tools" className="hover:text-white transition-colors">Subtitle tools</Link></li>
+              <li><Link to="/tools" className="hover:text-white transition-colors">Free tools</Link></li>
+              <li><Link to="/alternatives" className="hover:text-white transition-colors">All alternatives</Link></li>
+              <li><Link to="/subtitle-resources" className="hover:text-white transition-colors">Subtitle resources</Link></li>
+              <li><Link to="/transcription-benchmark" className="hover:text-white transition-colors">Transcription benchmark</Link></li>
+              <li><Link to="/accuracy-test" className="hover:text-white transition-colors">Accuracy test</Link></li>
             </ul>
           </div>
 
