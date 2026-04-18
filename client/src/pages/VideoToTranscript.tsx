@@ -1199,18 +1199,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const url = youtubeUrlInput.trim()
     if (!url) { toast.error('Please enter a YouTube URL'); return }
     if (!isYoutubeUrl(url)) { toast.error('Please enter a valid YouTube URL (youtube.com or youtu.be)'); return }
-
-    // Gate 1: Require authentication for YouTube feature
-    if (!isLoggedIn()) {
-      trackEvent('youtube_submission_gate_auth', { tool: 'video-to-transcript', source: 'youtube' })
-      setAuthModalMode('signup-combo')
-      setShowAuthModal(true)
-      return
-    }
-
     const _isPaid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
 
-    // Gate 2: Quota check (mirrors handleProcess) - free plan: 3 jobs total
+    // Quota check (mirrors handleProcess)
     let usageData: Awaited<ReturnType<typeof getCurrentUsage>> | null = null
     try {
       usageData = await getCurrentUsage()
@@ -1226,9 +1217,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         ? used >= (usageData.limit ?? 3)
         : (totalAvailable > 0 && used >= totalAvailable)
       if (atOrOverLimit) {
-        setPaywallReason('FREE_TIER_LIMIT_REACHED')
         setShowPaywall(true)
-        trackEvent('paywall_shown', { tool: 'video-to-transcript', source: 'youtube', reason: 'free_tier_limit' })
+        trackEvent('paywall_shown', { tool: 'video-to-transcript', source: 'youtube' })
         return
       }
     } catch { /* fall through on usage error */ }
