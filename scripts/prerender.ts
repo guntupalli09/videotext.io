@@ -789,9 +789,9 @@ function parseRegistryEntries(): ParsedEntry[] {
       keywords = keywordMatches.map(m => m[1].replace(/\\'/g, "'"))
     }
 
-    // Check indexable
-    if (/indexable:\s*false/.test(block)) continue
-
+    // Note: We INCLUDE all entries (both indexable: true and false) in prerender
+    // The indexable flag only controls sitemap inclusion, not HTML generation.
+    // All SEO pages must be prerendered for crawler visibility.
     entries.push({ path: routePath, title, description, h1, breadcrumbLabel, faq, keywords })
   }
 
@@ -806,6 +806,37 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
+}
+
+// Generate keywords from title and path if not explicitly provided
+function generateKeywordsFromTitle(title: string, path: string): string[] {
+  const cleanTitle = title
+    .replace(/\s*\|\s*VideoText$/i, '')
+    .replace(/–|—/g, '-')
+    .trim()
+
+  const words = cleanTitle
+    .toLowerCase()
+    .split(/[\s\-]+/)
+    .filter(w => w.length > 2 && !['the', 'and', 'for', 'all', 'any', 'you', 'can', 'get', 'how', 'why', 'are', 'this', 'that', 'from', 'with', 'into', 'your', 'free'].includes(w))
+
+  const keywords = new Set<string>()
+
+  // Add title-based keywords
+  if (words.length > 0) {
+    keywords.add(words.join(' '))
+    keywords.add(`${words[0]} online`)
+    keywords.add(`free ${words[0]}`)
+  }
+
+  // Add path-based keywords
+  const pathWords = path.slice(1).split('-').filter(w => w.length > 2)
+  if (pathWords.length > 0) {
+    keywords.add(pathWords.join(' '))
+    keywords.add(`${pathWords[0]} ${pathWords[1] || 'tool'}`)
+  }
+
+  return Array.from(keywords).slice(0, 8)
 }
 
 // Hub page link definitions (must match React component lists)
@@ -1174,7 +1205,7 @@ function main() {
       h1: e.h1,
       faq: e.faq,
       breadcrumbLabel: e.breadcrumbLabel,
-      keywords: e.keywords,
+      keywords: e.keywords || generateKeywordsFromTitle(e.title, e.path),
       valueProposition: e.valueProposition,
       comparison: e.comparison,
       howToUse: e.howToUse,
@@ -1187,7 +1218,7 @@ function main() {
       h1: e.h1,
       faq: e.faq,
       breadcrumbLabel: e.breadcrumbLabel,
-      keywords: e.keywords,
+      keywords: e.keywords || generateKeywordsFromTitle(e.title, e.path),
       valueProposition: e.valueProposition,
       comparison: e.comparison,
       howToUse: e.howToUse,
