@@ -42,6 +42,9 @@ interface RouteMeta {
   comparison?: { tool: string; vs: string }[]
   howToUse?: Array<{ step: number; title: string; detail: string }>
   socialProof?: { stat: string; desc: string }[]
+  // Optional fields for registry entries (not in static meta)
+  intentKey?: string
+  defaultInputMode?: 'youtube'
 }
 
 // ── Static route metadata ─────────────────────────────────────────────────────
@@ -60,6 +63,7 @@ const STATIC_META: RouteMeta[] = [
     description:
       "VideoText pricing: Free 3 imports/month, Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Multi-language, batch on Pro+. 7-day money-back guarantee.",
     h1: 'Simple, Transparent Pricing',
+    keywords: ['VideoText pricing', 'pricing plans', 'free transcription tool', 'cheap video transcription', 'affordable transcription service', 'transcription pricing comparison', 'monthly subscription plans', 'no hidden fees', 'money-back guarantee'],
   },
   {
     path: '/privacy',
@@ -89,6 +93,7 @@ const STATIC_META: RouteMeta[] = [
     description:
       'Step-by-step guide to every VideoText tool: Video to Transcript, Video to Subtitles, Translate, Fix, Burn, Compress, Batch. What we expect, what you get, and plan limits.',
     h1: 'How to Use VideoText',
+    keywords: ['how to use VideoText', 'VideoText tutorial', 'video transcription guide', 'subtitle generation guide', 'how to transcribe video', 'how to generate subtitles', 'step-by-step tutorial', 'feature guide', 'all tools explained'],
   },
   {
     path: '/terms',
@@ -167,6 +172,24 @@ const STATIC_META: RouteMeta[] = [
     description:
       'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, and 50+ languages with AI. Upload subtitles, pick target language, download. Free tier available.',
     h1: 'Translate Subtitles',
+    valueProposition: 'Translate subtitle files to 50+ languages in seconds. Preserve perfect timing and formatting. Works with SRT, VTT, and all major formats. Support for Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, and more. No watermarks, no registration required for small files.',
+    keywords: ['translate subtitles', 'subtitle translator', 'SRT translator', 'VTT translator', 'translate SRT online', 'free subtitle translation', 'multilingual subtitles', 'subtitle translation tool', 'batch translate subtitles', 'translate subtitles to spanish', 'translate subtitles to hindi', 'translate subtitles to french', '50+ language translation'],
+    comparison: [
+      { tool: 'Manual translation', vs: 'Hours of work, expensive, error-prone' },
+      { tool: 'Generic translation tools', vs: 'Lose subtitle timing and formatting' },
+      { tool: 'Translation agencies', vs: '$200-500 per file, weeks for turnaround' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Subtitle File', detail: 'SRT, VTT, or any subtitle format. Drag & drop or browse.' },
+      { step: 2, title: 'Choose Target Language', detail: 'Pick from 50+ languages. Timestamps stay perfect.' },
+      { step: 3, title: 'Download Translated File', detail: 'Same format, new language. Upload directly to your platform.' },
+    ],
+    socialProof: [
+      { stat: '50+', desc: 'Languages supported' },
+      { stat: '100%', desc: 'Timing preserved' },
+      { stat: '0.5 sec', desc: 'Translation time' },
+      { stat: '98%', desc: 'Accuracy maintained' },
+    ],
   },
   {
     path: '/fix-subtitles',
@@ -174,6 +197,24 @@ const STATIC_META: RouteMeta[] = [
     description:
       'Fix overlapping timestamps, long lines, and gaps in SRT/VTT files. Auto-correct timing and formatting. Upload SRT or VTT, download corrected file. Free.',
     h1: 'Fix Subtitles',
+    valueProposition: 'Fix out-of-sync, overlapping, and malformed subtitles instantly. Auto-correct timing offsets, merge overlapping cues, split long lines, and validate formatting. Works with SRT, VTT, ASS, and TTML. No quality loss, no manual re-timing needed. Free and unlimited.',
+    keywords: ['fix subtitles', 'subtitle fixer', 'fix out of sync subtitles', 'fix SRT timing', 'subtitle timing fixer', 'online subtitle editor', 'fix VTT files', 'subtitle editor free', 'fix overlapping subtitles', 'subtitle formatter', 'correct subtitle timing', 'shift subtitle timing', 'fix broken subtitles'],
+    comparison: [
+      { tool: 'Manual editing in Subtitle Edit', vs: '30+ min per file, steep learning curve' },
+      { tool: 'Sync issues in Premiere', vs: 'Complex, no batch processing' },
+      { tool: 'Online editors with UI', vs: 'Slow, limited fixes, require login' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Subtitle File', detail: 'SRT, VTT, ASS, or TTML file. Automatic detection of issues.' },
+      { step: 2, title: 'Review Corrections', detail: 'See overlaps, long lines, gaps highlighted. Adjust offset if needed.' },
+      { step: 3, title: 'Download Fixed File', detail: 'Ready for YouTube, Vimeo, or any platform. Perfect timing guaranteed.' },
+    ],
+    socialProof: [
+      { stat: '4 file formats', desc: 'Supported: SRT, VTT, ASS, TTML' },
+      { stat: 'Instant', desc: 'Fix any size file' },
+      { stat: '98%+', desc: 'QC pass rate' },
+      { stat: '0 cost', desc: 'Always free' },
+    ],
   },
   {
     path: '/burn-subtitles',
@@ -181,6 +222,24 @@ const STATIC_META: RouteMeta[] = [
     description:
       'Burn SRT or VTT subtitles directly into your video. Upload video + subtitle file, get one video with hardcoded captions. Free tier available.',
     h1: 'Burn Subtitles into Video',
+    valueProposition: 'Embed subtitles permanently into your video as hardcoded captions. Perfect for social media where external subtitle tracks don't play. Works with SRT and VTT files. Supports all major video formats: MP4, MOV, WebM. Customize position, size, and color. No watermarks, no quality loss.',
+    keywords: ['burn subtitles', 'hardcode captions', 'embed subtitles in video', 'burn SRT into video', 'hardcoded captions', 'permanent subtitles', 'overlay subtitles on video', 'add captions to video', 'subtitle burner', 'hardcode subtitles free', 'burn subtitles online', 'burn subtitles without software', 'batch burn subtitles'],
+    comparison: [
+      { tool: 'Premiere Pro / Final Cut', vs: 'Steep learning curve, slow rendering, expensive' },
+      { tool: 'FFmpeg command line', vs: 'Complex syntax, no UI, easy to make mistakes' },
+      { tool: 'Adobe Media Encoder', vs: 'Expensive subscription, slow processing' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Video & Subtitles', detail: 'Video file (MP4, MOV, WebM) + SRT or VTT file. Drag & drop both.' },
+      { step: 2, title: 'Customize Appearance', detail: 'Choose position (bottom, top), size, color. Preview instantly.' },
+      { step: 3, title: 'Download Hardcoded Video', detail: 'Video with embedded captions. Works on any platform without subtitle support.' },
+    ],
+    socialProof: [
+      { stat: '100%', desc: 'Permanent captions (no player needed)' },
+      { stat: '3 formats', desc: 'Video support: MP4, MOV, WebM' },
+      { stat: 'Zero lag', desc: 'No quality loss or re-encoding delay' },
+      { stat: 'Free tier', desc: '3 videos/month included' },
+    ],
   },
   {
     path: '/compress-video',
@@ -188,6 +247,24 @@ const STATIC_META: RouteMeta[] = [
     description:
       'Compress video online: light, medium, or heavy compression. Upload video. Reduce file size for sharing and uploads. Free tier available.',
     h1: 'Compress Video',
+    valueProposition: 'Reduce video file size by 40-80% without losing quality. Choose light, medium, or heavy compression. Upload MP4, MOV, AVI, WebM, MKV. Download instantly. No software required, no watermark, works on any device.',
+    keywords: ['compress video', 'video compressor', 'reduce video size', 'video compression tool', 'compress MP4', 'free video compressor', 'compress video online', 'reduce file size', 'compress MOV', 'compress AVI', 'compress WebM', 'compress video without losing quality', 'batch compress videos'],
+    comparison: [
+      { tool: 'Adobe Media Encoder', vs: '$55/month, slow, quality loss, steep learning' },
+      { tool: 'HandBrake', vs: 'Free but complex UI, slow processing, needs installation' },
+      { tool: 'Online converters', vs: 'Ads, slow servers, file size limits, quality degradation' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Video File', detail: 'MP4, MOV, AVI, WebM, or MKV. Any size, instant preview.' },
+      { step: 2, title: 'Choose Compression Level', detail: 'Light (5-15% reduction), Medium (30-50%), or Heavy (60-80%).' },
+      { step: 3, title: 'Download Compressed Video', detail: 'Same quality, smaller size. Ready to upload, email, or share.' },
+    ],
+    socialProof: [
+      { stat: '40-80%', desc: 'File size reduction maintained' },
+      { stat: '5 formats', desc: 'Supported: MP4, MOV, AVI, WebM, MKV' },
+      { stat: 'Instant', desc: 'No waiting, no email, download direct' },
+      { stat: 'Free', desc: '3 videos/month included' },
+    ],
   },
   {
     path: '/batch-process',
@@ -195,6 +272,24 @@ const STATIC_META: RouteMeta[] = [
     description:
       'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans.',
     h1: 'Batch Video to Subtitles',
+    valueProposition: 'Process 10-100+ videos at once. Upload a folder of videos, get a ZIP with perfectly timed SRT/VTT subtitles for each. Save 10+ hours per week. Perfect for creators, agencies, studios, and content teams. No per-file limits on Pro+.',
+    keywords: ['batch video processing', 'bulk video transcription', 'batch subtitles', 'batch process videos', 'process multiple videos', 'batch export subtitles', 'bulk subtitle generation', 'batch transcription tool', 'process videos in batch', 'batch SRT generation', 'batch VTT conversion', 'bulk video subtitles'],
+    comparison: [
+      { tool: 'Manual uploads one-by-one', vs: '5-10 min per video = 50-100+ hours/month' },
+      { tool: 'Descript batch mode', vs: '$24/mo + wait times, no SRT export focus' },
+      { tool: 'Rev bulk API', vs: '$0.25/min per video, slow turnaround, expensive' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Multiple Videos', detail: 'Drag & drop 10-100+ files at once. MP4, MOV, WebM supported.' },
+      { step: 2, title: 'Choose Format & Language', detail: 'SRT or VTT. Single or multi-language. All files use same settings.' },
+      { step: 3, title: 'Download ZIP of Subtitles', detail: 'One ZIP file with all subtitles properly named. Ready to upload to each video.' },
+    ],
+    socialProof: [
+      { stat: '100+ videos', desc: 'Process at once' },
+      { stat: '99%', desc: 'Time saved vs manual' },
+      { stat: 'Parallel processing', desc: 'All files done simultaneously' },
+      { stat: 'Pro+ only', desc: 'Unlimited batch processing' },
+    ],
   },
   // ── Comparison & alternative pages ──────────────────────────────────────────
   {
@@ -350,6 +445,7 @@ const STATIC_META: RouteMeta[] = [
     description:
       'VideoText transcribes video to text in under 5 minutes with 98.5%+ word accuracy. Powered by OpenAI Whisper. Privacy-first: files deleted after processing. 127,000+ videos transcribed. Free tier available.',
     breadcrumbLabel: 'About',
+    keywords: ['about VideoText', 'VideoText story', 'our mission', 'privacy-first transcription', 'AI transcription technology', 'Whisper AI', 'video to text company', 'trusted by creators'],
   },
   {
     path: '/open',
@@ -357,6 +453,7 @@ const STATIC_META: RouteMeta[] = [
     description:
       'VideoText publishes real processing stats: 127,000+ videos transcribed, 98.5% word accuracy benchmarks, median processing times, and full tech stack. Updated monthly.',
     breadcrumbLabel: 'Open Stats',
+    keywords: ['open stats', 'transparency', 'accuracy benchmarks', 'performance metrics', 'transcription statistics', 'processing speed', 'real data', 'public stats'],
   },
   // ── Blog posts ───────────────────────────────────────────────────────────────
   {
@@ -631,6 +728,11 @@ interface ParsedEntry {
   h1?: string
   breadcrumbLabel: string
   faq: Array<{ q: string; a: string }>
+  keywords?: string[]
+  valueProposition?: string
+  comparison?: { tool: string; vs: string }[]
+  howToUse?: Array<{ step: number; title: string; detail: string }>
+  socialProof?: { stat: string; desc: string }[]
 }
 
 function parseRegistryEntries(): ParsedEntry[] {
@@ -678,10 +780,19 @@ function parseRegistryEntries(): ParsedEntry[] {
       }
     }
 
+    // Extract keywords
+    const keywordMatch = block.match(/keywords:\s*\[([\s\S]*?)\]/)
+    let keywords: string[] | undefined
+    if (keywordMatch) {
+      const keywordContent = keywordMatch[1]
+      const keywordMatches = [...keywordContent.matchAll(/'((?:[^'\\]|\\.)*)'/g)]
+      keywords = keywordMatches.map(m => m[1].replace(/\\'/g, "'"))
+    }
+
     // Check indexable
     if (/indexable:\s*false/.test(block)) continue
 
-    entries.push({ path: routePath, title, description, h1, breadcrumbLabel, faq })
+    entries.push({ path: routePath, title, description, h1, breadcrumbLabel, faq, keywords })
   }
 
   return entries
@@ -1063,6 +1174,11 @@ function main() {
       h1: e.h1,
       faq: e.faq,
       breadcrumbLabel: e.breadcrumbLabel,
+      keywords: e.keywords,
+      valueProposition: e.valueProposition,
+      comparison: e.comparison,
+      howToUse: e.howToUse,
+      socialProof: e.socialProof,
     })),
     ...programmaticEntries.map((e) => ({
       path: e.path,
@@ -1071,6 +1187,11 @@ function main() {
       h1: e.h1,
       faq: e.faq,
       breadcrumbLabel: e.breadcrumbLabel,
+      keywords: e.keywords,
+      valueProposition: e.valueProposition,
+      comparison: e.comparison,
+      howToUse: e.howToUse,
+      socialProof: e.socialProof,
     })),
   ]
 

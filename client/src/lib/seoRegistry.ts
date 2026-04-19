@@ -97,6 +97,8 @@ export interface SeoRegistryEntry {
   deepContent?: SeoDeepContent
   /** Optional tutorial blocks for instructional landing pages (e.g. how-to pages). */
   tutorialContent?: SeoTutorialContent
+  /** Target keywords for SEO and crawler discovery. Injected into prerendered HTML. */
+  keywords?: string[]
 }
 
 const MANUAL_REGISTRY: SeoRegistryEntry[] = [
@@ -110,6 +112,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Turn any video into text in seconds. Upload a video, get a transcript, then view it in English, Hindi, Telugu, Spanish, Chinese, or Russian. Sign up for free to try.',
     breadcrumbLabel: 'Video to Text',
     toolKey: 'video-to-transcript',
+    keywords: ['video to text', 'convert video to text', 'video to text online', 'transcribe video to text', 'video transcription', 'free video to text', 'AI video transcription', 'fast video to text conversion'],
     // Hub page: links to all major intent pages + other money pages
     relatedSlugs: [
       // Major use-case clusters
