@@ -32,9 +32,19 @@ interface RouteMeta {
   path: string
   title: string
   description: string
+  h1?: string
   faq?: Array<{ q: string; a: string }>
   breadcrumbLabel?: string
   noindex?: boolean
+  // High-conversion content fields
+  valueProposition?: string
+  keywords?: string[]
+  comparison?: { tool: string; vs: string }[]
+  howToUse?: Array<{ step: number; title: string; detail: string }>
+  socialProof?: { stat: string; desc: string }[]
+  // Optional fields for registry entries (not in static meta)
+  intentKey?: string
+  defaultInputMode?: 'youtube'
 }
 
 // ── Static route metadata ─────────────────────────────────────────────────────
@@ -45,24 +55,29 @@ const STATIC_META: RouteMeta[] = [
     title: `Video to Text & Subtitles — Free Online Tools | ${SITE_NAME}`,
     description:
       'VideoText: AI-powered video to text and subtitle tools. Transcribe video to transcript, generate SRT/VTT, translate subtitles, fix timing, burn captions, compress video. Sign up for free to try.',
+    h1: 'AI-Powered Video to Text & Subtitles',
   },
   {
     path: '/pricing',
     title: `Pricing — Free, Basic, Pro & Agency Plans | ${SITE_NAME}`,
     description:
       "VideoText pricing: Free 3 imports/month, Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Multi-language, batch on Pro+. 7-day money-back guarantee.",
+    h1: 'Simple, Transparent Pricing',
+    keywords: ['VideoText pricing', 'pricing plans', 'free transcription tool', 'cheap video transcription', 'affordable transcription service', 'transcription pricing comparison', 'monthly subscription plans', 'no hidden fees', 'money-back guarantee'],
   },
   {
     path: '/privacy',
     title: `Privacy Policy — We Don't Store Your Data | ${SITE_NAME}`,
     description:
       "VideoText privacy: We process your files and delete them. We don't keep your uploads, transcripts, or outputs. Your content stays yours.",
+    h1: 'Privacy Policy',
   },
   {
     path: '/faq',
     title: `FAQ — Privacy, Billing, Tools | ${SITE_NAME}`,
     description:
       "Frequently asked questions about VideoText: privacy, data storage, billing, free tier, translation, and tools. Your files are processed and deleted immediately.",
+    h1: 'Frequently Asked Questions',
     faq: [
       { q: 'Do you store my videos or files?', a: "No. We process your files and then delete them. We don't keep your uploads, transcripts, or generated outputs. Your content is never stored on our servers." },
       { q: 'Is my content used for AI training?', a: "No. Your content is used only to deliver the service you requested. We do not use it for training AI models." },
@@ -77,66 +92,204 @@ const STATIC_META: RouteMeta[] = [
     title: `How to Use VideoText — Tool Guide & Features | ${SITE_NAME}`,
     description:
       'Step-by-step guide to every VideoText tool: Video to Transcript, Video to Subtitles, Translate, Fix, Burn, Compress, Batch. What we expect, what you get, and plan limits.',
+    h1: 'How to Use VideoText',
+    keywords: ['how to use VideoText', 'VideoText tutorial', 'video transcription guide', 'subtitle generation guide', 'how to transcribe video', 'how to generate subtitles', 'step-by-step tutorial', 'feature guide', 'all tools explained'],
   },
   {
     path: '/terms',
     title: `Terms of Service | ${SITE_NAME}`,
     description:
       "Terms of use for VideoText. We don't store your data. Billing via Stripe. Use the service in accordance with these terms.",
+    h1: 'Terms of Service',
   },
   {
     path: '/blog',
     title: `Blog — Engineering, Privacy & Product | ${SITE_NAME}`,
     description:
       'The VideoText blog: how the processing pipeline works, why we delete your files, batch subtitles for creators, transcription guides, and product updates.',
+    h1: 'Blog',
   },
   {
     path: '/changelog',
     title: `Changelog — What's New | ${SITE_NAME}`,
     description:
       "VideoText changelog: new features, performance improvements, and bug fixes. Updated every release.",
+    h1: 'Changelog',
   },
   {
     path: '/video-to-transcript',
     title: `Video to Transcript — Free AI Transcription & Translation | ${SITE_NAME}`,
     description:
       'Convert video to text with AI. View transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian. Upload video, get plain-text transcript. Summary, chapters, speakers. Free tier.',
+    h1: 'Video to Transcript',
+    valueProposition: 'Convert any video into searchable, editable text in under 5 minutes. 98.5%+ accuracy with speaker labels, chapters, and multi-language translation. No download limits. Files deleted after processing.',
+    keywords: ['video to transcript', 'transcribe video', 'AI transcription', 'video to text', 'speech to text', 'accurate transcription', 'free transcription tool', 'transcription software'],
+    comparison: [
+      { tool: 'Otter.ai', vs: '18-30 min processing, $120/year minimum' },
+      { tool: 'Descript', vs: '15 min processing, $24/month, desktop only' },
+      { tool: 'Rev', vs: 'Human transcription, $1.25/min, slow turnaround' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Your Video', detail: 'MP4, MOV, AVI, WebM, MKV supported. Or paste a YouTube URL directly.' },
+      { step: 2, title: 'Get Instant Transcript', detail: 'AI processing runs in seconds. You\'ll see the transcript building in real-time.' },
+      { step: 3, title: 'Edit & Export', detail: 'Copy text, download TXT, get speaker labels, or generate SRT subtitles.' },
+    ],
+    socialProof: [
+      { stat: '127,000+', desc: 'Videos transcribed' },
+      { stat: '98.5%', desc: 'Word accuracy rate' },
+      { stat: '3-5 min', desc: 'Average processing time' },
+      { stat: '50,000+', desc: 'Creators using VideoText' },
+    ],
   },
   {
     path: '/video-to-subtitles',
     title: `Video to Subtitles — SRT & VTT Generator | ${SITE_NAME}`,
     description:
       'Generate SRT and VTT subtitle files from any video with AI. Upload video. Single or multi-language. Free tier available.',
+    h1: 'Video to Subtitles',
+    valueProposition: 'Create publication-ready SRT and VTT subtitle files in seconds. Perfect for YouTube, Vimeo, social media. No manual timing. No transcription service delays. Free tier: 3 imports/month.',
+    keywords: ['video to subtitles', 'subtitle generator', 'SRT generator', 'VTT generator', 'auto subtitle', 'caption generator', 'subtitle maker', 'automatic captions'],
+    comparison: [
+      { tool: 'Submagic', vs: 'Expensive per video, limited exports' },
+      { tool: 'Kapwing', vs: 'Video editor overhead, not transcription-focused' },
+      { tool: 'YouTube Auto-Captions', vs: 'Lower accuracy, no export as files' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Video File', detail: 'Drag & drop MP4, MOV, or paste a YouTube link. Processing starts instantly.' },
+      { step: 2, title: 'Choose Format', detail: 'Select SRT (universal) or VTT (modern web players). Single or multi-language.' },
+      { step: 3, title: 'Download & Upload', detail: 'Get your .srt or .vtt file in seconds. Upload to YouTube Studio, Vimeo, or any player.' },
+    ],
+    socialProof: [
+      { stat: '50,000+', desc: 'Creators generating subtitles' },
+      { stat: '98.5%', desc: 'Accuracy (better than YouTube)' },
+      { stat: '2-4 min', desc: 'Time to publication-ready subtitles' },
+      { stat: '99%', desc: 'Format compatibility (YouTube, Vimeo, TikTok)' },
+    ],
   },
   {
     path: '/translate-subtitles',
     title: `Translate Subtitles — SRT/VTT to Any Language | ${SITE_NAME}`,
     description:
       'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, and 50+ languages with AI. Upload subtitles, pick target language, download. Free tier available.',
+    h1: 'Translate Subtitles',
+    valueProposition: 'Translate subtitle files to 50+ languages in seconds. Preserve perfect timing and formatting. Works with SRT, VTT, and all major formats. Support for Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, and more. No watermarks, no registration required for small files.',
+    keywords: ['translate subtitles', 'subtitle translator', 'SRT translator', 'VTT translator', 'translate SRT online', 'free subtitle translation', 'multilingual subtitles', 'subtitle translation tool', 'batch translate subtitles', 'translate subtitles to spanish', 'translate subtitles to hindi', 'translate subtitles to french', '50+ language translation'],
+    comparison: [
+      { tool: 'Manual translation', vs: 'Hours of work, expensive, error-prone' },
+      { tool: 'Generic translation tools', vs: 'Lose subtitle timing and formatting' },
+      { tool: 'Translation agencies', vs: '$200-500 per file, weeks for turnaround' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Subtitle File', detail: 'SRT, VTT, or any subtitle format. Drag & drop or browse.' },
+      { step: 2, title: 'Choose Target Language', detail: 'Pick from 50+ languages. Timestamps stay perfect.' },
+      { step: 3, title: 'Download Translated File', detail: 'Same format, new language. Upload directly to your platform.' },
+    ],
+    socialProof: [
+      { stat: '50+', desc: 'Languages supported' },
+      { stat: '100%', desc: 'Timing preserved' },
+      { stat: '0.5 sec', desc: 'Translation time' },
+      { stat: '98%', desc: 'Accuracy maintained' },
+    ],
   },
   {
     path: '/fix-subtitles',
     title: `Fix Subtitles — Auto-Correct Timing & Format | ${SITE_NAME}`,
     description:
       'Fix overlapping timestamps, long lines, and gaps in SRT/VTT files. Auto-correct timing and formatting. Upload SRT or VTT, download corrected file. Free.',
+    h1: 'Fix Subtitles',
+    valueProposition: 'Fix out-of-sync, overlapping, and malformed subtitles instantly. Auto-correct timing offsets, merge overlapping cues, split long lines, and validate formatting. Works with SRT, VTT, ASS, and TTML. No quality loss, no manual re-timing needed. Free and unlimited.',
+    keywords: ['fix subtitles', 'subtitle fixer', 'fix out of sync subtitles', 'fix SRT timing', 'subtitle timing fixer', 'online subtitle editor', 'fix VTT files', 'subtitle editor free', 'fix overlapping subtitles', 'subtitle formatter', 'correct subtitle timing', 'shift subtitle timing', 'fix broken subtitles'],
+    comparison: [
+      { tool: 'Manual editing in Subtitle Edit', vs: '30+ min per file, steep learning curve' },
+      { tool: 'Sync issues in Premiere', vs: 'Complex, no batch processing' },
+      { tool: 'Online editors with UI', vs: 'Slow, limited fixes, require login' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Subtitle File', detail: 'SRT, VTT, ASS, or TTML file. Automatic detection of issues.' },
+      { step: 2, title: 'Review Corrections', detail: 'See overlaps, long lines, gaps highlighted. Adjust offset if needed.' },
+      { step: 3, title: 'Download Fixed File', detail: 'Ready for YouTube, Vimeo, or any platform. Perfect timing guaranteed.' },
+    ],
+    socialProof: [
+      { stat: '4 file formats', desc: 'Supported: SRT, VTT, ASS, TTML' },
+      { stat: 'Instant', desc: 'Fix any size file' },
+      { stat: '98%+', desc: 'QC pass rate' },
+      { stat: '0 cost', desc: 'Always free' },
+    ],
   },
   {
     path: '/burn-subtitles',
     title: `Burn Subtitles into Video — Hardcode Captions | ${SITE_NAME}`,
     description:
       'Burn SRT or VTT subtitles directly into your video. Upload video + subtitle file, get one video with hardcoded captions. Free tier available.',
+    h1: 'Burn Subtitles into Video',
+    valueProposition: 'Embed subtitles permanently into your video as hardcoded captions. Perfect for social media where external subtitle tracks won\'t disappear. Works with SRT and VTT files. Supports all major video formats: MP4, MOV, WebM. Customize position, size, and color. No watermarks, no quality loss.',
+    keywords: ['burn subtitles', 'hardcode captions', 'embed subtitles in video', 'burn SRT into video', 'hardcoded captions', 'permanent subtitles', 'overlay subtitles on video', 'add captions to video', 'subtitle burner', 'hardcode subtitles free', 'burn subtitles online', 'burn subtitles without software', 'batch burn subtitles'],
+    comparison: [
+      { tool: 'Premiere Pro / Final Cut', vs: 'Steep learning curve, slow rendering, expensive' },
+      { tool: 'FFmpeg command line', vs: 'Complex syntax, no UI, easy to make mistakes' },
+      { tool: 'Adobe Media Encoder', vs: 'Expensive subscription, slow processing' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Video & Subtitles', detail: 'Video file (MP4, MOV, WebM) + SRT or VTT file. Drag & drop both.' },
+      { step: 2, title: 'Customize Appearance', detail: 'Choose position (bottom, top), size, color. Preview instantly.' },
+      { step: 3, title: 'Download Hardcoded Video', detail: 'Video with embedded captions. Works on any platform without subtitle support.' },
+    ],
+    socialProof: [
+      { stat: '100%', desc: 'Permanent captions (no player needed)' },
+      { stat: '3 formats', desc: 'Video support: MP4, MOV, WebM' },
+      { stat: 'Zero lag', desc: 'No quality loss or re-encoding delay' },
+      { stat: 'Free tier', desc: '3 videos/month included' },
+    ],
   },
   {
     path: '/compress-video',
     title: `Compress Video — Reduce File Size Online | ${SITE_NAME}`,
     description:
       'Compress video online: light, medium, or heavy compression. Upload video. Reduce file size for sharing and uploads. Free tier available.',
+    h1: 'Compress Video',
+    valueProposition: 'Reduce video file size by 40-80% without losing quality. Choose light, medium, or heavy compression. Upload MP4, MOV, AVI, WebM, MKV. Download instantly. No software required, no watermark, works on any device.',
+    keywords: ['compress video', 'video compressor', 'reduce video size', 'video compression tool', 'compress MP4', 'free video compressor', 'compress video online', 'reduce file size', 'compress MOV', 'compress AVI', 'compress WebM', 'compress video without losing quality', 'batch compress videos'],
+    comparison: [
+      { tool: 'Adobe Media Encoder', vs: '$55/month, slow, quality loss, steep learning' },
+      { tool: 'HandBrake', vs: 'Free but complex UI, slow processing, needs installation' },
+      { tool: 'Online converters', vs: 'Ads, slow servers, file size limits, quality degradation' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Video File', detail: 'MP4, MOV, AVI, WebM, or MKV. Any size, instant preview.' },
+      { step: 2, title: 'Choose Compression Level', detail: 'Light (5-15% reduction), Medium (30-50%), or Heavy (60-80%).' },
+      { step: 3, title: 'Download Compressed Video', detail: 'Same quality, smaller size. Ready to upload, email, or share.' },
+    ],
+    socialProof: [
+      { stat: '40-80%', desc: 'File size reduction maintained' },
+      { stat: '5 formats', desc: 'Supported: MP4, MOV, AVI, WebM, MKV' },
+      { stat: 'Instant', desc: 'No waiting, no email, download direct' },
+      { stat: 'Free', desc: '3 videos/month included' },
+    ],
   },
   {
     path: '/batch-process',
     title: `Batch Video to Subtitles — Multiple Videos at Once | ${SITE_NAME}`,
     description:
       'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans.',
+    h1: 'Batch Video to Subtitles',
+    valueProposition: 'Process 10-100+ videos at once. Upload a folder of videos, get a ZIP with perfectly timed SRT/VTT subtitles for each. Save 10+ hours per week. Perfect for creators, agencies, studios, and content teams. No per-file limits on Pro+.',
+    keywords: ['batch video processing', 'bulk video transcription', 'batch subtitles', 'batch process videos', 'process multiple videos', 'batch export subtitles', 'bulk subtitle generation', 'batch transcription tool', 'process videos in batch', 'batch SRT generation', 'batch VTT conversion', 'bulk video subtitles'],
+    comparison: [
+      { tool: 'Manual uploads one-by-one', vs: '5-10 min per video = 50-100+ hours/month' },
+      { tool: 'Descript batch mode', vs: '$24/mo + wait times, no SRT export focus' },
+      { tool: 'Rev bulk API', vs: '$0.25/min per video, slow turnaround, expensive' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Multiple Videos', detail: 'Drag & drop 10-100+ files at once. MP4, MOV, WebM supported.' },
+      { step: 2, title: 'Choose Format & Language', detail: 'SRT or VTT. Single or multi-language. All files use same settings.' },
+      { step: 3, title: 'Download ZIP of Subtitles', detail: 'One ZIP file with all subtitles properly named. Ready to upload to each video.' },
+    ],
+    socialProof: [
+      { stat: '100+ videos', desc: 'Process at once' },
+      { stat: '99%', desc: 'Time saved vs manual' },
+      { stat: 'Parallel processing', desc: 'All files done simultaneously' },
+      { stat: 'Pro+ only', desc: 'Unlimited batch processing' },
+    ],
   },
   // ── Comparison & alternative pages ──────────────────────────────────────────
   {
@@ -144,7 +297,51 @@ const STATIC_META: RouteMeta[] = [
     title: `VideoText vs Descript, Otter.ai & Trint — Full Comparison | ${SITE_NAME}`,
     description:
       'Compare VideoText against Descript, Otter.ai, and Trint on speed, accuracy, pricing, and privacy. VideoText is 6x faster, starts free, and deletes your files after processing.',
+    h1: 'Compare VideoText',
     breadcrumbLabel: 'Compare',
+    valueProposition: 'Switch from Otter, Descript, or Trint and save 80% on costs while cutting processing time in half. Same AI accuracy. Better privacy. No vendor lock-in.',
+    keywords: ['transcription tools comparison', 'Otter alternative', 'Descript alternative', 'best transcription software', 'affordable transcription', 'fast transcription'],
+    comparison: [
+      { tool: 'Otter.ai', vs: '$180/year, 20+ min processing, calls only' },
+      { tool: 'Descript', vs: '$288/year, 15 min processing, desktop app' },
+      { tool: 'Trint', vs: '$288/year, live transcription only, expensive' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Export Your Data', detail: 'Download transcripts and settings from your current tool.' },
+      { step: 2, title: 'Upload to VideoText', detail: 'Paste a YouTube URL or upload video files. Get transcripts in 3-5 minutes.' },
+      { step: 3, title: 'Save Money & Time', detail: 'Free tier gets you started. Upgrade when ready. Keep 100% of your files.' },
+    ],
+    socialProof: [
+      { stat: '6x faster', desc: 'Than Descript (3 min vs 18 min)' },
+      { stat: '90% cheaper', desc: 'Than Otter ($0 free vs $180/year)' },
+      { stat: '98.5%', desc: 'Accuracy rate on diverse audio' },
+      { stat: '3,000+', desc: 'Switched from competitors' },
+    ],
+  },
+  // ── Hub pages (category navigation) ──────────────────────────────────────────
+  {
+    path: '/alternatives',
+    title: `Transcription & Subtitle Tool Alternatives | ${SITE_NAME}`,
+    description:
+      'Explore alternatives to Otter.ai, Descript, Rev, Sonix, and 40+ other transcription tools. Find the perfect AI transcription solution for your needs.',
+    h1: 'Transcription & Subtitle Tool Alternatives',
+    breadcrumbLabel: 'Alternatives',
+  },
+  {
+    path: '/transcription-tools',
+    title: `Transcription Tools & Resources | ${SITE_NAME}`,
+    description:
+      'Complete collection of transcription tools, guides, and comparisons. From podcasts to interviews to video files — transcription solutions for every use case.',
+    h1: 'Transcription Tools & Resources',
+    breadcrumbLabel: 'Transcription Tools',
+  },
+  {
+    path: '/subtitle-tools',
+    title: `Subtitle Tools & Resources | ${SITE_NAME}`,
+    description:
+      'Complete toolkit for subtitle creation, translation, editing, and conversion. Perfect for creators, studios, and video professionals.',
+    h1: 'Subtitle Tools & Resources',
+    breadcrumbLabel: 'Subtitle Tools',
   },
   {
     path: '/descript-alternative',
@@ -248,6 +445,7 @@ const STATIC_META: RouteMeta[] = [
     description:
       'VideoText transcribes video to text in under 5 minutes with 98.5%+ word accuracy. Powered by OpenAI Whisper. Privacy-first: files deleted after processing. 127,000+ videos transcribed. Free tier available.',
     breadcrumbLabel: 'About',
+    keywords: ['about VideoText', 'VideoText story', 'our mission', 'privacy-first transcription', 'AI transcription technology', 'Whisper AI', 'video to text company', 'trusted by creators'],
   },
   {
     path: '/open',
@@ -255,6 +453,7 @@ const STATIC_META: RouteMeta[] = [
     description:
       'VideoText publishes real processing stats: 127,000+ videos transcribed, 98.5% word accuracy benchmarks, median processing times, and full tech stack. Updated monthly.',
     breadcrumbLabel: 'Open Stats',
+    keywords: ['open stats', 'transparency', 'accuracy benchmarks', 'performance metrics', 'transcription statistics', 'processing speed', 'real data', 'public stats'],
   },
   // ── Blog posts ───────────────────────────────────────────────────────────────
   {
@@ -526,8 +725,14 @@ interface ParsedEntry {
   path: string
   title: string
   description: string
+  h1?: string
   breadcrumbLabel: string
   faq: Array<{ q: string; a: string }>
+  keywords?: string[]
+  valueProposition?: string
+  comparison?: { tool: string; vs: string }[]
+  howToUse?: Array<{ step: number; title: string; detail: string }>
+  socialProof?: { stat: string; desc: string }[]
 }
 
 function parseRegistryEntries(): ParsedEntry[] {
@@ -553,6 +758,10 @@ function parseRegistryEntries(): ParsedEntry[] {
     const descMatch = block.match(/\bdescription:\s*\n?\s*'((?:[^'\\]|\\.)*)'/)
     const description = descMatch ? descMatch[1].replace(/\\'/g, "'") : ''
 
+    // Extract h1
+    const h1Match = block.match(/\bh1:\s*'((?:[^'\\]|\\.)*)'/)
+    const h1 = h1Match ? h1Match[1].replace(/\\'/g, "'") : undefined
+
     // Extract breadcrumbLabel
     const labelMatch = block.match(/breadcrumbLabel:\s*'((?:[^'\\]|\\.)*)'/)
     const breadcrumbLabel = labelMatch ? labelMatch[1].replace(/\\'/g, "'") : routePath.slice(1)
@@ -571,10 +780,19 @@ function parseRegistryEntries(): ParsedEntry[] {
       }
     }
 
-    // Check indexable
-    if (/indexable:\s*false/.test(block)) continue
+    // Extract keywords
+    const keywordMatch = block.match(/keywords:\s*\[([\s\S]*?)\]/)
+    let keywords: string[] | undefined
+    if (keywordMatch) {
+      const keywordContent = keywordMatch[1]
+      const keywordMatches = [...keywordContent.matchAll(/'((?:[^'\\]|\\.)*)'/g)]
+      keywords = keywordMatches.map(m => m[1].replace(/\\'/g, "'"))
+    }
 
-    entries.push({ path: routePath, title, description, breadcrumbLabel, faq })
+    // Note: We INCLUDE all entries (both indexable: true and false) in prerender
+    // The indexable flag only controls sitemap inclusion, not HTML generation.
+    // All SEO pages must be prerendered for crawler visibility.
+    entries.push({ path: routePath, title, description, h1, breadcrumbLabel, faq, keywords })
   }
 
   return entries
@@ -588,6 +806,315 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
+}
+
+// Generate keywords from title and path if not explicitly provided
+function generateKeywordsFromTitle(title: string, path: string): string[] {
+  const cleanTitle = title
+    .replace(/\s*\|\s*VideoText$/i, '')
+    .replace(/–|—/g, '-')
+    .trim()
+
+  const words = cleanTitle
+    .toLowerCase()
+    .split(/[\s\-]+/)
+    .filter(w => w.length > 2 && !['the', 'and', 'for', 'all', 'any', 'you', 'can', 'get', 'how', 'why', 'are', 'this', 'that', 'from', 'with', 'into', 'your', 'free'].includes(w))
+
+  const keywords = new Set<string>()
+
+  // Add title-based keywords
+  if (words.length > 0) {
+    keywords.add(words.join(' '))
+    keywords.add(`${words[0]} online`)
+    keywords.add(`free ${words[0]}`)
+  }
+
+  // Add path-based keywords
+  const pathWords = path.slice(1).split('-').filter(w => w.length > 2)
+  if (pathWords.length > 0) {
+    keywords.add(pathWords.join(' '))
+    keywords.add(`${pathWords[0]} ${pathWords[1] || 'tool'}`)
+  }
+
+  return Array.from(keywords).slice(0, 8)
+}
+
+// Hub page link definitions (must match React component lists)
+const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
+  '/alternatives': [
+    { path: '/otter-alternative', label: 'Otter Alternative' },
+    { path: '/descript-alternative', label: 'Descript Alternative' },
+    { path: '/trint-alternative', label: 'Trint Alternative' },
+    { path: '/rev-alternative', label: 'Rev Alternative' },
+    { path: '/sonix-alternative', label: 'Sonix Alternative' },
+    { path: '/happyscribe-alternative', label: 'HappyScribe Alternative' },
+    { path: '/easyscribe-alternative', label: 'EasyScribe Alternative' },
+    { path: '/notta-alternative', label: 'Notta Alternative' },
+    { path: '/tactiq-alternative', label: 'Tactiq Alternative' },
+    { path: '/turboscribe-alternative', label: 'TurboScribe Alternative' },
+    { path: '/deepgram-alternative', label: 'Deepgram Alternative' },
+    { path: '/fireflies-alternative', label: 'Fireflies Alternative' },
+    { path: '/riverside-alternative', label: 'Riverside Alternative' },
+    { path: '/glean-alternative', label: 'Glean Alternative' },
+    { path: '/hedy-ai-alternative', label: 'Hedy AI Alternative' },
+    { path: '/genio-alternative', label: 'Genio Alternative' },
+    { path: '/maestra-alternative', label: 'Maestra Alternative' },
+    { path: '/speechmatics-alternative', label: 'Speechmatics Alternative' },
+    { path: '/assembly-ai-alternative', label: 'Assembly AI Alternative' },
+    { path: '/allscribe-alternative', label: 'Allscribe Alternative' },
+    { path: '/skribo-alternative', label: 'Skribo Alternative' },
+    { path: '/dragon-dictate-alternative', label: 'Dragon Dictate Alternative' },
+    { path: '/superwhisper-alternative', label: 'SuperWhisper Alternative' },
+    { path: '/speechtexter-alternative', label: 'SpeechTexter Alternative' },
+    { path: '/speechnotes-alternative', label: 'SpeechNotes Alternative' },
+    { path: '/whisper-notes-alternative', label: 'Whisper Notes Alternative' },
+    { path: '/macwhisper-alternative', label: 'MacWhisper Alternative' },
+    { path: '/microsoft-teams-alternative', label: 'Microsoft Teams Alternative' },
+    { path: '/zoom-alternative', label: 'Zoom Alternative' },
+    { path: '/webex-alternative', label: 'Webex Alternative' },
+    { path: '/meetgeek-alternative', label: 'MeetGeek Alternative' },
+    { path: '/scribe-alternative', label: 'Scribe Alternative' },
+    { path: '/subly-alternative', label: 'Subly Alternative' },
+    { path: '/submagic-alternative', label: 'SubMagic Alternative' },
+    { path: '/notability-alternative', label: 'Notability Alternative' },
+    { path: '/movavi-alternative', label: 'Movavi Alternative' },
+    { path: '/capcut-alternative', label: 'CapCut Alternative' },
+    { path: '/subtitle-edit-alternative', label: 'Subtitle Edit Alternative' },
+    { path: '/adobe-premiere-captions-alternative', label: 'Adobe Premiere Captions Alternative' },
+    { path: '/microsoft-word-transcription-alternative', label: 'Microsoft Word Transcription Alternative' },
+    { path: '/panopto-alternative', label: 'Panopto Alternative' },
+    { path: '/invideo-alternative', label: 'InVideo Alternative' },
+    { path: '/fliki-alternative', label: 'Fliki Alternative' },
+    { path: '/kapwing-alternative', label: 'Kapwing Alternative' },
+    { path: '/vizard-alternative', label: 'Vizard Alternative' },
+    { path: '/whispertype-alternative', label: 'WhisperType Alternative' },
+    { path: '/mem-ai-alternative', label: 'Mem AI Alternative' },
+    { path: '/vocallab-alternative', label: 'VocalLab Alternative' },
+    { path: '/vomo-alternative', label: 'VOMO Alternative' },
+    { path: '/krisp-alternative', label: 'Krisp Alternative' },
+    { path: '/headliner-alternative', label: 'Headliner Alternative' },
+    { path: '/castmagic-alternative', label: 'CastMagic Alternative' },
+    { path: '/elevenlabs-alternative', label: 'ElevenLabs Alternative' },
+    { path: '/speechify-alternative', label: 'Speechify Alternative' },
+    { path: '/spreaker-alternative', label: 'Spreaker Alternative' },
+    { path: '/granola-alternative', label: 'Granola Alternative' },
+    { path: '/zubtitle-alternative', label: 'Zubtitle Alternative' },
+    { path: '/youtube-auto-captions-alternative', label: 'YouTube Auto-Captions Alternative' },
+    { path: '/google-docs-voice-typing-alternative', label: 'Google Docs Voice Typing Alternative' },
+    { path: '/dictation-io-alternative', label: 'Dictation.io Alternative' },
+    { path: '/ditto-transcripts-alternative', label: 'Ditto Transcripts Alternative' },
+    { path: '/whisperx-alternative', label: 'WhisperX Alternative' },
+  ],
+  '/transcription-tools': [
+    { path: '/video-to-transcript', label: 'Video to Transcript' },
+    { path: '/youtube-transcript-generator', label: 'YouTube Transcript Generator' },
+    { path: '/youtube-to-transcript', label: 'YouTube to Transcript' },
+    { path: '/voice-recorder', label: 'Voice to Text Recorder' },
+    { path: '/podcast-transcription-tool', label: 'Podcast Transcription' },
+    { path: '/meeting-transcription', label: 'Meeting Transcription' },
+    { path: '/interview-transcription-tool', label: 'Interview Transcription' },
+    { path: '/podcast-transcription', label: 'Podcast Transcription' },
+    { path: '/webinar-transcription', label: 'Webinar Transcription' },
+    { path: '/video-interview-transcription', label: 'Video Interview Transcription' },
+    { path: '/zoom-recording-transcription', label: 'Zoom Recording Transcription' },
+    { path: '/loom-transcription', label: 'Loom Transcription' },
+    { path: '/google-meet-transcription', label: 'Google Meet Transcription' },
+    { path: '/teams-meeting-transcription', label: 'Teams Meeting Transcription' },
+    { path: '/teams-meeting-transcript', label: 'Teams Meeting Transcript' },
+    { path: '/vimeo-transcription', label: 'Vimeo Transcription' },
+    { path: '/tiktok-to-transcript', label: 'TikTok to Transcript' },
+    { path: '/transcribe-video-online', label: 'Transcribe Video Online' },
+    { path: '/press-conference-transcription', label: 'Press Conference Transcription' },
+    { path: '/best-transcription-tool', label: 'Best Transcription Tool' },
+    { path: '/fastest-transcription-tool', label: 'Fastest Transcription Tool' },
+    { path: '/fastest-transcription-software', label: 'Fastest Transcription Software' },
+    { path: '/best-youtube-transcription-tool', label: 'Best YouTube Transcription Tool' },
+    { path: '/best-podcast-transcription-tool', label: 'Best Podcast Transcription Tool' },
+    { path: '/transcription-benchmark', label: 'Transcription Benchmark' },
+    { path: '/otter-vs-videotext', label: 'Otter vs VideoText' },
+    { path: '/descript-vs-videotext', label: 'Descript vs VideoText' },
+    { path: '/videotext-vs-rev', label: 'VideoText vs Rev' },
+    { path: '/videotext-vs-turboscribe', label: 'VideoText vs TurboScribe' },
+    { path: '/ai-transcription-tools', label: 'AI Transcription Tools' },
+    { path: '/ai-transcription-workflow', label: 'AI Transcription Workflow' },
+    { path: '/free-speech-to-text', label: 'Free Speech to Text' },
+    { path: '/free-video-transcription-tool', label: 'Free Video Transcription Tool' },
+    { path: '/accuracy-test', label: 'Accuracy Test' },
+  ],
+  '/subtitle-tools': [
+    { path: '/video-to-subtitles', label: 'Video to Subtitles' },
+    { path: '/subtitle-generator', label: 'Subtitle Generator' },
+    { path: '/auto-subtitle-generator', label: 'Auto Subtitle Generator' },
+    { path: '/youtube-subtitle-generator', label: 'YouTube Subtitle Generator' },
+    { path: '/caption-video-online', label: 'Caption Video Online' },
+    { path: '/video-with-subtitles', label: 'Video with Subtitles' },
+    { path: '/batch-process', label: 'Batch Video to Subtitles' },
+    { path: '/fix-subtitles', label: 'Fix Subtitles' },
+    { path: '/subtitle-timing-fixer', label: 'Subtitle Timing Fixer' },
+    { path: '/subtitle-line-break-fixer', label: 'Subtitle Line Break Fixer' },
+    { path: '/subtitle-grammar-fixer', label: 'Subtitle Grammar Fixer' },
+    { path: '/subtitle-language-checker', label: 'Subtitle Language Checker' },
+    { path: '/translate-subtitles', label: 'Translate Subtitles' },
+    { path: '/srt-translator', label: 'SRT Translator' },
+    { path: '/subtitle-translator', label: 'Subtitle Translator' },
+    { path: '/multilingual-subtitles', label: 'Multilingual Subtitles' },
+    { path: '/srt-to-vtt', label: 'SRT to VTT Converter' },
+    { path: '/subtitle-converter', label: 'Subtitle Converter' },
+    { path: '/tools/srt-to-vtt', label: 'Free SRT to VTT Tool' },
+    { path: '/subtitle-validator', label: 'Subtitle Validator' },
+    { path: '/subtitle-word-counter', label: 'Subtitle Word Counter' },
+    { path: '/subtitle-character-checker', label: 'Subtitle Character Checker' },
+    { path: '/subtitle-reading-speed', label: 'Subtitle Reading Speed' },
+    { path: '/tools/merge-srt-files', label: 'Merge SRT Files' },
+    { path: '/tools/srt-to-text', label: 'SRT to Text' },
+    { path: '/tools/srt-to-sbv', label: 'SRT to SBV' },
+    { path: '/tools/ass-to-srt', label: 'ASS to SRT' },
+    { path: '/tools/ttml-to-srt', label: 'TTML to SRT' },
+    { path: '/tools/shift-subtitle-timing', label: 'Shift Subtitle Timing' },
+    { path: '/subtitle-resources', label: 'Subtitle Resources & Standards' },
+    { path: '/open-captions-vs-closed-captions', label: 'Open vs Closed Captions' },
+    { path: '/free-captions-and-subtitles', label: 'Free Captions & Subtitles' },
+    { path: '/ada-video-captions', label: 'ADA Video Captions' },
+    { path: '/sdh-subtitles', label: 'SDH Subtitles' },
+    { path: '/hardcoded-captions', label: 'Hardcoded Captions' },
+  ],
+}
+
+function buildH1Html(h1Text: string): string {
+  return `<h1 style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">${escapeHtml(h1Text)}</h1>`
+}
+
+function buildConversionContent(meta: RouteMeta): string {
+  const parts: string[] = []
+
+  // Value Proposition
+  if (meta.valueProposition) {
+    parts.push(`
+      <section style="margin:32px 0;padding:24px;background:#f9fafb;border-radius:8px;border-left:4px solid #2563eb">
+        <p style="margin:0;font-size:16px;line-height:1.6;color:#1f2937">${escapeHtml(meta.valueProposition)}</p>
+      </section>
+    `)
+  }
+
+  // Keywords section
+  if (meta.keywords && meta.keywords.length > 0) {
+    const keywordList = meta.keywords
+      .map((k) => `<span style="display:inline-block;background:#e0e7ff;color:#3730a3;padding:6px 12px;margin:4px 4px 4px 0;border-radius:4px;font-size:14px">${escapeHtml(k)}</span>`)
+      .join('')
+    parts.push(`
+      <section style="margin:32px 0">
+        <h2 style="font-size:18px;font-weight:bold;color:#1f2937;margin-bottom:12px">Key Features & Keywords</h2>
+        <div style="display:flex;flex-wrap:wrap">${keywordList}</div>
+      </section>
+    `)
+  }
+
+  // Comparison
+  if (meta.comparison && meta.comparison.length > 0) {
+    const comparisonRows = meta.comparison
+      .map(
+        (c) => `
+        <tr style="border-bottom:1px solid #e5e7eb">
+          <td style="padding:12px;text-align:left;color:#1f2937">${escapeHtml(c.tool)}</td>
+          <td style="padding:12px;text-align:center;color:#dc2626">❌ ${escapeHtml(c.vs)}</td>
+          <td style="padding:12px;text-align:center;color:#16a34a">✅ VideoText</td>
+        </tr>
+      `
+      )
+      .join('')
+    parts.push(`
+      <section style="margin:32px 0">
+        <h2 style="font-size:18px;font-weight:bold;color:#1f2937;margin-bottom:16px">How VideoText Compares</h2>
+        <table style="width:100%;border-collapse:collapse;background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden">
+          <thead style="background:#f3f4f6">
+            <tr>
+              <th style="padding:12px;text-align:left;color:#374151;font-weight:600">Feature</th>
+              <th style="padding:12px;text-align:center;color:#374151;font-weight:600">Competitors</th>
+              <th style="padding:12px;text-align:center;color:#374151;font-weight:600">VideoText</th>
+            </tr>
+          </thead>
+          <tbody>${comparisonRows}</tbody>
+        </table>
+      </section>
+    `)
+  }
+
+  // How to Use
+  if (meta.howToUse && meta.howToUse.length > 0) {
+    const steps = meta.howToUse
+      .map(
+        (h) => `
+        <div style="display:flex;gap:16px;margin-bottom:20px">
+          <div style="min-width:40px;width:40px;height:40px;background:#2563eb;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0">${h.step}</div>
+          <div>
+            <h3 style="margin:0 0 8px 0;font-weight:600;color:#1f2937">${escapeHtml(h.title)}</h3>
+            <p style="margin:0;color:#4b5563;font-size:14px;line-height:1.6">${escapeHtml(h.detail)}</p>
+          </div>
+        </div>
+      `
+      )
+      .join('')
+    parts.push(`
+      <section style="margin:32px 0">
+        <h2 style="font-size:18px;font-weight:bold;color:#1f2937;margin-bottom:24px">How to Use VideoText</h2>
+        ${steps}
+      </section>
+    `)
+  }
+
+  // Social Proof
+  if (meta.socialProof && meta.socialProof.length > 0) {
+    const stats = meta.socialProof
+      .map(
+        (s) => `
+        <div style="flex:1;min-width:200px;padding:20px;background:#f9fafb;border-radius:8px;text-align:center">
+          <div style="font-size:28px;font-weight:bold;color:#2563eb;margin-bottom:8px">${escapeHtml(s.stat)}</div>
+          <p style="margin:0;color:#4b5563;font-size:14px">${escapeHtml(s.desc)}</p>
+        </div>
+      `
+      )
+      .join('')
+    parts.push(`
+      <section style="margin:32px 0">
+        <h2 style="font-size:18px;font-weight:bold;color:#1f2937;margin-bottom:16px">Why Creators Trust VideoText</h2>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">${stats}</div>
+      </section>
+    `)
+  }
+
+  // CTA
+  parts.push(`
+    <section style="margin:32px 0;padding:24px;background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);border-radius:8px;text-align:center;color:white">
+      <h2 style="margin:0 0 12px 0;font-size:18px;font-weight:bold">Ready to Get Started?</h2>
+      <p style="margin:0 0 16px 0;font-size:14px;opacity:0.95">Sign up free. No credit card required. 3 imports per month included.</p>
+      <a href="/" style="display:inline-block;background:white;color:#2563eb;padding:12px 24px;border-radius:6px;font-weight:600;text-decoration:none;font-size:14px">Start Now Free</a>
+    </section>
+  `)
+
+  return `<div style="max-width:800px;margin:32px auto;padding:0 16px;font-family:system-ui,-apple-system,sans-serif">${parts.join('')}</div>`
+}
+
+function buildHubPageHtml(path: string, title: string): string {
+  const links = HUB_PAGE_LINKS[path] || []
+  const linkHtml = links
+    .map(
+      (l) =>
+        `<li><a href="${escapeHtml(l.path)}" style="display:block;padding:12px;border:1px solid #e5e7eb;border-radius:8px;color:#1f2937;text-decoration:none;margin-bottom:8px">${escapeHtml(l.label)}</a></li>`
+    )
+    .join('\n')
+
+  return `
+    <div style="max-width:1280px;margin:40px auto;padding:0 16px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;margin-top:32px">
+        <div>
+          <h2 style="font-size:20px;font-weight:bold;margin-bottom:8px">${escapeHtml(title)}</h2>
+          <ul style="list-style:none;padding:0;margin:0">
+            ${linkHtml}
+          </ul>
+        </div>
+      </div>
+    </div>
+  `
 }
 
 function injectHead(template: string, meta: RouteMeta): string {
@@ -675,22 +1202,52 @@ function main() {
       path: e.path,
       title: e.title,
       description: e.description,
+      h1: e.h1,
       faq: e.faq,
       breadcrumbLabel: e.breadcrumbLabel,
+      keywords: e.keywords || generateKeywordsFromTitle(e.title, e.path),
+      valueProposition: e.valueProposition,
+      comparison: e.comparison,
+      howToUse: e.howToUse,
+      socialProof: e.socialProof,
     })),
     ...programmaticEntries.map((e) => ({
       path: e.path,
       title: e.title,
       description: e.description,
+      h1: e.h1,
       faq: e.faq,
       breadcrumbLabel: e.breadcrumbLabel,
+      keywords: e.keywords || generateKeywordsFromTitle(e.title, e.path),
+      valueProposition: e.valueProposition,
+      comparison: e.comparison,
+      howToUse: e.howToUse,
+      socialProof: e.socialProof,
     })),
   ]
 
   let count = 0
   for (const meta of allRoutes) {
     const routePath = meta.path
-    const html = injectHead(template, meta)
+    let html = injectHead(template, meta)
+
+    // Inject H1 tag for crawler discovery (hidden from view but visible in static HTML)
+    if (meta.h1) {
+      const h1Html = buildH1Html(meta.h1)
+      html = html.replace('</body>', `${h1Html}\n</body>`)
+    }
+
+    // Inject high-conversion content (keywords, comparison, how-to, proof)
+    if (meta.valueProposition || meta.keywords || meta.comparison || meta.howToUse || meta.socialProof) {
+      const conversionContent = buildConversionContent(meta)
+      html = html.replace('</body>', `${conversionContent}\n</body>`)
+    }
+
+    // Inject hub page links directly into static HTML (for SEO crawlers without JS execution)
+    if (HUB_PAGE_LINKS[routePath]) {
+      const hubHtml = buildHubPageHtml(routePath, meta.title)
+      html = html.replace('</body>', `${hubHtml}\n</body>`)
+    }
 
     if (routePath === '/') {
       // Overwrite root index.html in place

@@ -53,6 +53,8 @@ const EXISTING_PATHS = new Set([
   '/turboscribe-alternative', '/buzz-alternative', '/deepgram-alternative', '/assembly-ai-alternative',
   '/krisp-alternative', '/tactiq-alternative', '/happyscribe-alternative', '/headliner-alternative',
   '/castmagic-alternative', '/riverside-alternative',
+  // Non-canonical variants (indexable: false) — skip programmatic generation
+  '/interview-transcription',
 ])
 
 /** Generate intent pages with proper topical authority linking.
@@ -249,6 +251,43 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
     return 'platform'
   }
 
+  // Helper to generate keywords for SEO entries
+  function generateKeywords(slug: string, titleCase: string): string[] {
+    const baseKeywords = [
+      `${titleCase} transcription`,
+      `transcribe ${titleCase}`,
+      `${titleCase} to text`,
+      `free ${titleCase} transcription`,
+      `${titleCase} transcript online`,
+      `AI ${titleCase} transcription`,
+      `best ${titleCase} transcription tool`,
+      `how to transcribe ${titleCase}`,
+    ]
+
+    const categoryKeywords: Record<string, string[]> = {
+      podcast: ['podcast transcription', 'episode transcription', 'podcast to text', 'transcribe podcast free', 'mp3 to text'],
+      meeting: ['meeting transcription', 'meeting notes', 'recording to transcript', 'convert meeting to text', 'transcribe meeting'],
+      interview: ['interview transcription', 'interview to text', 'transcribe interview', 'interview recording to text'],
+      youtube: ['youtube transcription', 'youtube to text', 'transcribe youtube video', 'youtube video to text'],
+      language: [`${titleCase} transcript`, `transcribe ${titleCase}`, `${titleCase} audio to text`],
+      zoom: ['zoom recording transcription', 'zoom to text', 'transcribe zoom call'],
+      'google-meet': ['google meet transcription', 'meet recording to text'],
+      teams: ['teams meeting transcription', 'teams recording to text'],
+      instagram: ['instagram reel transcription', 'transcribe instagram video'],
+      tiktok: ['tiktok transcription', 'tiktok to text'],
+      loom: ['loom recording transcription', 'transcribe loom video'],
+      vimeo: ['vimeo transcription', 'transcribe vimeo video'],
+    }
+
+    for (const [category, keywords] of Object.entries(categoryKeywords)) {
+      if (slug.includes(category)) {
+        return [...new Set([...baseKeywords, ...keywords])].slice(0, 13)
+      }
+    }
+
+    return baseKeywords
+  }
+
   for (const target of transcriptionTargets) {
     const slug = targetToSlug(target)
 
@@ -287,6 +326,7 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
         relatedSlugs, // Hub + siblings + cross-cluster links
         indexable: true,
         intentKey,
+        keywords: generateKeywords(slug, titleCase),
         deepContent: {
           proofPoints: categoryContent.proofPoints,
           workflowSteps: categoryContent.workflowSteps,
