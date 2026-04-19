@@ -1117,6 +1117,20 @@ function buildHubPageHtml(path: string, title: string): string {
   `
 }
 
+// Add back-links from ALL pages to hub pages (fixes orphan pages)
+function buildBacklinksHtml(): string {
+  return `
+    <section style="margin:32px 0;padding:24px;background:#f3f4f6;border-radius:8px">
+      <h3 style="font-size:13px;font-weight:600;color:#4b5563;margin:0 0 12px 0;text-transform:uppercase;letter-spacing:0.5px">Find More Tools</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <a href="/alternatives" style="display:inline-block;padding:8px 14px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Tool Alternatives</a>
+        <a href="/transcription-tools" style="display:inline-block;padding:8px 14px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Transcription Tools</a>
+        <a href="/subtitle-tools" style="display:inline-block;padding:8px 14px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Subtitle Tools</a>
+      </div>
+    </section>
+  `
+}
+
 function injectHead(template: string, meta: RouteMeta): string {
   // Replace title tag
   let html = template.replace(
@@ -1247,6 +1261,12 @@ function main() {
     if (HUB_PAGE_LINKS[routePath]) {
       const hubHtml = buildHubPageHtml(routePath, meta.title)
       html = html.replace('</body>', `${hubHtml}\n</body>`)
+    }
+
+    // Inject back-links from ALL pages to hub pages (fixes orphan pages - every page links to hub pages)
+    if (routePath !== '/' && !HUB_PAGE_LINKS[routePath]) {
+      const backlinksHtml = buildBacklinksHtml()
+      html = html.replace('</body>', `${backlinksHtml}\n</body>`)
     }
 
     if (routePath === '/') {
