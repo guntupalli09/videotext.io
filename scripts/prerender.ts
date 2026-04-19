@@ -612,6 +612,169 @@ function escapeHtml(s: string): string {
     .replace(/>/g, '&gt;')
 }
 
+// Hub page link definitions (must match React component lists)
+const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
+  '/alternatives': [
+    { path: '/otter-alternative', label: 'Otter Alternative' },
+    { path: '/descript-alternative', label: 'Descript Alternative' },
+    { path: '/trint-alternative', label: 'Trint Alternative' },
+    { path: '/rev-alternative', label: 'Rev Alternative' },
+    { path: '/sonix-alternative', label: 'Sonix Alternative' },
+    { path: '/happyscribe-alternative', label: 'HappyScribe Alternative' },
+    { path: '/easyscribe-alternative', label: 'EasyScribe Alternative' },
+    { path: '/notta-alternative', label: 'Notta Alternative' },
+    { path: '/tactiq-alternative', label: 'Tactiq Alternative' },
+    { path: '/turboscribe-alternative', label: 'TurboScribe Alternative' },
+    { path: '/deepgram-alternative', label: 'Deepgram Alternative' },
+    { path: '/fireflies-alternative', label: 'Fireflies Alternative' },
+    { path: '/riverside-alternative', label: 'Riverside Alternative' },
+    { path: '/glean-alternative', label: 'Glean Alternative' },
+    { path: '/hedy-ai-alternative', label: 'Hedy AI Alternative' },
+    { path: '/genio-alternative', label: 'Genio Alternative' },
+    { path: '/maestra-alternative', label: 'Maestra Alternative' },
+    { path: '/speechmatics-alternative', label: 'Speechmatics Alternative' },
+    { path: '/assembly-ai-alternative', label: 'Assembly AI Alternative' },
+    { path: '/allscribe-alternative', label: 'Allscribe Alternative' },
+    { path: '/skribo-alternative', label: 'Skribo Alternative' },
+    { path: '/dragon-dictate-alternative', label: 'Dragon Dictate Alternative' },
+    { path: '/superwhisper-alternative', label: 'SuperWhisper Alternative' },
+    { path: '/speechtexter-alternative', label: 'SpeechTexter Alternative' },
+    { path: '/speechnotes-alternative', label: 'SpeechNotes Alternative' },
+    { path: '/whisper-notes-alternative', label: 'Whisper Notes Alternative' },
+    { path: '/macwhisper-alternative', label: 'MacWhisper Alternative' },
+    { path: '/microsoft-teams-alternative', label: 'Microsoft Teams Alternative' },
+    { path: '/zoom-alternative', label: 'Zoom Alternative' },
+    { path: '/webex-alternative', label: 'Webex Alternative' },
+    { path: '/meetgeek-alternative', label: 'MeetGeek Alternative' },
+    { path: '/scribe-alternative', label: 'Scribe Alternative' },
+    { path: '/subly-alternative', label: 'Subly Alternative' },
+    { path: '/submagic-alternative', label: 'SubMagic Alternative' },
+    { path: '/notability-alternative', label: 'Notability Alternative' },
+    { path: '/movavi-alternative', label: 'Movavi Alternative' },
+    { path: '/capcut-alternative', label: 'CapCut Alternative' },
+    { path: '/subtitle-edit-alternative', label: 'Subtitle Edit Alternative' },
+    { path: '/adobe-premiere-captions-alternative', label: 'Adobe Premiere Captions Alternative' },
+    { path: '/microsoft-word-transcription-alternative', label: 'Microsoft Word Transcription Alternative' },
+    { path: '/panopto-alternative', label: 'Panopto Alternative' },
+    { path: '/invideo-alternative', label: 'InVideo Alternative' },
+    { path: '/fliki-alternative', label: 'Fliki Alternative' },
+    { path: '/kapwing-alternative', label: 'Kapwing Alternative' },
+    { path: '/vizard-alternative', label: 'Vizard Alternative' },
+    { path: '/whispertype-alternative', label: 'WhisperType Alternative' },
+    { path: '/mem-ai-alternative', label: 'Mem AI Alternative' },
+    { path: '/vocallab-alternative', label: 'VocalLab Alternative' },
+    { path: '/vomo-alternative', label: 'VOMO Alternative' },
+    { path: '/krisp-alternative', label: 'Krisp Alternative' },
+    { path: '/headliner-alternative', label: 'Headliner Alternative' },
+    { path: '/castmagic-alternative', label: 'CastMagic Alternative' },
+    { path: '/elevenlabs-alternative', label: 'ElevenLabs Alternative' },
+    { path: '/speechify-alternative', label: 'Speechify Alternative' },
+    { path: '/spreaker-alternative', label: 'Spreaker Alternative' },
+    { path: '/granola-alternative', label: 'Granola Alternative' },
+    { path: '/zubtitle-alternative', label: 'Zubtitle Alternative' },
+    { path: '/youtube-auto-captions-alternative', label: 'YouTube Auto-Captions Alternative' },
+    { path: '/google-docs-voice-typing-alternative', label: 'Google Docs Voice Typing Alternative' },
+    { path: '/dictation-io-alternative', label: 'Dictation.io Alternative' },
+    { path: '/ditto-transcripts-alternative', label: 'Ditto Transcripts Alternative' },
+    { path: '/whisperx-alternative', label: 'WhisperX Alternative' },
+  ],
+  '/transcription-tools': [
+    { path: '/video-to-transcript', label: 'Video to Transcript' },
+    { path: '/youtube-transcript-generator', label: 'YouTube Transcript Generator' },
+    { path: '/youtube-to-transcript', label: 'YouTube to Transcript' },
+    { path: '/voice-recorder', label: 'Voice to Text Recorder' },
+    { path: '/podcast-transcription-tool', label: 'Podcast Transcription' },
+    { path: '/meeting-transcription', label: 'Meeting Transcription' },
+    { path: '/interview-transcription-tool', label: 'Interview Transcription' },
+    { path: '/podcast-transcription', label: 'Podcast Transcription' },
+    { path: '/webinar-transcription', label: 'Webinar Transcription' },
+    { path: '/video-interview-transcription', label: 'Video Interview Transcription' },
+    { path: '/zoom-recording-transcription', label: 'Zoom Recording Transcription' },
+    { path: '/loom-transcription', label: 'Loom Transcription' },
+    { path: '/google-meet-transcription', label: 'Google Meet Transcription' },
+    { path: '/teams-meeting-transcription', label: 'Teams Meeting Transcription' },
+    { path: '/teams-meeting-transcript', label: 'Teams Meeting Transcript' },
+    { path: '/vimeo-transcription', label: 'Vimeo Transcription' },
+    { path: '/tiktok-to-transcript', label: 'TikTok to Transcript' },
+    { path: '/transcribe-video-online', label: 'Transcribe Video Online' },
+    { path: '/press-conference-transcription', label: 'Press Conference Transcription' },
+    { path: '/best-transcription-tool', label: 'Best Transcription Tool' },
+    { path: '/fastest-transcription-tool', label: 'Fastest Transcription Tool' },
+    { path: '/fastest-transcription-software', label: 'Fastest Transcription Software' },
+    { path: '/best-youtube-transcription-tool', label: 'Best YouTube Transcription Tool' },
+    { path: '/best-podcast-transcription-tool', label: 'Best Podcast Transcription Tool' },
+    { path: '/transcription-benchmark', label: 'Transcription Benchmark' },
+    { path: '/otter-vs-videotext', label: 'Otter vs VideoText' },
+    { path: '/descript-vs-videotext', label: 'Descript vs VideoText' },
+    { path: '/videotext-vs-rev', label: 'VideoText vs Rev' },
+    { path: '/videotext-vs-turboscribe', label: 'VideoText vs TurboScribe' },
+    { path: '/ai-transcription-tools', label: 'AI Transcription Tools' },
+    { path: '/ai-transcription-workflow', label: 'AI Transcription Workflow' },
+    { path: '/free-speech-to-text', label: 'Free Speech to Text' },
+    { path: '/free-video-transcription-tool', label: 'Free Video Transcription Tool' },
+    { path: '/accuracy-test', label: 'Accuracy Test' },
+  ],
+  '/subtitle-tools': [
+    { path: '/video-to-subtitles', label: 'Video to Subtitles' },
+    { path: '/subtitle-generator', label: 'Subtitle Generator' },
+    { path: '/auto-subtitle-generator', label: 'Auto Subtitle Generator' },
+    { path: '/youtube-subtitle-generator', label: 'YouTube Subtitle Generator' },
+    { path: '/caption-video-online', label: 'Caption Video Online' },
+    { path: '/video-with-subtitles', label: 'Video with Subtitles' },
+    { path: '/fix-subtitles', label: 'Fix Subtitles' },
+    { path: '/subtitle-timing-fixer', label: 'Subtitle Timing Fixer' },
+    { path: '/subtitle-line-break-fixer', label: 'Subtitle Line Break Fixer' },
+    { path: '/subtitle-grammar-fixer', label: 'Subtitle Grammar Fixer' },
+    { path: '/subtitle-language-checker', label: 'Subtitle Language Checker' },
+    { path: '/translate-subtitles', label: 'Translate Subtitles' },
+    { path: '/srt-translator', label: 'SRT Translator' },
+    { path: '/subtitle-translator', label: 'Subtitle Translator' },
+    { path: '/multilingual-subtitles', label: 'Multilingual Subtitles' },
+    { path: '/srt-to-vtt', label: 'SRT to VTT Converter' },
+    { path: '/subtitle-converter', label: 'Subtitle Converter' },
+    { path: '/tools/srt-to-vtt', label: 'Free SRT to VTT Tool' },
+    { path: '/subtitle-validator', label: 'Subtitle Validator' },
+    { path: '/subtitle-word-counter', label: 'Subtitle Word Counter' },
+    { path: '/subtitle-character-checker', label: 'Subtitle Character Checker' },
+    { path: '/subtitle-reading-speed', label: 'Subtitle Reading Speed' },
+    { path: '/tools/merge-srt-files', label: 'Merge SRT Files' },
+    { path: '/tools/srt-to-text', label: 'SRT to Text' },
+    { path: '/tools/srt-to-sbv', label: 'SRT to SBV' },
+    { path: '/tools/ass-to-srt', label: 'ASS to SRT' },
+    { path: '/tools/ttml-to-srt', label: 'TTML to SRT' },
+    { path: '/tools/shift-subtitle-timing', label: 'Shift Subtitle Timing' },
+    { path: '/subtitle-resources', label: 'Subtitle Resources & Standards' },
+    { path: '/open-captions-vs-closed-captions', label: 'Open vs Closed Captions' },
+    { path: '/free-captions-and-subtitles', label: 'Free Captions & Subtitles' },
+    { path: '/ada-video-captions', label: 'ADA Video Captions' },
+    { path: '/sdh-subtitles', label: 'SDH Subtitles' },
+    { path: '/hardcoded-captions', label: 'Hardcoded Captions' },
+  ],
+}
+
+function buildHubPageHtml(path: string, title: string): string {
+  const links = HUB_PAGE_LINKS[path] || []
+  const linkHtml = links
+    .map(
+      (l) =>
+        `<li><a href="${escapeHtml(l.path)}" style="display:block;padding:12px;border:1px solid #e5e7eb;border-radius:8px;color:#1f2937;text-decoration:none;margin-bottom:8px">${escapeHtml(l.label)}</a></li>`
+    )
+    .join('\n')
+
+  return `
+    <div style="max-width:1280px;margin:40px auto;padding:0 16px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;margin-top:32px">
+        <div>
+          <h2 style="font-size:20px;font-weight:bold;margin-bottom:8px">${escapeHtml(title)}</h2>
+          <ul style="list-style:none;padding:0;margin:0">
+            ${linkHtml}
+          </ul>
+        </div>
+      </div>
+    </div>
+  `
+}
+
 function injectHead(template: string, meta: RouteMeta): string {
   // Replace title tag
   let html = template.replace(
@@ -712,7 +875,13 @@ function main() {
   let count = 0
   for (const meta of allRoutes) {
     const routePath = meta.path
-    const html = injectHead(template, meta)
+    let html = injectHead(template, meta)
+
+    // Inject hub page links directly into static HTML (for SEO crawlers without JS execution)
+    if (HUB_PAGE_LINKS[routePath]) {
+      const hubHtml = buildHubPageHtml(routePath, meta.title)
+      html = html.replace('</body>', `${hubHtml}\n</body>`)
+    }
 
     if (routePath === '/') {
       // Overwrite root index.html in place
