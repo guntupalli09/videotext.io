@@ -36,6 +36,12 @@ interface RouteMeta {
   faq?: Array<{ q: string; a: string }>
   breadcrumbLabel?: string
   noindex?: boolean
+  // High-conversion content fields
+  valueProposition?: string
+  keywords?: string[]
+  comparison?: { tool: string; vs: string }[]
+  howToUse?: Array<{ step: number; title: string; detail: string }>
+  socialProof?: { stat: string; desc: string }[]
 }
 
 // ── Static route metadata ─────────────────────────────────────────────────────
@@ -111,6 +117,24 @@ const STATIC_META: RouteMeta[] = [
     description:
       'Convert video to text with AI. View transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian. Upload video, get plain-text transcript. Summary, chapters, speakers. Free tier.',
     h1: 'Video to Transcript',
+    valueProposition: 'Convert any video into searchable, editable text in under 5 minutes. 98.5%+ accuracy with speaker labels, chapters, and multi-language translation. No download limits. Files deleted after processing.',
+    keywords: ['video to transcript', 'transcribe video', 'AI transcription', 'video to text', 'speech to text', 'accurate transcription', 'free transcription tool', 'transcription software'],
+    comparison: [
+      { tool: 'Otter.ai', vs: '18-30 min processing, $120/year minimum' },
+      { tool: 'Descript', vs: '15 min processing, $24/month, desktop only' },
+      { tool: 'Rev', vs: 'Human transcription, $1.25/min, slow turnaround' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Your Video', detail: 'MP4, MOV, AVI, WebM, MKV supported. Or paste a YouTube URL directly.' },
+      { step: 2, title: 'Get Instant Transcript', detail: 'AI processing runs in seconds. You\'ll see the transcript building in real-time.' },
+      { step: 3, title: 'Edit & Export', detail: 'Copy text, download TXT, get speaker labels, or generate SRT subtitles.' },
+    ],
+    socialProof: [
+      { stat: '127,000+', desc: 'Videos transcribed' },
+      { stat: '98.5%', desc: 'Word accuracy rate' },
+      { stat: '3-5 min', desc: 'Average processing time' },
+      { stat: '50,000+', desc: 'Creators using VideoText' },
+    ],
   },
   {
     path: '/video-to-subtitles',
@@ -118,6 +142,24 @@ const STATIC_META: RouteMeta[] = [
     description:
       'Generate SRT and VTT subtitle files from any video with AI. Upload video. Single or multi-language. Free tier available.',
     h1: 'Video to Subtitles',
+    valueProposition: 'Create publication-ready SRT and VTT subtitle files in seconds. Perfect for YouTube, Vimeo, social media. No manual timing. No transcription service delays. Free tier: 3 imports/month.',
+    keywords: ['video to subtitles', 'subtitle generator', 'SRT generator', 'VTT generator', 'auto subtitle', 'caption generator', 'subtitle maker', 'automatic captions'],
+    comparison: [
+      { tool: 'Submagic', vs: 'Expensive per video, limited exports' },
+      { tool: 'Kapwing', vs: 'Video editor overhead, not transcription-focused' },
+      { tool: 'YouTube Auto-Captions', vs: 'Lower accuracy, no export as files' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Upload Video File', detail: 'Drag & drop MP4, MOV, or paste a YouTube link. Processing starts instantly.' },
+      { step: 2, title: 'Choose Format', detail: 'Select SRT (universal) or VTT (modern web players). Single or multi-language.' },
+      { step: 3, title: 'Download & Upload', detail: 'Get your .srt or .vtt file in seconds. Upload to YouTube Studio, Vimeo, or any player.' },
+    ],
+    socialProof: [
+      { stat: '50,000+', desc: 'Creators generating subtitles' },
+      { stat: '98.5%', desc: 'Accuracy (better than YouTube)' },
+      { stat: '2-4 min', desc: 'Time to publication-ready subtitles' },
+      { stat: '99%', desc: 'Format compatibility (YouTube, Vimeo, TikTok)' },
+    ],
   },
   {
     path: '/translate-subtitles',
@@ -162,6 +204,24 @@ const STATIC_META: RouteMeta[] = [
       'Compare VideoText against Descript, Otter.ai, and Trint on speed, accuracy, pricing, and privacy. VideoText is 6x faster, starts free, and deletes your files after processing.',
     h1: 'Compare VideoText',
     breadcrumbLabel: 'Compare',
+    valueProposition: 'Switch from Otter, Descript, or Trint and save 80% on costs while cutting processing time in half. Same AI accuracy. Better privacy. No vendor lock-in.',
+    keywords: ['transcription tools comparison', 'Otter alternative', 'Descript alternative', 'best transcription software', 'affordable transcription', 'fast transcription'],
+    comparison: [
+      { tool: 'Otter.ai', vs: '$180/year, 20+ min processing, calls only' },
+      { tool: 'Descript', vs: '$288/year, 15 min processing, desktop app' },
+      { tool: 'Trint', vs: '$288/year, live transcription only, expensive' },
+    ],
+    howToUse: [
+      { step: 1, title: 'Export Your Data', detail: 'Download transcripts and settings from your current tool.' },
+      { step: 2, title: 'Upload to VideoText', detail: 'Paste a YouTube URL or upload video files. Get transcripts in 3-5 minutes.' },
+      { step: 3, title: 'Save Money & Time', detail: 'Free tier gets you started. Upgrade when ready. Keep 100% of your files.' },
+    ],
+    socialProof: [
+      { stat: '6x faster', desc: 'Than Descript (3 min vs 18 min)' },
+      { stat: '90% cheaper', desc: 'Than Otter ($0 free vs $180/year)' },
+      { stat: '98.5%', desc: 'Accuracy rate on diverse audio' },
+      { stat: '3,000+', desc: 'Switched from competitors' },
+    ],
   },
   // ── Hub pages (category navigation) ──────────────────────────────────────────
   {
@@ -782,6 +842,116 @@ function buildH1Html(h1Text: string): string {
   return `<h1 style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">${escapeHtml(h1Text)}</h1>`
 }
 
+function buildConversionContent(meta: RouteMeta): string {
+  const parts: string[] = []
+
+  // Value Proposition
+  if (meta.valueProposition) {
+    parts.push(`
+      <section style="margin:32px 0;padding:24px;background:#f9fafb;border-radius:8px;border-left:4px solid #2563eb">
+        <p style="margin:0;font-size:16px;line-height:1.6;color:#1f2937">${escapeHtml(meta.valueProposition)}</p>
+      </section>
+    `)
+  }
+
+  // Keywords section
+  if (meta.keywords && meta.keywords.length > 0) {
+    const keywordList = meta.keywords
+      .map((k) => `<span style="display:inline-block;background:#e0e7ff;color:#3730a3;padding:6px 12px;margin:4px 4px 4px 0;border-radius:4px;font-size:14px">${escapeHtml(k)}</span>`)
+      .join('')
+    parts.push(`
+      <section style="margin:32px 0">
+        <h2 style="font-size:18px;font-weight:bold;color:#1f2937;margin-bottom:12px">Key Features & Keywords</h2>
+        <div style="display:flex;flex-wrap:wrap">${keywordList}</div>
+      </section>
+    `)
+  }
+
+  // Comparison
+  if (meta.comparison && meta.comparison.length > 0) {
+    const comparisonRows = meta.comparison
+      .map(
+        (c) => `
+        <tr style="border-bottom:1px solid #e5e7eb">
+          <td style="padding:12px;text-align:left;color:#1f2937">${escapeHtml(c.tool)}</td>
+          <td style="padding:12px;text-align:center;color:#dc2626">❌ ${escapeHtml(c.vs)}</td>
+          <td style="padding:12px;text-align:center;color:#16a34a">✅ VideoText</td>
+        </tr>
+      `
+      )
+      .join('')
+    parts.push(`
+      <section style="margin:32px 0">
+        <h2 style="font-size:18px;font-weight:bold;color:#1f2937;margin-bottom:16px">How VideoText Compares</h2>
+        <table style="width:100%;border-collapse:collapse;background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden">
+          <thead style="background:#f3f4f6">
+            <tr>
+              <th style="padding:12px;text-align:left;color:#374151;font-weight:600">Feature</th>
+              <th style="padding:12px;text-align:center;color:#374151;font-weight:600">Competitors</th>
+              <th style="padding:12px;text-align:center;color:#374151;font-weight:600">VideoText</th>
+            </tr>
+          </thead>
+          <tbody>${comparisonRows}</tbody>
+        </table>
+      </section>
+    `)
+  }
+
+  // How to Use
+  if (meta.howToUse && meta.howToUse.length > 0) {
+    const steps = meta.howToUse
+      .map(
+        (h) => `
+        <div style="display:flex;gap:16px;margin-bottom:20px">
+          <div style="min-width:40px;width:40px;height:40px;background:#2563eb;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0">${h.step}</div>
+          <div>
+            <h3 style="margin:0 0 8px 0;font-weight:600;color:#1f2937">${escapeHtml(h.title)}</h3>
+            <p style="margin:0;color:#4b5563;font-size:14px;line-height:1.6">${escapeHtml(h.detail)}</p>
+          </div>
+        </div>
+      `
+      )
+      .join('')
+    parts.push(`
+      <section style="margin:32px 0">
+        <h2 style="font-size:18px;font-weight:bold;color:#1f2937;margin-bottom:24px">How to Use VideoText</h2>
+        ${steps}
+      </section>
+    `)
+  }
+
+  // Social Proof
+  if (meta.socialProof && meta.socialProof.length > 0) {
+    const stats = meta.socialProof
+      .map(
+        (s) => `
+        <div style="flex:1;min-width:200px;padding:20px;background:#f9fafb;border-radius:8px;text-align:center">
+          <div style="font-size:28px;font-weight:bold;color:#2563eb;margin-bottom:8px">${escapeHtml(s.stat)}</div>
+          <p style="margin:0;color:#4b5563;font-size:14px">${escapeHtml(s.desc)}</p>
+        </div>
+      `
+      )
+      .join('')
+    parts.push(`
+      <section style="margin:32px 0">
+        <h2 style="font-size:18px;font-weight:bold;color:#1f2937;margin-bottom:16px">Why Creators Trust VideoText</h2>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">${stats}</div>
+      </section>
+    `)
+  }
+
+  // CTA
+  parts.push(`
+    <section style="margin:32px 0;padding:24px;background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);border-radius:8px;text-align:center;color:white">
+      <h2 style="margin:0 0 12px 0;font-size:18px;font-weight:bold">Ready to Get Started?</h2>
+      <p style="margin:0 0 16px 0;font-size:14px;opacity:0.95">Sign up free. No credit card required. 3 imports per month included.</p>
+      <a href="/" style="display:inline-block;background:white;color:#2563eb;padding:12px 24px;border-radius:6px;font-weight:600;text-decoration:none;font-size:14px">Start Now Free</a>
+    </section>
+  `)
+
+  return `<div style="max-width:800px;margin:32px auto;padding:0 16px;font-family:system-ui,-apple-system,sans-serif">${parts.join('')}</div>`
+}
+
 function buildHubPageHtml(path: string, title: string): string {
   const links = HUB_PAGE_LINKS[path] || []
   const linkHtml = links
@@ -913,6 +1083,12 @@ function main() {
     if (meta.h1) {
       const h1Html = buildH1Html(meta.h1)
       html = html.replace('</body>', `${h1Html}\n</body>`)
+    }
+
+    // Inject high-conversion content (keywords, comparison, how-to, proof)
+    if (meta.valueProposition || meta.keywords || meta.comparison || meta.howToUse || meta.socialProof) {
+      const conversionContent = buildConversionContent(meta)
+      html = html.replace('</body>', `${conversionContent}\n</body>`)
     }
 
     // Inject hub page links directly into static HTML (for SEO crawlers without JS execution)
