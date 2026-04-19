@@ -15,6 +15,7 @@ const SUBTITLE_TOOLS = [
       { path: '/youtube-subtitle-generator', label: 'YouTube Subtitle Generator' },
       { path: '/caption-video-online', label: 'Caption Video Online' },
       { path: '/video-with-subtitles', label: 'Video with Subtitles' },
+      { path: '/batch-process', label: 'Batch Video to Subtitles' },
     ],
   },
   {
