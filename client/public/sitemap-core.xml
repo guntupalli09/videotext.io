@@ -67,12 +67,6 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://videotext.io/youtube-transcript</loc>
-    <lastmod>2026-04-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>https://videotext.io/youtube-transcript-generator</loc>
     <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
@@ -85,19 +79,7 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://videotext.io/audio-to-text</loc>
-    <lastmod>2026-04-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://videotext.io/audio-to-text-converter</loc>
-    <lastmod>2026-04-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://videotext.io/subtitle-generator</loc>
     <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -115,25 +97,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/srt-generator</loc>
-    <lastmod>2026-04-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://videotext.io/video-to-srt</loc>
-    <lastmod>2026-04-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>https://videotext.io/podcast-transcription</loc>
-    <lastmod>2026-04-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://videotext.io/interview-transcription</loc>
     <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

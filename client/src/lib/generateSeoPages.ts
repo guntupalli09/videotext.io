@@ -53,6 +53,8 @@ const EXISTING_PATHS = new Set([
   '/turboscribe-alternative', '/buzz-alternative', '/deepgram-alternative', '/assembly-ai-alternative',
   '/krisp-alternative', '/tactiq-alternative', '/happyscribe-alternative', '/headliner-alternative',
   '/castmagic-alternative', '/riverside-alternative',
+  // Non-canonical variants (indexable: false) — skip programmatic generation
+  '/interview-transcription',
 ])
 
 /** Generate intent pages with proper topical authority linking.

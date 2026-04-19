@@ -162,7 +162,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'YouTube Transcript',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/youtube-to-transcript', '/video-to-subtitles', '/podcast-transcription', '/subtitle-generator'],
-    indexable: true,
+    indexable: false,
     intentKey: 'youtube-transcript',
     canonicalGroup: 'youtube-transcript',
     defaultInputMode: 'youtube',
@@ -289,7 +289,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Subtitle Generator',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-transcript', '/translate-subtitles', '/video-to-srt', '/burn-subtitles-into-video'],
-    indexable: true,
+    indexable: false,
     intentKey: 'subtitle-generator',
     faq: [
       { q: 'What is an online subtitle generator?', a: 'An online subtitle generator takes a video file, transcribes the speech using AI, and produces a timed subtitle file (SRT or VTT) you can download and use immediately. You upload the video, wait a few seconds, and download the subtitles — no software to install, no manual typing required.' },
@@ -732,7 +732,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Bulk Video Transcription',
     toolKey: 'batch-process',
     relatedSlugs: ['/batch-process', '/video-to-transcript', '/video-to-subtitles', '/bulk-subtitle-export'],
-    indexable: true,
+    indexable: false,
     intentKey: 'bulk-video-transcription',
     faq: [
       {
@@ -785,7 +785,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Transcribe Video',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/youtube-to-transcript', '/video-to-text', '/mp4-to-text', '/meeting-transcription'],
-    indexable: true,
+    indexable: false,
     intentKey: 'transcribe-video',
     faq: [
       { q: 'Is it free to transcribe a video online?', a: 'Yes. The free tier includes 3 imports per month (resets on the 1st) after signing up for free — just upload and go. Create a free account to track usage across browser sessions. Paid plans start at $19/month for 450 minutes, which covers most creators and small teams processing regular content.' },
@@ -805,7 +805,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Video Transcription',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/transcribe-video', '/video-to-text', '/meeting-transcription'],
-    indexable: true,
+    indexable: false,
     intentKey: 'video-transcription',
     faq: [
       { q: 'What is video transcription?', a: 'Video transcription is the process of converting spoken words in a video into written text using AI speech recognition. You upload a video file, and the transcription engine extracts the audio track, detects speech, and produces a readable plain-text transcript aligned to the timing of the original recording.' },
@@ -825,7 +825,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Free Transcription',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/transcribe-video', '/video-to-text', '/ai-transcription'],
-    indexable: true,
+    indexable: false,
     intentKey: 'free-transcription',
     faq: [
       { q: 'Is transcription really free?', a: 'Yes. You get 3 imports per month (resets on the 1st) after signing up for free. No credit card needed to try.' },
@@ -845,7 +845,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Online Transcription',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/free-transcription', '/transcribe-video', '/meeting-transcription'],
-    indexable: true,
+    indexable: false,
     intentKey: 'online-transcription',
     faq: [
       { q: 'Does this work in any browser?', a: 'Yes. The tool is browser-based. No download or plugin required. Works in Chrome, Firefox, Safari, and Edge.' },
@@ -865,7 +865,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'AI Transcription',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/transcribe-video', '/free-transcription', '/video-transcription'],
-    indexable: true,
+    indexable: false,
     intentKey: 'ai-transcription',
     faq: [
       { q: 'How does AI transcription work?', a: 'We run your video through AI speech recognition models that detect spoken words and produce text with high accuracy, even for technical content and accents.' },
@@ -885,7 +885,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Audio to Text',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/transcribe-video', '/free-transcription', '/podcast-transcription'],
-    indexable: true,
+    indexable: false,
     intentKey: 'audio-to-text',
     faq: [
       { q: 'Can I transcribe audio files to text?', a: 'Yes. Upload your audio packaged as a video file — MP4, MOV, AVI, or WebM. Most recordings, podcasts, and interviews are shared in video containers that hold an audio track. If you have an audio-only file (MP3, WAV), export it to MP4 using any free converter before uploading.' },
@@ -928,7 +928,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Zoom Meeting Transcript',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/meeting-recording-to-transcript', '/meeting-transcription-tool', '/google-meet-transcript', '/otter-alternative'],
-    indexable: true,
+    indexable: false,
     intentKey: 'zoom-meeting-transcript',
     deepContent: {
       proofPoints: [
@@ -986,7 +986,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Meeting Recording to Transcript',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/google-meet-transcript', '/zoom-meeting-transcript', '/meeting-transcription-tool', '/fireflies-alternative'],
-    indexable: true,
+    indexable: false,
     intentKey: 'meeting-recording-to-transcript',
     deepContent: {
       proofPoints: [
@@ -1031,7 +1031,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Interview Transcription',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/speaker-diarization', '/podcast-transcription', '/zoom-meeting-transcript', '/mp3-to-text'],
-    indexable: true,
+    indexable: false,
     intentKey: 'interview-transcription',
     faq: [
       { q: 'Can I transcribe an interview with two speakers?', a: 'Yes. After transcribing, open the Speakers branch. Speech is grouped by speaker turn (Speaker 1, Speaker 2, etc.) so you can clearly see who said what. For interviews with multiple participants, speakers beyond two are also labeled separately.' },
@@ -1118,7 +1118,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Automatic Subtitles',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/subtitle-generator', '/caption-generator', '/video-to-srt'],
-    indexable: true,
+    indexable: false,
     intentKey: 'automatic-subtitles',
     faq: [
       { q: 'How accurate are automatic subtitles?', a: 'Automatic subtitles generated by our AI are highly accurate for clear audio. We use state-of-the-art speech recognition trained on diverse speakers, accents, and topics. For best accuracy, set the spoken language manually rather than relying on auto-detect, and ensure the audio has minimal background noise or music.' },
@@ -1138,7 +1138,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Caption Generator',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/automatic-subtitles', '/subtitle-generator', '/closed-caption-generator'],
-    indexable: true,
+    indexable: false,
     intentKey: 'caption-generator',
     faq: [
       { q: 'What is a caption generator and how does it work?', a: 'A caption generator uses AI speech recognition to transcribe speech in a video and align each word to its timestamp, producing timed caption files in SRT or VTT format. You upload a video file, wait 30–90 seconds, and download captions ready to upload to YouTube, Vimeo, or any platform.' },
@@ -1158,7 +1158,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Closed Caption Generator',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/caption-generator', '/automatic-subtitles', '/subtitles-vs-closed-captions'],
-    indexable: true,
+    indexable: false,
     intentKey: 'closed-caption-generator',
     faq: [
       { q: 'What are closed captions and how are they different from subtitles?', a: 'Closed captions are text overlays that viewers can toggle on or off. Unlike subtitles (which only transcribe speech), closed captions include non-speech audio cues like [music], [applause], and speaker identification, making video content accessible to deaf and hard-of-hearing viewers. The "closed" in closed captions means they can be turned off.' },
@@ -1178,7 +1178,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Free Subtitle Generator',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/subtitle-generator', '/automatic-subtitles', '/caption-generator'],
-    indexable: true,
+    indexable: false,
     intentKey: 'free-subtitle-generator',
     faq: [
       { q: 'Is the subtitle generator really free?', a: 'Yes. You get 3 imports per month (resets on the 1st) after signing up for free. No credit card needed to try.' },
@@ -1198,7 +1198,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Video to SRT',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/mp4-to-srt', '/srt-generator', '/automatic-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'video-to-srt',
     faq: [
       { q: 'What is an SRT file?', a: 'An SRT (SubRip Text) file is a plain-text subtitle format that contains numbered caption blocks, each with a start time, end time, and the spoken text. It is the most widely supported subtitle format, accepted by YouTube, Vimeo, VLC, LinkedIn, Facebook Video, and virtually every video platform and editing tool.' },
@@ -1218,7 +1218,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'SRT Generator',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-srt', '/mp4-to-srt', '/subtitle-generator'],
-    indexable: true,
+    indexable: false,
     intentKey: 'srt-generator',
     faq: [
       { q: 'What is an SRT generator?', a: 'An SRT generator transcribes speech in a video and creates a properly timed SRT subtitle file automatically. You upload video and download captions.' },
@@ -2150,7 +2150,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Meeting Transcription Tool',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/meeting-recording-to-transcript', '/google-meet-transcript', '/zoom-meeting-transcript', '/otter-alternative', '/notta-alternative'],
-    indexable: true,
+    indexable: false,
     intentKey: 'meeting-transcription-tool',
     deepContent: {
       proofPoints: [
