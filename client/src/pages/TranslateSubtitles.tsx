@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, Suspense, lazy } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { Languages, Copy, Check, Download, ArrowRight } from 'lucide-react'
 import FailedState from '../components/FailedState'
+import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
 import UpgradeBanner from '../components/UpgradeBanner'
@@ -365,15 +366,20 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
         {/* ── Upload tab: no file selected ─────────────────────────────────── */}
         {status === 'idle' && tab === 'upload' && !selectedFile && (
-          <UploadZone
-            immediateSelect
-            onFileSelect={handleFileSelect}
-            initialFiles={null}
-            onRemove={() => setSelectedFile(null)}
-            acceptedFormats={['SRT', 'VTT', 'TXT']}
-            acceptAttribute=".srt,.vtt,.txt"
-            maxSize="10 MB"
-          />
+          <div className="space-y-4">
+            <UploadZone
+              immediateSelect
+              onFileSelect={handleFileSelect}
+              initialFiles={null}
+              onRemove={() => setSelectedFile(null)}
+              acceptedFormats={['SRT', 'VTT', 'TXT']}
+              acceptAttribute=".srt,.vtt,.txt"
+              maxSize="10 MB"
+            />
+            {location.pathname === '/translate-subtitles' && (
+              <SamplesModule sourcePath={location.pathname} samplesHref="/samples#translate" />
+            )}
+          </div>
         )}
 
         {/* ── Upload tab: file selected ─────────────────────────────────────── */}

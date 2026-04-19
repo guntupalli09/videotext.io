@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Film } from 'lucide-react'
 // import { useWorkflow } from '../contexts/WorkflowContext'
 import FailedState from '../components/FailedState'
+import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
 import { ToolLayout } from '../components/figma/ToolLayout'
@@ -265,19 +266,24 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
     <>
       <ToolLayout {...layoutProps}>
         {status === 'idle' && !videoFile && (
-          <UploadZone
-            immediateSelect
-            onFileSelect={handleVideoSelect}
-            initialFiles={videoFile ? [videoFile] : null}
-            onRemove={() => {
-              // if (videoFromWorkflow) workflow.clearVideo()
-              setVideoFile(null)
-              setVideoFromWorkflow(false)
-            }}
-            fromWorkflowLabel={videoFromWorkflow ? 'From previous step' : undefined}
-            acceptedFormats={['MP4', 'MOV', 'AVI', 'WEBM']}
-            maxSize="10 GB"
-          />
+          <div className="space-y-4">
+            <UploadZone
+              immediateSelect
+              onFileSelect={handleVideoSelect}
+              initialFiles={videoFile ? [videoFile] : null}
+              onRemove={() => {
+                // if (videoFromWorkflow) workflow.clearVideo()
+                setVideoFile(null)
+                setVideoFromWorkflow(false)
+              }}
+              fromWorkflowLabel={videoFromWorkflow ? 'From previous step' : undefined}
+              acceptedFormats={['MP4', 'MOV', 'AVI', 'WEBM']}
+              maxSize="10 GB"
+            />
+            {location.pathname === '/burn-subtitles' && (
+              <SamplesModule sourcePath={location.pathname} samplesHref="/samples#burn" />
+            )}
+          </div>
         )}
 
         {status === 'idle' && videoFile && !subtitleFile && (

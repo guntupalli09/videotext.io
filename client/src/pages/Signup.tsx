@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { sendOtp, verifyOtp, loginWithGoogle } from '../lib/api'
 import { completeSignup, storeLoginResult } from '../lib/auth'
 import { identifyUser, trackEvent } from '../lib/analytics'
+import { getSamplesModuleAttribution } from '../lib/samplesAttribution'
 import { motion } from 'framer-motion'
 import { FileText, Youtube, Shield, ChevronRight, CheckCircle2 } from 'lucide-react'
 import GoogleSignInButton, { GOOGLE_CLIENT_ID } from '../components/GoogleSignInButton'
@@ -24,6 +25,7 @@ export default function Signup() {
   const params = new URLSearchParams(location.search)
   const returnTo = params.get('returnTo') || '/'
   const fromGuestJob = params.get('guestJob') === '1'
+  const samplesAttribution = getSamplesModuleAttribution()
 
   async function handleGoogleCredential(credential: string) {
     setGoogleLoading(true)
@@ -53,7 +55,19 @@ export default function Signup() {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    try { trackEvent('signup_started', { from_guest_job: fromGuestJob }) } catch { /* non-blocking */ }
+    try {
+      trackEvent('signup_started', {
+        from_guest_job: fromGuestJob,
+        ...(samplesAttribution
+          ? {
+              samples_module_clickthrough: true,
+              samples_module_source_path: samplesAttribution.sourcePath,
+              samples_module_target_path: samplesAttribution.samplesHref,
+              samples_module_clicked_at: samplesAttribution.clickedAt,
+            }
+          : {}),
+      })
+    } catch { /* non-blocking */ }
     try {
       await sendOtp(email)
       setStep('otp')
@@ -100,7 +114,18 @@ export default function Signup() {
       }
       try {
         identifyUser(result.userId, { plan: result.plan, email: result.email })
-        trackEvent('signup_completed', { plan: result.plan, from_guest_job: fromGuestJob })
+        trackEvent('signup_completed', {
+          plan: result.plan,
+          from_guest_job: fromGuestJob,
+          ...(samplesAttribution
+            ? {
+                samples_module_clickthrough: true,
+                samples_module_source_path: samplesAttribution.sourcePath,
+                samples_module_target_path: samplesAttribution.samplesHref,
+                samples_module_clicked_at: samplesAttribution.clickedAt,
+              }
+            : {}),
+        })
       } catch {
         // non-blocking
       }

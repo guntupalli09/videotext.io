@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Gem, Upload } from 'lucide-react'
 import FailedState from '../components/FailedState'
+import SamplesModule from '../components/SamplesModule'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import UpgradeBanner from '../components/UpgradeBanner'
@@ -2020,6 +2021,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
                   />
                 </div>
+                {location.pathname === '/video-to-transcript' && (
+                  <SamplesModule sourcePath={location.pathname} samplesHref="/samples#transcript" />
+                )}
                 <p className="text-xs text-center text-gray-400 dark:text-gray-500">
                   Your files are processed and deleted. Nothing is stored. Ever.
                 </p>
