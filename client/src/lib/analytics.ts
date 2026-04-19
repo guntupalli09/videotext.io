@@ -106,6 +106,7 @@ export type AnalyticsEvent =
   // Nav & discovery
   | 'nav_cta_clicked'              // props: { label, destination }
   | 'tool_nav_clicked'             // user clicked a tool from nav dropdown; props: { tool, path }
+  | 'samples_module_clicked'       // user clicked "See real output samples"; props: { source_path, target_path }
   // Tool configuration
   | 'format_changed'               // props: { tool, format }
   | 'language_selected'            // props: { tool, language, additional?: boolean }

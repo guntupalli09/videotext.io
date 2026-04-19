@@ -9,6 +9,7 @@ import { FileText } from 'lucide-react'
 import { getSeoEntry, getRelatedSuggestionsForEntry } from '../lib/seoRegistry'
 import type { SeoToolKey } from '../lib/seoRegistry'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
+import SamplesModule from '../components/SamplesModule'
 import NotFound from './NotFound'
 
 // Lazy-load core tools so only the needed one is loaded for each SEO URL
@@ -30,6 +31,15 @@ const TOOL_MAP: Record<SeoToolKey, React.LazyExoticComponent<React.ComponentType
   'compress-video': CompressVideo,
   'batch-process': BatchProcess,
   'voice-to-text': VoiceRecorder,
+}
+
+const SAMPLES_ANCHOR_BY_TOOL: Partial<Record<SeoToolKey, string>> = {
+  'video-to-transcript': '/samples#transcript',
+  'video-to-subtitles': '/samples#subtitle',
+  'translate-subtitles': '/samples#translate',
+  'fix-subtitles': '/samples#fix',
+  'burn-subtitles': '/samples#burn',
+  'compress-video': '/samples#compress',
 }
 
 function RouteFallback() {
@@ -54,6 +64,7 @@ export default function SeoToolPage() {
   }
 
   const related = getRelatedSuggestionsForEntry(entry)
+  const samplesHref = SAMPLES_ANCHOR_BY_TOOL[entry.toolKey]
   const suggestions = related.map(({ path, title }) => ({
     icon: FileText,
     title,
@@ -78,6 +89,11 @@ export default function SeoToolPage() {
       <Suspense fallback={<RouteFallback />}>
         <Tool {...toolProps} />
       </Suspense>
+      {samplesHref && (
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-6">
+          <SamplesModule sourcePath={pathname} samplesHref={samplesHref} />
+        </div>
+      )}
       {suggestions.length > 0 && (
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-12">
           <CrossToolSuggestions suggestions={suggestions} />

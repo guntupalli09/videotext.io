@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Wrench, CheckCircle } from 'lucide-react'
 import FailedState from '../components/FailedState'
+import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
@@ -294,15 +295,20 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     <>
       <ToolLayout {...layoutProps}>
         {status === 'idle' && !selectedFile && !showIssues && (
-          <UploadZone
-            immediateSelect
-            onFileSelect={handleFileSelect}
-            initialFiles={selectedFile ? [selectedFile] : null}
-            onRemove={() => { setSelectedFile(null); setIssues([]); setShowIssues(false) }}
-            acceptedFormats={['SRT', 'VTT']}
-            acceptAttribute=".srt,.vtt"
-            maxSize="10 MB"
-          />
+          <div className="space-y-4">
+            <UploadZone
+              immediateSelect
+              onFileSelect={handleFileSelect}
+              initialFiles={selectedFile ? [selectedFile] : null}
+              onRemove={() => { setSelectedFile(null); setIssues([]); setShowIssues(false) }}
+              acceptedFormats={['SRT', 'VTT']}
+              acceptAttribute=".srt,.vtt"
+              maxSize="10 MB"
+            />
+            {location.pathname === '/fix-subtitles' && (
+              <SamplesModule sourcePath={location.pathname} samplesHref="/samples#fix" />
+            )}
+          </div>
         )}
 
         {status === 'idle' && selectedFile && !showIssues && (

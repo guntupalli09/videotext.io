@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2, Lock } from 'lucide-react'
 import FailedState from '../components/FailedState'
+import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
@@ -765,17 +766,22 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="watermark" />
         {status === 'idle' && !selectedFile && (
-          <UploadZone
-            immediateSelect
-            onFileSelect={handleFileSelect}
-            initialFiles={selectedFile ? [selectedFile] : null}
-            onRemove={() => {
-              // if (fileFromWorkflow) workflow.clearVideo()
-              setSelectedFile(null)
-              setFileFromWorkflow(false)
-            }}
-            fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
-          />
+          <div className="space-y-4">
+            <UploadZone
+              immediateSelect
+              onFileSelect={handleFileSelect}
+              initialFiles={selectedFile ? [selectedFile] : null}
+              onRemove={() => {
+                // if (fileFromWorkflow) workflow.clearVideo()
+                setSelectedFile(null)
+                setFileFromWorkflow(false)
+              }}
+              fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
+            />
+            {location.pathname === '/video-to-subtitles' && (
+              <SamplesModule sourcePath={location.pathname} samplesHref="/samples#subtitle" />
+            )}
+          </div>
         )}
 
         {status === 'idle' && selectedFile && (

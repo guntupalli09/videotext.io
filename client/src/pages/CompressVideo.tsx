@@ -4,6 +4,7 @@ import { Minimize2, Lock } from 'lucide-react'
 import { isLoggedIn } from '../lib/auth'
 // import { useWorkflow } from '../contexts/WorkflowContext'
 import FailedState from '../components/FailedState'
+import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
@@ -269,19 +270,24 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
     <>
       <ToolLayout {...layoutProps}>
         {status === 'idle' && !selectedFile && (
-          <UploadZone
-            immediateSelect
-            onFileSelect={handleFileSelect}
-            initialFiles={selectedFile ? [selectedFile] : null}
-            onRemove={() => {
-              // if (fileFromWorkflow) workflow.clearVideo()
-              setSelectedFile(null)
-              setFileFromWorkflow(false)
-            }}
-            fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
-            acceptedFormats={['MP4', 'MOV', 'AVI', 'WEBM', 'MKV']}
-            maxSize="10 GB"
-          />
+          <div className="space-y-4">
+            <UploadZone
+              immediateSelect
+              onFileSelect={handleFileSelect}
+              initialFiles={selectedFile ? [selectedFile] : null}
+              onRemove={() => {
+                // if (fileFromWorkflow) workflow.clearVideo()
+                setSelectedFile(null)
+                setFileFromWorkflow(false)
+              }}
+              fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
+              acceptedFormats={['MP4', 'MOV', 'AVI', 'WEBM', 'MKV']}
+              maxSize="10 GB"
+            />
+            {location.pathname === '/compress-video' && (
+              <SamplesModule sourcePath={location.pathname} samplesHref="/samples#compress" />
+            )}
+          </div>
         )}
 
         {status === 'idle' && selectedFile && (
