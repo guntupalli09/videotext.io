@@ -1,5 +1,6 @@
 import { API_ORIGIN } from './apiBase'
 import { trackEvent } from './analytics'
+import { getSamplesModuleAttribution } from './samplesAttribution'
 
 /** True when requests hit same origin (e.g. Vite dev server) and are proxied to backend — use conservative chunking. */
 function isLikelyDevProxy(): boolean {
@@ -19,7 +20,18 @@ function isLikelyDevProxy(): boolean {
 /** Fire-and-forget analytics; never throws. */
 function trackUploadEvent(event: 'upload_started' | 'upload_completed', props: Record<string, unknown>) {
   try {
-    trackEvent(event, props)
+    const samplesAttribution = getSamplesModuleAttribution()
+    trackEvent(event, {
+      ...props,
+      ...(samplesAttribution
+        ? {
+            samples_module_clickthrough: true,
+            samples_module_source_path: samplesAttribution.sourcePath,
+            samples_module_target_path: samplesAttribution.samplesHref,
+            samples_module_clicked_at: samplesAttribution.clickedAt,
+          }
+        : {}),
+    })
   } catch {
     // no-op
   }

@@ -877,6 +877,55 @@ function titleFromPath(routePath: string): string {
   return `${label} | ${SITE_NAME}`
 }
 
+function optimizeSeoTitle(rawTitle: string, routePath: string): string {
+  const suffix = ` | ${SITE_NAME}`
+  const normalized = (rawTitle || '').trim().replace(/\s+/g, ' ')
+  const hasSuffix = normalized.endsWith(suffix)
+  const base = hasSuffix ? normalized.slice(0, -suffix.length).trim() : normalized
+  const maxTotal = 62
+  const budget = maxTotal - suffix.length
+  if (base.length <= budget) return `${base}${suffix}`
+
+  const maybeAddConversionBoost = (candidate: string): string => {
+    const boosts = routePath.includes('-alternative')
+      ? [' - Faster, File-First', ' - Faster & Easier']
+      : routePath.includes('transcription')
+        ? [' - Fast & Accurate', ' - Free Online']
+        : []
+    for (const boost of boosts) {
+      const next = `${candidate}${boost}`
+      if (next.length <= budget) return next
+    }
+    return candidate
+  }
+
+  // Prefer keeping intent-rich lead phrase before long explanatory tails.
+  const separators = [' — ', ' – ', ': ', ' - ', ' | ']
+  for (const sep of separators) {
+    const parts = base.split(sep).map((p) => p.trim()).filter(Boolean)
+    if (parts.length <= 1) continue
+    let candidate = parts[0]
+    for (let i = 1; i < parts.length; i += 1) {
+      const next = `${candidate}${sep}${parts[i]}`
+      if (next.length > budget) break
+      candidate = next
+    }
+    if (candidate.length <= budget) return `${maybeAddConversionBoost(candidate)}${suffix}`
+  }
+
+  // Fallback: word-safe truncate.
+  const clipped = base.slice(0, budget - 1)
+  const safe = clipped.slice(0, Math.max(0, clipped.lastIndexOf(' '))).trim() || clipped.trim()
+  const withEllipsis = `${safe}…`
+
+  // For money pages, keep CTA language if truncation was aggressive.
+  if (withEllipsis.length < 36 && routePath !== '/blog') {
+    const compact = base.slice(0, budget - 7).trim()
+    return `${compact} Free${suffix}`.slice(0, maxTotal).replace(/\s+\|/, ' |')
+  }
+  return `${withEllipsis}${suffix}`
+}
+
 function descriptionFromPath(routePath: string): string {
   if (routePath === '/') {
     return 'VideoText helps you transcribe videos, generate subtitles, translate captions, and export clean transcripts in your browser.'
@@ -885,11 +934,63 @@ function descriptionFromPath(routePath: string): string {
   return `VideoText page for ${label}. Fully prerendered HTML for search crawlers, SEO tools, and LLM agents.`
 }
 
+function optimizeMetaDescription(rawDescription: string, routePath: string): string {
+  const maxLen = 158
+  const normalized = (rawDescription || '').trim().replace(/\s+/g, ' ')
+  if (!normalized) return ''
+  const clean = (value: string) =>
+    value
+      .replace(/\s+,/g, ',')
+      .replace(/,\./g, '.')
+      .replace(/\.\./g, '.')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+  if (normalized.length <= maxLen) return clean(normalized)
+
+  // Keep strongest lead sentences first.
+  const sentences = normalized.split(/(?<=\.)\s+/).filter(Boolean)
+  if (sentences.length > 1) {
+    let candidate = ''
+    for (const sentence of sentences) {
+      const next = candidate ? `${candidate} ${sentence}` : sentence
+      if (next.length > maxLen) break
+      candidate = next
+    }
+    if (candidate && candidate.length >= 90) return clean(candidate)
+  }
+
+  // Optional concise conversion tail for key pages when there is room.
+  const conversionTail = routePath.includes('-alternative')
+    ? ' Free tier.'
+    : routePath.includes('transcription')
+      ? ' Fast, accurate, free tier.'
+      : ''
+
+  const budget = maxLen - conversionTail.length
+  const clipped = normalized.slice(0, Math.max(1, budget - 1))
+  const safe = clipped.slice(0, Math.max(0, clipped.lastIndexOf(' '))).trim() || clipped.trim()
+  const base = safe.endsWith('.') ? safe : `${safe}.`
+  const merged = clean(`${base}${conversionTail}`.trim())
+  return merged.length <= maxLen ? merged : clean(merged.slice(0, maxLen).trimEnd())
+}
+
 function mergeRouteMetaWithSitemapCoverage(routes: RouteMeta[]): RouteMeta[] {
   const byPath = new Map<string, RouteMeta>()
   for (const route of routes) {
     const canonicalPath = getCanonicalPathForRoute(route.path)
-    byPath.set(canonicalPath, { ...route, path: canonicalPath })
+    const fallbackTitle = route.title?.trim() ? route.title : titleFromPath(canonicalPath)
+    const fallbackH1Base = fallbackTitle.replace(` | ${SITE_NAME}`, '')
+    byPath.set(canonicalPath, {
+      ...route,
+      path: canonicalPath,
+      title: fallbackTitle,
+      description: route.description?.trim() ? route.description : descriptionFromPath(canonicalPath),
+      h1: route.h1?.trim() ? route.h1 : fallbackH1Base,
+      breadcrumbLabel: route.breadcrumbLabel?.trim()
+        ? route.breadcrumbLabel
+        : fallbackH1Base,
+    })
   }
 
   const sitemapPaths = getIndexablePaths().map((p) => getCanonicalPathForRoute(p))
@@ -1169,8 +1270,37 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
   ],
 }
 
-function buildH1Html(h1Text: string): string {
-  return `<h1 style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">${escapeHtml(h1Text)}</h1>`
+function buildH1Html(meta: RouteMeta): string {
+  const h1Text = meta.h1 ? escapeHtml(meta.h1) : ''
+  const description = escapeHtml(meta.description)
+  const primaryCta = meta.path === '/pricing' ? '/pricing' : '/signup'
+  const primaryLabel = meta.path === '/pricing' ? 'See pricing' : 'Start free'
+
+  return `
+    <section id="vt-prerender-h1" style="max-width:960px;margin:24px auto 8px auto;padding:0 16px;font-family:system-ui,-apple-system,sans-serif">
+      <h1 style="margin:0 0 10px 0;font-size:32px;line-height:1.2;font-weight:800;color:#111827">${h1Text}</h1>
+      <p style="margin:0 0 14px 0;font-size:16px;line-height:1.6;color:#4b5563">${description}</p>
+      <a href="${primaryCta}" style="display:inline-block;background:#6d28d9;color:#ffffff;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none">${primaryLabel}</a>
+    </section>
+    <script>
+      (function () {
+        var hidden = false
+        function hidePrerenderH1() {
+          if (hidden) return
+          var root = document.getElementById('root')
+          var h1 = document.getElementById('vt-prerender-h1')
+          if (!root || !h1) return
+          if (root.childElementCount > 0) {
+            h1.style.display = 'none'
+            hidden = true
+          }
+        }
+        hidePrerenderH1()
+        setTimeout(hidePrerenderH1, 250)
+        setTimeout(hidePrerenderH1, 1200)
+      })()
+    </script>
+  `
 }
 
 function buildConversionContent(meta: RouteMeta): string {
@@ -1409,16 +1539,18 @@ function buildMoneyPageAuthorityLinksHtml(routePath: string): string {
 }
 
 function injectHead(template: string, meta: RouteMeta): string {
+  const seoTitle = optimizeSeoTitle(meta.title, meta.path)
+  const seoDescription = optimizeMetaDescription(meta.description, meta.path)
   // Replace title tag
   let html = template.replace(
     /<title>[^<]*<\/title>/,
-    `<title>${escapeHtml(meta.title)}</title>`
+    `<title>${escapeHtml(seoTitle)}</title>`
   )
 
   // Replace meta description
   html = html.replace(
     /<meta\s+name="description"\s+content="[^"]*"\s*\/>/,
-    `<meta name="description" content="${escapeHtml(meta.description)}" />`
+    `<meta name="description" content="${escapeHtml(seoDescription)}" />`
   )
 
   // Replace canonical (match SPA primary map so static HTML agrees with Helmet)
@@ -1432,13 +1564,13 @@ function injectHead(template: string, meta: RouteMeta): string {
   // Replace og:title
   html = html.replace(
     /<meta\s+property="og:title"\s+content="[^"]*"\s*\/>/,
-    `<meta property="og:title" content="${escapeHtml(meta.title)}" />`
+    `<meta property="og:title" content="${escapeHtml(seoTitle)}" />`
   )
 
   // Replace og:description
   html = html.replace(
     /<meta\s+property="og:description"\s+content="[^"]*"\s*\/>/,
-    `<meta property="og:description" content="${escapeHtml(meta.description)}" />`
+    `<meta property="og:description" content="${escapeHtml(seoDescription)}" />`
   )
 
   // Replace og:url
@@ -1450,13 +1582,13 @@ function injectHead(template: string, meta: RouteMeta): string {
   // Replace twitter:title
   html = html.replace(
     /<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/>/,
-    `<meta name="twitter:title" content="${escapeHtml(meta.title)}" />`
+    `<meta name="twitter:title" content="${escapeHtml(seoTitle)}" />`
   )
 
   // Replace twitter:description
   html = html.replace(
     /<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/>/,
-    `<meta name="twitter:description" content="${escapeHtml(meta.description)}" />`
+    `<meta name="twitter:description" content="${escapeHtml(seoDescription)}" />`
   )
 
   // Replace robots (noindex support)
@@ -1520,9 +1652,9 @@ function main() {
     let html = injectHead(template, meta)
     html = injectStructuredData(html, routePath, meta)
 
-    // Inject H1 tag for crawler discovery (hidden from view but visible in static HTML)
+    // Inject visible prerender H1 block so non-JS crawlers can read headings and context.
     if (meta.h1) {
-      const h1Html = buildH1Html(meta.h1)
+      const h1Html = buildH1Html(meta)
       html = html.replace('</body>', `${h1Html}\n</body>`)
     }
 
