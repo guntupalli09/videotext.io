@@ -5183,6 +5183,7 @@ const STATIC_PAGE_LABELS: Record<string, string> = {
   '/compare': 'Compare tools',
   '/guide': 'Guide',
   '/blog': 'Blog',
+  '/samples': 'Samples',
 }
 
 /** Popular footer links — revenue tools first, then SEO hubs & proof. */
@@ -5191,12 +5192,9 @@ const POPULAR_FOOTER_PATHS: string[] = [
   '/fastest-transcription-tool',
   '/best-transcription-tool',
   '/video-to-transcription',
-  '/youtube-url-to-transcription',
   '/podcast-transcription-tool',
-  '/youtube-to-transcript',
-  '/video-to-subtitles',
-  '/fix-subtitles',
-  '/compress-video',
+  '/youtube-transcript-generator',
+  '/samples',
   '/tools',
   '/subtitle-tools',
   '/transcription-tools',
@@ -5210,7 +5208,18 @@ const POPULAR_FOOTER_PATHS: string[] = [
 
 /** Links for Footer "Popular tools" section; labels from registry or core labels. */
 export function getPopularFooterLinks(): { path: string; label: string }[] {
-  return POPULAR_FOOTER_PATHS.map((path) => ({ path, label: getPageLabel(path) }))
+  const seen = new Set<string>()
+  const links: { path: string; label: string }[] = []
+
+  for (const path of POPULAR_FOOTER_PATHS) {
+    const canonicalPath = resolveInternalLinkPath(path)
+    if (seen.has(canonicalPath)) continue
+    if (!isPathIndexable(canonicalPath)) continue
+    seen.add(canonicalPath)
+    links.push({ path: canonicalPath, label: getPageLabel(canonicalPath) })
+  }
+
+  return links
 }
 
 export function getSeoEntry(path: string): SeoRegistryEntry | undefined {
