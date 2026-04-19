@@ -1059,7 +1059,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Lecture Transcription',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/keyword-indexed-transcript', '/video-chapters-generator', '/transcribe-video', '/mp3-to-text'],
-    indexable: true,
+    indexable: false,
     intentKey: 'lecture-transcription',
     faq: [
       { q: 'Can I transcribe a university lecture?', a: 'Yes. Upload the lecture recording (MP4, MOV, WebM, MP3, WAV) and get a full text transcript. Works well for recorded talks, presentation recordings, Zoom class sessions, and physical classroom recordings.' },
@@ -1082,7 +1082,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'MOV to Text',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-text', '/mp4-to-text', '/transcribe-video'],
-    indexable: true,
+    indexable: false,
     intentKey: 'mov-to-text',
     faq: [
       { q: 'Can I convert MOV to text?', a: 'Yes. Upload your MOV file and we transcribe the speech to text. MOV is the default format for iPhone and Mac recordings.' },
@@ -1102,7 +1102,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'WebM to Text',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/video-to-text', '/mp4-to-text', '/transcribe-video'],
-    indexable: true,
+    indexable: false,
     intentKey: 'webm-to-text',
     faq: [
       { q: 'Can I transcribe a WebM file?', a: 'Yes. WebM is a supported format. Upload your file and get a text transcript in seconds.' },

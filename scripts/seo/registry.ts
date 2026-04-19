@@ -24,25 +24,10 @@ export const STATIC_ROUTES = [
   '/burn-subtitles',
   '/compress-video',
   '/batch-process',
-  '/transcription-benchmark',
-  '/accuracy-test',
   '/best-transcription-tool',
-  '/fastest-transcription-software',
   '/fastest-transcription-tool',
-  '/otter-vs-videotext',
-  '/descript-vs-videotext',
-  '/ai-transcription-tools',
-  '/videotext-vs-turboscribe',
-  '/videotext-vs-rev',
-  '/best-otter-alternatives',
-  '/best-descript-alternatives',
-  '/ai-transcription-workflow',
   '/podcast-transcription-tool',
   '/interview-transcription-tool',
-  '/youtube-video-to-transcript',
-  '/otter-vs-videotext',
-  '/descript-vs-videotext',
-  '/ai-transcription-tools',
 ]
 
 export function loadRoutesInventory(): string[] {
@@ -90,45 +75,12 @@ export const CORE_PATHS: string[] = [
   '/burn-subtitles',
   '/batch-process',
   '/compress-video',
-  '/transcription-benchmark',
-  '/accuracy-test',
   '/best-transcription-tool',
-  '/fastest-transcription-software',
   '/fastest-transcription-tool',
-  '/otter-vs-videotext',
-  '/descript-vs-videotext',
-  '/ai-transcription-tools',
-  '/videotext-vs-turboscribe',
-  '/videotext-vs-rev',
-  '/best-otter-alternatives',
-  '/best-descript-alternatives',
-  '/ai-transcription-workflow',
   '/podcast-transcription-tool',
   '/interview-transcription-tool',
-  '/youtube-video-to-transcript',
-  '/otter-vs-videotext',
-  '/descript-vs-videotext',
-  '/ai-transcription-tools',
-  // Cluster A — Platform-specific (high-intent)
-  '/tiktok-to-transcript',
-  '/google-meet-transcript',
-  '/teams-meeting-transcript',
-  '/loom-transcription',
-  '/screen-recording-transcript',
-  '/instagram-reel-transcript',
-  '/vimeo-transcription',
-  '/riverside-transcription',
-  // Cluster B — Language-specific
-  '/spanish-transcription',
-  '/hindi-transcription',
-  '/french-transcription',
-  '/chinese-transcription',
-  '/arabic-transcription',
-  '/portuguese-transcription',
-  '/japanese-transcription',
-  '/korean-transcription',
-  '/german-transcription',
-  '/italian-transcription',
+  // Cluster A — Platform-specific (high-intent) - moved to Sitemap 2 via seoRegistry.ts
+  // Cluster B — Language-specific - moved to Sitemap 2 via seoRegistry.ts
   // Cluster C — Competitor alternatives
   '/whisper-online',
   '/fireflies-alternative',
@@ -169,35 +121,9 @@ export const CORE_PATHS: string[] = [
   '/compare',
   '/open',
   '/changelog',
-  '/guide',
-  // Cluster F — Journalist & Student pages
-  '/transcription-for-journalists',
-  '/transcription-for-students',
-  '/best-transcription-tool-for-journalists',
-  '/best-transcription-tool-for-students',
-  '/press-conference-transcription',
-  '/research-interview-transcription',
-  '/qualitative-research-transcription',
-  '/journalism-transcription',
-  '/academic-transcription',
-  // Blog posts for journalist & student audiences
-  '/blog/best-transcription-tools-for-journalists',
-  '/blog/best-transcription-tools-for-students',
-  '/blog/how-to-transcribe-interview-recording',
-  '/blog/how-to-transcribe-lecture-recording',
-  // Cluster G — High-volume meeting platform alternatives (custom comparison pages)
-  '/zoom-alternative',
-  '/microsoft-teams-alternative',
-  '/panopto-alternative',
-  '/panopto-transcription',
-  '/webex-alternative',
-  '/notta-alternative',
-  '/tactiq-alternative',
-  '/capcut-alternative',
-  '/macwhisper-alternative',
-  '/deepgram-alternative',
-  // Cluster H — Voice-to-Text (browser-based voice recorder → Whisper transcription)
-  '/voice-recorder',
+  // Cluster F — Journalist & Student pages - moved to Sitemap 2 via seoRegistry.ts
+  // Cluster G — High-volume meeting platform alternatives - moved to Sitemap 2 via seoRegistry.ts
+  // Cluster H — Voice-to-Text
   '/voice-to-text',
   '/speech-to-text',
   '/voice-to-text-online',
@@ -210,14 +136,7 @@ export const CORE_PATHS: string[] = [
   '/voice-memo-to-text',
   '/voice-notes-to-text',
   '/voice-to-text-converter',
-  // Cluster H — Voice competitors (high-volume alternative pages)
-  '/dragon-dictate-alternative',
-  '/speechify-alternative',
-  '/speechnotes-alternative',
-  '/speechtexter-alternative',
-  '/dictation-io-alternative',
-  '/whispertype-alternative',
-  // Remaining alternatives are in sitemap2 via seoRegistry
+  // Voice competitors - moved to Sitemap 2 via seoRegistry.ts
 ]
 
 /**
