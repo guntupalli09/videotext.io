@@ -113,7 +113,6 @@ export const CORE_PATHS: string[] = [
   '/tiktok-to-transcript',
   '/google-meet-transcript',
   '/teams-meeting-transcript',
-  '/zoom-meeting-transcript',
   '/loom-transcription',
   '/screen-recording-transcript',
   '/instagram-reel-transcript',
