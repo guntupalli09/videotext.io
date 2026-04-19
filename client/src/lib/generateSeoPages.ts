@@ -53,8 +53,20 @@ const EXISTING_PATHS = new Set([
   '/turboscribe-alternative', '/buzz-alternative', '/deepgram-alternative', '/assembly-ai-alternative',
   '/krisp-alternative', '/tactiq-alternative', '/happyscribe-alternative', '/headliner-alternative',
   '/castmagic-alternative', '/riverside-alternative',
-  // Non-canonical variants (indexable: false) — skip programmatic generation
-  '/interview-transcription',
+  // Non-canonical variants (indexable: false) — skip programmatic generation (46 pages with canonical redirects)
+  '/youtube-transcript', '/youtube-video-transcript', '/transcribe-youtube-video', '/youtube-to-text',
+  '/mp4-to-text', '/mp4-to-srt', '/subtitle-generator', '/srt-translator', '/speaker-diarization',
+  '/video-summary-generator', '/video-chapters-generator', '/keyword-indexed-transcript',
+  '/srt-to-vtt', '/subtitle-converter', '/subtitle-timing-fixer', '/subtitle-validation',
+  '/subtitle-translator', '/multilingual-subtitles', '/subtitle-language-checker',
+  '/subtitle-grammar-fixer', '/subtitle-line-break-fixer', '/hardcoded-captions',
+  '/video-with-subtitles', '/video-compressor', '/reduce-video-size', '/batch-video-processing',
+  '/bulk-subtitle-export', '/bulk-transcript-export', '/bulk-video-transcription',
+  '/transcribe-video', '/video-transcription', '/free-transcription', '/online-transcription',
+  '/ai-transcription', '/audio-to-text', '/zoom-meeting-transcript',
+  '/meeting-recording-to-transcript', '/interview-transcription', '/automatic-subtitles',
+  '/caption-generator', '/closed-caption-generator', '/free-subtitle-generator', '/video-to-srt',
+  '/srt-generator', '/webinar-transcription', '/meeting-transcription-tool',
 ])
 
 /** Generate intent pages with proper topical authority linking.

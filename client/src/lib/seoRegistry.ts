@@ -123,7 +123,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       // Competitor links
       '/buzz-alternative', '/descript-alternative',
     ],
-    indexable: true,
+    indexable: false,
     intentKey: 'video-to-text',
     faq: [
       { q: 'What video formats are supported?', a: 'We support MP4, MOV, AVI, WebM, and MKV. Upload any of these formats and our AI extracts the speech track as plain text within seconds. If your file is in a different container, most video editors let you export to MP4 before uploading.' },
@@ -145,7 +145,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     toolKey: 'video-to-transcript',
     keywords: ['youtube to transcript', 'youtube transcript generator', 'transcribe youtube', 'youtube to text', 'get youtube transcript', 'free youtube transcription', 'youtube video to text', 'transcribe youtube videos free'],
     relatedSlugs: ['/video-to-subtitles', '/transcribe-video', '/meeting-transcription'],
-    indexable: true,
+    indexable: false,
     intentKey: 'youtube-to-transcript',
     defaultInputMode: 'youtube',
     faq: [
@@ -1244,7 +1244,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Translate Video',
     toolKey: 'translate-subtitles',
     relatedSlugs: ['/video-translation', '/subtitle-translator', '/multilingual-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'translate-video',
     faq: [
       { q: 'How do I translate a video to another language?', a: 'Upload your video and transcribe it using the Video to Transcript tool. Click Translate to view the full transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian. To translate subtitle files (SRT/VTT), generate subtitles first, then use Translate Subtitles to convert the caption file to any of 70+ languages.' },
@@ -1264,7 +1264,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Video Translation',
     toolKey: 'translate-subtitles',
     relatedSlugs: ['/translate-video', '/subtitle-translator', '/multilingual-subtitles'],
-    indexable: true,
+    indexable: false,
     intentKey: 'video-translation',
     faq: [
       { q: 'What is video translation?', a: 'Video translation converts your video content into another language as text (transcript) or timed captions (SRT/VTT) that can be burned into the video or uploaded to a platform.' },
