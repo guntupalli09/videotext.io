@@ -1120,6 +1120,44 @@ function buildHubPageHtml(path: string, title: string): string {
   `
 }
 
+// Inject canonical primary tool links into hub pages as separate section
+function buildCanonicalToolsSection(hubPath: string): string {
+  let tools: Array<{ path: string; label: string }> = []
+
+  if (hubPath === '/subtitle-tools') {
+    tools = [
+      { path: '/burn-subtitles', label: 'Burn Subtitles into Video' },
+    ]
+  } else if (hubPath === '/transcription-tools') {
+    tools = [
+      { path: '/translate-subtitles', label: 'Translate Subtitles' },
+      { path: '/compress-video', label: 'Compress Video' },
+    ]
+  }
+
+  if (tools.length === 0) return ''
+
+  const linkHtml = tools
+    .map(
+      (l) =>
+        `<li><a href="${escapeHtml(l.path)}" style="display:block;padding:12px;border:1px solid #e5e7eb;border-radius:8px;color:#1f2937;text-decoration:none;margin-bottom:8px">${escapeHtml(l.label)}</a></li>`
+    )
+    .join('\n')
+
+  return `
+    <div style="max-width:1280px;margin:0 auto;padding:0 16px;margin-bottom:40px">
+      <div style="border-top:2px solid #f3f4f6;padding-top:32px">
+        <h3 style="font-size:16px;font-weight:bold;margin-bottom:16px">Core Processing Tools</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px">
+          <ul style="list-style:none;padding:0;margin:0">
+            ${linkHtml}
+          </ul>
+        </div>
+      </div>
+    </div>
+  `
+}
+
 // Add back-links from ALL pages to hub pages (fixes orphan pages)
 function buildBacklinksHtml(): string {
   return `
@@ -1264,6 +1302,12 @@ function main() {
     if (HUB_PAGE_LINKS[routePath]) {
       const hubHtml = buildHubPageHtml(routePath, meta.title)
       html = html.replace('</body>', `${hubHtml}\n</body>`)
+
+      // Also inject canonical tool links section (compress-video, burn-subtitles, translate-subtitles)
+      const canonicalToolsHtml = buildCanonicalToolsSection(routePath)
+      if (canonicalToolsHtml) {
+        html = html.replace('</body>', `${canonicalToolsHtml}\n</body>`)
+      }
     }
 
     // Inject back-links from ALL pages to hub pages (fixes orphan pages - every page links to hub pages)
