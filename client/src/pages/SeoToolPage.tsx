@@ -9,7 +9,6 @@ import { FileText } from 'lucide-react'
 import { getSeoEntry, getRelatedSuggestionsForEntry } from '../lib/seoRegistry'
 import type { SeoToolKey } from '../lib/seoRegistry'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
-import SamplesModule from '../components/SamplesModule'
 import NotFound from './NotFound'
 import { resolveInternalLinkPath } from '../lib/primaryUrls'
 
@@ -95,7 +94,6 @@ export default function SeoToolPage() {
   }
 
   const related = getRelatedSuggestionsForEntry(entry)
-  const samplesHref = SAMPLES_ANCHOR_BY_TOOL[entry.toolKey]
   const suggestions = related.map(({ path, title }) => ({
     icon: FileText,
     title,
