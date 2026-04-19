@@ -5121,6 +5121,33 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Is VideoText the most accurate caption generator?', a: 'Yes — among online tools, VideoText uses Whisper large-v3 which achieves the lowest Word Error Rate of any publicly available model. At 98.5%+ accuracy on clear audio, it outperforms YouTube auto-captions, Otter.ai, and most other web-based caption generators.' },
     ],
   },
+  // ── Hub pages (category navigation) ──────────────────────────────────────────
+  {
+    path: '/alternatives',
+    title: 'Transcription & Subtitle Tool Alternatives | VideoText',
+    description: 'Explore alternatives to Otter.ai, Descript, Rev, Sonix, and 40+ other transcription tools. Find the perfect AI transcription solution.',
+    h1: 'Transcription & Subtitle Tool Alternatives',
+    intro: 'Explore alternatives to popular transcription platforms. Compare Otter.ai, Descript, Sonix, Rev, and 60+ other solutions to find the perfect fit for your workflow.',
+    breadcrumbLabel: 'Alternatives',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/compare', '/transcription-tools', '/subtitle-tools', '/guide'],
+    indexable: true,
+    intentKey: 'alternatives-hub',
+    faq: [],
+  },
+  {
+    path: '/transcription-tools',
+    title: 'Transcription Tools & Resources | VideoText',
+    description: 'Complete collection of transcription tools, guides, and comparisons. From podcasts to interviews to video files — transcription solutions for every use case.',
+    h1: 'Transcription Tools & Resources',
+    intro: 'Explore our complete collection of transcription tools, guides, use-case pages, and comparisons. Everything you need for podcasts, meetings, interviews, and video files.',
+    breadcrumbLabel: 'Transcription Tools',
+    toolKey: 'video-to-transcript',
+    relatedSlugs: ['/podcast-transcription', '/meeting-transcription', '/interview-transcription-tool', '/best-transcription-tool', '/compare'],
+    indexable: true,
+    intentKey: 'transcription-tools-hub',
+    faq: [],
+  },
 ]
 
 /** Full registry: manual + programmatic (targets × intents). */

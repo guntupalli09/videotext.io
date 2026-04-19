@@ -146,6 +146,28 @@ const STATIC_META: RouteMeta[] = [
       'Compare VideoText against Descript, Otter.ai, and Trint on speed, accuracy, pricing, and privacy. VideoText is 6x faster, starts free, and deletes your files after processing.',
     breadcrumbLabel: 'Compare',
   },
+  // ── Hub pages (category navigation) ──────────────────────────────────────────
+  {
+    path: '/alternatives',
+    title: `Transcription & Subtitle Tool Alternatives | ${SITE_NAME}`,
+    description:
+      'Explore alternatives to Otter.ai, Descript, Rev, Sonix, and 40+ other transcription tools. Find the perfect AI transcription solution for your needs.',
+    breadcrumbLabel: 'Alternatives',
+  },
+  {
+    path: '/transcription-tools',
+    title: `Transcription Tools & Resources | ${SITE_NAME}`,
+    description:
+      'Complete collection of transcription tools, guides, and comparisons. From podcasts to interviews to video files — transcription solutions for every use case.',
+    breadcrumbLabel: 'Transcription Tools',
+  },
+  {
+    path: '/subtitle-tools',
+    title: `Subtitle Tools & Resources | ${SITE_NAME}`,
+    description:
+      'Complete toolkit for subtitle creation, translation, editing, and conversion. Perfect for creators, studios, and video professionals.',
+    breadcrumbLabel: 'Subtitle Tools',
+  },
   {
     path: '/descript-alternative',
     title: `Best Free Descript Alternative for Transcription & Subtitles | ${SITE_NAME}`,
