@@ -222,7 +222,7 @@ const STATIC_META: RouteMeta[] = [
     description:
       'Burn SRT or VTT subtitles directly into your video. Upload video + subtitle file, get one video with hardcoded captions. Free tier available.',
     h1: 'Burn Subtitles into Video',
-    valueProposition: 'Embed subtitles permanently into your video as hardcoded captions. Perfect for social media where external subtitle tracks don't play. Works with SRT and VTT files. Supports all major video formats: MP4, MOV, WebM. Customize position, size, and color. No watermarks, no quality loss.',
+    valueProposition: 'Embed subtitles permanently into your video as hardcoded captions. Perfect for social media where external subtitle tracks won\'t disappear. Works with SRT and VTT files. Supports all major video formats: MP4, MOV, WebM. Customize position, size, and color. No watermarks, no quality loss.',
     keywords: ['burn subtitles', 'hardcode captions', 'embed subtitles in video', 'burn SRT into video', 'hardcoded captions', 'permanent subtitles', 'overlay subtitles on video', 'add captions to video', 'subtitle burner', 'hardcode subtitles free', 'burn subtitles online', 'burn subtitles without software', 'batch burn subtitles'],
     comparison: [
       { tool: 'Premiere Pro / Final Cut', vs: 'Steep learning curve, slow rendering, expensive' },
