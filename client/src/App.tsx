@@ -70,6 +70,7 @@ const TactiqAlternative = lazy(() => import('./pages/seo/TactiqAlternativePage')
 const FirefliesAlternative = lazy(() => import('./pages/seo/FirefliesAlternativePage'))
 const About = lazy(() => import('./pages/AboutPage'))
 const Open = lazy(() => import('./pages/Open'))
+const Samples = lazy(() => import('./pages/Samples'))
 const TranscriptionBenchmark = lazy(() => import('./pages/TranscriptionBenchmark'))
 const AccuracyTest = lazy(() => import('./pages/AccuracyTest'))
 const BestTranscriptionTool = lazy(() => import('./pages/BestTranscriptionTool'))
@@ -521,6 +522,7 @@ function App() {
             <Route path="/fireflies-alternative" element={<FirefliesAlternative />} />
             <Route path="/about" element={<About />} />
             <Route path="/open" element={<Open />} />
+            <Route path="/samples" element={<Samples />} />
             <Route path="/transcription-benchmark" element={<TranscriptionBenchmark />} />
             <Route path="/accuracy-test" element={<AccuracyTest />} />
             <Route path="/best-transcription-tool" element={<BestTranscriptionTool />} />

@@ -93,6 +93,7 @@ export default function Footer() {
               <li><Link to="/compare" className="hover:text-white transition-colors">Compare</Link></li>
               <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
               <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
+              <li><Link to="/samples" className="hover:text-white transition-colors">Samples</Link></li>
               <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
               <li><Link to="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
               <li><Link to="/open" className="hover:text-white transition-colors">Open stats</Link></li>
@@ -116,9 +117,9 @@ export default function Footer() {
 
           {/* Product & resources */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Product & resources</h3>
+            <h3 className="text-white font-semibold mb-4">Popular pages</h3>
             <ul className="space-y-2 text-sm">
-              {popularLinks.map(({ path, label }) => (
+              {popularLinks.slice(0, 14).map(({ path, label }) => (
                 <li key={path}>
                   <Link to={path} className="hover:text-white transition-colors">
                     {label}
