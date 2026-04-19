@@ -32,6 +32,7 @@ interface RouteMeta {
   path: string
   title: string
   description: string
+  h1?: string
   faq?: Array<{ q: string; a: string }>
   breadcrumbLabel?: string
   noindex?: boolean
@@ -45,24 +46,28 @@ const STATIC_META: RouteMeta[] = [
     title: `Video to Text & Subtitles — Free Online Tools | ${SITE_NAME}`,
     description:
       'VideoText: AI-powered video to text and subtitle tools. Transcribe video to transcript, generate SRT/VTT, translate subtitles, fix timing, burn captions, compress video. Sign up for free to try.',
+    h1: 'AI-Powered Video to Text & Subtitles',
   },
   {
     path: '/pricing',
     title: `Pricing — Free, Basic, Pro & Agency Plans | ${SITE_NAME}`,
     description:
       "VideoText pricing: Free 3 imports/month, Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Multi-language, batch on Pro+. 7-day money-back guarantee.",
+    h1: 'Simple, Transparent Pricing',
   },
   {
     path: '/privacy',
     title: `Privacy Policy — We Don't Store Your Data | ${SITE_NAME}`,
     description:
       "VideoText privacy: We process your files and delete them. We don't keep your uploads, transcripts, or outputs. Your content stays yours.",
+    h1: 'Privacy Policy',
   },
   {
     path: '/faq',
     title: `FAQ — Privacy, Billing, Tools | ${SITE_NAME}`,
     description:
       "Frequently asked questions about VideoText: privacy, data storage, billing, free tier, translation, and tools. Your files are processed and deleted immediately.",
+    h1: 'Frequently Asked Questions',
     faq: [
       { q: 'Do you store my videos or files?', a: "No. We process your files and then delete them. We don't keep your uploads, transcripts, or generated outputs. Your content is never stored on our servers." },
       { q: 'Is my content used for AI training?', a: "No. Your content is used only to deliver the service you requested. We do not use it for training AI models." },
@@ -77,66 +82,77 @@ const STATIC_META: RouteMeta[] = [
     title: `How to Use VideoText — Tool Guide & Features | ${SITE_NAME}`,
     description:
       'Step-by-step guide to every VideoText tool: Video to Transcript, Video to Subtitles, Translate, Fix, Burn, Compress, Batch. What we expect, what you get, and plan limits.',
+    h1: 'How to Use VideoText',
   },
   {
     path: '/terms',
     title: `Terms of Service | ${SITE_NAME}`,
     description:
       "Terms of use for VideoText. We don't store your data. Billing via Stripe. Use the service in accordance with these terms.",
+    h1: 'Terms of Service',
   },
   {
     path: '/blog',
     title: `Blog — Engineering, Privacy & Product | ${SITE_NAME}`,
     description:
       'The VideoText blog: how the processing pipeline works, why we delete your files, batch subtitles for creators, transcription guides, and product updates.',
+    h1: 'Blog',
   },
   {
     path: '/changelog',
     title: `Changelog — What's New | ${SITE_NAME}`,
     description:
       "VideoText changelog: new features, performance improvements, and bug fixes. Updated every release.",
+    h1: 'Changelog',
   },
   {
     path: '/video-to-transcript',
     title: `Video to Transcript — Free AI Transcription & Translation | ${SITE_NAME}`,
     description:
       'Convert video to text with AI. View transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian. Upload video, get plain-text transcript. Summary, chapters, speakers. Free tier.',
+    h1: 'Video to Transcript',
   },
   {
     path: '/video-to-subtitles',
     title: `Video to Subtitles — SRT & VTT Generator | ${SITE_NAME}`,
     description:
       'Generate SRT and VTT subtitle files from any video with AI. Upload video. Single or multi-language. Free tier available.',
+    h1: 'Video to Subtitles',
   },
   {
     path: '/translate-subtitles',
     title: `Translate Subtitles — SRT/VTT to Any Language | ${SITE_NAME}`,
     description:
       'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, and 50+ languages with AI. Upload subtitles, pick target language, download. Free tier available.',
+    h1: 'Translate Subtitles',
   },
   {
     path: '/fix-subtitles',
     title: `Fix Subtitles — Auto-Correct Timing & Format | ${SITE_NAME}`,
     description:
       'Fix overlapping timestamps, long lines, and gaps in SRT/VTT files. Auto-correct timing and formatting. Upload SRT or VTT, download corrected file. Free.',
+    h1: 'Fix Subtitles',
   },
   {
     path: '/burn-subtitles',
     title: `Burn Subtitles into Video — Hardcode Captions | ${SITE_NAME}`,
     description:
       'Burn SRT or VTT subtitles directly into your video. Upload video + subtitle file, get one video with hardcoded captions. Free tier available.',
+    h1: 'Burn Subtitles into Video',
   },
   {
     path: '/compress-video',
     title: `Compress Video — Reduce File Size Online | ${SITE_NAME}`,
     description:
       'Compress video online: light, medium, or heavy compression. Upload video. Reduce file size for sharing and uploads. Free tier available.',
+    h1: 'Compress Video',
   },
   {
     path: '/batch-process',
     title: `Batch Video to Subtitles — Multiple Videos at Once | ${SITE_NAME}`,
     description:
       'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans.',
+    h1: 'Batch Video to Subtitles',
   },
   // ── Comparison & alternative pages ──────────────────────────────────────────
   {
@@ -144,6 +160,7 @@ const STATIC_META: RouteMeta[] = [
     title: `VideoText vs Descript, Otter.ai & Trint — Full Comparison | ${SITE_NAME}`,
     description:
       'Compare VideoText against Descript, Otter.ai, and Trint on speed, accuracy, pricing, and privacy. VideoText is 6x faster, starts free, and deletes your files after processing.',
+    h1: 'Compare VideoText',
     breadcrumbLabel: 'Compare',
   },
   // ── Hub pages (category navigation) ──────────────────────────────────────────
@@ -152,6 +169,7 @@ const STATIC_META: RouteMeta[] = [
     title: `Transcription & Subtitle Tool Alternatives | ${SITE_NAME}`,
     description:
       'Explore alternatives to Otter.ai, Descript, Rev, Sonix, and 40+ other transcription tools. Find the perfect AI transcription solution for your needs.',
+    h1: 'Transcription & Subtitle Tool Alternatives',
     breadcrumbLabel: 'Alternatives',
   },
   {
@@ -159,6 +177,7 @@ const STATIC_META: RouteMeta[] = [
     title: `Transcription Tools & Resources | ${SITE_NAME}`,
     description:
       'Complete collection of transcription tools, guides, and comparisons. From podcasts to interviews to video files — transcription solutions for every use case.',
+    h1: 'Transcription Tools & Resources',
     breadcrumbLabel: 'Transcription Tools',
   },
   {
@@ -166,6 +185,7 @@ const STATIC_META: RouteMeta[] = [
     title: `Subtitle Tools & Resources | ${SITE_NAME}`,
     description:
       'Complete toolkit for subtitle creation, translation, editing, and conversion. Perfect for creators, studios, and video professionals.',
+    h1: 'Subtitle Tools & Resources',
     breadcrumbLabel: 'Subtitle Tools',
   },
   {
@@ -548,6 +568,7 @@ interface ParsedEntry {
   path: string
   title: string
   description: string
+  h1?: string
   breadcrumbLabel: string
   faq: Array<{ q: string; a: string }>
 }
@@ -575,6 +596,10 @@ function parseRegistryEntries(): ParsedEntry[] {
     const descMatch = block.match(/\bdescription:\s*\n?\s*'((?:[^'\\]|\\.)*)'/)
     const description = descMatch ? descMatch[1].replace(/\\'/g, "'") : ''
 
+    // Extract h1
+    const h1Match = block.match(/\bh1:\s*'((?:[^'\\]|\\.)*)'/)
+    const h1 = h1Match ? h1Match[1].replace(/\\'/g, "'") : undefined
+
     // Extract breadcrumbLabel
     const labelMatch = block.match(/breadcrumbLabel:\s*'((?:[^'\\]|\\.)*)'/)
     const breadcrumbLabel = labelMatch ? labelMatch[1].replace(/\\'/g, "'") : routePath.slice(1)
@@ -596,7 +621,7 @@ function parseRegistryEntries(): ParsedEntry[] {
     // Check indexable
     if (/indexable:\s*false/.test(block)) continue
 
-    entries.push({ path: routePath, title, description, breadcrumbLabel, faq })
+    entries.push({ path: routePath, title, description, h1, breadcrumbLabel, faq })
   }
 
   return entries
@@ -752,6 +777,10 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
   ],
 }
 
+function buildH1Html(h1Text: string): string {
+  return `<h1 style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">${escapeHtml(h1Text)}</h1>`
+}
+
 function buildHubPageHtml(path: string, title: string): string {
   const links = HUB_PAGE_LINKS[path] || []
   const linkHtml = links
@@ -860,6 +889,7 @@ function main() {
       path: e.path,
       title: e.title,
       description: e.description,
+      h1: e.h1,
       faq: e.faq,
       breadcrumbLabel: e.breadcrumbLabel,
     })),
@@ -867,6 +897,7 @@ function main() {
       path: e.path,
       title: e.title,
       description: e.description,
+      h1: e.h1,
       faq: e.faq,
       breadcrumbLabel: e.breadcrumbLabel,
     })),
@@ -876,6 +907,12 @@ function main() {
   for (const meta of allRoutes) {
     const routePath = meta.path
     let html = injectHead(template, meta)
+
+    // Inject H1 tag for crawler discovery (hidden from view but visible in static HTML)
+    if (meta.h1) {
+      const h1Html = buildH1Html(meta.h1)
+      html = html.replace('</body>', `${h1Html}\n</body>`)
+    }
 
     // Inject hub page links directly into static HTML (for SEO crawlers without JS execution)
     if (HUB_PAGE_LINKS[routePath]) {
