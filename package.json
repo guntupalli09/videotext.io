@@ -13,6 +13,7 @@
     "seo:sitemap": "tsx scripts/seo/generate-sitemap.ts",
     "seo:validate-registry": "node scripts/seo/validate-registry.js",
     "seo:validate-sitemap": "tsx scripts/seo/validate-sitemap.ts",
+    "seo:validate-discoverability": "tsx scripts/seo/validate-discoverability.ts",
     "seo:smoke": "tsx scripts/seo/smoke-seo-output.ts",
 
     "seo:apply-proposals": "tsx scripts/seo/apply-proposals-to-registry.ts",

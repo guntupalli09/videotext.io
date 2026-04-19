@@ -6,6 +6,7 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import { CORE_PATHS, getSitemap2Paths } from './registry'
+import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
 
 const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
@@ -37,7 +38,8 @@ function assertNoMixedDomains(urls: string[]): void {
 function buildNormalizedLocs(paths: string[]): string[] {
   const uniqueUrls = new Set<string>()
   for (const p of paths.filter((x) => x !== '*')) {
-    const loc = p === '/' ? `${SITE_URL}/` : `${SITE_URL}${p}`
+    const canonicalPath = getCanonicalPathForRoute(p)
+    const loc = canonicalPath === '/' ? `${SITE_URL}/` : `${SITE_URL}${canonicalPath}`
     uniqueUrls.add(normalizeUrl(loc))
   }
   const urls = [...uniqueUrls]
