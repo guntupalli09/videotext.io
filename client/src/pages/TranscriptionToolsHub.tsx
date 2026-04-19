@@ -65,6 +65,16 @@ const TRANSCRIPTION_TOOLS = [
       { path: '/accuracy-test', label: 'Accuracy Test' },
     ],
   },
+  {
+    title: 'Post-Transcription Tools',
+    icon: Zap,
+    description: 'Process and enhance transcripts and video',
+    links: [
+      { path: '/translate-subtitles', label: 'Translate Subtitles' },
+      { path: '/compress-video', label: 'Compress Video' },
+      { path: '/batch-process', label: 'Batch Process Videos' },
+    ],
+  },
 ]
 
 export default function TranscriptionToolsHub() {

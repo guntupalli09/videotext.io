@@ -24,6 +24,7 @@ const SUBTITLE_TOOLS = [
     description: 'Edit, fix, and improve existing subtitles',
     links: [
       { path: '/fix-subtitles', label: 'Fix Subtitles' },
+      { path: '/burn-subtitles', label: 'Burn Subtitles into Video' },
       { path: '/subtitle-timing-fixer', label: 'Subtitle Timing Fixer' },
       { path: '/subtitle-line-break-fixer', label: 'Subtitle Line Break Fixer' },
       { path: '/subtitle-grammar-fixer', label: 'Subtitle Grammar Fixer' },

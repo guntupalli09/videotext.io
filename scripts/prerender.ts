@@ -940,6 +940,8 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
     { path: '/free-speech-to-text', label: 'Free Speech to Text' },
     { path: '/free-video-transcription-tool', label: 'Free Video Transcription Tool' },
     { path: '/accuracy-test', label: 'Accuracy Test' },
+    { path: '/translate-subtitles', label: 'Translate Subtitles' },
+    { path: '/compress-video', label: 'Compress Video' },
   ],
   '/subtitle-tools': [
     { path: '/video-to-subtitles', label: 'Video to Subtitles' },
@@ -950,6 +952,7 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
     { path: '/video-with-subtitles', label: 'Video with Subtitles' },
     { path: '/batch-process', label: 'Batch Video to Subtitles' },
     { path: '/fix-subtitles', label: 'Fix Subtitles' },
+    { path: '/burn-subtitles', label: 'Burn Subtitles into Video' },
     { path: '/subtitle-timing-fixer', label: 'Subtitle Timing Fixer' },
     { path: '/subtitle-line-break-fixer', label: 'Subtitle Line Break Fixer' },
     { path: '/subtitle-grammar-fixer', label: 'Subtitle Grammar Fixer' },
