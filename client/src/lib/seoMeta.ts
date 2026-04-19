@@ -84,6 +84,11 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'The VideoText blog: how the processing pipeline works, why we delete your files, batch subtitles for creators, and how we handle support.',
   },
+  '/samples': {
+    title: 'Transcript & Subtitle Output Samples | VideoText',
+    description:
+      'See real transcript samples, subtitle previews, and workflow outputs (summary, chapters, exports) so you know exactly what VideoText generates.',
+  },
   '/blog/how-to-transcribe-zoom-recording': {
     title: 'How to Transcribe a Zoom Recording: Step-by-Step Guide | VideoText',
     description:
@@ -420,6 +425,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/privacy': [{ name: 'Home', path: '/' }, { name: 'Privacy', path: '/privacy' }],
   '/terms': [{ name: 'Home', path: '/' }, { name: 'Terms', path: '/terms' }],
   '/about': [{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }],
+  '/samples': [{ name: 'Home', path: '/' }, { name: 'Samples', path: '/samples' }],
   '/compare': [{ name: 'Home', path: '/' }, { name: 'Compare', path: '/compare' }],
   '/descript-alternative': [{ name: 'Home', path: '/' }, { name: 'Descript Alternative', path: '/descript-alternative' }],
   '/otter-ai-alternative': [{ name: 'Home', path: '/' }, { name: 'Otter.ai Alternative', path: '/otter-ai-alternative' }],

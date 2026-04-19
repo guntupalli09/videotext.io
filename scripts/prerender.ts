@@ -16,6 +16,8 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { getProgrammaticSeoEntries } from '../client/src/lib/generateSeoPages'
 import { getCanonicalPathForRoute } from '../client/src/lib/primaryUrls'
+import { getSoftwareApplicationJsonLd, getHowToJsonLd } from '../client/src/lib/seoMeta'
+import { getIndexablePaths } from './seo/registry'
 
 const REPO_ROOT = path.resolve(__dirname, '..')
 // Vercel outputDirectory is the root-level dist/ (build copies client/dist → dist/).
@@ -46,6 +48,15 @@ interface RouteMeta {
   intentKey?: string
   defaultInputMode?: 'youtube'
 }
+
+const MONEY_PAGES: Array<{ path: string; label: string }> = [
+  { path: '/video-to-transcript', label: 'Video to Transcript' },
+  { path: '/video-to-subtitles', label: 'Video to Subtitles' },
+  { path: '/translate-subtitles', label: 'Translate Subtitles' },
+  { path: '/fix-subtitles', label: 'Fix Subtitles' },
+  { path: '/burn-subtitles', label: 'Burn Subtitles' },
+  { path: '/compress-video', label: 'Compress Video' },
+]
 
 // ── Static route metadata ─────────────────────────────────────────────────────
 
@@ -110,12 +121,29 @@ const STATIC_META: RouteMeta[] = [
     h1: 'Blog',
   },
   {
+    path: '/samples',
+    title: `Transcript & Subtitle Output Samples | ${SITE_NAME}`,
+    description:
+      'Real output examples from VideoText: transcript sample with speakers/timestamps, SRT subtitle preview, and workflow deliverables (summary, chapters, exports).',
+    h1: 'Transcript & Subtitle Output Samples',
+  },
+  {
     path: '/changelog',
     title: `Changelog — What's New | ${SITE_NAME}`,
     description:
       "VideoText changelog: new features, performance improvements, and bug fixes. Updated every release.",
     h1: 'Changelog',
   },
+
+  {
+    path: '/site-index',
+    title: `All VideoText Pages — Complete HTML Index for Crawlers | ${SITE_NAME}`,
+    description:
+      'Complete HTML index of VideoText pages for search crawlers and LLM agents. Browse all transcription, subtitle, tools, and comparison pages from one place.',
+    h1: 'Complete VideoText Page Index',
+    noindex: false,
+  },
+
   {
     path: '/video-to-transcript',
     title: `Video to Transcript — Free AI Transcription & Translation | ${SITE_NAME}`,
@@ -839,6 +867,164 @@ function generateKeywordsFromTitle(title: string, path: string): string[] {
   return Array.from(keywords).slice(0, 8)
 }
 
+function titleFromPath(routePath: string): string {
+  if (routePath === '/') return `VideoText — AI Transcription & Subtitle Tools | ${SITE_NAME}`
+  const label = routePath
+    .slice(1)
+    .split('/')
+    .map((segment) => segment.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' '))
+    .join(' — ')
+  return `${label} | ${SITE_NAME}`
+}
+
+function descriptionFromPath(routePath: string): string {
+  if (routePath === '/') {
+    return 'VideoText helps you transcribe videos, generate subtitles, translate captions, and export clean transcripts in your browser.'
+  }
+  const label = routePath.replace(/^\//, '').replace(/\//g, ' ').replace(/-/g, ' ')
+  return `VideoText page for ${label}. Fully prerendered HTML for search crawlers, SEO tools, and LLM agents.`
+}
+
+function mergeRouteMetaWithSitemapCoverage(routes: RouteMeta[]): RouteMeta[] {
+  const byPath = new Map<string, RouteMeta>()
+  for (const route of routes) {
+    const canonicalPath = getCanonicalPathForRoute(route.path)
+    byPath.set(canonicalPath, { ...route, path: canonicalPath })
+  }
+
+  const sitemapPaths = getIndexablePaths().map((p) => getCanonicalPathForRoute(p))
+  for (const routePath of sitemapPaths) {
+    if (!byPath.has(routePath)) {
+      byPath.set(routePath, {
+        path: routePath,
+        title: titleFromPath(routePath),
+        description: descriptionFromPath(routePath),
+        h1: titleFromPath(routePath).replace(` | ${SITE_NAME}`, ''),
+        breadcrumbLabel: routePath === '/' ? 'Home' : routePath.slice(1).replace(/\//g, ' / '),
+      })
+    }
+  }
+
+  return [...byPath.values()]
+}
+
+function buildBreadcrumbJsonLd(routePath: string, routeMeta: RouteMeta): object | null {
+  if (routePath === '/') return null
+  const segments = routePath.split('/').filter(Boolean)
+  const items: Array<{ '@type': 'ListItem'; position: number; name: string; item: string }> = [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+  ]
+  let current = ''
+  segments.forEach((segment, idx) => {
+    current += `/${segment}`
+    const name =
+      idx === segments.length - 1
+        ? routeMeta.breadcrumbLabel || routeMeta.h1 || segment.replace(/-/g, ' ')
+        : segment.replace(/-/g, ' ')
+    items.push({
+      '@type': 'ListItem',
+      position: idx + 2,
+      name: name.replace(/\b\w/g, (c) => c.toUpperCase()),
+      item: `${SITE_URL}${current}`,
+    })
+  })
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items,
+  }
+}
+
+function buildFaqJsonLd(meta: RouteMeta): object | null {
+  if (!meta.faq?.length) return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: meta.faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  }
+}
+
+function buildPricingProductJsonLd(routePath: string): object | null {
+  if (routePath !== '/pricing') return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'VideoText Transcription & Subtitle Plans',
+    description: 'Pricing plans for VideoText AI transcription and subtitle tools: Free, Basic, Pro, and Agency.',
+    brand: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+    category: 'SaaS',
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'Free',
+        price: '0',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: `${SITE_URL}/pricing`,
+      },
+      {
+        '@type': 'Offer',
+        name: 'Basic',
+        price: '19',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: `${SITE_URL}/pricing`,
+      },
+      {
+        '@type': 'Offer',
+        name: 'Pro',
+        price: '49',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: `${SITE_URL}/pricing`,
+      },
+      {
+        '@type': 'Offer',
+        name: 'Agency',
+        price: '129',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: `${SITE_URL}/pricing`,
+      },
+    ],
+  }
+}
+
+function dedupeSchemas(schemas: object[]): object[] {
+  const seen = new Set<string>()
+  const unique: object[] = []
+  for (const schema of schemas) {
+    const key = JSON.stringify(schema)
+    if (seen.has(key)) continue
+    seen.add(key)
+    unique.push(schema)
+  }
+  return unique
+}
+
+function injectStructuredData(template: string, routePath: string, meta: RouteMeta): string {
+  const schemas: object[] = []
+  const breadcrumb = buildBreadcrumbJsonLd(routePath, meta)
+  const faq = buildFaqJsonLd(meta)
+  const softwareApp = getSoftwareApplicationJsonLd(routePath)
+  const howTo = getHowToJsonLd(routePath)
+  const product = buildPricingProductJsonLd(routePath)
+  if (breadcrumb) schemas.push(breadcrumb)
+  if (faq) schemas.push(faq)
+  if (softwareApp) schemas.push(softwareApp)
+  if (howTo) schemas.push(howTo)
+  if (product) schemas.push(product)
+  if (!schemas.length) return template
+  const scripts = dedupeSchemas(schemas)
+    .map((schema) => `<script type="application/ld+json">${JSON.stringify(schema)}</script>`)
+    .join('\n')
+  return template.replace('</head>', `${scripts}\n</head>`)
+}
+
 // Hub page link definitions (must match React component lists)
 const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
   '/alternatives': [
@@ -1172,6 +1358,56 @@ function buildBacklinksHtml(): string {
   `
 }
 
+
+function buildAllPagesIndexHtml(routes: RouteMeta[]): string {
+  const sorted = [...routes].sort((a, b) => a.path.localeCompare(b.path))
+  const items = sorted
+    .map((route) => {
+      const label = route.breadcrumbLabel || route.h1 || route.title.replace(/\s*[—–|].*$/, '').trim()
+      return `<li><a href="${escapeHtml(route.path)}" style="display:block;padding:8px 10px;border:1px solid #e5e7eb;border-radius:6px;text-decoration:none;color:#1f2937;background:#fff">${escapeHtml(label)} <span style="color:#6b7280">${escapeHtml(route.path)}</span></a></li>`
+    })
+    .join('')
+
+  return `
+    <section style="max-width:1280px;margin:32px auto;padding:0 16px">
+      <h2 style="font-size:20px;font-weight:700;margin:0 0 16px 0">All VideoText Pages</h2>
+      <p style="margin:0 0 16px 0;color:#4b5563">This crawlable HTML index links to every prerendered page for search engines and LLM agents.</p>
+      <ul style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px;list-style:none;padding:0;margin:0">${items}</ul>
+    </section>
+  `
+}
+
+function buildGlobalDiscoverabilityLinksHtml(): string {
+  return `
+    <section style="margin:20px 0;padding:16px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px">
+      <h3 style="font-size:13px;font-weight:600;color:#3730a3;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:0.5px">Crawler Navigation</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <a href="/site-index" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">All Pages Index</a>
+        <a href="/alternatives" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Tool Alternatives</a>
+        <a href="/transcription-tools" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Transcription Tools</a>
+        <a href="/subtitle-tools" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Subtitle Tools</a>
+      </div>
+    </section>
+  `
+}
+
+function buildMoneyPageAuthorityLinksHtml(routePath: string): string {
+  const links = MONEY_PAGES
+    .filter((p) => p.path !== routePath)
+    .map(
+      (p) =>
+        `<a href="${escapeHtml(p.path)}" style="display:inline-block;padding:8px 12px;background:#fff;border:1px solid #bbf7d0;border-radius:5px;text-decoration:none;color:#166534;font-size:13px;font-weight:600">${escapeHtml(p.label)}</a>`
+    )
+    .join('')
+
+  return `
+    <section style="margin:20px 0;padding:16px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px">
+      <h3 style="font-size:13px;font-weight:700;color:#166534;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:0.5px">Primary Transcription & Caption Tools</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">${links}</div>
+    </section>
+  `
+}
+
 function injectHead(template: string, meta: RouteMeta): string {
   // Replace title tag
   let html = template.replace(
@@ -1231,9 +1467,6 @@ function injectHead(template: string, meta: RouteMeta): string {
     )
   }
 
-  // BreadcrumbList + FAQPage JSON-LD come only from the SPA (AppSeo + react-helmet-async).
-  // Injecting them here duplicated structured data on prerendered HTML + hydrated head.
-
   return html
 }
 
@@ -1251,7 +1484,7 @@ function main() {
   // Collect all routes: static + registry (parsed) + programmatic
   const registryEntries = parseRegistryEntries()
   const programmaticEntries = getProgrammaticSeoEntries()
-  const allRoutes: RouteMeta[] = [
+  const allRoutes: RouteMeta[] = mergeRouteMetaWithSitemapCoverage([
     ...STATIC_META,
     ...registryEntries.map((e) => ({
       path: e.path,
@@ -1279,12 +1512,13 @@ function main() {
       howToUse: e.howToUse,
       socialProof: e.socialProof,
     })),
-  ]
+  ])
 
   let count = 0
   for (const meta of allRoutes) {
     const routePath = meta.path
     let html = injectHead(template, meta)
+    html = injectStructuredData(html, routePath, meta)
 
     // Inject H1 tag for crawler discovery (hidden from view but visible in static HTML)
     if (meta.h1) {
@@ -1296,6 +1530,12 @@ function main() {
     if (meta.valueProposition || meta.keywords || meta.comparison || meta.howToUse || meta.socialProof) {
       const conversionContent = buildConversionContent(meta)
       html = html.replace('</body>', `${conversionContent}\n</body>`)
+    }
+
+    // Inject complete HTML index page with links to all prerendered routes.
+    if (routePath === '/site-index') {
+      const allPagesIndexHtml = buildAllPagesIndexHtml(allRoutes)
+      html = html.replace('</body>', `${allPagesIndexHtml}\n</body>`)
     }
 
     // Inject hub page links directly into static HTML (for SEO crawlers without JS execution)
@@ -1310,7 +1550,17 @@ function main() {
       }
     }
 
-    // Inject back-links from ALL pages to hub pages (fixes orphan pages - every page links to hub pages)
+    // Inject crawlable discoverability links on ALL pages.
+    const discoverabilityHtml = buildGlobalDiscoverabilityLinksHtml()
+    html = html.replace('</body>', `${discoverabilityHtml}\n</body>`)
+
+    // Inject authority links to money pages on all indexable pages.
+    if (routePath !== '/') {
+      const authorityLinksHtml = buildMoneyPageAuthorityLinksHtml(routePath)
+      html = html.replace('</body>', `${authorityLinksHtml}\n</body>`)
+    }
+
+    // Keep legacy hub backlinks on non-hub pages to preserve existing architecture.
     if (routePath !== '/' && !HUB_PAGE_LINKS[routePath]) {
       const backlinksHtml = buildBacklinksHtml()
       html = html.replace('</body>', `${backlinksHtml}\n</body>`)

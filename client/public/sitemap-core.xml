@@ -43,6 +43,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://videotext.io/samples</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://videotext.io/video-to-transcript</loc>
     <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>

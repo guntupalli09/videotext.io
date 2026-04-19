@@ -5,6 +5,7 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import { getProgrammaticSeoEntries } from '../../client/src/lib/generateSeoPages'
+import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
 
 const SCRIPT_DIR = __dirname
 const REPO_ROOT = path.join(SCRIPT_DIR, '..', '..')
@@ -13,6 +14,8 @@ const REGISTRY_PATH = path.join(REPO_ROOT, 'client', 'src', 'lib', 'seoRegistry.
 /** Static routes (all indexable). Single source of truth; sync script imports from here. */
 export const STATIC_ROUTES = [
   '/',
+  '/site-index',
+  '/samples',
   '/pricing',
   '/privacy',
   '/faq',
@@ -63,6 +66,7 @@ export const CORE_PATHS: string[] = [
   '/terms',
   '/guide',
   '/blog',
+  '/samples',
   '/video-to-transcript',
   '/video-to-subtitles',
   '/youtube-transcript-generator',
@@ -145,6 +149,7 @@ export const CORE_PATHS: string[] = [
  * Previously omitted from sitemaps → weaker discovery vs internal links only.
  */
 export const FREE_TOOL_AND_HUB_PATHS: string[] = [
+  '/site-index',
   '/tools',
   '/tools/srt-to-vtt',
   '/tools/vtt-to-srt',
@@ -176,18 +181,24 @@ export function getProgrammaticPaths(): string[] {
 
 /** Paths for sitemap 2: programmatic + remaining manual (not in core). No duplicates with core. */
 export function getSitemap2Paths(): string[] {
-  const coreSet = new Set(CORE_PATHS)
+  const coreSet = new Set(CORE_PATHS.map((p) => getCanonicalPathForRoute(p)))
   const registry = getIndexableSeoPathsFromRegistry()
   const programmatic = getProgrammaticPaths()
-  const otherManual = registry.filter((p) => !coreSet.has(p))
-  const otherProgrammatic = programmatic.filter((p) => !coreSet.has(p))
-  const freeTools = FREE_TOOL_AND_HUB_PATHS.filter((p) => !coreSet.has(p))
+  const otherManual = registry.filter((p) => !coreSet.has(getCanonicalPathForRoute(p)))
+  const otherProgrammatic = programmatic.filter((p) => !coreSet.has(getCanonicalPathForRoute(p)))
+  const freeTools = FREE_TOOL_AND_HUB_PATHS.filter((p) => !coreSet.has(getCanonicalPathForRoute(p)))
   return [...new Set([...otherManual, ...otherProgrammatic, ...freeTools])]
+    .map((p) => getCanonicalPathForRoute(p))
+    .filter(Boolean)
+    .filter((p, i, arr) => arr.indexOf(p) === i)
 }
 
 /** All routes (for validation). No duplicates. */
 export function getIndexablePaths(): string[] {
   return [...new Set([...CORE_PATHS, ...getSitemap2Paths()])]
+    .map((p) => getCanonicalPathForRoute(p))
+    .filter(Boolean)
+    .filter((p, i, arr) => arr.indexOf(p) === i)
 }
 
 /** Intent keys of indexable SEO pages (for decision engine: block CREATE_NEW_PAGE if intentKey exists). */
