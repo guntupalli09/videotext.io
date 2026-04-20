@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { DashboardFeedback } from '../../lib/founderDashboard'
+import { generateCSV, downloadCSV } from '../../lib/csvExport'
 
 function ExpandedRow({ f }: { f: DashboardFeedback }) {
   const surveyFields = [
@@ -39,6 +40,23 @@ export default function FeedbackTable({ feedback }: { feedback: DashboardFeedbac
     })
   }
 
+  function handleExport() {
+    const headers = ['Stars', 'Source', 'Tool', 'Plan', 'Email', 'Comment', 'Top Tool', 'Feature Request', 'Date']
+    const rows = feedback.map((f) => [
+      f.stars ?? '—',
+      f.source,
+      f.topTool ?? f.toolId ?? '—',
+      f.planAtSubmit ?? '—',
+      f.email || f.userNameOrEmail || f.userId || '—',
+      f.comment || '—',
+      f.topToolReason || '—',
+      f.featureRequest || '—',
+      f.createdAt ? new Date(f.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }) : '—',
+    ])
+    const csv = generateCSV(headers, rows as (string | number | null | undefined)[][])
+    downloadCSV(csv, `feedback-export-${new Date().toISOString().split('T')[0]}.csv`)
+  }
+
   const surveyCount = feedback.filter((f) => f.source === 'survey').length
 
   return (
@@ -52,6 +70,14 @@ export default function FeedbackTable({ feedback }: { feedback: DashboardFeedbac
             </span>
           )}
           <span className="text-xs text-zinc-500">{feedback.length} entries</span>
+          {feedback.length > 0 && (
+            <button
+              onClick={handleExport}
+              className="bg-violet-700 hover:bg-violet-600 text-white text-xs px-2.5 py-1 rounded transition-colors"
+            >
+              Export
+            </button>
+          )}
         </div>
       </div>
       {feedback.length === 0 ? (
