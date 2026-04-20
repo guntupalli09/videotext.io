@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import type { DashboardUser } from '../../lib/founderDashboard'
+import { generateCSV, downloadCSV } from '../../lib/csvExport'
 
 const PLAN_COLORS: Record<string, string> = {
   free: 'bg-zinc-700 text-zinc-300',
@@ -72,6 +73,22 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
     return <span className="text-violet-400 ml-1">{sortDir === 'desc' ? '↓' : '↑'}</span>
   }
 
+  function handleExport() {
+    const headers = ['Name', 'Email', 'Plan', 'Jobs 30d', 'Total jobs', 'Last active', 'Signed up', 'Source']
+    const rows = filtered.map((u) => [
+      u.name ?? '',
+      u.email,
+      u.plan,
+      u.jobCount30d,
+      u.totalJobs,
+      u.lastActiveAt ? new Date(u.lastActiveAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }) : '—',
+      new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }),
+      u.utmSource ?? (u.firstReferrer ? (() => { try { return new URL(u.firstReferrer!).hostname } catch { return u.firstReferrer } })() : '—'),
+    ])
+    const csv = generateCSV(headers, rows as (string | number | null | undefined)[][])
+    downloadCSV(csv, `users-export-${new Date().toISOString().split('T')[0]}.csv`)
+  }
+
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
       {/* Controls */}
@@ -94,6 +111,12 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
           ))}
         </select>
         <span className="text-sm text-zinc-500 self-center">{filtered.length} users</span>
+        <button
+          onClick={handleExport}
+          className="ml-auto bg-violet-700 hover:bg-violet-600 text-white text-sm px-3 py-1.5 rounded-lg transition-colors"
+        >
+          Export to CSV
+        </button>
       </div>
 
       {/* Table */}

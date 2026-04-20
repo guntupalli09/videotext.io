@@ -1,4 +1,5 @@
 import type { DashboardJob } from '../../lib/founderDashboard'
+import { generateCSV, downloadCSV } from '../../lib/csvExport'
 
 const TOOL_LABELS: Record<string, string> = {
   'video-to-transcript': 'Transcript',
@@ -52,11 +53,37 @@ function fmtVideoLen(sec: number | null): string {
 }
 
 export default function RecentJobsFeed({ jobs }: { jobs: DashboardJob[] }) {
+  function handleExport() {
+    const headers = ['Time', 'User', 'Tool', 'Plan', 'Status', 'Failure Reason', 'Duration (ms)', 'Video Duration (s)']
+    const rows = jobs.map((j) => [
+      new Date(j.createdAt).toISOString(),
+      j.email ?? j.userId,
+      TOOL_LABELS[j.toolType] ?? j.toolType,
+      j.planAtRun ?? '—',
+      j.status,
+      j.failureReason ?? '—',
+      j.processingMs ?? '—',
+      j.videoDurationSec ?? '—',
+    ])
+    const csv = generateCSV(headers, rows as (string | number | null | undefined)[][])
+    downloadCSV(csv, `jobs-export-${new Date().toISOString().split('T')[0]}.csv`)
+  }
+
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
       <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white">Recent jobs</h3>
-        <span className="text-xs text-zinc-500">{jobs.length} latest</span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-zinc-500">{jobs.length} latest</span>
+          {jobs.length > 0 && (
+            <button
+              onClick={handleExport}
+              className="bg-violet-700 hover:bg-violet-600 text-white text-xs px-2.5 py-1 rounded transition-colors"
+            >
+              Export
+            </button>
+          )}
+        </div>
       </div>
       <div className="overflow-y-auto max-h-[400px]">
         <table className="w-full text-xs min-w-[560px]">
