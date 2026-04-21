@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { trackEvent, identifyUser } from '../lib/analytics'
+import { storeLoginResult } from '../lib/auth'
 
 /**
- * Handles magic login links sent via daily email.
+ * Handles magic login links sent via email (welcome, activation, re-engagement).
  * URL format: /magic-login?token=xxx&next=/video-to-transcript
  *
- * Exchanges the one-time token for a JWT, saves it to localStorage (same as
- * regular login), then redirects to `next` (default: /video-to-transcript).
+ * Exchanges the one-time server token for a JWT, saves it via storeLoginResult
+ * (identical to regular login), then redirects to `next`.
  */
 export default function MagicLogin() {
   const [searchParams] = useSearchParams()
@@ -17,9 +18,10 @@ export default function MagicLogin() {
   useEffect(() => {
     const token = searchParams.get('token')
     const next = searchParams.get('next') || '/video-to-transcript'
+    const notice = searchParams.get('notice')
 
-    if (!token) {
-      setError('Invalid magic link — no token provided.')
+    if (notice === 'link-expired' || !token) {
+      setError('This link has expired. Please log in.')
       return
     }
 
@@ -28,15 +30,18 @@ export default function MagicLogin() {
       .then(async (res) => {
         const data = await res.json()
         if (!res.ok) throw new Error(data.message || 'Invalid or expired link.')
-        // Save auth the same way regular login does
-        if (data.token) localStorage.setItem('auth_token', data.token)
-        if (data.plan)  localStorage.setItem('plan', data.plan)
-        if (data.userId) localStorage.setItem('user_id', data.userId)
+        storeLoginResult({
+          token: data.token,
+          userId: data.userId,
+          plan: data.plan,
+          email: data.email || '',
+        })
         try {
           if (data.userId) identifyUser(data.userId, { plan: data.plan })
           trackEvent('magic_login_completed', { plan: data.plan })
         } catch { /* non-blocking */ }
         navigate(next, { replace: true })
+        window.location.reload()
       })
       .catch((e: any) => {
         try { trackEvent('magic_login_failed', { error: e.message }) } catch { /* non-blocking */ }

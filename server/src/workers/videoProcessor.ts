@@ -63,6 +63,7 @@ import {
   trackProcessingFailed,
   trackJobTimedOut,
   trackFirstPaidJobCompleted,
+  trackFirstFreeJobCompleted,
 } from '../utils/analytics'
 import {
   updateJobStarted,
@@ -86,16 +87,18 @@ import { resetProxyPoolState } from '../utils/youtubeProxyPool'
 import { v4 as uuidv4 } from 'uuid'
 
 /**
- * Fires 'first_paid_job_completed' analytics event exactly once per user.
+ * Fires 'first_free_job_completed' or 'first_paid_job_completed' exactly once per user.
  * Called before incrementUserUsage so we can check videoCount === 0.
- * No-op for free users or if videoCount > 0 already.
  */
 async function maybeTrackFirstPaidJob(userId: string, plan: PlanType, toolType: string, jobId: string | number): Promise<void> {
-  if (plan === 'free') return
   try {
     const snapshot = await getUser(userId)
     if (snapshot && (snapshot.usageThisMonth.videoCount ?? 0) === 0) {
-      trackFirstPaidJobCompleted({ user_id: userId, plan, tool_type: toolType, job_id: String(jobId) })
+      if (plan === 'free') {
+        trackFirstFreeJobCompleted({ user_id: userId, tool_type: toolType, job_id: String(jobId) })
+      } else {
+        trackFirstPaidJobCompleted({ user_id: userId, plan, tool_type: toolType, job_id: String(jobId) })
+      }
     }
   } catch { /* non-blocking */ }
 }

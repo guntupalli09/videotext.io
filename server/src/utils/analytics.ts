@@ -129,6 +129,24 @@ export function trackJobTimedOut(params: {
 }
 
 /**
+ * Fired once per free user when they complete their first job.
+ * Enables the PostHog funnel: signup_completed → first_free_job_completed.
+ * Primary activation metric — 90% of signups are not reaching this event.
+ */
+export function trackFirstFreeJobCompleted(params: {
+  user_id: string
+  tool_type: string
+  job_id: string
+}): void {
+  capture('first_free_job_completed', params.user_id, {
+    user_id: params.user_id,
+    plan: 'free',
+    tool_type: params.tool_type,
+    job_id: params.job_id,
+  })
+}
+
+/**
  * Fired once per paid user when they complete their first job after upgrading.
  * Enables the PostHog funnel: plan_upgraded → first_paid_job_completed.
  * Used to identify users who paid but never activated (churn-risk nudge).

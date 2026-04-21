@@ -96,7 +96,7 @@ function HeroDropzone() {
         {/* Text */}
         <div className="text-center">
           <p className="text-white font-bold text-base leading-snug">
-            {dragging ? 'Release to start transcribing' : 'Upload your video or audio — get results in minutes'}
+            {dragging ? 'Release to start transcribing' : 'Drop your video — transcript + summary ready in ~40 seconds'}
           </p>
           <p className="text-white/40 text-sm mt-0.5">
             MP4, MOV, MKV, AVI, WebM · MP3, WAV, M4A, FLAC, AAC
@@ -148,7 +148,7 @@ function HeroDropzone() {
             </p>
           </div>
           <p className="text-white/35 text-[11px] leading-snug">
-            Paste any YouTube URL — instant transcript
+            Paste any YouTube URL — no account needed
           </p>
           <div className="flex items-center gap-1 text-[11px] font-semibold text-red-400 group-hover:gap-1.5 transition-all">
             Try now <ChevronRight className="w-3 h-3" />
@@ -191,17 +191,17 @@ export function Hero() {
 
         {/* H1 */}
         <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5">
-          Turn any video into transcript,
+          Your video → accurate transcript
           <span className="block mt-3 pb-2 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-            summary &amp; chapters — in minutes.
+            + summary + chapters. In 40 seconds.
           </span>
         </h1>
 
         {/* Sub-headline */}
         <p className="text-center text-[16px] sm:text-[17px] text-white/50 max-w-lg mx-auto leading-relaxed mb-8">
-          Upload a video, record your voice, or paste a YouTube URL — get a transcript, AI summary, chapters,{' '}
-          <span className="text-violet-300 font-medium">and translation</span>{' '}
-          automatically.
+          Upload a video or paste a YouTube URL — get a word-for-word transcript, AI summary,
+          chapter markers, and SRT subtitles.{' '}
+          <span className="text-violet-300 font-medium">Delivered in ~40 seconds.</span>
         </p>
 
         {/* Dropzone + Record */}
@@ -305,7 +305,7 @@ export function Hero() {
                 <span className="text-[7px] font-bold text-violet-300">12K+</span>
               </span>
             </span>
-            <span><span className="text-white/55 font-semibold">12,000+ creators</span> trust VideoText</span>
+            <span><span className="text-white/55 font-semibold">Creators, podcasters &amp; agencies</span> trust VideoText</span>
           </span>
           <span className="hidden sm:block w-px h-3 bg-white/10" />
           {/* Stars */}

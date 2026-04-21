@@ -111,6 +111,52 @@ async function sendOTPEmail(email: string, code: string): Promise<void> {
   }
 }
 
+async function sendWelcomeEmail(email: string, magicLink: string): Promise<void> {
+  const resendKey = process.env.RESEND_API_KEY
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>'
+  if (!resendKey) {
+    log.info({ msg: 'Welcome email (RESEND_API_KEY not set)', email, magicLink })
+    return
+  }
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [email],
+        subject: 'Your VideoText account is ready — try it in 30 seconds',
+        text: [
+          `Your account is set up. Here's what to do first:`,
+          ``,
+          `→ Click here to transcribe your first video (auto-logged in):`,
+          `${magicLink}`,
+          ``,
+          `Drop any video, audio file, or paste a YouTube URL. You'll get a full transcript + AI summary + chapter markers in ~40 seconds.`,
+          ``,
+          `Your free account includes 3 transcriptions today — no card needed.`,
+          ``,
+          `Files are deleted right after processing. Nothing is stored.`,
+          ``,
+          `— The VideoText team`,
+          ``,
+          `P.S. Questions? Reply to this email.`,
+        ].join('\n'),
+      }),
+      signal: AbortSignal.timeout(8000),
+    })
+    if (!res.ok) {
+      const body = await res.text()
+      log.error({ msg: 'Welcome email Resend error', status: res.status, body })
+    } else {
+      log.info({ msg: 'Welcome email sent', email })
+      incrementResendCounter()
+    }
+  } catch (err) {
+    log.error({ msg: 'Welcome email send failed (non-fatal)', error: (err as Error)?.message ?? String(err) })
+  }
+}
+
 async function sendPasswordResetEmail(email: string, resetLink: string): Promise<void> {
   const resendKey = process.env.RESEND_API_KEY
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>'
@@ -316,6 +362,18 @@ router.post('/complete-signup', async (req: Request, res: Response) => {
     }
 
     await saveUser(user)
+
+    // Send welcome email with a magic link so the user can start in one click.
+    // Non-blocking — failure must never fail the signup response.
+    try {
+      const frontendUrl = (process.env.FRONTEND_URL || process.env.VITE_SITE_URL || 'https://videotext.io').replace(/\/$/, '')
+      const magicToken = await createMagicLinkToken(user.id)
+      const magicLink = `${frontendUrl}/magic-login?token=${encodeURIComponent(magicToken)}&next=${encodeURIComponent('/video-to-transcript')}`
+      sendWelcomeEmail(normalized, magicLink).catch(() => { /* already logged inside */ })
+    } catch (emailErr) {
+      log.error({ msg: 'complete-signup: failed to create welcome magic link (non-fatal)', error: (emailErr as Error)?.message ?? String(emailErr) })
+    }
+
     const jwt = signAuthToken(user)
     return res.status(201).json({
       token: jwt,
@@ -462,6 +520,7 @@ export async function createMagicLinkToken(userId: string): Promise<string> {
 
 /** GET /api/auth/magic-login?token=xxx
  *  Validates the one-time token, returns a JWT, and deletes the token (single-use).
+ *  Used by the /magic-login frontend page (welcome emails, activation emails, re-engagement).
  */
 router.get('/magic-login', async (req: Request, res: Response) => {
   try {
@@ -480,7 +539,6 @@ router.get('/magic-login', async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Account not found.' })
     }
 
-    // Map DB row to User model shape
     const userObj = {
       id: user.id,
       email: user.email,
@@ -676,6 +734,16 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
       await saveUser(newUser)
       user = newUser
       log.info({ msg: 'Google OAuth new user created', email })
+
+      // Send welcome email for Google signups too (non-blocking).
+      try {
+        const frontendUrl = (process.env.FRONTEND_URL || process.env.VITE_SITE_URL || 'https://videotext.io').replace(/\/$/, '')
+        const magicToken = await createMagicLinkToken(newUser.id)
+        const magicLink = `${frontendUrl}/magic-login?token=${encodeURIComponent(magicToken)}&next=${encodeURIComponent('/video-to-transcript')}`
+        sendWelcomeEmail(email, magicLink).catch(() => { /* already logged inside */ })
+      } catch (emailErr) {
+        log.error({ msg: 'google-auth: failed to create welcome magic link (non-fatal)', error: (emailErr as Error)?.message ?? String(emailErr) })
+      }
     } else {
       // Update name if we now have one and the user didn't have one stored
       if (googleName && !user.name) {
