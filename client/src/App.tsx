@@ -485,6 +485,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/demo" element={<Demo />} />
             <Route path="/preview/transcript-results" element={<TranscriptResultWorkspaceMock />} />
+            <Route path="/preview/icp-results-studio" element={<Navigate to="/preview/transcript-results" replace />} />
+            <Route path="/icp-results-studio" element={<Navigate to="/preview/transcript-results" replace />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
