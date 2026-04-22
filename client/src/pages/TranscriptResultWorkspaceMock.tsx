@@ -16,11 +16,21 @@ import {
   Volume2,
   Settings,
   FileText,
+  CheckCircle2,
+  Youtube,
+  Linkedin,
+  Wand2,
+  Sparkles,
+  Link2,
+  FolderGit2,
+  Clock3,
+  BadgeCheck,
 } from 'lucide-react'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { Checkbox } from '../components/figma/FormControls'
 
 type Lang = 'original' | 'translated'
+type ContextMode = 'podcast' | 'interview' | 'tutorial' | 'talking-head' | 'youtube'
 
 const MOCK_SEGMENTS = [
   {
@@ -46,6 +56,64 @@ const MOCK_SEGMENTS = [
   },
 ]
 
+const CONTEXT_OPTIONS: Array<{ key: ContextMode; label: string; hint: string }> = [
+  { key: 'podcast', label: 'Podcast notes', hint: 'Long-form show notes + listener CTA' },
+  { key: 'interview', label: 'Interview recap', hint: 'Guest-centric takeaways + quotes' },
+  { key: 'tutorial', label: 'Tutorial summary', hint: 'Steps, outcomes, prerequisites' },
+  { key: 'talking-head', label: 'Talking-head clip', hint: 'Opinion-led short-form copy' },
+  { key: 'youtube', label: 'YouTube SEO', hint: 'Search-friendly description + chapters' },
+]
+
+const CONTEXT_OUTPUTS: Record<ContextMode, { headline: string; summary: string; focus: string[] }> = {
+  podcast: {
+    headline: 'Podcast-ready show notes',
+    summary: 'This episode breaks down practical AI workflows for creators, including transcription, repurposing, and faster publishing loops.',
+    focus: ['Episode TL;DR', 'Guest quote highlights', 'Resources + links', 'Listener CTA'],
+  },
+  interview: {
+    headline: 'Interview recap optimized for authority',
+    summary: 'A structured recap focused on the guest perspective, key frameworks, and quotable moments for social distribution.',
+    focus: ['Guest bio angle', 'Top 5 insights', 'Direct quote pullouts', 'Follow-up question prompts'],
+  },
+  tutorial: {
+    headline: 'Step-by-step tutorial brief',
+    summary: 'A clean walkthrough with prerequisites, setup steps, expected outputs, and troubleshooting notes.',
+    focus: ['Prerequisites', 'Step list with timestamps', 'Expected result', 'Troubleshooting'],
+  },
+  'talking-head': {
+    headline: 'Talking-head script packaging',
+    summary: 'High-retention framing for personal-brand videos with a stronger hook, opinion ladder, and end CTA.',
+    focus: ['3-second hook', 'Contrarian angle', 'Proof/credibility line', 'Comment CTA'],
+  },
+  youtube: {
+    headline: 'YouTube description + chapters',
+    summary: 'SEO-aware copy with intent-matched opening lines, keyword clusters, and timestamp chapters.',
+    focus: ['Primary keyword in first lines', 'Chapters block', 'Related keywords', 'Subscribe + lead magnet CTA'],
+  },
+}
+
+const ASSET_PACK = [
+  { label: 'YouTube titles', value: '7 generated', icon: Youtube },
+  { label: 'SEO description', value: '1 publish-ready', icon: FileText },
+  { label: 'X/Twitter thread', value: '12 posts', icon: Share2 },
+  { label: 'LinkedIn post', value: '2 variants', icon: Linkedin },
+  { label: 'Blog draft', value: '950 words', icon: Wand2 },
+  { label: 'Shorts/Reels scripts', value: '3 hooks + timestamps', icon: Sparkles },
+]
+
+const COLLAB_COMMENTS = [
+  { user: 'Maya (Editor)', text: 'Can we shorten the section at 02:14 and keep the quote at 02:38?', time: '2m ago', status: 'Open' },
+  { user: 'Ari (Founder)', text: 'Approve title set B for YouTube + LinkedIn variant #2.', time: '6m ago', status: 'Resolved' },
+  { user: 'Jen (Social)', text: 'Thread format is great. Add one stat in post #4 for credibility.', time: '11m ago', status: 'Open' },
+]
+
+const INGESTION_SOURCES = [
+  { source: 'YouTube URL', state: 'Imported', eta: 'Done', icon: Youtube },
+  { source: 'Loom link', state: 'Imported', eta: 'Done', icon: Link2 },
+  { source: 'Google Drive file', state: 'Syncing', eta: '~16s', icon: FolderGit2 },
+  { source: 'Zoom cloud recording', state: 'Queued', eta: '~48s', icon: Clock3 },
+]
+
 function formatTs(sec: number): string {
   const m = Math.floor(sec / 60)
   const s = Math.floor(sec % 60)
@@ -56,6 +124,7 @@ export default function TranscriptResultWorkspaceMock() {
   const [lang, setLang] = useState<Lang>('original')
   const [showTimestamps, setShowTimestamps] = useState(true)
   const [showSpeakers, setShowSpeakers] = useState(true)
+  const [contextMode, setContextMode] = useState<ContextMode>('youtube')
   const [search, setSearch] = useState('')
   const [exportOpen, setExportOpen] = useState(false)
   const [exportKind, setExportKind] = useState<'txt' | 'srt' | 'vtt'>('txt')
@@ -72,6 +141,7 @@ export default function TranscriptResultWorkspaceMock() {
       return t.toLowerCase().includes(q)
     })
   }, [lang, search])
+  const contextOutput = useMemo(() => CONTEXT_OUTPUTS[contextMode], [contextMode])
 
   return (
     <ToolLayout
@@ -288,6 +358,122 @@ export default function TranscriptResultWorkspaceMock() {
             </div>
           </aside>
         </div>
+
+        <section className="space-y-6 rounded-2xl border border-violet-200/70 dark:border-violet-900/50 bg-gradient-to-b from-violet-50/70 to-white dark:from-violet-950/20 dark:to-gray-900 p-4 sm:p-6">
+          <header>
+            <p className="inline-flex items-center gap-2 rounded-full bg-violet-100 dark:bg-violet-900/40 px-3 py-1 text-xs font-semibold text-violet-700 dark:text-violet-300">
+              <BadgeCheck className="h-3.5 w-3.5" />
+              Final results UX layer (all 4 ideas)
+            </p>
+            <h2 className="mt-2 text-xl font-bold text-gray-900 dark:text-white">Post-transcript advantage workspace</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+              This section appears under the original transcript output above and gives immediate publish + collaboration workflows.
+            </p>
+          </header>
+
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-4 space-y-4">
+            <div>
+              <h3 className="text-base font-bold text-gray-900 dark:text-white">1) Context-aware output mode</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Select the goal first, then shape summary and downstream assets automatically.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+              {CONTEXT_OPTIONS.map((option) => (
+                <button
+                  key={option.key}
+                  type="button"
+                  onClick={() => setContextMode(option.key)}
+                  className={`rounded-xl border px-3 py-3 text-left transition ${contextMode === option.key
+                    ? 'border-violet-400 bg-violet-50 dark:bg-violet-950/40'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-violet-300'}`}
+                >
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{option.label}</p>
+                  <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">{option.hint}</p>
+                </button>
+              ))}
+            </div>
+            <article className="rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/70 dark:bg-emerald-950/20 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">Generated output</p>
+              <h4 className="mt-1 text-base font-bold text-emerald-900 dark:text-emerald-200">{contextOutput.headline}</h4>
+              <p className="mt-2 text-sm text-emerald-800/90 dark:text-emerald-200/90">{contextOutput.summary}</p>
+              <ul className="mt-3 grid sm:grid-cols-2 gap-1.5">
+                {contextOutput.focus.map((item) => (
+                  <li key={item} className="inline-flex items-center gap-2 text-sm text-emerald-900 dark:text-emerald-200">
+                    <CheckCircle2 className="h-4 w-4" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-4">
+            <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-4 space-y-4">
+              <div>
+                <h3 className="text-base font-bold text-gray-900 dark:text-white">2) Repurposing asset pack</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">One click to generate publish-ready assets.</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {ASSET_PACK.map((asset) => {
+                  const Icon = asset.icon
+                  return (
+                    <div key={asset.label} className="rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+                      <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                        <Icon className="h-4 w-4 text-violet-500" />
+                        {asset.label}
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{asset.value}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-4 space-y-4">
+              <div>
+                <h3 className="text-base font-bold text-gray-900 dark:text-white">3) Collaboration layer</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Inline comments + resolve workflow for editor/team handoff.</p>
+              </div>
+              <div className="space-y-2.5">
+                {COLLAB_COMMENTS.map((comment) => (
+                  <article key={`${comment.user}-${comment.time}`} className="rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{comment.user}</p>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full ${comment.status === 'Resolved'
+                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                        : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'}`}>
+                        {comment.status}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{comment.text}</p>
+                    <p className="mt-1 text-xs text-gray-400">{comment.time}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-4 space-y-3">
+            <div>
+              <h3 className="text-base font-bold text-gray-900 dark:text-white">4) Drop-anything ingestion</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Paste links from anywhere and continue creating while ingestion runs in parallel.</p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
+              {INGESTION_SOURCES.map((source) => {
+                const Icon = source.icon
+                return (
+                  <article key={source.source} className="rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+                    <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                      <Icon className="h-4 w-4 text-violet-500" />
+                      {source.source}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Status: {source.state}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">ETA: {source.eta}</p>
+                  </article>
+                )
+              })}
+            </div>
+          </div>
+        </section>
 
         <p className="text-center text-xs text-gray-500 dark:text-gray-400">
           Tip: Export as SRT to use in Premiere / YouTube subtitles.
