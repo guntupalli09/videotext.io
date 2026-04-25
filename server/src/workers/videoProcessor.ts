@@ -2451,11 +2451,6 @@ async function processJob(job: import('bull').Job<JobData>) {
         // non-blocking
       }
     }
-    try {
-      await updateJobFailed(String(jobId), err?.message)
-    } catch {
-      // non-blocking
-    }
     // Failure: rethrow so Bull marks job as "failed" and stores error; no job can exit without terminal state
     log.error({ err, msg: 'job_failed', error_message: err?.message ?? String(err) })
     pushLogEntry({ ts: new Date().toISOString(), level: 'error', service: 'worker', msg: `job failed: ${data.toolType} — ${err?.message ?? String(err)}`, jobId: String(jobId), extra: err?.stack?.slice(0, 200) })
@@ -2510,6 +2505,16 @@ function attachQueueEvents(queue: import('bull').Queue<JobData>) {
           error: err?.message,
           msg: 'job_failed_permanent',
         })
+      }
+    }
+    if (isFinalFailure) {
+      try {
+        const idsToUpdate = new Set<string>()
+        if (job?.id != null) idsToUpdate.add(String(job.id))
+        if (data?.jobToken) idsToUpdate.add(String(data.jobToken))
+        await Promise.all([...idsToUpdate].map((id) => updateJobFailed(id, err?.message || 'Job failed')))
+      } catch {
+        // non-blocking
       }
     }
     if (data?.webhookUrl) {
