@@ -49,9 +49,9 @@ function getContent(reason?: PaywallReason) {
       }
     case 'COPY_LIMIT_REACHED':
       return {
-        title: 'Your transcript is ready',
-        body: "You've used your 3 free copies. Upgrade to Pro to copy and export unlimited transcripts — no watermark, no limits.",
-        cta: 'Upgrade to Pro',
+        title: 'Keep this workflow uninterrupted',
+        body: "You've already generated a production-quality transcript. Upgrade to Pro for unlimited copy/export, no watermark, and no daily interruptions.",
+        cta: 'Upgrade to Pro — keep going',
         secondaryLabel: null,
         secondary: null,
       }
@@ -67,8 +67,8 @@ function getContent(reason?: PaywallReason) {
     default:
       return {
         title: "Today's 3 free imports used",
-        body: 'Upgrade to Pro — no daily limits, AI chapters, keywords, speaker labels, batch processing, and no watermark.',
-        cta: 'Upgrade to Pro — $10/mo annual',
+        body: 'Upgrade to Pro to keep processing without daily stops: no watermark, longer videos, speaker labels, summary, chapters, and batch export.',
+        cta: 'Upgrade to Pro — continue instantly',
         secondaryLabel: null,
         secondary: null,
       }
