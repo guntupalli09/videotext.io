@@ -276,6 +276,10 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: 'VideoText vs TurboScribe — Workflow Comparison',
     description: 'Compare VideoText and TurboScribe for speed, output depth, and long-form content repurposing workflows.',
   },
+  '/turboscribe-alternative': {
+    title: 'Best TurboScribe Alternative for Subtitles, Summaries & Chapters',
+    description: 'Switch from transcript-only workflows. VideoText generates transcript, SRT/VTT subtitles, speaker labels, summary, and chapters in one upload.',
+  },
   '/videotext-vs-rev': {
     title: 'VideoText vs Rev — AI Workflow vs Service Comparison',
     description: 'Compare VideoText and Rev across speed, workflow depth, output structure, and use-case fit.',

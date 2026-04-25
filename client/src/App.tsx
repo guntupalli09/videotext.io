@@ -80,6 +80,7 @@ const OtterVsVideoText = lazy(() => import('./pages/OtterVsVideoText'))
 const DescriptVsVideoText = lazy(() => import('./pages/DescriptVsVideoText'))
 const AiTranscriptionTools = lazy(() => import('./pages/AiTranscriptionTools'))
 const VideoTextVsTurboScribe = lazy(() => import('./pages/VideoTextVsTurboScribe'))
+const TurboScribeAlternative = lazy(() => import('./pages/TurboScribeAlternative'))
 const VideoTextVsRev = lazy(() => import('./pages/VideoTextVsRev'))
 const BestOtterAlternatives = lazy(() => import('./pages/BestOtterAlternatives'))
 const BestDescriptAlternatives = lazy(() => import('./pages/BestDescriptAlternatives'))
@@ -483,7 +484,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/demo" element={<Demo />} />
+            <Route path="/pro-access" element={<Demo />} />
+            <Route path="/demo" element={<Navigate to="/pro-access" replace />} />
             <Route path="/preview/transcript-results" element={<TranscriptResultWorkspaceMock />} />
             <Route path="/preview/icp-results-studio" element={<Navigate to="/preview/transcript-results" replace />} />
             <Route path="/icp-results-studio" element={<Navigate to="/preview/transcript-results" replace />} />
@@ -534,6 +536,7 @@ function App() {
             <Route path="/descript-vs-videotext" element={<DescriptVsVideoText />} />
             <Route path="/ai-transcription-tools" element={<AiTranscriptionTools />} />
             <Route path="/videotext-vs-turboscribe" element={<VideoTextVsTurboScribe />} />
+            <Route path="/turboscribe-alternative" element={<TurboScribeAlternative />} />
             <Route path="/videotext-vs-rev" element={<VideoTextVsRev />} />
             <Route path="/best-otter-alternatives" element={<BestOtterAlternatives />} />
             <Route path="/best-descript-alternatives" element={<BestDescriptAlternatives />} />
