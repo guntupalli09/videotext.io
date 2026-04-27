@@ -41,7 +41,9 @@ async function requireFounder(req: Request, res: Response): Promise<string | nul
   const auth = getAuthFromRequest(req)
   if (!auth?.userId) { res.status(401).json({ message: 'Unauthorized' }); return null }
   const user = await getUser(auth.userId)
-  if (!user || user.role !== 'founder') {
+  const email = String(user?.email || '').trim().toLowerCase()
+  const isFounder = email === 'santhoshguntupalli06@gmail.com'
+  if (!user || !isFounder) {
     res.status(403).json({ message: 'Forbidden' }); return null
   }
   return auth.userId
