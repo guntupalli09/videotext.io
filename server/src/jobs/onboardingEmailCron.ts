@@ -6,7 +6,7 @@ import { getLogger } from '../lib/logger'
 const log = getLogger('api')
 const redis = createRedisClient('client')
 
-type SequenceDay = 0 | 1 | 3 | 7
+type SequenceDay = 0 | 1 | 3 | 7 | 14
 
 const TEMPLATE: Record<SequenceDay, { subject: string; body: string }> = {
   0: {
@@ -25,6 +25,10 @@ const TEMPLATE: Record<SequenceDay, { subject: string; body: string }> = {
     subject: 'Still transcribing manually?',
     body: 'Do one 5-minute test file here and compare output quality + speed. It takes less than a minute.',
   },
+  14: {
+    subject: 'Last nudge: get your first output today',
+    body: 'If your first transcript + subtitle output does not beat your current workflow in speed and quality, just ignore this email.',
+  },
 }
 
 function getSequenceDay(hoursSinceSignup: number): SequenceDay | null {
@@ -32,6 +36,7 @@ function getSequenceDay(hoursSinceSignup: number): SequenceDay | null {
   if (hoursSinceSignup >= 24 && hoursSinceSignup < 48) return 1
   if (hoursSinceSignup >= 72 && hoursSinceSignup < 96) return 3
   if (hoursSinceSignup >= 168 && hoursSinceSignup < 192) return 7
+  if (hoursSinceSignup >= 336 && hoursSinceSignup < 360) return 14
   return null
 }
 
@@ -74,12 +79,12 @@ export async function runOnboardingEmailSequence(): Promise<void> {
   const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>'
   const now = Date.now()
-  const tenDaysAgo = new Date(now - 10 * 24 * 60 * 60 * 1000)
+  const fifteenDaysAgo = new Date(now - 15 * 24 * 60 * 60 * 1000)
 
   const users = await prisma.user.findMany({
     where: {
       plan: 'free',
-      createdAt: { gte: tenDaysAgo },
+      createdAt: { gte: fifteenDaysAgo },
       email: { not: { startsWith: 'demo-user-' }, contains: '@' },
     },
     select: { id: true, email: true, createdAt: true, usageThisMonth: true },
@@ -105,6 +110,10 @@ export async function runOnboardingEmailSequence(): Promise<void> {
   const day7Users = eligibleUsers.filter((u) => {
     const hours = (now - u.createdAt.getTime()) / (60 * 60 * 1000)
     return hours >= 168 && hours < 192
+  })
+  const day14Users = eligibleUsers.filter((u) => {
+    const hours = (now - u.createdAt.getTime()) / (60 * 60 * 1000)
+    return hours >= 336 && hours < 360
   })
 
   let sent = 0
@@ -148,6 +157,7 @@ export async function runOnboardingEmailSequence(): Promise<void> {
     day1: day1Users.length,
     day3: day3Users.length,
     day7: day7Users.length,
+    day14: day14Users.length,
     sent,
   })
 }

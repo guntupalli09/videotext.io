@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Zap } from 'lucide-react'
+import { trackAppEvent } from '../lib/feedbackEvents'
+import { trackEvent } from '../lib/analytics'
 
 export type UpgradeBannerVariant =
   | 'video-length'   // "Unlock full-length videos — upgrade to Pro"
@@ -54,6 +56,10 @@ export default function UpgradeBanner({ variant = 'video-length' }: UpgradeBanne
       </div>
       <Link
         to="/pricing"
+        onClick={() => {
+          trackAppEvent('upgrade_clicked', { source: `upgrade_banner:${variant}`, plan: 'pro' })
+          trackEvent('upgrade_clicked', { source: `upgrade_banner:${variant}`, plan: 'pro' })
+        }}
         className="shrink-0 text-sm font-semibold text-violet-700 dark:text-violet-300 hover:text-violet-900 dark:hover:text-white underline underline-offset-2 transition-colors"
       >
         {cta} →

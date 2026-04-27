@@ -6,6 +6,7 @@ import SamplesModule from '../components/SamplesModule'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import UpgradeBanner from '../components/UpgradeBanner'
+import ActivationWizardCard from '../components/ActivationWizardCard'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import { isLoggedIn } from '../lib/auth'
 import { ToolLayout } from '../components/figma/ToolLayout'
@@ -168,6 +169,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   /** Timestamp of the last successful localStorage save — drives the "Saved" indicator. */
   const [editsSavedAt, setEditsSavedAt] = useState<number | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [showPostSuccessUpgrade, setShowPostSuccessUpgrade] = useState(false)
   const [showAuthGate, setShowAuthGate] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
@@ -206,6 +208,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [audioVolume, setAudioVolume] = useState(1)
   const [audioMuted, setAudioMuted] = useState(false)
   const [audioSpeed, setAudioSpeed] = useState(1)
+  const hasTrackedFirstOutputRef = useRef(false)
   const syncScrubberFill = useCallback(() => {
     const el = scrubberRef.current
     if (!el) return
@@ -773,6 +776,15 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       setShowAuthModal(true)
     }
   }, [status])
+
+  useEffect(() => {
+    if (status !== 'completed' || !result || hasTrackedFirstOutputRef.current) return
+    hasTrackedFirstOutputRef.current = true
+    trackAppEvent('first_output_seen', { toolId: 'video-to-transcript' })
+    try { localStorage.setItem('vt:first_output_seen', '1') } catch { /* ignore */ }
+    const plan = typeof window !== 'undefined' ? (localStorage.getItem('plan') || 'free').toLowerCase() : 'free'
+    if (plan === 'free') setShowPostSuccessUpgrade(true)
+  }, [status, result])
 
   const handleFileSelect = (file: File) => {
     try {
@@ -1515,6 +1527,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setTranslationLanguage(null)
     setTranslatedCache({})
     setTranscriptView('original')
+    setShowPostSuccessUpgrade(false)
+    hasTrackedFirstOutputRef.current = false
     setBatchTranslateLanguage('')
     setBatchSpeakerDiarization(false)
     setBatchPrimaryLanguage('English')
@@ -1747,6 +1761,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   }, [translationLanguage, translatedCache, result?.segments])
 
   const isPaidPlan = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+  const hasSeenFirstOutput = typeof window !== 'undefined' && localStorage.getItem('vt:first_output_seen') === '1'
 
   // Track when the AI summary teaser is shown to a free user (fires once per completed job)
   useEffect(() => {
@@ -1970,6 +1985,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     <>
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" />
+        {!isPaidPlan && !hasSeenFirstOutput && (
+          <ActivationWizardCard completed={status === 'completed'} />
+        )}
         {freeImportsRemaining != null && freeImportsRemaining <= 1 && (
           <div className="mb-4 rounded-xl border border-amber-300/70 bg-amber-50/80 dark:border-amber-700/60 dark:bg-amber-950/25 px-4 py-3">
             <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">
@@ -2733,6 +2751,34 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
         {!isBatchMode && status === 'completed' && result && (
           <>
+            {showPostSuccessUpgrade && !isPaidPlan && (
+              <div className="mb-4 rounded-xl border border-violet-300/70 bg-violet-50/80 dark:border-violet-700/60 dark:bg-violet-950/25 px-4 py-3">
+                <p className="text-sm font-semibold text-violet-900 dark:text-violet-300">
+                  First output complete 🎉 Next step: unlock faster repeats.
+                </p>
+                <p className="mt-1 text-xs text-violet-800 dark:text-violet-200/90">
+                  Upgrade CTR target for activated users is at least 20%.
+                  {' '}
+                  <Link
+                    to="/pricing"
+                    className="font-semibold underline underline-offset-2 hover:opacity-90"
+                    onClick={() => {
+                      trackAppEvent('upgrade_clicked', { source: 'post_success_upgrade_panel', plan: 'pro' })
+                      trackEvent('upgrade_clicked', { source: 'post_success_upgrade_panel', plan: 'pro' })
+                    }}
+                  >
+                    Compare plans
+                  </Link>
+                  <button
+                    type="button"
+                    className="ml-2 text-xs text-violet-700 dark:text-violet-300 underline"
+                    onClick={() => setShowPostSuccessUpgrade(false)}
+                  >
+                    Dismiss
+                  </button>
+                </p>
+              </div>
+            )}
             {/* ── Teaser preview card (non-logged-in) — first 10% of real content ── */}
             {showAuthGate && !isLoggedIn() && (() => {
               const fullText = displayTranscript || fullTranscript || transcriptPreview || ''
