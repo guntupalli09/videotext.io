@@ -7,6 +7,7 @@ import { getPlanLimits } from '../utils/limits'
 import { getAuthFromRequest, getEffectiveUserId, verifyEmailVerificationToken, generatePasswordSetupToken, signAuthToken } from '../utils/auth'
 import { isAllowedOrigin, normalizeOrigin } from '../utils/allowedOrigins'
 import { getLogger } from '../lib/logger'
+import { recordUpgradeIntent } from '../models/UpgradeIntent'
 
 const log = getLogger('api')
 const router = express.Router()
@@ -162,6 +163,10 @@ router.post('/checkout', async (req: Request, res: Response) => {
       }
 
       const session = await stripe.checkout.sessions.create(sessionParams)
+
+      if (auth?.userId) {
+        recordUpgradeIntent({ userId: auth.userId, source: 'checkout_session_started' }).catch(() => {})
+      }
 
       return res.json({ url: session.url })
     }

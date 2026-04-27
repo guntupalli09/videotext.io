@@ -39,7 +39,22 @@ model User {
   createdAt                DateTime
   updatedAt                DateTime
 
+  upgradeIntents           UpgradeIntent[]
+
   @@index([createdAt])
+}
+
+
+model UpgradeIntent {
+  id        String   @id @default(cuid())
+  userId    String
+  source    String   // upgrade_clicked | checkout_session_started
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([userId, createdAt])
 }
 
 model Job {

@@ -10,6 +10,7 @@ import rateLimit from 'express-rate-limit'
 import { Prisma } from '@prisma/client'
 import { prisma } from '../db'
 import { getEffectiveUserId } from '../utils/auth'
+import { recordUpgradeIntent } from '../models/UpgradeIntent'
 
 const router = express.Router()
 
@@ -27,6 +28,8 @@ const VALID_EVENTS = new Set([
   'result_viewed',
   'export_clicked',
   'session_returned',
+  'upgrade_clicked',
+  'payment_completed',
 ])
 
 router.post('/', eventsLimit, async (req: Request, res: Response) => {
@@ -54,6 +57,9 @@ router.post('/', eventsLimit, async (req: Request, res: Response) => {
     // Update UserMetrics asynchronously for authenticated users
     if (userId) {
       upsertUserMetrics(userId, eventName).catch(() => {})
+      if (eventName === 'upgrade_clicked') {
+        recordUpgradeIntent({ userId, source: 'upgrade_clicked' }).catch(() => {})
+      }
     }
 
     return res.status(201).json({ ok: true })

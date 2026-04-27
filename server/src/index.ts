@@ -41,6 +41,7 @@ import { createMagicLinkToken } from './routes/auth'
 import { attachLiveTranscription } from './routes/liveTranscription'
 import { maybeRunYoutubeCanary } from './services/youtubeCanary'
 import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
+import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
 
 const log = getLogger('api')
 
@@ -397,6 +398,9 @@ const server = app.listen(PORT, () => {
 
   // Activation sequence (Day 0/1/3/7) for free users who signed up but never started.
   startOnboardingEmailCron()
+
+  // Upgrade rescue sequence for users who clicked upgrade but did not complete payment in 24h.
+  startUpgradeRescueCron()
 
   // Optional heap memory monitoring — set MEMORY_DEBUG=1 to enable
   if (process.env.MEMORY_DEBUG === '1') {
