@@ -391,7 +391,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
         GROUP BY stars
         ORDER BY stars DESC
       `,
-      // Per-tool performance breakdown (30d completed jobs)
+      // Per-tool performance breakdown (all-time completed jobs)
       prisma.$queryRaw<{
         toolType: string
         count: bigint
@@ -404,15 +404,14 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
         SELECT
           "toolType",
           COUNT(*)::bigint as count,
-          AVG("processingMs")::double precision as "avgMs",
-          percentile_cont(0.95) WITHIN GROUP (ORDER BY "processingMs")::double precision as "p95Ms",
+          AVG("processingMs") FILTER (WHERE "processingMs" IS NOT NULL)::double precision as "avgMs",
+          percentile_cont(0.95) WITHIN GROUP (ORDER BY "processingMs")
+            FILTER (WHERE "processingMs" IS NOT NULL)::double precision as "p95Ms",
           AVG("fileSizeBytes"::double precision)::double precision as "avgFileSizeBytes",
           AVG("videoDurationSec")::double precision as "avgDurationSec",
           SUM("videoDurationSec"::double precision / 60.0)::double precision as "totalMinutes"
         FROM "Job"
         WHERE status = 'completed'
-          AND "completedAt" >= ${thirtyDaysAgo}
-          AND "processingMs" IS NOT NULL
         GROUP BY "toolType"
         ORDER BY count DESC
       `,
