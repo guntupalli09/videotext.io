@@ -1,7 +1,6 @@
 import { useRef, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Play,
   Mic,
   Shield,
   CheckCircle2,
@@ -251,19 +250,6 @@ export function Hero() {
               <p className="text-[10px] text-white/30 leading-relaxed hidden sm:block">{preview}</p>
             </Link>
           ))}
-        </div>
-
-        {/* Secondary CTA */}
-        <div className="flex items-center justify-center mt-4">
-          <Link
-            to="/guide"
-            className="flex items-center gap-2 px-5 py-2.5 text-white/40 hover:text-white/65 transition-colors text-sm font-medium"
-          >
-            <div className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center bg-white/[0.04]">
-              <Play className="w-2.5 h-2.5 ml-0.5" />
-            </div>
-            Watch 60-sec demo
-          </Link>
         </div>
 
         {/* Trust signals + Social proof — single compact row */}

@@ -172,6 +172,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
+  const [freeImportsRemaining, setFreeImportsRemaining] = useState<number | null>(null)
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
   const [isSummaryHydrating, setIsSummaryHydrating] = useState(false)
   const [isRehydrating, setIsRehydrating] = useState(false)
@@ -312,6 +313,23 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   useEffect(() => {
     setFreeExportsUsed(0)
   }, [result?.downloadUrl])
+
+  // Soft upgrade nudge: show remaining free imports before users hit the hard paywall.
+  useEffect(() => {
+    getCurrentUsage({ skipCache: true })
+      .then((data) => {
+        if (data.quotaType !== 'imports') {
+          setFreeImportsRemaining(null)
+          return
+        }
+        const limit = data.limit ?? 3
+        const used = data.used ?? data.usage?.importCount ?? 0
+        setFreeImportsRemaining(Math.max(0, limit - used))
+      })
+      .catch(() => {
+        setFreeImportsRemaining(null)
+      })
+  }, [])
 
   // Upload-to-first-word timeline: log firstRender when partialSegments first paints
   useEffect(() => {
@@ -1952,6 +1970,20 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     <>
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" />
+        {freeImportsRemaining != null && freeImportsRemaining <= 1 && (
+          <div className="mb-4 rounded-xl border border-amber-300/70 bg-amber-50/80 dark:border-amber-700/60 dark:bg-amber-950/25 px-4 py-3">
+            <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">
+              {freeImportsRemaining === 0 ? 'No free imports left today.' : '1 free import left today.'}
+            </p>
+            <p className="mt-1 text-xs text-amber-800 dark:text-amber-200/90">
+              Upgrade to Pro to keep processing without daily stops and remove export watermarks.
+              {' '}
+              <Link to="/pricing" className="font-semibold underline underline-offset-2 hover:opacity-90">
+                View Pro
+              </Link>
+            </p>
+          </div>
+        )}
         {status === 'idle' && !selectedFile && !isBatchMode && (
           <div className="space-y-4">
             {/* YouTube URL tab temporarily hidden — feature under development */}
