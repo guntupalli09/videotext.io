@@ -1,9 +1,7 @@
 import { prisma } from '../db'
 import { createMagicLinkToken } from '../routes/auth'
 import { createRedisClient } from '../utils/redis'
-import { getLogger } from '../lib/logger'
 
-const log = getLogger('api')
 const redis = createRedisClient('client')
 
 type OnboardingStage = 'first_3to6h' | 'day1' | 'day3' | 'day7'
@@ -94,16 +92,10 @@ export async function runOnboardingEmailSequence(): Promise<void> {
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>'
   const debugOnboarding = process.env.DEBUG_ONBOARDING === 'true'
   const now = Date.now()
-  const tenDaysAgo = new Date(now - 10 * 24 * 60 * 60 * 1000)
 
   const users = await prisma.user.findMany({
-    where: {
-      plan: 'free',
-      createdAt: { gte: tenDaysAgo },
-      email: { not: { startsWith: 'demo-user-' }, contains: '@' },
-    },
-    select: { id: true, email: true, createdAt: true, usageThisMonth: true },
-    orderBy: { createdAt: 'desc' },
+    where: { plan: 'free' },
+    select: { id: true, email: true, createdAt: true },
   })
 
   const eligibleUsers = users.filter((user) => {
@@ -133,10 +125,18 @@ export async function runOnboardingEmailSequence(): Promise<void> {
   }
 
   let sent = 0
-  for (const user of eligibleUsers) {
-    const usage = (user.usageThisMonth ?? {}) as { importCount?: number }
-    const importCount = Number(usage.importCount ?? 0)
-    if (importCount > 0) continue // already activated
+  let skipped = 0
+  for (const user of candidates) {
+    const hoursSinceSignup = (now - new Date(user.createdAt).getTime()) / (1000 * 60 * 60)
+    const jobCount = jobMap.get(user.id) || 0
+    console.log('[ONBOARDING_USER]', { email: user.email, hoursSinceSignup, jobCount })
+
+    const key = `onboarding:first:${user.id}`
+    const alreadySent = await redis.get(key)
+    if (alreadySent) {
+      skipped += 1
+      continue
+    }
 
     const jobCount = jobCountByUserId.get(user.id) ?? 0
     if (jobCount >= 2) continue
@@ -171,6 +171,8 @@ export async function runOnboardingEmailSequence(): Promise<void> {
         log.warn({ msg: 'Onboarding email send failed', status: res.status, email: user.email, stage, body })
       }
     }
+    await redis.set(key, '1', 'EX', 60 * 60 * 24 * 7)
+    sent += 1
   }
 
   log.info('[ONBOARDING]', {
@@ -180,26 +182,27 @@ export async function runOnboardingEmailSequence(): Promise<void> {
     stageCandidates,
     stageSent,
     sent,
+    skipped,
+    timestamp: new Date().toISOString(),
   })
 }
 
-export function startOnboardingEmailCron(): void {
-  const enabled = process.env.ONBOARDING_EMAILS_ENABLED === 'true'
-  if (!enabled) {
-    log.info({ msg: 'Onboarding email cron disabled (set ONBOARDING_EMAILS_ENABLED=true to enable)' })
-    return
+export async function startOnboardingEmailCron(): Promise<void> {
+  if (process.env.ONBOARDING_EMAILS_ENABLED !== 'true') return
+
+  const intervalMinutes = Number(process.env.ONBOARDING_EMAILS_INTERVAL_MINUTES || 15)
+  console.log('[CRON] Onboarding scheduler started', { intervalMinutes })
+
+  await runOnboardingEmails()
+  if (process.env.DEBUG_ONBOARDING === 'true') {
+    await runOnboardingEmails({ force: true })
   }
 
-  const intervalMinutes = Number(process.env.ONBOARDING_EMAILS_INTERVAL_MINUTES ?? '15')
-  const intervalMs = Math.max(5, Number.isFinite(intervalMinutes) ? intervalMinutes : 15) * 60 * 1000
-
-  runOnboardingEmailSequence().catch((e) => {
-    log.warn({ msg: 'Onboarding sequence initial run failed', error: (e as Error)?.message })
-  })
-
-  setInterval(() => {
-    runOnboardingEmailSequence().catch((e) => {
-      log.warn({ msg: 'Onboarding sequence cron run failed', error: (e as Error)?.message })
-    })
-  }, intervalMs)
+  setInterval(async () => {
+    try {
+      await runOnboardingEmails()
+    } catch (err) {
+      console.error('Onboarding cron error:', err)
+    }
+  }, intervalMinutes * 60 * 1000)
 }

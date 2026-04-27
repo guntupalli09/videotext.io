@@ -396,7 +396,9 @@ const server = app.listen(PORT, () => {
   }, 60 * 1000) // check every minute
 
   // Activation sequence (Day 0/1/3/7) for free users who signed up but never started.
-  startOnboardingEmailCron()
+  startOnboardingEmailCron().catch((e) => {
+    console.error('Failed to start onboarding cron:', e)
+  })
 
   // Optional heap memory monitoring — set MEMORY_DEBUG=1 to enable
   if (process.env.MEMORY_DEBUG === '1') {

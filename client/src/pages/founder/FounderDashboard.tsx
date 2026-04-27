@@ -132,6 +132,7 @@ export default function FounderDashboard() {
   const totalFeedbackCount = (data.starDistribution ?? []).reduce((s, d) => s + d.count, 0)
   const weightedStars = (data.starDistribution ?? []).reduce((s, d) => s + d.stars * d.count, 0)
   const avgRating = totalFeedbackCount > 0 ? (weightedStars / totalFeedbackCount).toFixed(1) : '—'
+  const growth = data.growth
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
@@ -182,6 +183,40 @@ export default function FounderDashboard() {
             <KpiCard label="Top tool" value={topToolEntry?.toolType ?? '—'} sub={topToolEntry ? `${topToolEntry.count} jobs (30d)` : ''} />
           </div>
         </section>
+
+        {growth && (
+          <section>
+            <SectionTitle id="growth">Activation & Upgrade Lift</SectionTitle>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+                <h3 className="text-sm font-semibold text-white mb-3">KPI progress ({growth.latest.windowDays}d)</h3>
+                <div className="space-y-2 text-xs">
+                  <p className="text-zinc-300">Activation: <span className="text-white font-semibold">{growth.latest.activationRatePct}%</span> (target {growth.kpiTargets.activationRatePct.target}%)</p>
+                  <p className="text-zinc-300">Upgrade CTR (activated): <span className="text-white font-semibold">{growth.latest.activatedUpgradeCtrPct}%</span> (target ≥{growth.kpiTargets.activatedUpgradeCtrPct.target}%)</p>
+                  <p className="text-zinc-300">Paid conversion (free base): <span className="text-white font-semibold">{growth.latest.paidConversionPct}%</span> (target ≥{growth.kpiTargets.paidConversionPct.target}%)</p>
+                </div>
+              </div>
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+                <h3 className="text-sm font-semibold text-white mb-3">Daily founder report</h3>
+                <div className="grid grid-cols-2 gap-2 text-xs text-zinc-300">
+                  <p>New free signups</p><p className="text-right text-white font-semibold">{growth.founderDailyReport.newFreeSignups}</p>
+                  <p>Users in 3–6h window</p><p className="text-right text-white font-semibold">{growth.founderDailyReport.usersIn3To6hWindow}</p>
+                  <p>First outputs completed</p><p className="text-right text-white font-semibold">{growth.founderDailyReport.firstOutputsCompleted}</p>
+                  <p>Upgrade clicks</p><p className="text-right text-white font-semibold">{growth.founderDailyReport.upgradeClicks}</p>
+                  <p>Paid conversions</p><p className="text-right text-white font-semibold">{growth.founderDailyReport.paidConversions}</p>
+                </div>
+              </div>
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+                <h3 className="text-sm font-semibold text-white mb-3">Cohort comparison</h3>
+                <p className="text-xs text-zinc-500 mb-2">Release date: {new Date(growth.cohortComparison.releaseDate).toLocaleDateString()}</p>
+                <div className="space-y-2 text-xs text-zinc-300">
+                  <p>Day 7: before <span className="text-white font-semibold">{growth.cohortComparison.day7.beforePct}%</span> → after <span className="text-emerald-300 font-semibold">{growth.cohortComparison.day7.afterPct}%</span></p>
+                  <p>Day 14: before <span className="text-white font-semibold">{growth.cohortComparison.day14.beforePct}%</span> → after <span className="text-emerald-300 font-semibold">{growth.cohortComparison.day14.afterPct}%</span></p>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Daily trends */}
         <section>
