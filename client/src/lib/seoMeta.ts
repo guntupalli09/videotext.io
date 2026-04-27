@@ -423,6 +423,10 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: "How to Translate Video Subtitles to Any Language | VideoText",
     description: "Learn how to translate video subtitles in two ways: upload an SRT file or transcribe and translate from scratch. Covers YouTube, TikTok, eLearning, and more.",
   },
+  '/blog/srt-file-format-explained': {
+    title: "SRT File Format Explained: Everything You Need to Know | VideoText",
+    description: "Learn how the SRT file format works: timestamp syntax, character limits, common errors, and when to use SRT vs VTT vs ASS. With a real example.",
+  },
 }
 
 /** Static breadcrumb items (non-SEO-registry routes). */
