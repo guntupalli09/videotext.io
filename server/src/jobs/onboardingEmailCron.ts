@@ -5,6 +5,7 @@ import { getLogger } from '../lib/logger'
 import { captureFunnelEvent } from '../utils/funnelEvents'
 
 const redis = createRedisClient('client')
+const log = getLogger('worker')
 
 type OnboardingStage = 'first_3to6h' | 'day1' | 'day3' | 'day7'
 
@@ -97,7 +98,7 @@ export async function runOnboardingEmailSequence(): Promise<void> {
 
   const users = await prisma.user.findMany({
     where: { plan: 'free' },
-    select: { id: true, email: true, createdAt: true },
+    select: { id: true, email: true, createdAt: true, usageThisMonth: true },
   })
 
   const eligibleUsers = users.filter((user) => {
@@ -128,12 +129,13 @@ export async function runOnboardingEmailSequence(): Promise<void> {
 
   let sent = 0
   let skipped = 0
-  for (const user of candidates) {
+  for (const user of eligibleUsers) {
     const hoursSinceSignup = (now - new Date(user.createdAt).getTime()) / (1000 * 60 * 60)
-    const jobCount = jobMap.get(user.id) || 0
-    console.log('[ONBOARDING_USER]', { email: user.email, hoursSinceSignup, jobCount })
+    const stage = STAGES.find((value) => isUserInStage(hoursSinceSignup, value))
+    if (!stage) continue
+    stageCandidates[stage] += 1
 
-    const key = `onboarding:first:${user.id}`
+    const key = STAGE_CONFIG[stage].idempotencyKey(user.id)
     const alreadySent = await redis.get(key)
     if (alreadySent) {
       skipped += 1
@@ -143,42 +145,35 @@ export async function runOnboardingEmailSequence(): Promise<void> {
     const jobCount = jobCountByUserId.get(user.id) ?? 0
     if (jobCount >= 2) continue
 
-    const hours = (now - user.createdAt.getTime()) / (60 * 60 * 1000)
-    const day = getSequenceDay(hours)
-    if (day == null) continue
-
-    const lockKey = `onboarding:${user.id}:day-${day}`
-    const lock = await redis.set(lockKey, '1', 'EX', 45 * 24 * 60 * 60, 'NX')
-    if (lock !== 'OK') continue
-
     const token = await createMagicLinkToken(user.id)
     const ctaUrl = `${baseUrl}/magic-login?token=${encodeURIComponent(token)}&next=/video-to-transcript`
-    const html = onboardingHtml(day, ctaUrl)
+    const html = onboardingHtml(stage, ctaUrl)
+    const subject = STAGE_CONFIG[stage].subject
 
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
-      body: JSON.stringify({ from: fromEmail, to: [user.email], subject: TEMPLATE[day].subject, html }),
+      body: JSON.stringify({ from: fromEmail, to: [user.email], subject, html }),
       signal: AbortSignal.timeout(8_000),
     })
 
     if (res.ok) {
       sent += 1
-      if (day === 0) {
+      stageSent[stage] += 1
+      if (stage === 'first_3to6h') {
         captureFunnelEvent({
           eventName: 'activation_wizard_shown',
           userId: user.id,
           source: 'onboarding_email_cron',
           plan: 'free',
-          metadata: { sequence_day: day },
+          metadata: { sequence_stage: stage },
         }).catch(() => {})
       }
+      await redis.set(key, '1', 'EX', 60 * 60 * 24 * 45)
     } else {
       const body = await res.text().catch(() => '')
-      log.warn({ msg: 'Onboarding email send failed', status: res.status, email: user.email, sequenceDay: day, body })
+      log.warn({ msg: 'Onboarding email send failed', status: res.status, email: user.email, stage, body })
     }
-    await redis.set(key, '1', 'EX', 60 * 60 * 24 * 7)
-    sent += 1
   }
 
   log.info({
@@ -200,14 +195,11 @@ export async function startOnboardingEmailCron(): Promise<void> {
   const intervalMinutes = Number(process.env.ONBOARDING_EMAILS_INTERVAL_MINUTES || 15)
   console.log('[CRON] Onboarding scheduler started', { intervalMinutes })
 
-  await runOnboardingEmails()
-  if (process.env.DEBUG_ONBOARDING === 'true') {
-    await runOnboardingEmails({ force: true })
-  }
+  await runOnboardingEmailSequence()
 
   setInterval(async () => {
     try {
-      await runOnboardingEmails()
+      await runOnboardingEmailSequence()
     } catch (err) {
       console.error('Onboarding cron error:', err)
     }

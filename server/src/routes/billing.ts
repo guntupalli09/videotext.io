@@ -8,6 +8,7 @@ import { getAuthFromRequest, getEffectiveUserId, verifyEmailVerificationToken, g
 import { isAllowedOrigin, normalizeOrigin } from '../utils/allowedOrigins'
 import { getLogger } from '../lib/logger'
 import { captureFunnelEvent } from '../utils/funnelEvents'
+import { recordUpgradeIntent } from '../models/UpgradeIntent'
 
 const log = getLogger('api')
 const router = express.Router()
