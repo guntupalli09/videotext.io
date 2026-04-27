@@ -27,6 +27,14 @@ const VALID_EVENTS = new Set([
   'result_viewed',
   'export_clicked',
   'session_returned',
+  'signup_completed',
+  'activation_wizard_shown',
+  'job_completed',
+  'first_output_seen',
+  'upgrade_prompt_seen',
+  'upgrade_clicked',
+  'checkout_started',
+  'payment_completed',
 ])
 
 router.post('/', eventsLimit, async (req: Request, res: Response) => {
@@ -46,6 +54,11 @@ router.post('/', eventsLimit, async (req: Request, res: Response) => {
       typeof body.metadata === 'object' && body.metadata !== null && !Array.isArray(body.metadata)
         ? (body.metadata as Record<string, unknown>)
         : {}
+
+    if (eventName === 'first_output_seen' && userId) {
+      const existing = await prisma.eventLog.findFirst({ where: { userId, eventName }, select: { id: true } })
+      if (existing) return res.status(200).json({ ok: true, deduped: true })
+    }
 
     await prisma.eventLog.create({
       data: { eventName, userId, sessionId, metadata: metadata as unknown as Prisma.InputJsonValue },

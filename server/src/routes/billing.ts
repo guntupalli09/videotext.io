@@ -7,6 +7,7 @@ import { getPlanLimits } from '../utils/limits'
 import { getAuthFromRequest, getEffectiveUserId, verifyEmailVerificationToken, generatePasswordSetupToken, signAuthToken } from '../utils/auth'
 import { isAllowedOrigin, normalizeOrigin } from '../utils/allowedOrigins'
 import { getLogger } from '../lib/logger'
+import { captureFunnelEvent } from '../utils/funnelEvents'
 
 const log = getLogger('api')
 const router = express.Router()
@@ -162,6 +163,15 @@ router.post('/checkout', async (req: Request, res: Response) => {
       }
 
       const session = await stripe.checkout.sessions.create(sessionParams)
+      if (auth?.userId) {
+        captureFunnelEvent({
+          eventName: 'checkout_started',
+          userId: auth.userId,
+          source: 'billing_checkout_route',
+          plan,
+          metadata: { annual },
+        }).catch(() => {})
+      }
 
       return res.json({ url: session.url })
     }
@@ -427,4 +437,3 @@ router.get('/session-status', async (req: Request, res: Response) => {
 })
 
 export default router
-

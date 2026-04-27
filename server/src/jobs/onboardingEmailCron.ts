@@ -2,6 +2,7 @@ import { prisma } from '../db'
 import { createMagicLinkToken } from '../routes/auth'
 import { createRedisClient } from '../utils/redis'
 import { getLogger } from '../lib/logger'
+import { captureFunnelEvent } from '../utils/funnelEvents'
 
 const log = getLogger('api')
 const redis = createRedisClient('client')
@@ -134,13 +135,23 @@ export async function runOnboardingEmailSequence(): Promise<void> {
 
     if (res.ok) {
       sent += 1
+      if (day === 0) {
+        captureFunnelEvent({
+          eventName: 'activation_wizard_shown',
+          userId: user.id,
+          source: 'onboarding_email_cron',
+          plan: 'free',
+          metadata: { sequence_day: day },
+        }).catch(() => {})
+      }
     } else {
       const body = await res.text().catch(() => '')
       log.warn({ msg: 'Onboarding email send failed', status: res.status, email: user.email, sequenceDay: day, body })
     }
   }
 
-  log.info('Onboarding debug', {
+  log.info({
+    msg: 'Onboarding debug',
     totalUsers: users.length,
     eligible: eligibleUsers.length,
     day0: day0Users.length,

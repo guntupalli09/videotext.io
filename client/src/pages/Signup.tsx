@@ -9,6 +9,7 @@ import { FileText, Youtube, Shield, ChevronRight, CheckCircle2 } from 'lucide-re
 import GoogleSignInButton, { GOOGLE_CLIENT_ID } from '../components/GoogleSignInButton'
 
 type Step = 'email' | 'otp' | 'password'
+const SIGNUP_STARTED_AT_KEY = 'videotext:signup_started_at'
 
 export default function Signup() {
   const [step, setStep] = useState<Step>('email')
@@ -40,6 +41,17 @@ export default function Signup() {
       try {
         const event = result.isNewUser ? 'google_signup_completed' : 'google_login_completed'
         trackEvent(event, { plan: result.plan })
+        if (result.isNewUser) {
+          const nowIso = new Date().toISOString()
+          try { localStorage.setItem(SIGNUP_STARTED_AT_KEY, nowIso) } catch { /* non-blocking */ }
+          trackEvent('signup_completed', {
+            plan: result.plan,
+            source: 'google_signup',
+            hours_since_signup: 0,
+            job_count: 0,
+            cohort_date: nowIso.slice(0, 10),
+          })
+        }
       } catch { /* non-blocking */ }
       window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
       navigate(returnTo, { replace: true })
@@ -114,8 +126,14 @@ export default function Signup() {
       }
       try {
         identifyUser(result.userId, { plan: result.plan, email: result.email })
+        const nowIso = new Date().toISOString()
+        try { localStorage.setItem(SIGNUP_STARTED_AT_KEY, nowIso) } catch { /* non-blocking */ }
         trackEvent('signup_completed', {
           plan: result.plan,
+          source: fromGuestJob ? 'guest_job' : 'signup_page',
+          hours_since_signup: 0,
+          job_count: 0,
+          cohort_date: nowIso.slice(0, 10),
           from_guest_job: fromGuestJob,
           ...(samplesAttribution
             ? {

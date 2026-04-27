@@ -18,6 +18,7 @@ export type AppEventName =
   | 'result_viewed'
   | 'export_clicked'
   | 'session_returned'
+  | 'first_output_seen'
 
 export type TriggerType = 'result' | 'export' | 'dropoff' | 'pmf' | 'competitor'
 

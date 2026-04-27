@@ -216,6 +216,18 @@ export interface DashboardData {
   toolPerf: DashboardToolPerf[]
   costMetrics: DashboardCostMetrics | null
   youtubeResolution?: DashboardYoutubeResolution
+  funnelByCohort?: {
+    cohortDate: string
+    signupCompleted: number
+    activationWizardShown: number
+    uploadStarted: number
+    jobCompleted: number
+    firstOutputSeen: number
+    upgradePromptSeen: number
+    upgradeClicked: number
+    checkoutStarted: number
+    paymentCompleted: number
+  }[]
 }
 
 // ── API Credits types ─────────────────────────────────────────────────────────
