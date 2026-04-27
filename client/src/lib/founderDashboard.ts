@@ -198,6 +198,32 @@ export interface DashboardYoutubeResolution {
   byError: { error: string; count: number }[]
 }
 
+export interface DashboardGrowth {
+  latest: {
+    windowDays: number
+    activationRatePct: number
+    activatedUpgradeCtrPct: number
+    paidConversionPct: number
+  }
+  kpiTargets: {
+    activationRatePct: { target: number }
+    activatedUpgradeCtrPct: { target: number }
+    paidConversionPct: { target: number }
+  }
+  founderDailyReport: {
+    newFreeSignups: number
+    usersIn3To6hWindow: number
+    firstOutputsCompleted: number
+    upgradeClicks: number
+    paidConversions: number
+  }
+  cohortComparison: {
+    releaseDate: string
+    day7: { beforePct: number; afterPct: number }
+    day14: { beforePct: number; afterPct: number }
+  }
+}
+
 export interface DashboardData {
   snapshot: DashboardSnapshot
   revenue: DashboardRevenue
@@ -216,6 +242,7 @@ export interface DashboardData {
   toolPerf: DashboardToolPerf[]
   costMetrics: DashboardCostMetrics | null
   youtubeResolution?: DashboardYoutubeResolution
+  growth?: DashboardGrowth
   funnelByCohort?: {
     cohortDate: string
     signupCompleted: number
