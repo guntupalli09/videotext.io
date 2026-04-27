@@ -450,6 +450,14 @@
       "angle": "Two methods: translate existing SRT file vs transcribe and translate from scratch. Cover 5 common use cases (YouTube, TikTok, eLearning, meetings, docs).",
       "tag": "Guide",
       "target_intent": "informational"
+    },
+    {
+      "slug": "srt-file-format-explained",
+      "keyword": "srt file format",
+      "title": "SRT File Format Explained: Everything You Need to Know",
+      "angle": "What SRT is, how timestamps work, character limits, common errors. Include a valid SRT example. When to use SRT vs VTT vs ASS.",
+      "tag": "Guide",
+      "target_intent": "informational"
     }
   ]
 }
