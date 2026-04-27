@@ -92,6 +92,7 @@ export type VideoToTranscriptSeoProps = {
 }
 
 export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {}) {
+  const POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY = 'vt_post_success_monetization_panel_date'
   const { seoH1, seoIntro, faq = [], seoDeepContent, defaultInputMode = 'file' } = props
   const location = useLocation()
   const navigate = useNavigate()
@@ -214,7 +215,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [audioVolume, setAudioVolume] = useState(1)
   const [audioMuted, setAudioMuted] = useState(false)
   const [audioSpeed, setAudioSpeed] = useState(1)
-  const hasTrackedFirstOutputRef = useRef(false)
+  const [showPostSuccessMonetizationPanel, setShowPostSuccessMonetizationPanel] = useState(false)
   const syncScrubberFill = useCallback(() => {
     const el = scrubberRef.current
     if (!el) return
@@ -1823,6 +1824,26 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const isPaidPlan = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
   const hasSeenFirstOutput = typeof window !== 'undefined' && localStorage.getItem('vt:first_output_seen') === '1'
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (status !== 'completed' || !result || isPaidPlan) {
+      setShowPostSuccessMonetizationPanel(false)
+      return
+    }
+    const today = new Date().toISOString().slice(0, 10)
+    const lastShownDate = localStorage.getItem(POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY)
+    if (lastShownDate === today) {
+      setShowPostSuccessMonetizationPanel(false)
+      return
+    }
+    setShowPostSuccessMonetizationPanel(true)
+    try {
+      localStorage.setItem(POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY, today)
+    } catch {
+      /* localStorage unavailable; non-blocking */
+    }
+  }, [status, result, isPaidPlan, POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY])
+
   // Track when the AI summary teaser is shown to a free user (fires once per completed job)
   useEffect(() => {
     if (status === 'completed' && result && !isPaidPlan) {
@@ -2951,6 +2972,28 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             className={`space-y-6 ${audioObjectUrl ? 'pb-24 sm:pb-28' : ''}`}
             hidden={showAuthGate && !isLoggedIn()}
           >
+            {showPostSuccessMonetizationPanel && (
+              <div className="rounded-2xl border border-violet-200/90 dark:border-violet-900/50 bg-violet-50/70 dark:bg-violet-950/20 px-5 py-4">
+                <p className="text-sm sm:text-[15px] font-semibold text-violet-900 dark:text-violet-100">
+                  You just generated transcript + subtitles + summary. Upgrade to keep this workflow uninterrupted.
+                </p>
+                <div className="mt-3 flex items-center gap-3">
+                  <Link
+                    to="/pricing"
+                    onClick={() => {
+                      trackEvent('upgrade_clicked', { source: 'post_first_success_panel', tool: 'video-to-transcript' })
+                      setShowPostSuccessMonetizationPanel(false)
+                    }}
+                    className="inline-flex items-center rounded-lg bg-violet-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-violet-700 transition-colors"
+                  >
+                    Upgrade now
+                  </Link>
+                  <p className="text-xs text-violet-700/90 dark:text-violet-300/90">
+                    Free plan includes watermark + daily cap.
+                  </p>
+                </div>
+              </div>
+            )}
             {/* Result header + primary actions */}
             <TranscriptResult
               fileName={
