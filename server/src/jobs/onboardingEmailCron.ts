@@ -140,7 +140,8 @@ export async function runOnboardingEmailSequence(): Promise<void> {
     }
   }
 
-  log.info('Onboarding debug', {
+  log.info({
+    msg: 'Onboarding debug',
     totalUsers: users.length,
     eligible: eligibleUsers.length,
     day0: day0Users.length,
