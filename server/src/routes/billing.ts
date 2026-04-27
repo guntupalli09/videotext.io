@@ -7,7 +7,7 @@ import { getPlanLimits } from '../utils/limits'
 import { getAuthFromRequest, getEffectiveUserId, verifyEmailVerificationToken, generatePasswordSetupToken, signAuthToken } from '../utils/auth'
 import { isAllowedOrigin, normalizeOrigin } from '../utils/allowedOrigins'
 import { getLogger } from '../lib/logger'
-import { recordUpgradeIntent } from '../models/UpgradeIntent'
+import { captureFunnelEvent } from '../utils/funnelEvents'
 
 const log = getLogger('api')
 const router = express.Router()
@@ -163,6 +163,15 @@ router.post('/checkout', async (req: Request, res: Response) => {
       }
 
       const session = await stripe.checkout.sessions.create(sessionParams)
+      if (auth?.userId) {
+        captureFunnelEvent({
+          eventName: 'checkout_started',
+          userId: auth.userId,
+          source: 'billing_checkout_route',
+          plan,
+          metadata: { annual },
+        }).catch(() => {})
+      }
 
       if (auth?.userId) {
         recordUpgradeIntent({ userId: auth.userId, source: 'checkout_session_started' }).catch(() => {})
@@ -432,4 +441,3 @@ router.get('/session-status', async (req: Request, res: Response) => {
 })
 
 export default router
-

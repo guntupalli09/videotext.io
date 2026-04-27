@@ -71,6 +71,10 @@ function batchUploadEligible(): boolean {
   return ['pro', 'agency', 'business', 'founding_workflow'].includes(p)
 }
 
+const SIGNUP_STARTED_AT_KEY = 'videotext:signup_started_at'
+const JOB_COMPLETED_COUNT_KEY = 'videotext:job_completed_count'
+const FIRST_OUTPUT_SEEN_KEY_PREFIX = 'videotext:first_output_seen'
+
 /** Optional SEO overrides for alternate entry points (e.g. /video-to-text, /youtube-transcript-generator). Do NOT duplicate logic here. */
 export type VideoToTranscriptSeoProps = {
   seoH1?: string
@@ -138,6 +142,18 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
     return null
   }, [sourceParam])
+  const getFunnelProps = useCallback((source: string) => {
+    const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
+    const signupAt = localStorage.getItem(SIGNUP_STARTED_AT_KEY)
+    const jobCount = Number(localStorage.getItem(JOB_COMPLETED_COUNT_KEY) || '0')
+    const hoursSinceSignup = signupAt ? Math.max(0, Math.round((Date.now() - new Date(signupAt).getTime()) / 36e5)) : null
+    return {
+      plan,
+      source,
+      job_count: Number.isFinite(jobCount) ? jobCount : 0,
+      ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupAt?.slice(0, 10) } : {}),
+    }
+  }, [])
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [trimStart, setTrimStart] = useState<number | null>(null)
   const [trimEnd, setTrimEnd] = useState<number | null>(null)
@@ -794,13 +810,15 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   }, [status])
 
   useEffect(() => {
-    if (status !== 'completed' || !result || hasTrackedFirstOutputRef.current) return
-    hasTrackedFirstOutputRef.current = true
-    trackAppEvent('first_output_seen', { toolId: 'video-to-transcript' })
-    try { localStorage.setItem('vt:first_output_seen', '1') } catch { /* ignore */ }
-    const plan = typeof window !== 'undefined' ? (localStorage.getItem('plan') || 'free').toLowerCase() : 'free'
-    if (plan === 'free') setShowPostSuccessUpgrade(true)
-  }, [status, result])
+    try {
+      const key = 'videotext:activation_wizard_shown'
+      if (localStorage.getItem(key) === '1') return
+      trackEvent('activation_wizard_shown', getFunnelProps('video_to_transcript'))
+      localStorage.setItem(key, '1')
+    } catch {
+      // non-blocking
+    }
+  }, [getFunnelProps])
 
   const handleFileSelect = (file: File) => {
     try {
@@ -943,6 +961,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       if (atOrOverLimit) {
         setShowPaywall(true)
         trackEvent('paywall_shown', { tool: 'video-to-transcript' })
+        trackEvent('upgrade_prompt_seen', getFunnelProps('quota_gate'))
         return
       }
     } catch {
@@ -973,6 +992,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         setStatus('idle')
         toast.error(preflight.reason ?? 'Video exceeds plan limits.')
         trackEvent('paywall_shown', { tool: 'video-to-transcript', reason: 'preflight' })
+        trackEvent('upgrade_prompt_seen', { ...getFunnelProps('preflight'), reason: preflight.reason ?? 'plan_limit' })
         try {
           trackEvent('file_validation_failed', { tool: 'video-to-transcript', reason: preflight.reason ?? 'plan_limit', validation_type: 'preflight' })
         } catch {
@@ -1009,6 +1029,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       }
       setDiarizationWasRequested(speakerDiarization)
       setUploadPhase('uploading')
+      const uploadProps = getFunnelProps('file_upload')
+      trackEvent('upload_started', uploadProps)
+      trackAppEvent('upload_started', uploadProps)
       trackEvent('processing_started', { tool: 'video-to-transcript' })
 
       if (typeof window !== 'undefined') (window as any).__uploadTimeline = {}
@@ -1124,7 +1147,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 job_id: response.jobId,
                 tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT,
                 processing_time_ms: processingMs,
+                ...getFunnelProps('file_upload'),
               })
+              const nextJobCount = (Number(localStorage.getItem(JOB_COMPLETED_COUNT_KEY) || '0') || 0) + 1
+              localStorage.setItem(JOB_COMPLETED_COUNT_KEY, String(nextJobCount))
+              const firstOutputKey = `${FIRST_OUTPUT_SEEN_KEY_PREFIX}:${localStorage.getItem('userId') || 'anon'}`
+              if (localStorage.getItem(firstOutputKey) !== '1') {
+                trackEvent('first_output_seen', { ...getFunnelProps('result_panel'), job_count: nextJobCount })
+                trackAppEvent('first_output_seen', { ...getFunnelProps('result_panel'), job_count: nextJobCount })
+                localStorage.setItem(firstOutputKey, '1')
+              }
               trackEvent('processing_completed', { tool: 'video-to-transcript' })
               // texJobCompleted(processingMs, 'video-to-transcript')
               setLastProcessingMs(processingMs)
@@ -1273,6 +1305,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       if (atOrOverLimit) {
         setShowPaywall(true)
         trackEvent('paywall_shown', { tool: 'video-to-transcript', source: 'youtube' })
+        trackEvent('upgrade_prompt_seen', getFunnelProps('youtube_paywall'))
         return
       }
     } catch { /* fall through on usage error */ }
@@ -1297,6 +1330,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       setDiarizationWasRequested(speakerDiarization)
       trackEvent('processing_started', { tool: 'video-to-transcript', source: 'youtube' })
 
+      const uploadProps = getFunnelProps('youtube_url')
+      trackEvent('upload_started', uploadProps)
+      trackAppEvent('upload_started', uploadProps)
       const response: YoutubeUploadResponse = await submitYoutubeUrl(
         url,
         {
@@ -1386,7 +1422,15 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 setAvailableMinutes(total)
               }).catch(() => {})
             try {
-              trackEvent('job_completed', { job_id: response.jobId, tool_type: 'youtube-to-transcript', processing_time_ms: processingMs })
+              trackEvent('job_completed', { job_id: response.jobId, tool_type: 'youtube-to-transcript', processing_time_ms: processingMs, ...getFunnelProps('youtube_url') })
+              const nextJobCount = (Number(localStorage.getItem(JOB_COMPLETED_COUNT_KEY) || '0') || 0) + 1
+              localStorage.setItem(JOB_COMPLETED_COUNT_KEY, String(nextJobCount))
+              const firstOutputKey = `${FIRST_OUTPUT_SEEN_KEY_PREFIX}:${localStorage.getItem('userId') || 'anon'}`
+              if (localStorage.getItem(firstOutputKey) !== '1') {
+                trackEvent('first_output_seen', { ...getFunnelProps('result_panel'), job_count: nextJobCount })
+                trackAppEvent('first_output_seen', { ...getFunnelProps('result_panel'), job_count: nextJobCount })
+                localStorage.setItem(firstOutputKey, '1')
+              }
               trackEvent('processing_completed', { tool: 'video-to-transcript', source: 'youtube' })
               // texJobCompleted(processingMs, 'video-to-transcript')
               setLastProcessingMs(processingMs)

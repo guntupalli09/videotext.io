@@ -1,6 +1,8 @@
 import { prisma } from '../db'
 import { createMagicLinkToken } from '../routes/auth'
 import { createRedisClient } from '../utils/redis'
+import { getLogger } from '../lib/logger'
+import { captureFunnelEvent } from '../utils/funnelEvents'
 
 const redis = createRedisClient('client')
 
@@ -142,40 +144,45 @@ export async function runOnboardingEmailSequence(): Promise<void> {
     if (jobCount >= 2) continue
 
     const hours = (now - user.createdAt.getTime()) / (60 * 60 * 1000)
-    const stagesToRun = debugOnboarding ? STAGES : STAGES.filter((stage) => isUserInStage(hours, stage))
-    if (stagesToRun.length === 0) continue
+    const day = getSequenceDay(hours)
+    if (day == null) continue
 
-    for (const stage of stagesToRun) {
-      stageCandidates[stage] += 1
+    const lockKey = `onboarding:${user.id}:day-${day}`
+    const lock = await redis.set(lockKey, '1', 'EX', 45 * 24 * 60 * 60, 'NX')
+    if (lock !== 'OK') continue
 
-      const lockKey = STAGE_CONFIG[stage].idempotencyKey(user.id)
-      const lock = await redis.set(lockKey, '1', 'EX', 45 * 24 * 60 * 60, 'NX')
-      if (lock !== 'OK') continue
+    const token = await createMagicLinkToken(user.id)
+    const ctaUrl = `${baseUrl}/magic-login?token=${encodeURIComponent(token)}&next=/video-to-transcript`
+    const html = onboardingHtml(day, ctaUrl)
 
-      const token = await createMagicLinkToken(user.id)
-      const ctaUrl = `${baseUrl}/magic-login?token=${encodeURIComponent(token)}&next=/video-to-transcript`
-      const html = onboardingHtml(stage, ctaUrl)
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
+      body: JSON.stringify({ from: fromEmail, to: [user.email], subject: TEMPLATE[day].subject, html }),
+      signal: AbortSignal.timeout(8_000),
+    })
 
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
-        body: JSON.stringify({ from: fromEmail, to: [user.email], subject: STAGE_CONFIG[stage].subject, html }),
-        signal: AbortSignal.timeout(8_000),
-      })
-
-      if (res.ok) {
-        sent += 1
-        stageSent[stage] += 1
-      } else {
-        const body = await res.text().catch(() => '')
-        log.warn({ msg: 'Onboarding email send failed', status: res.status, email: user.email, stage, body })
+    if (res.ok) {
+      sent += 1
+      if (day === 0) {
+        captureFunnelEvent({
+          eventName: 'activation_wizard_shown',
+          userId: user.id,
+          source: 'onboarding_email_cron',
+          plan: 'free',
+          metadata: { sequence_day: day },
+        }).catch(() => {})
       }
+    } else {
+      const body = await res.text().catch(() => '')
+      log.warn({ msg: 'Onboarding email send failed', status: res.status, email: user.email, sequenceDay: day, body })
     }
     await redis.set(key, '1', 'EX', 60 * 60 * 24 * 7)
     sent += 1
   }
 
-  log.info('[ONBOARDING]', {
+  log.info({
+    msg: 'Onboarding debug',
     totalUsers: users.length,
     eligible: eligibleUsers.length,
     debugOnboarding,

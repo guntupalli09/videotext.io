@@ -100,6 +100,7 @@ export type AnalyticsEvent =
   | 'login_failed'                 // props: { error }
   | 'signup_started'
   | 'signup_completed'             // account created
+  | 'activation_wizard_shown'
   | 'forgot_password_requested'
   | 'magic_login_completed'
   | 'magic_login_failed'           // props: { error }
@@ -141,6 +142,9 @@ export type AnalyticsEvent =
   | 'activation_wizard_cta_clicked' // first-session activation card CTA clicked
   // Engagement
   | 'result_page_time_spent'       // time before first action; props: { tool, seconds, action }
+  | 'first_output_seen'
+  | 'upgrade_prompt_seen'
+  | 'checkout_started'
 
 export function trackEvent(event: AnalyticsEvent, props?: Record<string, unknown>): void {
   if (import.meta.env.DEV) {

@@ -64,6 +64,7 @@ import {
   trackJobTimedOut,
   trackFirstPaidJobCompleted,
 } from '../utils/analytics'
+import { captureFunnelEvent } from '../utils/funnelEvents'
 import {
   updateJobStarted,
   updateJobCompleted,
@@ -2421,6 +2422,18 @@ async function processJob(job: import('bull').Job<JobData>) {
           user.lastActiveAt = new Date()
           await saveUser(user)
         }
+        captureFunnelEvent({
+          eventName: 'job_completed',
+          userId: data.userId,
+          source: data.toolType,
+          metadata: { job_id: String(jobId), processing_ms: totalJobMs },
+        }).catch(() => {})
+        captureFunnelEvent({
+          eventName: 'first_output_seen',
+          userId: data.userId,
+          source: data.toolType,
+          metadata: { job_id: String(jobId) },
+        }).catch(() => {})
       }
     } catch {
       // non-blocking

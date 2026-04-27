@@ -216,32 +216,18 @@ export interface DashboardData {
   toolPerf: DashboardToolPerf[]
   costMetrics: DashboardCostMetrics | null
   youtubeResolution?: DashboardYoutubeResolution
-  growth?: {
-    kpiTargets: {
-      activationRatePct: { baseline: number; target: number }
-      activatedUpgradeCtrPct: { target: number }
-      paidConversionPct: { baseline: number; target: number }
-    }
-    latest: {
-      activationRatePct: number
-      activatedUpgradeCtrPct: number
-      paidConversionPct: number
-      windowDays: number
-    }
-    founderDailyReport: {
-      date: string
-      newFreeSignups: number
-      usersIn3To6hWindow: number
-      firstOutputsCompleted: number
-      upgradeClicks: number
-      paidConversions: number
-    }
-    cohortComparison: {
-      releaseDate: string
-      day7: { beforePct: number; afterPct: number; beforeCount: number; afterCount: number }
-      day14: { beforePct: number; afterPct: number; beforeCount: number; afterCount: number }
-    }
-  }
+  funnelByCohort?: {
+    cohortDate: string
+    signupCompleted: number
+    activationWizardShown: number
+    uploadStarted: number
+    jobCompleted: number
+    firstOutputSeen: number
+    upgradePromptSeen: number
+    upgradeClicked: number
+    checkoutStarted: number
+    paymentCompleted: number
+  }[]
 }
 
 // ── API Credits types ─────────────────────────────────────────────────────────

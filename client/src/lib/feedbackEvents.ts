@@ -18,8 +18,6 @@ export type AppEventName =
   | 'result_viewed'
   | 'export_clicked'
   | 'session_returned'
-  | 'upgrade_clicked'
-  | 'activation_wizard_completed'
   | 'first_output_seen'
 
 export type TriggerType = 'result' | 'export' | 'dropoff' | 'pmf' | 'competitor'

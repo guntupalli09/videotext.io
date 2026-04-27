@@ -469,7 +469,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
       toolPerf,
       costMetrics,
       youtubeResolution,
-      growthMetrics,
+      funnelByCohort,
     ] = await Promise.all([
       prisma.dailyMetrics.findFirst({ orderBy: { date: 'desc' } }),
       prisma.monthlyMetrics.findMany({ orderBy: { monthStart: 'desc' }, take: 12 }),
@@ -642,7 +642,39 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
           AND "whisperCostMicros" IS NOT NULL
       `,
       getYoutubeResolutionMetrics(fileQueue.client),
-      getGrowthMetrics(releaseDate),
+      prisma.$queryRaw<{
+        cohortDate: Date
+        signupCompleted: bigint
+        activationWizardShown: bigint
+        uploadStarted: bigint
+        jobCompleted: bigint
+        firstOutputSeen: bigint
+        upgradePromptSeen: bigint
+        upgradeClicked: bigint
+        checkoutStarted: bigint
+        paymentCompleted: bigint
+      }[]>`
+        WITH cohorts AS (
+          SELECT id, date_trunc('week', "createdAt")::date AS "cohortDate"
+          FROM "User"
+          WHERE "createdAt" >= ${new Date(Date.now() - 180 * 24 * 60 * 60 * 1000)}
+        )
+        SELECT
+          c."cohortDate",
+          COUNT(*)::bigint AS "signupCompleted",
+          COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM "EventLog" e WHERE e."userId" = c.id AND e."eventName" = 'activation_wizard_shown'))::bigint AS "activationWizardShown",
+          COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM "EventLog" e WHERE e."userId" = c.id AND e."eventName" = 'upload_started'))::bigint AS "uploadStarted",
+          COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM "EventLog" e WHERE e."userId" = c.id AND e."eventName" = 'job_completed'))::bigint AS "jobCompleted",
+          COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM "EventLog" e WHERE e."userId" = c.id AND e."eventName" = 'first_output_seen'))::bigint AS "firstOutputSeen",
+          COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM "EventLog" e WHERE e."userId" = c.id AND e."eventName" = 'upgrade_prompt_seen'))::bigint AS "upgradePromptSeen",
+          COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM "EventLog" e WHERE e."userId" = c.id AND e."eventName" = 'upgrade_clicked'))::bigint AS "upgradeClicked",
+          COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM "EventLog" e WHERE e."userId" = c.id AND e."eventName" = 'checkout_started'))::bigint AS "checkoutStarted",
+          COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM "EventLog" e WHERE e."userId" = c.id AND e."eventName" = 'payment_completed'))::bigint AS "paymentCompleted"
+        FROM cohorts c
+        GROUP BY c."cohortDate"
+        ORDER BY c."cohortDate" DESC
+        LIMIT 26
+      `,
     ])
 
     let snapshot: Record<string, unknown>
@@ -811,7 +843,18 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
         }
       })(),
       youtubeResolution,
-      growth: growthMetrics,
+      funnelByCohort: (funnelByCohort ?? []).map((row) => ({
+        cohortDate: row.cohortDate.toISOString(),
+        signupCompleted: Number(row.signupCompleted),
+        activationWizardShown: Number(row.activationWizardShown),
+        uploadStarted: Number(row.uploadStarted),
+        jobCompleted: Number(row.jobCompleted),
+        firstOutputSeen: Number(row.firstOutputSeen),
+        upgradePromptSeen: Number(row.upgradePromptSeen),
+        upgradeClicked: Number(row.upgradeClicked),
+        checkoutStarted: Number(row.checkoutStarted),
+        paymentCompleted: Number(row.paymentCompleted),
+      })),
     }
     cachedDashboard = response
     cacheTimestamp = Date.now()

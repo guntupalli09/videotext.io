@@ -47,6 +47,13 @@ export default function Pricing() {
 
   const isPaidPlan = currentPlan === 'basic' || currentPlan === 'pro' || currentPlan === 'agency' || currentPlan === 'founding_workflow' || currentPlan === 'business'
   const isCurrentPlan = (plan: string) => (currentPlan || 'free').toLowerCase() === plan.toLowerCase()
+  const signupStartedAt = (() => {
+    try { return localStorage.getItem('videotext:signup_started_at') } catch { return null }
+  })()
+  const hoursSinceSignup = signupStartedAt ? Math.max(0, Math.round((Date.now() - new Date(signupStartedAt).getTime()) / 36e5)) : null
+  const jobCount = (() => {
+    try { return Number(localStorage.getItem('videotext:job_completed_count') || '0') || 0 } catch { return 0 }
+  })()
 
   async function handleManageSubscription() {
     if (!isPaidPlan) return
@@ -69,11 +76,30 @@ export default function Pricing() {
     // For anonymous users the server omits customer_email so Stripe collects it.
     setDirectCheckoutLoading(true)
     try {
+      trackEvent('upgrade_clicked', {
+        plan,
+        source: 'pricing_page',
+        job_count: jobCount,
+        ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
+      })
+      trackEvent('checkout_started', {
+        plan,
+        source: 'pricing_page',
+        job_count: jobCount,
+        ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
+      })
       const { url } = await createCheckoutSession({
         mode: 'subscription', plan, annual: isAnnual,
         returnToPath: '/pricing', frontendOrigin: window.location.origin,
       })
-      trackEvent('payment_completed', { type: 'subscription_checkout_started', plan, annual: isAnnual })
+      trackEvent('payment_completed', {
+        type: 'subscription_checkout_started',
+        plan,
+        source: 'pricing_page',
+        annual: isAnnual,
+        job_count: jobCount,
+        ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
+      })
       window.location.href = url
     } catch (e: any) {
       const msg: string = e.message || ''

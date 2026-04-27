@@ -22,6 +22,7 @@ import {
   trackSubscriptionRenewed,
   trackPaymentFailed,
 } from '../utils/analytics'
+import { captureFunnelEvent } from '../utils/funnelEvents'
 
 const log = getLogger('api')
 
@@ -324,6 +325,13 @@ async function handleInvoicePaymentSucceeded(
 
   user.updatedAt = new Date()
   await saveUser(user)
+  captureFunnelEvent({
+    eventName: 'payment_completed',
+    userId: user.id,
+    source: 'stripe_invoice_payment_succeeded',
+    plan: activePlan ?? user.plan,
+    metadata: { invoice_id: invoice.id },
+  }).catch(() => {})
 
   log.info({
     msg: 'stripe: invoice.payment_succeeded processed',
