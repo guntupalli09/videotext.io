@@ -19,69 +19,6 @@ export default function Footer() {
             <p className="text-sm text-gray-300">
               Turn speech into text: transcripts, subtitles, translation. For creators & teams. We don’t store your data.
             </p>
-
-            {/* LaunchBoosts Badge */}
-            <a
-              href="https://launchboosts.com/project/videotext"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex mt-4"
-              aria-label="Featured on LaunchBoosts"
-            >
-              <img
-                src="https://launchboosts.com/badges/featured-dark.svg"
-                alt="Featured on LaunchBoosts"
-                width={180}
-                height={54}
-              />
-            </a>
-
-            {/* IndieHunt Badge */}
-            <a
-              href="https://indiehunt.io/project/videotext"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex mt-3"
-              aria-label="Featured on IndieHunt"
-            >
-              <img
-                src="https://indiehunt.io/badges/indiehunt-badge-dark.svg"
-                alt="Featured on IndieHunt"
-                width={265}
-                height={58}
-              />
-            </a>
-
-            {/* Fazier Badge */}
-            <a
-              href="https://fazier.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex mt-3"
-              aria-label="Fazier badge"
-            >
-              <img
-                src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light"
-                alt="Fazier badge"
-                width={120}
-              />
-            </a>
-
-            {/* StartupHub.ai Badge */}
-            <a
-              href="https://www.startuphub.ai/startups/videotext"
-              target="_blank"
-              rel="dofollow"
-              className="inline-flex mt-3"
-              aria-label="Featured on StartupHub.ai"
-            >
-              <img
-                src="https://www.startuphub.ai/api/badge/e603447c-ae34-4126-93b9-46056d79719b?skin=classic&theme=dark"
-                alt="Featured on StartupHub.ai"
-                width={180}
-                height={50}
-              />
-            </a>
           </div>
 
           {/* Links */}
@@ -152,6 +89,84 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-gray-800 text-sm text-center">
           <p>&copy; {new Date().getFullYear()} VideoText. All rights reserved.</p>
+        </div>
+
+        {/* Badges */}
+        <div className="mt-8 pt-8 border-t border-gray-800">
+          <div className="flex flex-wrap gap-4 justify-center items-center">
+            {/* LaunchBoosts Badge */}
+            <a
+              href="https://launchboosts.com/project/videotext"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Featured on LaunchBoosts"
+            >
+              <img
+                src="https://launchboosts.com/badges/featured-dark.svg"
+                alt="Featured on LaunchBoosts"
+                width={180}
+                height={54}
+              />
+            </a>
+
+            {/* IndieHunt Badge */}
+            <a
+              href="https://indiehunt.io/project/videotext"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Featured on IndieHunt"
+            >
+              <img
+                src="https://indiehunt.io/badges/indiehunt-badge-dark.svg"
+                alt="Featured on IndieHunt"
+                width={265}
+                height={58}
+              />
+            </a>
+
+            {/* Fazier Badge */}
+            <a
+              href="https://fazier.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Fazier badge"
+            >
+              <img
+                src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light"
+                alt="Fazier badge"
+                width={120}
+              />
+            </a>
+
+            {/* StartupHub.ai Badge */}
+            <a
+              href="https://www.startuphub.ai/startups/videotext"
+              target="_blank"
+              rel="dofollow"
+              aria-label="Featured on StartupHub.ai"
+            >
+              <img
+                src="https://www.startuphub.ai/api/badge/e603447c-ae34-4126-93b9-46056d79719b?skin=classic&theme=dark"
+                alt="Featured on StartupHub.ai"
+                width={180}
+                height={50}
+              />
+            </a>
+
+            {/* Better Launch Badge */}
+            <a
+              href="https://www.betterlaunch.co"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Featured on Better Launch"
+            >
+              <img
+                src="https://www.betterlaunch.co/badge-dark.svg"
+                alt="Featured on Better Launch"
+                width={200}
+              />
+            </a>
+          </div>
         </div>
       </div>
     </footer>

@@ -38,7 +38,10 @@ export async function insertJobRecord(params: InsertJobParams): Promise<void> {
 export async function updateJobStarted(jobId: string): Promise<void> {
   try {
     await prisma.job.updateMany({
-      where: { id: jobId },
+      where: {
+        id: jobId,
+        status: { in: ['queued', 'processing'] },
+      },
       data: { status: 'processing', startedAt: new Date() },
     })
   } catch (err) {
@@ -70,10 +73,14 @@ export async function updateJobFailed(
 ): Promise<void> {
   try {
     await prisma.job.updateMany({
-      where: { id: jobId },
+      where: {
+        id: jobId,
+        status: { not: 'completed' },
+      },
       data: {
         status: 'failed',
         failureReason: failureReason ?? null,
+        completedAt: new Date(),
       },
     })
   } catch (err) {

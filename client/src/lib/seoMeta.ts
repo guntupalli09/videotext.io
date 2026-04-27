@@ -89,6 +89,11 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'See real transcript samples, subtitle previews, and workflow outputs (summary, chapters, exports) so you know exactly what VideoText generates.',
   },
+  '/preview/icp-results-studio': {
+    title: 'ICP Results Studio Preview | VideoText',
+    description:
+      'Preview a clean post-transcript results UX for context-aware outputs, multi-asset generation, collaboration comments, and drop-anything ingestion.',
+  },
   '/blog/how-to-transcribe-zoom-recording': {
     title: 'How to Transcribe a Zoom Recording: Step-by-Step Guide | VideoText',
     description:
@@ -430,6 +435,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/terms': [{ name: 'Home', path: '/' }, { name: 'Terms', path: '/terms' }],
   '/about': [{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }],
   '/samples': [{ name: 'Home', path: '/' }, { name: 'Samples', path: '/samples' }],
+  '/preview/icp-results-studio': [{ name: 'Home', path: '/' }, { name: 'ICP Results Studio', path: '/preview/icp-results-studio' }],
   '/compare': [{ name: 'Home', path: '/' }, { name: 'Compare', path: '/compare' }],
   '/descript-alternative': [{ name: 'Home', path: '/' }, { name: 'Descript Alternative', path: '/descript-alternative' }],
   '/otter-ai-alternative': [{ name: 'Home', path: '/' }, { name: 'Otter.ai Alternative', path: '/otter-ai-alternative' }],
