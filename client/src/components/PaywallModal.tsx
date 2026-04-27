@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { trackEvent } from '../lib/analytics'
+import { trackAppEvent } from '../lib/feedbackEvents'
 
 export type PaywallReason =
   | 'FREE_DAILY_LIMIT_REACHED'
@@ -113,7 +114,11 @@ export default function PaywallModal({ isOpen, onClose, reason, onUpgrade }: Pay
 
           <Link
             to="/pricing"
-            onClick={() => { try { trackEvent('upgrade_clicked', { source: 'paywall_modal', reason }) } catch { /* non-blocking */ }; (onUpgrade ?? onClose)?.() }}
+            onClick={() => {
+              try { trackEvent('upgrade_clicked', { source: 'paywall_modal', reason }) } catch { /* non-blocking */ }
+              trackAppEvent('upgrade_clicked', { source: 'paywall_modal', reason })
+              ;(onUpgrade ?? onClose)?.()
+            }}
             className="block w-full py-3.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm text-center transition-colors shadow-sm"
           >
             {cta}

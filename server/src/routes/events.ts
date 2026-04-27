@@ -1,7 +1,7 @@
 /**
  * POST /api/events — Fire-and-forget behavioral event tracking.
  * Records upload_started, transcription_completed, result_viewed,
- * export_clicked, session_returned for funnel analytics and feedback triggers.
+ * export_clicked, session_returned, upgrade_clicked and activation events.
  * No auth required. Anonymous sessions accepted via sessionId.
  */
 
