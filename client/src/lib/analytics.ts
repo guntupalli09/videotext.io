@@ -138,6 +138,8 @@ export type AnalyticsEvent =
   // Feature adoption
   | 'subtitle_editor_opened'       // subtitle editor panel opened; props: { tool }
   | 'batch_job_created'            // batch upload submitted; props: { tool, file_count }
+  | 'activation_wizard_shown'     // first-session activation card shown
+  | 'activation_wizard_cta_clicked' // first-session activation card CTA clicked
   // Engagement
   | 'result_page_time_spent'       // time before first action; props: { tool, seconds, action }
   | 'first_output_seen'

@@ -1,11 +1,12 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Gem, Upload } from 'lucide-react'
+import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Gem, Upload, CheckCircle2 } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import UpgradeBanner from '../components/UpgradeBanner'
+import ActivationWizardCard from '../components/ActivationWizardCard'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import { isLoggedIn } from '../lib/auth'
 import { ToolLayout } from '../components/figma/ToolLayout'
@@ -60,6 +61,9 @@ import toast from 'react-hot-toast'
 // ─── Phase 1 – Derived Transcript Utilities (client-side only) ─────────────────
 const STOPWORDS = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'when', 'where', 'why', 'how'])
 
+const ACTIVATION_CARD_DISMISS_KEY = 'vt:first-activation-card-dismissed'
+
+
 /** Matches server `batchEnabled` (Pro, Business, Agency, founding_workflow — not Basic). */
 function batchUploadEligible(): boolean {
   if (typeof window === 'undefined') return false
@@ -92,6 +96,7 @@ export type VideoToTranscriptSeoProps = {
 }
 
 export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {}) {
+  const POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY = 'vt_post_success_monetization_panel_date'
   const { seoH1, seoIntro, faq = [], seoDeepContent, defaultInputMode = 'file' } = props
   const location = useLocation()
   const navigate = useNavigate()
@@ -184,11 +189,15 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   /** Timestamp of the last successful localStorage save — drives the "Saved" indicator. */
   const [editsSavedAt, setEditsSavedAt] = useState<number | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [showPostSuccessUpgrade, setShowPostSuccessUpgrade] = useState(false)
   const [showAuthGate, setShowAuthGate] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null)
   const [freeImportsRemaining, setFreeImportsRemaining] = useState<number | null>(null)
+  const [hasCompletedJobs, setHasCompletedJobs] = useState<boolean | null>(null)
+  const [activationCardDismissed, setActivationCardDismissed] = useState(false)
+  const activationWizardShownTrackedRef = useRef(false)
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
   const [isSummaryHydrating, setIsSummaryHydrating] = useState(false)
   const [isRehydrating, setIsRehydrating] = useState(false)
@@ -222,6 +231,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [audioVolume, setAudioVolume] = useState(1)
   const [audioMuted, setAudioMuted] = useState(false)
   const [audioSpeed, setAudioSpeed] = useState(1)
+  const [showPostSuccessMonetizationPanel, setShowPostSuccessMonetizationPanel] = useState(false)
   const syncScrubberFill = useCallback(() => {
     const el = scrubberRef.current
     if (!el) return
@@ -330,20 +340,29 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setFreeExportsUsed(0)
   }, [result?.downloadUrl])
 
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    setActivationCardDismissed(localStorage.getItem(ACTIVATION_CARD_DISMISS_KEY) === '1')
+  }, [])
+
   // Soft upgrade nudge: show remaining free imports before users hit the hard paywall.
   useEffect(() => {
     getCurrentUsage({ skipCache: true })
       .then((data) => {
         if (data.quotaType !== 'imports') {
           setFreeImportsRemaining(null)
+          setHasCompletedJobs(false)
           return
         }
         const limit = data.limit ?? 3
         const used = data.used ?? data.usage?.importCount ?? 0
+        setHasCompletedJobs(used > 0)
         setFreeImportsRemaining(Math.max(0, limit - used))
       })
       .catch(() => {
         setFreeImportsRemaining(null)
+        setHasCompletedJobs(null)
       })
   }, [])
 
@@ -1104,6 +1123,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               }
             }
             incrementUsage('video-to-transcript')
+            setHasCompletedJobs(true)
+            setActivationCardDismissed(true)
+            try {
+              localStorage.setItem(ACTIVATION_CARD_DISMISS_KEY, '1')
+            } catch {
+              // Ignore storage failures
+            }
             invalidateUsageCache()
             const refreshUsage = () => {
               getCurrentUsage({ skipCache: true })
@@ -1381,6 +1407,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               }
             }
             incrementUsage('video-to-transcript')
+            setHasCompletedJobs(true)
+            setActivationCardDismissed(true)
+            try {
+              localStorage.setItem(ACTIVATION_CARD_DISMISS_KEY, '1')
+            } catch {
+              // Ignore storage failures
+            }
             invalidateUsageCache()
             getCurrentUsage({ skipCache: true })
               .then((data) => {
@@ -1568,6 +1601,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setTranslationLanguage(null)
     setTranslatedCache({})
     setTranscriptView('original')
+    setShowPostSuccessUpgrade(false)
+    hasTrackedFirstOutputRef.current = false
     setBatchTranslateLanguage('')
     setBatchSpeakerDiarization(false)
     setBatchPrimaryLanguage('English')
@@ -1799,7 +1834,59 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }))
   }, [translationLanguage, translatedCache, result?.segments])
 
+
+  const isLoggedInUser = isLoggedIn()
+  const currentPlan = typeof window !== 'undefined' ? (localStorage.getItem('plan') || 'free').toLowerCase() : 'free'
+  const shouldShowActivationCard = isLoggedInUser && currentPlan === 'free' && hasCompletedJobs === false && !activationCardDismissed
+
+  useEffect(() => {
+    if (!shouldShowActivationCard || activationWizardShownTrackedRef.current) return
+    activationWizardShownTrackedRef.current = true
+    try {
+      trackEvent('activation_wizard_shown', { tool: 'video-to-transcript' })
+    } catch {
+      // non-blocking
+    }
+  }, [shouldShowActivationCard])
+
+  const handleActivationWizardCta = useCallback(() => {
+    try {
+      trackEvent('activation_wizard_cta_clicked', { tool: 'video-to-transcript' })
+    } catch {
+      // non-blocking
+    }
+    uploadZoneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (typeof window !== 'undefined') {
+      window.setTimeout(() => {
+        const fileInput = uploadZoneRef.current?.querySelector('input[type="file"]') as HTMLInputElement | null
+        if (!fileInput) return
+        fileInput.focus({ preventScroll: true })
+      }, 250)
+    }
+  }, [])
+
   const isPaidPlan = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+  const hasSeenFirstOutput = typeof window !== 'undefined' && localStorage.getItem('vt:first_output_seen') === '1'
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (status !== 'completed' || !result || isPaidPlan) {
+      setShowPostSuccessMonetizationPanel(false)
+      return
+    }
+    const today = new Date().toISOString().slice(0, 10)
+    const lastShownDate = localStorage.getItem(POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY)
+    if (lastShownDate === today) {
+      setShowPostSuccessMonetizationPanel(false)
+      return
+    }
+    setShowPostSuccessMonetizationPanel(true)
+    try {
+      localStorage.setItem(POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY, today)
+    } catch {
+      /* localStorage unavailable; non-blocking */
+    }
+  }, [status, result, isPaidPlan, POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY])
 
   // Track when the AI summary teaser is shown to a free user (fires once per completed job)
   useEffect(() => {
@@ -2023,6 +2110,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     <>
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" />
+        {!isPaidPlan && !hasSeenFirstOutput && (
+          <ActivationWizardCard completed={status === 'completed'} />
+        )}
         {freeImportsRemaining != null && freeImportsRemaining <= 1 && (
           <div className="mb-4 rounded-xl border border-amber-300/70 bg-amber-50/80 dark:border-amber-700/60 dark:bg-amber-950/25 px-4 py-3">
             <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">
@@ -2075,6 +2165,28 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     </p>
                   </div>
                 )}
+                {shouldShowActivationCard && (
+                  <div className="rounded-xl border border-emerald-300/70 dark:border-emerald-700/70 bg-emerald-50/80 dark:bg-emerald-950/25 px-4 py-4 sm:px-5 sm:py-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">Get your first transcript in under a minute</p>
+                        <ol className="mt-2 space-y-1.5 text-xs sm:text-sm text-emerald-800 dark:text-emerald-100/90">
+                          <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden />Step 1: Upload a video or paste URL</li>
+                          <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden />Step 2: Wait ~40s</li>
+                          <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden />Step 3: Download transcript/SRT</li>
+                        </ol>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleActivationWizardCta}
+                        className="shrink-0 rounded-lg bg-emerald-600 px-3 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-emerald-700 transition"
+                      >
+                        Start now
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="rounded-xl border border-violet-200/60 dark:border-violet-800/40 bg-gradient-to-br from-violet-50/40 to-purple-50/20 dark:from-violet-950/30 dark:to-purple-950/20 px-4 py-4 sm:px-6 sm:py-5">
                   <div className="flex flex-wrap gap-4 sm:gap-6 justify-center sm:justify-start">
                     <div className="flex flex-col items-start gap-1.5">
@@ -2786,6 +2898,34 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
         {!isBatchMode && status === 'completed' && result && (
           <>
+            {showPostSuccessUpgrade && !isPaidPlan && (
+              <div className="mb-4 rounded-xl border border-violet-300/70 bg-violet-50/80 dark:border-violet-700/60 dark:bg-violet-950/25 px-4 py-3">
+                <p className="text-sm font-semibold text-violet-900 dark:text-violet-300">
+                  First output complete 🎉 Next step: unlock faster repeats.
+                </p>
+                <p className="mt-1 text-xs text-violet-800 dark:text-violet-200/90">
+                  Upgrade CTR target for activated users is at least 20%.
+                  {' '}
+                  <Link
+                    to="/pricing"
+                    className="font-semibold underline underline-offset-2 hover:opacity-90"
+                    onClick={() => {
+                      trackAppEvent('upgrade_clicked', { source: 'post_success_upgrade_panel', plan: 'pro' })
+                      trackEvent('upgrade_clicked', { source: 'post_success_upgrade_panel', plan: 'pro' })
+                    }}
+                  >
+                    Compare plans
+                  </Link>
+                  <button
+                    type="button"
+                    className="ml-2 text-xs text-violet-700 dark:text-violet-300 underline"
+                    onClick={() => setShowPostSuccessUpgrade(false)}
+                  >
+                    Dismiss
+                  </button>
+                </p>
+              </div>
+            )}
             {/* ── Teaser preview card (non-logged-in) — first 10% of real content ── */}
             {showAuthGate && !isLoggedIn() && (() => {
               const fullText = displayTranscript || fullTranscript || transcriptPreview || ''
@@ -2876,6 +3016,28 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             className={`space-y-6 ${audioObjectUrl ? 'pb-24 sm:pb-28' : ''}`}
             hidden={showAuthGate && !isLoggedIn()}
           >
+            {showPostSuccessMonetizationPanel && (
+              <div className="rounded-2xl border border-violet-200/90 dark:border-violet-900/50 bg-violet-50/70 dark:bg-violet-950/20 px-5 py-4">
+                <p className="text-sm sm:text-[15px] font-semibold text-violet-900 dark:text-violet-100">
+                  You just generated transcript + subtitles + summary. Upgrade to keep this workflow uninterrupted.
+                </p>
+                <div className="mt-3 flex items-center gap-3">
+                  <Link
+                    to="/pricing"
+                    onClick={() => {
+                      trackEvent('upgrade_clicked', { source: 'post_first_success_panel', tool: 'video-to-transcript' })
+                      setShowPostSuccessMonetizationPanel(false)
+                    }}
+                    className="inline-flex items-center rounded-lg bg-violet-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-violet-700 transition-colors"
+                  >
+                    Upgrade now
+                  </Link>
+                  <p className="text-xs text-violet-700/90 dark:text-violet-300/90">
+                    Free plan includes watermark + daily cap.
+                  </p>
+                </div>
+              </div>
+            )}
             {/* Result header + primary actions */}
             <TranscriptResult
               fileName={

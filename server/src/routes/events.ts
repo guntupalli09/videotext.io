@@ -1,7 +1,7 @@
 /**
  * POST /api/events — Fire-and-forget behavioral event tracking.
  * Records upload_started, transcription_completed, result_viewed,
- * export_clicked, session_returned for funnel analytics and feedback triggers.
+ * export_clicked, session_returned, upgrade_clicked and activation events.
  * No auth required. Anonymous sessions accepted via sessionId.
  */
 
@@ -10,6 +10,7 @@ import rateLimit from 'express-rate-limit'
 import { Prisma } from '@prisma/client'
 import { prisma } from '../db'
 import { getEffectiveUserId } from '../utils/auth'
+import { recordUpgradeIntent } from '../models/UpgradeIntent'
 
 const router = express.Router()
 
@@ -67,6 +68,9 @@ router.post('/', eventsLimit, async (req: Request, res: Response) => {
     // Update UserMetrics asynchronously for authenticated users
     if (userId) {
       upsertUserMetrics(userId, eventName).catch(() => {})
+      if (eventName === 'upgrade_clicked') {
+        recordUpgradeIntent({ userId, source: 'upgrade_clicked' }).catch(() => {})
+      }
     }
 
     return res.status(201).json({ ok: true })
