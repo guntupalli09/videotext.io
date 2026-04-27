@@ -27,11 +27,11 @@ const TEMPLATE: Record<SequenceDay, { subject: string; body: string }> = {
   },
 }
 
-function getSequenceDay(daysSinceSignup: number): SequenceDay | null {
-  if (daysSinceSignup === 0) return 0
-  if (daysSinceSignup === 1) return 1
-  if (daysSinceSignup === 3) return 3
-  if (daysSinceSignup === 7) return 7
+function getSequenceDay(hoursSinceSignup: number): SequenceDay | null {
+  if (hoursSinceSignup < 24) return 0
+  if (hoursSinceSignup >= 24 && hoursSinceSignup < 48) return 1
+  if (hoursSinceSignup >= 72 && hoursSinceSignup < 96) return 3
+  if (hoursSinceSignup >= 168 && hoursSinceSignup < 192) return 7
   return null
 }
 
@@ -83,21 +83,41 @@ export async function runOnboardingEmailSequence(): Promise<void> {
       email: { not: { startsWith: 'demo-user-' }, contains: '@' },
     },
     select: { id: true, email: true, createdAt: true, usageThisMonth: true },
-    take: 1000,
     orderBy: { createdAt: 'desc' },
   })
 
+  const eligibleUsers = users.filter((user) => {
+    const usage = (user.usageThisMonth ?? {}) as { importCount?: number }
+    return Number(usage.importCount ?? 0) === 0
+  })
+  const day0Users = eligibleUsers.filter((u) => {
+    const hours = (now - u.createdAt.getTime()) / (60 * 60 * 1000)
+    return hours < 24
+  })
+  const day1Users = eligibleUsers.filter((u) => {
+    const hours = (now - u.createdAt.getTime()) / (60 * 60 * 1000)
+    return hours >= 24 && hours < 48
+  })
+  const day3Users = eligibleUsers.filter((u) => {
+    const hours = (now - u.createdAt.getTime()) / (60 * 60 * 1000)
+    return hours >= 72 && hours < 96
+  })
+  const day7Users = eligibleUsers.filter((u) => {
+    const hours = (now - u.createdAt.getTime()) / (60 * 60 * 1000)
+    return hours >= 168 && hours < 192
+  })
+
   let sent = 0
-  for (const user of users) {
+  for (const user of eligibleUsers) {
     const usage = (user.usageThisMonth ?? {}) as { importCount?: number }
     const importCount = Number(usage.importCount ?? 0)
     if (importCount > 0) continue // already activated
 
-    const daysSinceSignup = Math.floor((now - user.createdAt.getTime()) / (24 * 60 * 60 * 1000))
-    const day = getSequenceDay(daysSinceSignup)
+    const hours = (now - user.createdAt.getTime()) / (60 * 60 * 1000)
+    const day = getSequenceDay(hours)
     if (day == null) continue
 
-    const lockKey = `videotext:onboarding-sequence:${user.id}:day-${day}`
+    const lockKey = `onboarding:${user.id}:day-${day}`
     const lock = await redis.set(lockKey, '1', 'EX', 45 * 24 * 60 * 60, 'NX')
     if (lock !== 'OK') continue
 
@@ -120,12 +140,27 @@ export async function runOnboardingEmailSequence(): Promise<void> {
     }
   }
 
-  if (sent > 0) {
-    log.info({ msg: 'Onboarding sequence run complete', sent })
-  }
+  log.info('Onboarding debug', {
+    totalUsers: users.length,
+    eligible: eligibleUsers.length,
+    day0: day0Users.length,
+    day1: day1Users.length,
+    day3: day3Users.length,
+    day7: day7Users.length,
+    sent,
+  })
 }
 
 export function startOnboardingEmailCron(): void {
+  const enabled = process.env.ONBOARDING_EMAILS_ENABLED === 'true'
+  if (!enabled) {
+    log.info({ msg: 'Onboarding email cron disabled (set ONBOARDING_EMAILS_ENABLED=true to enable)' })
+    return
+  }
+
+  const intervalMinutes = Number(process.env.ONBOARDING_EMAILS_INTERVAL_MINUTES ?? '15')
+  const intervalMs = Math.max(5, Number.isFinite(intervalMinutes) ? intervalMinutes : 15) * 60 * 1000
+
   runOnboardingEmailSequence().catch((e) => {
     log.warn({ msg: 'Onboarding sequence initial run failed', error: (e as Error)?.message })
   })
@@ -134,5 +169,5 @@ export function startOnboardingEmailCron(): void {
     runOnboardingEmailSequence().catch((e) => {
       log.warn({ msg: 'Onboarding sequence cron run failed', error: (e as Error)?.message })
     })
-  }, 15 * 60 * 1000)
+  }, intervalMs)
 }
