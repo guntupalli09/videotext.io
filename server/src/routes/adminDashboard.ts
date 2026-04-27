@@ -221,10 +221,215 @@ adminDashboardRouter.post('/recompute', async (req: Request, res: Response): Pro
 const CACHE_TTL_MS = 30_000
 let cachedDashboard: Record<string, unknown> | null = null
 let cacheTimestamp = 0
+const KPI_TARGETS = {
+  activationRatePct: { baseline: 10, target: 25 },
+  activatedUpgradeCtrPct: { target: 20 },
+  paidConversionPct: { baseline: 3.1, target: 10 },
+} as const
 
 export function clearDashboardCache(): void {
   cachedDashboard = null
   cacheTimestamp = 0
+}
+
+function pct(num: number, den: number): number {
+  if (!Number.isFinite(num) || !Number.isFinite(den) || den <= 0) return 0
+  return Math.round((num / den) * 1000) / 10
+}
+
+async function getGrowthMetrics(releaseDate: Date): Promise<{
+  kpiTargets: typeof KPI_TARGETS
+  latest: { activationRatePct: number; activatedUpgradeCtrPct: number; paidConversionPct: number; windowDays: number }
+  founderDailyReport: {
+    date: string
+    newFreeSignups: number
+    usersIn3To6hWindow: number
+    firstOutputsCompleted: number
+    upgradeClicks: number
+    paidConversions: number
+  }
+  cohortComparison: {
+    releaseDate: string
+    day7: { beforePct: number; afterPct: number; beforeCount: number; afterCount: number }
+    day14: { beforePct: number; afterPct: number; beforeCount: number; afterCount: number }
+  }
+}> {
+  const now = new Date()
+  const last14Days = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000)
+  const startOfTodayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+  const endOfTodayUtc = new Date(startOfTodayUtc.getTime() + 24 * 60 * 60 * 1000)
+  const threeHoursAgo = new Date(now.getTime() - 3 * 60 * 60 * 1000)
+  const sixHoursAgo = new Date(now.getTime() - 6 * 60 * 60 * 1000)
+
+  const [activationWindow, activatedUpgrade, paidWindow, reportRows, cohortRows] = await Promise.all([
+    prisma.$queryRaw<[{ total: bigint; activated: bigint }]>`
+      SELECT
+        COUNT(*)::bigint as total,
+        COUNT(*) FILTER (
+          WHERE EXISTS (
+            SELECT 1 FROM "Job" j
+            WHERE j."userId" = u.id
+              AND j.status = 'completed'
+              AND j."completedAt" IS NOT NULL
+              AND j."completedAt" <= u."createdAt" + INTERVAL '24 hours'
+          )
+        )::bigint as activated
+      FROM "User" u
+      WHERE u.plan = 'free' AND u."createdAt" >= ${last14Days}
+    `,
+    prisma.$queryRaw<[{ activatedUsers: bigint; upgradeClickUsers: bigint }]>`
+      WITH activated AS (
+        SELECT u.id
+        FROM "User" u
+        WHERE u.plan = 'free'
+          AND u."createdAt" >= ${last14Days}
+          AND EXISTS (
+            SELECT 1 FROM "Job" j
+            WHERE j."userId" = u.id
+              AND j.status = 'completed'
+              AND j."completedAt" IS NOT NULL
+              AND j."completedAt" <= u."createdAt" + INTERVAL '24 hours'
+          )
+      )
+      SELECT
+        COUNT(*)::bigint as "activatedUsers",
+        COUNT(*) FILTER (
+          WHERE EXISTS (
+            SELECT 1 FROM "EventLog" e
+            WHERE e."userId" = a.id
+              AND e."eventName" = 'upgrade_clicked'
+              AND e."createdAt" >= ${last14Days}
+          )
+        )::bigint as "upgradeClickUsers"
+      FROM activated a
+    `,
+    prisma.$queryRaw<[{ total: bigint; paid: bigint }]>`
+      SELECT
+        COUNT(*)::bigint as total,
+        COUNT(*) FILTER (WHERE u.plan <> 'free')::bigint as paid
+      FROM "User" u
+      WHERE u."createdAt" >= ${last14Days}
+    `,
+    prisma.$queryRaw<[{
+      newFreeSignups: bigint
+      usersIn3To6hWindow: bigint
+      firstOutputsCompleted: bigint
+      upgradeClicks: bigint
+      paidConversions: bigint
+    }]>`
+      SELECT
+        (SELECT COUNT(*)::bigint FROM "User" u WHERE u.plan = 'free' AND u."createdAt" >= ${startOfTodayUtc} AND u."createdAt" < ${endOfTodayUtc}) as "newFreeSignups",
+        (SELECT COUNT(*)::bigint FROM "User" u
+          WHERE u.plan = 'free'
+            AND u."createdAt" >= ${sixHoursAgo}
+            AND u."createdAt" < ${threeHoursAgo}
+            AND COALESCE((u."usageThisMonth"->>'importCount')::int, 0) = 0) as "usersIn3To6hWindow",
+        (SELECT COUNT(*)::bigint
+          FROM (
+            SELECT j."userId", MIN(j."completedAt") as first_completed_at
+            FROM "Job" j
+            WHERE j.status = 'completed' AND j."completedAt" IS NOT NULL
+            GROUP BY j."userId"
+          ) fc
+          WHERE fc.first_completed_at >= ${startOfTodayUtc} AND fc.first_completed_at < ${endOfTodayUtc}) as "firstOutputsCompleted",
+        (SELECT COUNT(*)::bigint FROM "EventLog" e
+          WHERE e."eventName" = 'upgrade_clicked'
+            AND e."createdAt" >= ${startOfTodayUtc} AND e."createdAt" < ${endOfTodayUtc}) as "upgradeClicks",
+        (SELECT COUNT(*)::bigint FROM "User" u
+          WHERE u.plan <> 'free' AND u."updatedAt" >= ${startOfTodayUtc} AND u."updatedAt" < ${endOfTodayUtc}) as "paidConversions"
+    `,
+    prisma.$queryRaw<[{ before7: bigint; after7: bigint; before14: bigint; after14: bigint; beforeCount: bigint; afterCount: bigint }]>`
+      WITH cohorts AS (
+        SELECT
+          u.id,
+          u."createdAt",
+          CASE WHEN u."createdAt" < ${releaseDate} THEN 'before' ELSE 'after' END as period
+        FROM "User" u
+        WHERE u."createdAt" >= ${new Date(releaseDate.getTime() - 14 * 24 * 60 * 60 * 1000)}
+          AND u."createdAt" < ${new Date(releaseDate.getTime() + 14 * 24 * 60 * 60 * 1000)}
+      )
+      SELECT
+        COUNT(*) FILTER (
+          WHERE period = 'before' AND EXISTS (
+            SELECT 1 FROM "SubscriptionSnapshot" s
+            WHERE s."userId" = c.id
+              AND s.status = 'active'
+              AND s."periodStart" <= c."createdAt" + INTERVAL '7 days'
+          )
+        )::bigint as before7,
+        COUNT(*) FILTER (
+          WHERE period = 'after' AND EXISTS (
+            SELECT 1 FROM "SubscriptionSnapshot" s
+            WHERE s."userId" = c.id
+              AND s.status = 'active'
+              AND s."periodStart" <= c."createdAt" + INTERVAL '7 days'
+          )
+        )::bigint as after7,
+        COUNT(*) FILTER (
+          WHERE period = 'before' AND EXISTS (
+            SELECT 1 FROM "SubscriptionSnapshot" s
+            WHERE s."userId" = c.id
+              AND s.status = 'active'
+              AND s."periodStart" <= c."createdAt" + INTERVAL '14 days'
+          )
+        )::bigint as before14,
+        COUNT(*) FILTER (
+          WHERE period = 'after' AND EXISTS (
+            SELECT 1 FROM "SubscriptionSnapshot" s
+            WHERE s."userId" = c.id
+              AND s.status = 'active'
+              AND s."periodStart" <= c."createdAt" + INTERVAL '14 days'
+          )
+        )::bigint as after14,
+        COUNT(*) FILTER (WHERE period = 'before')::bigint as "beforeCount",
+        COUNT(*) FILTER (WHERE period = 'after')::bigint as "afterCount"
+      FROM cohorts c
+    `,
+  ])
+
+  const totalActivation = Number(activationWindow?.[0]?.total ?? 0)
+  const activatedUsers = Number(activationWindow?.[0]?.activated ?? 0)
+  const activatedDen = Number(activatedUpgrade?.[0]?.activatedUsers ?? 0)
+  const upgradeClickUsers = Number(activatedUpgrade?.[0]?.upgradeClickUsers ?? 0)
+  const paidTotal = Number(paidWindow?.[0]?.total ?? 0)
+  const paidConverted = Number(paidWindow?.[0]?.paid ?? 0)
+  const report = reportRows?.[0]
+  const cohort = cohortRows?.[0]
+  const beforeCount = Number(cohort?.beforeCount ?? 0)
+  const afterCount = Number(cohort?.afterCount ?? 0)
+
+  return {
+    kpiTargets: KPI_TARGETS,
+    latest: {
+      activationRatePct: pct(activatedUsers, totalActivation),
+      activatedUpgradeCtrPct: pct(upgradeClickUsers, activatedDen),
+      paidConversionPct: pct(paidConverted, paidTotal),
+      windowDays: 14,
+    },
+    founderDailyReport: {
+      date: startOfTodayUtc.toISOString(),
+      newFreeSignups: Number(report?.newFreeSignups ?? 0),
+      usersIn3To6hWindow: Number(report?.usersIn3To6hWindow ?? 0),
+      firstOutputsCompleted: Number(report?.firstOutputsCompleted ?? 0),
+      upgradeClicks: Number(report?.upgradeClicks ?? 0),
+      paidConversions: Number(report?.paidConversions ?? 0),
+    },
+    cohortComparison: {
+      releaseDate: releaseDate.toISOString(),
+      day7: {
+        beforePct: pct(Number(cohort?.before7 ?? 0), beforeCount),
+        afterPct: pct(Number(cohort?.after7 ?? 0), afterCount),
+        beforeCount,
+        afterCount,
+      },
+      day14: {
+        beforePct: pct(Number(cohort?.before14 ?? 0), beforeCount),
+        afterPct: pct(Number(cohort?.after14 ?? 0), afterCount),
+        beforeCount,
+        afterCount,
+      },
+    },
+  }
 }
 
 adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Promise<Response> => {
@@ -240,6 +445,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     const thirtyOneDaysAgo = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000)
+    const releaseDate = new Date(process.env.ACTIVATION_RELEASE_DATE || '2026-04-27T00:00:00.000Z')
 
     const [
       latestDaily,
@@ -263,6 +469,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
       toolPerf,
       costMetrics,
       youtubeResolution,
+      growthMetrics,
     ] = await Promise.all([
       prisma.dailyMetrics.findFirst({ orderBy: { date: 'desc' } }),
       prisma.monthlyMetrics.findMany({ orderBy: { monthStart: 'desc' }, take: 12 }),
@@ -435,6 +642,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
           AND "whisperCostMicros" IS NOT NULL
       `,
       getYoutubeResolutionMetrics(fileQueue.client),
+      getGrowthMetrics(releaseDate),
     ])
 
     let snapshot: Record<string, unknown>
@@ -603,6 +811,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
         }
       })(),
       youtubeResolution,
+      growth: growthMetrics,
     }
     cachedDashboard = response
     cacheTimestamp = Date.now()
