@@ -56,6 +56,7 @@ import {
   exportToPdf,
   exportToDocx,
   exportToDocxThreeColumn,
+  exportToPdfThreeColumn,
 } from '../lib/transcriptExport'
 import toast from 'react-hot-toast'
 // import { useWorkflow } from '../contexts/WorkflowContext'
@@ -181,6 +182,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [exportFormats, setExportFormats] = useState<('txt' | 'json' | 'docx' | 'pdf')[]>(['txt'])
   const [timestampMode, setTimestampMode] = useState<TimestampMode>('per-speaker')
   const [verbatimMode, setVerbatimMode] = useState<VerbatimMode>('full')
+  const [intervalSec, setIntervalSec] = useState(30)
   // Text-only translation panel state
   const [textTranslateOpen, setTextTranslateOpen] = useState(false)
   const [textTranslateInput, setTextTranslateInput] = useState('')
@@ -356,7 +358,24 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   useEffect(() => {
     if (typeof window === 'undefined') return
     setActivationCardDismissed(localStorage.getItem(ACTIVATION_CARD_DISMISS_KEY) === '1')
+    // Restore user output-format preferences
+    const savedTs = localStorage.getItem('vt:timestampMode') as TimestampMode | null
+    if (savedTs && ['per-speaker', 'per-segment', 'per-interval', 'none'].includes(savedTs)) {
+      setTimestampMode(savedTs)
+    }
+    const savedVb = localStorage.getItem('vt:verbatimMode') as VerbatimMode | null
+    if (savedVb && ['full', 'clean'].includes(savedVb)) setVerbatimMode(savedVb)
+    const savedIs = localStorage.getItem('vt:intervalSec')
+    if (savedIs) {
+      const n = parseInt(savedIs, 10)
+      if (Number.isFinite(n) && n > 0) setIntervalSec(n)
+    }
   }, [])
+
+  // Persist output-format preferences whenever they change
+  useEffect(() => { try { localStorage.setItem('vt:timestampMode', timestampMode) } catch { /* ignore */ } }, [timestampMode])
+  useEffect(() => { try { localStorage.setItem('vt:verbatimMode', verbatimMode) } catch { /* ignore */ } }, [verbatimMode])
+  useEffect(() => { try { localStorage.setItem('vt:intervalSec', String(intervalSec)) } catch { /* ignore */ } }, [intervalSec])
 
   // Soft upgrade nudge: show remaining free imports before users hit the hard paywall.
   useEffect(() => {
@@ -1910,7 +1929,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   /** Single TXT download — speaker-aware, uses edited segments. Zero server round-trip. */
   const handleQuickTxtExport = useCallback(() => {
     const structured = editableSegments?.length
-      ? buildTxt(editableSegments, speakerNameMap, { timestampMode, verbatimMode })
+      ? buildTxt(editableSegments, speakerNameMap, { timestampMode, verbatimMode, intervalSec })
       : (editedFullTranscript || fullTranscript || '').trim()
     const content = structured.trim()
     if (!content) { toast.error('Nothing to export'); return }
@@ -1956,7 +1975,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const watermark = isPaidPlan ? undefined : 'Exported from VideoText (Free Plan) · videotext.io'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_original_${langCodeForFile(exportSourceLangCode)}`, '.pdf')
     try {
-      await exportToPdf(segs, speakerNameMap, filename, watermark, { timestampMode, verbatimMode })
+      await exportToPdf(segs, speakerNameMap, filename, watermark, { timestampMode, verbatimMode, intervalSec })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'pdf', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'PDF downloaded' : 'PDF downloaded (with watermark)')
@@ -1964,7 +1983,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       console.error('PDF generation failed:', err)
       toast.error('PDF generation failed')
     }
-  }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode, timestampMode, verbatimMode])
+  }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode, timestampMode, verbatimMode, intervalSec])
 
   /** Client-side DOCX generation — zero server round-trip, respects edits and renamed speakers. */
   const handleExportDocx = useCallback(async () => {
@@ -1974,7 +1993,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const watermark = isPaidPlan ? undefined : 'Exported from VideoText (Free Plan) · videotext.io'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_original_${langCodeForFile(exportSourceLangCode)}`, '.docx')
     try {
-      await exportToDocx(segs, speakerNameMap, filename, watermark, { timestampMode, verbatimMode })
+      await exportToDocx(segs, speakerNameMap, filename, watermark, { timestampMode, verbatimMode, intervalSec })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'docx', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'DOCX downloaded' : 'DOCX downloaded (with watermark)')
@@ -1982,7 +2001,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       console.error('DOCX generation failed:', err)
       toast.error('DOCX generation failed')
     }
-  }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode, timestampMode, verbatimMode])
+  }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode, timestampMode, verbatimMode, intervalSec])
 
   /** Translated PDF — uses translatedSegments so the file is in the target language. */
   const handleExportPdfTranslated = useCallback(async () => {
@@ -1992,7 +2011,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const slug = translationLanguage ? targetLangFileSlug(translationLanguage) : 'translated'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_translated_${slug}`, '.pdf')
     try {
-      await exportToPdf(translatedSegments, speakerNameMap, filename, watermark, { timestampMode, verbatimMode })
+      await exportToPdf(translatedSegments, speakerNameMap, filename, watermark, { timestampMode, verbatimMode, intervalSec })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'pdf_translated', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'PDF downloaded' : 'PDF downloaded (with watermark)')
@@ -2000,7 +2019,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       console.error('PDF generation failed:', err)
       toast.error('PDF generation failed')
     }
-  }, [translatedSegments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, translationLanguage, timestampMode, verbatimMode])
+  }, [translatedSegments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, translationLanguage, timestampMode, verbatimMode, intervalSec])
 
   /** Translated DOCX — uses translatedSegments so the file is in the target language. */
   const handleExportDocxTranslated = useCallback(async () => {
@@ -2010,7 +2029,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const slug = translationLanguage ? targetLangFileSlug(translationLanguage) : 'translated'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_translated_${slug}`, '.docx')
     try {
-      await exportToDocx(translatedSegments, speakerNameMap, filename, watermark, { timestampMode, verbatimMode })
+      await exportToDocx(translatedSegments, speakerNameMap, filename, watermark, { timestampMode, verbatimMode, intervalSec })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'docx_translated', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'DOCX downloaded' : 'DOCX downloaded (with watermark)')
@@ -2018,7 +2037,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       console.error('DOCX generation failed:', err)
       toast.error('DOCX generation failed')
     }
-  }, [translatedSegments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, translationLanguage, timestampMode, verbatimMode])
+  }, [translatedSegments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, translationLanguage, timestampMode, verbatimMode, intervalSec])
 
   /** DOCX 3-column table — Speaker | Timecode | Dialogue, one row per speaker turn. */
   const handleExportDocxThreeColumn = useCallback(async () => {
@@ -2038,6 +2057,24 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
   }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode, verbatimMode])
 
+  /** PDF 3-column table — Speaker | Timecode | Dialogue, one row per speaker turn. */
+  const handleExportPdfThreeColumn = useCallback(async () => {
+    const segs = (editableSegments && editableSegments.length > 0 ? editableSegments : result?.segments) ?? null
+    if (!segs?.length) { toast.error('Nothing to export'); return }
+    if (!isPaidPlan && freeExportsUsed >= 2) { toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.'); return }
+    const watermark = isPaidPlan ? undefined : 'Exported from VideoText (Free Plan) · videotext.io'
+    const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_3col_${langCodeForFile(exportSourceLangCode)}`, '.pdf')
+    try {
+      await exportToPdfThreeColumn(segs, speakerNameMap, filename, { verbatimMode }, watermark)
+      if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
+      try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'pdf_3col', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
+      toast.success(isPaidPlan ? 'PDF (3-col) downloaded' : 'PDF (3-col) downloaded (with watermark)')
+    } catch (err) {
+      console.error('PDF 3-col generation failed:', err)
+      toast.error('PDF generation failed')
+    }
+  }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode, verbatimMode])
+
   /** Translate a pasted plain-text transcript (no video/audio upload required). */
   const handleTextTranslate = useCallback(async () => {
     const text = textTranslateInput.trim()
@@ -2047,17 +2084,21 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     setTextTranslateResult('')
     try {
       const token = getAuthToken()
+      // Send text with an instruction to preserve speaker labels, timestamps, and structural markers
+      const systemHint = 'Preserve all speaker labels (e.g. "Alice (0:00):", "[0:30]", "SPEAKER_00:"), timestamps, and line structure. Only translate the actual spoken dialogue.'
       const res = await fetch(`${getApiBase()}/api/translate-transcript/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ text, targetLanguage: textTranslateLang }),
+        body: JSON.stringify({ text: `${systemHint}\n\n${text}`, targetLanguage: textTranslateLang }),
       })
       const data = await res.json() as { translatedText?: string; error?: string }
       if (data.translatedText) {
-        setTextTranslateResult(data.translatedText)
+        // Strip the system hint echo-back if the model included it
+        const result = data.translatedText.replace(/^Preserve all speaker labels.*\n\n/s, '').trim()
+        setTextTranslateResult(result)
         toast.success('Translation complete')
       } else {
         toast.error(data.error ?? 'Translation failed')
@@ -2068,6 +2109,23 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       setTextTranslating(false)
     }
   }, [textTranslateInput, textTranslateLang])
+
+  /** Load a .txt file into the text-translation textarea. */
+  const handleTextTranslateFileLoad = useCallback((file: File) => {
+    if (!file.name.toLowerCase().endsWith('.txt') && !file.name.toLowerCase().endsWith('.srt') && !file.name.toLowerCase().endsWith('.vtt')) {
+      toast.error('Only .txt, .srt, and .vtt files are supported')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const text = e.target?.result as string
+      if (text) {
+        setTextTranslateInput(text)
+        toast.success('File loaded — ready to translate')
+      }
+    }
+    reader.readAsText(file)
+  }, [])
 
   // Search: match in segments (if any) or paragraphs; return { index, snippet, startTime? }
   const _searchResults = useMemo(() => {
@@ -2298,12 +2356,29 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   {textTranslateOpen && (
                     <div className="px-4 pb-4 space-y-3 border-t border-gray-100 dark:border-gray-800">
                       <p className="text-xs text-gray-500 dark:text-gray-400 pt-3">
-                        Paste your finished transcript below, pick a target language, and download the translated version. No audio or video required.
+                        Paste your finished transcript below or upload a .txt/.srt/.vtt file, pick a target language, and download the translated version. Speaker labels and timestamps are preserved.
                       </p>
+                      <div className="flex gap-2">
+                        <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors shrink-0">
+                          <Upload className="w-3.5 h-3.5" />
+                          Upload file
+                          <input
+                            type="file"
+                            accept=".txt,.srt,.vtt"
+                            className="sr-only"
+                            onChange={(e) => {
+                              const f = e.target.files?.[0]
+                              if (f) handleTextTranslateFileLoad(f)
+                              e.target.value = ''
+                            }}
+                          />
+                        </label>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500 self-center">.txt · .srt · .vtt</p>
+                      </div>
                       <textarea
                         value={textTranslateInput}
                         onChange={(e) => setTextTranslateInput(e.target.value)}
-                        placeholder="Paste your transcript here…"
+                        placeholder="Paste your transcript here, or upload a file above…"
                         rows={6}
                         className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                       />
@@ -2334,22 +2409,72 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Translation ({textTranslateLang})</p>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const blob = new Blob([textTranslateResult], { type: 'text/plain;charset=utf-8' })
-                                const a = document.createElement('a')
-                                a.href = URL.createObjectURL(blob)
-                                a.download = `transcript_translated_${textTranslateLang.toLowerCase()}.txt`
-                                a.click()
-                                URL.revokeObjectURL(a.href)
-                                toast.success('Translation downloaded')
-                              }}
-                              className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
-                            >
-                              <Download className="w-3 h-3" />
-                              Download TXT
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const blob = new Blob([textTranslateResult], { type: 'text/plain;charset=utf-8' })
+                                  const a = document.createElement('a')
+                                  a.href = URL.createObjectURL(blob)
+                                  a.download = `transcript_translated_${textTranslateLang.toLowerCase()}.txt`
+                                  a.click()
+                                  URL.revokeObjectURL(a.href)
+                                  toast.success('Translation downloaded')
+                                }}
+                                className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                              >
+                                <Download className="w-3 h-3" />
+                                TXT
+                              </button>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  try {
+                                    const { Document: D, Paragraph: P, TextRun: T, Packer } = await import('docx')
+                                    const paras = textTranslateResult.split('\n').map((line) => new P({ children: [new T({ text: line })] }))
+                                    const doc = new D({ sections: [{ children: paras }] })
+                                    const blob = await Packer.toBlob(doc)
+                                    const a = document.createElement('a')
+                                    a.href = URL.createObjectURL(blob)
+                                    a.download = `transcript_translated_${textTranslateLang.toLowerCase()}.docx`
+                                    a.click()
+                                    URL.revokeObjectURL(a.href)
+                                    toast.success('DOCX downloaded')
+                                  } catch { toast.error('DOCX export failed') }
+                                }}
+                                className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                              >
+                                <Download className="w-3 h-3" />
+                                DOCX
+                              </button>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  try {
+                                    const { jsPDF } = await import('jspdf')
+                                    const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+                                    const margin = 20
+                                    const textWidth = doc.internal.pageSize.getWidth() - margin * 2
+                                    const pageH = doc.internal.pageSize.getHeight()
+                                    const lineH = 6
+                                    let y = margin
+                                    doc.setFontSize(11)
+                                    const allLines = doc.splitTextToSize(textTranslateResult, textWidth) as string[]
+                                    for (const line of allLines) {
+                                      if (y + lineH > pageH - margin) { doc.addPage(); y = margin }
+                                      doc.text(line, margin, y)
+                                      y += lineH
+                                    }
+                                    doc.save(`transcript_translated_${textTranslateLang.toLowerCase()}.pdf`)
+                                    toast.success('PDF downloaded')
+                                  } catch { toast.error('PDF export failed') }
+                                }}
+                                className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                              >
+                                <Download className="w-3 h-3" />
+                                PDF
+                              </button>
+                            </div>
                           </div>
                           <div className="max-h-48 overflow-y-auto p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/40 rounded-lg text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
                             {textTranslateResult}
@@ -2848,9 +2973,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     <div className="flex flex-col gap-1.5">
                       {(
                         [
-                          { value: 'per-speaker', label: 'Per speaker entry', hint: 'One timestamp per speaker turn — recommended' },
-                          { value: 'none',         label: 'No timestamps',     hint: 'Speaker names only, no time codes' },
-                          { value: 'per-segment',  label: 'Per segment',       hint: 'Timestamp on every raw chunk (subtitle-style)' },
+                          { value: 'per-speaker',  label: 'Per speaker entry',  hint: 'One timestamp per speaker turn — recommended' },
+                          { value: 'per-interval', label: 'Per time interval',  hint: 'Timestamp every N seconds — advanced' },
+                          { value: 'none',         label: 'No timestamps',      hint: 'Speaker names only, no time codes' },
+                          { value: 'per-segment',  label: 'Per segment',        hint: 'Timestamp on every raw chunk (subtitle-style)' },
                         ] as const
                       ).map(({ value, label, hint }) => (
                         <label key={value} className="flex items-start gap-2 cursor-pointer group">
@@ -2868,6 +2994,22 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           </span>
                         </label>
                       ))}
+                      {timestampMode === 'per-interval' && (
+                        <div className="ml-5 flex items-center gap-2 mt-1">
+                          <label className="text-xs text-gray-600 dark:text-gray-400 shrink-0">Interval:</label>
+                          <select
+                            value={intervalSec}
+                            onChange={(e) => setIntervalSec(Number(e.target.value))}
+                            className="text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-2 py-1 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                          >
+                            <option value={15}>15 sec</option>
+                            <option value={30}>30 sec</option>
+                            <option value={60}>1 min</option>
+                            <option value={120}>2 min</option>
+                            <option value={300}>5 min</option>
+                          </select>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -3595,6 +3737,67 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           <p className="text-xs text-gray-500">Exports appear after transcript data is ready.</p>
                         ) : (
                           <div className="space-y-3">
+                            {/* ── Output settings (mirrored from pre-processing panel, always visible at export time) ── */}
+                            <details className="group rounded-lg border border-gray-100 dark:border-gray-800 overflow-hidden">
+                              <summary className="flex cursor-pointer items-center justify-between px-3 py-2 text-[11px] font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 [&::-webkit-details-marker]:hidden">
+                                <span>Output settings</span>
+                                <ChevronRight className="w-3.5 h-3.5 text-gray-400 transition-transform group-open:rotate-90" />
+                              </summary>
+                              <div className="px-3 pb-3 space-y-3 border-t border-gray-100 dark:border-gray-800">
+                                <div className="pt-2">
+                                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Timestamp format</p>
+                                  <div className="flex flex-col gap-1">
+                                    {([
+                                      { value: 'per-speaker',  label: 'Per speaker' },
+                                      { value: 'per-interval', label: 'Per interval' },
+                                      { value: 'none',         label: 'No timestamps' },
+                                      { value: 'per-segment',  label: 'Per segment' },
+                                    ] as const).map(({ value, label }) => (
+                                      <label key={value} className="flex items-center gap-1.5 cursor-pointer">
+                                        <input type="radio" name="ts-sidebar" value={value} checked={timestampMode === value} onChange={() => setTimestampMode(value)} className="accent-violet-600" />
+                                        <span className="text-xs text-gray-700 dark:text-gray-300">{label}</span>
+                                      </label>
+                                    ))}
+                                  </div>
+                                  {timestampMode === 'per-interval' && (
+                                    <div className="flex items-center gap-2 mt-1.5 ml-4">
+                                      <label className="text-[10px] text-gray-500 shrink-0">Interval:</label>
+                                      <select value={intervalSec} onChange={(e) => setIntervalSec(Number(e.target.value))} className="text-[10px] rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-1.5 py-0.5">
+                                        <option value={15}>15s</option>
+                                        <option value={30}>30s</option>
+                                        <option value={60}>1m</option>
+                                        <option value={120}>2m</option>
+                                        <option value={300}>5m</option>
+                                      </select>
+                                    </div>
+                                  )}
+                                </div>
+                                <div>
+                                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Verbatim mode</p>
+                                  <div className="flex flex-col gap-1">
+                                    {([
+                                      { value: 'full',  label: 'Full verbatim' },
+                                      { value: 'clean', label: 'Clean verbatim' },
+                                    ] as const).map(({ value, label }) => (
+                                      <label key={value} className="flex items-center gap-1.5 cursor-pointer">
+                                        <input type="radio" name="vb-sidebar" value={value} checked={verbatimMode === value} onChange={() => setVerbatimMode(value)} className="accent-violet-600" />
+                                        <span className="text-xs text-gray-700 dark:text-gray-300">{label}</span>
+                                      </label>
+                                    ))}
+                                  </div>
+                                </div>
+                                {/* Live preview */}
+                                {(editableSegments?.length ?? 0) > 0 && (
+                                  <div>
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Preview (TXT)</p>
+                                    <pre className="text-[10px] text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded p-2 max-h-32 overflow-y-auto whitespace-pre-wrap leading-relaxed">
+                                      {buildTxt(editableSegments!, speakerNameMap, { timestampMode, verbatimMode, intervalSec }).slice(0, 400)}
+                                      {buildTxt(editableSegments!, speakerNameMap, { timestampMode, verbatimMode, intervalSec }).length > 400 ? '…' : ''}
+                                    </pre>
+                                  </div>
+                                )}
+                              </div>
+                            </details>
                             <div>
                               <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Structured</p>
                               <div className="grid grid-cols-2 gap-2">
@@ -3611,7 +3814,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                         ? buildCsv(segsForFormat, speakerNameMap)
                                         : format === 'notion'
                                           ? buildNotion(segsForFormat, speakerNameMap)
-                                          : buildTxt(segsForFormat, speakerNameMap, { timestampMode, verbatimMode })
+                                          : buildTxt(segsForFormat, speakerNameMap, { timestampMode, verbatimMode, intervalSec })
                                   const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
                                   const freeCanDownload = !isPaidPlan && freeExportsUsed < 2
                                   const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
@@ -3692,21 +3895,25 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   </button>
                                 )}
                               </div>
+                              <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5 italic">SRT/VTT always include timestamps regardless of timestamp setting</p>
                             </div>
                             <div>
                               <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Documents</p>
-                              <div className="grid grid-cols-3 gap-2">
+                              <div className="grid grid-cols-2 gap-2">
                                 <button type="button" onClick={handleExportPdf} className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                                   PDF
                                 </button>
                                 <button type="button" onClick={handleExportDocx} className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" title="Standard block format">
                                   DOCX
                                 </button>
+                                <button type="button" onClick={() => void handleExportPdfThreeColumn()} className="rounded-lg border border-violet-200 dark:border-violet-700/60 px-2 py-2 text-[11px] font-medium text-violet-700 dark:text-violet-300 bg-violet-50/60 dark:bg-violet-950/20 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors" title="3-column table: Speaker | Timecode | Dialogue">
+                                  PDF 3-col
+                                </button>
                                 <button type="button" onClick={handleExportDocxThreeColumn} className="rounded-lg border border-violet-200 dark:border-violet-700/60 px-2 py-2 text-[11px] font-medium text-violet-700 dark:text-violet-300 bg-violet-50/60 dark:bg-violet-950/20 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors" title="3-column table: Speaker | Timecode | Dialogue">
                                   DOCX 3-col
                                 </button>
                               </div>
-                              <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">DOCX 3-col: Speaker · Timecode · Dialogue table</p>
+                              <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">3-col: Speaker · Timecode · Dialogue table</p>
                             </div>
 
                             {/* ── Translated exports — only shown when translate was enabled ── */}
@@ -3726,7 +3933,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   format === 'json' ? buildJson(translatedSegments, speakerNameMap)
                                   : format === 'csv' ? buildCsv(translatedSegments, speakerNameMap)
                                   : format === 'notion' ? buildNotion(translatedSegments, speakerNameMap)
-                                  : buildTxt(translatedSegments, speakerNameMap, { timestampMode, verbatimMode })
+                                  : buildTxt(translatedSegments, speakerNameMap, { timestampMode, verbatimMode, intervalSec })
                                 if (freeUsedAll) { toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.'); return }
                                 const mimeType = format === 'json' ? 'application/json' : 'text/plain'
                                 const ext = format === 'json' ? '.json' : format === 'csv' ? '.csv' : '.txt'

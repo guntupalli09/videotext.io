@@ -22,9 +22,10 @@ export type SpeakerNameMap = Record<string, string>
  * Controls how timestamps appear in text-based exports.
  * - `per-speaker`: one timestamp at the start of each speaker turn (default — Adaiah feedback)
  * - `per-segment`: timestamp on every Whisper segment (old behaviour, mirrors subtitle timing)
+ * - `per-interval`: a `[MM:SS]` marker is emitted every N seconds (set via `intervalSec` option)
  * - `none`: no timestamps; speaker names still appear when diarisation is active
  */
-export type TimestampMode = 'per-speaker' | 'per-segment' | 'none'
+export type TimestampMode = 'per-speaker' | 'per-segment' | 'per-interval' | 'none'
 
 /**
  * Controls filler-word handling in text-based exports.
@@ -221,9 +222,9 @@ export function buildFullTranscript(segments: Segment[]): string {
 export function buildTxt(
   segments: Segment[],
   nameMap: SpeakerNameMap,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode; intervalSec?: number } = {},
 ): string {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
+  const { timestampMode = 'per-speaker', verbatimMode = 'full', intervalSec = 30 } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
   const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t.trim())
   const lines: string[] = []
@@ -239,6 +240,42 @@ export function buildTxt(
         if (t) lines.push(t)
       }
     }
+  } else if (timestampMode === 'per-interval') {
+    // Group segments by interval block; within each block group by speaker
+    let currentIntervalStart = -1
+    let pendingSpeaker: string | undefined = undefined
+    let pendingText = ''
+
+    const flushPending = () => {
+      if (!pendingText.trim()) return
+      if (pendingSpeaker) {
+        lines.push(`${pendingSpeaker}: ${pendingText.trim()}`)
+      } else {
+        lines.push(pendingText.trim())
+      }
+      pendingText = ''
+    }
+
+    for (const seg of resolved) {
+      const intervalStart = Math.floor(seg.start / intervalSec) * intervalSec
+
+      if (intervalStart !== currentIntervalStart) {
+        flushPending()
+        if (lines.length > 0) lines.push('')
+        lines.push(`[${formatTimestamp(intervalStart)}]`)
+        currentIntervalStart = intervalStart
+        pendingSpeaker = seg.speaker
+        pendingText = applyVerb(seg.text)
+      } else if (seg.speaker === pendingSpeaker) {
+        const t = applyVerb(seg.text)
+        pendingText = pendingText.trimEnd() + ' ' + t.trim()
+      } else {
+        flushPending()
+        pendingSpeaker = seg.speaker
+        pendingText = applyVerb(seg.text)
+      }
+    }
+    flushPending()
   } else {
     // per-speaker and none: group consecutive same-speaker segments into turns
     const groups = groupSegmentsBySpeakerEntry(resolved)
@@ -375,9 +412,9 @@ export async function exportToPdf(
   nameMap: SpeakerNameMap,
   filename: string,
   watermark?: string,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode; intervalSec?: number } = {},
 ): Promise<void> {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
+  const { timestampMode = 'per-speaker', verbatimMode = 'full', intervalSec = 30 } = options
   const { jsPDF } = await import('jspdf')
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
@@ -436,6 +473,47 @@ export async function exportToPdf(
       doc.text(bodyLines, margin, y)
       y += lineH * bodyLines.length + lineH * 0.6
     }
+  } else if (timestampMode === 'per-interval') {
+    // Interval markers: group segments by N-second blocks, speaker-grouped within each block
+    let currentIntervalStart = -1
+    let pendingSpeaker: string | undefined = undefined
+    let pendingText = ''
+
+    const flushPendingPdf = () => {
+      if (!pendingText.trim()) return
+      const prefix = pendingSpeaker ? `${pendingSpeaker}: ` : ''
+      const bodyLines = doc.splitTextToSize(prefix + pendingText.trim(), textWidth)
+      ensureSpace(lineH * bodyLines.length + lineH * 0.4)
+      doc.setFont('helvetica', 'normal')
+      doc.setTextColor(0)
+      doc.text(bodyLines, margin, y)
+      y += lineH * bodyLines.length + lineH * 0.4
+      pendingText = ''
+    }
+
+    for (const seg of resolved) {
+      const intervalStart = Math.floor(seg.start / intervalSec) * intervalSec
+
+      if (intervalStart !== currentIntervalStart) {
+        flushPendingPdf()
+        ensureSpace(lineH * 1.5)
+        doc.setFont('helvetica', 'bold')
+        doc.setTextColor(80, 40, 160)
+        doc.text(`[${formatTimestamp(intervalStart)}]`, margin, y)
+        doc.setTextColor(0)
+        y += lineH * 1.2
+        currentIntervalStart = intervalStart
+        pendingSpeaker = seg.speaker
+        pendingText = applyVerb(seg.text)
+      } else if (seg.speaker === pendingSpeaker) {
+        pendingText = pendingText.trimEnd() + ' ' + applyVerb(seg.text).trim()
+      } else {
+        flushPendingPdf()
+        pendingSpeaker = seg.speaker
+        pendingText = applyVerb(seg.text)
+      }
+    }
+    flushPendingPdf()
   } else {
     // per-speaker / none: grouped speaker turns with intra-turn paragraph breaks
     const groups = groupSegmentsBySpeakerEntry(resolved)
@@ -499,9 +577,9 @@ export async function exportToDocx(
   nameMap: SpeakerNameMap,
   filename: string,
   watermark?: string,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode; intervalSec?: number } = {},
 ): Promise<void> {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
+  const { timestampMode = 'per-speaker', verbatimMode = 'full', intervalSec = 30 } = options
   const { Document, Paragraph, TextRun, HeadingLevel, Packer } = await import('docx')
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
@@ -550,6 +628,47 @@ export async function exportToDocx(
         )
       }
     }
+  } else if (timestampMode === 'per-interval') {
+    // Interval markers every N seconds; speaker-grouped within each block
+    let currentIntervalStart = -1
+    let pendingSpeaker: string | undefined = undefined
+    let pendingText = ''
+
+    const flushPendingDocx = () => {
+      if (!pendingText.trim()) return
+      const prefix = pendingSpeaker ? `${pendingSpeaker}: ` : ''
+      children.push(
+        new Paragraph({
+          children: [new TextRun({ text: prefix + pendingText.trim() })],
+          spacing: { after: 80 },
+        }),
+      )
+      pendingText = ''
+    }
+
+    for (const seg of resolved) {
+      const intervalStart = Math.floor(seg.start / intervalSec) * intervalSec
+
+      if (intervalStart !== currentIntervalStart) {
+        flushPendingDocx()
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: `[${formatTimestamp(intervalStart)}]`, bold: true, color: '5028A0' })],
+            spacing: { before: 160, after: 40 },
+          }),
+        )
+        currentIntervalStart = intervalStart
+        pendingSpeaker = seg.speaker
+        pendingText = applyVerb(seg.text)
+      } else if (seg.speaker === pendingSpeaker) {
+        pendingText = pendingText.trimEnd() + ' ' + applyVerb(seg.text).trim()
+      } else {
+        flushPendingDocx()
+        pendingSpeaker = seg.speaker
+        pendingText = applyVerb(seg.text)
+      }
+    }
+    flushPendingDocx()
   } else {
     // per-speaker / none: grouped turns with intra-turn paragraph breaks
     const groups = groupSegmentsBySpeakerEntry(resolved)
@@ -711,6 +830,138 @@ export async function exportToDocxThreeColumn(
   a.download = filename
   a.click()
   URL.revokeObjectURL(a.href)
+}
+
+// ─── PDF — 3-column table (Speaker | Timecode | Dialogue) ───────────────────────
+
+/**
+ * Generates a PDF with a 3-column layout:
+ *   Column 1 (20%): Speaker name
+ *   Column 2 (15%): Timecode
+ *   Column 3 (65%): Dialogue text
+ *
+ * Mirrors the structure of exportToDocxThreeColumn for format parity.
+ */
+export async function exportToPdfThreeColumn(
+  segments: Segment[],
+  nameMap: SpeakerNameMap,
+  filename: string,
+  options: { verbatimMode?: VerbatimMode } = {},
+  watermark?: string,
+): Promise<void> {
+  const { verbatimMode = 'full' } = options
+  const { jsPDF } = await import('jspdf')
+  const resolved = withResolvedSpeakers(segments, nameMap)
+  const groups = groupSegmentsBySpeakerEntry(resolved)
+  const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t.trim())
+
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+  const pageW = doc.internal.pageSize.getWidth()
+  const pageH = doc.internal.pageSize.getHeight()
+  const margin = 15
+  const lineH = 6
+  let y = margin
+
+  // Column x-positions and widths
+  const col1X = margin
+  const col1W = 30
+  const col2X = margin + col1W + 3
+  const col2W = 22
+  const col3X = margin + col1W + col2W + 6
+  const col3W = pageW - margin - col3X
+
+  const addPage = () => { doc.addPage(); y = margin }
+  const ensureSpace = (needed: number) => {
+    if (y + needed > pageH - margin - 10) addPage()
+  }
+
+  // Title
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Video Transcript', margin, y)
+  y += lineH * 1.4
+
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(120)
+  doc.text('Generated by VideoText.io', margin, y)
+  y += lineH * 1.6
+  doc.setTextColor(0)
+
+  if (watermark) {
+    doc.setFontSize(8)
+    doc.setFont('helvetica', 'italic')
+    doc.setTextColor(160)
+    doc.text(watermark, margin, y)
+    doc.setTextColor(0)
+    y += lineH * 1.4
+  }
+
+  // Column headers
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(80, 40, 160)
+  doc.text('SPEAKER', col1X, y)
+  doc.text('TIMECODE', col2X, y)
+  doc.text('DIALOGUE', col3X, y)
+  doc.setTextColor(0)
+  y += lineH * 0.5
+
+  doc.setDrawColor(180)
+  doc.setLineWidth(0.3)
+  doc.line(margin, y, pageW - margin, y)
+  y += lineH * 0.8
+
+  doc.setFontSize(10)
+
+  for (const g of groups) {
+    const paras = g.text.split('\n\n').filter(Boolean)
+    const bodyText = paras.map((p) => applyVerb(p)).filter(Boolean).join(' ')
+    const dialogueLines = doc.splitTextToSize(bodyText || ' ', col3W)
+    const speakerLines = doc.splitTextToSize(g.speaker ?? '', col1W)
+    const rowLineCount = Math.max(speakerLines.length, 1, dialogueLines.length)
+    const rowH = lineH * rowLineCount + lineH * 0.5
+
+    ensureSpace(rowH)
+
+    // Speaker
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(80, 40, 160)
+    if (g.speaker) doc.text(speakerLines, col1X, y)
+    doc.setTextColor(0)
+
+    // Timecode
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(100)
+    doc.text(formatTimestamp(g.start), col2X, y)
+    doc.setTextColor(0)
+
+    // Dialogue
+    doc.setFont('helvetica', 'normal')
+    doc.text(dialogueLines, col3X, y)
+
+    y += rowH
+
+    // Light separator
+    doc.setDrawColor(230)
+    doc.setLineWidth(0.1)
+    doc.line(margin, y - lineH * 0.2, pageW - margin, y - lineH * 0.2)
+  }
+
+  // Watermark footer on every page
+  if (watermark) {
+    const totalPages = doc.getNumberOfPages()
+    for (let p = 1; p <= totalPages; p++) {
+      doc.setPage(p)
+      doc.setFontSize(8)
+      doc.setFont('helvetica', 'italic')
+      doc.setTextColor(160)
+      doc.text(watermark, margin, pageH - 8)
+      doc.setTextColor(0)
+    }
+  }
+
+  doc.save(filename)
 }
 
 // ─── localStorage persistence (zero server retention) ────────────────────────
