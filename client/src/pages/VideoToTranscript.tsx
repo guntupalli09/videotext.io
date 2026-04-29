@@ -57,6 +57,7 @@ import {
   exportToDocx,
   exportToDocxThreeColumn,
   exportToPdfThreeColumn,
+  applyCleanVerbatim,
 } from '../lib/transcriptExport'
 import toast from 'react-hot-toast'
 // import { useWorkflow } from '../contexts/WorkflowContext'
@@ -2077,32 +2078,77 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
   /** Translate a pasted plain-text transcript (no video/audio upload required). */
   const handleTextTranslate = useCallback(async () => {
-    const text = textTranslateInput.trim()
-    if (!text) { toast.error('Paste a transcript first'); return }
+    const rawText = textTranslateInput.trim()
+    if (!rawText) { toast.error('Paste a transcript first'); return }
     if (!textTranslateLang) { toast.error('Select a target language'); return }
     setTextTranslating(true)
     setTextTranslateResult('')
     try {
-      const token = getAuthToken()
-      // Send text with an instruction to preserve speaker labels, timestamps, and structural markers
-      const systemHint = 'Preserve all speaker labels (e.g. "Alice (0:00):", "[0:30]", "SPEAKER_00:"), timestamps, and line structure. Only translate the actual spoken dialogue.'
-      const res = await fetch(`${getApiBase()}/api/translate-transcript/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ text: `${systemHint}\n\n${text}`, targetLanguage: textTranslateLang }),
-      })
-      const data = await res.json() as { translatedText?: string; error?: string }
-      if (data.translatedText) {
-        // Strip the system hint echo-back if the model included it
-        const result = data.translatedText.replace(/^Preserve all speaker labels.*\n\n/s, '').trim()
-        setTextTranslateResult(result)
-        toast.success('Translation complete')
-      } else {
-        toast.error(data.error ?? 'Translation failed')
+      // ── Client-side block parsing ──────────────────────────────────────────
+      // Split the input into "structural" lines (speaker headers, timestamps,
+      // SRT counters, blank lines) and "dialogue" lines that need translation.
+      // Structural lines are never sent to the API — they pass through as-is.
+      type Block = { kind: 'structural'; text: string } | { kind: 'dialogue'; text: string; id: number }
+      const blocks: Block[] = []
+      let dialogueId = 1
+      for (const line of rawText.split('\n')) {
+        const trimmed = line.trim()
+        const isStructural =
+          !trimmed ||                                              // blank line
+          /^\[\d{1,2}:\d{2}(?::\d{2})?\]$/.test(trimmed) ||   // [0:30] interval marker
+          /^[A-Za-z][^:\n]{0,40}\s*\(\d+:\d+\):?\s*$/.test(trimmed) || // Alice (0:00) speaker header
+          /^SPEAKER_\d+:?\s*$/.test(trimmed) ||                  // SPEAKER_00: raw label
+          /^\d+$/.test(trimmed) ||                                // SRT sequence number
+          /\d{2}:\d{2}:\d{2}[,.]\d{3}\s+-->\s+\d{2}:\d{2}:\d{2}[,.]\d{3}/.test(line) || // SRT/VTT timestamp
+          /^WEBVTT/.test(trimmed)                                  // VTT header
+        if (isStructural) {
+          blocks.push({ kind: 'structural', text: line })
+        } else {
+          blocks.push({ kind: 'dialogue', text: line, id: dialogueId++ })
+        }
       }
+
+      const dialogueBlocks = blocks.filter((b): b is Extract<Block, { kind: 'dialogue' }> => b.kind === 'dialogue')
+
+      let translatedText: string
+      if (dialogueBlocks.length === 0) {
+        // Nothing to translate (e.g. pure SRT timestamps)
+        translatedText = rawText
+      } else {
+        // Build numbered list request — only dialogue lines
+        const numberedRequest =
+          `Translate each numbered line below to ${textTranslateLang}. ` +
+          `Return ONLY the numbered translations in the exact same format (1. 2. 3. etc). ` +
+          `Do not add any extra text, explanations, or change the numbering.\n\n` +
+          dialogueBlocks.map(b => `${b.id}. ${b.text}`).join('\n')
+
+        const token = getAuthToken()
+        const res = await fetch(`${getApiBase()}/api/translate-transcript/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ text: numberedRequest, targetLanguage: textTranslateLang }),
+        })
+        const data = await res.json() as { translatedText?: string; error?: string }
+        if (!data.translatedText) { toast.error(data.error ?? 'Translation failed'); return }
+
+        // Parse numbered response: "1. translated text"
+        const translated: Record<number, string> = {}
+        for (const line of data.translatedText.split('\n')) {
+          const m = line.match(/^(\d+)\.\s+(.*)$/)
+          if (m) translated[parseInt(m[1], 10)] = m[2]
+        }
+
+        // Reconstruct — structural blocks pass through, dialogue blocks get translation (fallback to original)
+        translatedText = blocks.map(b =>
+          b.kind === 'structural' ? b.text : (translated[b.id] ?? b.text)
+        ).join('\n')
+      }
+
+      setTextTranslateResult(translatedText)
+      toast.success('Translation complete')
     } catch {
       toast.error('Translation failed — check your connection')
     } finally {
@@ -3600,52 +3646,140 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       ))}
                     </div>
                   ) : result?.segments?.length ? (() => {
-                    // Read-mode: use editableSegments so edits are visible immediately after
-                    // clicking "Done". Fall back to result.segments if editableSegments is null
-                    // (shouldn't happen once a result exists, but guards against edge cases).
-                    // Translated view overrides text but keeps original timestamps via origSeg below.
                     const segs = transcriptView === 'translated' && translatedSegments
                       ? translatedSegments
                       : (editableSegments ?? result.segments)
-                    // Group segments into paragraphs of ~5 for readability
-                    const groups: { seg: typeof segs[0]; globalIndex: number }[][] = []
-                    const PARA_SIZE = 5
-                    for (let i = 0; i < segs.length; i += PARA_SIZE) {
-                      groups.push(segs.slice(i, i + PARA_SIZE).map((s, j) => ({ seg: s, globalIndex: i + j })))
+
+                    // Shared segment span renderer — preserves audio-sync refs and active highlight
+                    const segSpan = (seg: typeof segs[0], globalIndex: number) => {
+                      const isActive = globalIndex === activeSegIdx
+                      const origSeg = result.segments![globalIndex]
+                      const displayText = verbatimMode === 'clean' ? applyCleanVerbatim(seg.text) : seg.text
+                      return (
+                        <span
+                          key={globalIndex}
+                          ref={(el) => { if (el) segmentRefsRef.current.set(globalIndex, el); else segmentRefsRef.current.delete(globalIndex) }}
+                          onClick={() => {
+                            if (!audioRef.current || !origSeg) return
+                            audioRef.current.currentTime = origSeg.start
+                            audioRef.current.play().catch(() => {})
+                          }}
+                          className={audioObjectUrl ? 'cursor-pointer' : ''}
+                        >
+                          {timestampMode === 'per-segment' && (
+                            <span className={`mr-1 inline-block shrink-0 align-baseline text-[12px] font-mono tabular-nums text-gray-500 ${isActive ? 'font-medium text-violet-700' : ''}`}>
+                              ({formatTimestamp(origSeg?.start ?? seg.start)})
+                            </span>
+                          )}
+                          <span className={isActive ? 'rounded-sm bg-amber-100/95 px-0.5 text-[#1d1d1f] shadow-sm transition-colors duration-150' : ''}>
+                            {displayText}
+                          </span>{' '}
+                        </span>
+                      )
                     }
+
+                    if (timestampMode === 'per-segment') {
+                      // Legacy chunk-of-5 view with per-segment timestamps
+                      const groups: { seg: typeof segs[0]; globalIndex: number }[][] = []
+                      for (let i = 0; i < segs.length; i += 5) {
+                        groups.push(segs.slice(i, i + 5).map((s, j) => ({ seg: s, globalIndex: i + j })))
+                      }
+                      return (
+                        <div className="max-w-[52rem]">
+                          {groups.map((group, pi) => (
+                            <p key={pi} className="mb-6 last:mb-0">
+                              {group.map(({ seg, globalIndex }) => segSpan(seg, globalIndex))}
+                            </p>
+                          ))}
+                        </div>
+                      )
+                    }
+
+                    if (timestampMode === 'per-interval') {
+                      // Interval-marker view: [MM:SS] header before the first segment in each N-second block
+                      const intervalItems: { markerTime?: number; seg?: typeof segs[0]; globalIndex?: number }[] = []
+                      let nextMarker = 0
+                      for (let i = 0; i < segs.length; i++) {
+                        while (nextMarker <= segs[i].start) {
+                          intervalItems.push({ markerTime: nextMarker })
+                          nextMarker += intervalSec
+                        }
+                        intervalItems.push({ seg: segs[i], globalIndex: i })
+                      }
+                      // Group non-marker items into paragraphs between markers
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      const rendered: any[] = []
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      let buf: any[] = []
+                      const flushBuf = (key: string) => {
+                        if (buf.length) { rendered.push(<p key={key} className="mb-3 last:mb-0">{buf}</p>); buf = [] }
+                      }
+                      intervalItems.forEach((item, idx) => {
+                        if (item.markerTime != null) {
+                          flushBuf(`para-${idx}`)
+                          rendered.push(
+                            <div key={`marker-${item.markerTime}`} className="mt-5 first:mt-0 mb-1.5 text-[13px] font-bold text-violet-600 dark:text-violet-400">
+                              [{formatTimestamp(item.markerTime)}]
+                            </div>
+                          )
+                        } else if (item.seg != null && item.globalIndex != null) {
+                          buf.push(segSpan(item.seg, item.globalIndex))
+                        }
+                      })
+                      flushBuf('para-last')
+                      return <div className="max-w-[52rem]">{rendered}</div>
+                    }
+
+                    // per-speaker or none: group by speaker turn with headers
+                    const resolvedForView = withResolvedSpeakers(segs, speakerNameMap)
+                    const hasSpeakers = resolvedForView.some(s => s.speaker)
+
+                    // Build view groups (same logic as groupSegmentsBySpeakerEntry but keeping globalIndex)
+                    interface VG { speaker?: string; startTime: number; items: { seg: typeof segs[0]; globalIndex: number; newPara: boolean }[] }
+                    const vGroups: VG[] = []
+                    for (let i = 0; i < resolvedForView.length; i++) {
+                      const rseg = resolvedForView[i]
+                      const prev = i > 0 ? resolvedForView[i - 1] : null
+                      const gap = prev ? Math.max(0, rseg.start - prev.end) : Infinity
+                      const last = vGroups[vGroups.length - 1]
+                      if (!last || last.speaker !== rseg.speaker) {
+                        vGroups.push({ speaker: rseg.speaker, startTime: rseg.start, items: [{ seg: segs[i], globalIndex: i, newPara: false }] })
+                      } else {
+                        last.items.push({ seg: segs[i], globalIndex: i, newPara: gap >= 3.0 })
+                      }
+                    }
+
                     return (
-                      <div className="max-w-[52rem]">
-                        {groups.map((group, pi) => (
-                          <p key={pi} className="mb-6 last:mb-0">
-                            {group.map(({ seg, globalIndex }) => {
-                              const isActive = globalIndex === activeSegIdx
-                              const origSeg = result.segments![globalIndex]
-                              return (
-                                <span
-                                  key={globalIndex}
-                                  ref={(el) => { if (el) segmentRefsRef.current.set(globalIndex, el); else segmentRefsRef.current.delete(globalIndex) }}
-                                  onClick={() => {
-                                    if (!audioRef.current || !origSeg) return
-                                    audioRef.current.currentTime = origSeg.start
-                                    audioRef.current.play().catch(() => {})
-                                  }}
-                                  className={audioObjectUrl ? 'cursor-pointer' : ''}
-                                >
-                                  <span
-                                    className={`mr-1 inline-block shrink-0 align-baseline text-[12px] font-mono tabular-nums text-gray-500 ${isActive ? 'font-medium text-violet-700' : ''}`}
-                                  >
-                                    ({formatTimestamp(origSeg?.start ?? seg.start)})
-                                  </span>
-                                  <span
-                                    className={`${isActive ? 'rounded-sm bg-amber-100/95 px-0.5 text-[#1d1d1f] shadow-sm transition-colors duration-150' : ''}`}
-                                  >
-                                    {seg.text}
-                                  </span>{' '}
-                                </span>
-                              )
-                            })}
-                          </p>
-                        ))}
+                      <div className="max-w-[52rem] space-y-5">
+                        {vGroups.map((vg, gi) => {
+                          // Split items into paragraphs on newPara boundaries
+                          const paras: { seg: typeof segs[0]; globalIndex: number }[][] = [[]]
+                          for (const item of vg.items) {
+                            if (item.newPara && paras[paras.length - 1].length > 0) paras.push([])
+                            paras[paras.length - 1].push({ seg: item.seg, globalIndex: item.globalIndex })
+                          }
+                          return (
+                            <div key={gi}>
+                              {hasSpeakers && vg.speaker && (
+                                <div className="text-[13px] font-semibold text-violet-700 dark:text-violet-300 mb-1.5 -mt-0.5">
+                                  {vg.speaker}
+                                  {timestampMode === 'per-speaker' && (
+                                    <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500 text-[12px] tabular-nums">
+                                      {formatTimestamp(vg.startTime)}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                              <div className="space-y-3">
+                                {paras.map((para, pi) => (
+                                  <p key={pi}>
+                                    {para.map(({ seg, globalIndex }) => segSpan(seg, globalIndex))}
+                                  </p>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                        })}
                       </div>
                     )
                   })() : (
