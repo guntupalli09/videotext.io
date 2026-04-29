@@ -18,6 +18,21 @@ import { formatTimestamp } from './srtExport'
 /** Maps raw backend speaker labels (e.g. "SPEAKER_00") to user-defined names (e.g. "Alice"). */
 export type SpeakerNameMap = Record<string, string>
 
+/**
+ * Controls how timestamps appear in text-based exports.
+ * - `per-speaker`: one timestamp at the start of each speaker turn (default — Adaiah feedback)
+ * - `per-segment`: timestamp on every Whisper segment (old behaviour, mirrors subtitle timing)
+ * - `none`: no timestamps; speaker names still appear when diarisation is active
+ */
+export type TimestampMode = 'per-speaker' | 'per-segment' | 'none'
+
+/**
+ * Controls filler-word handling in text-based exports.
+ * - `full`: no post-processing, raw transcription preserved
+ * - `clean`: removes common filler words / false-start patterns before export
+ */
+export type VerbatimMode = 'full' | 'clean'
+
 /** A segment with the speaker field already resolved to a display name. */
 export interface ResolvedSegment {
   start: number
@@ -78,6 +93,45 @@ export function withResolvedSpeakers(
   }))
 }
 
+// ─── Clean-verbatim helper ────────────────────────────────────────────────────
+
+/**
+ * Regex that matches common filler words and false-start patterns.
+ * Ordered longest-first to avoid partial-word matches on shorter patterns.
+ */
+const FILLER_PATTERN =
+  /\b(you know what|you know|i mean|sort of|kind of|basically|literally|honestly|actually|um+h?|uh+|er+h?|hmm+|hm+|ah+|oh well)\b[,.]?\s*/gi
+
+/**
+ * Strips common filler words / false-start patterns from a segment's text.
+ * Collapses duplicate whitespace and trims the result.
+ */
+export function applyCleanVerbatim(text: string): string {
+  return text.replace(FILLER_PATTERN, ' ').replace(/\s{2,}/g, ' ').trim()
+}
+
+// ─── Speaker-entry grouping ───────────────────────────────────────────────────
+
+/**
+ * Collapses consecutive segments that share the same speaker into a single
+ * "turn" entry — the canonical structure for professional transcripts.
+ * Segments without a speaker are treated as independent paragraphs.
+ */
+export function groupSegmentsBySpeakerEntry(
+  resolved: ResolvedSegment[],
+): Array<{ speaker?: string; start: number; text: string }> {
+  const groups: Array<{ speaker?: string; start: number; text: string }> = []
+  for (const seg of resolved) {
+    const last = groups[groups.length - 1]
+    if (last && last.speaker === seg.speaker) {
+      last.text = last.text + ' ' + seg.text.trim()
+    } else {
+      groups.push({ speaker: seg.speaker, start: seg.start, text: seg.text.trim() })
+    }
+  }
+  return groups
+}
+
 // ─── Full transcript text ─────────────────────────────────────────────────────
 
 /**
@@ -93,29 +147,61 @@ export function buildFullTranscript(segments: Segment[]): string {
 /**
  * Builds a human-readable plain-text transcript.
  *
- * When speakers are present (diarized):
+ * timestampMode controls how timestamps appear:
+ *   per-speaker (default) — one timestamp at the start of each speaker turn
+ *   per-segment           — timestamp on every raw Whisper segment
+ *   none                  — no timestamps
+ *
+ * verbatimMode controls filler-word handling:
+ *   full  (default) — raw transcription, nothing removed
+ *   clean           — common filler words stripped before output
+ *
+ * Example output (per-speaker, diarised):
  *   Alice (0:00)
- *   Hello, how are you?
+ *   Hello, how are you? Doing great actually.
  *
- *   Bob (0:05)
- *   Doing well, thanks.
- *
- * When no speakers:
- *   Hello, how are you?
+ *   Bob (0:45)
  *   Doing well, thanks.
  */
-export function buildTxt(segments: Segment[], nameMap: SpeakerNameMap): string {
+export function buildTxt(
+  segments: Segment[],
+  nameMap: SpeakerNameMap,
+  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+): string {
+  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
+  const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t.trim())
   const lines: string[] = []
-  for (const seg of resolved) {
-    if (seg.speaker) {
-      lines.push(`${seg.speaker} (${formatTimestamp(seg.start)})`)
-      lines.push(seg.text.trim())
-      lines.push('')
-    } else {
-      lines.push(seg.text.trim())
+
+  if (timestampMode === 'per-segment') {
+    for (const seg of resolved) {
+      if (seg.speaker) {
+        lines.push(`${seg.speaker} (${formatTimestamp(seg.start)})`)
+        lines.push(applyVerb(seg.text))
+        lines.push('')
+      } else {
+        const t = applyVerb(seg.text)
+        if (t) lines.push(t)
+      }
+    }
+  } else {
+    // per-speaker and none: group consecutive same-speaker segments into turns
+    const groups = groupSegmentsBySpeakerEntry(resolved)
+    for (const g of groups) {
+      const text = applyVerb(g.text)
+      if (!text) continue
+      if (g.speaker) {
+        const header =
+          timestampMode === 'none' ? g.speaker : `${g.speaker} (${formatTimestamp(g.start)})`
+        lines.push(header)
+        lines.push(text)
+        lines.push('')
+      } else {
+        lines.push(text)
+      }
     }
   }
+
   return lines.join('\n').trimEnd()
 }
 
@@ -373,6 +459,120 @@ export async function exportToDocx(
   }
 
   const doc = new Document({ sections: [{ children }] })
+  const blob = await Packer.toBlob(doc)
+
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
+// ─── DOCX — 3-column table (Speaker | Timecode | Dialogue) ──────────────────────
+
+/**
+ * Generates a DOCX with a 3-column table layout:
+ *   Column 1: Speaker name
+ *   Column 2: Timecode (start of speaker turn)
+ *   Column 3: Dialogue text
+ *
+ * Consecutive segments from the same speaker are merged into one row so the
+ * table reflects speaker turns rather than raw Whisper chunks.
+ */
+export async function exportToDocxThreeColumn(
+  segments: Segment[],
+  nameMap: SpeakerNameMap,
+  filename: string,
+  options: { verbatimMode?: VerbatimMode } = {},
+  watermark?: string,
+): Promise<void> {
+  const { verbatimMode = 'full' } = options
+  const {
+    Document,
+    Paragraph,
+    TextRun,
+    Table,
+    TableRow,
+    TableCell,
+    HeadingLevel,
+    Packer,
+    WidthType,
+    AlignmentType,
+  } = await import('docx')
+
+  const resolved = withResolvedSpeakers(segments, nameMap)
+  const groups = groupSegmentsBySpeakerEntry(resolved)
+  const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t.trim())
+
+  const cellPad = { top: 80, bottom: 80, left: 120, right: 120 }
+
+  const makeHeaderCell = (text: string) =>
+    new TableCell({
+      margins: cellPad,
+      children: [
+        new Paragraph({
+          children: [new TextRun({ text, bold: true, color: '5028A0' })],
+        }),
+      ],
+    })
+
+  const makeDataCell = (text: string, bold = false, color?: string) =>
+    new TableCell({
+      margins: cellPad,
+      children: [
+        new Paragraph({
+          children: [new TextRun({ text, bold, ...(color ? { color } : {}) })],
+        }),
+      ],
+    })
+
+  const headerRow = new TableRow({
+    tableHeader: true,
+    children: [
+      makeHeaderCell('Speaker'),
+      makeHeaderCell('Timecode'),
+      makeHeaderCell('Dialogue'),
+    ],
+  })
+
+  const dataRows = groups.map(
+    (g) =>
+      new TableRow({
+        children: [
+          makeDataCell(g.speaker ?? '', !!g.speaker, g.speaker ? '5028A0' : undefined),
+          makeDataCell(formatTimestamp(g.start)),
+          makeDataCell(applyVerb(g.text)),
+        ],
+      }),
+  )
+
+  const table = new Table({
+    rows: [headerRow, ...dataRows],
+    width: { size: 100, type: WidthType.PERCENTAGE },
+  })
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const docChildren: any[] = [
+    new Paragraph({
+      text: 'Video Transcript',
+      heading: HeadingLevel.HEADING_1,
+      spacing: { after: 120 },
+    }),
+  ]
+
+  if (watermark) {
+    docChildren.push(
+      new Paragraph({
+        children: [new TextRun({ text: watermark, italics: true, color: '888888', size: 18 })],
+        spacing: { after: 240 },
+        alignment: AlignmentType.LEFT,
+      }),
+    )
+  }
+
+  docChildren.push(table)
+
+  const doc = new Document({ sections: [{ children: docChildren }] })
   const blob = await Packer.toBlob(doc)
 
   const a = document.createElement('a')

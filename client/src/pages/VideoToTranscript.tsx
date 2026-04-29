@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Gem, Upload, CheckCircle2 } from 'lucide-react'
+import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Gem, Upload, CheckCircle2, Languages } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
@@ -42,6 +42,8 @@ import { trackEvent } from '../lib/analytics'
 import { segmentsToSrt, segmentsToVtt, formatTimestamp, type Segment } from '../lib/srtExport'
 import {
   type SpeakerNameMap,
+  type TimestampMode,
+  type VerbatimMode,
   withResolvedSpeakers,
   buildTxt,
   buildCsv,
@@ -53,6 +55,7 @@ import {
   computeTranscriptHash,
   exportToPdf,
   exportToDocx,
+  exportToDocxThreeColumn,
 } from '../lib/transcriptExport'
 import toast from 'react-hot-toast'
 // import { useWorkflow } from '../contexts/WorkflowContext'
@@ -176,6 +179,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [includeSummary, setIncludeSummary] = useState(true)
   const [includeChapters, setIncludeChapters] = useState(true)
   const [exportFormats, setExportFormats] = useState<('txt' | 'json' | 'docx' | 'pdf')[]>(['txt'])
+  const [timestampMode, setTimestampMode] = useState<TimestampMode>('per-speaker')
+  const [verbatimMode, setVerbatimMode] = useState<VerbatimMode>('full')
+  // Text-only translation panel state
+  const [textTranslateOpen, setTextTranslateOpen] = useState(false)
+  const [textTranslateInput, setTextTranslateInput] = useState('')
+  const [textTranslateLang, setTextTranslateLang] = useState('Spanish')
+  const [textTranslateResult, setTextTranslateResult] = useState('')
+  const [textTranslating, setTextTranslating] = useState(false)
   const [speakerDiarization, setSpeakerDiarization] = useState(false)
   const [diarizationWasRequested, setDiarizationWasRequested] = useState(false)
   const [numSpeakers, setNumSpeakers] = useState('')
@@ -1899,7 +1910,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   /** Single TXT download — speaker-aware, uses edited segments. Zero server round-trip. */
   const handleQuickTxtExport = useCallback(() => {
     const structured = editableSegments?.length
-      ? buildTxt(editableSegments, speakerNameMap)
+      ? buildTxt(editableSegments, speakerNameMap, { timestampMode, verbatimMode })
       : (editedFullTranscript || fullTranscript || '').trim()
     const content = structured.trim()
     if (!content) { toast.error('Nothing to export'); return }
@@ -1933,6 +1944,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     transcriptView,
     translationLanguage,
     exportSourceLangCode,
+    timestampMode,
+    verbatimMode,
   ])
 
   /** Client-side PDF generation — zero server round-trip, respects edits and renamed speakers. */
@@ -2006,6 +2019,55 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       toast.error('DOCX generation failed')
     }
   }, [translatedSegments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, translationLanguage])
+
+  /** DOCX 3-column table — Speaker | Timecode | Dialogue, one row per speaker turn. */
+  const handleExportDocxThreeColumn = useCallback(async () => {
+    const segs = (editableSegments && editableSegments.length > 0 ? editableSegments : result?.segments) ?? null
+    if (!segs?.length) { toast.error('Nothing to export'); return }
+    if (!isPaidPlan && freeExportsUsed >= 2) { toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.'); return }
+    const watermark = isPaidPlan ? undefined : 'Exported from VideoText (Free Plan) · videotext.io'
+    const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_3col_${langCodeForFile(exportSourceLangCode)}`, '.docx')
+    try {
+      await exportToDocxThreeColumn(segs, speakerNameMap, filename, { verbatimMode }, watermark)
+      if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
+      try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'docx_3col', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
+      toast.success(isPaidPlan ? 'DOCX (3-col) downloaded' : 'DOCX (3-col) downloaded (with watermark)')
+    } catch (err) {
+      console.error('DOCX 3-col generation failed:', err)
+      toast.error('DOCX generation failed')
+    }
+  }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode, verbatimMode])
+
+  /** Translate a pasted plain-text transcript (no video/audio upload required). */
+  const handleTextTranslate = useCallback(async () => {
+    const text = textTranslateInput.trim()
+    if (!text) { toast.error('Paste a transcript first'); return }
+    if (!textTranslateLang) { toast.error('Select a target language'); return }
+    setTextTranslating(true)
+    setTextTranslateResult('')
+    try {
+      const token = getAuthToken()
+      const res = await fetch(`${getApiBase()}/api/translate-transcript/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ text, targetLanguage: textTranslateLang }),
+      })
+      const data = await res.json() as { translatedText?: string; error?: string }
+      if (data.translatedText) {
+        setTextTranslateResult(data.translatedText)
+        toast.success('Translation complete')
+      } else {
+        toast.error(data.error ?? 'Translation failed')
+      }
+    } catch {
+      toast.error('Translation failed — check your connection')
+    } finally {
+      setTextTranslating(false)
+    }
+  }, [textTranslateInput, textTranslateLang])
 
   // Search: match in segments (if any) or paragraphs; return { index, snippet, startTime? }
   const _searchResults = useMemo(() => {
@@ -2219,6 +2281,85 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
                   />
                 </div>
+
+                {/* ── Text-only translation panel ── */}
+                <div className="rounded-xl border border-dashed border-gray-200 dark:border-gray-700 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setTextTranslateOpen((v) => !v)}
+                    className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                  >
+                    <span className="flex items-center gap-2 font-medium">
+                      <Languages className="w-4 h-4 text-blue-500 shrink-0" />
+                      Translate an existing transcript (no video upload needed)
+                    </span>
+                    <ChevronRight className={`w-4 h-4 shrink-0 transition-transform ${textTranslateOpen ? 'rotate-90' : ''}`} />
+                  </button>
+                  {textTranslateOpen && (
+                    <div className="px-4 pb-4 space-y-3 border-t border-gray-100 dark:border-gray-800">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 pt-3">
+                        Paste your finished transcript below, pick a target language, and download the translated version. No audio or video required.
+                      </p>
+                      <textarea
+                        value={textTranslateInput}
+                        onChange={(e) => setTextTranslateInput(e.target.value)}
+                        placeholder="Paste your transcript here…"
+                        rows={6}
+                        className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                      />
+                      <div className="flex gap-2">
+                        <select
+                          value={textTranslateLang}
+                          onChange={(e) => setTextTranslateLang(e.target.value)}
+                          className="flex-1 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2"
+                        >
+                          {LANGUAGES.filter((l) => l.value !== 'English').map((l) => (
+                            <option key={l.value} value={l.value}>{l.label}</option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => void handleTextTranslate()}
+                          disabled={textTranslating || !textTranslateInput.trim()}
+                          className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center gap-2 shrink-0"
+                        >
+                          {textTranslating ? (
+                            <><Loader2 className="w-4 h-4 animate-spin" />Translating…</>
+                          ) : (
+                            <>Translate</>
+                          )}
+                        </button>
+                      </div>
+                      {textTranslateResult && (
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Translation ({textTranslateLang})</p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const blob = new Blob([textTranslateResult], { type: 'text/plain;charset=utf-8' })
+                                const a = document.createElement('a')
+                                a.href = URL.createObjectURL(blob)
+                                a.download = `transcript_translated_${textTranslateLang.toLowerCase()}.txt`
+                                a.click()
+                                URL.revokeObjectURL(a.href)
+                                toast.success('Translation downloaded')
+                              }}
+                              className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                            >
+                              <Download className="w-3 h-3" />
+                              Download TXT
+                            </button>
+                          </div>
+                          <div className="max-h-48 overflow-y-auto p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/40 rounded-lg text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                            {textTranslateResult}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 {location.pathname === '/video-to-transcript' && (
                   <SamplesModule sourcePath={location.pathname} samplesHref="/samples#transcript" />
                 )}
@@ -2695,6 +2836,68 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       </p>
                     </>
                   )}
+                </div>
+
+                {/* ── Transcript output settings ── */}
+                <div className="rounded-xl border border-gray-100 dark:border-gray-800 p-3 space-y-4">
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Transcript output settings</p>
+
+                  {/* Timestamp format */}
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">Timestamp format (in exported files)</p>
+                    <div className="flex flex-col gap-1.5">
+                      {(
+                        [
+                          { value: 'per-speaker', label: 'Per speaker entry', hint: 'One timestamp per speaker turn — recommended' },
+                          { value: 'none',         label: 'No timestamps',     hint: 'Speaker names only, no time codes' },
+                          { value: 'per-segment',  label: 'Per segment',       hint: 'Timestamp on every raw chunk (subtitle-style)' },
+                        ] as const
+                      ).map(({ value, label, hint }) => (
+                        <label key={value} className="flex items-start gap-2 cursor-pointer group">
+                          <input
+                            type="radio"
+                            name="timestampMode"
+                            value={value}
+                            checked={timestampMode === value}
+                            onChange={() => setTimestampMode(value)}
+                            className="mt-0.5 accent-violet-600 shrink-0"
+                          />
+                          <span className="flex flex-col">
+                            <span className="text-sm text-gray-800 dark:text-gray-200">{label}</span>
+                            <span className="text-xs text-gray-400 dark:text-gray-500">{hint}</span>
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Verbatim mode */}
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">Verbatim mode (in exported files)</p>
+                    <div className="flex flex-col gap-1.5">
+                      {(
+                        [
+                          { value: 'full',  label: 'Full verbatim',  hint: 'Raw transcript — all fillers, stutters and false starts kept' },
+                          { value: 'clean', label: 'Clean verbatim', hint: 'Auto-removes "um", "uh", "you know", "basically" etc.' },
+                        ] as const
+                      ).map(({ value, label, hint }) => (
+                        <label key={value} className="flex items-start gap-2 cursor-pointer group">
+                          <input
+                            type="radio"
+                            name="verbatimMode"
+                            value={value}
+                            checked={verbatimMode === value}
+                            onChange={() => setVerbatimMode(value)}
+                            className="mt-0.5 accent-violet-600 shrink-0"
+                          />
+                          <span className="flex flex-col">
+                            <span className="text-sm text-gray-800 dark:text-gray-200">{label}</span>
+                            <span className="text-xs text-gray-400 dark:text-gray-500">{hint}</span>
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -3408,7 +3611,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                         ? buildCsv(segsForFormat, speakerNameMap)
                                         : format === 'notion'
                                           ? buildNotion(segsForFormat, speakerNameMap)
-                                          : buildTxt(segsForFormat, speakerNameMap)
+                                          : buildTxt(segsForFormat, speakerNameMap, { timestampMode, verbatimMode })
                                   const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
                                   const freeCanDownload = !isPaidPlan && freeExportsUsed < 2
                                   const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
@@ -3492,14 +3695,18 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             </div>
                             <div>
                               <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Documents</p>
-                              <div className="grid grid-cols-2 gap-2">
+                              <div className="grid grid-cols-3 gap-2">
                                 <button type="button" onClick={handleExportPdf} className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                                   PDF
                                 </button>
-                                <button type="button" onClick={handleExportDocx} className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                <button type="button" onClick={handleExportDocx} className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" title="Standard block format">
                                   DOCX
                                 </button>
+                                <button type="button" onClick={handleExportDocxThreeColumn} className="rounded-lg border border-violet-200 dark:border-violet-700/60 px-2 py-2 text-[11px] font-medium text-violet-700 dark:text-violet-300 bg-violet-50/60 dark:bg-violet-950/20 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors" title="3-column table: Speaker | Timecode | Dialogue">
+                                  DOCX 3-col
+                                </button>
                               </div>
+                              <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">DOCX 3-col: Speaker · Timecode · Dialogue table</p>
                             </div>
 
                             {/* ── Translated exports — only shown when translate was enabled ── */}
@@ -3519,7 +3726,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   format === 'json' ? buildJson(translatedSegments, speakerNameMap)
                                   : format === 'csv' ? buildCsv(translatedSegments, speakerNameMap)
                                   : format === 'notion' ? buildNotion(translatedSegments, speakerNameMap)
-                                  : buildTxt(translatedSegments, speakerNameMap)
+                                  : buildTxt(translatedSegments, speakerNameMap, { timestampMode, verbatimMode })
                                 if (freeUsedAll) { toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.'); return }
                                 const mimeType = format === 'json' ? 'application/json' : 'text/plain'
                                 const ext = format === 'json' ? '.json' : format === 'csv' ? '.csv' : '.txt'
