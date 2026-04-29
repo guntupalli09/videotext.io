@@ -96,40 +96,95 @@ export function withResolvedSpeakers(
 // ─── Clean-verbatim helper ────────────────────────────────────────────────────
 
 /**
- * Regex that matches common filler words and false-start patterns.
- * Ordered longest-first to avoid partial-word matches on shorter patterns.
+ * Filler-word patterns ordered longest-to-shortest to prevent partial matches.
+ * Multi-word phrases must come before their constituent words.
  */
 const FILLER_PATTERN =
-  /\b(you know what|you know|i mean|sort of|kind of|basically|literally|honestly|actually|um+h?|uh+|er+h?|hmm+|hm+|ah+|oh well)\b[,.]?\s*/gi
+  /\b(you know what|you know|i mean|what i mean is|to be honest|to tell the truth|i guess|you see|let me think|let me say|as i said|sort of|kind of|basically|literally|honestly|actually|oh well|um+h?|uh+|er+h?|hmm+|hm+|ah+)\b[,.]?\s*/gi
 
 /**
- * Strips common filler words / false-start patterns from a segment's text.
- * Collapses duplicate whitespace and trims the result.
+ * Produces clean-verbatim text from a raw transcript segment:
+ *
+ * 1. Strips filler words (um, uh, you know, basically …)
+ * 2. Collapses false starts where the SAME phrase appears on both sides of a
+ *    dash — "I was — I was going to say" → "I was going to say"
+ * 3. Removes any remaining solo em/en dashes (e.g. dangling after step 2)
+ * 4. Strips stuttered duplicate words: "and and we" → "and we"
+ * 5. Fixes orphaned punctuation left by steps 1–4 (double commas, etc.)
+ * 6. Collapses multiple spaces and trims.
  */
 export function applyCleanVerbatim(text: string): string {
-  return text.replace(FILLER_PATTERN, ' ').replace(/\s{2,}/g, ' ').trim()
+  let t = text
+
+  // ① Fillers
+  t = t.replace(FILLER_PATTERN, ' ')
+
+  // ② False starts: "phrase — same-phrase" → keep only what follows the dash
+  //    Lookahead ensures we only remove the prefix when the SAME words restart.
+  //    Handles up to 4-word prefixes (covers most real false-start patterns).
+  t = t.replace(/\b(\w+(?:\s+\w+){0,3})\s*[—–]\s*(?=\1\b)/gi, '')
+
+  // ③ Solo em/en dashes left over after step ② (or originally present)
+  t = t.replace(/\s*[—–]\s*/g, ' ')
+
+  // ④ Stuttered consecutive words: "the the house" → "the house"
+  t = t.replace(/\b(\w+)(\s+\1)+\b/gi, '$1')
+
+  // ⑤ Punctuation cleanup after removal
+  t = t.replace(/,\s*,/g, ',')            // double comma
+  t = t.replace(/,\s*([.!?])/g, '$1')    // ", ." → "."
+  t = t.replace(/([.!?])\s*,/g, '$1')    // ". ," → "."
+
+  // ⑥ Normalise whitespace
+  t = t.replace(/[ \t]{2,}/g, ' ')
+
+  return t.trim()
 }
 
 // ─── Speaker-entry grouping ───────────────────────────────────────────────────
 
 /**
- * Collapses consecutive segments that share the same speaker into a single
- * "turn" entry — the canonical structure for professional transcripts.
- * Segments without a speaker are treated as independent paragraphs.
+ * Collapses consecutive segments that share the same speaker into "turns".
+ *
+ * paragraphGapSec (default 3.0 s): when there is a silence gap longer than
+ * this threshold between two consecutive segments of the SAME speaker, a
+ * paragraph break (\n\n) is inserted inside the turn rather than starting a
+ * new turn.  This preserves the single-header-per-speaker-entry structure that
+ * professional transcripts require while still reflecting natural pauses.
+ *
+ * The returned `text` field may therefore contain \n\n — callers that render
+ * to a document (DOCX, PDF) should split on \n\n to create distinct paragraphs.
  */
 export function groupSegmentsBySpeakerEntry(
   resolved: ResolvedSegment[],
+  options: { paragraphGapSec?: number } = {},
 ): Array<{ speaker?: string; start: number; text: string }> {
-  const groups: Array<{ speaker?: string; start: number; text: string }> = []
+  const { paragraphGapSec = 3.0 } = options
+  type Group = { speaker?: string; start: number; end: number; text: string }
+  const groups: Group[] = []
+
   for (const seg of resolved) {
     const last = groups[groups.length - 1]
-    if (last && last.speaker === seg.speaker) {
-      last.text = last.text + ' ' + seg.text.trim()
+    const isSameSpeaker = last !== undefined && last.speaker === seg.speaker
+    const gapSec = last ? Math.max(0, seg.start - last.end) : Infinity
+    const isLongPause = gapSec >= paragraphGapSec
+
+    if (isSameSpeaker && !isLongPause) {
+      // Same turn, seamless continuation
+      last.text = last.text.trimEnd() + ' ' + seg.text.trim()
+      last.end = seg.end
+    } else if (isSameSpeaker && isLongPause) {
+      // Same speaker but notable pause → new paragraph within same turn
+      last.text = last.text.trimEnd() + '\n\n' + seg.text.trim()
+      last.end = seg.end
     } else {
-      groups.push({ speaker: seg.speaker, start: seg.start, text: seg.text.trim() })
+      // New speaker (or first segment)
+      groups.push({ speaker: seg.speaker, start: seg.start, end: seg.end, text: seg.text.trim() })
     }
   }
-  return groups
+
+  // Strip the internal 'end' field — it was only needed for gap detection
+  return groups.map(({ speaker, start, text }) => ({ speaker, start, text }))
 }
 
 // ─── Full transcript text ─────────────────────────────────────────────────────
@@ -310,22 +365,23 @@ export function buildNotion(segments: Segment[], nameMap: SpeakerNameMap): strin
  * Generates and triggers download of a PDF transcript.
  * Lazy-loads jsPDF to avoid adding it to the initial bundle.
  *
- * Layout:
- *   Title line, then for each segment:
- *     SPEAKER (0:00)   [bold, colored when diarized]
- *     Transcript text  [normal weight, indented]
- *
- * Long documents automatically paginate.
+ * Respects timestampMode and verbatimMode:
+ *   per-speaker (default) — one bold header per speaker turn, body text grouped
+ *   per-segment           — header + body for every raw Whisper segment
+ *   none                  — no timestamps, grouped body text only
  */
 export async function exportToPdf(
   segments: Segment[],
   nameMap: SpeakerNameMap,
   filename: string,
   watermark?: string,
+  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
 ): Promise<void> {
+  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
   const { jsPDF } = await import('jspdf')
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
+  const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t.trim())
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const pageW = doc.internal.pageSize.getWidth()
@@ -339,7 +395,6 @@ export async function exportToPdf(
     doc.addPage()
     y = margin
   }
-
   const ensureSpace = (needed: number) => {
     if (y + needed > pageH - margin) addPage()
   }
@@ -357,24 +412,59 @@ export async function exportToPdf(
   y += lineH * 2
   doc.setTextColor(0)
 
-  // Segments
   doc.setFontSize(11)
-  for (const seg of resolved) {
-    const bodyLines = doc.splitTextToSize(seg.text.trim() || ' ', textWidth)
-    const blockH = hasSpeakers && seg.speaker ? lineH + lineH * bodyLines.length + lineH * 0.6 : lineH * bodyLines.length + lineH * 0.4
-    ensureSpace(blockH)
 
-    if (hasSpeakers && seg.speaker) {
-      doc.setFont('helvetica', 'bold')
-      doc.setTextColor(80, 40, 160) // violet
-      doc.text(`${seg.speaker}  (${formatTimestamp(seg.start)})`, margin, y)
-      doc.setTextColor(0)
-      y += lineH
+  if (timestampMode === 'per-segment') {
+    // Legacy: one header + body per raw Whisper segment
+    for (const seg of resolved) {
+      const t = applyVerb(seg.text)
+      const bodyLines = doc.splitTextToSize(t || ' ', textWidth)
+      const blockH = hasSpeakers && seg.speaker
+        ? lineH + lineH * bodyLines.length + lineH * 0.6
+        : lineH * bodyLines.length + lineH * 0.4
+      ensureSpace(blockH)
+
+      if (hasSpeakers && seg.speaker) {
+        doc.setFont('helvetica', 'bold')
+        doc.setTextColor(80, 40, 160)
+        doc.text(`${seg.speaker}  (${formatTimestamp(seg.start)})`, margin, y)
+        doc.setTextColor(0)
+        y += lineH
+      }
+
+      doc.setFont('helvetica', 'normal')
+      doc.text(bodyLines, margin, y)
+      y += lineH * bodyLines.length + lineH * 0.6
     }
+  } else {
+    // per-speaker / none: grouped speaker turns with intra-turn paragraph breaks
+    const groups = groupSegmentsBySpeakerEntry(resolved)
+    for (const g of groups) {
+      const paras = g.text.split('\n\n').filter(Boolean)
+      const bodyText = paras.map((p) => applyVerb(p)).filter(Boolean).join('\n')
+      const bodyLines = doc.splitTextToSize(bodyText || ' ', textWidth)
+      const blockH =
+        hasSpeakers && g.speaker
+          ? lineH + lineH * bodyLines.length + lineH * 0.6
+          : lineH * bodyLines.length + lineH * 0.4
+      ensureSpace(blockH)
 
-    doc.setFont('helvetica', 'normal')
-    doc.text(bodyLines, margin, y)
-    y += lineH * bodyLines.length + lineH * 0.6
+      if (hasSpeakers && g.speaker) {
+        doc.setFont('helvetica', 'bold')
+        doc.setTextColor(80, 40, 160)
+        const headerText =
+          timestampMode === 'none'
+            ? g.speaker
+            : `${g.speaker}  (${formatTimestamp(g.start)})`
+        doc.text(headerText, margin, y)
+        doc.setTextColor(0)
+        y += lineH
+      }
+
+      doc.setFont('helvetica', 'normal')
+      doc.text(bodyLines, margin, y)
+      y += lineH * bodyLines.length + lineH * 0.6
+    }
   }
 
   // Watermark footer on every page
@@ -399,30 +489,29 @@ export async function exportToPdf(
  * Generates and triggers download of a DOCX transcript.
  * Lazy-loads the `docx` library to avoid adding it to the initial bundle.
  *
- * Layout:
- *   H1: "Video Transcript"
- *   For each segment:
- *     Bold paragraph: "Speaker (0:00)" [when diarized]
- *     Normal paragraph: transcript text
+ * Respects timestampMode and verbatimMode:
+ *   per-speaker (default) — one bold header per speaker turn, body grouped
+ *   per-segment           — header + body for every raw Whisper segment
+ *   none                  — speaker names only (no timecodes), grouped body
  */
 export async function exportToDocx(
   segments: Segment[],
   nameMap: SpeakerNameMap,
   filename: string,
   watermark?: string,
+  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
 ): Promise<void> {
+  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
   const { Document, Paragraph, TextRun, HeadingLevel, Packer } = await import('docx')
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
+  const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t.trim())
 
   const children: InstanceType<typeof Paragraph>[] = []
 
   // Title
   children.push(
-    new Paragraph({
-      text: 'Video Transcript',
-      heading: HeadingLevel.HEADING_1,
-    }),
+    new Paragraph({ text: 'Video Transcript', heading: HeadingLevel.HEADING_1 }),
   )
 
   if (watermark) {
@@ -434,28 +523,63 @@ export async function exportToDocx(
     )
   }
 
-  // Segments
-  for (const seg of resolved) {
-    if (hasSpeakers && seg.speaker) {
-      children.push(
-        new Paragraph({
-          children: [
-            new TextRun({
-              text: `${seg.speaker}  (${formatTimestamp(seg.start)})`,
-              bold: true,
-              color: '5028A0',
-            }),
-          ],
-          spacing: { before: 160, after: 40 },
-        }),
-      )
+  if (timestampMode === 'per-segment') {
+    // Legacy: one header + body per raw Whisper segment
+    for (const seg of resolved) {
+      if (hasSpeakers && seg.speaker) {
+        children.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `${seg.speaker}  (${formatTimestamp(seg.start)})`,
+                bold: true,
+                color: '5028A0',
+              }),
+            ],
+            spacing: { before: 160, after: 40 },
+          }),
+        )
+      }
+      const t = applyVerb(seg.text)
+      if (t) {
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: t })],
+            spacing: { after: hasSpeakers && seg.speaker ? 120 : 80 },
+          }),
+        )
+      }
     }
-    children.push(
-      new Paragraph({
-        children: [new TextRun({ text: seg.text.trim() })],
-        spacing: { after: hasSpeakers && seg.speaker ? 120 : 80 },
-      }),
-    )
+  } else {
+    // per-speaker / none: grouped turns with intra-turn paragraph breaks
+    const groups = groupSegmentsBySpeakerEntry(resolved)
+    for (const g of groups) {
+      if (hasSpeakers && g.speaker) {
+        const headerText =
+          timestampMode === 'none'
+            ? g.speaker
+            : `${g.speaker}  (${formatTimestamp(g.start)})`
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: headerText, bold: true, color: '5028A0' })],
+            spacing: { before: 160, after: 40 },
+          }),
+        )
+      }
+      // Split on paragraph breaks inserted by timing gaps
+      const paras = g.text.split('\n\n').filter(Boolean)
+      for (const para of paras) {
+        const t = applyVerb(para)
+        if (t) {
+          children.push(
+            new Paragraph({
+              children: [new TextRun({ text: t })],
+              spacing: { after: hasSpeakers && g.speaker ? 120 : 80 },
+            }),
+          )
+        }
+      }
+    }
   }
 
   const doc = new Document({ sections: [{ children }] })
@@ -519,11 +643,18 @@ export async function exportToDocxThreeColumn(
   const makeDataCell = (text: string, bold = false, color?: string) =>
     new TableCell({
       margins: cellPad,
-      children: [
-        new Paragraph({
-          children: [new TextRun({ text, bold, ...(color ? { color } : {}) })],
-        }),
-      ],
+      // Split on intra-turn paragraph breaks so long speaker turns render as
+      // multiple Word paragraphs inside the cell rather than a single wall of text
+      children: text
+        .split('\n\n')
+        .filter(Boolean)
+        .map(
+          (para) =>
+            new Paragraph({
+              children: [new TextRun({ text: para.trim(), bold, ...(color ? { color } : {}) })],
+              spacing: { after: 60 },
+            }),
+        ),
     })
 
   const headerRow = new TableRow({

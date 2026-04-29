@@ -1956,7 +1956,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const watermark = isPaidPlan ? undefined : 'Exported from VideoText (Free Plan) · videotext.io'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_original_${langCodeForFile(exportSourceLangCode)}`, '.pdf')
     try {
-      await exportToPdf(segs, speakerNameMap, filename, watermark)
+      await exportToPdf(segs, speakerNameMap, filename, watermark, { timestampMode, verbatimMode })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'pdf', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'PDF downloaded' : 'PDF downloaded (with watermark)')
@@ -1964,7 +1964,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       console.error('PDF generation failed:', err)
       toast.error('PDF generation failed')
     }
-  }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode])
+  }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode, timestampMode, verbatimMode])
 
   /** Client-side DOCX generation — zero server round-trip, respects edits and renamed speakers. */
   const handleExportDocx = useCallback(async () => {
@@ -1974,7 +1974,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const watermark = isPaidPlan ? undefined : 'Exported from VideoText (Free Plan) · videotext.io'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_original_${langCodeForFile(exportSourceLangCode)}`, '.docx')
     try {
-      await exportToDocx(segs, speakerNameMap, filename, watermark)
+      await exportToDocx(segs, speakerNameMap, filename, watermark, { timestampMode, verbatimMode })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'docx', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'DOCX downloaded' : 'DOCX downloaded (with watermark)')
@@ -1982,7 +1982,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       console.error('DOCX generation failed:', err)
       toast.error('DOCX generation failed')
     }
-  }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode])
+  }, [editableSegments, result?.segments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, exportSourceLangCode, timestampMode, verbatimMode])
 
   /** Translated PDF — uses translatedSegments so the file is in the target language. */
   const handleExportPdfTranslated = useCallback(async () => {
@@ -1992,7 +1992,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const slug = translationLanguage ? targetLangFileSlug(translationLanguage) : 'translated'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_translated_${slug}`, '.pdf')
     try {
-      await exportToPdf(translatedSegments, speakerNameMap, filename, watermark)
+      await exportToPdf(translatedSegments, speakerNameMap, filename, watermark, { timestampMode, verbatimMode })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'pdf_translated', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'PDF downloaded' : 'PDF downloaded (with watermark)')
@@ -2000,7 +2000,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       console.error('PDF generation failed:', err)
       toast.error('PDF generation failed')
     }
-  }, [translatedSegments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, translationLanguage])
+  }, [translatedSegments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, translationLanguage, timestampMode, verbatimMode])
 
   /** Translated DOCX — uses translatedSegments so the file is in the target language. */
   const handleExportDocxTranslated = useCallback(async () => {
@@ -2010,7 +2010,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const slug = translationLanguage ? targetLangFileSlug(translationLanguage) : 'translated'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_translated_${slug}`, '.docx')
     try {
-      await exportToDocx(translatedSegments, speakerNameMap, filename, watermark)
+      await exportToDocx(translatedSegments, speakerNameMap, filename, watermark, { timestampMode, verbatimMode })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'docx_translated', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'DOCX downloaded' : 'DOCX downloaded (with watermark)')
@@ -2018,7 +2018,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       console.error('DOCX generation failed:', err)
       toast.error('DOCX generation failed')
     }
-  }, [translatedSegments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, translationLanguage])
+  }, [translatedSegments, speakerNameMap, isPaidPlan, freeExportsUsed, selectedFile?.name, translationLanguage, timestampMode, verbatimMode])
 
   /** DOCX 3-column table — Speaker | Timecode | Dialogue, one row per speaker turn. */
   const handleExportDocxThreeColumn = useCallback(async () => {
