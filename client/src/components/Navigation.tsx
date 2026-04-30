@@ -11,7 +11,7 @@ import { trackEvent } from '../lib/analytics'
 const AI_TOOLS = [
   { name: 'Video → Transcript', path: '/video-to-transcript' },
   { name: 'Voice → Text', path: '/voice-recorder' },
-  { name: 'Translate Subtitles', path: '/translate-subtitles' },
+  { name: 'Translate', path: '/translate-subtitles' },
   { name: 'Batch processing', path: '/batch-process' },
   { name: 'Video → Subtitles', path: '/video-to-subtitles' },
   { name: 'Fix Subtitles', path: '/fix-subtitles' },

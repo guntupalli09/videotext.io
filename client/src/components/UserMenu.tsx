@@ -12,7 +12,7 @@ import { useFounderStatus } from '../hooks/useFounderStatus'
 const tools = [
   { name: 'Video → Transcript', path: '/video-to-transcript' },
   { name: 'Video → Subtitles', path: '/video-to-subtitles' },
-  { name: 'Translate Subtitles', path: '/translate-subtitles' },
+  { name: 'Translate', path: '/translate-subtitles' },
   { name: 'Fix Subtitles', path: '/fix-subtitles' },
   { name: 'Burn Subtitles', path: '/burn-subtitles' },
   { name: 'Compress Video', path: '/compress-video' },
