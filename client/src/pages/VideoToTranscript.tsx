@@ -252,16 +252,15 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     try {
       const raw = localStorage.getItem(EXPORT_PREFS_KEY)
       if (!raw) return
-      const p = JSON.parse(raw) as { t?: TranscriptTimestampMode; l?: TranscriptDocLayout; v?: TranscriptVerbosityMode; i?: number }
-      if (p.t) setTranscriptTimestampMode(p.t)
-      if (p.l) setTranscriptDocLayout(p.l)
-      if (p.v) setTranscriptVerbatimMode(p.v)
-      if (p.i && p.i > 0) setTimestampIntervalSec(p.i)
+      const p = JSON.parse(raw) as { t?: TimestampMode; v?: VerbatimMode; i?: number }
+      if (p.t && ['per-speaker', 'per-segment', 'per-interval', 'none'].includes(p.t)) setTimestampMode(p.t)
+      if (p.v && ['full', 'clean'].includes(p.v)) setVerbatimMode(p.v)
+      if (p.i && p.i > 0) setIntervalSec(p.i)
     } catch { /* ignore */ }
   }, [])
   useEffect(() => {
-    try { localStorage.setItem(EXPORT_PREFS_KEY, JSON.stringify({ t: transcriptTimestampMode, l: transcriptDocLayout, v: transcriptVerbatimMode, i: timestampIntervalSec })) } catch { /* ignore */ }
-  }, [transcriptTimestampMode, transcriptDocLayout, transcriptVerbatimMode, timestampIntervalSec])
+    try { localStorage.setItem(EXPORT_PREFS_KEY, JSON.stringify({ t: timestampMode, v: verbatimMode, i: intervalSec })) } catch { /* ignore */ }
+  }, [timestampMode, verbatimMode, intervalSec])
   const syncScrubberFill = useCallback(() => {
     const el = scrubberRef.current
     if (!el) return
