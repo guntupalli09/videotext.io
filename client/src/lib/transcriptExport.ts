@@ -422,7 +422,7 @@ export async function exportToDocx(
   const intervalSec = options.intervalSec ?? 30
   const grouped = groupReadableParagraphs(resolved, verbatimMode)
 
-  const children: Array<InstanceType<typeof Paragraph> | InstanceType<typeof Table>> = []
+  const children: any[] = []
 
   // Title
   children.push(
