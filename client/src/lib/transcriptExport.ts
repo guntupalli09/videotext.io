@@ -17,6 +17,9 @@ import { formatTimestamp } from './srtExport'
 
 /** Maps raw backend speaker labels (e.g. "SPEAKER_00") to user-defined names (e.g. "Alice"). */
 export type SpeakerNameMap = Record<string, string>
+export type TranscriptTimestampMode = 'none' | 'speaker-turn' | 'interval'
+export type TranscriptDocLayout = 'regular' | 'three-column'
+export type TranscriptVerbosityMode = 'full-verbatim' | 'clean-verbatim'
 
 /** A segment with the speaker field already resolved to a display name. */
 export interface ResolvedSegment {
@@ -25,6 +28,49 @@ export interface ResolvedSegment {
   text: string
   /** Resolved display name (custom or auto "Speaker N"), only set when diarization was enabled. */
   speaker?: string
+}
+
+function toCleanVerbatimText(input: string): string {
+  let text = input
+    .replace(/\b(um+|uh+|erm|ah+)\b/gi, '')
+    .replace(/\b(you know|i mean|kind of|sort of|basically|like)\b/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\b(\w+)(\s+\1\b){1,}/gi, '$1')
+    .replace(/\s+([,.;!?])/g, '$1')
+    .trim()
+  text = text.replace(/(^|[.!?]\s+)([a-z])/g, (_, p1, p2) => `${p1}${String(p2).toUpperCase()}`)
+  return text
+}
+
+function segmentTextByMode(text: string, mode: TranscriptVerbosityMode): string {
+  return mode === 'clean-verbatim' ? toCleanVerbatimText(text) : text.trim()
+}
+
+function groupReadableParagraphs(
+  segments: ResolvedSegment[],
+  mode: TranscriptVerbosityMode,
+): Array<{ speaker?: string; start: number; text: string }> {
+  const out: Array<{ speaker?: string; start: number; text: string }> = []
+  let current: { speaker?: string; start: number; text: string } | null = null
+  for (const seg of segments) {
+    const text = segmentTextByMode(seg.text, mode)
+    if (!text) continue
+    const sameSpeaker = !!current && current.speaker === seg.speaker
+    const canAppend = !!current && sameSpeaker && current.text.length < 420 && !/[.!?]["')\]]?$/.test(current.text.trim())
+    if (!current || !canAppend) {
+      if (current) out.push(current)
+      current = { speaker: seg.speaker, start: seg.start, text }
+    } else {
+      current.text = `${current.text.replace(/\s+$/, '')} ${text.replace(/^\s+/, '')}`
+    }
+  }
+  if (current) out.push(current)
+  return out
+}
+
+function intervalStamp(start: number, intervalSec: number): string {
+  const bucket = Math.floor(start / Math.max(1, intervalSec)) * Math.max(1, intervalSec)
+  return formatTimestamp(bucket)
 }
 
 // ─── Speaker resolution ───────────────────────────────────────────────────────
@@ -104,12 +150,25 @@ export function buildFullTranscript(segments: Segment[]): string {
  *   Hello, how are you?
  *   Doing well, thanks.
  */
-export function buildTxt(segments: Segment[], nameMap: SpeakerNameMap): string {
+export function buildTxt(
+  segments: Segment[],
+  nameMap: SpeakerNameMap,
+  options: { timestampMode?: TranscriptTimestampMode; verbatimMode?: TranscriptVerbosityMode } = {},
+): string {
+  const timestampMode = options.timestampMode ?? 'speaker-turn'
+  const verbatimMode = options.verbatimMode ?? 'full-verbatim'
+  const intervalSec = 30
   const resolved = withResolvedSpeakers(segments, nameMap)
+  const grouped = groupReadableParagraphs(resolved, verbatimMode)
   const lines: string[] = []
-  for (const seg of resolved) {
+  for (const seg of grouped) {
     if (seg.speaker) {
-      lines.push(`${seg.speaker} (${formatTimestamp(seg.start)})`)
+      const speakerHead = timestampMode === 'speaker-turn'
+        ? `${seg.speaker} (${formatTimestamp(seg.start)})`
+        : timestampMode === 'interval'
+          ? `${seg.speaker} (${intervalStamp(seg.start, intervalSec)})`
+        : seg.speaker
+      lines.push(speakerHead)
       lines.push(seg.text.trim())
       lines.push('')
     } else {
@@ -236,10 +295,16 @@ export async function exportToPdf(
   nameMap: SpeakerNameMap,
   filename: string,
   watermark?: string,
+  options: { timestampMode?: TranscriptTimestampMode; layout?: TranscriptDocLayout; verbatimMode?: TranscriptVerbosityMode; intervalSec?: number } = {},
 ): Promise<void> {
   const { jsPDF } = await import('jspdf')
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
+  const timestampMode = options.timestampMode ?? 'speaker-turn'
+  const layout = options.layout ?? 'regular'
+  const verbatimMode = options.verbatimMode ?? 'full-verbatim'
+  const intervalSec = options.intervalSec ?? 30
+  const grouped = groupReadableParagraphs(resolved, verbatimMode)
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const pageW = doc.internal.pageSize.getWidth()
@@ -273,7 +338,28 @@ export async function exportToPdf(
 
   // Segments
   doc.setFontSize(11)
-  for (const seg of resolved) {
+  if (layout === 'three-column') {
+    const speakerX = margin
+    const tsX = margin + 42
+    const dialogX = margin + 74
+    doc.setFont('helvetica', 'bold')
+    doc.text('Speaker', speakerX, y)
+    doc.text('Timestamp', tsX, y)
+    doc.text('Dialogue', dialogX, y)
+    y += lineH
+    doc.setFont('helvetica', 'normal')
+  }
+  for (const seg of grouped) {
+    if (layout === 'three-column') {
+      const bodyLines = doc.splitTextToSize(seg.text.trim() || ' ', pageW - margin - (margin + 74))
+      const blockH = Math.max(lineH, lineH * bodyLines.length) + 2
+      ensureSpace(blockH)
+      doc.text(seg.speaker ?? '—', margin, y)
+      doc.text(timestampMode === 'none' ? '—' : (timestampMode === 'interval' ? intervalStamp(seg.start, intervalSec) : formatTimestamp(seg.start)), margin + 42, y)
+      doc.text(bodyLines, margin + 74, y)
+      y += blockH
+      continue
+    }
     const bodyLines = doc.splitTextToSize(seg.text.trim() || ' ', textWidth)
     const blockH = hasSpeakers && seg.speaker ? lineH + lineH * bodyLines.length + lineH * 0.6 : lineH * bodyLines.length + lineH * 0.4
     ensureSpace(blockH)
@@ -281,7 +367,8 @@ export async function exportToPdf(
     if (hasSpeakers && seg.speaker) {
       doc.setFont('helvetica', 'bold')
       doc.setTextColor(80, 40, 160) // violet
-      doc.text(`${seg.speaker}  (${formatTimestamp(seg.start)})`, margin, y)
+      const stamp = timestampMode === 'interval' ? intervalStamp(seg.start, intervalSec) : formatTimestamp(seg.start)
+      doc.text(`${seg.speaker}  (${stamp})`, margin, y)
       doc.setTextColor(0)
       y += lineH
     }
@@ -324,12 +411,18 @@ export async function exportToDocx(
   nameMap: SpeakerNameMap,
   filename: string,
   watermark?: string,
+  options: { timestampMode?: TranscriptTimestampMode; layout?: TranscriptDocLayout; verbatimMode?: TranscriptVerbosityMode; intervalSec?: number } = {},
 ): Promise<void> {
-  const { Document, Paragraph, TextRun, HeadingLevel, Packer } = await import('docx')
+  const { Document, Paragraph, TextRun, HeadingLevel, Packer, Table, TableRow, TableCell, WidthType } = await import('docx')
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
+  const timestampMode = options.timestampMode ?? 'speaker-turn'
+  const layout = options.layout ?? 'regular'
+  const verbatimMode = options.verbatimMode ?? 'full-verbatim'
+  const intervalSec = options.intervalSec ?? 30
+  const grouped = groupReadableParagraphs(resolved, verbatimMode)
 
-  const children: InstanceType<typeof Paragraph>[] = []
+  const children: Array<InstanceType<typeof Paragraph> | InstanceType<typeof Table>> = []
 
   // Title
   children.push(
@@ -349,13 +442,39 @@ export async function exportToDocx(
   }
 
   // Segments
-  for (const seg of resolved) {
+  if (layout === 'three-column') {
+    const tableRows = [
+      new TableRow({
+        children: [
+          new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Speaker', bold: true })] })] }),
+          new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Timestamp', bold: true })] })] }),
+          new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Dialogue', bold: true })] })] }),
+        ],
+      }),
+      ...grouped.map((seg) => new TableRow({
+        children: [
+          new TableCell({ children: [new Paragraph(seg.speaker ?? '—')] }),
+          new TableCell({ children: [new Paragraph(timestampMode === 'none' ? '—' : (timestampMode === 'interval' ? intervalStamp(seg.start, intervalSec) : formatTimestamp(seg.start)))] }),
+          new TableCell({ children: [new Paragraph(seg.text.trim())] }),
+        ],
+      })),
+    ]
+    children.push(new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      rows: tableRows,
+    }))
+  } else for (const seg of grouped) {
     if (hasSpeakers && seg.speaker) {
+      const speakerHead = timestampMode === 'speaker-turn'
+        ? `${seg.speaker}  (${formatTimestamp(seg.start)})`
+        : timestampMode === 'interval'
+          ? `${seg.speaker}  (${intervalStamp(seg.start, intervalSec)})`
+        : seg.speaker
       children.push(
         new Paragraph({
           children: [
             new TextRun({
-              text: `${seg.speaker}  (${formatTimestamp(seg.start)})`,
+              text: speakerHead,
               bold: true,
               color: '5028A0',
             }),

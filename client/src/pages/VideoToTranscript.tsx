@@ -42,6 +42,9 @@ import { trackEvent } from '../lib/analytics'
 import { segmentsToSrt, segmentsToVtt, formatTimestamp, type Segment } from '../lib/srtExport'
 import {
   type SpeakerNameMap,
+  type TranscriptDocLayout,
+  type TranscriptVerbosityMode,
+  type TranscriptTimestampMode,
   withResolvedSpeakers,
   buildTxt,
   buildCsv,
@@ -74,6 +77,7 @@ function batchUploadEligible(): boolean {
 const SIGNUP_STARTED_AT_KEY = 'videotext:signup_started_at'
 const JOB_COMPLETED_COUNT_KEY = 'videotext:job_completed_count'
 const FIRST_OUTPUT_SEEN_KEY_PREFIX = 'videotext:first_output_seen'
+const EXPORT_PREFS_KEY = 'vt:transcript_export_prefs'
 
 /** Optional SEO overrides for alternate entry points (e.g. /video-to-text, /youtube-transcript-generator). Do NOT duplicate logic here. */
 export type VideoToTranscriptSeoProps = {
@@ -176,6 +180,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [includeSummary, setIncludeSummary] = useState(true)
   const [includeChapters, setIncludeChapters] = useState(true)
   const [exportFormats, setExportFormats] = useState<('txt' | 'json' | 'docx' | 'pdf')[]>(['txt'])
+  const [transcriptTimestampMode, setTranscriptTimestampMode] = useState<TranscriptTimestampMode>('speaker-turn')
+  const [transcriptDocLayout, setTranscriptDocLayout] = useState<TranscriptDocLayout>('regular')
+  const [transcriptVerbatimMode, setTranscriptVerbatimMode] = useState<TranscriptVerbosityMode>('full-verbatim')
+  const [timestampIntervalSec, setTimestampIntervalSec] = useState(30)
   const [speakerDiarization, setSpeakerDiarization] = useState(false)
   const [diarizationWasRequested, setDiarizationWasRequested] = useState(false)
   const [numSpeakers, setNumSpeakers] = useState('')
@@ -233,6 +241,20 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [audioMuted, setAudioMuted] = useState(false)
   const [audioSpeed, setAudioSpeed] = useState(1)
   const [showPostSuccessMonetizationPanel, setShowPostSuccessMonetizationPanel] = useState(false)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(EXPORT_PREFS_KEY)
+      if (!raw) return
+      const p = JSON.parse(raw) as { t?: TranscriptTimestampMode; l?: TranscriptDocLayout; v?: TranscriptVerbosityMode; i?: number }
+      if (p.t) setTranscriptTimestampMode(p.t)
+      if (p.l) setTranscriptDocLayout(p.l)
+      if (p.v) setTranscriptVerbatimMode(p.v)
+      if (p.i && p.i > 0) setTimestampIntervalSec(p.i)
+    } catch { /* ignore */ }
+  }, [])
+  useEffect(() => {
+    try { localStorage.setItem(EXPORT_PREFS_KEY, JSON.stringify({ t: transcriptTimestampMode, l: transcriptDocLayout, v: transcriptVerbatimMode, i: timestampIntervalSec })) } catch { /* ignore */ }
+  }, [transcriptTimestampMode, transcriptDocLayout, transcriptVerbatimMode, timestampIntervalSec])
   const syncScrubberFill = useCallback(() => {
     const el = scrubberRef.current
     if (!el) return
@@ -1899,7 +1921,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   /** Single TXT download — speaker-aware, uses edited segments. Zero server round-trip. */
   const handleQuickTxtExport = useCallback(() => {
     const structured = editableSegments?.length
-      ? buildTxt(editableSegments, speakerNameMap)
+      ? buildTxt(editableSegments, speakerNameMap, { timestampMode: transcriptTimestampMode, verbatimMode: transcriptVerbatimMode })
       : (editedFullTranscript || fullTranscript || '').trim()
     const content = structured.trim()
     if (!content) { toast.error('Nothing to export'); return }
@@ -1943,7 +1965,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const watermark = isPaidPlan ? undefined : 'Exported from VideoText (Free Plan) · videotext.io'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_original_${langCodeForFile(exportSourceLangCode)}`, '.pdf')
     try {
-      await exportToPdf(segs, speakerNameMap, filename, watermark)
+      await exportToPdf(segs, speakerNameMap, filename, watermark, { timestampMode: transcriptTimestampMode, layout: transcriptDocLayout, verbatimMode: transcriptVerbatimMode, intervalSec: timestampIntervalSec })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'pdf', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'PDF downloaded' : 'PDF downloaded (with watermark)')
@@ -1961,7 +1983,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const watermark = isPaidPlan ? undefined : 'Exported from VideoText (Free Plan) · videotext.io'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_original_${langCodeForFile(exportSourceLangCode)}`, '.docx')
     try {
-      await exportToDocx(segs, speakerNameMap, filename, watermark)
+      await exportToDocx(segs, speakerNameMap, filename, watermark, { timestampMode: transcriptTimestampMode, layout: transcriptDocLayout, verbatimMode: transcriptVerbatimMode, intervalSec: timestampIntervalSec })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'docx', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'DOCX downloaded' : 'DOCX downloaded (with watermark)')
@@ -1979,7 +2001,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const slug = translationLanguage ? targetLangFileSlug(translationLanguage) : 'translated'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_translated_${slug}`, '.pdf')
     try {
-      await exportToPdf(translatedSegments, speakerNameMap, filename, watermark)
+      await exportToPdf(translatedSegments, speakerNameMap, filename, watermark, { timestampMode: transcriptTimestampMode, layout: transcriptDocLayout, verbatimMode: transcriptVerbatimMode, intervalSec: timestampIntervalSec })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'pdf_translated', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'PDF downloaded' : 'PDF downloaded (with watermark)')
@@ -1997,7 +2019,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const slug = translationLanguage ? targetLangFileSlug(translationLanguage) : 'translated'
     const filename = joinExportFilename(exportFileStem(selectedFile?.name, 'video'), `transcript_translated_${slug}`, '.docx')
     try {
-      await exportToDocx(translatedSegments, speakerNameMap, filename, watermark)
+      await exportToDocx(translatedSegments, speakerNameMap, filename, watermark, { timestampMode: transcriptTimestampMode, layout: transcriptDocLayout, verbatimMode: transcriptVerbatimMode, intervalSec: timestampIntervalSec })
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
       try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'docx_translated', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
       toast.success(isPaidPlan ? 'DOCX downloaded' : 'DOCX downloaded (with watermark)')
@@ -2189,6 +2211,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 )}
 
                 <div className="rounded-xl border border-violet-200/60 dark:border-violet-800/40 bg-gradient-to-br from-violet-50/40 to-purple-50/20 dark:from-violet-950/30 dark:to-purple-950/20 px-4 py-4 sm:px-6 sm:py-5">
+                  <div className="mb-3 rounded-lg border border-sky-200/70 dark:border-sky-800/50 bg-sky-50/70 dark:bg-sky-950/20 px-3 py-2">
+                    <p className="text-xs font-semibold text-sky-900 dark:text-sky-200">Need transcript-only translation?</p>
+                    <p className="text-[11px] text-sky-800 dark:text-sky-300 mt-0.5">
+                      Upload TXT, DOCX, SRT, or VTT directly — no audio/video required.
+                      <Link to="/translate-subtitles" className="ml-1 underline font-semibold">Open transcript translation</Link>
+                    </p>
+                  </div>
                   <div className="flex flex-wrap gap-4 sm:gap-6 justify-center sm:justify-start">
                     <div className="flex flex-col items-start gap-1.5">
                       <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Accuracy</p>
@@ -3392,6 +3421,67 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           <p className="text-xs text-gray-500">Exports appear after transcript data is ready.</p>
                         ) : (
                           <div className="space-y-3">
+                            <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-2.5 space-y-2">
+                              <p className="text-[10px] uppercase tracking-wide text-gray-500">Transcript formatting</p>
+                              <div className="grid grid-cols-2 gap-2">
+                                <label className="text-[11px] text-gray-700 dark:text-gray-200">
+                                  Timestamps
+                                  <select
+                                    value={transcriptTimestampMode}
+                                    onChange={(e) => setTranscriptTimestampMode(e.target.value as TranscriptTimestampMode)}
+                                    className="mt-1 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1"
+                                  >
+                                    <option value="speaker-turn">Per speaker entry (default)</option>
+                                    <option value="interval">Per time interval (advanced)</option>
+                                    <option value="none">No timestamps</option>
+                                  </select>
+                                </label>
+                                {transcriptTimestampMode === 'interval' && (
+                                  <label className="text-[11px] text-gray-700 dark:text-gray-200">
+                                    Interval seconds
+                                    <input
+                                      type="number"
+                                      min={5}
+                                      step={5}
+                                      value={timestampIntervalSec}
+                                      onChange={(e) => setTimestampIntervalSec(Math.max(5, Number(e.target.value) || 30))}
+                                      className="mt-1 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1"
+                                    />
+                                  </label>
+                                )}
+                                <label className="text-[11px] text-gray-700 dark:text-gray-200">
+                                  Transcript style
+                                  <select
+                                    value={transcriptVerbatimMode}
+                                    onChange={(e) => setTranscriptVerbatimMode(e.target.value as TranscriptVerbosityMode)}
+                                    className="mt-1 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1"
+                                  >
+                                    <option value="full-verbatim">Full verbatim (no edits)</option>
+                                    <option value="clean-verbatim">Clean verbatim (auto cleanup)</option>
+                                  </select>
+                                </label>
+                                <label className="text-[11px] text-gray-700 dark:text-gray-200">
+                                  DOC/PDF layout
+                                  <select
+                                    value={transcriptDocLayout}
+                                    onChange={(e) => setTranscriptDocLayout(e.target.value as TranscriptDocLayout)}
+                                    className="mt-1 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1"
+                                  >
+                                    <option value="regular">Regular document</option>
+                                    <option value="three-column">3-column (speaker / time / dialogue)</option>
+                                  </select>
+                                </label>
+                              </div>
+                              <p className="text-[10px] text-gray-500">
+                                Built for professional transcript delivery: choose verbatim level, timestamp style, and final document format before export.
+                              </p>
+                              <div className="rounded-md bg-gray-50 dark:bg-gray-800/60 p-2">
+                                <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Live preview</p>
+                                <p className="text-[11px] whitespace-pre-wrap text-gray-700 dark:text-gray-200 line-clamp-4">
+                                  {buildTxt((segmentsForExport ?? []).slice(0, 4), speakerNameMap, { timestampMode: transcriptTimestampMode, verbatimMode: transcriptVerbatimMode })}
+                                </p>
+                              </div>
+                            </div>
                             <div>
                               <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Structured</p>
                               <div className="grid grid-cols-2 gap-2">
@@ -3408,7 +3498,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                         ? buildCsv(segsForFormat, speakerNameMap)
                                         : format === 'notion'
                                           ? buildNotion(segsForFormat, speakerNameMap)
-                                          : buildTxt(segsForFormat, speakerNameMap)
+                                      : buildTxt(segsForFormat, speakerNameMap, { timestampMode: transcriptTimestampMode, verbatimMode: transcriptVerbatimMode })
                                   const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
                                   const freeCanDownload = !isPaidPlan && freeExportsUsed < 2
                                   const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
@@ -3519,7 +3609,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   format === 'json' ? buildJson(translatedSegments, speakerNameMap)
                                   : format === 'csv' ? buildCsv(translatedSegments, speakerNameMap)
                                   : format === 'notion' ? buildNotion(translatedSegments, speakerNameMap)
-                                  : buildTxt(translatedSegments, speakerNameMap)
+                                  : buildTxt(translatedSegments, speakerNameMap, { timestampMode: transcriptTimestampMode, verbatimMode: transcriptVerbatimMode })
                                 if (freeUsedAll) { toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.'); return }
                                 const mimeType = format === 'json' ? 'application/json' : 'text/plain'
                                 const ext = format === 'json' ? '.json' : format === 'csv' ? '.csv' : '.txt'
