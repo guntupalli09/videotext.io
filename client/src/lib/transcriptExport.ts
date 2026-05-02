@@ -17,10 +17,6 @@ import { formatTimestamp } from './srtExport'
 
 /** Maps raw backend speaker labels (e.g. "SPEAKER_00") to user-defined names (e.g. "Alice"). */
 export type SpeakerNameMap = Record<string, string>
-export type TranscriptTimestampMode = 'none' | 'speaker-turn' | 'interval'
-export type TranscriptDocLayout = 'regular' | 'three-column'
-export type TranscriptVerbosityMode = 'full-verbatim' | 'clean-verbatim'
-
 /**
  * Controls how timestamps appear in text-based exports.
  * - `per-speaker`: one timestamp at the start of each speaker turn (default — Adaiah feedback)
@@ -46,48 +42,7 @@ export interface ResolvedSegment {
   speaker?: string
 }
 
-function toCleanVerbatimText(input: string): string {
-  let text = input
-    .replace(/\b(um+|uh+|erm|ah+)\b/gi, '')
-    .replace(/\b(you know|i mean|kind of|sort of|basically|like)\b/gi, '')
-    .replace(/\s{2,}/g, ' ')
-    .replace(/\b(\w+)(\s+\1\b){1,}/gi, '$1')
-    .replace(/\s+([,.;!?])/g, '$1')
-    .trim()
-  text = text.replace(/(^|[.!?]\s+)([a-z])/g, (_, p1, p2) => `${p1}${String(p2).toUpperCase()}`)
-  return text
-}
 
-function segmentTextByMode(text: string, mode: TranscriptVerbosityMode): string {
-  return mode === 'clean-verbatim' ? toCleanVerbatimText(text) : text.trim()
-}
-
-function groupReadableParagraphs(
-  segments: ResolvedSegment[],
-  mode: TranscriptVerbosityMode,
-): Array<{ speaker?: string; start: number; text: string }> {
-  const out: Array<{ speaker?: string; start: number; text: string }> = []
-  let current: { speaker?: string; start: number; text: string } | null = null
-  for (const seg of segments) {
-    const text = segmentTextByMode(seg.text, mode)
-    if (!text) continue
-    const sameSpeaker = !!current && current.speaker === seg.speaker
-    const canAppend = !!current && sameSpeaker && current.text.length < 420 && !/[.!?]["')\]]?$/.test(current.text.trim())
-    if (!current || !canAppend) {
-      if (current) out.push(current)
-      current = { speaker: seg.speaker, start: seg.start, text }
-    } else {
-      current.text = `${current.text.replace(/\s+$/, '')} ${text.replace(/^\s+/, '')}`
-    }
-  }
-  if (current) out.push(current)
-  return out
-}
-
-function intervalStamp(start: number, intervalSec: number): string {
-  const bucket = Math.floor(start / Math.max(1, intervalSec)) * Math.max(1, intervalSec)
-  return formatTimestamp(bucket)
-}
 
 // ─── Speaker resolution ───────────────────────────────────────────────────────
 
