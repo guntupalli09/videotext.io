@@ -41,8 +41,8 @@ export const LANDING_TOOLS: LandingToolConfig[] = [
   },
   {
     id: 'translate-subtitles',
-    name: 'Translate Subtitles',
-    description: 'Convert subtitles to Arabic, Hindi, Spanish, and 70+ languages',
+    name: 'Translate',
+    description: 'Translate subtitles, DOCX, TXT, and JSON into 70+ languages',
     icon: Languages,
     gradientFrom: 'from-pink-600',
     gradientTo: 'to-purple-600',

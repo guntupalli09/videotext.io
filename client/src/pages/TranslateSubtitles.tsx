@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, Suspense, lazy } from 'react'
+import { useState, useRef, Suspense, lazy } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { Languages, Copy, Check, Download, ArrowRight } from 'lucide-react'
+import { Languages, Copy, Check, Download, ArrowRight, Bold, Italic, AlignLeft, AlignCenter, AlignRight } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
@@ -27,6 +27,159 @@ import { LANGUAGES } from '../lib/languages'
 import { exportFileStem, joinExportFilename, targetLangFileSlug } from '../lib/exportFileNames'
 
 type Tab = 'upload' | 'paste'
+type InputKind = 'subtitles' | 'documents'
+
+interface SubStyles {
+  fontFamily: string
+  fontSize: number
+  color: string
+  bgColor: string
+  bgOpacity: number
+  bold: boolean
+  italic: boolean
+  position: 'top' | 'center' | 'bottom'
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+function hexToRgba(hex: string, opacity: number): string {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `rgba(${r},${g},${b},${opacity})`
+}
+
+function hexToAssColor(hex: string): string {
+  const r = hex.slice(1, 3).toUpperCase()
+  const g = hex.slice(3, 5).toUpperCase()
+  const b = hex.slice(5, 7).toUpperCase()
+  return `&H00${b}${g}${r}`
+}
+
+function hexToAssBackColor(hex: string, opacity: number): string {
+  const alpha = Math.round((1 - opacity) * 255).toString(16).padStart(2, '0').toUpperCase()
+  const r = hex.slice(1, 3).toUpperCase()
+  const g = hex.slice(3, 5).toUpperCase()
+  const b = hex.slice(5, 7).toUpperCase()
+  return `&H${alpha}${b}${g}${r}`
+}
+
+function srtTimeToAss(t: string): string {
+  // "00:00:01,500" → "0:00:01.50"
+  const norm = t.trim().replace(',', '.')
+  const stripped = norm.replace(/^0(\d:)/, '$1')
+  return stripped.replace(/(\.\d{2})\d*$/, '$1')
+}
+
+function generateStyledVtt(rows: SubtitleRow[], styles: SubStyles, baseFilename: string): void {
+  const { fontFamily, fontSize, color, bgColor, bgOpacity, bold, italic, position } = styles
+  const linePos = position === 'top' ? ' line:5%' : position === 'center' ? ' line:50%' : ' line:90%'
+  let vtt = `WEBVTT\n\nSTYLE\n::cue {\n`
+  vtt += `  font-family: ${fontFamily};\n`
+  vtt += `  font-size: ${fontSize}px;\n`
+  vtt += `  color: ${color};\n`
+  vtt += `  background-color: ${hexToRgba(bgColor, bgOpacity)};\n`
+  if (bold) vtt += `  font-weight: bold;\n`
+  if (italic) vtt += `  font-style: italic;\n`
+  vtt += `}\n\n`
+  for (let i = 0; i < rows.length; i++) {
+    vtt += `${i + 1}\n${rows[i].startTime} --> ${rows[i].endTime}${linePos}\n${rows[i].text}\n\n`
+  }
+  downloadBlob(vtt, 'text/vtt', `${baseFilename}_styled.vtt`)
+}
+
+function generateAssFile(rows: SubtitleRow[], styles: SubStyles, baseFilename: string): void {
+  const { fontFamily, fontSize, color, bgColor, bgOpacity, bold, italic, position } = styles
+  const alignment = position === 'top' ? 6 : position === 'center' ? 10 : 2
+  const primaryColor = hexToAssColor(color)
+  const backColor = hexToAssBackColor(bgColor, bgOpacity)
+  const boldFlag = bold ? -1 : 0
+  const italicFlag = italic ? -1 : 0
+  let ass = `[Script Info]\nScriptType: v4.00+\nCollisions: Normal\n\n`
+  ass += `[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n`
+  ass += `Style: Default,${fontFamily},${fontSize},${primaryColor},&H000000FF,&H00000000,${backColor},${boldFlag},${italicFlag},0,0,100,100,0,0,3,1,0,${alignment},10,10,10,1\n\n`
+  ass += `[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n`
+  for (const row of rows) {
+    const start = srtTimeToAss(row.startTime)
+    const end = srtTimeToAss(row.endTime)
+    const text = row.text.replace(/\n/g, '\\N')
+    ass += `Dialogue: 0,${start},${end},Default,,0,0,0,,${text}\n`
+  }
+  downloadBlob(ass, 'text/plain', `${baseFilename}.ass`)
+}
+
+function downloadBlob(content: string, mimeType: string, filename: string): void {
+  const blob = new Blob([content], { type: mimeType + ';charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+// ── Block-based translation (structure preserved) ──────────────────────────────
+
+type Block =
+  | { kind: 'structural'; text: string }
+  | { kind: 'dialogue'; text: string; id: number }
+
+function parseBlocks(text: string): Block[] {
+  const lines = text.split('\n')
+  let id = 0
+  return lines.map((line) => {
+    const t = line.trim()
+    const structural =
+      !t ||
+      /^\[\d+:\d+\]/.test(t) ||
+      /^.+\s+\(\d{1,2}:\d{2}(:\d{2})?\)$/.test(t) ||
+      /^SPEAKER_\d+/.test(t) ||
+      /^\d+$/.test(t) ||
+      /^\d{2}:\d{2}:\d{2}[,.]\d{3}\s*-->\s*/.test(t) ||
+      /^WEBVTT/.test(t) ||
+      /^NOTE\b/.test(t) ||
+      /^STYLE\b/.test(t)
+    return structural ? { kind: 'structural', text: line } : { kind: 'dialogue', text: line, id: id++ }
+  })
+}
+
+async function translateWithBlocks(text: string, targetLanguage: string): Promise<string> {
+  const blocks = parseBlocks(text)
+  const dialogues = blocks.filter((b): b is Extract<Block, { kind: 'dialogue' }> => b.kind === 'dialogue')
+  if (dialogues.length === 0) return text
+  const numbered = dialogues.map((b) => `${b.id + 1}. ${b.text}`).join('\n')
+  const token = getAuthToken()
+  const res = await fetch(`${getApiBase()}/api/translate-transcript/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify({ text: numbered, targetLanguage }),
+  })
+  if (res.status === 401) throw new Error('auth')
+  if (res.status === 403) throw new Error('paywall')
+  if (!res.ok) throw new Error('failed')
+  const { translatedText } = await res.json() as { translatedText: string }
+  const map: Record<number, string> = {}
+  for (const line of translatedText.split('\n')) {
+    const m = line.match(/^(\d+)\.\s*(.*)$/)
+    if (m) map[parseInt(m[1]) - 1] = m[2]
+  }
+  return blocks.map((b) => b.kind === 'structural' ? b.text : (map[b.id] ?? b.text)).join('\n')
+}
+
+async function extractDocText(file: File): Promise<string> {
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
+  if (ext === 'docx') {
+    const mammoth = await import('mammoth')
+    const ab = await file.arrayBuffer()
+    const { value } = await mammoth.extractRawText({ arrayBuffer: ab })
+    return value
+  }
+  if (ext === 'json') {
+    const raw = await file.text()
+    try { return JSON.stringify(JSON.parse(raw), null, 2) } catch { return raw }
+  }
+  return file.text()
+}
 
 /** Optional SEO overrides for alternate entry points (e.g. /srt-translator). Do NOT duplicate logic. */
 export type TranslateSubtitlesSeoProps = {
@@ -40,10 +193,18 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const location = useLocation()
   const navigate = useNavigate()
 
+  // ── Input kind ────────────────────────────────────────────────────────────
+  const [inputKind, setInputKind] = useState<InputKind>('subtitles')
+
+  // ── Shared ────────────────────────────────────────────────────────────────
   const [tab, setTab] = useState<Tab>('upload')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [pastedText, setPastedText] = useState('')
   const [targetLanguage, setTargetLanguage] = useState<string>('Spanish')
+  const [copied, setCopied] = useState(false)
+  const [showPaywall, setShowPaywall] = useState(false)
+
+  // ── Subtitles (job queue) ──────────────────────────────────────────────────
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
   const [uploadPhase, setUploadPhase] = useState<'uploading' | 'processing'>('processing')
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -52,13 +213,28 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; consistencyIssues?: { line: number; issueType: string }[] } | null>(null)
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
   const [plainTextResult, setPlainTextResult] = useState<string | null>(null)
-  const [showPaywall, setShowPaywall] = useState(false)
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
-  const [copied, setCopied] = useState(false)
-  const [pasteLoading, setPasteLoading] = useState(false)
-  const [pasteResult, setPasteResult] = useState<string | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
+
+  // ── Subtitle styles ───────────────────────────────────────────────────────
+  const [subStyles, setSubStyles] = useState<SubStyles>({
+    fontFamily: 'Arial',
+    fontSize: 24,
+    color: '#ffffff',
+    bgColor: '#000000',
+    bgOpacity: 0.7,
+    bold: false,
+    italic: false,
+    position: 'bottom',
+  })
+  const updateStyle = <K extends keyof SubStyles>(key: K, val: SubStyles[K]) =>
+    setSubStyles((s) => ({ ...s, [key]: val }))
+
+  // ── Documents (client-side) ───────────────────────────────────────────────
+  const [docText, setDocText] = useState<string | null>(null)
+  const [docTranslated, setDocTranslated] = useState<string | null>(null)
+  const [docLoading, setDocLoading] = useState(false)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const isPaidPlan = !['free', ''].includes(plan)
@@ -75,113 +251,103 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       ext
     )
 
-  useEffect(() => {
-    if (result?.downloadUrl) setFreeExportsUsed(0)
-  }, [result?.downloadUrl])
+  const subtitleBaseName = (result?.fileName ?? fallbackTranslatedName('.srt')).replace(/\.\w+$/, '')
 
+  // ── Subtitle file select ──────────────────────────────────────────────────
   const handleFileSelect = (file: File) => {
-    try {
-      trackEvent('file_selected', {
-        tool_type: BACKEND_TOOL_TYPES.TRANSLATE_SUBTITLES,
-        file_size_bytes: file.size,
-      })
-    } catch {
-      // non-blocking
-    }
+    try { trackEvent('file_selected', { tool_type: BACKEND_TOOL_TYPES.TRANSLATE_SUBTITLES, file_size_bytes: file.size }) } catch { /* non-blocking */ }
     setSelectedFile(file)
     setSubtitleRows([])
     setPlainTextResult(null)
   }
 
-  const parseSubtitlesToRows = (text: string): SubtitleRow[] => {
-    const blocks = text
-      .replace(/\r/g, '')
-      .trim()
-      .split('\n\n')
-      .filter(Boolean)
+  // ── Document file select (client-side read) ────────────────────────────────
+  const handleDocFileSelect = async (file: File) => {
+    setSelectedFile(file)
+    setDocText(null)
+    setDocTranslated(null)
+    try {
+      const text = await extractDocText(file)
+      setDocText(text)
+    } catch {
+      toast.error('Could not read file')
+    }
+  }
 
+  // ── Document translate ─────────────────────────────────────────────────────
+  const handleDocTranslate = async () => {
+    const src = tab === 'paste' ? pastedText : docText
+    if (!src?.trim()) { toast.error('No text to translate'); return }
+    if (!isPaidPlan) {
+      const today = new Date().toISOString().slice(0, 10)
+      const used = parseInt(localStorage.getItem(`docTranslateUsed_${today}`) ?? '0', 10)
+      if (used >= 3) { setShowPaywall(true); return }
+    }
+    try {
+      setDocLoading(true)
+      setDocTranslated(null)
+      const translated = await translateWithBlocks(src, targetLanguage)
+      setDocTranslated(translated)
+      if (!isPaidPlan) {
+        const today = new Date().toISOString().slice(0, 10)
+        const used = parseInt(localStorage.getItem(`docTranslateUsed_${today}`) ?? '0', 10)
+        localStorage.setItem(`docTranslateUsed_${today}`, String(used + 1))
+      }
+    } catch (e: unknown) {
+      const err = e as Error
+      if (err.message === 'auth') toast.error('Sign in to translate')
+      else if (err.message === 'paywall') setShowPaywall(true)
+      else toast.error('Translation failed. Please try again.')
+    } finally {
+      setDocLoading(false)
+    }
+  }
+
+  const downloadDocAsDocx = async (text: string, filename: string) => {
+    const { Document, Paragraph, TextRun, Packer } = await import('docx')
+    const paragraphs = text.split('\n').map((line) =>
+      new Paragraph({ children: [new TextRun({ text: line || ' ' })] })
+    )
+    const doc = new Document({ sections: [{ children: paragraphs }] })
+    const blob = await Packer.toBlob(doc)
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const downloadDocAsPdf = async (text: string, filename: string) => {
+    const { default: jsPDF } = await import('jspdf')
+    const doc = new jsPDF()
+    const lines = doc.splitTextToSize(text, 180) as string[]
+    let y = 15
+    for (const line of lines) {
+      if (y > 280) { doc.addPage(); y = 15 }
+      doc.text(line, 15, y)
+      y += 6
+    }
+    doc.save(filename)
+  }
+
+  const parseSubtitlesToRows = (text: string): SubtitleRow[] => {
+    const blocks = text.replace(/\r/g, '').trim().split('\n\n').filter(Boolean)
     const rows: SubtitleRow[] = []
     for (const block of blocks) {
       const lines = block.split('\n').filter((l) => l.trim().length > 0)
       const timeLineIdx = lines.findIndex((l) => l.includes('-->'))
       if (timeLineIdx === -1) continue
       const [start, end] = lines[timeLineIdx].split('-->').map((s) => s.trim())
-      const textLines = lines.slice(timeLineIdx + 1)
-      rows.push({
-        index: rows.length + 1,
-        startTime: start,
-        endTime: end,
-        text: textLines.join('\n'),
-      })
+      rows.push({ index: rows.length + 1, startTime: start, endTime: end, text: lines.slice(timeLineIdx + 1).join('\n') })
     }
     return rows
   }
 
-  const rowsToSrt = (rows: SubtitleRow[]): string => {
-    return rows
-      .map((r, idx) => `${idx + 1}\n${r.startTime} --> ${r.endTime}\n${r.text}`)
-      .join('\n\n')
-  }
+  const rowsToSrt = (rows: SubtitleRow[]): string =>
+    rows.map((r, idx) => `${idx + 1}\n${r.startTime} --> ${r.endTime}\n${r.text}`).join('\n\n')
 
-  // ── Paste translation (direct API, no job queue) ───────────────────────────
-  const handlePasteTranslate = async () => {
-    if (!pastedText.trim()) {
-      toast.error('Paste some text first')
-      return
-    }
-
-    // Free plan gating (client-side, daily counter)
-    if (!isPaidPlan) {
-      const today = new Date().toISOString().slice(0, 10)
-      const key = `translationPasteUsed_${today}`
-      const used = parseInt(localStorage.getItem(key) ?? '0', 10)
-      if (used >= 3) {
-        setShowPaywall(true)
-        return
-      }
-    }
-
-    try {
-      setPasteLoading(true)
-      setPasteResult(null)
-      const token = getAuthToken()
-      const res = await fetch(`${getApiBase()}/api/translate-transcript/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ text: pastedText, targetLanguage }),
-      })
-      if (res.status === 401) {
-        toast.error('Sign in to translate pasted text, or use the Upload tab')
-        return
-      }
-      if (res.status === 403) {
-        setShowPaywall(true)
-        return
-      }
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        toast.error((body as { message?: string }).message || 'Translation failed')
-        return
-      }
-      const data = await res.json() as { translatedText: string }
-      setPasteResult(data.translatedText)
-
-      // Increment daily counter
-      const today = new Date().toISOString().slice(0, 10)
-      const key = `translationPasteUsed_${today}`
-      const used = parseInt(localStorage.getItem(key) ?? '0', 10)
-      localStorage.setItem(key, String(used + 1))
-    } catch {
-      toast.error('Translation failed. Please try again.')
-    } finally {
-      setPasteLoading(false)
-    }
-  }
-
-  // ── File/upload translation (job queue) ───────────────────────────────────
+  // ── Subtitle upload translate (job queue) ─────────────────────────────────
   const handleProcess = async () => {
     try {
       const usageData = await getCurrentUsage()
@@ -284,7 +450,6 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     clearPersistedJobId(location.pathname, navigate)
     setSelectedFile(null)
     setPastedText('')
-    setPasteResult(null)
     setStatus('idle')
     setUploadPhase('processing')
     setUploadProgress(0)
@@ -294,10 +459,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     setPlainTextResult(null)
   }
 
-  const getDownloadUrl = () => {
-    if (!result?.downloadUrl) return ''
-    return getAbsoluteDownloadUrl(result.downloadUrl)
-  }
+  const getDownloadUrl = () => result?.downloadUrl ? getAbsoluteDownloadUrl(result.downloadUrl) : ''
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -305,383 +467,556 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       setCopied(true)
       toast.success('Copied!')
       setTimeout(() => setCopied(false), 2000)
-    } catch {
-      toast.error('Copy failed')
-    }
+    } catch { toast.error('Copy failed') }
   }
 
-  const downloadText = (text: string, filename: string) => {
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename
-    a.click()
-    URL.revokeObjectURL(url)
+  const switchKind = (k: InputKind) => {
+    setInputKind(k)
+    setSelectedFile(null)
+    setPastedText('')
+    setDocText(null)
+    setDocTranslated(null)
+    setStatus('idle')
+    setResult(null)
+    setSubtitleRows([])
+    setTab('upload')
   }
 
-  // ── Format preservation hint ───────────────────────────────────────────────
-  const getFormatHint = () => {
-    if (!selectedFile && tab !== 'paste') return null
-    if (tab === 'paste') return 'Paragraph breaks and line structure preserved exactly'
-    const name = selectedFile?.name?.toLowerCase() ?? ''
-    if (name.endsWith('.srt') || name.endsWith('.vtt')) return 'Timestamps and cue structure preserved exactly'
-    if (name.endsWith('.txt')) return 'Line breaks and paragraph structure preserved exactly'
-    return null
-  }
-
-  const breadcrumbs = [{ label: 'Translation', href: '/translation' }]
+  const breadcrumbs = [{ label: 'Translate', href: '/translation' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Translation',
-    subtitle: seoIntro ?? 'Translate any subtitle, transcript, or text file into 70+ languages — timestamps and formatting always preserved.',
+    title: seoH1 ?? 'Translate',
+    subtitle: seoIntro ?? 'Translate subtitles, documents, DOCX, TXT, and JSON into 70+ languages — structure always preserved.',
     icon: <Languages className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
-    tags: ['SRT', 'VTT', 'TXT', '70+ Languages', 'Format Preserved'],
+    tags: ['SRT', 'VTT', 'TXT', 'DOCX', 'JSON', '70+ Languages'],
     sidebar: null,
   }
+
+  // ── Shared tab bar (used in both modes) ────────────────────────────────────
+  const tabBar = (
+    <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit mb-3">
+      {(['upload', 'paste'] as Tab[]).map((t) => (
+        <button
+          key={t}
+          onClick={() => { setTab(t); setSelectedFile(null); setPastedText(''); setDocText(null); setDocTranslated(null) }}
+          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            tab === t
+              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+          }`}
+        >
+          {t === 'upload' ? 'Upload file' : 'Paste text'}
+        </button>
+      ))}
+    </div>
+  )
+
+  // ── Subtitle style panel (shown after successful subtitle translation) ──────
+  const subtitleStylePanel = subtitleRows.length > 0 && (
+    <div className="surface-card rounded-xl p-6 space-y-5">
+      <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">Subtitle Style</h3>
+      <div className="flex flex-col sm:flex-row gap-6">
+        {/* Controls */}
+        <div className="flex-1 space-y-4">
+          {/* Font */}
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Font</label>
+              <select
+                value={subStyles.fontFamily}
+                onChange={(e) => updateStyle('fontFamily', e.target.value)}
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+              >
+                {['Arial', 'Helvetica', 'Georgia', 'Courier New', 'Impact', 'Trebuchet MS', 'Verdana'].map((f) => (
+                  <option key={f}>{f}</option>
+                ))}
+              </select>
+            </div>
+            <div className="w-28">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Size: {subStyles.fontSize}px</label>
+              <input
+                type="range" min={12} max={56} step={2}
+                value={subStyles.fontSize}
+                onChange={(e) => updateStyle('fontSize', Number(e.target.value))}
+                className="w-full accent-violet-600"
+              />
+            </div>
+          </div>
+          {/* Colors */}
+          <div className="flex flex-wrap gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Text color</label>
+              <input type="color" value={subStyles.color} onChange={(e) => updateStyle('color', e.target.value)}
+                className="h-8 w-14 cursor-pointer rounded border border-gray-200 dark:border-gray-700 bg-transparent p-0.5" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Background</label>
+              <input type="color" value={subStyles.bgColor} onChange={(e) => updateStyle('bgColor', e.target.value)}
+                className="h-8 w-14 cursor-pointer rounded border border-gray-200 dark:border-gray-700 bg-transparent p-0.5" />
+            </div>
+            <div className="flex-1 min-w-[100px]">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Opacity {Math.round(subStyles.bgOpacity * 100)}%</label>
+              <input type="range" min={0} max={1} step={0.05}
+                value={subStyles.bgOpacity}
+                onChange={(e) => updateStyle('bgOpacity', Number(e.target.value))}
+                className="w-full accent-violet-600" />
+            </div>
+          </div>
+          {/* Style toggles */}
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => updateStyle('bold', !subStyles.bold)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${subStyles.bold ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'}`}
+            >
+              <Bold className="w-3.5 h-3.5" /> Bold
+            </button>
+            <button
+              onClick={() => updateStyle('italic', !subStyles.italic)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${subStyles.italic ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'}`}
+            >
+              <Italic className="w-3.5 h-3.5" /> Italic
+            </button>
+            <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+              {(['top', 'center', 'bottom'] as const).map((pos, i) => (
+                <button key={pos} onClick={() => updateStyle('position', pos)}
+                  title={`Position: ${pos}`}
+                  className={`px-3 py-1.5 text-sm transition-colors ${subStyles.position === pos ? 'bg-violet-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'} ${i > 0 ? 'border-l border-gray-200 dark:border-gray-700' : ''}`}
+                >
+                  {pos === 'top' ? <AlignLeft className="w-3.5 h-3.5 rotate-90" /> : pos === 'center' ? <AlignCenter className="w-3.5 h-3.5 rotate-90" /> : <AlignRight className="w-3.5 h-3.5 rotate-90" />}
+                </button>
+              ))}
+            </div>
+            <span className="text-xs text-gray-400 dark:text-gray-500 self-center">Position</span>
+          </div>
+        </div>
+        {/* Preview card */}
+        <div className="w-full sm:w-52 shrink-0">
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Preview</p>
+          <div className="relative bg-gray-900 rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
+            <div className="absolute inset-0 bg-gradient-to-b from-gray-700 to-gray-900" />
+            <div className={`absolute left-0 right-0 flex justify-center px-3 ${
+              subStyles.position === 'top' ? 'top-3' : subStyles.position === 'center' ? 'top-1/2 -translate-y-1/2' : 'bottom-3'
+            }`}>
+              <span
+                className="px-1.5 py-0.5 text-center leading-snug rounded"
+                style={{
+                  fontFamily: subStyles.fontFamily,
+                  fontSize: `${Math.round(subStyles.fontSize * 0.45)}px`,
+                  color: subStyles.color,
+                  backgroundColor: hexToRgba(subStyles.bgColor, subStyles.bgOpacity),
+                  fontWeight: subStyles.bold ? 700 : 400,
+                  fontStyle: subStyles.italic ? 'italic' : 'normal',
+                }}
+              >
+                Subtitle preview text
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Export buttons */}
+      <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+        <button
+          onClick={() => generateStyledVtt(subtitleRows, subStyles, subtitleBaseName)}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        >
+          <Download className="w-3.5 h-3.5" /> Styled VTT
+        </button>
+        <button
+          onClick={() => generateAssFile(subtitleRows, subStyles, subtitleBaseName)}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        >
+          <Download className="w-3.5 h-3.5" /> ASS / SSA
+        </button>
+        <p className="text-xs text-gray-400 dark:text-gray-500 self-center ml-1">Import into Premiere, DaVinci, Aegisub, or any player that supports styled subtitles</p>
+      </div>
+    </div>
+  )
+
+  const docBaseName = `${selectedFile?.name.replace(/\.\w+$/, '') ?? 'document'}_${targetLanguage.toLowerCase()}`
+
+  const kindTab = (k: InputKind, label: string) => (
+    <button
+      onClick={() => switchKind(k)}
+      className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+        inputKind === k
+          ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+      }`}
+    >
+      {label}
+    </button>
+  )
+
+  const kindSelector = (status === 'idle' || inputKind === 'documents') && !docTranslated && (
+    <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit mb-4">
+      {kindTab('subtitles', 'Subtitles (SRT / VTT)')}
+      {kindTab('documents', 'Documents (DOCX, TXT, JSON…)')}
+    </div>
+  )
 
   return (
     <>
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" />
 
-        {/* ── Tab switcher ──────────────────────────────────────────────────── */}
-        {status === 'idle' && (
-          <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit mb-2">
-            {(['upload', 'paste'] as Tab[]).map((t) => (
-              <button
-                key={t}
-                onClick={() => { setTab(t); setSelectedFile(null); setPastedText(''); setPasteResult(null) }}
-                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  tab === t
-                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                }`}
+        {kindSelector}
+
+        {/* ══════════════ SUBTITLES PATH ══════════════ */}
+        {inputKind === 'subtitles' && (
+          <>
+            {status === 'idle' && tabBar}
+
+            {/* Upload: no file */}
+            {status === 'idle' && tab === 'upload' && !selectedFile && (
+              <div className="space-y-4">
+                <UploadZone
+                  immediateSelect
+                  onFileSelect={handleFileSelect}
+                  initialFiles={null}
+                  onRemove={() => setSelectedFile(null)}
+                  acceptedFormats={['SRT', 'VTT']}
+                  acceptAttribute=".srt,.vtt"
+                  maxSize="10 MB"
+                />
+                {location.pathname === '/translate-subtitles' && (
+                  <SamplesModule sourcePath={location.pathname} samplesHref="/samples#translate" />
+                )}
+              </div>
+            )}
+
+            {/* Upload: file ready */}
+            {status === 'idle' && tab === 'upload' && selectedFile && (
+              <ProcessingInterface
+                file={{ name: selectedFile.name, size: `${(selectedFile.size / 1024).toFixed(2)} KB` }}
+                onRemove={() => setSelectedFile(null)}
+                actionLabel="Translate"
+                onAction={handleProcess}
+                actionLoading={false}
+                showVideoPlayer={false}
               >
-                {t === 'upload' ? 'Upload file' : 'Paste text'}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* ── Upload tab: no file selected ─────────────────────────────────── */}
-        {status === 'idle' && tab === 'upload' && !selectedFile && (
-          <div className="space-y-4">
-            <UploadZone
-              immediateSelect
-              onFileSelect={handleFileSelect}
-              initialFiles={null}
-              onRemove={() => setSelectedFile(null)}
-              acceptedFormats={['SRT', 'VTT', 'TXT']}
-              acceptAttribute=".srt,.vtt,.txt"
-              maxSize="10 MB"
-            />
-            {location.pathname === '/translate-subtitles' && (
-              <SamplesModule sourcePath={location.pathname} samplesHref="/samples#translate" />
+                <div className="space-y-3">
+                  <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
+                  {!isPaidPlan && (
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                      Free plan: 3 translations per day ·{' '}
+                      <Link to="/pricing" className="text-violet-500 hover:underline">Upgrade for unlimited</Link>
+                    </p>
+                  )}
+                </div>
+              </ProcessingInterface>
             )}
-          </div>
-        )}
 
-        {/* ── Upload tab: file selected ─────────────────────────────────────── */}
-        {status === 'idle' && tab === 'upload' && selectedFile && (
-          <ProcessingInterface
-            file={{
-              name: selectedFile.name,
-              size: `${(selectedFile.size / 1024).toFixed(2)} KB`,
-            }}
-            onRemove={() => setSelectedFile(null)}
-            actionLabel="Translate"
-            onAction={handleProcess}
-            actionLoading={false}
-            showVideoPlayer={false}
-          >
-            <div className="space-y-4">
-              <Select
-                label="Translate to"
-                options={LANGUAGES}
-                value={targetLanguage}
-                onChange={setTargetLanguage}
-              />
-              {getFormatHint() && (
-                <p className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 shrink-0" />
-                  {getFormatHint()}
-                </p>
-              )}
-              {!isPaidPlan && (
-                <p className="text-xs text-gray-400 dark:text-gray-500">
-                  Free plan: 3 translations per day · Resets at midnight UTC ·{' '}
-                  <Link to="/pricing" className="text-violet-500 hover:underline">Upgrade for unlimited</Link>
-                </p>
-              )}
-            </div>
-          </ProcessingInterface>
-        )}
-
-        {/* ── Paste tab ─────────────────────────────────────────────────────── */}
-        {status === 'idle' && tab === 'paste' && !pasteResult && (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Select
-                label="Translate to"
-                options={LANGUAGES}
-                value={targetLanguage}
-                onChange={setTargetLanguage}
-              />
-              {getFormatHint() && (
-                <p className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 shrink-0" />
-                  {getFormatHint()}
-                </p>
-              )}
-            </div>
-            <textarea
-              value={pastedText}
-              onChange={(e) => setPastedText(e.target.value)}
-              placeholder="Paste your transcript, subtitles, or any text here…"
-              className="w-full h-56 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 dark:placeholder:text-gray-600 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-400"
-            />
-            {!isPaidPlan && (
-              <p className="text-xs text-gray-400 dark:text-gray-500">
-                Free plan: 3 paste translations per day · Resets at midnight UTC ·{' '}
-                <Link to="/pricing" className="text-violet-500 hover:underline">Upgrade for unlimited</Link>
-              </p>
-            )}
-            <button
-              onClick={handlePasteTranslate}
-              disabled={pasteLoading || !pastedText.trim()}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {pasteLoading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Translating…
-                </>
-              ) : (
-                <>
+            {/* Paste tab */}
+            {status === 'idle' && tab === 'paste' && (
+              <div className="space-y-4">
+                <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
+                <textarea
+                  value={pastedText}
+                  onChange={(e) => setPastedText(e.target.value)}
+                  placeholder="Paste your SRT, VTT, or plain text here…"
+                  className="w-full h-56 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+                />
+                {!isPaidPlan && (
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    Free plan: 3 translations per day ·{' '}
+                    <Link to="/pricing" className="text-violet-500 hover:underline">Upgrade for unlimited</Link>
+                  </p>
+                )}
+                <button
+                  onClick={handleProcess}
+                  disabled={!pastedText.trim()}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <Languages className="w-4 h-4" />
                   Translate to {targetLanguage}
                   <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </div>
-        )}
-
-        {/* ── Paste result ──────────────────────────────────────────────────── */}
-        {status === 'idle' && tab === 'paste' && pasteResult && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
-                <Check className="w-4 h-4" />
-                <span className="text-sm font-semibold">Translated to {targetLanguage}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => copyToClipboard(pasteResult)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                  {copied ? 'Copied!' : 'Copy'}
                 </button>
-                <button
-                  onClick={() =>
-                    downloadText(
-                      pasteResult,
-                      joinExportFilename(
-                        exportFileStem(undefined, 'pasted_text'),
-                        `transcript_translated_${targetLangFileSlug(targetLanguage)}`,
-                        '.txt'
-                      )
-                    )
+              </div>
+            )}
+
+            {/* Processing */}
+            {status === 'processing' && (
+              <div className="rounded-2xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
+                <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                  {selectedFile?.name ?? 'Pasted text'} · Translating to {targetLanguage}
+                </div>
+                <ProcessingProgress
+                  steps={[
+                    { label: 'Uploading', status: uploadPhase === 'uploading' ? 'active' : 'completed' },
+                    { label: 'Translating', status: uploadPhase === 'processing' ? 'active' : 'pending' },
+                    { label: 'Finalizing', status: progress >= 100 ? 'completed' : 'pending' },
+                  ]}
+                  currentMessage={uploadPhase === 'uploading' ? 'Uploading…' : `Translating to ${targetLanguage}…`}
+                  progress={uploadPhase === 'uploading' ? uploadProgress : progress}
+                  estimatedTime={uploadPhase === 'uploading' ? undefined : '10–40 seconds'}
+                  statusSubtext={uploadPhase === 'processing' && queuePosition !== undefined && queuePosition > 0 ? `Queue position: ${queuePosition}` : undefined}
+                  onCancel={handleProcessAnother}
+                />
+              </div>
+            )}
+
+            {/* Completed */}
+            {status === 'completed' && result && (
+              <div className="space-y-6">
+                <TranslateResult
+                  title="Translation complete!"
+                  fileName={result.fileName ?? fallbackTranslatedName(translateFallbackExt)}
+                  processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
+                  downloadLabel={isPaidPlan ? 'Download translated file' : (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download with watermark')}
+                  onDownload={
+                    !isPaidPlan
+                      ? async () => {
+                          if (freeExportsUsed >= 2) { toast('You\'ve used your 2 free downloads. Upgrade for more.'); return }
+                          try {
+                            const token = getAuthToken()
+                            const res = await fetch(getDownloadUrl() + '?wm=1', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+                            const blob = await res.blob()
+                            const a = document.createElement('a')
+                            a.href = URL.createObjectURL(blob)
+                            a.download = result?.fileName || fallbackTranslatedName(translateFallbackExt)
+                            a.click()
+                            URL.revokeObjectURL(a.href)
+                            try { trackEvent('result_downloaded', { tool: 'translate-subtitles', plan: 'free' }) } catch { /* non-blocking */ }
+                            setFreeExportsUsed((prev) => prev + 1)
+                            toast.success('Download started')
+                          } catch { toast.error('Download failed') }
+                        }
+                      : async () => {
+                          try {
+                            const token = getAuthToken()
+                            const res = await fetch(getDownloadUrl(), { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+                            const blob = await res.blob()
+                            const a = document.createElement('a')
+                            a.href = URL.createObjectURL(blob)
+                            a.download = result?.fileName || fallbackTranslatedName(translateFallbackExt)
+                            a.click()
+                            URL.revokeObjectURL(a.href)
+                            try { trackEvent('result_downloaded', { tool: 'translate-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
+                          } catch { toast.error('Download failed') }
+                        }
                   }
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  onProcessAnother={handleProcessAnother}
+                  relatedTools={[
+                    { path: '/fix-subtitles', name: 'Fix Subtitles', description: 'Auto-correct timing' },
+                    { path: '/burn-subtitles', name: 'Burn Subtitles', description: 'Hardcode into video' },
+                    { path: '/video-to-subtitles', name: 'Video → Subtitles', description: 'Generate SRT/VTT from video' },
+                  ]}
+                />
+
+                {/* Plain text result */}
+                {plainTextResult && (
+                  <div className="surface-card rounded-xl p-6 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Translated text</p>
+                      <button
+                        onClick={() => copyToClipboard(plainTextResult)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                        {copied ? 'Copied!' : 'Copy'}
+                      </button>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-700 rounded-lg p-4 max-h-72 overflow-y-auto">
+                      <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans leading-relaxed">{plainTextResult}</pre>
+                    </div>
+                  </div>
+                )}
+
+                {/* Consistency issues */}
+                {result.consistencyIssues && result.consistencyIssues.length > 0 && (
+                  <div className="bg-amber-50 rounded-2xl p-6 shadow-card border border-amber-100">
+                    <p className="text-amber-800 font-medium mb-2">Some lines may not be translated.</p>
+                    <ul className="text-sm text-amber-900 space-y-1">
+                      {result.consistencyIssues.slice(0, 8).map((issue, i) => (
+                        <li key={i}>Line {issue.line}: {issue.issueType === 'untranslated' ? 'possibly untranslated' : 'mixed language'}</li>
+                      ))}
+                      {result.consistencyIssues.length > 8 && <li>… and {result.consistencyIssues.length - 8} more</li>}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Subtitle style panel */}
+                {subtitleStylePanel}
+
+                {/* SRT/VTT inline editor */}
+                {subtitleRows.length > 0 && (
+                  <div className="surface-card rounded-xl p-6">
+                    <Suspense fallback={null}>
+                      <SubtitleEditor entries={subtitleRows} editable={canEdit} onChange={setSubtitleRows} />
+                    </Suspense>
+                    <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                      <button
+                        disabled={!canEdit}
+                        onClick={() => {
+                          const content = rowsToSrt(subtitleRows)
+                          downloadBlob(content, 'text/plain', (result.fileName || fallbackTranslatedName('.srt')).replace(/\.vtt$/i, '.srt'))
+                        }}
+                        className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                      >
+                        Download Edited Subtitles
+                      </button>
+                      {!canEdit && <div className="text-xs text-gray-500">Upgrade to edit translated subtitles inline.</div>}
+                    </div>
+                  </div>
+                )}
+
+                <CrossToolSuggestions
+                  workflowHint="Burn into video or fix timing on another file."
+                  suggestions={[
+                    { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn translated captions into video' },
+                    { icon: Wrench, title: 'Fix Subtitles', path: '/fix-subtitles', description: 'Fix timing, grammar, line breaks' },
+                    { icon: MessageSquare, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT from another video' },
+                  ]}
+                />
+              </div>
+            )}
+
+            {status === 'failed' && <FailedState onTryAgain={handleProcessAnother} />}
+          </>
+        )}
+
+        {/* ══════════════ DOCUMENTS PATH ══════════════ */}
+        {inputKind === 'documents' && (
+          <>
+            {!docTranslated && !docLoading && tabBar}
+
+            {/* Upload: no file */}
+            {!docTranslated && !docLoading && tab === 'upload' && !selectedFile && (
+              <UploadZone
+                immediateSelect
+                onFileSelect={handleDocFileSelect}
+                initialFiles={null}
+                onRemove={() => { setSelectedFile(null); setDocText(null) }}
+                acceptedFormats={['TXT', 'DOCX', 'JSON', 'SRT', 'VTT']}
+                acceptAttribute=".txt,.docx,.json,.srt,.vtt"
+                maxSize="10 MB"
+              />
+            )}
+
+            {/* Upload: file selected, reading */}
+            {!docTranslated && !docLoading && tab === 'upload' && selectedFile && !docText && (
+              <div className="flex items-center gap-3 rounded-xl border border-gray-200 dark:border-gray-700 p-4 text-sm text-gray-500">
+                <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                Reading {selectedFile.name}…
+              </div>
+            )}
+
+            {/* Upload: file read, ready to translate */}
+            {!docTranslated && !docLoading && tab === 'upload' && selectedFile && docText && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{selectedFile.name}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{docText.length.toLocaleString()} characters</p>
+                  </div>
+                  <button onClick={() => { setSelectedFile(null); setDocText(null) }} className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Remove</button>
+                </div>
+                <div className="bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800 rounded-xl p-4 max-h-40 overflow-y-auto">
+                  <pre className="text-xs text-gray-500 dark:text-gray-400 whitespace-pre-wrap font-sans">{docText.slice(0, 600)}{docText.length > 600 ? '\n…' : ''}</pre>
+                </div>
+                <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
+                {!isPaidPlan && (
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    Free plan: 3 translations per day ·{' '}
+                    <Link to="/pricing" className="text-violet-500 hover:underline">Upgrade for unlimited</Link>
+                  </p>
+                )}
+                <button
+                  onClick={handleDocTranslate}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors"
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  Download .txt
+                  <Languages className="w-4 h-4" />
+                  Translate to {targetLanguage}
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-700 rounded-xl p-5 max-h-80 overflow-y-auto">
-              <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans leading-relaxed">
-                {pasteResult}
-              </pre>
-            </div>
-            <button
-              onClick={() => { setPasteResult(null); setPastedText('') }}
-              className="w-full py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            >
-              Translate another
-            </button>
-          </div>
-        )}
+            )}
 
-        {/* ── Processing ────────────────────────────────────────────────────── */}
-        {status === 'processing' && (
-          <div className="rounded-2xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
-            <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-              {selectedFile?.name ?? 'Pasted text'} · Translating to {targetLanguage}
-            </div>
-            <ProcessingProgress
-              steps={[
-                { label: 'Uploading', status: uploadPhase === 'uploading' ? 'active' : 'completed' },
-                { label: 'Translating', status: uploadPhase === 'processing' ? 'active' : 'pending' },
-                { label: 'Finalizing', status: progress >= 100 ? 'completed' : 'pending' },
-              ]}
-              currentMessage={uploadPhase === 'uploading' ? 'Uploading…' : `Translating to ${targetLanguage}…`}
-              progress={uploadPhase === 'uploading' ? uploadProgress : progress}
-              estimatedTime={uploadPhase === 'uploading' ? undefined : '10–40 seconds'}
-              statusSubtext={uploadPhase === 'processing' && queuePosition !== undefined && queuePosition > 0 ? `Queue position: ${queuePosition}` : undefined}
-              onCancel={handleProcessAnother}
-            />
-          </div>
-        )}
+            {/* Paste tab */}
+            {!docTranslated && !docLoading && tab === 'paste' && (
+              <div className="space-y-4">
+                <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
+                <textarea
+                  value={pastedText}
+                  onChange={(e) => setPastedText(e.target.value)}
+                  placeholder="Paste text from any document, transcript, or file…"
+                  className="w-full h-56 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+                />
+                {!isPaidPlan && (
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    Free plan: 3 translations per day ·{' '}
+                    <Link to="/pricing" className="text-violet-500 hover:underline">Upgrade for unlimited</Link>
+                  </p>
+                )}
+                <button
+                  onClick={handleDocTranslate}
+                  disabled={docLoading || !pastedText.trim()}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Languages className="w-4 h-4" />
+                  Translate to {targetLanguage}
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
 
-        {/* ── File upload result ────────────────────────────────────────────── */}
-        {status === 'completed' && result && (
-          <div className="space-y-6">
-            <TranslateResult
-              title="Translation complete!"
-              fileName={result.fileName ?? fallbackTranslatedName(translateFallbackExt)}
-              processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
-              downloadLabel={isPaidPlan ? 'Download translated file' : (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download with watermark')}
-              onDownload={
-                !isPaidPlan
-                  ? async () => {
-                      if (freeExportsUsed >= 2) {
-                        toast('You\'ve used your 2 free downloads. Upgrade for more.')
-                        return
-                      }
-                      try {
-                        const token = getAuthToken()
-                        const res = await fetch(getDownloadUrl() + '?wm=1', {
-                          headers: token ? { Authorization: `Bearer ${token}` } : {},
-                        })
-                        const blob = await res.blob()
-                        const a = document.createElement('a')
-                        a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || fallbackTranslatedName(translateFallbackExt)
-                        a.click()
-                        URL.revokeObjectURL(a.href)
-                        try { trackEvent('result_downloaded', { tool: 'translate-subtitles', plan: 'free' }) } catch { /* non-blocking */ }
-                        setFreeExportsUsed((prev) => prev + 1)
-                        toast.success('Download started')
-                      } catch {
-                        toast.error('Download failed')
-                      }
-                    }
-                  : async () => {
-                      try {
-                        const token = getAuthToken()
-                        const res = await fetch(getDownloadUrl(), {
-                          headers: token ? { Authorization: `Bearer ${token}` } : {},
-                        })
-                        const blob = await res.blob()
-                        const a = document.createElement('a')
-                        a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || fallbackTranslatedName(translateFallbackExt)
-                        a.click()
-                        URL.revokeObjectURL(a.href)
-                        try { trackEvent('result_downloaded', { tool: 'translate-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
-                      } catch {
-                        toast.error('Download failed')
-                      }
-                    }
-              }
-              onProcessAnother={handleProcessAnother}
-              relatedTools={[
-                { path: '/fix-subtitles', name: 'Fix Subtitles', description: 'Auto-correct timing' },
-                { path: '/burn-subtitles', name: 'Burn Subtitles', description: 'Hardcode into video' },
-                { path: '/video-to-subtitles', name: 'Video → Subtitles', description: 'Generate SRT/VTT from video' },
-              ]}
-            />
+            {/* Translating spinner */}
+            {docLoading && (
+              <div className="rounded-2xl bg-blue-50 dark:bg-blue-950/30 p-8 flex flex-col items-center gap-4">
+                <div className="w-8 h-8 border-3 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm text-gray-600 dark:text-gray-400">Translating to {targetLanguage}…</p>
+              </div>
+            )}
 
-            {/* Plain text result (.txt files) */}
-            {plainTextResult && (
-              <div className="surface-card rounded-xl p-6 space-y-3">
+            {/* Result */}
+            {docTranslated && (
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Translated text</p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => copyToClipboard(plainTextResult)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                    >
-                      {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
-                      {copied ? 'Copied!' : 'Copy'}
-                    </button>
+                  <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                    <Check className="w-4 h-4" />
+                    <span className="text-sm font-semibold">Translated to {targetLanguage}</span>
                   </div>
-                </div>
-                <div className="bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-700 rounded-lg p-4 max-h-72 overflow-y-auto">
-                  <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans leading-relaxed">
-                    {plainTextResult}
-                  </pre>
-                </div>
-              </div>
-            )}
-
-            {/* Consistency issues for SRT/VTT */}
-            {result.consistencyIssues && result.consistencyIssues.length > 0 && (
-              <div className="bg-amber-50 rounded-2xl p-6 shadow-card border border-amber-100">
-                <p className="text-amber-800 font-medium mb-2">Some lines may not be translated.</p>
-                <p className="text-sm text-amber-900 mb-2">Non-blocking: review lines below if needed.</p>
-                <ul className="text-sm text-amber-900 space-y-1">
-                  {result.consistencyIssues.slice(0, 8).map((issue, i) => (
-                    <li key={i}>Line {issue.line}: {issue.issueType === 'untranslated' ? 'possibly untranslated' : 'mixed language'}</li>
-                  ))}
-                  {result.consistencyIssues.length > 8 && <li>… and {result.consistencyIssues.length - 8} more</li>}
-                </ul>
-              </div>
-            )}
-
-            {/* SRT/VTT inline editor */}
-            {subtitleRows.length > 0 && (
-              <div className="surface-card rounded-xl p-6">
-                <Suspense fallback={null}>
-                  <SubtitleEditor
-                    entries={subtitleRows}
-                    editable={canEdit}
-                    onChange={setSubtitleRows}
-                  />
-                </Suspense>
-                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                   <button
-                    disabled={!canEdit}
-                    onClick={() => {
-                      const content = rowsToSrt(subtitleRows)
-                      const blob = new Blob([content], { type: 'text/plain' })
-                      const url = URL.createObjectURL(blob)
-                      const a = document.createElement('a')
-                      a.href = url
-                      a.download = (result.fileName || fallbackTranslatedName('.srt')).replace(/\.vtt$/i, '.srt')
-                      a.click()
-                      URL.revokeObjectURL(url)
-                    }}
-                    className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                    onClick={() => copyToClipboard(docTranslated)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
-                    Download Edited Subtitles
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? 'Copied!' : 'Copy'}
                   </button>
-                  {!canEdit && (
-                    <div className="text-xs text-gray-500">
-                      Upgrade to edit translated subtitles inline.
-                    </div>
-                  )}
                 </div>
+                <div className="bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-700 rounded-xl p-5 max-h-80 overflow-y-auto">
+                  <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans leading-relaxed">{docTranslated}</pre>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => downloadBlob(docTranslated, 'text/plain', `${docBaseName}.txt`)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Download TXT
+                  </button>
+                  <button
+                    onClick={() => downloadDocAsDocx(docTranslated, `${docBaseName}.docx`)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Download DOCX
+                  </button>
+                  <button
+                    onClick={() => downloadDocAsPdf(docTranslated, `${docBaseName}.pdf`)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Download PDF
+                  </button>
+                </div>
+                <button
+                  onClick={() => { setDocTranslated(null); setDocText(null); setSelectedFile(null); setPastedText('') }}
+                  className="w-full py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  Translate another
+                </button>
               </div>
             )}
-
-            <CrossToolSuggestions
-              workflowHint="Burn into video or fix timing on another file."
-              suggestions={[
-                { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn translated captions into video' },
-                { icon: Wrench, title: 'Fix Subtitles', path: '/fix-subtitles', description: 'Fix timing, grammar, line breaks' },
-                { icon: MessageSquare, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT from another video' },
-              ]}
-            />
-          </div>
-        )}
-
-        {status === 'failed' && (
-          <FailedState onTryAgain={handleProcessAnother} />
+          </>
         )}
       </ToolLayout>
 

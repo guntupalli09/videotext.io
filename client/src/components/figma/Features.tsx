@@ -90,8 +90,8 @@ const SECONDARY_TOOLS = [
   },
   {
     icon: Languages,
-    name: 'Translate Subtitles',
-    description: 'Convert existing subtitles to Arabic, Hindi, Spanish, French, and 50+ other languages.',
+    name: 'Translate',
+    description: 'Translate subtitles, documents, DOCX, TXT, and JSON into 70+ languages with formatting preserved.',
     gradient: 'from-pink-500 to-purple-600',
     accent: 'text-pink-400',
     href: '/translate-subtitles',
