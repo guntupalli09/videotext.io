@@ -79,6 +79,7 @@ function batchUploadEligible(): boolean {
 const SIGNUP_STARTED_AT_KEY = 'videotext:signup_started_at'
 const JOB_COMPLETED_COUNT_KEY = 'videotext:job_completed_count'
 const FIRST_OUTPUT_SEEN_KEY_PREFIX = 'videotext:first_output_seen'
+const EXPORT_PREFS_KEY = 'vt:transcript_export_prefs'
 
 /** Optional SEO overrides for alternate entry points (e.g. /video-to-text, /youtube-transcript-generator). Do NOT duplicate logic here. */
 export type VideoToTranscriptSeoProps = {
@@ -247,6 +248,20 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [audioMuted, setAudioMuted] = useState(false)
   const [audioSpeed, setAudioSpeed] = useState(1)
   const [showPostSuccessMonetizationPanel, setShowPostSuccessMonetizationPanel] = useState(false)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(EXPORT_PREFS_KEY)
+      if (!raw) return
+      const p = JSON.parse(raw) as { t?: TranscriptTimestampMode; l?: TranscriptDocLayout; v?: TranscriptVerbosityMode; i?: number }
+      if (p.t) setTranscriptTimestampMode(p.t)
+      if (p.l) setTranscriptDocLayout(p.l)
+      if (p.v) setTranscriptVerbatimMode(p.v)
+      if (p.i && p.i > 0) setTimestampIntervalSec(p.i)
+    } catch { /* ignore */ }
+  }, [])
+  useEffect(() => {
+    try { localStorage.setItem(EXPORT_PREFS_KEY, JSON.stringify({ t: transcriptTimestampMode, l: transcriptDocLayout, v: transcriptVerbatimMode, i: timestampIntervalSec })) } catch { /* ignore */ }
+  }, [transcriptTimestampMode, transcriptDocLayout, transcriptVerbatimMode, timestampIntervalSec])
   const syncScrubberFill = useCallback(() => {
     const el = scrubberRef.current
     if (!el) return
@@ -2355,6 +2370,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 )}
 
                 <div className="rounded-xl border border-violet-200/60 dark:border-violet-800/40 bg-gradient-to-br from-violet-50/40 to-purple-50/20 dark:from-violet-950/30 dark:to-purple-950/20 px-4 py-4 sm:px-6 sm:py-5">
+                  <div className="mb-3 rounded-lg border border-sky-200/70 dark:border-sky-800/50 bg-sky-50/70 dark:bg-sky-950/20 px-3 py-2">
+                    <p className="text-xs font-semibold text-sky-900 dark:text-sky-200">Need transcript-only translation?</p>
+                    <p className="text-[11px] text-sky-800 dark:text-sky-300 mt-0.5">
+                      Upload TXT, DOCX, SRT, or VTT directly — no audio/video required.
+                      <Link to="/translate-subtitles" className="ml-1 underline font-semibold">Open transcript translation</Link>
+                    </p>
+                  </div>
                   <div className="flex flex-wrap gap-4 sm:gap-6 justify-center sm:justify-start">
                     <div className="flex flex-col items-start gap-1.5">
                       <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Accuracy</p>
