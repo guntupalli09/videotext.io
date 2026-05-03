@@ -33,7 +33,7 @@ import {
   targetLangFileSlug,
   transcriptExportName,
 } from '../lib/exportFileNames'
-import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
+import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId, clearPersistedJobIdInPlace } from '../lib/jobSession'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
@@ -516,7 +516,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           })
           setIsSummaryHydrating(false)
         }
-      } catch {
+      } catch (err) {
+        if (err instanceof SessionExpiredError) {
+          cancelled = true
+          setIsSummaryHydrating(false)
+          setCurrentJobId(null)
+          clearPersistedJobId(location.pathname, navigate)
+          return
+        }
         // Keep polling until summary is ready.
       }
     }
@@ -904,6 +911,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const handleProcessBatch = async () => {
     if (batchFiles.length === 0 || isBatchStarting) return
     const paid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+    if (currentJobId || getPersistedJobId(location.pathname)) {
+      clearPersistedJobIdInPlace(location.pathname)
+      setCurrentJobId(null)
+    }
     if (batchPollRef.current) {
       clearInterval(batchPollRef.current)
       batchPollRef.current = null
@@ -919,6 +930,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         ...(extraLangs.length > 0 ? { additionalLanguages: extraLangs } : {}),
       })
       const batchId = res.batchId
+      if (!batchId) throw new Error('Batch upload did not return a batchId')
       try {
         trackEvent('batch_job_created', { file_count: batchFiles.length, tool: 'video-to-transcript' })
       } catch {
