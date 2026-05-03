@@ -14,7 +14,6 @@ import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingInterface } from '../components/figma/ProcessingInterface'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
 import { ResultSkeleton } from '../components/figma/ResultSkeleton'
-import { TranscriptResult } from '../components/figma/TranscriptResult'
 import TranscriptSharePanel from '../components/TranscriptSharePanel'
 import SpeakerSegmentsPanel from '../components/videoTranscript/SpeakerSegmentsPanel'
 import PinnedAudioPlayerBar from '../components/transcript/PinnedAudioPlayerBar'
@@ -1941,47 +1940,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
   }, [status, result, isPaidPlan])
 
-  /** Single TXT download — speaker-aware, uses edited segments. Zero server round-trip. */
-  const handleQuickTxtExport = useCallback(() => {
-    const structured = editableSegments?.length
-      ? buildTxt(editableSegments, speakerNameMap, { timestampMode, verbatimMode, intervalSec })
-      : (editedFullTranscript || fullTranscript || '').trim()
-    const content = structured.trim()
-    if (!content) { toast.error('Nothing to export'); return }
-    const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
-    const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
-    if (freeUsedAll) { toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.'); return }
-    const stem = exportFileStem(selectedFile?.name, 'video')
-    const desc =
-      transcriptView === 'translated' && translationLanguage
-        ? `transcript_translated_${targetLangFileSlug(translationLanguage)}`
-        : `transcript_export_original_${langCodeForFile(exportSourceLangCode)}`
-    const file = joinExportFilename(stem, desc, '.txt')
-    const payload = isPaidPlan ? content : content + FREE_EXPORT_WATERMARK
-    if (!isPaidPlan) setFreeExportsUsed((n) => n + 1)
-    const blob = new Blob([payload], { type: 'text/plain;charset=utf-8' })
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = file
-    a.click()
-    URL.revokeObjectURL(a.href)
-    try { trackEvent('result_downloaded', { tool: 'video-to-transcript', format: 'txt', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
-    toast.success(isPaidPlan ? 'TXT downloaded' : 'TXT downloaded (with watermark)')
-  }, [
-    editableSegments,
-    speakerNameMap,
-    editedFullTranscript,
-    fullTranscript,
-    isPaidPlan,
-    freeExportsUsed,
-    selectedFile?.name,
-    transcriptView,
-    translationLanguage,
-    exportSourceLangCode,
-    timestampMode,
-    verbatimMode,
-  ])
-
   /** Client-side PDF generation — zero server round-trip, respects edits and renamed speakers. */
   const handleExportPdf = useCallback(async () => {
     const segs = (editableSegments && editableSegments.length > 0 ? editableSegments : result?.segments) ?? null
@@ -3348,11 +3306,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               const previewText = fullText.slice(0, Math.max(400, Math.ceil(fullText.length * 0.25)))
               return (
                 <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none mb-2">
-                  {/* header row */}
-                  <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
+                  {/* preview banner */}
+                  <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-emerald-50/80 via-cyan-50/70 to-blue-50/70 dark:from-emerald-950/30 dark:via-cyan-950/20 dark:to-blue-950/20">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" aria-hidden />
-                      <span className="text-sm font-semibold text-gray-800 dark:text-white">Transcript ready</span>
+                      <span className="text-sm font-semibold text-gray-800 dark:text-white">Transcript preview</span>
                       {lastProcessingMs != null && (
                         <span className="text-xs text-gray-400">· {(lastProcessingMs / 1000).toFixed(1)}s</span>
                       )}
@@ -3451,33 +3409,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 </div>
               </div>
             )}
-            {/* Result header + primary actions */}
-            <TranscriptResult
-              fileName={
-                result.fileName ??
-                joinExportFilename(
-                  exportFileStem(selectedFile?.name, 'video'),
-                  `transcript_original_${langCodeForFile(exportSourceLangCode)}`,
-                  '.txt'
-                )
-              }
-              processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
-              fileSize={result.fileName ? undefined : undefined}
-              transcript={displayTranscript || fullTranscript || transcriptPreview || ''}
-              onDownload={handleQuickTxtExport}
-              onProcessAnother={handleProcessAnother}
-
-              onExportSrt={handleExportSrt}
-              onExportVtt={handleExportVtt}
-              onCopy={handleCopyToClipboard}
-              onEditToggle={isPaidPlan ? () => setTranscriptEditMode((v) => !v) : undefined}
-              editLabel={transcriptEditMode ? 'Done' : 'Edit'}
-              searchQuery={searchQuery}
-              onSearchQueryChange={setSearchQuery}
-              showTranscriptCard={false}
-              showNextSteps={false}
-            />
-
             {/* ── Transcript stats pills ── */}
             {(() => {
               const text = displayTranscript || fullTranscript || transcriptPreview || ''
@@ -3809,6 +3740,22 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     </div>
                   )}
                 </div>
+                <div className="mt-6 rounded-xl border border-indigo-200/80 dark:border-indigo-800/70 bg-gradient-to-r from-indigo-50 via-violet-50 to-fuchsia-50 dark:from-indigo-950/30 dark:via-violet-950/20 dark:to-fuchsia-950/20 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">Need a download?</p>
+                    <p className="text-xs text-indigo-700/90 dark:text-indigo-300/90">Use the Exports panel on the right for TXT, SRT, DOCX, PDF, JSON, CSV and more.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const node = document.getElementById('exports-panel')
+                      if (node) node.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }}
+                    className="inline-flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 transition-colors shrink-0"
+                  >
+                    Go to Exports
+                  </button>
+                </div>
               </div>
                 )}
               </div>
@@ -3828,7 +3775,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     'flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100 [&::-webkit-details-marker]:hidden'
                   return (
                     <>
-                      <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
+                      <div id="exports-panel" className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
                         <div className="flex items-center justify-between gap-2 mb-3">
                           <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                             <FileCode className="w-4 h-4 text-violet-600" strokeWidth={1.7} />
