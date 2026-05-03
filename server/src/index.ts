@@ -122,6 +122,40 @@ const corsOptions: cors.CorsOptions = {
 app.use(cors(corsOptions))
 app.options('*', cors(corsOptions))
 
+// CORS debug instrumentation (do not alter behavior)
+app.use((req, res, next) => {
+  const origin = req.get('origin') ?? 'undefined'
+  const path = req.originalUrl || req.path
+  log.info({ msg: '[REQ]', method: req.method, path, origin })
+
+  if (req.method === 'OPTIONS') {
+    log.info({ msg: '[OPTIONS]', stage: 'received', method: req.method, path, origin })
+  }
+
+  res.on('finish', () => {
+    const allowOrigin = res.getHeader('Access-Control-Allow-Origin')
+    const hasCorsHeader = allowOrigin !== undefined && allowOrigin !== null
+    log.info({
+      msg: req.method === 'OPTIONS' ? '[OPTIONS]' : '[RES]',
+      stage: 'sent',
+      method: req.method,
+      path,
+      status: res.statusCode,
+      hasAccessControlAllowOrigin: hasCorsHeader,
+      accessControlAllowOrigin: hasCorsHeader ? String(allowOrigin) : null,
+    })
+  })
+
+  next()
+})
+
+app.get('/api/debug/cors', (req, res) => {
+  res.json({
+    origin: req.headers.origin ?? null,
+    responseHeaders: res.getHeaders(),
+  })
+})
+
 // Request ID: correlate UI → API → worker (read from edge or generate)
 app.use(requestIdMiddleware)
 app.use(sentryRequestIdScope)
