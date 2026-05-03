@@ -227,7 +227,7 @@ export function buildTxt(
 ): string {
   const { timestampMode = 'per-speaker', verbatimMode = 'full', intervalSec = 30 } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
-  const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t.trim())
+  const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t)
   const lines: string[] = []
 
   if (timestampMode === 'per-segment') {
@@ -308,17 +308,25 @@ function csvCell(value: string): string {
  * Builds a CSV with columns: start, end, speaker, text
  * The speaker column is omitted when the transcript is not diarized.
  */
-export function buildCsv(segments: Segment[], nameMap: SpeakerNameMap): string {
+export function buildCsv(
+  segments: Segment[],
+  nameMap: SpeakerNameMap,
+  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+): string {
+  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
+  const includeTimestamps = timestampMode !== 'none'
+  const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t)
 
-  const header = hasSpeakers ? 'start,end,speaker,text' : 'start,end,text'
+  const header = includeTimestamps
+    ? (hasSpeakers ? 'start,end,speaker,text' : 'start,end,text')
+    : (hasSpeakers ? 'speaker,text' : 'text')
   const rows = resolved.map((seg) => {
     const cols = [
-      seg.start.toFixed(3),
-      seg.end.toFixed(3),
+      ...(includeTimestamps ? [seg.start.toFixed(3), seg.end.toFixed(3)] : []),
       ...(hasSpeakers ? [csvCell(seg.speaker ?? '')] : []),
-      csvCell(seg.text),
+      csvCell(applyVerb(seg.text)),
     ]
     return cols.join(',')
   })
@@ -329,7 +337,7 @@ export function buildCsv(segments: Segment[], nameMap: SpeakerNameMap): string {
 
 export interface TranscriptJsonExport {
   fullTranscript: string
-  segments: Array<{ start: number; end: number; text: string; speaker?: string }>
+  segments: Array<{ start?: number; end?: number; text: string; speaker?: string }>
   speakers?: Array<{ speaker: string; text: string }>
   summary?: unknown
   chapters?: unknown
@@ -351,23 +359,27 @@ export function buildJson(
     highlights?: unknown
     keywords?: unknown
   } = {},
+  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
 ): string {
+  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
 
+  const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t)
+  const fullTranscript = resolved.map((s) => applyVerb(s.text)).join('\n\n').trimEnd()
+
   const payload: TranscriptJsonExport = {
-    fullTranscript: buildFullTranscript(segments),
+    fullTranscript,
     segments: resolved.map((s) => ({
-      start: s.start,
-      end: s.end,
-      text: s.text,
+      ...(timestampMode !== 'none' ? { start: s.start, end: s.end } : {}),
+      text: applyVerb(s.text),
       ...(hasSpeakers && s.speaker ? { speaker: s.speaker } : {}),
     })),
     ...(hasSpeakers
       ? {
           speakers: resolved
             .filter((s) => s.speaker)
-            .map((s) => ({ speaker: s.speaker!, text: s.text })),
+            .map((s) => ({ speaker: s.speaker!, text: applyVerb(s.text) })),
         }
       : {}),
     ...extras,
@@ -381,15 +393,26 @@ export function buildJson(
  * Builds a Notion-compatible block array (paragraph blocks).
  * Speaker turns are prefixed: "[Alice] Hello there."
  */
-export function buildNotion(segments: Segment[], nameMap: SpeakerNameMap): string {
+export function buildNotion(
+  segments: Segment[],
+  nameMap: SpeakerNameMap,
+  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+): string {
+  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
+  const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t)
   const blocks = resolved.map((seg) => ({
     type: 'paragraph',
     rich_text: [
       {
         type: 'text',
         text: {
-          content: seg.speaker ? `[${seg.speaker}] ${seg.text}` : seg.text,
+          content:
+            timestampMode === 'none'
+              ? applyVerb(seg.text)
+              : seg.speaker
+                ? `[${seg.speaker}] ${applyVerb(seg.text)}`
+                : applyVerb(seg.text),
         },
       },
     ],

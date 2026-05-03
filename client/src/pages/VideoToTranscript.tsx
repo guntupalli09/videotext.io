@@ -3713,15 +3713,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   {timestampMode === 'per-speaker' && (
                                     <div className="mt-2 ml-4 space-y-1.5">
                                       <p className="text-[10px] text-gray-500 dark:text-gray-400">
-                                        Speaker diarization (REPLICATE_API): map speaker labels for exports
+                                        Speaker labels for exports
                                       </p>
                                       {hasDiarizedSpeakersForExport ? (
                                         speakerOptionsForExport.map((rawSpeaker, idx) => (
                                           <label key={rawSpeaker} className="flex items-center gap-2 text-[10px]">
                                             <span className="min-w-20 text-gray-500">{rawSpeaker}</span>
                                             <input
-                                              value={speakerNameMap[rawSpeaker] || `Speaker ${idx + 1}`}
+                                              value={speakerNameMap[rawSpeaker] ?? ''}
                                               onChange={(e) => setSpeakerNameMap((prev) => ({ ...prev, [rawSpeaker]: e.target.value }))}
+                                              placeholder={`Speaker ${idx + 1}`}
                                               className="flex-1 min-w-0 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-1.5 py-0.5"
                                             />
                                           </label>
@@ -3748,18 +3749,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                     ))}
                                   </div>
                                 </div>
-                                {/* Live preview */}
-                                {(editableSegments?.length ?? 0) > 0 && (
-                                  <div>
-                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">
-                                      Preview (TXT) · {verbatimMode === 'clean' ? 'Clean verbatim' : 'Full verbatim'}
-                                    </p>
-                                    <pre className="text-[10px] text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded p-2 max-h-32 overflow-y-auto whitespace-pre-wrap leading-relaxed">
-                                      {buildTxt(editableSegments!, speakerNameMap, { timestampMode, verbatimMode, intervalSec }).slice(0, 400)}
-                                      {buildTxt(editableSegments!, speakerNameMap, { timestampMode, verbatimMode, intervalSec }).length > 400 ? '…' : ''}
-                                    </pre>
-                                  </div>
-                                )}
                             </div>
                             <div>
                               <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Structured</p>
@@ -3772,11 +3761,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   const segsForFormat = segmentsForExport ?? []
                                   const content =
                                     format === 'json'
-                                      ? buildJson(segsForFormat, speakerNameMap, { summary: schema, chapters, highlights, keywords })
+                                      ? buildJson(segsForFormat, speakerNameMap, { summary: schema, chapters, highlights, keywords }, { timestampMode, verbatimMode })
                                       : format === 'csv'
-                                        ? buildCsv(segsForFormat, speakerNameMap)
+                                        ? buildCsv(segsForFormat, speakerNameMap, { timestampMode, verbatimMode })
                                         : format === 'notion'
-                                          ? buildNotion(segsForFormat, speakerNameMap)
+                                          ? buildNotion(segsForFormat, speakerNameMap, { timestampMode, verbatimMode })
                                           : buildTxt(segsForFormat, speakerNameMap, { timestampMode, verbatimMode, intervalSec })
                                   const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
                                   const freeCanDownload = !isPaidPlan && freeExportsUsed < 2
@@ -3893,9 +3882,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                               const makeStructuredHandler = (format: 'txt' | 'csv' | 'json' | 'notion') => () => {
                                 if (!translatedSegments) return
                                 const content =
-                                  format === 'json' ? buildJson(translatedSegments, speakerNameMap)
-                                  : format === 'csv' ? buildCsv(translatedSegments, speakerNameMap)
-                                  : format === 'notion' ? buildNotion(translatedSegments, speakerNameMap)
+                                  format === 'json' ? buildJson(translatedSegments, speakerNameMap, {}, { timestampMode, verbatimMode })
+                                  : format === 'csv' ? buildCsv(translatedSegments, speakerNameMap, { timestampMode, verbatimMode })
+                                  : format === 'notion' ? buildNotion(translatedSegments, speakerNameMap, { timestampMode, verbatimMode })
                                   : buildTxt(translatedSegments, speakerNameMap, { timestampMode, verbatimMode, intervalSec })
                                 if (freeUsedAll) { toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.'); return }
                                 const mimeType = format === 'json' ? 'application/json' : 'text/plain'
