@@ -1064,6 +1064,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
     try {
       const _isPaid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+      const diarizationEnabledForJob = true
       const baseOptions: Parameters<typeof uploadFileWithProgress>[1] = {
         toolType: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT,
         trimmedStart: (trimStartSec ?? trimStart) ?? undefined,
@@ -1072,12 +1073,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         includeChapters: _isPaid ? includeChapters : false,
         exportFormats: exportFormats.length > 0 ? exportFormats : (['txt'] as const),
         language: selectedLanguage ? languageToCode(selectedLanguage) || undefined : undefined,
-        speakerDiarization: _isPaid ? speakerDiarization : false,
-        numSpeakers: _isPaid && numSpeakers ? Number(numSpeakers) : undefined,
-        diarizationLanguage: _isPaid ? (selectedLanguage ? languageToCode(selectedLanguage) || undefined : undefined) : undefined,
+        speakerDiarization: diarizationEnabledForJob,
+        numSpeakers: diarizationEnabledForJob && numSpeakers ? Number(numSpeakers) : undefined,
+        diarizationLanguage: diarizationEnabledForJob ? (selectedLanguage ? languageToCode(selectedLanguage) || undefined : undefined) : undefined,
         glossary: glossary.trim() || undefined,
       }
-      setDiarizationWasRequested(speakerDiarization)
+      setDiarizationWasRequested(diarizationEnabledForJob)
       setUploadPhase('uploading')
       const uploadProps = getFunnelProps('file_upload')
       trackEvent('upload_started', uploadProps)
@@ -1406,7 +1407,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       setPartialSegments([])
       setYoutubeStage(null)
       youtubeStageAtFailureRef.current = null
-      setDiarizationWasRequested(speakerDiarization)
+      const diarizationEnabledForJob = true
+      setDiarizationWasRequested(diarizationEnabledForJob)
       trackEvent('processing_started', { tool: 'video-to-transcript', source: 'youtube' })
 
       const uploadProps = getFunnelProps('youtube_url')
@@ -1419,9 +1421,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           includeChapters: _isPaid ? includeChapters : false,
           exportFormats: exportFormats.length > 0 ? exportFormats : ['txt'],
           language: selectedLanguage ? languageToCode(selectedLanguage) || undefined : undefined,
-          speakerDiarization: _isPaid ? speakerDiarization : false,
-          numSpeakers: _isPaid && numSpeakers ? Number(numSpeakers) : undefined,
-          diarizationLanguage: _isPaid ? (selectedLanguage ? languageToCode(selectedLanguage) || undefined : undefined) : undefined,
+          speakerDiarization: diarizationEnabledForJob,
+          numSpeakers: diarizationEnabledForJob && numSpeakers ? Number(numSpeakers) : undefined,
+          diarizationLanguage: diarizationEnabledForJob ? (selectedLanguage ? languageToCode(selectedLanguage) || undefined : undefined) : undefined,
           glossary: glossary.trim() || undefined,
         },
         uploadAbortRef.current.signal
@@ -1765,7 +1767,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const labels = Array.from(new Set(raw.map((seg) => seg.speaker?.trim()).filter(Boolean) as string[]))
     return labels
   }, [result?.segments])
-  const hasDiarizedSpeakersForExport = speakerOptionsForExport.length >= 2
+  const hasDiarizedSpeakersForExport = speakerOptionsForExport.length >= 1
 
   const getSummarySchema = useCallback((): { summary?: string; bullets: string[]; decisions: string[]; action_items: string[]; key_points: string[] } => {
     if (result?.summary) {
@@ -3726,7 +3728,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                         ))
                                       ) : (
                                         <p className="text-[10px] text-amber-600 dark:text-amber-400">
-                                          REPLICATE_API diarization has not returned multiple speaker labels yet. Enable speaker labels and reprocess to populate this list.
+                                          REPLICATE_API diarization labels are still processing for this job. If no labels appear, reprocess with speaker diarization enabled.
                                         </p>
                                       )}
                                     </div>

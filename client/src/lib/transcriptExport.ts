@@ -76,14 +76,14 @@ export function resolveSpeakerName(
 /**
  * Returns a copy of segments where each `speaker` field is replaced by the
  * resolved display name. Segments without a speaker are unchanged.
- * Only attaches a speaker when there are ≥2 distinct speakers (diarized audio).
+ * Attaches speaker labels whenever diarization produced at least one label.
  */
 export function withResolvedSpeakers(
   segments: Segment[],
   nameMap: SpeakerNameMap,
 ): ResolvedSegment[] {
   const labels = uniqueSpeakerLabels(segments)
-  const isDiarized = labels.length >= 2
+  const isDiarized = labels.length >= 1
   return segments.map((seg) => ({
     start: seg.start,
     end: seg.end,
