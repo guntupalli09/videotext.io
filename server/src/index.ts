@@ -90,25 +90,7 @@ const generalLimiter = rateLimit({
 })
 
 // CORS: allowlist is managed in utils/allowedOrigins.ts.
-// Production: explicit origins only (hardcoded set + CORS_ORIGINS env var).
-// Development: any localhost origin allowed.
-// The *.vercel.app wildcard has been removed — add preview URLs to CORS_ORIGINS instead.
-
-const corsOptions: cors.CorsOptions = {
-  origin: (origin, callback) => {
-    if (isAllowedOrigin(origin)) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Id', 'X-Plan', 'X-Upload-Id', 'X-Chunk-Index'],
-  credentials: true,
-  optionsSuccessStatus: 204,
-}
-
-// Ensure CORS headers are on every response (including errors). Run first so preflight and error responses get them.
+// Includes: production domain(s), localhost dev, and https://*.vercel.app previews.
 const corsHeaders = [
   'Content-Type',
   'Authorization',
@@ -117,36 +99,28 @@ const corsHeaders = [
   'X-Upload-Id',
   'X-Chunk-Index',
 ]
-app.use((req, res, next) => {
-  const rawOrigin = req.headers.origin
-  const origin = typeof rawOrigin === 'string' ? normalizeOrigin(rawOrigin) || rawOrigin : rawOrigin
-  if (origin && isAllowedOrigin(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin)
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH')
-    res.setHeader('Access-Control-Allow-Headers', corsHeaders.join(', '))
-    res.setHeader('Access-Control-Max-Age', '86400')
-  }
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204)
-  }
-  next()
-})
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    const normalized = typeof origin === 'string' ? normalizeOrigin(origin) : origin
+    log.info({ msg: '[cors] incoming origin', origin: normalized ?? 'undefined' })
+
+    if (!normalized || isAllowedOrigin(normalized)) {
+      callback(null, true)
+      return
+    }
+
+    log.warn({ msg: '[cors] rejected origin', origin: normalized })
+    callback(new Error('Not allowed by CORS'))
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: corsHeaders,
+  credentials: true,
+  optionsSuccessStatus: 204,
+}
 
 app.use(cors(corsOptions))
-// Preflight fallback (in case OPTIONS is not caught above)
-app.options('*', (req, res) => {
-  const rawOrigin = req.headers.origin
-  const origin = typeof rawOrigin === 'string' ? normalizeOrigin(rawOrigin) || rawOrigin : rawOrigin
-  if (origin && isAllowedOrigin(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin)
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH')
-    res.setHeader('Access-Control-Allow-Headers', corsHeaders.join(', '))
-    res.setHeader('Access-Control-Max-Age', '86400')
-  }
-  res.sendStatus(204)
-})
+app.options('*', cors(corsOptions))
 
 // Request ID: correlate UI → API → worker (read from edge or generate)
 app.use(requestIdMiddleware)
