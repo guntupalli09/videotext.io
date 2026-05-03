@@ -9,7 +9,6 @@ import { UseCases } from '../components/landing/UseCases';
 import { FAQ } from '../components/landing/FAQ';
 import { FinalCTA } from '../components/landing/FinalCTA';
 import { ArrowRight } from 'lucide-react';
-import { PRIMARY_DEFINITION, PRODUCT_CATEGORY, CORE_VALUE } from '../lib/productDna';
 
 // Conversion order (psychologically optimised):
 // 1. Hero — 3-second clarity + CTA
@@ -138,15 +137,6 @@ export default function Home() {
     <div className="min-h-screen">
       {/* 1 — Hero */}
       <Hero />
-
-      <section className="py-8 border-b border-gray-100 dark:border-gray-800">
-        <div className="max-w-5xl mx-auto px-6">
-          <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400">{PRODUCT_CATEGORY}</p>
-          <h2 className="mt-2 text-2xl font-extrabold text-gray-900 dark:text-white">{PRIMARY_DEFINITION}</h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Core value: {CORE_VALUE}</p>
-        </div>
-      </section>
-
 
       {/* 2 — Features / toolkit */}
       <Features />
