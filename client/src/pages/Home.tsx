@@ -87,13 +87,27 @@ export default function Home() {
           <p className="mt-2 text-base text-white/85 max-w-3xl">Get clean transcript, summary, chapters, and subtitles in minutes.</p>
           <p className="mt-2 text-white/85 max-w-3xl">Replace your current setup and manual cleanup in one step.</p>
 
-          <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Link to="/open" className={`${ctaClass} bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)</Link>
-            <p className="text-xs text-white/70">No signup required • Files deleted after processing • Works with long videos</p>
-            <p className="text-xs text-violet-300">Takes less than 30 seconds to try.</p>
-            <Link to="/youtube-transcript-generator" className={`${ctaClass} border border-white/20 hover:border-white/40 bg-white/[0.02] hover:bg-white/[0.06]`}>
-              Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)
+          <div className="mt-8">
+            <Link
+              to="/open"
+              className="group block rounded-2xl border-2 border-dashed border-violet-400/60 bg-violet-500/10 hover:bg-violet-500/15 px-6 py-10 text-center transition duration-200 ease-out hover:scale-[1.01] hover:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
+            >
+              <p className="text-2xl md:text-3xl font-black">Drop your video here → get clean transcript in minutes</p>
+              <p className="mt-2 text-violet-200 font-semibold">(No editing. No waiting.)</p>
+              <p className="mt-4 text-white/85 text-sm">Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)</p>
+              <p className="mt-3 text-xs text-white/70">Drag & drop your file<br/>or click to upload<br/>or paste YouTube link</p>
             </Link>
+
+            <div className="mt-4 flex flex-col sm:flex-row gap-3">
+              <Link to="/youtube-transcript-generator" className={`${ctaClass} border border-white/20 hover:border-white/40 bg-white/[0.02] hover:bg-white/[0.06]`}>
+                Paste YouTube link
+              </Link>
+              <Link to="/open" className={`${ctaClass} bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>
+                Upload from device
+              </Link>
+            </div>
+            <p className="mt-3 text-xs text-white/70">No signup required • Files deleted after processing • Works with long videos</p>
+            <p className="mt-1 text-xs text-violet-300">Takes less than 30 seconds to try.</p>
           </div>
 
           <ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-white/85">
