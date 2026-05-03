@@ -3829,58 +3829,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   return (
                     <>
                       <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Full summary</h3>
-                          {result?.summary ? (
-                            <span className="text-[10px] font-medium uppercase tracking-wide text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/40 px-2 py-0.5 rounded-full">
-                              AI-generated
-                            </span>
-                          ) : null}
-                        </div>
-                        {schema.summary ? (
-                          <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{schema.summary}</p>
-                        ) : isSummaryHydrating ? (
-                          <div className="flex items-center gap-2 text-xs text-violet-600 dark:text-violet-400">
-                            <span className="w-3 h-3 rounded-full border-2 border-violet-500 border-t-transparent animate-spin shrink-0" />
-                            Generating summary…
-                          </div>
-                        ) : isPaidPlan ? (
-                          <p className="text-xs text-gray-500 dark:text-gray-400">No summary for this transcript yet.</p>
-                        ) : (
-                          <div className="relative rounded-lg overflow-hidden">
-                            {/* Blurred skeleton lines representing locked summary content */}
-                            <div className="blur-sm select-none pointer-events-none space-y-2 py-1">
-                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-full" />
-                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-5/6" />
-                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-11/12" />
-                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-4/5" />
-                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-full" />
-                            </div>
-                            {/* Overlay CTA */}
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-white/80 dark:bg-gray-900/80">
-                              <Lock className="w-3.5 h-3.5 text-violet-500" />
-                              <button
-                                type="button"
-                                onClick={() => { setPaywallReason('AI_FEATURES'); setShowPaywall(true) }}
-                                className="text-xs font-semibold text-violet-600 dark:text-violet-400 hover:underline"
-                              >
-                                Unlock AI Summary →
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                        {previewBullets.length > 0 ? (
-                          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
-                            <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-2">Key bullets</p>
-                            <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1.5 list-disc pl-4">
-                              {previewBullets.map((b, i) => (
-                                <li key={i}>{b}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        ) : null}
-                      </div>
-                      <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
                         <div className="flex items-center justify-between gap-2 mb-3">
                           <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                             <FileCode className="w-4 h-4 text-violet-600" strokeWidth={1.7} />
@@ -4168,6 +4116,58 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             })()}
                           </div>
                         )}
+                      </div>
+                      <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Full summary</h3>
+                          {result?.summary ? (
+                            <span className="text-[10px] font-medium uppercase tracking-wide text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/40 px-2 py-0.5 rounded-full">
+                              AI-generated
+                            </span>
+                          ) : null}
+                        </div>
+                        {schema.summary ? (
+                          <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{schema.summary}</p>
+                        ) : isSummaryHydrating ? (
+                          <div className="flex items-center gap-2 text-xs text-violet-600 dark:text-violet-400">
+                            <span className="w-3 h-3 rounded-full border-2 border-violet-500 border-t-transparent animate-spin shrink-0" />
+                            Generating summary…
+                          </div>
+                        ) : isPaidPlan ? (
+                          <p className="text-xs text-gray-500 dark:text-gray-400">No summary for this transcript yet.</p>
+                        ) : (
+                          <div className="relative rounded-lg overflow-hidden">
+                            {/* Blurred skeleton lines representing locked summary content */}
+                            <div className="blur-sm select-none pointer-events-none space-y-2 py-1">
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-full" />
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-5/6" />
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-11/12" />
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-4/5" />
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-full" />
+                            </div>
+                            {/* Overlay CTA */}
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-white/80 dark:bg-gray-900/80">
+                              <Lock className="w-3.5 h-3.5 text-violet-500" />
+                              <button
+                                type="button"
+                                onClick={() => { setPaywallReason('AI_FEATURES'); setShowPaywall(true) }}
+                                className="text-xs font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+                              >
+                                Unlock AI Summary →
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                        {previewBullets.length > 0 ? (
+                          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                            <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-2">Key bullets</p>
+                            <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1.5 list-disc pl-4">
+                              {previewBullets.map((b, i) => (
+                                <li key={i}>{b}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : null}
                       </div>
                       <details className={detailCls}>
                         <summary className={summaryCls}>
