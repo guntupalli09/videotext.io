@@ -33,7 +33,7 @@ import {
   targetLangFileSlug,
   transcriptExportName,
 } from '../lib/exportFileNames'
-import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
+import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId, clearPersistedJobIdInPlace } from '../lib/jobSession'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
@@ -516,7 +516,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           })
           setIsSummaryHydrating(false)
         }
-      } catch {
+      } catch (err) {
+        if (err instanceof SessionExpiredError) {
+          cancelled = true
+          setIsSummaryHydrating(false)
+          setCurrentJobId(null)
+          clearPersistedJobId(location.pathname, navigate)
+          return
+        }
         // Keep polling until summary is ready.
       }
     }
@@ -905,7 +912,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     if (batchFiles.length === 0 || isBatchStarting) return
     const paid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
     if (currentJobId || getPersistedJobId(location.pathname)) {
-      clearPersistedJobId(location.pathname, navigate)
+      clearPersistedJobIdInPlace(location.pathname)
       setCurrentJobId(null)
     }
     if (batchPollRef.current) {

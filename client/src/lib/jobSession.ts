@@ -68,6 +68,22 @@ export function clearPersistedJobId(pathname: string, navigate: (path: string, o
   }
 }
 
+/** Remove jobId/jobToken for current tool path without router navigation side effects. */
+export function clearPersistedJobIdInPlace(pathname: string): void {
+  const key = getPathKey(pathname)
+  try {
+    sessionStorage.removeItem(key)
+    sessionStorage.removeItem(key + TOKEN_STORAGE_SUFFIX)
+  } catch {
+    // ignore
+  }
+  const url = new URL(window.location.href)
+  if (url.searchParams.has(QUERY_KEY)) {
+    url.searchParams.delete(QUERY_KEY)
+    window.history.replaceState({}, '', url.pathname + (url.search ? url.search : ''))
+  }
+}
+
 /** Clear all persisted job IDs and tokens from sessionStorage. Call on logout so results are not re-shown after reload. */
 export function clearAllPersistedJobs(): void {
   if (typeof sessionStorage === 'undefined') return
