@@ -3751,9 +3751,60 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 </div>
                             </div>
                             <div>
-                              <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Structured</p>
+                              <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Documents</p>
+                              <div className="grid grid-cols-3 gap-2">
+                                {(['pdf', 'docx', 'text'] as const).map((format) => {
+                                  const canClick = true
+                                  const handleDownload = () => {
+                                    if (format === 'pdf') { handleExportPdf(); return }
+                                    if (format === 'docx') { handleExportDocx(); return }
+                                    const segsForFormat = segmentsForExport ?? []
+                                    const content = buildTxt(segsForFormat, speakerNameMap, { timestampMode, verbatimMode, intervalSec })
+                                    const FREE_EXPORT_WATERMARK = '\n\n---\nExported from VideoText (Free Plan) · videotext.io\n'
+                                    const freeCanDownload = !isPaidPlan && freeExportsUsed < 2
+                                    const freeUsedAll = !isPaidPlan && freeExportsUsed >= 2
+                                    if (isPaidPlan) {
+                                      const blob = new Blob([content], { type: 'text/plain' })
+                                      const a = document.createElement('a')
+                                      a.href = URL.createObjectURL(blob)
+                                      a.download = transcriptExportName(selectedFile?.name, 'text', exportSourceLangCode)
+                                      a.click()
+                                      URL.revokeObjectURL(a.href)
+                                      toast.success('Download started')
+                                      return
+                                    }
+                                    if (!freeCanDownload || freeUsedAll) {
+                                      toast('You\'ve used your 2 free exports. Upgrade for unlimited downloads.')
+                                      return
+                                    }
+                                    const blob = new Blob([content + FREE_EXPORT_WATERMARK], { type: 'text/plain' })
+                                    setFreeExportsUsed((prev) => prev + 1)
+                                    const a = document.createElement('a')
+                                    a.href = URL.createObjectURL(blob)
+                                    a.download = transcriptExportName(selectedFile?.name, 'text', exportSourceLangCode)
+                                    a.click()
+                                    URL.revokeObjectURL(a.href)
+                                    toast.success('Download started (with watermark)')
+                                  }
+                                  return (
+                                    <button
+                                      key={format}
+                                      type="button"
+                                      onClick={handleDownload}
+                                      disabled={!canClick}
+                                      className="rounded-lg border border-violet-400/70 dark:border-violet-500/70 bg-violet-600 dark:bg-violet-700 px-2 py-2 text-[11px] font-semibold tracking-wide text-white hover:bg-violet-500 dark:hover:bg-violet-600 transition-colors"
+                                      title="Click to download"
+                                    >
+                                      {format.toUpperCase()}
+                                    </button>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Other formats</p>
                               <div className="grid grid-cols-2 gap-2">
-                                {(['json', 'csv', 'notion', 'text'] as const).map((format) => {
+                                {(['json', 'csv', 'notion'] as const).map((format) => {
                                   const schema = getSummarySchema()
                                   const chapters = getChaptersData()
                                   const highlights = getHighlightsData()
@@ -3813,6 +3864,15 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   )
                                 })}
                               </div>
+                              <div className="grid grid-cols-2 gap-2 mt-2">
+                                <button type="button" onClick={() => void handleExportPdfThreeColumn()} className="rounded-lg border border-violet-200 dark:border-violet-700/60 px-2 py-2 text-[11px] font-medium text-violet-700 dark:text-violet-300 bg-violet-50/60 dark:bg-violet-950/20 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors" title="3-column table: Speaker | Timecode | Dialogue">
+                                  PDF 3-col
+                                </button>
+                                <button type="button" onClick={handleExportDocxThreeColumn} className="rounded-lg border border-violet-200 dark:border-violet-700/60 px-2 py-2 text-[11px] font-medium text-violet-700 dark:text-violet-300 bg-violet-50/60 dark:bg-violet-950/20 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors" title="3-column table: Speaker | Timecode | Dialogue">
+                                  DOCX 3-col
+                                </button>
+                              </div>
+                              <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">3-col: Speaker · Timecode · Dialogue table</p>
                             </div>
                             <div>
                               <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Subtitles</p>
@@ -3849,25 +3909,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                               </div>
                               <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5 italic">SRT/VTT always include timestamps regardless of timestamp setting</p>
                             </div>
-                            <div>
-                              <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Documents</p>
-                              <div className="grid grid-cols-2 gap-2">
-                                <button type="button" onClick={handleExportPdf} className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                  PDF
-                                </button>
-                                <button type="button" onClick={handleExportDocx} className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" title="Standard block format">
-                                  DOCX
-                                </button>
-                                <button type="button" onClick={() => void handleExportPdfThreeColumn()} className="rounded-lg border border-violet-200 dark:border-violet-700/60 px-2 py-2 text-[11px] font-medium text-violet-700 dark:text-violet-300 bg-violet-50/60 dark:bg-violet-950/20 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors" title="3-column table: Speaker | Timecode | Dialogue">
-                                  PDF 3-col
-                                </button>
-                                <button type="button" onClick={handleExportDocxThreeColumn} className="rounded-lg border border-violet-200 dark:border-violet-700/60 px-2 py-2 text-[11px] font-medium text-violet-700 dark:text-violet-300 bg-violet-50/60 dark:bg-violet-950/20 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors" title="3-column table: Speaker | Timecode | Dialogue">
-                                  DOCX 3-col
-                                </button>
-                              </div>
-                              <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">3-col: Speaker · Timecode · Dialogue table</p>
-                            </div>
-
                             {/* ── Translated exports — only shown when translate was enabled ── */}
                             {translateEnabled && translationLanguage && (() => {
                               const isReady = !!translatedSegments
