@@ -48,7 +48,6 @@ import {
   buildCsv,
   buildJson,
   buildNotion,
-  buildFullTranscript,
   saveEditsToStorage,
   loadEditsFromStorage,
   computeTranscriptHash,
@@ -1833,16 +1832,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
 
   const transcriptParagraphs = getParagraphs(fullTranscript || '')
-
-  /**
-   * Full transcript text built from the current edited segments.
-   * This is the SINGLE SOURCE OF TRUTH for all plain-text exports.
-   * Falls back to original fullTranscript when no editable segments exist.
-   */
-  const editedFullTranscript = useMemo(
-    () => (editableSegments?.length ? buildFullTranscript(editableSegments) : fullTranscript || ''),
-    [editableSegments, fullTranscript],
-  )
 
   const displayTranscript =
     transcriptView === 'translated' && translationLanguage && translatedCache[translationLanguage] != null
