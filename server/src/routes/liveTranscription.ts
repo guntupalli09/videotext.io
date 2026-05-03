@@ -6,6 +6,7 @@ import type { Duplex } from 'stream'
 import { DeepgramClient } from '@deepgram/sdk'
 import { getLogger } from '../lib/logger'
 import { verifyAuthToken } from '../utils/auth'
+import { isAllowedOrigin, normalizeOrigin } from '../utils/allowedOrigins'
 
 const log = getLogger('api')
 
@@ -48,24 +49,6 @@ function getSessionCap(plan: string): number {
 const activeSessions = new Map<string, SessionState>()
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-
-function isAllowedOrigin(origin: string | undefined): boolean {
-  if (!origin) return true
-  const exact = new Set(['https://videotext.io', 'https://www.videotext.io'])
-  if (exact.has(origin)) return true
-  if (origin.endsWith('.vercel.app')) return true
-  const envOrigins = (process.env.CORS_ORIGINS || '')
-    .split(',')
-    .map((o) => o.trim())
-    .filter(Boolean)
-  if (envOrigins.includes(origin)) return true
-  try {
-    const host = new URL(origin).hostname.toLowerCase()
-    return host === 'localhost' || host === '127.0.0.1' || host === '::1'
-  } catch {
-    return false
-  }
-}
 
 /**
  * Extract the dominant speaker index from Deepgram word-level diarization.
@@ -117,7 +100,11 @@ export function attachLiveTranscription(server: Server): void {
       socket.destroy()
       return
     }
-    if (!isAllowedOrigin(request.headers.origin)) {
+    const rawOrigin = request.headers.origin
+    const origin = typeof rawOrigin === 'string' ? normalizeOrigin(rawOrigin) : undefined
+    log.info({ msg: '[live] upgrade origin', origin: origin ?? 'undefined' })
+    if (!isAllowedOrigin(origin)) {
+      log.warn({ msg: '[live] rejected upgrade origin', origin })
       socket.write('HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: close\r\n\r\n')
       socket.destroy()
       return
