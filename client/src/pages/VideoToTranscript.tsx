@@ -103,6 +103,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const { seoH1, seoIntro, faq = [], seoDeepContent, defaultInputMode = 'file' } = props
   const location = useLocation()
   const navigate = useNavigate()
+  const autoStartQuery = useMemo(() => new URLSearchParams(location.search).get('auto_start'), [location.search])
+  const autoStartEnabled = useMemo(() => autoStartQuery !== 'false', [autoStartQuery])
   const sourceParam = useMemo(() => new URLSearchParams(location.search).get('source') || '', [location.search])
   const sourceMessage = useMemo(() => {
     if (sourceParam === 'google-meet') {
@@ -245,6 +247,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [audioMuted, setAudioMuted] = useState(false)
   const [audioSpeed, setAudioSpeed] = useState(1)
   const [showPostSuccessMonetizationPanel, setShowPostSuccessMonetizationPanel] = useState(false)
+  const uploadCompletedAtRef = useRef<number | null>(null)
+  const autoStartTriggeredForFileRef = useRef<string | null>(null)
+  const shouldAutoStartNextFileRef = useRef(false)
   useEffect(() => {
     try {
       const raw = localStorage.getItem(EXPORT_PREFS_KEY)
@@ -835,6 +840,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const w = window as Window & { __videotextPendingFile?: File }
     if (w.__videotextPendingFile) {
       setSelectedFile(w.__videotextPendingFile)
+      shouldAutoStartNextFileRef.current = true
       delete w.__videotextPendingFile
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -874,6 +880,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
     // workflow.setVideo(file)
     setSelectedFile(file)
+    shouldAutoStartNextFileRef.current = false
     setFileFromWorkflow(false)
     setTrimStart(null)
     setTrimEnd(null)
@@ -977,7 +984,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     }
   }
 
-  const handleProcess = async (trimStartPercent?: number, trimEndPercent?: number) => {
+  const handleProcess = async (trimStartPercent?: number, trimEndPercent?: number, startMode: 'auto' | 'manual' = 'manual') => {
     if (!selectedFile) {
       toast.error('Please select a file')
       return
@@ -1092,6 +1099,18 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
       const tl = typeof window !== 'undefined' ? (window as any).__uploadTimeline : undefined
       uploadAbortRef.current = null
+      uploadCompletedAtRef.current = Date.now()
+      try {
+        trackEvent('upload_completed', {
+          tool: 'video-to-transcript',
+          file_size_bytes: selectedFile.size,
+          upload_progress_pct: 100,
+          start_mode: startMode,
+          auto_start_enabled: autoStartEnabled,
+        })
+      } catch {
+        // non-blocking
+      }
       setCurrentJobId(response.jobId)
       persistJobId(location.pathname, response.jobId, response.jobToken)
       setUploadPhase('processing')
@@ -1117,6 +1136,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         if (jobStatus.queuePosition !== undefined) setQueuePosition(jobStatus.queuePosition)
         if (jobStatus.status === 'processing' && jobStartedTrackedRef.current !== response.jobId) {
           jobStartedTrackedRef.current = response.jobId
+          const uploadCompletedAt = uploadCompletedAtRef.current
+          const uploadToJobStartMs = uploadCompletedAt != null ? Date.now() - uploadCompletedAt : undefined
+          if (startMode === 'auto') {
+            trackEvent('transcription_autostarted', { tool: 'video-to-transcript', job_id: response.jobId, upload_to_job_start_ms: uploadToJobStartMs })
+          } else {
+            trackEvent('transcription_manual_started', { tool: 'video-to-transcript', job_id: response.jobId, upload_to_job_start_ms: uploadToJobStartMs })
+          }
           try {
             trackEvent('job_started', { job_id: response.jobId, tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT })
           } catch {
@@ -1322,6 +1348,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       toast.error(getUserFacingMessage(error))
     }
   }
+
+  useEffect(() => {
+    if (!autoStartEnabled || !shouldAutoStartNextFileRef.current || status !== 'idle' || !selectedFile) return
+    const fileKey = `${selectedFile.name}:${selectedFile.size}:${selectedFile.lastModified}`
+    if (autoStartTriggeredForFileRef.current === fileKey) return
+    autoStartTriggeredForFileRef.current = fileKey
+    shouldAutoStartNextFileRef.current = false
+    void handleProcess(undefined, undefined, 'auto')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStartEnabled, selectedFile, status])
 
   // ── YouTube submission ──────────────────────────────────────────────────────
   const handleProcessYoutube = async () => {
@@ -2848,7 +2884,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               setFileFromWorkflow(false)
             }}
             actionLabel="Transcribe Video"
-            onAction={(trimStartPercent, trimEndPercent) => handleProcess(trimStartPercent, trimEndPercent)}
+            onAction={(trimStartPercent, trimEndPercent) => handleProcess(trimStartPercent, trimEndPercent, 'manual')}
             actionLoading={false}
             showVideoPlayer={!!(videoPreviewUrl || filePreview?.durationSeconds)}
             videoSrc={videoPreviewUrl ?? undefined}

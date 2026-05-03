@@ -75,6 +75,8 @@ export type AnalyticsEvent =
   | 'file_selected'
   | 'upload_started'
   | 'upload_completed'
+  | 'transcription_autostarted'
+  | 'transcription_manual_started'
   | 'job_started'
   | 'job_completed'
   | 'result_downloaded'
