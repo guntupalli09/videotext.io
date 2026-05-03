@@ -180,7 +180,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const [includeSummary, setIncludeSummary] = useState(true)
   const [includeChapters, setIncludeChapters] = useState(true)
   const [exportFormats, setExportFormats] = useState<('txt' | 'json' | 'docx' | 'pdf')[]>(['txt'])
-  const [timestampMode, setTimestampMode] = useState<TimestampMode>('per-speaker')
+  const [timestampMode, setTimestampMode] = useState<TimestampMode>('per-interval')
   const [verbatimMode, setVerbatimMode] = useState<VerbatimMode>('full')
   const [intervalSec, setIntervalSec] = useState(30)
   // Text-only translation panel state
@@ -1722,6 +1722,15 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       return []
     }
   }, [result?.segments, fullTranscript, getParagraphs, speakerNameMap, editableSegments])
+
+  const speakerOptionsForExport = useMemo(() => {
+    // IMPORTANT: source labels only from backend diarization output (REPLICATE_API via result.segments),
+    // never from user-edited segments to avoid fabricating speaker identities.
+    const raw = result?.segments ?? []
+    const labels = Array.from(new Set(raw.map((seg) => seg.speaker?.trim()).filter(Boolean) as string[]))
+    return labels
+  }, [result?.segments])
+  const hasDiarizedSpeakersForExport = speakerOptionsForExport.length >= 2
 
   const getSummarySchema = useCallback((): { summary?: string; bullets: string[]; decisions: string[]; action_items: string[]; key_points: string[] } => {
     if (result?.summary) {
@@ -3568,6 +3577,22 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     </button>
                   </div>
                 </div>
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="text-[11px] text-gray-500 dark:text-gray-400">Timestamp mode:</span>
+                  <span className="inline-flex items-center rounded-full border border-indigo-200 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 text-[11px] font-medium text-indigo-700 dark:text-indigo-200">
+                    {timestampMode === 'per-speaker'
+                      ? 'Per speaker'
+                      : timestampMode === 'per-interval'
+                        ? `Per interval (${intervalSec}s)`
+                        : timestampMode === 'per-segment'
+                          ? 'Per segment'
+                          : 'No timestamps'}
+                  </span>
+                  <span className="text-[11px] text-gray-500 dark:text-gray-400">Transcript mode:</span>
+                  <span className="inline-flex items-center rounded-full border border-violet-200 dark:border-violet-700 bg-violet-50 dark:bg-violet-900/30 px-2 py-0.5 text-[11px] font-medium text-violet-700 dark:text-violet-200">
+                    {verbatimMode === 'clean' ? 'Clean verbatim' : 'Full verbatim'}
+                  </span>
+                </div>
                 <div
                   ref={transcriptScrollRef}
                   className="flex-1 min-h-0 overflow-y-auto bg-white rounded-xl border border-gray-200/90 px-5 py-6 shadow-[inset_0_1px_0_0_rgba(15,23,42,0.04)] text-[17px] leading-[1.58] tracking-[-0.011em] text-[#1d1d1f] antialiased selection:bg-violet-100 selection:text-[#1d1d1f] font-[ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Helvetica,Arial,sans-serif]"
@@ -3671,9 +3696,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       return <div className="max-w-[52rem]">{rendered}</div>
                     }
 
-                    // per-speaker or none: group by speaker turn with headers
+                    // per-speaker or none: group by speaker turn with optional headers
                     const resolvedForView = withResolvedSpeakers(segs, speakerNameMap)
-                    const hasSpeakers = resolvedForView.some(s => s.speaker)
+                    const showSpeakerHeaders = timestampMode === 'per-speaker'
+                    const hasSpeakers = showSpeakerHeaders && resolvedForView.some(s => s.speaker)
 
                     // Build view groups (same logic as groupSegmentsBySpeakerEntry but keeping globalIndex)
                     interface VG { speaker?: string; startTime: number; items: { seg: typeof segs[0]; globalIndex: number; newPara: boolean }[] }
@@ -3704,7 +3730,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                               {hasSpeakers && vg.speaker && (
                                 <div className="text-[13px] font-semibold text-violet-700 dark:text-violet-300 mb-1.5 -mt-0.5">
                                   {vg.speaker}
-                                  {timestampMode === 'per-speaker' && (
+                                  {showSpeakerHeaders && (
                                     <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500 text-[12px] tabular-nums">
                                       {formatTimestamp(vg.startTime)}
                                     </span>
@@ -3777,12 +3803,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         ) : (
                           <div className="space-y-3">
                             {/* ── Output settings (mirrored from pre-processing panel, always visible at export time) ── */}
-                            <details className="group rounded-lg border border-gray-100 dark:border-gray-800 overflow-hidden">
-                              <summary className="flex cursor-pointer items-center justify-between px-3 py-2 text-[11px] font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 [&::-webkit-details-marker]:hidden">
-                                <span>Output settings</span>
-                                <ChevronRight className="w-3.5 h-3.5 text-gray-400 transition-transform group-open:rotate-90" />
-                              </summary>
-                              <div className="px-3 pb-3 space-y-3 border-t border-gray-100 dark:border-gray-800">
+                            <div className="rounded-lg border border-gray-100 dark:border-gray-800 px-3 pb-3 space-y-3">
+                              <div className="flex items-center justify-between pt-2">
+                                <span className="text-[11px] font-semibold text-gray-700 dark:text-gray-300">Output settings</span>
+                                <span className="text-[10px] text-gray-500">Default: Per interval</span>
+                              </div>
                                 <div className="pt-2">
                                   <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Timestamp format</p>
                                   <div className="flex flex-col gap-1">
@@ -3810,6 +3835,29 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                       </select>
                                     </div>
                                   )}
+                                  {timestampMode === 'per-speaker' && (
+                                    <div className="mt-2 ml-4 space-y-1.5">
+                                      <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                                        Speaker diarization (REPLICATE_API): map speaker labels for exports
+                                      </p>
+                                      {hasDiarizedSpeakersForExport ? (
+                                        speakerOptionsForExport.map((rawSpeaker, idx) => (
+                                          <label key={rawSpeaker} className="flex items-center gap-2 text-[10px]">
+                                            <span className="min-w-20 text-gray-500">{rawSpeaker}</span>
+                                            <input
+                                              value={speakerNameMap[rawSpeaker] || `Speaker ${idx + 1}`}
+                                              onChange={(e) => setSpeakerNameMap((prev) => ({ ...prev, [rawSpeaker]: e.target.value }))}
+                                              className="flex-1 min-w-0 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-1.5 py-0.5"
+                                            />
+                                          </label>
+                                        ))
+                                      ) : (
+                                        <p className="text-[10px] text-amber-600 dark:text-amber-400">
+                                          REPLICATE_API diarization has not returned multiple speaker labels yet. Enable speaker labels and reprocess to populate this list.
+                                        </p>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
                                 <div>
                                   <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Verbatim mode</p>
@@ -3828,15 +3876,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 {/* Live preview */}
                                 {(editableSegments?.length ?? 0) > 0 && (
                                   <div>
-                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Preview (TXT)</p>
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">
+                                      Preview (TXT) · {verbatimMode === 'clean' ? 'Clean verbatim' : 'Full verbatim'}
+                                    </p>
                                     <pre className="text-[10px] text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded p-2 max-h-32 overflow-y-auto whitespace-pre-wrap leading-relaxed">
                                       {buildTxt(editableSegments!, speakerNameMap, { timestampMode, verbatimMode, intervalSec }).slice(0, 400)}
                                       {buildTxt(editableSegments!, speakerNameMap, { timestampMode, verbatimMode, intervalSec }).length > 400 ? '…' : ''}
                                     </pre>
                                   </div>
                                 )}
-                              </div>
-                            </details>
+                            </div>
                             <div>
                               <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1.5">Structured</p>
                               <div className="grid grid-cols-2 gap-2">
