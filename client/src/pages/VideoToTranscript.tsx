@@ -904,6 +904,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   const handleProcessBatch = async () => {
     if (batchFiles.length === 0 || isBatchStarting) return
     const paid = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+    if (currentJobId || getPersistedJobId(location.pathname)) {
+      clearPersistedJobId(location.pathname, navigate)
+      setCurrentJobId(null)
+    }
     if (batchPollRef.current) {
       clearInterval(batchPollRef.current)
       batchPollRef.current = null
@@ -919,6 +923,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         ...(extraLangs.length > 0 ? { additionalLanguages: extraLangs } : {}),
       })
       const batchId = res.batchId
+      if (!batchId) throw new Error('Batch upload did not return a batchId')
       try {
         trackEvent('batch_job_created', { file_count: batchFiles.length, tool: 'video-to-transcript' })
       } catch {
