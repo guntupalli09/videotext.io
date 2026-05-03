@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
 
 const trustBullets = [
   'No signup required to start',
@@ -22,9 +23,60 @@ const testimonials = [
   },
 ];
 
+const stickyMessages = {
+  default: 'Upload your video → get transcript in minutes',
+  output: 'Get this output in ~3 minutes',
+  comparison: 'Stop wasting 30 minutes. Try this now.',
+  footer: 'Upload your video now — get clean transcript instantly',
+} as const;
+
 export default function Home() {
+  const [showSticky, setShowSticky] = useState(false);
+  const [stickyMessage, setStickyMessage] = useState<string>(stickyMessages.default);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (rafRef.current) return;
+      rafRef.current = window.requestAnimationFrame(() => {
+        rafRef.current = null;
+
+        const scrollY = window.scrollY;
+        const pageHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = pageHeight > 0 ? scrollY / pageHeight : 0;
+
+        setShowSticky(progress > 0.24);
+
+        const outputTop = document.getElementById('output-preview')?.offsetTop ?? Number.MAX_SAFE_INTEGER;
+        const comparisonTop = document.getElementById('comparison')?.offsetTop ?? Number.MAX_SAFE_INTEGER;
+        const footerTop = document.getElementById('final-cta')?.offsetTop ?? Number.MAX_SAFE_INTEGER;
+
+        if (scrollY >= footerTop - window.innerHeight * 0.5) {
+          setStickyMessage(stickyMessages.footer);
+        } else if (scrollY >= comparisonTop - window.innerHeight * 0.4) {
+          setStickyMessage(stickyMessages.comparison);
+        } else if (scrollY >= outputTop - window.innerHeight * 0.35) {
+          setStickyMessage(stickyMessages.output);
+        } else {
+          setStickyMessage(stickyMessages.default);
+        }
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  const ctaClass =
+    'inline-flex items-center justify-center rounded-xl px-6 py-3 text-base font-bold cursor-pointer transition duration-200 ease-out hover:scale-[1.02] active:scale-[0.99]';
+
   return (
-    <main className="bg-gray-950 text-white min-h-screen">
+    <main className="bg-gray-950 text-white min-h-screen pb-36">
       <section className="border-b border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
           <p className="text-violet-400 text-xs font-extrabold tracking-[0.2em] uppercase">VideoText.io</p>
@@ -34,16 +86,10 @@ export default function Home() {
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Link
-              to="/open"
-              className="inline-flex items-center justify-center rounded-xl bg-violet-500 hover:bg-violet-400 px-6 py-3 text-base font-bold"
-            >
+            <Link to="/open" className={`${ctaClass} bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>
               Upload video now
             </Link>
-            <Link
-              to="/youtube-transcript-generator"
-              className="inline-flex items-center justify-center rounded-xl border border-white/20 hover:border-white/40 px-6 py-3 text-base font-bold"
-            >
+            <Link to="/youtube-transcript-generator" className={`${ctaClass} border border-white/20 hover:border-white/40 bg-white/[0.02] hover:bg-white/[0.06]`}>
               Paste YouTube link
             </Link>
           </div>
@@ -56,7 +102,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-b border-white/10">
+      <section id="output-preview" className="border-b border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-16">
           <h2 className="text-3xl md:text-4xl font-extrabold">See what you get in minutes</h2>
           <p className="mt-3 text-white/75">Automatically generated. No editing required.</p>
@@ -106,7 +152,7 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
           </div>
 
           <p className="mt-6 text-violet-300 font-semibold">This is generated automatically in ~3 minutes.</p>
-          <Link to="/open" className="mt-4 inline-flex rounded-xl bg-violet-500 hover:bg-violet-400 px-6 py-3 font-bold">
+          <Link to="/open" className={`${ctaClass} mt-4 bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>
             Upload your video → get this in minutes
           </Link>
         </div>
@@ -125,6 +171,10 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
             <div className="rounded-xl border border-white/10 bg-white/5 p-4"><h3 className="font-bold">Otter</h3><p className="mt-2 text-white/75">Good for live notes, but raw output usually needs cleanup.</p></div>
             <div className="rounded-xl border border-violet-400/40 bg-violet-500/10 p-4"><h3 className="font-bold text-violet-300">VideoText</h3><p className="mt-2 text-white/90">Fast processing, structured output, and no cleanup workflow.</p></div>
           </div>
+
+          <Link to="/open" className={`${ctaClass} mt-8 bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>
+            Stop wasting time → try VideoText
+          </Link>
         </div>
       </section>
 
@@ -146,7 +196,7 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
         </div>
       </section>
 
-      <section className="border-b border-white/10">
+      <section id="comparison" className="border-b border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-14 overflow-x-auto">
           <h2 className="text-3xl font-extrabold">Comparison</h2>
           <table className="mt-6 min-w-full text-left text-sm border-collapse">
@@ -161,6 +211,10 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
               <tr><td className="py-3 pr-4 text-violet-300 font-bold">VideoText</td><td className="py-3 pr-4 text-violet-300 font-bold">~3–5 min for 2h video</td><td className="py-3 pr-4">Publish-ready</td><td className="py-3 pr-4">No</td><td className="py-3 pr-4">Transcript + summary + chapters + subtitles</td></tr>
             </tbody>
           </table>
+
+          <Link to="/open" className={`${ctaClass} mt-8 bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>
+            Switch to faster transcription → upload now
+          </Link>
         </div>
       </section>
 
@@ -196,16 +250,33 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
         </div>
       </section>
 
-      <section>
+      <section id="final-cta">
         <div className="max-w-6xl mx-auto px-6 py-20 text-center">
           <h2 className="text-4xl md:text-5xl font-black">Upload your video → get transcript in minutes</h2>
           <p className="mt-4 text-white/80">No cleanup. Fast outputs. Private processing.</p>
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
-            <Link to="/open" className="rounded-xl bg-violet-500 hover:bg-violet-400 px-8 py-3 font-bold">Upload video now</Link>
-            <Link to="/youtube-transcript-generator" className="rounded-xl border border-white/20 hover:border-white/40 px-8 py-3 font-bold">Paste YouTube link</Link>
+            <Link to="/open" className={`${ctaClass} bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload video now</Link>
+            <Link to="/youtube-transcript-generator" className={`${ctaClass} border border-white/20 hover:border-white/40 bg-white/[0.02] hover:bg-white/[0.06]`}>Paste YouTube link</Link>
           </div>
         </div>
       </section>
+
+      <div className={`fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ease-out ${showSticky ? 'translate-y-0' : 'translate-y-full'}`}>
+        <div className="mx-auto max-w-6xl px-4 pb-[max(env(safe-area-inset-bottom),0.75rem)]">
+          <aside className="rounded-2xl border border-violet-400/30 bg-gray-900/95 backdrop-blur shadow-2xl shadow-violet-900/40 p-4 md:p-5">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div>
+                <p className="font-extrabold text-base md:text-lg text-white">{stickyMessage}</p>
+                <p className="text-xs text-white/65 mt-1">No signup required • Files deleted after processing</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full lg:w-auto">
+                <Link to="/open" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-violet-500 hover:bg-violet-400 px-5 text-sm font-bold transition duration-200 hover:scale-[1.02] shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]">Upload video</Link>
+                <Link to="/youtube-transcript-generator" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/25 hover:border-white/45 bg-white/[0.02] hover:bg-white/[0.07] px-5 text-sm font-bold transition duration-200 hover:scale-[1.02]">Paste YouTube link</Link>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
     </main>
   );
 }
