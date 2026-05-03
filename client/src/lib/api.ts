@@ -1368,6 +1368,7 @@ export async function uploadBatch(
     additionalLanguages?: string[]
   }
 ): Promise<BatchUploadResponse> {
+  const BATCH_UPLOAD_TIMEOUT_MS = 120_000
   const formData = new FormData()
   files.forEach(file => formData.append('files', file))
   formData.append('primaryLanguage', primaryLanguage)
@@ -1387,6 +1388,7 @@ export async function uploadBatch(
 
   const response = await api('/api/batch/upload', {
     method: 'POST',
+    timeout: BATCH_UPLOAD_TIMEOUT_MS,
     body: formData,
     headers: {
       'x-user-id': localStorage.getItem('userId') || 'demo-user',
@@ -1395,7 +1397,10 @@ export async function uploadBatch(
   })
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Batch upload failed' }))
+    const fallbackMessage = response.status === 408
+      ? 'Batch upload timed out. Please retry with fewer files or smaller files.'
+      : 'Batch upload failed'
+    const error = await response.json().catch(() => ({ message: fallbackMessage }))
     throw new Error(error.message || 'Batch upload failed')
   }
 
