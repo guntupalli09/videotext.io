@@ -635,23 +635,28 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
   const docBaseName = `${selectedFile?.name.replace(/\.\w+$/, '') ?? 'document'}_${targetLanguage.toLowerCase()}`
 
-  const kindTab = (k: InputKind, label: string) => (
+  const kindTab = (k: InputKind, label: string, helper: string) => (
     <button
       onClick={() => switchKind(k)}
-      className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+      className={`group flex-1 min-w-[240px] text-left px-4 py-3 rounded-xl border transition-all ${
         inputKind === k
-          ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
-          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+          ? 'bg-violet-600 border-violet-500 text-white shadow-lg shadow-violet-500/25'
+          : 'bg-white/80 dark:bg-gray-800/70 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:border-violet-400 dark:hover:border-violet-500'
       }`}
     >
-      {label}
+      <p className="text-sm font-semibold">{label}</p>
+      <p className={`mt-1 text-xs ${inputKind === k ? 'text-violet-100' : 'text-gray-500 dark:text-gray-400'}`}>{helper}</p>
     </button>
   )
 
   const kindSelector = (status === 'idle' || inputKind === 'documents') && !docTranslated && (
-    <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit mb-4">
-      {kindTab('subtitles', 'Subtitles (SRT / VTT)')}
-      {kindTab('documents', 'Documents (DOCX, TXT, JSON…)')}
+    <div className="mb-5 rounded-2xl border border-violet-300/60 dark:border-violet-500/40 bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-violet-950/30 dark:to-indigo-950/20 p-4 sm:p-5">
+      <p className="text-xs font-bold tracking-wide uppercase text-violet-700 dark:text-violet-300">Choose what to translate</p>
+      <p className="mt-1 text-sm text-gray-700 dark:text-gray-200">Translate subtitle files or full transcript documents from this same page.</p>
+      <div className="mt-3 flex flex-col sm:flex-row gap-2">
+        {kindTab('subtitles', 'Subtitles (SRT / VTT)', 'Best for video captions with timestamps preserved.')}
+        {kindTab('documents', 'Documents (DOCX, TXT, JSON…)', 'Best for scripts, transcripts, notes, and structured text.')}
+      </div>
     </div>
   )
 
