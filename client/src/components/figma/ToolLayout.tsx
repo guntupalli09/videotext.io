@@ -28,13 +28,13 @@ export function ToolLayout({
   sidebar = null
 }: ToolLayoutProps) {
   return (
-    <div className="min-h-screen w-full max-w-full pt-16 sm:pt-20 pb-8 sm:pb-12 px-4 sm:px-6 lg:px-12 xl:px-16 bg-white dark:bg-gray-950 transition-colors duration-500 flex flex-col box-border">
+    <div className="min-h-screen w-full max-w-full pt-12 sm:pt-14 pb-8 sm:pb-10 px-4 sm:px-6 lg:px-12 xl:px-16 bg-white dark:bg-gray-950 transition-colors duration-500 flex flex-col box-border">
       <div className="w-full max-w-full flex-1 min-w-0 box-border">
         <motion.nav
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm mb-4 sm:mb-8 flex-wrap min-w-0"
+          className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm mb-3 sm:mb-5 flex-wrap min-w-0"
           aria-label="Breadcrumb"
         >
           <Link
@@ -65,7 +65,7 @@ export function ToolLayout({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-8 sm:mb-10"
+          className="mb-5 sm:mb-7"
         >
           <div className="flex items-center gap-3 sm:gap-4 mb-4">
             <motion.div
