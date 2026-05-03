@@ -1,37 +1,55 @@
-# CORS preflight: allowlist only (F9). Do not reflect arbitrary Origin.
+# CORS guardrail at the edge:
+# - Handle preflight consistently for allowed origins.
+# - Include CORS headers on all API responses for allowed origins (including 4xx/5xx generated upstream).
+# This prevents browser-side "CORS" masking when batch requests hit error paths.
 api.videotext.io {
     request_id
+    @origin_videotext header Origin https://videotext.io
+    @origin_www header Origin https://www.videotext.io
+    @origin_vercel header_regexp Origin https://.*\.vercel\.app$
+
+    # CORS headers for non-OPTIONS responses
+    header @origin_videotext Access-Control-Allow-Origin https://videotext.io
+    header @origin_www Access-Control-Allow-Origin https://www.videotext.io
+    header @origin_vercel Access-Control-Allow-Origin {http.request.header.Origin}
+    header @origin_videotext Access-Control-Allow-Credentials true
+    header @origin_www Access-Control-Allow-Credentials true
+    header @origin_vercel Access-Control-Allow-Credentials true
+    header @origin_videotext Vary Origin
+    header @origin_www Vary Origin
+    header @origin_vercel Vary Origin
+
     @options method OPTIONS
     handle @options {
-        @origin_videotext header Origin https://videotext.io
-        @origin_www header Origin https://www.videotext.io
-        @origin_vercel header_regexp Origin https://.*\.vercel\.app$
         handle @origin_videotext {
             header Access-Control-Allow-Origin https://videotext.io
             header Access-Control-Allow-Credentials true
             header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-            header Access-Control-Allow-Headers "Content-Type, Authorization, X-User-Id, X-Plan, X-Upload-Id, X-Chunk-Index"
+            header Access-Control-Allow-Headers "Content-Type, Authorization, Accept, X-Api-Key, X-User-Id, X-Plan, X-Upload-Id, X-Chunk-Index"
             header Access-Control-Max-Age 86400
+            header Vary Origin
             respond 204
         }
         handle @origin_www {
             header Access-Control-Allow-Origin https://www.videotext.io
             header Access-Control-Allow-Credentials true
             header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-            header Access-Control-Allow-Headers "Content-Type, Authorization, X-User-Id, X-Plan, X-Upload-Id, X-Chunk-Index"
+            header Access-Control-Allow-Headers "Content-Type, Authorization, Accept, X-Api-Key, X-User-Id, X-Plan, X-Upload-Id, X-Chunk-Index"
             header Access-Control-Max-Age 86400
+            header Vary Origin
             respond 204
         }
         handle @origin_vercel {
             header Access-Control-Allow-Origin {http.request.header.Origin}
             header Access-Control-Allow-Credentials true
             header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-            header Access-Control-Allow-Headers "Content-Type, Authorization, X-User-Id, X-Plan, X-Upload-Id, X-Chunk-Index"
+            header Access-Control-Allow-Headers "Content-Type, Authorization, Accept, X-Api-Key, X-User-Id, X-Plan, X-Upload-Id, X-Chunk-Index"
             header Access-Control-Max-Age 86400
+            header Vary Origin
             respond 204
         }
         handle {
-            respond 204
+            respond 403
         }
     }
     handle {
