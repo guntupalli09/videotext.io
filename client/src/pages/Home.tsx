@@ -208,8 +208,57 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
 
       <section className="border-b border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-14">
-          <h2 className="text-3xl font-extrabold">Raw video → publish-ready content in one click</h2>
-          <p className="mt-4 text-white/80 max-w-3xl">Skip tool switching. Save hours per file. Deliver structured outputs your team can publish immediately.</p>
+          <h2 className="text-3xl font-extrabold">Ready-to-use outputs. No formatting required.</h2>
+          <p className="mt-3 text-white/80 max-w-3xl">Download in the format you already use. No cleanup. No conversion steps.</p>
+
+          <div className="mt-8 grid md:grid-cols-3 gap-4">
+            <article className="rounded-xl border border-white/10 bg-white/5 p-5">
+              <h3 className="text-lg font-bold">Documents</h3>
+              <ul className="mt-3 space-y-2 text-white/85 text-sm">
+                <li>PDF → Clean transcript</li>
+                <li>DOCX → Ready to edit</li>
+                <li>3-column → Speaker | Timestamp | Dialogue</li>
+              </ul>
+            </article>
+
+            <article className="rounded-xl border border-white/10 bg-white/5 p-5">
+              <h3 className="text-lg font-bold">Subtitles</h3>
+              <ul className="mt-3 space-y-2 text-white/85 text-sm">
+                <li>SRT (Original)</li>
+                <li>SRT (Translated)</li>
+              </ul>
+            </article>
+
+            <article className="rounded-xl border border-white/10 bg-white/5 p-5">
+              <h3 className="text-lg font-bold">Structured</h3>
+              <ul className="mt-3 space-y-2 text-white/85 text-sm">
+                <li>JSON → Developer-ready</li>
+                <li>CSV → Spreadsheet-ready</li>
+                <li>Notion → Import directly</li>
+                <li>TXT → Simple text</li>
+              </ul>
+            </article>
+          </div>
+
+          <p className="mt-7 text-violet-300 font-bold text-lg">Most tools give you raw text. You still format it. VideoText gives you ready-to-use files.</p>
+
+          <div className="mt-7 rounded-xl border border-white/10 bg-black/30 p-5">
+            <h3 className="text-lg font-bold">Works with your workflow</h3>
+            <ul className="mt-3 grid sm:grid-cols-2 gap-2 text-sm text-white/85">
+              <li>Editors → DOCX / PDF</li>
+              <li>Developers → JSON / CSV</li>
+              <li>Creators → SRT subtitles</li>
+              <li>Teams → Notion-ready</li>
+            </ul>
+          </div>
+
+          <p className="mt-6 text-white/90">Skip formatting, exporting, and converting — everything is ready instantly.</p>
+
+          <Link to="/open" className={`${ctaClass} mt-6 bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>
+            Upload your video → get ready-to-use files
+          </Link>
+          <p className="mt-3 text-xs text-white/70">No signup required • Files deleted after processing • Works with long videos</p>
+          <p className="mt-1 text-xs text-violet-300">Takes less than 30 seconds to try.</p>
         </div>
       </section>
 
