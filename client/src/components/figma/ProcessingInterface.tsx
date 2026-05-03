@@ -1,7 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { X, FileVideo, Clock, Loader2 } from 'lucide-react';
-import { VideoFrameStrip } from './VideoFrameStrip';
 
 interface UploadedFile {
   name: string;
@@ -22,7 +21,6 @@ interface ProcessingInterfaceProps {
   actionLoading?: boolean;
   /** Optional video src (e.g. object URL) for trim preview. */
   videoSrc?: string | null;
-  /** Duration in seconds (for frame strip); pass from filePreview.durationSeconds. */
   durationSeconds?: number;
   /** Trim range 0–100 (controlled). */
   trimStartPercent?: number;
@@ -39,27 +37,15 @@ export function ProcessingInterface({
   showVideoPlayer = true,
   actionLoading = false,
   videoSrc,
-  durationSeconds,
+  durationSeconds: _durationSeconds,
   trimStartPercent = 0,
   trimEndPercent = 100,
   onTrimChange,
 }: ProcessingInterfaceProps) {
-  const [internalStart, setInternalStart] = useState(trimStartPercent ?? 0);
-  const [internalEnd, setInternalEnd] = useState(trimEndPercent ?? 100);
   const videoPlayerRef = useRef<HTMLVideoElement | null>(null);
-  const [playbackTime, setPlaybackTime] = useState(0);
-  const [durationFromVideo, setDurationFromVideo] = useState<number | null>(null);
-  const effectiveDuration = durationSeconds ?? durationFromVideo;
-
-  useEffect(() => {
-    if (!videoSrc) setDurationFromVideo(null);
-  }, [videoSrc]);
-  const start = trimStartPercent ?? internalStart;
-  const end = trimEndPercent ?? internalEnd;
-
   const handleAction = () => {
-    onTrimChange?.(start, end);
-    onAction?.(start, end);
+    onTrimChange?.(trimStartPercent, trimEndPercent);
+    onAction?.(trimStartPercent, trimEndPercent);
   };
 
   return (
@@ -110,7 +96,7 @@ export function ProcessingInterface({
           transition={{ delay: 0.1 }}
           className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-gray-200 dark:border-gray-800 shadow-sm"
         >
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 sm:mb-3">Trim video before processing</h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 sm:mb-3">Video preview</h3>
           {videoSrc && (
             <>
               <div className="bg-black rounded-lg overflow-hidden mb-2 sm:mb-3 flex items-center justify-center w-full max-w-xl mx-auto max-h-[200px] aspect-video">
@@ -119,68 +105,11 @@ export function ProcessingInterface({
                   className="w-full h-full object-contain"
                   controls
                   src={videoSrc}
-                  onLoadedMetadata={(e) => {
-                    const d = (e.target as HTMLVideoElement).duration;
-                    if (Number.isFinite(d) && d > 0) setDurationFromVideo(d);
-                  }}
-                  onTimeUpdate={() => setPlaybackTime(videoPlayerRef.current?.currentTime ?? 0)}
                 />
               </div>
-              {effectiveDuration != null && effectiveDuration > 0 && (
-                <div className="mb-2 sm:mb-3">
-                  <VideoFrameStrip
-                    videoSrc={videoSrc}
-                    durationSeconds={effectiveDuration}
-                    currentTime={playbackTime}
-                    onSeek={(time) => {
-                      if (videoPlayerRef.current) {
-                        videoPlayerRef.current.currentTime = time;
-                        videoPlayerRef.current.play().catch(() => {});
-                        setPlaybackTime(time);
-                      }
-                    }}
-                  />
-                </div>
-              )}
             </>
           )}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-              <span>Start: {start}%</span>
-              <span>End: {end}%</span>
-              {file.duration && <span>Duration: {file.duration}</span>}
-            </div>
-            <div className="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={start}
-                onChange={(e) => {
-                  const v = Number(e.target.value);
-                  setInternalStart(v);
-                  onTrimChange?.(v, end);
-                }}
-                className="absolute w-full h-2 opacity-0 cursor-pointer"
-              />
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={end}
-                onChange={(e) => {
-                  const v = Number(e.target.value);
-                  setInternalEnd(v);
-                  onTrimChange?.(start, v);
-                }}
-                className="absolute w-full h-2 opacity-0 cursor-pointer"
-              />
-              <motion.div
-                className="absolute h-full bg-gradient-to-r from-purple-600 to-blue-600 rounded-full"
-                style={{ left: `${start}%`, right: `${100 - end}%` }}
-              />
-            </div>
-          </div>
+          {file.duration && <p className="text-xs text-gray-600 dark:text-gray-400">Duration: {file.duration}</p>}
         </motion.div>
       )}
 

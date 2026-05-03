@@ -18,7 +18,6 @@ import TranscriptSharePanel from '../components/TranscriptSharePanel'
 import SpeakerSegmentsPanel from '../components/videoTranscript/SpeakerSegmentsPanel'
 import PinnedAudioPlayerBar from '../components/transcript/PinnedAudioPlayerBar'
 import { getActiveSegmentIndexAtTime } from '../lib/segmentSync'
-import { Checkbox } from '../components/figma/FormControls'
 import { incrementUsage } from '../lib/usage'
 import { uploadFileWithProgress, getJobStatus, getJobDeferredSummary, subscribeJobStatus, getCurrentUsage, invalidateUsageCache, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, submitYoutubeUrl, isYoutubeUrl, claimGuestJob, uploadBatch, getBatchStatus, getBatchDownloadUrl, type YoutubeUploadResponse, type BatchStatus } from '../lib/api'
 import { getFailureMessage } from '../lib/failureMessage'
@@ -2853,44 +2852,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             actionLoading={false}
             showVideoPlayer={!!(videoPreviewUrl || filePreview?.durationSeconds)}
             videoSrc={videoPreviewUrl ?? undefined}
-            durationSeconds={filePreview?.durationSeconds}
           >
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Options</h3>
               <div className="space-y-4">
-                {/* AI Summary — Pro only */}
-                {isPaidPlan ? (
-                  <Checkbox
-                    label="Include AI summary & bullets"
-                    checked={includeSummary}
-                    onChange={(checked) => setIncludeSummary(checked)}
-                  />
-                ) : (
-                  <div className="flex items-center justify-between opacity-60">
-                    <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                      Include AI summary &amp; bullets
-                      <Lock className="w-3 h-3 text-gray-400" />
-                    </span>
-                    <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
-                  </div>
-                )}
-                {/* Chapters — Pro only */}
-                {isPaidPlan ? (
-                  <Checkbox
-                    label="Auto-generate chapters"
-                    checked={includeChapters}
-                    onChange={(checked) => setIncludeChapters(checked)}
-                  />
-                ) : (
-                  <div className="flex items-center justify-between opacity-60">
-                    <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                      Auto-generate chapters
-                      <Lock className="w-3 h-3 text-gray-400" />
-                    </span>
-                    <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
-                  </div>
-                )}
-                {/* Audio language — always visible, improves both transcription and speaker detection */}
                 <div>
                   <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
                     Audio language <span className="text-gray-400">(optional — improves accuracy)</span>
@@ -2906,163 +2871,24 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     ))}
                   </select>
                 </div>
-                {/* Speaker labels — Pro only */}
-                {isPaidPlan ? (
-                  <Checkbox
-                    label="Speaker labels (who said what)"
-                    description="Identify and label different speakers in the transcript"
-                    checked={speakerDiarization}
-                    onChange={(checked) => setSpeakerDiarization(checked)}
-                  />
-                ) : (
-                  <div className="flex items-center justify-between opacity-60">
-                    <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                      Speaker labels (who said what)
-                      <Lock className="w-3 h-3 text-gray-400" />
-                    </span>
-                    <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
-                  </div>
-                )}
-                {isPaidPlan && speakerDiarization && (
-                  <>
-                    <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 -mt-1">
-                      Speaker identification adds extra processing time — roughly 1.5× longer than standard transcription (e.g. a 2-hour video takes ~10 min instead of ~4 min).
-                    </p>
-                    <div>
-                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">No. of speakers <span className="text-gray-400">(optional)</span></label>
-                      <input
-                        type="number"
-                        min={1}
-                        max={50}
-                        value={numSpeakers}
-                        onChange={(e) => setNumSpeakers(e.target.value)}
-                        placeholder="Auto-detect"
-                        className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                    </div>
-                  </>
-                )}
-                {/* Also translate to — Pro only */}
-                <div className={`rounded-xl border p-3 space-y-2 transition-colors ${
-                  translateEnabled && isPaidPlan
-                    ? 'border-blue-200 dark:border-blue-800/40 bg-blue-50/40 dark:bg-blue-950/20'
-                    : 'border-gray-100 dark:border-gray-800'
-                }`}>
-                  <div className="flex items-center gap-2">
-                    {isPaidPlan ? (
-                      <input
-                        type="checkbox"
-                        checked={translateEnabled}
-                        onChange={(e) => {
-                          setTranslateEnabled(e.target.checked)
-                          if (e.target.checked && !translationLanguage) setTranslationLanguage('Spanish')
-                        }}
-                        className="rounded accent-blue-500"
-                      />
-                    ) : null}
-                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                      Also translate to
-                      {!isPaidPlan && <Lock className="w-3 h-3 text-gray-400" />}
-                    </span>
-                    {!isPaidPlan && (
-                      <Link to="/pricing" className="ml-auto text-xs text-violet-500 font-medium hover:underline">Pro</Link>
-                    )}
-                  </div>
-                  {translateEnabled && isPaidPlan && (
-                    <>
-                      <select
-                        value={translationLanguage ?? 'Spanish'}
-                        onChange={(e) => setTranslationLanguage(e.target.value)}
-                        className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        {LANGUAGES.map((l) => (
-                          <option key={l.value} value={l.value}>{l.label}</option>
-                        ))}
-                      </select>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
-                        A translated transcript will be added alongside the original — always preserved.
-                      </p>
-                    </>
-                  )}
-                </div>
-
-                {/* ── Transcript output settings ── */}
-                <div className="rounded-xl border border-gray-100 dark:border-gray-800 p-3 space-y-4">
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Transcript output settings</p>
-
-                  {/* Timestamp format */}
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">Timestamp format (in exported files)</p>
-                    <div className="flex flex-col gap-1.5">
-                      {(
-                        [
-                          { value: 'per-speaker',  label: 'Per speaker entry',  hint: 'One timestamp per speaker turn — recommended' },
-                          { value: 'per-interval', label: 'Per time interval',  hint: 'Timestamp every N seconds — advanced' },
-                          { value: 'none',         label: 'No timestamps',      hint: 'Speaker names only, no time codes' },
-                          { value: 'per-segment',  label: 'Per segment',        hint: 'Timestamp on every raw chunk (subtitle-style)' },
-                        ] as const
-                      ).map(({ value, label, hint }) => (
-                        <label key={value} className="flex items-start gap-2 cursor-pointer group">
-                          <input
-                            type="radio"
-                            name="timestampMode"
-                            value={value}
-                            checked={timestampMode === value}
-                            onChange={() => setTimestampMode(value)}
-                            className="mt-0.5 accent-violet-600 shrink-0"
-                          />
-                          <span className="flex flex-col">
-                            <span className="text-sm text-gray-800 dark:text-gray-200">{label}</span>
-                            <span className="text-xs text-gray-400 dark:text-gray-500">{hint}</span>
-                          </span>
-                        </label>
-                      ))}
-                      {timestampMode === 'per-interval' && (
-                        <div className="ml-5 flex items-center gap-2 mt-1">
-                          <label className="text-xs text-gray-600 dark:text-gray-400 shrink-0">Interval:</label>
-                          <select
-                            value={intervalSec}
-                            onChange={(e) => setIntervalSec(Number(e.target.value))}
-                            className="text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-2 py-1 focus:outline-none focus:ring-2 focus:ring-violet-500"
-                          >
-                            <option value={15}>15 sec</option>
-                            <option value={30}>30 sec</option>
-                            <option value={60}>1 min</option>
-                            <option value={120}>2 min</option>
-                            <option value={300}>5 min</option>
-                          </select>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Verbatim mode */}
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">Verbatim mode (in exported files)</p>
-                    <div className="flex flex-col gap-1.5">
-                      {(
-                        [
-                          { value: 'full',  label: 'Full verbatim',  hint: 'Raw transcript — all fillers, stutters and false starts kept' },
-                          { value: 'clean', label: 'Clean verbatim', hint: 'Auto-removes "um", "uh", "you know", "basically" etc.' },
-                        ] as const
-                      ).map(({ value, label, hint }) => (
-                        <label key={value} className="flex items-start gap-2 cursor-pointer group">
-                          <input
-                            type="radio"
-                            name="verbatimMode"
-                            value={value}
-                            checked={verbatimMode === value}
-                            onChange={() => setVerbatimMode(value)}
-                            className="mt-0.5 accent-violet-600 shrink-0"
-                          />
-                          <span className="flex flex-col">
-                            <span className="text-sm text-gray-800 dark:text-gray-200">{label}</span>
-                            <span className="text-xs text-gray-400 dark:text-gray-500">{hint}</span>
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
+                <div>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    Also translate to <span className="text-gray-400">(optional)</span>
+                  </label>
+                  <select
+                    value={translationLanguage ?? ''}
+                    onChange={(e) => {
+                      const language = e.target.value
+                      setTranslateEnabled(Boolean(language))
+                      setTranslationLanguage(language || null)
+                    }}
+                    className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2"
+                  >
+                    <option value="">— None —</option>
+                    {LANGUAGES.map((l) => (
+                      <option key={l.value} value={l.value}>{l.label}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
