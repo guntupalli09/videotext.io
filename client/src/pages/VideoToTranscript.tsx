@@ -3434,6 +3434,17 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               )
             })()}
 
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleProcessAnother}
+                className="inline-flex items-center gap-2 rounded-xl border border-violet-300 dark:border-violet-700 bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-violet-700 transition-colors shadow-sm"
+              >
+                <Upload className="h-4 w-4" aria-hidden />
+                Upload new file
+              </button>
+            </div>
+
             {/* Main workspace: transcript / speakers (left) + insight rail (right) */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(380px,500px)] xl:grid-cols-[minmax(0,1fr)_540px] items-start">
               <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden flex flex-col min-h-[min(62vh,640px)]">
