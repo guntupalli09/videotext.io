@@ -24,7 +24,7 @@ const testimonials = [
 ];
 
 const stickyMessages = {
-  default: 'Upload your video → get clean transcript, summary & subtitles in minutes',
+  default: 'Upload now → get clean transcript instantly',
   output: 'Get this output in ~3 minutes',
   comparison: 'Stop wasting time → try this now',
   footer: 'Upload now → get clean transcript instantly',
@@ -85,13 +85,14 @@ export default function Home() {
             No editing. No waiting. No multi-tool workflow.
           </p>
           <p className="mt-2 text-base text-white/85 max-w-3xl">Get clean transcript, summary, chapters, and subtitles in minutes.</p>
+          <p className="mt-2 text-white/85 max-w-3xl">Replace your current setup and manual cleanup in one step.</p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Link to="/open" className={`${ctaClass} bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload your video → get clean transcript, summary & subtitles in minutes</Link>
+            <Link to="/open" className={`${ctaClass} bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)</Link>
             <p className="text-xs text-white/70">No signup required • Files deleted after processing • Works with long videos</p>
             <p className="text-xs text-violet-300">Takes less than 30 seconds to try.</p>
             <Link to="/youtube-transcript-generator" className={`${ctaClass} border border-white/20 hover:border-white/40 bg-white/[0.02] hover:bg-white/[0.06]`}>
-              Upload your video → get clean transcript, summary & subtitles in minutes
+              Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)
             </Link>
           </div>
 
@@ -155,19 +156,20 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
 
           <p className="mt-6 text-violet-300 font-semibold">This is generated automatically in ~3 minutes.</p>
           <p className="mt-2 text-white/85">First transcript lines appear in seconds.</p>
-          <Link to="/open" className={`${ctaClass} mt-4 bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload your video → get clean transcript, summary & subtitles in minutes</Link>
+          <p className="mt-1 text-white/90 font-semibold">Your transcript starts almost immediately after upload.</p>
+          <Link to="/open" className={`${ctaClass} mt-4 bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)</Link>
         </div>
       </section>
 
       <section className="border-b border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <h2 className="text-3xl font-extrabold">No manual cleanup</h2>
-          <p className="mt-4 text-white/85">Most tools give you raw transcripts.</p>
+          <p className="mt-4 text-white/85">Most transcription tools dump raw text. You still fix everything.</p>
           <ul className="mt-4 space-y-2 text-white/80">
             <li>• fix punctuation</li>
-            <li>• split speakers</li>
-            <li>• format text</li>
-            <li>• export into multiple formats</li>
+            <li>• fix speakers</li>
+            <li>• reformat text</li>
+            <li>• export manually</li>
           </ul>
           <p className="mt-5 text-white/90 font-semibold">VideoText skips all of that.</p>
           <p className="mt-1 text-violet-300 font-semibold">You get clean, structured output — ready to use.</p>
@@ -177,7 +179,7 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
       <section className="border-b border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-14">
           <h2 className="text-3xl font-extrabold">Stop wasting 30 minutes per file.</h2>
-          <p className="mt-3 text-white/80">Most tools don't save time — they just shift the work.</p>
+          <p className="mt-3 text-white/80">Most tools don't save time — they just shift the work. That's hours lost every week.</p>
           <ul className="mt-5 space-y-2 text-white/80">
             <li>• Still cleaning messy outputs?</li>
             <li>• Still using multiple tools for transcript + summaries + subtitles?</li>
@@ -189,7 +191,7 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
             <div className="rounded-xl border border-violet-400/40 bg-violet-500/10 p-4"><h3 className="font-bold text-violet-300">VideoText</h3><p className="mt-2 text-white/90">Fast processing, structured output, and no cleanup workflow.</p></div>
           </div>
 
-          <Link to="/open" className={`${ctaClass} mt-8 bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload your video → get clean transcript, summary & subtitles in minutes</Link>
+          <Link to="/open" className={`${ctaClass} mt-8 bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)</Link>
           <p className="mt-3 text-xs text-white/70">No signup required • Files deleted after processing • Works with long videos</p>
           <p className="mt-1 text-xs text-violet-300">Takes less than 30 seconds to try.</p>
         </div>
@@ -209,7 +211,8 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
       <section className="border-b border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-14">
           <h2 className="text-3xl font-extrabold">Ready-to-use outputs. No formatting required.</h2>
-          <p className="mt-3 text-white/80 max-w-3xl">Download in the format you already use. No cleanup. No conversion steps.</p>
+          <p className="mt-3 text-white/80 max-w-3xl">Download in the format you already use. No cleanup. No conversion steps.
+          Everything exported in one click. No formatting. No conversions.</p>
 
           <div className="mt-8 grid md:grid-cols-3 gap-4">
             <article className="rounded-xl border border-white/10 bg-white/5 p-5">
@@ -240,7 +243,7 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
             </article>
           </div>
 
-          <p className="mt-7 text-violet-300 font-bold text-lg">Most tools give you raw text. You still format it. VideoText gives you ready-to-use files.</p>
+          <p className="mt-7 text-violet-300 font-extrabold text-2xl leading-tight">Most tools give you raw text. You still format it. VideoText gives you ready-to-use files.</p>
 
           <div className="mt-7 rounded-xl border border-white/10 bg-black/30 p-5">
             <h3 className="text-lg font-bold">Works with your workflow</h3>
@@ -279,7 +282,7 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
           </table>
           <p className="mt-4 text-violet-300 font-semibold">Everything generated together. No manual steps.</p>
 
-          <Link to="/open" className={`${ctaClass} mt-8 bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload your video → get clean transcript, summary & subtitles in minutes</Link>
+          <Link to="/open" className={`${ctaClass} mt-8 bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)</Link>
           <p className="mt-3 text-xs text-white/70">No signup required • Files deleted after processing • Works with long videos</p>
           <p className="mt-1 text-xs text-violet-300">Takes less than 30 seconds to try.</p>
         </div>
@@ -319,11 +322,11 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
 
       <section id="final-cta">
         <div className="max-w-6xl mx-auto px-6 py-20 text-center">
-          <h2 className="text-4xl md:text-5xl font-black">Upload your video → get clean transcript, summary & subtitles in minutes</h2>
+          <h2 className="text-4xl md:text-5xl font-black">Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)</h2>
           <p className="mt-4 text-white/80">No signup required. Files deleted after processing. Works with long videos.</p>
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
-            <Link to="/open" className={`${ctaClass} bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload your video → get clean transcript, summary & subtitles in minutes</Link>
-            <Link to="/youtube-transcript-generator" className={`${ctaClass} border border-white/20 hover:border-white/40 bg-white/[0.02] hover:bg-white/[0.06]`}>Upload your video → get clean transcript, summary & subtitles in minutes</Link>
+            <Link to="/open" className={`${ctaClass} bg-violet-500 hover:bg-violet-400 shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]`}>Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)</Link>
+            <Link to="/youtube-transcript-generator" className={`${ctaClass} border border-white/20 hover:border-white/40 bg-white/[0.02] hover:bg-white/[0.06]`}>Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)</Link>
           </div>
           <p className="mt-3 text-xs text-white/70">No signup required • Files deleted after processing • Works with long videos</p>
           <p className="mt-1 text-xs text-violet-300">Takes less than 30 seconds to try.</p>
@@ -339,8 +342,8 @@ Upload the file once, then export transcript, summary, chapters, and subtitles w
                 <p className="text-xs text-white/65 mt-1">No signup required • Files deleted after processing</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full lg:w-auto">
-                <Link to="/open" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-violet-500 hover:bg-violet-400 px-5 text-sm font-bold transition duration-200 hover:scale-[1.02] shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]">Upload your video → get clean transcript, summary & subtitles in minutes</Link>
-                <Link to="/youtube-transcript-generator" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/25 hover:border-white/45 bg-white/[0.02] hover:bg-white/[0.07] px-5 text-sm font-bold transition duration-200 hover:scale-[1.02]">Upload your video → get clean transcript, summary & subtitles in minutes</Link>
+                <Link to="/open" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-violet-500 hover:bg-violet-400 px-5 text-sm font-bold transition duration-200 hover:scale-[1.02] shadow-[0_0_0_rgba(139,92,246,0)] hover:shadow-[0_0_28px_rgba(139,92,246,0.45)]">Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)</Link>
+                <Link to="/youtube-transcript-generator" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/25 hover:border-white/45 bg-white/[0.02] hover:bg-white/[0.07] px-5 text-sm font-bold transition duration-200 hover:scale-[1.02]">Upload your video → get clean transcript, summary & subtitles in minutes (takes &lt;30 seconds to try)</Link>
               </div>
             </div>
           </aside>
