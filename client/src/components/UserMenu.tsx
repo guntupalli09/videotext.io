@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Menu, X, Sun, Moon, Clock, CreditCard, Mail, Gift, MessageCircle } from 'lucide-react'
+import { Menu, X, Sun, Moon, CreditCard, Mail, Gift, MessageCircle } from 'lucide-react'
 import { prefetchRoute } from '../lib/prefetch'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getCurrentUsage } from '../lib/api'
@@ -27,11 +27,7 @@ export default function UserMenu() {
   const [open, setOpen] = useState(false)
   const [usage, setUsage] = useState<{
     plan: string
-    remaining: number
-    totalPlanMinutes: number
-    resetDate: string
     email?: string
-    quotaType?: 'imports' | 'minutes'
   } | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
   const { theme, toggleTheme } = useTheme()
@@ -44,18 +40,9 @@ export default function UserMenu() {
     }
     getCurrentUsage({ skipCache: true })
       .then((data) => {
-        const isImports = data.quotaType === 'imports'
-        const remaining = isImports
-          ? (data.remaining ?? Math.max(0, (data.limit ?? 3) - (data.used ?? 0)))
-          : data.usage.remaining
-        const total = isImports ? (data.limit ?? 3) : (data.limits.minutesPerMonth + data.overages.minutes)
         setUsage({
           plan: (data.plan || 'free').toLowerCase(),
-          remaining,
-          totalPlanMinutes: total,
-          resetDate: data.resetDate,
           email: data.email || (typeof localStorage !== 'undefined' ? localStorage.getItem('userEmail') || undefined : undefined),
-          quotaType: isImports ? 'imports' : 'minutes',
         })
       })
       .catch(() => {
@@ -65,7 +52,7 @@ export default function UserMenu() {
         }
         const plan = typeof localStorage !== 'undefined' ? localStorage.getItem('plan') || 'free' : 'free'
         const email = typeof localStorage !== 'undefined' ? localStorage.getItem('userEmail') || undefined : undefined
-        setUsage(plan ? { plan, remaining: 0, totalPlanMinutes: 0, resetDate: new Date().toISOString(), email } : null)
+        setUsage(plan ? { plan, email } : null)
       })
   }, [])
 
@@ -123,15 +110,15 @@ export default function UserMenu() {
               aria-hidden
             />
             <motion.div
-              initial={{ x: '100%' }}
+              initial={{ x: '100%', opacity: 0.6, scale: 0.98 }}
               animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'tween', duration: 0.25 }}
+              exit={{ x: '100%', opacity: 0.7, scale: 0.99 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 280, mass: 0.65 }}
               className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm flex flex-col h-screen"
             >
               <aside
                 data-user-menu-panel
-                className="w-full h-full min-h-screen flex flex-col shadow-2xl border-l border-gray-200 dark:border-gray-600 isolate bg-white dark:bg-gray-800"
+                className="w-full h-full min-h-screen flex flex-col shadow-2xl border-l border-white/40 dark:border-gray-600/80 isolate bg-gradient-to-b from-slate-50 to-white dark:from-gray-800 dark:to-gray-900 backdrop-blur-xl"
               >
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 shrink-0 bg-white dark:bg-gray-800">
                   <span className="font-semibold text-gray-900 dark:text-white">Menu</span>
@@ -152,26 +139,6 @@ export default function UserMenu() {
                     <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Account</p>
                     <p className="mt-1 text-sm text-gray-900 dark:text-white break-all">{usage.email}</p>
                     <p className="mt-0.5 text-xs text-gray-600 dark:text-gray-300 capitalize">{usage.plan} plan</p>
-                  </div>
-                )}
-
-                {/* Quota left — hidden for demo sessions; imports for free, minutes for paid */}
-                {!isLoggedIn() || isDemo() ? null : usage ? (
-                  <div className="rounded-xl bg-violet-100 dark:bg-violet-900/40 border border-violet-200 dark:border-violet-800 p-4">
-                    <div className="flex items-center gap-2 text-violet-800 dark:text-violet-200 text-sm font-medium">
-                      <Clock className="w-4 h-4 shrink-0" />
-                      {usage.quotaType === 'imports' ? 'Imports left' : 'Minutes left'}
-                    </div>
-                    <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-                      {usage.quotaType === 'imports' && usage.remaining === 0
-                        ? <span className="text-base font-normal">You&apos;ve used all 3 imports. Upgrade to use the tool.</span>
-                        : <>{usage.remaining} <span className="text-base font-normal text-gray-600 dark:text-gray-300">{usage.quotaType === 'imports' ? `of ${usage.totalPlanMinutes} free imports left today` : 'min remaining'}</span></>}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="rounded-xl bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4">
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Quota</p>
-                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">Loading…</p>
                   </div>
                 )}
 
