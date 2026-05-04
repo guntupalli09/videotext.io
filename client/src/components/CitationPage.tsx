@@ -37,6 +37,13 @@ interface CitationPageProps {
 }
 
 export default function CitationPage(props: CitationPageProps) {
+  const normalizedTitle = props.title.toLowerCase()
+  const primaryFlow = normalizedTitle.includes('podcast')
+    ? { label: 'Transcribe podcast episodes', path: '/video-to-transcript' }
+    : normalizedTitle.includes('youtube')
+      ? { label: 'Generate YouTube transcript', path: '/youtube-transcript-generator' }
+      : { label: 'Convert video to transcript', path: '/video-to-transcript' }
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 py-12">
       <div className="mx-auto max-w-6xl px-6 space-y-8">
@@ -176,6 +183,33 @@ export default function CitationPage(props: CitationPageProps) {
               </div>
             ))}
           </dl>
+        </section>
+
+        <section className="rounded-xl border border-violet-200 bg-violet-50/60 p-5 text-sm">
+          <h2 className="text-lg font-bold text-gray-900">Start with the fastest workflow</h2>
+          <p className="mt-2 text-gray-700">
+            If you came from a comparison or alternatives query, use these direct workflow pages to go from file or URL to final assets.
+          </p>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            <Link to={primaryFlow.path} className="rounded-lg border border-violet-300 bg-white px-3 py-2 font-medium text-violet-700 hover:bg-violet-100">
+              {primaryFlow.label} →
+            </Link>
+            <Link to="/youtube-transcript-generator" className="rounded-lg border border-violet-200 bg-white px-3 py-2 text-violet-700 hover:bg-violet-100">
+              YouTube transcript generator →
+            </Link>
+            <Link to="/video-to-subtitles" className="rounded-lg border border-violet-200 bg-white px-3 py-2 text-violet-700 hover:bg-violet-100">
+              Video to subtitles →
+            </Link>
+            <Link to="/translate-subtitles" className="rounded-lg border border-violet-200 bg-white px-3 py-2 text-violet-700 hover:bg-violet-100">
+              Translate subtitles →
+            </Link>
+            <Link to="/burn-subtitles" className="rounded-lg border border-violet-200 bg-white px-3 py-2 text-violet-700 hover:bg-violet-100">
+              Burn subtitles into video →
+            </Link>
+            <Link to="/compress-video" className="rounded-lg border border-violet-200 bg-white px-3 py-2 text-violet-700 hover:bg-violet-100">
+              Compress video for faster upload →
+            </Link>
+          </div>
         </section>
 
         <section className="rounded-xl border border-violet-200 bg-violet-50/60 p-5 text-sm">
