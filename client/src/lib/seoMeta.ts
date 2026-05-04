@@ -40,9 +40,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       "Terms of use for VideoText. We don't store your data; see our Privacy Policy for details. Billing via Stripe. Use the service in accordance with these terms.",
   },
   '/voice-recorder': {
-    title: 'Voice to Text — Free Voice Recorder & Instant Transcription | VideoText',
+    title: 'Live Voice to Text Online (Real-Time Speech to Text — Free & Fast)',
     description:
-      'Record your voice and get an accurate transcript in seconds. Free online voice-to-text with AI noise suppression, 99 language support, and instant .txt export. No account needed.',
+      'Convert voice to text instantly as you speak. Live speech-to-text with no upload required. Real-time transcription, fast, private, and free.',
   },
   '/video-to-transcript': {
     title: 'Video to Text Converter: Fast AI Video to Transcript Software | VideoText',
