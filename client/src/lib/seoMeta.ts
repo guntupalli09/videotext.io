@@ -242,9 +242,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   },
 
   '/best-transcription-tool': {
-    title: 'Best Transcription Tool for Video to Text Workflows (2026)',
+    title: 'Fastest Transcription Tool for Long Videos (Transcript + Subtitles + Summary)',
     description:
-      'Compare transcription tools for broad commercial intent: speed, transcript quality, exports, workflow friction, and trade-offs by use case.',
+      'Transcribe long videos in minutes. Get transcript, subtitles, summary, and chapters in one workflow. Fast, accurate, and built for real production use.',
   },
   '/fastest-transcription-software': {
     title: 'Fastest Transcription Software — Benchmark Comparison | VideoText',
