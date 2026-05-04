@@ -557,8 +557,8 @@ function App() {
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript
-              seoH1="Video to Transcript in Minutes (Not Hours)"
-              seoIntro="Upload any video and get a clean transcript, subtitles (SRT/VTT), summary, and chapters — all in one click. No signup required. 👉 2-hour video → transcript in ~3–5 minutes."
+              seoH1="Video to Transcript in 3 Minutes (Free, Fast & Private)"
+              seoIntro="Upload any video and get a clean transcript, subtitles (SRT/VTT), summary, and chapters — all in one click. No signup required. **2-hour video → transcript in ~3–5 minutes**."
               faq={[
                 {
                   q: 'How do I convert video to transcript?',
@@ -575,6 +575,10 @@ function App() {
                 {
                   q: 'Can I transcribe long videos?',
                   a: 'Yes. VideoText is optimized for long files and is built to process hours-long videos quickly.',
+                },
+                {
+                  q: 'What is the fastest way to transcribe video?',
+                  a: 'Use a tool built for fast file-based processing. With VideoText, upload once and get transcript text, subtitles, summary, and chapters together in minutes.',
                 },
                 {
                   q: 'What formats are supported?',

@@ -149,8 +149,8 @@ const STATIC_META: RouteMeta[] = [
     title: 'Video to Transcript in Minutes (Free, Fast & Private Tool)',
     description:
       'Convert any video to transcript online in minutes. Upload or paste a link to get transcripts, subtitles (SRT/VTT), summary and chapters. No signup. Private.',
-    h1: 'Video to Transcript in Minutes (Not Hours)',
-    valueProposition: 'Upload any video and get a clean transcript, subtitles (SRT/VTT), summary, and chapters — all in one click. No signup required. 2-hour video → transcript in ~3–5 minutes.',
+    h1: 'Video to Transcript in 3 Minutes (Free, Fast & Private)',
+    valueProposition: 'VideoText lets you convert video to transcript online in minutes. Upload any video and get transcript text, subtitles (SRT/VTT), summary, and chapters in one click. 2-hour video → transcript in ~3–5 minutes.',
     keywords: ['video to transcript', 'convert video to transcript', 'transcribe video online', 'video to text', 'youtube transcript generator', 'subtitle generator', 'long video transcription', 'private transcription tool'],
     comparison: [
       { tool: 'Typical tools', vs: '20–40+ minutes for 2-hour videos' },
@@ -1305,6 +1305,35 @@ function buildH1Html(meta: RouteMeta): string {
 
 function buildConversionContent(meta: RouteMeta): string {
   const parts: string[] = []
+
+  if (meta.path === '/video-to-transcript') {
+    parts.push(`
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Video to Transcript Online (Free &amp; Fast)</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">VideoText lets you convert video to transcript online in minutes with one upload and one clean output package.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Transcribe Video to Text in Minutes</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">Upload a file or paste a URL, then download transcript text, SRT/VTT subtitles, summary, and chapters.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Convert Video to Transcript Without Editing</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">No timeline editing, no manual cleanup, and no extra steps. One-click output for publishing workflows.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">The Fastest Video to Transcript Tool</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">Built for speed with parallel processing for long files and structured outputs in minutes.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Related tools</h2>
+        <ul style="margin:0;padding-left:18px;line-height:1.8">
+          <li><a href="/youtube-transcript-generator">Transcribe YouTube videos</a></li>
+          <li><a href="/subtitle-generator">Generate subtitles</a></li>
+          <li><a href="/transcribe-long-videos">Transcribe long videos</a></li>
+        </ul>
+      </section>
+    `)
+  }
 
   // Value Proposition
   if (meta.valueProposition) {
