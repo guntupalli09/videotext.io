@@ -110,9 +110,9 @@ export default function UserMenu() {
               aria-hidden
             />
             <motion.div
-              initial={{ x: '100%', opacity: 0.6, scale: 0.98 }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%', opacity: 0.7, scale: 0.99 }}
+              initial={{ x: '100%', opacity: 1, scale: 0.98 }}
+              animate={{ x: 0, opacity: 1, scale: 1 }}
+              exit={{ x: '100%', opacity: 1, scale: 0.99 }}
               transition={{ type: 'spring', damping: 28, stiffness: 280, mass: 0.65 }}
               className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm flex flex-col h-screen"
             >
