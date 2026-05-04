@@ -45,9 +45,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Record your voice and get an accurate transcript in seconds. Free online voice-to-text with AI noise suppression, 99 language support, and instant .txt export. No account needed.',
   },
   '/video-to-transcript': {
-    title: 'Video to Text Converter: Fast AI Video to Transcript Software | VideoText',
+    title: 'Video to Transcript in Minutes (Free, Fast & Private Tool)',
     description:
-      'Convert video to text and downloadable transcripts in minutes. Built for fast file-based transcription with TXT, PDF, DOCX, SRT, and VTT outputs. Files are processed then deleted.',
+      'Convert any video to transcript online in minutes. Upload or paste a link to get transcripts, subtitles (SRT/VTT), summary and chapters. No signup. Private.',
   },
   '/video-to-subtitles': {
     title: 'Video to Subtitles — SRT & VTT Generator',

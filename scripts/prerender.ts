@@ -146,27 +146,27 @@ const STATIC_META: RouteMeta[] = [
 
   {
     path: '/video-to-transcript',
-    title: `Video to Transcript — Free AI Transcription & Translation | ${SITE_NAME}`,
+    title: 'Video to Transcript in Minutes (Free, Fast & Private Tool)',
     description:
-      'Convert video to text with AI. View transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian. Upload video, get plain-text transcript. Summary, chapters, speakers. Free tier.',
-    h1: 'Video to Transcript',
-    valueProposition: 'Convert any video into searchable, editable text in under 5 minutes. 98.5%+ accuracy with speaker labels, chapters, and multi-language translation. No download limits. Files deleted after processing.',
-    keywords: ['video to transcript', 'transcribe video', 'AI transcription', 'video to text', 'speech to text', 'accurate transcription', 'free transcription tool', 'transcription software'],
+      'Convert any video to transcript online in minutes. Upload or paste a link to get transcripts, subtitles (SRT/VTT), summary and chapters. No signup. Private.',
+    h1: 'Video to Transcript in Minutes (Not Hours)',
+    valueProposition: 'Upload any video and get a clean transcript, subtitles (SRT/VTT), summary, and chapters — all in one click. No signup required. 2-hour video → transcript in ~3–5 minutes.',
+    keywords: ['video to transcript', 'convert video to transcript', 'transcribe video online', 'video to text', 'youtube transcript generator', 'subtitle generator', 'long video transcription', 'private transcription tool'],
     comparison: [
-      { tool: 'Otter.ai', vs: '18-30 min processing, $120/year minimum' },
-      { tool: 'Descript', vs: '15 min processing, $24/month, desktop only' },
-      { tool: 'Rev', vs: 'Human transcription, $1.25/min, slow turnaround' },
+      { tool: 'Typical tools', vs: '20–40+ minutes for 2-hour videos' },
+      { tool: 'VideoText workflow', vs: 'Upload → download transcript + SRT/VTT + summary + chapters' },
+      { tool: 'Privacy', vs: 'Files deleted after processing' },
     ],
     howToUse: [
-      { step: 1, title: 'Upload Your Video', detail: 'MP4, MOV, AVI, WebM, MKV supported. Or paste a YouTube URL directly.' },
-      { step: 2, title: 'Get Instant Transcript', detail: 'AI processing runs in seconds. You\'ll see the transcript building in real-time.' },
-      { step: 3, title: 'Edit & Export', detail: 'Copy text, download TXT, get speaker labels, or generate SRT subtitles.' },
+      { step: 1, title: 'Upload your video or paste a link', detail: 'Works for MP4, MOV, MP3, YouTube, Zoom, and more.' },
+      { step: 2, title: 'AI transcribes in minutes', detail: 'Built for long videos and large files, not just short clips.' },
+      { step: 3, title: 'Download transcript, subtitles, and summary', detail: 'Get transcript text, SRT/VTT subtitles, summary, and chapters in one run.' },
     ],
     socialProof: [
-      { stat: '127,000+', desc: 'Videos transcribed' },
-      { stat: '98.5%', desc: 'Word accuracy rate' },
-      { stat: '3-5 min', desc: 'Average processing time' },
-      { stat: '50,000+', desc: 'Creators using VideoText' },
+      { stat: '2-hour → 3–5 min', desc: 'Processing benchmark' },
+      { stat: '70+', desc: 'Languages supported' },
+      { stat: 'SRT + VTT', desc: 'Subtitle outputs included' },
+      { stat: 'Deleted files', desc: 'Privacy-first processing' },
     ],
   },
   {
@@ -1617,7 +1617,6 @@ function main() {
   const registryEntries = parseRegistryEntries()
   const programmaticEntries = getProgrammaticSeoEntries()
   const allRoutes: RouteMeta[] = mergeRouteMetaWithSitemapCoverage([
-    ...STATIC_META,
     ...registryEntries.map((e) => ({
       path: e.path,
       title: e.title,
@@ -1644,6 +1643,9 @@ function main() {
       howToUse: e.howToUse,
       socialProof: e.socialProof,
     })),
+    // Keep static routes last so canonical core pages (e.g. /video-to-transcript)
+    // are not overwritten by registry aliases that resolve to the same primary URL.
+    ...STATIC_META,
   ])
 
   let count = 0
