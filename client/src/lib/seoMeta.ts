@@ -40,9 +40,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       "Terms of use for VideoText. We don't store your data; see our Privacy Policy for details. Billing via Stripe. Use the service in accordance with these terms.",
   },
   '/voice-recorder': {
-    title: 'Voice to Text — Free Voice Recorder & Instant Transcription | VideoText',
+    title: 'Live Voice to Text Online (Real-Time Speech to Text — Free & Fast)',
     description:
-      'Record your voice and get an accurate transcript in seconds. Free online voice-to-text with AI noise suppression, 99 language support, and instant .txt export. No account needed.',
+      'Convert voice to text instantly as you speak. Live speech-to-text with no upload required. Real-time transcription, fast, private, and free.',
   },
   '/video-to-transcript': {
     title: 'Video to Transcript in Minutes (Free, Fast & Private Tool)',
@@ -50,14 +50,14 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Convert any video to transcript online in minutes. Upload or paste a link to get transcripts, subtitles (SRT/VTT), summary and chapters. No signup. Private.',
   },
   '/video-to-subtitles': {
-    title: 'Video to Subtitles — SRT & VTT Generator',
+    title: 'Subtitle Generator (SRT & VTT) — Auto Generate Subtitles Online',
     description:
-      'Generate SRT and VTT subtitle files from any video with AI. Upload video. Ideal for YouTube and web. Single or multi-language. Sign up to try free.',
+      'Generate subtitles from video instantly. Create SRT and VTT files online with accurate timestamps. Fast, automatic, and no editing required.',
   },
   '/translate-subtitles': {
-    title: 'Translate Subtitles — SRT/VTT to Any Language',
+    title: 'Translate Subtitles/ Documents Online (SRT, VTT, TXT, DOC, PDF ++) — Fast & Accurate',
     description:
-      'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, and 70+ languages with AI. Upload subtitles, pick target language, download. Free tier available.',
+      'Translate subtitles, SRT files, and transcripts online in seconds. 70+ languages with timestamps preserved. No signup. Fast and accurate.',
   },
   '/fix-subtitles': {
     title: 'Fix Subtitles — Auto-Correct Timing & Format',
@@ -65,9 +65,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Fix overlapping timestamps, long lines, and gaps in SRT/VTT files. Auto-correct timing and formatting for readability and YouTube limits. Upload SRT or VTT, download corrected file. Free.',
   },
   '/burn-subtitles': {
-    title: 'Burn Subtitles into Video — Hardcode Captions',
+    title: 'Burn Subtitles into Video (Hardcode Captions Online — Free)',
     description:
-      'Burn SRT or VTT subtitles directly into your video. Upload video + subtitle file, get one video with hardcoded captions. No signup. Free tier available.',
+      'Burn subtitles into video instantly. Hardcode captions permanently with styling and positioning. Fast, online, and no editing required.',
   },
   '/compress-video': {
     title: 'Compress Video — Reduce File Size Online',
@@ -1060,7 +1060,7 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   '/translate-subtitles': {
     name: 'Translate Subtitles — SRT/VTT to Any Language',
     description: 'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, French, Japanese, and 70+ languages with AI. Upload subtitles, pick target language, download.',
-    featureList: 'SRT translation, VTT translation, 50+ target languages, Timestamp preservation, Download translated subtitles',
+    featureList: 'SRT translation, VTT translation, 70+ target languages, Timestamp preservation, Download translated subtitles',
   },
   '/fix-subtitles': {
     name: 'Fix Subtitles — Auto-Correct Timing & Format',
