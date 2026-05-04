@@ -70,9 +70,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Burn SRT or VTT subtitles directly into your video. Upload video + subtitle file, get one video with hardcoded captions. No signup. Free tier available.',
   },
   '/compress-video': {
-    title: 'Compress Video — Reduce File Size Online',
+    title: 'Compress Video Online (Reduce File Size Without Losing Quality)',
     description:
-      'Compress video online: light, medium, or heavy compression. Upload video. Reduce file size for sharing and uploads. Sign up to try free.',
+      'Compress video files instantly without losing quality. Reduce video size online for faster uploads and sharing. Fast, simple, and no software required.',
   },
   '/batch-process': {
     title: 'Batch Video to Subtitles — Multiple Videos at Once',

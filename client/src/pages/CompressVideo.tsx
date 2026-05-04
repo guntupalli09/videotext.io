@@ -259,8 +259,8 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const breadcrumbs = [{ label: 'Compress Video', href: '/compress-video' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Compress Video',
-    subtitle: seoIntro ?? 'Reduce file size while keeping quality high',
+    title: seoH1 ?? 'Compress Video Online (Reduce File Size Without Losing Quality)',
+    subtitle: seoIntro ?? 'Reduce video file size instantly while maintaining quality. Compress large videos for faster upload, sharing, and processing.',
     icon: <Minimize2 className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['Compression', 'Reduce size', 'Quality', 'Optimize'],
     sidebar: null,
@@ -528,6 +528,73 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
           window.location.reload()
         }}
       />
+
+
+      {location.pathname === '/compress-video' && (
+        <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4 space-y-10" aria-label="Compress video guide">
+          <p className="text-base font-medium text-gray-800">👉 Upload video → reduce size in seconds (no quality loss)</p>
+          <p className="text-sm text-gray-600">👉 Works for large files and multiple formats</p>
+
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-3">Compress Video Files Online Instantly</h2>
+            <p className="text-gray-600">Reduce the size of your video without compromising quality. If you need subtitles after compression, generate them automatically at <a className="text-violet-600 hover:underline" href="/video-to-subtitles">/video-to-subtitles</a>.</p>
+            <p className="mt-3 text-sm text-gray-500">compress video online · video compressor · reduce video size</p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-3">Reduce Video Size Without Losing Quality</h2>
+            <p className="text-gray-600">Most tools degrade quality. This compressor optimizes compression, maintains clarity, and reduces file size efficiently. Need text output too? Convert video to transcript at <a className="text-violet-600 hover:underline" href="/video-to-transcript">/video-to-transcript</a>.</p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-3">Compress Large Video Files Fast</h2>
+            <p className="text-gray-600">Built for large files and long videos with support for large uploads, sharing-ready outputs, and performance-optimized processing. Working with YouTube content? Use <a className="text-violet-600 hover:underline" href="/youtube-transcript-generator">/youtube-transcript-generator</a>.</p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-3">Why Compress Videos?</h2>
+            <ul className="list-disc pl-6 text-gray-600 space-y-1">
+              <li>Upload faster to platforms</li>
+              <li>Reduce storage usage</li>
+              <li>Share videos easily</li>
+              <li>Optimize videos for web</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-3">Why This Video Compressor Is Better</h2>
+            <ul className="list-disc pl-6 text-gray-600 space-y-1">
+              <li>Fast compression</li>
+              <li>Minimal quality loss</li>
+              <li>Supports multiple formats</li>
+              <li>No installation required</li>
+              <li>Browser-based processing</li>
+            </ul>
+            <p className="mt-3 text-gray-600">Need translation too? Translate subtitles and transcripts with <a className="text-violet-600 hover:underline" href="/translate-subtitles">/translate-subtitles</a>.</p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-3">Complete Video Processing Workflow</h2>
+            <ul className="list-disc pl-6 text-gray-600 space-y-1">
+              <li><a className="text-violet-600 hover:underline" href="/video-to-transcript">Convert video to transcript</a></li>
+              <li><a className="text-violet-600 hover:underline" href="/video-to-subtitles">Generate subtitles</a></li>
+              <li><a className="text-violet-600 hover:underline" href="/burn-subtitles">Burn subtitles</a></li>
+              <li><a className="text-violet-600 hover:underline" href="/translate-subtitles">Translate subtitles</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Frequently Asked Questions</h2>
+            <dl className="space-y-4 text-gray-600">
+              <div><dt className="font-medium text-gray-800">How do I compress a video online?</dt><dd>Upload your video and the tool will reduce its size instantly.</dd></div>
+              <div><dt className="font-medium text-gray-800">Can I reduce video size without losing quality?</dt><dd>Yes. This tool optimizes compression to maintain quality.</dd></div>
+              <div><dt className="font-medium text-gray-800">Is there a free video compressor?</dt><dd>Yes. You can compress videos online without installing software.</dd></div>
+              <div><dt className="font-medium text-gray-800">What formats are supported?</dt><dd>Common formats like MP4, MOV, AVI, and more.</dd></div>
+              <div><dt className="font-medium text-gray-800">Can I compress large video files?</dt><dd>Yes. The tool supports large video files and long videos.</dd></div>
+            </dl>
+          </div>
+        </section>
+      )}
 
       {faq.length > 0 && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
