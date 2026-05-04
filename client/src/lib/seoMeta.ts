@@ -50,9 +50,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Convert video to text and downloadable transcripts in minutes. Built for fast file-based transcription with TXT, PDF, DOCX, SRT, and VTT outputs. Files are processed then deleted.',
   },
   '/video-to-subtitles': {
-    title: 'Video to Subtitles — SRT & VTT Generator',
+    title: 'Subtitle Generator (SRT & VTT) — Auto Generate Subtitles Online',
     description:
-      'Generate SRT and VTT subtitle files from any video with AI. Upload video. Ideal for YouTube and web. Single or multi-language. Sign up to try free.',
+      'Generate subtitles from video instantly. Create SRT and VTT files online with accurate timestamps. Fast, automatic, and no editing required.',
   },
   '/translate-subtitles': {
     title: 'Translate Subtitles — SRT/VTT to Any Language',
