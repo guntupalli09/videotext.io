@@ -4293,9 +4293,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Related tools</h2>
                 <ul className="mt-4 space-y-2 text-violet-700 dark:text-violet-300 font-medium">
-                  <li><Link to="/youtube-transcript-generator" className="hover:underline">Transcribe YouTube videos</Link></li>
-                  <li><Link to="/subtitle-generator" className="hover:underline">Generate subtitles</Link></li>
-                  <li><Link to="/transcribe-long-videos" className="hover:underline">Transcribe long videos</Link></li>
+                  <li><Link to="/translate-subtitles" className="hover:underline">Translate your transcripts</Link></li>
+                  <li><Link to="/compress-video" className="hover:underline">Compress your video</Link></li>
+                  <li><Link to="/voice-recorder" className="hover:underline">Need notes/transcripts from your voice</Link></li>
+                  <li><Link to="/burn-subtitles" className="hover:underline">Burn subtitles</Link></li>
                 </ul>
               </div>
             </div>
