@@ -9,6 +9,7 @@ import { FileText } from 'lucide-react'
 import { getSeoEntry, getRelatedSuggestionsForEntry } from '../lib/seoRegistry'
 import type { SeoToolKey } from '../lib/seoRegistry'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
+import MoneyPagesCta from '../components/MoneyPagesCta'
 import NotFound from './NotFound'
 import { resolveInternalLinkPath } from '../lib/primaryUrls'
 
@@ -143,6 +144,15 @@ export default function SeoToolPage() {
             </Link>
           </div>
         </div>
+        {intentClass === 'comparisonAlternative' && (
+          <div className="mt-4">
+            <MoneyPagesCta
+              title="Best next step after this comparison"
+              description="Jump straight into the core workflows used by customers to create transcript and subtitle outputs."
+              className="rounded-2xl border border-violet-100 bg-violet-50/60 p-4 sm:p-5 text-sm"
+            />
+          </div>
+        )}
       </div>
       {suggestions.length > 0 && (
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-12">
