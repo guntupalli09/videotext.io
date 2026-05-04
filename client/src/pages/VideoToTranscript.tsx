@@ -35,7 +35,7 @@ import {
 } from '../lib/exportFileNames'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId, clearPersistedJobIdInPlace } from '../lib/jobSession'
 import { trackAppEvent } from '../lib/feedbackEvents'
-import { trackEvent } from '../lib/analytics'
+import { trackEvent, trackFirstOutputSeen } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import { segmentsToSrt, segmentsToVtt, formatTimestamp, type Segment } from '../lib/srtExport'
 import {
@@ -75,7 +75,6 @@ function batchUploadEligible(): boolean {
 
 const SIGNUP_STARTED_AT_KEY = 'videotext:signup_started_at'
 const JOB_COMPLETED_COUNT_KEY = 'videotext:job_completed_count'
-const FIRST_OUTPUT_SEEN_KEY_PREFIX = 'videotext:first_output_seen'
 const EXPORT_PREFS_KEY = 'vt:transcript_export_prefs'
 
 /** Optional SEO overrides for alternate entry points (e.g. /video-to-text, /youtube-transcript-generator). Do NOT duplicate logic here. */
@@ -1233,12 +1232,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               })
               const nextJobCount = (Number(localStorage.getItem(JOB_COMPLETED_COUNT_KEY) || '0') || 0) + 1
               localStorage.setItem(JOB_COMPLETED_COUNT_KEY, String(nextJobCount))
-              const firstOutputKey = `${FIRST_OUTPUT_SEEN_KEY_PREFIX}:${localStorage.getItem('userId') || 'anon'}`
-              if (localStorage.getItem(firstOutputKey) !== '1') {
-                trackEvent('first_output_seen', { ...getFunnelProps('result_panel'), job_count: nextJobCount })
-                trackAppEvent('first_output_seen', { ...getFunnelProps('result_panel'), job_count: nextJobCount })
-                localStorage.setItem(firstOutputKey, '1')
-              }
+              trackFirstOutputSeen({ ...getFunnelProps('result_panel'), job_count: nextJobCount })
+              trackAppEvent('first_output_seen', { ...getFunnelProps('result_panel'), job_count: nextJobCount })
               trackEvent('processing_completed', { tool: 'video-to-transcript' })
               // texJobCompleted(processingMs, 'video-to-transcript')
               setLastProcessingMs(processingMs)
@@ -1518,12 +1513,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               trackEvent('job_completed', { job_id: response.jobId, tool_type: 'youtube-to-transcript', processing_time_ms: processingMs, ...getFunnelProps('youtube_url') })
               const nextJobCount = (Number(localStorage.getItem(JOB_COMPLETED_COUNT_KEY) || '0') || 0) + 1
               localStorage.setItem(JOB_COMPLETED_COUNT_KEY, String(nextJobCount))
-              const firstOutputKey = `${FIRST_OUTPUT_SEEN_KEY_PREFIX}:${localStorage.getItem('userId') || 'anon'}`
-              if (localStorage.getItem(firstOutputKey) !== '1') {
-                trackEvent('first_output_seen', { ...getFunnelProps('result_panel'), job_count: nextJobCount })
-                trackAppEvent('first_output_seen', { ...getFunnelProps('result_panel'), job_count: nextJobCount })
-                localStorage.setItem(firstOutputKey, '1')
-              }
+              trackFirstOutputSeen({ ...getFunnelProps('result_panel'), job_count: nextJobCount })
+              trackAppEvent('first_output_seen', { ...getFunnelProps('result_panel'), job_count: nextJobCount })
               trackEvent('processing_completed', { tool: 'video-to-transcript', source: 'youtube' })
               // texJobCompleted(processingMs, 'video-to-transcript')
               setLastProcessingMs(processingMs)
