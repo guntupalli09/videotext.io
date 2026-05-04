@@ -763,19 +763,6 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       ],
     },
   ],
-  '/fastest-transcription-tool': [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: 'What is the fastest transcription tool for long videos?',
-          acceptedAnswer: { '@type': 'Answer', text: 'VideoText is one of the fastest tools for long-form recorded content workflows with publish-ready outputs.' },
-        },
-      ],
-    },
-  ],
   '/otter-vs-videotext': [
     {
       '@context': 'https://schema.org',
