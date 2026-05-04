@@ -105,7 +105,7 @@ export default function UserMenu() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/30 dark:bg-black/50"
+              className="fixed inset-0 z-40 bg-black/55"
               onClick={() => setOpen(false)}
               aria-hidden
             />
@@ -118,9 +118,9 @@ export default function UserMenu() {
             >
               <aside
                 data-user-menu-panel
-                className="w-full h-full min-h-screen flex flex-col shadow-2xl border-l border-gray-200/90 dark:border-slate-700/90 isolate bg-gradient-to-b from-white via-slate-50 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 backdrop-blur-2xl"
+                className="w-full h-full min-h-screen flex flex-col shadow-2xl border-l border-gray-200 dark:border-slate-700 isolate bg-white dark:bg-slate-900"
               >
-                <div className="flex items-center justify-between p-4 border-b border-gray-200/90 dark:border-slate-700/90 shrink-0 bg-white/95 dark:bg-slate-900/95">
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700 shrink-0 bg-white dark:bg-slate-900">
                   <span className="font-semibold text-gray-900 dark:text-white">Menu</span>
                   <button
                     type="button"
@@ -132,7 +132,7 @@ export default function UserMenu() {
                   </button>
                 </div>
 
-                <div data-user-menu-body className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-6 bg-white/75 dark:bg-slate-900/70">
+                <div data-user-menu-body className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 bg-white dark:bg-slate-900">
                 {/* Account email (paid plans) — only when logged in and not a demo session */}
                 {isLoggedIn() && !isDemo() && usage?.email && (
                   <div className="rounded-xl bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 p-3">
