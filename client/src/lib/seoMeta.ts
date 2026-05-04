@@ -65,9 +65,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Fix overlapping timestamps, long lines, and gaps in SRT/VTT files. Auto-correct timing and formatting for readability and YouTube limits. Upload SRT or VTT, download corrected file. Free.',
   },
   '/burn-subtitles': {
-    title: 'Burn Subtitles into Video — Hardcode Captions',
+    title: 'Burn Subtitles into Video (Hardcode Captions Online — Free)',
     description:
-      'Burn SRT or VTT subtitles directly into your video. Upload video + subtitle file, get one video with hardcoded captions. No signup. Free tier available.',
+      'Burn subtitles into video instantly. Hardcode captions permanently with styling and positioning. Fast, online, and no editing required.',
   },
   '/compress-video': {
     title: 'Compress Video — Reduce File Size Online',
