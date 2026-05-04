@@ -1304,6 +1304,9 @@ function buildH1Html(meta: RouteMeta): string {
 }
 
 function buildConversionContent(meta: RouteMeta): string {
+  // Restrict marketing conversion blocks to the compressor landing pages only.
+  if (meta.path !== '/compress-video' && meta.path !== '/video-compressor') return ''
+
   const parts: string[] = []
 
   if (meta.path === '/video-to-transcript') {
