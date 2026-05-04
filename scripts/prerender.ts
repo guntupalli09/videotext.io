@@ -146,27 +146,27 @@ const STATIC_META: RouteMeta[] = [
 
   {
     path: '/video-to-transcript',
-    title: `Video to Transcript — Free AI Transcription & Translation | ${SITE_NAME}`,
+    title: 'Video to Transcript in Minutes (Free, Fast & Private Tool)',
     description:
-      'Convert video to text with AI. View transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian. Upload video, get plain-text transcript. Summary, chapters, speakers. Free tier.',
-    h1: 'Video to Transcript',
-    valueProposition: 'Convert any video into searchable, editable text in under 5 minutes. 98.5%+ accuracy with speaker labels, chapters, and multi-language translation. No download limits. Files deleted after processing.',
-    keywords: ['video to transcript', 'transcribe video', 'AI transcription', 'video to text', 'speech to text', 'accurate transcription', 'free transcription tool', 'transcription software'],
+      'Convert any video to transcript online in minutes. Upload or paste a link to get transcripts, subtitles (SRT/VTT), summary and chapters. No signup. Private.',
+    h1: 'Video to Transcript in 3 Minutes (Free, Fast & Private)',
+    valueProposition: 'VideoText lets you convert video to transcript online in minutes. Upload any video and get transcript text, subtitles (SRT/VTT), summary, and chapters in one click. 2-hour video → transcript in ~3–5 minutes.',
+    keywords: ['video to transcript', 'convert video to transcript', 'transcribe video online', 'video to text', 'youtube transcript generator', 'subtitle generator', 'long video transcription', 'private transcription tool'],
     comparison: [
-      { tool: 'Otter.ai', vs: '18-30 min processing, $120/year minimum' },
-      { tool: 'Descript', vs: '15 min processing, $24/month, desktop only' },
-      { tool: 'Rev', vs: 'Human transcription, $1.25/min, slow turnaround' },
+      { tool: 'Typical tools', vs: '20–40+ minutes for 2-hour videos' },
+      { tool: 'VideoText workflow', vs: 'Upload → download transcript + SRT/VTT + summary + chapters' },
+      { tool: 'Privacy', vs: 'Files deleted after processing' },
     ],
     howToUse: [
-      { step: 1, title: 'Upload Your Video', detail: 'MP4, MOV, AVI, WebM, MKV supported. Or paste a YouTube URL directly.' },
-      { step: 2, title: 'Get Instant Transcript', detail: 'AI processing runs in seconds. You\'ll see the transcript building in real-time.' },
-      { step: 3, title: 'Edit & Export', detail: 'Copy text, download TXT, get speaker labels, or generate SRT subtitles.' },
+      { step: 1, title: 'Upload your video or paste a link', detail: 'Works for MP4, MOV, MP3, YouTube, Zoom, and more.' },
+      { step: 2, title: 'AI transcribes in minutes', detail: 'Built for long videos and large files, not just short clips.' },
+      { step: 3, title: 'Download transcript, subtitles, and summary', detail: 'Get transcript text, SRT/VTT subtitles, summary, and chapters in one run.' },
     ],
     socialProof: [
-      { stat: '127,000+', desc: 'Videos transcribed' },
-      { stat: '98.5%', desc: 'Word accuracy rate' },
-      { stat: '3-5 min', desc: 'Average processing time' },
-      { stat: '50,000+', desc: 'Creators using VideoText' },
+      { stat: '2-hour → 3–5 min', desc: 'Processing benchmark' },
+      { stat: '70+', desc: 'Languages supported' },
+      { stat: 'SRT + VTT', desc: 'Subtitle outputs included' },
+      { stat: 'Deleted files', desc: 'Privacy-first processing' },
     ],
   },
   {
@@ -1306,6 +1306,42 @@ function buildH1Html(meta: RouteMeta): string {
 function buildConversionContent(meta: RouteMeta): string {
   const parts: string[] = []
 
+  if (meta.path === '/video-to-transcript') {
+    parts.push(`
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Video to Transcript Online (Free &amp; Fast)</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">VideoText lets you convert video to transcript online in minutes with one upload and one clean output package.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Transcribe Video to Text in Minutes</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">Upload a file or paste a URL, then download transcript text, SRT/VTT subtitles, summary, and chapters. You can also transcribe YouTube videos using our <a href="/youtube-transcript-generator">YouTube transcript generator</a>.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Convert Video to Transcript Without Editing</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">No timeline editing, no manual cleanup, and no extra steps. One-click output for publishing workflows. For subtitle exports, use our <a href="/subtitle-generator">subtitle generator</a>.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">The Fastest Video to Transcript Tool</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">Built for speed with parallel processing for long files and structured outputs in minutes. Need hours-long processing? See <a href="/transcribe-long-videos">transcribe long videos</a>.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Related transcription tools</h2>
+        <ul style="margin:0;padding-left:18px;line-height:1.8">
+          <li><a href="/youtube-transcript-generator">Transcribe YouTube videos</a></li>
+          <li><a href="/subtitle-generator">Generate subtitles automatically</a></li>
+          <li><a href="/transcribe-long-videos">Transcribe long videos</a></li>
+        </ul>
+        <p style="margin:14px 0 6px 0;color:#374151;font-weight:600">More workflow tools</p>
+        <ul style="margin:0;padding-left:18px;line-height:1.8">
+          <li><a href="/translate-subtitles">Translate your transcripts</a></li>
+          <li><a href="/burn-subtitles">Burn subtitles</a></li>
+          <li><a href="/compress-video">Compress your video</a></li>
+          <li><a href="/voice-recorder">Need notes/transcripts from your voice</a></li>
+        </ul>
+      </section>
+    `)
+  }
+
   // Value Proposition
   if (meta.valueProposition) {
     parts.push(`
@@ -1512,6 +1548,9 @@ function buildGlobalDiscoverabilityLinksHtml(): string {
     <section style="margin:20px 0;padding:16px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px">
       <h3 style="font-size:13px;font-weight:600;color:#3730a3;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:0.5px">Crawler Navigation</h3>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:700">Transcribe video online</a>
+        <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">Video to transcript tool</a>
+        <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">Fast video transcription</a>
         <a href="/site-index" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">All Pages Index</a>
         <a href="/alternatives" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Tool Alternatives</a>
         <a href="/transcription-tools" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Transcription Tools</a>
@@ -1617,7 +1656,6 @@ function main() {
   const registryEntries = parseRegistryEntries()
   const programmaticEntries = getProgrammaticSeoEntries()
   const allRoutes: RouteMeta[] = mergeRouteMetaWithSitemapCoverage([
-    ...STATIC_META,
     ...registryEntries.map((e) => ({
       path: e.path,
       title: e.title,
@@ -1644,6 +1682,9 @@ function main() {
       howToUse: e.howToUse,
       socialProof: e.socialProof,
     })),
+    // Keep static routes last so canonical core pages (e.g. /video-to-transcript)
+    // are not overwritten by registry aliases that resolve to the same primary URL.
+    ...STATIC_META,
   ])
 
   let count = 0

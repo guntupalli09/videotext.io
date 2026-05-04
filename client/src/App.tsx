@@ -557,40 +557,36 @@ function App() {
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript
-              seoH1="Convert Any Video to Transcript in Minutes (Not Hours)"
-              seoIntro="1-hour video -> clean transcript, subtitles, and summary in 3-5 minutes. No cleanup needed. Used by 50,000+ creators, researchers, and agencies."
+              seoH1="Video to Transcript in 3 Minutes (Free, Fast & Private)"
+              seoIntro="Upload any video and get a clean transcript, subtitles (SRT/VTT), summary, and chapters — all in one click. No signup required. **2-hour video → transcript in ~3–5 minutes**."
               faq={[
                 {
-                  q: 'How long does transcription actually take?',
-                  a: 'Real-time speed or faster. A 1-hour video transcribes in 3-5 minutes. A 2-hour video: under 5 minutes. A 30-minute video: under 2 minutes. We process in parallel, not real-time. Typical scaling: about 24 seconds of source audio per output minute.',
+                  q: 'How do I convert video to transcript?',
+                  a: 'Upload your video or paste a link. VideoText automatically transcribes it, then lets you download transcript text, subtitles, and summary outputs.',
+                },
+                {
+                  q: 'Can I transcribe video online for free?',
+                  a: 'Yes. You can transcribe videos online without installing software. Free usage depends on current plan and upload limits.',
                 },
                 {
                   q: 'How accurate is the transcription?',
-                  a: 'VideoText achieves 98.5% word accuracy on clean English audio using OpenAI Whisper - the same engine professional transcription services use. Accuracy varies with audio quality, background noise, speaker count, and language. Use our Glossary feature to improve accuracy on technical terms.',
+                  a: 'Up to ~98% depending on audio quality, speaker overlap, and background noise.',
                 },
                 {
-                  q: 'Is my video data private?',
-                  a: 'Completely private. Your file is processed and deleted immediately after transcription. We do not retain, store, archive, or share uploads, transcripts, or output files. GDPR and CCPA compliant. Full privacy policy available on our site.',
+                  q: 'Can I transcribe long videos?',
+                  a: 'Yes. VideoText is optimized for long files and is built to process hours-long videos quickly.',
                 },
                 {
-                  q: 'What do I get from one upload?',
-                  a: 'One comprehensive output set: Full timestamped transcript (TXT, PDF, DOCX, JSON), AI-generated summary with bullet points, auto-detected chapter markers, and ready-to-upload subtitles (SRT and VTT). Everything from one pass - nothing hidden, no upsell on individual formats.',
+                  q: 'What is the fastest way to transcribe video?',
+                  a: 'Use a tool built for fast file-based processing. With VideoText, upload once and get transcript text, subtitles, summary, and chapters together in minutes.',
                 },
                 {
-                  q: 'Which video and audio formats work?',
-                  a: 'Video: MP4, MOV, MKV, WebM, AVI, FLV, and most modern formats. Audio: WAV, MP3, M4A, FLAC, OGG. You can also paste a public YouTube URL and we will transcribe directly without downloading. Maximum file size: 2GB on Free, unlimited on paid plans.',
+                  q: 'What formats are supported?',
+                  a: 'MP4, MOV, MP3, WAV, YouTube links, Zoom recordings, and more.',
                 },
                 {
-                  q: 'How does VideoText compare to Otter.ai, Descript, or Rev?',
-                  a: 'VideoText is optimized for files, not meetings. Faster processing (3-5 min vs 15-45 min), more output per job (transcript + summary + chapters + subtitles vs transcript-only), zero data storage (vs indefinite retention), and supports 90+ languages equally (not English-first). Best for creators, podcasters, and batch workflows. Otter and Descript are better for real-time meeting transcription.',
-                },
-                {
-                  q: 'Can I edit the transcript after it is done?',
-                  a: 'Yes. Use our built-in editor to correct words, adjust timing, and add speaker labels. All edits save locally in your browser. Export your corrected version in any format. On Pro plans, you can also re-process with a custom Glossary to improve accuracy before export.',
-                },
-                {
-                  q: 'Do you offer bulk processing or API access?',
-                  a: 'Yes. Pro plan includes batch upload (drag in 5-10 videos, get one ZIP with all results). Agency plan adds API access for programmatic transcription workflows. You can process 100s of videos without repeating the upload step for each one.',
+                  q: 'Will my files be stored?',
+                  a: 'No. Files are deleted after processing.',
                 },
               ]}
               seoDeepContent={{

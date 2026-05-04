@@ -2382,17 +2382,18 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-4 sm:gap-6 justify-center sm:justify-start">
+                    <p className="w-full text-sm sm:text-base font-extrabold text-gray-900 dark:text-white">2-hour video → transcript in ~3–5 minutes</p>
                     <div className="flex flex-col items-start gap-1.5">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Accuracy</p>
-                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">98.5%</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">⚡</p>
+                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">3–5 min processing</p>
                     </div>
                     <div className="flex flex-col items-start gap-1.5">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Languages</p>
-                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">90+</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">🔒</p>
+                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">No data stored</p>
                     </div>
                     <div className="flex flex-col items-start gap-1.5">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Data Stored</p>
-                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">None</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">📄</p>
+                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Transcript + SRT + summary</p>
                     </div>
                   </div>
                 </div>
@@ -4271,6 +4272,50 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
       {hasDeepContent && (
         <section className="py-16 px-4 sm:px-6 max-w-5xl mx-auto space-y-20" aria-label="Workflow proof and comparison">
+          {location.pathname === '/video-to-transcript' && (
+            <div className="space-y-10">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Video to Transcript Online (Free &amp; Fast)</h2>
+                <p className="mt-3 text-gray-600 dark:text-gray-300">VideoText lets you convert video to transcript online in minutes with one upload and one clean output package.</p>
+              </div>
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Transcribe Video to Text in Minutes</h2>
+                <p className="mt-3 text-gray-600 dark:text-gray-300">
+                  Upload a file or paste a URL, then download transcript text, SRT/VTT subtitles, summary, and chapters without manual cleanup. You can also transcribe YouTube videos using our{' '}
+                  <Link to="/youtube-transcript-generator" className="text-violet-700 dark:text-violet-300 font-medium hover:underline">YouTube transcript generator</Link>.
+                </p>
+              </div>
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Convert Video to Transcript Without Editing</h2>
+                <p className="mt-3 text-gray-600 dark:text-gray-300">
+                  No timeline editing, no manual cleanup, and no extra steps. VideoText is built for one-click output so you can publish faster. If you need subtitle files, generate them directly with our{' '}
+                  <Link to="/subtitle-generator" className="text-violet-700 dark:text-violet-300 font-medium hover:underline">subtitle generator</Link>.
+                </p>
+              </div>
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">The Fastest Video to Transcript Tool</h2>
+                <p className="mt-3 text-gray-600 dark:text-gray-300">
+                  Most tools process in longer, multi-step workflows. VideoText focuses on fast parallel processing for long videos, so you get structured outputs in minutes. For hours-long uploads, use our{' '}
+                  <Link to="/transcribe-long-videos" className="text-violet-700 dark:text-violet-300 font-medium hover:underline">transcribe long videos workflow</Link>.
+                </p>
+              </div>
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Related transcription tools</h2>
+                <ul className="mt-4 space-y-2 text-violet-700 dark:text-violet-300 font-medium">
+                  <li><Link to="/youtube-transcript-generator" className="hover:underline">Transcribe YouTube videos</Link></li>
+                  <li><Link to="/subtitle-generator" className="hover:underline">Generate subtitles automatically</Link></li>
+                  <li><Link to="/transcribe-long-videos" className="hover:underline">Transcribe long videos</Link></li>
+                </ul>
+                <p className="mt-6 text-sm font-semibold text-gray-700 dark:text-gray-300">More workflow tools</p>
+                <ul className="mt-2 space-y-2 text-violet-700 dark:text-violet-300 font-medium">
+                  <li><Link to="/translate-subtitles" className="hover:underline">Translate your transcripts</Link></li>
+                  <li><Link to="/burn-subtitles" className="hover:underline">Burn subtitles</Link></li>
+                  <li><Link to="/compress-video" className="hover:underline">Compress your video</Link></li>
+                  <li><Link to="/voice-recorder" className="hover:underline">Need notes/transcripts from your voice</Link></li>
+                </ul>
+              </div>
+            </div>
+          )}
 
           {/* ── Proof points ── */}
           {seoDeepContent?.proofPoints?.length ? (
