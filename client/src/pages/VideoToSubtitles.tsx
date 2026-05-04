@@ -27,7 +27,7 @@ import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/fil
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
-import { trackEvent } from '../lib/analytics'
+import { trackEvent, trackFirstOutputSeen } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 // import { useWorkflow } from '../contexts/WorkflowContext'
@@ -596,6 +596,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_SUBTITLES,
               processing_time_ms: processingMs,
             })
+            trackFirstOutputSeen({ tool: 'video-to-subtitles', source: 'result_panel' })
+            trackAppEvent('first_output_seen', { tool: 'video-to-subtitles', source: 'result_panel' })
             trackEvent('processing_completed', { tool: 'video-to-subtitles' })
             // texJobCompleted(processingMs, 'video-to-subtitles')
             setLastProcessingMs(processingMs)
