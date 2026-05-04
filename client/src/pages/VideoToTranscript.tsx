@@ -4291,12 +4291,18 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 <p className="mt-3 text-gray-600 dark:text-gray-300">Most tools process in longer, multi-step workflows. VideoText focuses on fast parallel processing for long videos, so you get structured outputs in minutes.</p>
               </div>
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Related tools</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Related transcription tools</h2>
                 <ul className="mt-4 space-y-2 text-violet-700 dark:text-violet-300 font-medium">
+                  <li><Link to="/youtube-transcript-generator" className="hover:underline">Transcribe YouTube videos</Link></li>
+                  <li><Link to="/subtitle-generator" className="hover:underline">Generate subtitles automatically</Link></li>
+                  <li><Link to="/transcribe-long-videos" className="hover:underline">Transcribe long videos</Link></li>
+                </ul>
+                <p className="mt-6 text-sm font-semibold text-gray-700 dark:text-gray-300">More workflow tools</p>
+                <ul className="mt-2 space-y-2 text-violet-700 dark:text-violet-300 font-medium">
                   <li><Link to="/translate-subtitles" className="hover:underline">Translate your transcripts</Link></li>
+                  <li><Link to="/burn-subtitles" className="hover:underline">Burn subtitles</Link></li>
                   <li><Link to="/compress-video" className="hover:underline">Compress your video</Link></li>
                   <li><Link to="/voice-recorder" className="hover:underline">Need notes/transcripts from your voice</Link></li>
-                  <li><Link to="/burn-subtitles" className="hover:underline">Burn subtitles</Link></li>
                 </ul>
               </div>
             </div>

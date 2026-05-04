@@ -1325,12 +1325,18 @@ function buildConversionContent(meta: RouteMeta): string {
         <p style="margin:0;color:#374151;line-height:1.7">Built for speed with parallel processing for long files and structured outputs in minutes.</p>
       </section>
       <section style="margin:32px 0">
-        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Related tools</h2>
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Related transcription tools</h2>
+        <ul style="margin:0;padding-left:18px;line-height:1.8">
+          <li><a href="/youtube-transcript-generator">Transcribe YouTube videos</a></li>
+          <li><a href="/subtitle-generator">Generate subtitles automatically</a></li>
+          <li><a href="/transcribe-long-videos">Transcribe long videos</a></li>
+        </ul>
+        <p style="margin:14px 0 6px 0;color:#374151;font-weight:600">More workflow tools</p>
         <ul style="margin:0;padding-left:18px;line-height:1.8">
           <li><a href="/translate-subtitles">Translate your transcripts</a></li>
+          <li><a href="/burn-subtitles">Burn subtitles</a></li>
           <li><a href="/compress-video">Compress your video</a></li>
           <li><a href="/voice-recorder">Need notes/transcripts from your voice</a></li>
-          <li><a href="/burn-subtitles">Burn subtitles</a></li>
         </ul>
       </section>
     `)
@@ -1542,8 +1548,9 @@ function buildGlobalDiscoverabilityLinksHtml(): string {
     <section style="margin:20px 0;padding:16px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px">
       <h3 style="font-size:13px;font-weight:600;color:#3730a3;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:0.5px">Crawler Navigation</h3>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
-        <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:700">Start: Video to Transcript</a>
-        <a href="/fastest-transcription-tool" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">Fastest Transcription Tool</a>
+        <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:700">Transcribe video online</a>
+        <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">Video to transcript tool</a>
+        <a href="/fastest-transcription-tool" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">Fast video transcription</a>
         <a href="/site-index" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">All Pages Index</a>
         <a href="/alternatives" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Tool Alternatives</a>
         <a href="/transcription-tools" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Transcription Tools</a>
