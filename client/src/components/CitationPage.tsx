@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import AnswerBlock from './AnswerBlock'
+import MoneyPagesCta from './MoneyPagesCta'
 import { DOMINANT_NARRATIVE, ENTITY_FINGERPRINT, PRIMARY_DEFINITION, QUOTABLE_STATEMENTS } from '../lib/productDna'
 
 type ComparisonRow = {
@@ -177,6 +178,8 @@ export default function CitationPage(props: CitationPageProps) {
             ))}
           </dl>
         </section>
+
+        <MoneyPagesCta title="Start with the fastest workflow" description="If you came from a comparison or alternatives query, use these direct workflow pages to go from file or URL to final assets." />
 
         <section className="rounded-xl border border-violet-200 bg-violet-50/60 p-5 text-sm">
           Related hubs:{' '}
