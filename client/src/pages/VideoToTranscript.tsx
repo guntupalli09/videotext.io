@@ -4280,24 +4280,15 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               </div>
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Transcribe Video to Text in Minutes</h2>
-                <p className="mt-3 text-gray-600 dark:text-gray-300">
-                  Upload a file or paste a URL, then download transcript text, SRT/VTT subtitles, summary, and chapters without manual cleanup. You can also transcribe YouTube videos using our{' '}
-                  <Link to="/youtube-transcript-generator" className="text-violet-700 dark:text-violet-300 font-medium hover:underline">YouTube transcript generator</Link>.
-                </p>
+                <p className="mt-3 text-gray-600 dark:text-gray-300">Upload a file or paste a URL, then download transcript text, SRT/VTT subtitles, summary, and chapters without manual cleanup.</p>
               </div>
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Convert Video to Transcript Without Editing</h2>
-                <p className="mt-3 text-gray-600 dark:text-gray-300">
-                  No timeline editing, no manual cleanup, and no extra steps. VideoText is built for one-click output so you can publish faster. If you need subtitle files, generate them directly with our{' '}
-                  <Link to="/subtitle-generator" className="text-violet-700 dark:text-violet-300 font-medium hover:underline">subtitle generator</Link>.
-                </p>
+                <p className="mt-3 text-gray-600 dark:text-gray-300">No timeline editing, no manual cleanup, and no extra steps. VideoText is built for one-click output so you can publish faster.</p>
               </div>
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">The Fastest Video to Transcript Tool</h2>
-                <p className="mt-3 text-gray-600 dark:text-gray-300">
-                  Most tools process in longer, multi-step workflows. VideoText focuses on fast parallel processing for long videos, so you get structured outputs in minutes. For hours-long uploads, use our{' '}
-                  <Link to="/transcribe-long-videos" className="text-violet-700 dark:text-violet-300 font-medium hover:underline">transcribe long videos workflow</Link>.
-                </p>
+                <p className="mt-3 text-gray-600 dark:text-gray-300">Most tools process in longer, multi-step workflows. VideoText focuses on fast parallel processing for long videos, so you get structured outputs in minutes.</p>
               </div>
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Related transcription tools</h2>

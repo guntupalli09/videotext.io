@@ -1314,15 +1314,15 @@ function buildConversionContent(meta: RouteMeta): string {
       </section>
       <section style="margin:32px 0">
         <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Transcribe Video to Text in Minutes</h2>
-        <p style="margin:0;color:#374151;line-height:1.7">Upload a file or paste a URL, then download transcript text, SRT/VTT subtitles, summary, and chapters. You can also transcribe YouTube videos using our <a href="/youtube-transcript-generator">YouTube transcript generator</a>.</p>
+        <p style="margin:0;color:#374151;line-height:1.7">Upload a file or paste a URL, then download transcript text, SRT/VTT subtitles, summary, and chapters.</p>
       </section>
       <section style="margin:32px 0">
         <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Convert Video to Transcript Without Editing</h2>
-        <p style="margin:0;color:#374151;line-height:1.7">No timeline editing, no manual cleanup, and no extra steps. One-click output for publishing workflows. For subtitle exports, use our <a href="/subtitle-generator">subtitle generator</a>.</p>
+        <p style="margin:0;color:#374151;line-height:1.7">No timeline editing, no manual cleanup, and no extra steps. One-click output for publishing workflows.</p>
       </section>
       <section style="margin:32px 0">
         <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">The Fastest Video to Transcript Tool</h2>
-        <p style="margin:0;color:#374151;line-height:1.7">Built for speed with parallel processing for long files and structured outputs in minutes. Need hours-long processing? See <a href="/transcribe-long-videos">transcribe long videos</a>.</p>
+        <p style="margin:0;color:#374151;line-height:1.7">Built for speed with parallel processing for long files and structured outputs in minutes.</p>
       </section>
       <section style="margin:32px 0">
         <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Related transcription tools</h2>
@@ -1550,7 +1550,7 @@ function buildGlobalDiscoverabilityLinksHtml(): string {
       <div style="display:flex;flex-wrap:wrap;gap:8px">
         <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:700">Transcribe video online</a>
         <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">Video to transcript tool</a>
-        <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">Fast video transcription</a>
+        <a href="/fastest-transcription-tool" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">Fast video transcription</a>
         <a href="/site-index" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">All Pages Index</a>
         <a href="/alternatives" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Tool Alternatives</a>
         <a href="/transcription-tools" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Transcription Tools</a>
