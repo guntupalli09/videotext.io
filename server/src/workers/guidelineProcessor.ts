@@ -6,6 +6,8 @@ import { prisma } from '../db'
 import { enforceGuideline, type ParsedRule } from '../services/guidelineEnforcer'
 import { computeTranscriptDiff } from '../services/diffEngine'
 import { getLogger } from '../lib/logger'
+import { updateJobCompleted, updateJobFailed, updateJobStarted } from '../lib/jobAnalytics'
+import { pushLogEntry } from '../lib/logRing'
 
 const log = getLogger('worker')
 
@@ -33,8 +35,21 @@ let guidelineWorkerStarted = false
 
 async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<void> {
   const { formattingJobId, transcriptText, rules } = job.data
+  const started = Date.now()
 
   try {
+    // Dashboard-visible Job status
+    void updateJobStarted(formattingJobId)
+
+    pushLogEntry({
+      ts: new Date().toISOString(),
+      level: 'info',
+      service: 'worker',
+      msg: 'guideline_format_started',
+      jobId: formattingJobId,
+      module: 'guidelineProcessor',
+    })
+
     await prisma.formattingJob.update({
       where: { id: formattingJobId },
       data: { status: 'processing' },
@@ -53,6 +68,16 @@ async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<
         appliedRules: result.appliedRules as unknown as Prisma.InputJsonValue,
       },
     })
+
+    void updateJobCompleted(formattingJobId, Math.max(0, Date.now() - started))
+    pushLogEntry({
+      ts: new Date().toISOString(),
+      level: 'info',
+      service: 'worker',
+      msg: 'guideline_format_completed',
+      jobId: formattingJobId,
+      module: 'guidelineProcessor',
+    })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     try {
@@ -66,6 +91,17 @@ async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<
     } catch (e) {
       log.warn({ msg: 'Failed to mark FormattingJob as failed', id: formattingJobId, error: String(e) })
     }
+
+    void updateJobFailed(formattingJobId, msg)
+    pushLogEntry({
+      ts: new Date().toISOString(),
+      level: 'error',
+      service: 'worker',
+      msg: 'guideline_format_failed',
+      jobId: formattingJobId,
+      module: 'guidelineProcessor',
+      extra: msg.slice(0, 300),
+    })
     throw err
   }
 }

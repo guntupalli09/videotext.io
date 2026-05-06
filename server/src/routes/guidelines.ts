@@ -4,6 +4,8 @@ import { getEffectiveUserId } from '../utils/auth'
 import { prisma } from '../db'
 import { guidelineQueue } from '../workers/guidelineProcessor'
 import type { ParsedRule } from '../services/guidelineEnforcer'
+import { insertJobRecord } from '../lib/jobAnalytics'
+import { pushLogEntry } from '../lib/logRing'
 
 const router = express.Router()
 
@@ -67,6 +69,14 @@ router.post('/format', async (req: Request, res: Response) => {
       },
     })
 
+    // Mirror into the persistent Job table so the Founder Dashboard counts it like other tools.
+    // Fire-and-forget by design (jobAnalytics.ts handles its own errors).
+    void insertJobRecord({
+      id: job.id,
+      userId,
+      toolType: 'guideline-formatting',
+    })
+
     await guidelineQueue.add(
       {
         formattingJobId: job.id,
@@ -79,6 +89,16 @@ router.post('/format', async (req: Request, res: Response) => {
         backoff: { type: 'exponential', delay: 2000 },
       }
     )
+
+    // Surface in Command Centre log viewer (Redis log ring).
+    pushLogEntry({
+      ts: new Date().toISOString(),
+      level: 'info',
+      service: 'api',
+      msg: 'guideline_format_enqueued',
+      jobId: job.id,
+      module: 'guidelines',
+    })
 
     return res.status(200).json({ jobId: job.id })
   } catch (e) {
