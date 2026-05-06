@@ -13,6 +13,9 @@ type EditableRule = {
   defaultValue: string
   currentValue: string
   isEdited: boolean
+  extractionConfidence?: 'high' | 'medium' | 'needs_review'
+  extractionReason?: string
+  sourceQuote?: string
 }
 
 const CATEGORY_ORDER = [
@@ -133,6 +136,9 @@ export default function GuidelineFormat() {
   const [customFile, setCustomFile] = useState<File | null>(null)
   const [customGuideLoading, setCustomGuideLoading] = useState(false)
   const [customGuideError, setCustomGuideError] = useState<string | null>(null)
+  const [customGuideConflicts, setCustomGuideConflicts] = useState<
+    Array<{ ruleIdA: string; ruleIdB: string; summary: string; confidence: 'high' | 'medium' }>
+  >([])
   const [jobId, setJobId] = useState<string | null>(null)
   const [jobStatus, setJobStatus] = useState<JobStatusResponse | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -179,6 +185,7 @@ export default function GuidelineFormat() {
     setOriginalCaptionCues(null)
     setFocusSegment(null)
     setCustomGuideError(null)
+    setCustomGuideConflicts([])
   }
 
   const buildRulesPayload = (): ParsedRule[] => {
@@ -519,12 +526,25 @@ export default function GuidelineFormat() {
     fd.append('file', file)
     api('/api/guidelines/parse-guide', { method: 'POST', body: fd, timeout: 60000 })
       .then(async (res) => {
-        const data = (await res.json()) as { rules?: Array<{ id: string; category: string; label: string; currentValue: string }>; error?: string }
+        const data = (await res.json()) as {
+          rules?: Array<{
+            id: string
+            category: string
+            label: string
+            currentValue: string
+            extractionConfidence?: 'high' | 'medium' | 'needs_review'
+            extractionReason?: string
+            sourceQuote?: string
+          }>
+          conflicts?: Array<{ ruleIdA: string; ruleIdB: string; summary: string; confidence: 'high' | 'medium' }>
+          error?: string
+        }
         if (!res.ok) {
           throw new Error(data.error || 'Failed to parse style guide')
         }
         const list = Array.isArray(data.rules) ? data.rules : []
         if (!list.length) throw new Error('No rules extracted from this guide')
+        setCustomGuideConflicts(Array.isArray(data.conflicts) ? data.conflicts : [])
         setRules(
           list.map((r) => ({
             id: r.id,
@@ -533,9 +553,12 @@ export default function GuidelineFormat() {
             defaultValue: r.currentValue,
             currentValue: r.currentValue,
             isEdited: false,
+            extractionConfidence: r.extractionConfidence,
+            extractionReason: r.extractionReason,
+            sourceQuote: r.sourceQuote,
           }))
         )
-        toast.success('Style guide parsed — rules loaded')
+        toast.success('Rules extracted — please review before formatting')
       })
       .catch((e) => {
         setCustomGuideError(e instanceof Error ? e.message : 'Failed to parse style guide')
@@ -722,6 +745,31 @@ export default function GuidelineFormat() {
                 </select>
               </div>
 
+              {selectedPreset === 'custom' && rules.length > 0 && (
+                <div className="rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/70 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-100">
+                  <p className="font-semibold">Rules extracted from your guide — please review before formatting.</p>
+                  <p className="text-xs text-amber-800/90 dark:text-amber-200/90 mt-1">
+                    We’ll mark ambiguous rules as “Needs review” and warn on conflicts.
+                  </p>
+                </div>
+              )}
+
+              {selectedPreset === 'custom' && customGuideConflicts.length > 0 && (
+                <div className="rounded-xl border border-red-200 dark:border-red-900/40 bg-red-50/70 dark:bg-red-950/20 px-4 py-3 space-y-2">
+                  <p className="text-sm font-semibold text-red-800 dark:text-red-200">Potential rule conflicts detected</p>
+                  <ul className="space-y-1 text-xs text-red-700 dark:text-red-200">
+                    {customGuideConflicts.slice(0, 6).map((c, idx) => (
+                      <li key={idx}>
+                        <span className="font-semibold">{c.confidence === 'high' ? 'High' : 'Medium'} confidence:</span> {c.summary}
+                      </li>
+                    ))}
+                    {customGuideConflicts.length > 6 && (
+                      <li className="text-red-700/80 dark:text-red-200/80">…and {customGuideConflicts.length - 6} more</li>
+                    )}
+                  </ul>
+                </div>
+              )}
+
               {selectedPreset && rules.length > 0 && (
                 <div className="space-y-4">
                   {[...CATEGORY_ORDER, ...[...rulesByCategory.keys()].filter((k) => !(CATEGORY_ORDER as readonly string[]).includes(k))].map(
@@ -761,7 +809,37 @@ export default function GuidelineFormat() {
                                     </button>
                                   </div>
                                 )}
+                                {selectedPreset === 'custom' && rule.extractionConfidence && (
+                                  <span
+                                    className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${
+                                      rule.extractionConfidence === 'high'
+                                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200'
+                                        : rule.extractionConfidence === 'medium'
+                                          ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100'
+                                          : 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200'
+                                    }`}
+                                    title={rule.extractionReason || undefined}
+                                  >
+                                    {rule.extractionConfidence === 'high'
+                                      ? 'High confidence'
+                                      : rule.extractionConfidence === 'medium'
+                                        ? 'Medium confidence'
+                                        : 'Needs review'}
+                                  </span>
+                                )}
                               </div>
+                              {selectedPreset === 'custom' && (rule.extractionReason || rule.sourceQuote) && (
+                                <div className="mb-2 space-y-1">
+                                  {rule.extractionReason && (
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{rule.extractionReason}</p>
+                                  )}
+                                  {rule.sourceQuote && (
+                                    <p className="text-[11px] text-gray-500 dark:text-gray-400 border-l-2 border-gray-200 dark:border-gray-700 pl-2">
+                                      “{rule.sourceQuote}”
+                                    </p>
+                                  )}
+                                </div>
+                              )}
                               <AutoGrowTextarea
                                 aria-label={rule.label}
                                 value={rule.currentValue}

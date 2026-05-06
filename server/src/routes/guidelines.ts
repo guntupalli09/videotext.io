@@ -258,8 +258,8 @@ router.post('/parse-guide', guideUpload.single('file'), async (req: Request, res
       return res.status(400).json({ error: 'Could not extract any text from this file.' })
     }
 
-    const rules = await extractRulesFromGuideText(cleaned)
-    if (!rules.length) {
+    const extracted = await extractRulesFromGuideText(cleaned)
+    if (!extracted.rules.length) {
       return res.status(400).json({ error: 'Could not extract rules from this guide. Try a different file or use a preset.' })
     }
 
@@ -271,7 +271,7 @@ router.post('/parse-guide', guideUpload.single('file'), async (req: Request, res
       module: 'guidelines',
     })
 
-    return res.status(200).json({ rules })
+    return res.status(200).json(extracted)
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Internal error'
     return res.status(500).json({ error: msg })

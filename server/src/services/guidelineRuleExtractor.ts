@@ -13,13 +13,30 @@ const SYSTEM_PROMPT =
   'Rules must be phrased as instructions that can be applied to a transcript.\n' +
   'Do not invent rules not present in the guide.\n' +
   'If the guide is vague, create fewer rules and mark them clearly.\n' +
+  'Detect contradictions between rules. Many real guides conflict; warn explicitly.\n' +
   'You must respond with valid JSON only.\n' +
   'No preamble. No markdown.\n' +
   '\n' +
   'Return this JSON structure:\n' +
   '{\n' +
   '  "rules": [\n' +
-  '    { "id": "stable_id", "category": "Category", "label": "Short rule label", "currentValue": "Rule details/instruction" }\n' +
+  '    {\n' +
+  '      "id": "stable_id",\n' +
+  '      "category": "Category",\n' +
+  '      "label": "Short rule label",\n' +
+  '      "currentValue": "Rule details/instruction",\n' +
+  '      "extractionConfidence": "high|medium|needs_review",\n' +
+  '      "extractionReason": "one sentence on why",\n' +
+  '      "sourceQuote": "short quote from guide supporting this rule"\n' +
+  '    }\n' +
+  '  ],\n' +
+  '  "conflicts": [\n' +
+  '    {\n' +
+  '      "ruleIdA": "id",\n' +
+  '      "ruleIdB": "id",\n' +
+  '      "summary": "why these conflict",\n' +
+  '      "confidence": "high|medium"\n' +
+  '    }\n' +
   '  ]\n' +
   '}\n'
 
@@ -36,20 +53,54 @@ function stableId(seed: string): string {
   return crypto.createHash('sha1').update(seed).digest('hex').slice(0, 12)
 }
 
-function isParsedRule(x: unknown): x is ParsedRule {
+export type ExtractionConfidence = 'high' | 'medium' | 'needs_review'
+
+export interface ExtractedRule extends ParsedRule {
+  extractionConfidence: ExtractionConfidence
+  extractionReason: string
+  sourceQuote: string
+}
+
+export interface RuleConflict {
+  ruleIdA: string
+  ruleIdB: string
+  summary: string
+  confidence: 'high' | 'medium'
+}
+
+export interface GuideExtractionResult {
+  rules: ExtractedRule[]
+  conflicts: RuleConflict[]
+}
+
+function isExtractedRule(x: unknown): x is ExtractedRule {
   if (!x || typeof x !== 'object') return false
   const o = x as Record<string, unknown>
   return (
     typeof o.id === 'string' &&
     typeof o.category === 'string' &&
     typeof o.label === 'string' &&
-    typeof o.currentValue === 'string'
+    typeof o.currentValue === 'string' &&
+    (o.extractionConfidence === 'high' || o.extractionConfidence === 'medium' || o.extractionConfidence === 'needs_review') &&
+    typeof o.extractionReason === 'string' &&
+    typeof o.sourceQuote === 'string'
   )
 }
 
-export async function extractRulesFromGuideText(guideText: string): Promise<ParsedRule[]> {
+function isRuleConflict(x: unknown): x is RuleConflict {
+  if (!x || typeof x !== 'object') return false
+  const o = x as Record<string, unknown>
+  return (
+    typeof o.ruleIdA === 'string' &&
+    typeof o.ruleIdB === 'string' &&
+    typeof o.summary === 'string' &&
+    (o.confidence === 'high' || o.confidence === 'medium')
+  )
+}
+
+export async function extractRulesFromGuideText(guideText: string): Promise<GuideExtractionResult> {
   const trimmed = guideText.trim()
-  if (!trimmed) return []
+  if (!trimmed) return { rules: [], conflicts: [] }
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
@@ -80,24 +131,28 @@ export async function extractRulesFromGuideText(guideText: string): Promise<Pars
   const o = parsed as Record<string, unknown>
   const rulesRaw = o.rules
   if (!Array.isArray(rulesRaw)) throw new Error('Style guide parser JSON missing rules array')
+  const conflictsRaw = o.conflicts
+  const conflicts: RuleConflict[] = Array.isArray(conflictsRaw) ? conflictsRaw.filter(isRuleConflict) : []
 
-  const rules: ParsedRule[] = rulesRaw.filter(isParsedRule).map((r) => ({
+  const rules: ExtractedRule[] = rulesRaw.filter(isExtractedRule).map((r) => ({
     ...r,
     id: r.id?.trim() ? r.id : stableId(`${r.category}|${r.label}|${r.currentValue}`),
     category: r.category.trim(),
     label: r.label.trim(),
     currentValue: r.currentValue.trim(),
+    extractionReason: r.extractionReason.trim(),
+    sourceQuote: r.sourceQuote.trim(),
   }))
 
   // Ensure IDs are stable + unique
   const seen = new Set<string>()
-  const out: ParsedRule[] = []
+  const out: ExtractedRule[] = []
   for (const r of rules) {
     const id = r.id.trim() || stableId(`${r.category}|${r.label}|${r.currentValue}`)
     const finalId = seen.has(id) ? `${id}_${out.length + 1}` : id
     seen.add(finalId)
     out.push({ ...r, id: finalId })
   }
-  return out
+  return { rules: out, conflicts }
 }
 
