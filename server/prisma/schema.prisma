@@ -247,6 +247,24 @@ model UserMetrics {
 }
 
 // User feedback from Tex panel (post-job completion) or public survey link. No auth required to submit.
+// Async guideline formatting job (OpenAI + diff); polled from /api/guidelines/jobs/:id
+model FormattingJob {
+  id               String   @id @default(cuid())
+  userId           String
+  inputText        String   @db.Text
+  status           String   // queued | processing | completed | failed
+  outputText       String?  @db.Text
+  diffData         Json?
+  flaggedSegments  Json?
+  appliedRules     Json
+  presetId         String?
+  failureReason    String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId])
+}
+
 model Feedback {
   id              String   @id @default(cuid())
   toolId          String?  // e.g. video-to-transcript, video-to-subtitles (where stars were collected)

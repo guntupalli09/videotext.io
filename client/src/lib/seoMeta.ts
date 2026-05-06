@@ -25,14 +25,14 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       "VideoText privacy: We process your files and delete them. We don't keep your uploads, transcripts, or outputs. Your content stays yours. Read our full policy.",
   },
   '/faq': {
-    title: 'FAQ — Privacy, Billing, Tools | VideoText',
+    title: 'VideoText FAQ — privacy, billing, transcription, and client style guides',
     description:
-      "Frequently asked questions about VideoText: privacy and data (we don't store your files), billing, free tier, translation, and tools. Your files are processed and deleted.",
+      'Answers on privacy (files deleted after jobs), billing, uploads, subtitles, verbatim modes, transcription QA prep, and how Format → Client guidelines fits your workflow.',
   },
   '/guide': {
-    title: 'How to Use VideoText — Tool Guide & Features | VideoText',
+    title: 'How to use VideoText — tools, workflows, and client guidelines',
     description:
-      'Step-by-step guide to every VideoText tool: Video to Transcript, Video to Subtitles, Translate, Fix, Burn, Compress, Batch. What we expect, what you get, and plan limits. Authoritative and practical.',
+      'Tool-by-tool steps for Video → Transcript, Format → Client guidelines (marketplace presets + editable cards), subtitles, translate, fix, burn, compress, batch, voice, and YouTube URLs. Inputs, outputs, limits.',
   },
   '/terms': {
     title: 'Terms of Service | VideoText',
@@ -48,6 +48,11 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: 'Video to Transcript in Minutes (Free, Fast & Private Tool)',
     description:
       'Convert any video to transcript online in minutes. Upload or paste a link to get transcripts, subtitles (SRT/VTT), summary and chapters. No signup. Private.',
+  },
+  '/guideline-format': {
+    title: 'Format transcripts to match client transcription style guides',
+    description:
+      'Paste or upload a transcript, then work through editable Rev-, GoTranscript-, TranscribeMe-, and Scribie-style rule presets before QA. Optional client PDF/DOCX/TXT upload is stored for your workflow; automated parsing and auto-reformat from those files is not live yet—use presets and rule cards today.',
   },
   '/video-to-subtitles': {
     title: 'Subtitle Generator (SRT & VTT) — Auto Generate Subtitles Online',
@@ -80,9 +85,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans. Multi-language optional.',
   },
   '/blog': {
-    title: 'Blog — Engineering, Privacy & Product | VideoText',
+    title: 'VideoText blog — transcription, subtitles, and workflow guides',
     description:
-      'The VideoText blog: how the processing pipeline works, why we delete your files, batch subtitles for creators, and how we handle support.',
+      'Product updates, privacy notes, and practitioner guides—including how to prep transcripts against client style guides before QA.',
   },
   '/samples': {
     title: 'Transcript & Subtitle Output Samples | VideoText',
@@ -170,9 +175,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'VideoText changelog: new features, performance improvements, and bug fixes. Updated every release. See what has shipped.',
   },
   '/compare': {
-    title: 'VideoText vs Descript, Otter.ai & Trint — Full Comparison',
+    title: 'VideoText vs Descript, Otter.ai & Trint — speed, price, subtitles, privacy',
     description:
-      'Compare VideoText against Descript, Otter.ai, and Trint on speed, accuracy, pricing, and privacy. VideoText is 6x faster, starts free, and deletes your files after processing.',
+      'Side-by-side on video uploads, subtitle exports, turnaround, pricing, and storage—includes how freelancers use marketplace preset checklists (Format → Client guidelines) before QA.',
   },
   '/descript-alternative': {
     title: 'Best Free Descript Alternative for Transcription & Subtitles | VideoText',
@@ -427,6 +432,31 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: "SRT File Format Explained: Everything You Need to Know | VideoText",
     description: "Learn how the SRT file format works: timestamp syntax, character limits, common errors, and when to use SRT vs VTT vs ASS. With a real example.",
   },
+  '/blog/rev-style-guide-transcript-formatter': {
+    title: 'Rev Style Guide Transcript Formatter — Freelancer QA Workflow | VideoText',
+    description:
+      'Map AI transcripts onto Rev transcription style rules faster: verbatim modes, speaker labels, inaudible tags, editable checklist, then proof for payout.',
+  },
+  '/blog/how-to-earn-more-per-hour-as-a-transcriptionist': {
+    title: 'How to Earn More Per Hour as a Transcriptionist (AI + QA Stack) | VideoText',
+    description:
+      'Raise effective hourly transcription pay by cutting rework: AI first pass, preset style guides for GoTranscript/Rev clients, repeatable QA logs, faster invoicing.',
+  },
+  '/blog/clean-verbatim-vs-full-verbatim': {
+    title: 'Clean Verbatim vs Full Verbatim — Transcription Freelancer Guide | VideoText',
+    description:
+      'Clean verbatim removes filler vs full verbatim keeps disfluencies. Learn marketplace differences, payouts, tagging, when to escalate — with VideoText presets.',
+  },
+  '/blog/what-is-transcript-qa': {
+    title: 'What Is Transcript QA? Compliance Checklist for Agencies | VideoText',
+    description:
+      'Transcript QA defined: glossary, timestamps, readability, tagging, speaker labels. Separate QA from transcription; align rubrics inside VideoText guideline workspace.',
+  },
+  '/blog/freelance-transcription-style-guide-cheatsheet': {
+    title: 'Freelance Transcription Style Guide Cheatsheet (GoTranscript, Scribie) | VideoText',
+    description:
+      'One-page freelancer cheatsheet aligning GoTranscript, Scribie, and custom PDF client briefs to editable presets so QA matches invoice-ready deliverables.',
+  },
 }
 
 /** Static breadcrumb items (non-SEO-registry routes). */
@@ -470,6 +500,11 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/youtube-video-to-transcript': [{ name: 'Home', path: '/' }, { name: 'YouTube Video to Transcript', path: '/youtube-video-to-transcript' }],
   '/blog/best-transcription-software-2026': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Best Transcription Software 2026', path: '/blog/best-transcription-software-2026' }],
   '/blog/best-video-captioning-tools-2026': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Best Video Captioning Tools 2026', path: '/blog/best-video-captioning-tools-2026' }],
+  '/blog/rev-style-guide-transcript-formatter': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Rev Style Guide Transcript Formatter', path: '/blog/rev-style-guide-transcript-formatter' }],
+  '/blog/how-to-earn-more-per-hour-as-a-transcriptionist': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Earn More Per Hour (Transcriptionist)', path: '/blog/how-to-earn-more-per-hour-as-a-transcriptionist' }],
+  '/blog/clean-verbatim-vs-full-verbatim': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Clean Verbatim vs Full Verbatim', path: '/blog/clean-verbatim-vs-full-verbatim' }],
+  '/blog/what-is-transcript-qa': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'What Is Transcript QA', path: '/blog/what-is-transcript-qa' }],
+  '/blog/freelance-transcription-style-guide-cheatsheet': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Freelance Style Guide Cheatsheet', path: '/blog/freelance-transcription-style-guide-cheatsheet' }],
   '/blog': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }],
   '/tools': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }],
   '/tools/srt-to-vtt': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'SRT to VTT', path: '/tools/srt-to-vtt' }],
@@ -508,6 +543,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/blog/how-to-translate-subtitles': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'How to Translate Subtitles', path: '/blog/how-to-translate-subtitles' }],
   '/changelog': [{ name: 'Home', path: '/' }, { name: 'Changelog', path: '/changelog' }],
   '/video-to-transcript': [{ name: 'Home', path: '/' }, { name: 'Video to Transcript', path: '/video-to-transcript' }],
+  '/guideline-format': [{ name: 'Home', path: '/' }, { name: 'Format to client guidelines', path: '/guideline-format' }],
   '/video-to-subtitles': [{ name: 'Home', path: '/' }, { name: 'Video to Subtitles', path: '/video-to-subtitles' }],
   '/translate-subtitles': [{ name: 'Home', path: '/' }, { name: 'Translate Subtitles', path: '/translate-subtitles' }],
   '/fix-subtitles': [{ name: 'Home', path: '/' }, { name: 'Fix Subtitles', path: '/fix-subtitles' }],
@@ -547,6 +583,9 @@ const FAQ_SCHEMA_ITEMS = [
   { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 imports per month, resetting on the 1st. Single language, watermark on subtitle exports. Upgrade any time for more imports, AI features, and batch processing." },
   { q: 'Can I translate subtitles or transcripts?', a: "Yes. Use the Translate Subtitles tool for SRT/VTT files. For transcripts, use the \"Also translate to\" option before starting to get a full translation in 70+ languages." },
   { q: 'What is the maximum video duration?', a: "Free: 30 minutes per video. Basic: 45 minutes. Pro: 2 hours. Agency: 4 hours. To transcribe a longer video, trim or split it into segments before uploading." },
+  { q: 'How do I format a transcript for a client\'s style guide or Rev-type rules?', a: 'Use Format → Client guidelines (/guideline-format). Paste your raw transcript or jump from Video → Transcript with "Make this client-ready →". Pick presets such as Rev, GoTranscript, TranscribeMe, or Scribie, tweak the editable rule cards, or upload PDF/DOCX guidance.' },
+  { q: 'What does "clean verbatim vs full verbatim" mean for freelancers?', a: 'Clean verbatim removes filler words and disfluencies for readability; full verbatim keeps them. Marketplace briefs spell out which variant you owe—see /blog/clean-verbatim-vs-full-verbatim.' },
+  { q: 'What is transcript QA and how does VideoText help before I invoice?', a: 'Transcript QA is the checklist pass against names, glossary, punctuation, timestamps, and style compliance. Produce the text in Video → Transcript, then map platform rules inside /guideline-format so reviewers know what you matched before payout.' },
 ]
 
 /** Published dates for blog posts — used for BlogPosting JSON-LD and og:article meta. */
@@ -566,6 +605,11 @@ export const BLOG_POST_DATES: Record<string, { datePublished: string; dateModifi
   '/blog/batch-subtitles-for-creators':        { datePublished: '2026-02-20', dateModified: '2026-02-20' },
   '/blog/how-to-transcribe-podcast-episode':   { datePublished: '2026-03-17', dateModified: '2026-03-17' },
   '/blog/how-to-add-captions-youtube-video':   { datePublished: '2026-03-17', dateModified: '2026-03-17' },
+  '/blog/rev-style-guide-transcript-formatter': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
+  '/blog/how-to-earn-more-per-hour-as-a-transcriptionist': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
+  '/blog/clean-verbatim-vs-full-verbatim': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
+  '/blog/what-is-transcript-qa': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
+  '/blog/freelance-transcription-style-guide-cheatsheet': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
 }
 
 /** BlogPosting JSON-LD for individual blog post pages. Returns null if no date metadata found. */

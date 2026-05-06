@@ -38,6 +38,7 @@ const Guide = lazy(() => import('./pages/Guide'))
 const Terms = lazy(() => import('./pages/Terms'))
 const VoiceRecorder = lazy(() => import('./pages/VoiceRecorder'))
 const VideoToTranscript = lazy(() => import('./pages/VideoToTranscript'))
+const GuidelineFormat = lazy(() => import('./pages/GuidelineFormat'))
 const VideoToSubtitles = lazy(() => import('./pages/VideoToSubtitles'))
 const TranslateSubtitles = lazy(() => import('./pages/TranslateSubtitles'))
 const FixSubtitles = lazy(() => import('./pages/FixSubtitles'))
@@ -556,6 +557,7 @@ function App() {
             <Route path="/status" element={<Status />} />
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/s/:slug" element={<ShareTranscript />} />
+            <Route path="/guideline-format" element={<GuidelineFormat />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript
               seoH1="Video to Transcript in 3 Minutes (Free, Fast & Private)"
               seoIntro="Upload any video and get a clean transcript, subtitles (SRT/VTT), summary, and chapters — all in one click. No signup required. **2-hour video → transcript in ~3–5 minutes**."

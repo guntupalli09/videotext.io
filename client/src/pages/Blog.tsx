@@ -1,5 +1,6 @@
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { GENERATED_POSTS } from '../data/generatedPosts'
+import { FORMATTING_GUIDE_BLOG_POSTS } from '../data/formattingGuideBlogPosts'
 
 interface BlogPost {
   slug: string
@@ -12,6 +13,7 @@ interface BlogPost {
 }
 
 const POSTS: BlogPost[] = [
+  ...(FORMATTING_GUIDE_BLOG_POSTS as BlogPost[]),
   {
     slug: 'voice-to-text-free-in-browser',
     date: 'March 22, 2026',
@@ -1566,14 +1568,22 @@ function PostView({ post }: { post: BlogPost }) {
         {post.content}
       </div>
 
-      <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Sign up for free — 3 imports per month, no credit card required.</p>
-        <Link
-          to="/video-to-transcript"
-          className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors"
-        >
-          Try the tool →
-        </Link>
+      <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 space-y-4">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Free accounts include 3 imports per month; paid plans unlock longer files, batch, and guideline handoff from transcript results.</p>
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+          <Link
+            to="/video-to-transcript"
+            className="inline-flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
+          >
+            Open Video → Transcript
+          </Link>
+          <Link
+            to="/guideline-format"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-300 dark:border-violet-600 bg-white dark:bg-gray-900 text-violet-700 dark:text-violet-300 text-sm font-semibold px-5 py-2.5 hover:bg-violet-50 dark:hover:bg-violet-950/40 transition-colors"
+          >
+            Format your transcript to a client style guide →
+          </Link>
+        </div>
       </div>
     </div>
   )
@@ -1598,11 +1608,15 @@ export default function Blog() {
         ) : (
           <>
             <div className="mb-10">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Blog</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">VideoText blog — transcription, subtitles, and workflow guides</h1>
               <p className="text-gray-600 dark:text-gray-400">
-                Engineering, product, and privacy writing from the VideoText team.{' '}
+                Engineering and product notes plus practical guides. Need client-style prep?{' '}
+                <Link to="/guideline-format" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-semibold">
+                  Format your transcript to a client style guide →
+                </Link>
+                {' · '}
                 <Link to="/changelog" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-medium">
-                  See the changelog →
+                  Changelog →
                 </Link>
               </p>
             </div>

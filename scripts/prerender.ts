@@ -85,10 +85,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/faq',
-    title: `FAQ — Privacy, Billing, Tools | ${SITE_NAME}`,
+    title: `VideoText FAQ — privacy, billing, transcription, and client style guides | ${SITE_NAME}`,
     description:
-      "Frequently asked questions about VideoText: privacy, data storage, billing, free tier, translation, and tools. Your files are processed and deleted immediately.",
-    h1: 'Frequently Asked Questions',
+      'Answers on privacy (files deleted after jobs), billing, uploads, subtitles, verbatim modes, QA prep, and how Format → Client guidelines fits freelancer workflows.',
+    h1: 'VideoText FAQ — privacy, billing, transcription, and client style guides',
     faq: [
       { q: 'Do you store my videos or files?', a: "No. We process your files and then delete them. We don't keep your uploads, transcripts, or generated outputs. Your content is never stored on our servers." },
       { q: 'Is my content used for AI training?', a: "No. Your content is used only to deliver the service you requested. We do not use it for training AI models." },
@@ -100,10 +100,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/guide',
-    title: `How to Use VideoText — Tool Guide & Features | ${SITE_NAME}`,
+    title: `How to use VideoText — tools, workflows, and client guidelines | ${SITE_NAME}`,
     description:
-      'Step-by-step guide to every VideoText tool: Video to Transcript, Video to Subtitles, Translate, Fix, Burn, Compress, Batch. What we expect, what you get, and plan limits.',
-    h1: 'How to Use VideoText',
+      'Tool-by-tool steps for Video → Transcript, Format → Client guidelines (marketplace presets + editable cards), subtitles, translate, fix, burn, compress, batch, voice, YouTube URLs. Inputs, outputs, limits.',
+    h1: 'How to use VideoText — tools, workflows, and client guidelines',
     keywords: ['how to use VideoText', 'VideoText tutorial', 'video transcription guide', 'subtitle generation guide', 'how to transcribe video', 'how to generate subtitles', 'step-by-step tutorial', 'feature guide', 'all tools explained'],
   },
   {
@@ -115,10 +115,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/blog',
-    title: `Blog — Engineering, Privacy & Product | ${SITE_NAME}`,
+    title: `VideoText blog — transcription, subtitles, and workflow guides | ${SITE_NAME}`,
     description:
-      'The VideoText blog: how the processing pipeline works, why we delete your files, batch subtitles for creators, transcription guides, and product updates.',
-    h1: 'Blog',
+      'Product updates, privacy notes, practitioner guides, and links to tools like Format → Client guidelines for marketplace-style QA prep.',
+    h1: 'VideoText blog — transcription, subtitles, and workflow guides',
   },
   {
     path: '/samples',
@@ -168,6 +168,14 @@ const STATIC_META: RouteMeta[] = [
       { stat: 'SRT + VTT', desc: 'Subtitle outputs included' },
       { stat: 'Deleted files', desc: 'Privacy-first processing' },
     ],
+  },
+  {
+    path: '/guideline-format',
+    title: `Format transcripts to match client transcription style guides | ${SITE_NAME}`,
+    description:
+      'Paste or upload a transcript, then work through editable Rev-, GoTranscript-, TranscribeMe-, and Scribie-style rule presets before QA. Optional client PDF/DOCX/TXT upload is stored for your workflow; automated parsing and auto-reformat from those files is not live yet—use presets and rule cards today.',
+    h1: 'Format transcripts to match client transcription style guides',
+    breadcrumbLabel: 'Format to client guidelines',
   },
   {
     path: '/video-to-subtitles',
@@ -322,10 +330,10 @@ const STATIC_META: RouteMeta[] = [
   // ── Comparison & alternative pages ──────────────────────────────────────────
   {
     path: '/compare',
-    title: `VideoText vs Descript, Otter.ai & Trint — Full Comparison | ${SITE_NAME}`,
+    title: `VideoText vs Descript, Otter.ai & Trint — speed, price, subtitles, privacy | ${SITE_NAME}`,
     description:
-      'Compare VideoText against Descript, Otter.ai, and Trint on speed, accuracy, pricing, and privacy. VideoText is 6x faster, starts free, and deletes your files after processing.',
-    h1: 'Compare VideoText',
+      'Side-by-side on video behaviour, subtitle exports, turnaround, pricing, storage—plus freelancer preset checklists via Format → Client guidelines.',
+    h1: 'VideoText vs Descript, Otter.ai & Trint — speed, price, subtitles, privacy',
     breadcrumbLabel: 'Compare',
     valueProposition: 'Switch from Otter, Descript, or Trint and save 80% on costs while cutting processing time in half. Same AI accuracy. Better privacy. No vendor lock-in.',
     keywords: ['transcription tools comparison', 'Otter alternative', 'Descript alternative', 'best transcription software', 'affordable transcription', 'fast transcription'],
@@ -588,6 +596,41 @@ const STATIC_META: RouteMeta[] = [
     description:
       'How to add captions to a YouTube video the right way: upload an SRT file instead of relying on auto-captions. Better accuracy, better SEO.',
     breadcrumbLabel: 'Add Captions to YouTube Video',
+  },
+  {
+    path: '/blog/rev-style-guide-transcript-formatter',
+    title: `Rev Style Guide Transcript Formatter — Freelancer QA Workflow | ${SITE_NAME}`,
+    description:
+      'Map AI transcripts onto Rev transcription style rules faster: verbatim modes, speaker labels, inaudible tags, editable checklist, then proof for payout.',
+    breadcrumbLabel: 'Rev Style Guide Transcript Formatter',
+  },
+  {
+    path: '/blog/how-to-earn-more-per-hour-as-a-transcriptionist',
+    title: `How to Earn More Per Hour as a Transcriptionist (AI + QA Stack) | ${SITE_NAME}`,
+    description:
+      'Raise effective hourly transcription pay by cutting rework: AI first pass, preset style guides for GoTranscript/Rev clients, repeatable QA logs, faster invoicing.',
+    breadcrumbLabel: 'Earn More Per Hour (Transcriptionist)',
+  },
+  {
+    path: '/blog/clean-verbatim-vs-full-verbatim',
+    title: `Clean Verbatim vs Full Verbatim — Transcription Freelancer Guide | ${SITE_NAME}`,
+    description:
+      'Clean verbatim removes filler vs full verbatim keeps disfluencies. Learn marketplace differences, payouts, tagging, when to escalate — with VideoText presets.',
+    breadcrumbLabel: 'Clean Verbatim vs Full Verbatim',
+  },
+  {
+    path: '/blog/what-is-transcript-qa',
+    title: `What Is Transcript QA? Compliance Checklist for Agencies | ${SITE_NAME}`,
+    description:
+      'Transcript QA defined: glossary, timestamps, readability, tagging, speaker labels. Separate QA from transcription; align rubrics inside VideoText guideline workspace.',
+    breadcrumbLabel: 'What Is Transcript QA',
+  },
+  {
+    path: '/blog/freelance-transcription-style-guide-cheatsheet',
+    title: `Freelance Transcription Style Guide Cheatsheet (GoTranscript, Scribie) | ${SITE_NAME}`,
+    description:
+      'One-page freelancer cheatsheet aligning GoTranscript, Scribie, and custom PDF client briefs to editable presets so QA matches invoice-ready deliverables.',
+    breadcrumbLabel: 'Freelance Style Guide Cheatsheet',
   },
   // ── Free client-side tools ───────────────────────────────────────────────────
   {

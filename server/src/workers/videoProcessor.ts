@@ -85,6 +85,7 @@ import {
 } from '../services/youtube'
 import { resetProxyPoolState } from '../utils/youtubeProxyPool'
 import { v4 as uuidv4 } from 'uuid'
+import { startGuidelineWorker } from './guidelineProcessor'
 
 /**
  * Fires 'first_paid_job_completed' analytics event exactly once per user.
@@ -2594,6 +2595,7 @@ export function startWorker() {
 if (require.main === module) {
   initSentry()
   startWorker()
+  startGuidelineWorker()
   workerLog.info({
     msg: 'Worker process started',
     normalConcurrency: NORMAL_CONCURRENCY,

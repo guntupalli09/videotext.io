@@ -6,6 +6,7 @@ import { trackEvent } from '../lib/analytics'
 import type { BillingPlan } from '../lib/billing'
 import { getCurrentUsage } from '../lib/api'
 import { logout } from '../lib/auth'
+import { Link } from 'react-router-dom'
 
 
 function Check() {
@@ -357,6 +358,13 @@ export default function Pricing() {
             ))}
           </div>
         </div>
+
+        <p className="mt-10 text-center text-sm text-gray-600 dark:text-gray-300 max-w-xl mx-auto leading-relaxed">
+          Transcriptionists matching Rev-, GoTranscript-, or similar PDFs can{' '}
+          <Link to="/guideline-format" className="font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300">
+            format your transcript to a client style guide →
+          </Link>
+        </p>
 
         {/* Trust signals */}
         <div className="mt-10 flex flex-wrap justify-center gap-6 text-sm text-gray-400 dark:text-gray-500">

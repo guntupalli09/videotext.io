@@ -11,12 +11,14 @@ import {
   CheckCircle,
   ArrowRight,
   BookOpen,
+  ClipboardCheck,
 } from 'lucide-react'
 
 const TOOL_ICONS = {
   'Voice → Text': Mic,
   'YouTube → Transcript': FileText,
   'Video → Transcript': FileText,
+  'Format → Client guidelines': ClipboardCheck,
   'Video → Subtitles': MessageSquare,
   'Translate Subtitles': Languages,
   'Fix Subtitles': Wrench,
@@ -42,6 +44,7 @@ const TOOL_SLUGS: Record<ToolKey, string> = {
   'Voice → Text': 'voice-recorder',
   'YouTube → Transcript': 'youtube-transcript',
   'Video → Transcript': 'video-to-transcript',
+  'Format → Client guidelines': 'guideline-format',
   'Video → Subtitles': 'video-to-subtitles',
   'Translate Subtitles': 'translate-subtitles',
   'Fix Subtitles': 'fix-subtitles',
@@ -138,6 +141,30 @@ const TOOL_GUIDES: ToolGuide[] = [
       'Translate to 70+ languages: get a full translation alongside the original — Pro only.',
       'Export as TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.',
       'Shareable read-only links (Pro): send a transcript URL — viewers do not need to log in.',
+    ],
+  },
+  {
+    key: 'Format → Client guidelines',
+    path: '/guideline-format',
+    title: 'Format → Client guidelines',
+    shortDesc:
+      'Prep transcript text against editable Rev-, GoTranscript-, TranscribeMe-, and Scribie-style rule presets. Attach a client PDF/DOCX/TXT for your records; parsing those files into rules ships separately.',
+    howTo: [
+      'Finish a transcript in Video → Transcript, then click "Make this client-ready →" in Exports — your text loads here automatically — or open this tool and paste or upload .txt.',
+      'Choose a preset from the dropdown (Rev, GoTranscript, TranscribeMe, Scribie), or pick Custom and drop a client PDF, DOCX, or TXT.',
+      'Edit any rule summary in-place. Use Reset on a rule or Reset all when you want defaults back.',
+      'When your transcript text and guideline (preset plus rules or uploaded file) are ready, tap Format Transcript → to confirm receipt.',
+    ],
+    expected: [
+      { label: 'Best for', detail: 'Freelancers handing off to agencies, QA checklists against platform rules, and teams with branded style sheets.' },
+      { label: 'Inputs', detail: 'Plain transcript text; optional .txt paste or upload; presets or custom guide file.' },
+      { label: 'Workflow', detail: 'Pairs with Video → Transcript exports; no retyping long jobs into a blank doc.' },
+    ],
+    features: [
+      'One-click handoff from Video → Transcript with session pre-fill.',
+      'Four platform presets tuned to verbatim, tags, speaker label, and number conventions.',
+      'Per-rule edits with Edited badges so reviewers see what changed from default.',
+      'Custom client guide slot for PDF/DOCX/TXT (server parsing rolls out in a later release).',
     ],
   },
   {
@@ -289,9 +316,9 @@ export default function Guide() {
         <div className="flex items-center gap-3 mb-4">
           <BookOpen className="w-9 h-9 text-violet-600 shrink-0" strokeWidth={1.5} aria-hidden />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">How to use VideoText</h1>
+            <h1 className="text-3xl font-bold text-gray-900">How to use VideoText — tools, workflows, and client guidelines</h1>
             <p className="text-gray-600 mt-1">
-              A practical guide to each tool: how to use it, what we expect, and what you get.
+              A practical guide to each tool: inputs, outputs, limits, plus how freelancers prep transcripts against marketplace rules before QA.
             </p>
           </div>
         </div>
@@ -313,6 +340,7 @@ export default function Guide() {
             { who: 'Social media creators', want: 'Subtitles burned in for silent autoplay. Translate to reach global audiences.', path: '#burn-subtitles' },
             { who: 'Teams & agencies', want: 'Batch process 20–100 videos in one go, download ZIP with SRT per video', path: '#batch-process' },
             { who: 'Meeting notes', want: 'Transcribe Zoom/Teams MP4, speaker-labelled notes + AI action items', path: '#video-to-transcript' },
+            { who: 'Freelance transcriptionists', want: 'Match Rev / GoTranscript / client PDF rules before invoice — presets + cheatsheet-ready exports', path: '#guideline-format' },
             { who: 'Educators', want: 'Auto-captions + timing fix for accessibility. Translate to 70+ languages for global reach.', path: '#fix-subtitles' },
           ].map(({ who, want, path }) => (
             <a key={who} href={path} className="block bg-violet-50/50 border border-violet-100 rounded-lg p-3 hover:bg-violet-50 transition-colors">
@@ -349,6 +377,14 @@ export default function Guide() {
                 <Link to="/burn-subtitles" className="text-violet-600 hover:text-violet-700 font-medium">Burn</Link>
                 <span className="text-gray-400 mx-1">→</span>
                 <Link to="/compress-video" className="text-violet-600 hover:text-violet-700 font-medium">Compress</Link>
+              </p>
+            </div>
+            <div className="rounded-lg bg-white/80 border border-violet-100/80 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 mb-1.5">Client-ready transcripts</p>
+              <p className="text-sm text-gray-700">
+                <Link to="/video-to-transcript" className="text-violet-600 hover:text-violet-700 font-medium">Transcript</Link>
+                <span className="text-gray-400 mx-1">→</span>
+                <Link to="/guideline-format" className="text-violet-600 hover:text-violet-700 font-medium">Guideline presets</Link>
               </p>
             </div>
             <div className="rounded-lg bg-white/80 border border-violet-100/80 p-3">
@@ -564,11 +600,12 @@ export default function Guide() {
         </section>
 
         {/* Cross-links to related pages */}
-        <section className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <section className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { to: '/compare', label: 'Compare vs Descript, Otter, Trint', desc: 'See how VideoText stacks up on speed, price, and privacy.' },
-            { to: '/blog', label: 'Blog & guides', desc: 'How to transcribe Zoom, SRT vs VTT, batch subtitles, and more.' },
-            { to: '/faq', label: 'FAQ', desc: 'Answers about privacy, billing, accuracy, and supported formats.' },
+            { to: '/guideline-format', label: 'Format your transcript to a client style guide →', desc: 'Rev-, GoTranscript-, TranscribeMe-, and Scribie-style presets plus editable rule cards.' },
+            { to: '/compare', label: 'Compare vs Descript, Otter, Trint', desc: 'Speed, subtitle exports, privacy, and where guideline presets fit.' },
+            { to: '/blog', label: 'Blog & guides', desc: 'Zoom transcription, SRT vs VTT, batch subtitles, verbatim QA.' },
+            { to: '/faq', label: 'FAQ', desc: 'Privacy, billing, accuracy, uploads, transcription vs subtitles.' },
           ].map(({ to, label, desc }) => (
             <Link key={to} to={to} className="block bg-white border border-gray-200 rounded-xl p-4 hover:border-violet-300 hover:shadow-sm transition-all">
               <span className="text-sm font-semibold text-violet-600">{label} →</span>

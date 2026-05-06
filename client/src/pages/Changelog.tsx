@@ -191,9 +191,13 @@ export default function Changelog() {
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Changelog</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            What's been shipped. Updated every time something meaningful changes.{' '}
+            What’s been shipped. Updated every time something meaningful changes.{' '}
             <Link to="/blog" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-medium">
               Read the blog →
+            </Link>
+            {' · '}
+            <Link to="/guideline-format" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-semibold">
+              Format your transcript to a client style guide →
             </Link>
           </p>
         </div>

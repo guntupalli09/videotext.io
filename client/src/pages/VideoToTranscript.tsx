@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { FileText, FileCode, Download, Lock, Search, X, Layers, Sparkles, FolderArchive, AlertCircle, Loader2, ChevronRight, Gem, Upload, CheckCircle2, Languages } from 'lucide-react'
 import FailedState from '../components/FailedState'
+import { MakeClientReadyTranscriptButton } from '../components/SuccessState'
 import SamplesModule from '../components/SamplesModule'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
@@ -2214,6 +2215,26 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   // Segments with speaker labels resolved to display names — used by SRT/VTT generators
   const resolvedSegmentsForExport = segmentsForExport ? withResolvedSpeakers(segmentsForExport, speakerNameMap) : null
 
+  const plainTranscriptForClientReady = useMemo(() => {
+    const segs =
+      transcriptView === 'translated' && translatedSegments?.length ? translatedSegments : segmentsForExport
+    if (segs?.length) {
+      return segs
+        .map((s) => (verbatimMode === 'clean' ? applyCleanVerbatim(s.text) : s.text))
+        .join('\n\n')
+        .trim()
+    }
+    return (displayTranscript || fullTranscript || transcriptPreview || '').trim()
+  }, [
+    transcriptView,
+    translatedSegments,
+    segmentsForExport,
+    verbatimMode,
+    displayTranscript,
+    fullTranscript,
+    transcriptPreview,
+  ])
+
   const handleExportSrt = () => {
     trackAppEvent('export_clicked', { toolId: 'video-to-transcript', format: 'srt' })
     if (!resolvedSegmentsForExport?.length) {
@@ -4008,6 +4029,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 </div>
                               )
                             })()}
+                            {plainTranscriptForClientReady ? (
+                              <MakeClientReadyTranscriptButton
+                                plainTranscript={plainTranscriptForClientReady}
+                                className="w-full"
+                              />
+                            ) : null}
                           </div>
                         )}
                       </div>
