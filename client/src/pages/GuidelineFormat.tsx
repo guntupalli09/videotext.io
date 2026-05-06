@@ -538,6 +538,28 @@ export default function GuidelineFormat() {
     return blocks.length ? blocks : [t]
   }, [originalTranscriptForJob])
 
+  const findSegmentForText = useCallback(
+    (needle: string): number | null => {
+      const n = (needle || '').trim()
+      if (!n) return null
+      const nLower = n.toLowerCase()
+      for (let i = 0; i < originalSegments.length; i++) {
+        const seg = originalSegments[i]
+        if (seg.toLowerCase().includes(nLower)) return i + 1
+      }
+      // Fallback: try first ~80 chars to handle model-added punctuation changes
+      const short = n.slice(0, 80).toLowerCase()
+      if (short.length >= 12) {
+        for (let i = 0; i < originalSegments.length; i++) {
+          const seg = originalSegments[i]
+          if (seg.toLowerCase().includes(short)) return i + 1
+        }
+      }
+      return null
+    },
+    [originalSegments]
+  )
+
   return (
     <>
       <ToolLayout
@@ -1014,16 +1036,36 @@ export default function GuidelineFormat() {
                               : c === 'low'
                                 ? 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200'
                                 : 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100'
+                          const segIndex = findSegmentForText(seg.originalText)
+                          const canJump = typeof segIndex === 'number' && segIndex > 0
                           return (
                             <li
                               key={i}
                               className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/50 p-4 space-y-2 text-sm"
                             >
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${badgeClass}`}>
-                                  {seg.confidence || 'medium'}
-                                </span>
-                                <span className="text-xs font-medium text-violet-700 dark:text-violet-300">{seg.ruleApplied}</span>
+                              <div className="flex flex-wrap items-center justify-between gap-2">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span
+                                    className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${badgeClass}`}
+                                  >
+                                    {seg.confidence || 'medium'}
+                                  </span>
+                                  <span className="text-xs font-medium text-violet-700 dark:text-violet-300">{seg.ruleApplied}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  disabled={!canJump}
+                                  onClick={() => {
+                                    if (!canJump) return
+                                    setFocusSegment(segIndex as number)
+                                    const el = document.getElementById(`seg-${segIndex}`)
+                                    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                                  }}
+                                  className={`text-xs font-semibold ${canJump ? 'text-violet-700 dark:text-violet-300 hover:underline' : 'text-gray-400 dark:text-gray-500'}`}
+                                  title={canJump ? `Jump to segment ${segIndex}` : 'Could not locate this exact text in the original transcript'}
+                                >
+                                  {canJump ? `Jump to segment ${segIndex}` : 'Jump unavailable'}
+                                </button>
                               </div>
                               <p className="text-xs text-gray-500 dark:text-gray-400">
                                 <span className="font-semibold text-gray-700 dark:text-gray-300">Original: </span>
