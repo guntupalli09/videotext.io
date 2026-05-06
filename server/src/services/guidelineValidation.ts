@@ -17,6 +17,16 @@ export interface ValidationReport {
     likelyCompliant: { passed: number; total: number }
     needsReview: { passed: number; total: number }
     confidencePct: number
+    qaReductionPct: number
+    qaReductionBasis: {
+      inputTokens: number
+      outputTokens: number
+      fillerTokenReduction: number
+      repetitionRateDelta: number
+      verifiedChecksPassed: number
+      verifiedChecksTotal: number
+      flaggedCount: number
+    }
   }
   checks: ValidationCheck[]
 }
@@ -80,12 +90,25 @@ const STOPWORDS = new Set(
   ]
 )
 
+const FILLER_TOKENS = new Set([
+  'um','uh','erm','hmm','mm','ah','oh','like','you','know','i','mean','basically','actually','literally','honestly',
+])
+
 function tokenizeWords(text: string): string[] {
   return text
     .toLowerCase()
     .replace(/[^\p{L}\p{N}'-]+/gu, ' ')
     .split(/\s+/)
     .filter(Boolean)
+}
+
+function countFillerTokens(text: string): number {
+  const tokens = tokenizeWords(text)
+  let count = 0
+  for (const t of tokens) {
+    if (FILLER_TOKENS.has(t)) count++
+  }
+  return count
 }
 
 function semanticDensityMetrics(text: string): { tokenCount: number; uniqueRatio: number; nonStopwordRatio: number; repetitionRate: number } {
@@ -241,6 +264,10 @@ export function buildValidationReport(params: {
     }
   }
 
+  const verifiedSummary = summarize('verified')
+  const likelySummary = summarize('likely_compliant')
+  const reviewSummary = summarize('needs_review')
+
   // Confidence score: simple, monotonic, explainable.
   // - Failed verified checks are most costly
   // - Likely compliant failures are moderate
@@ -257,12 +284,41 @@ export function buildValidationReport(params: {
   confidencePct -= unresolvedReview * 10
   confidencePct = Math.max(0, Math.min(100, Math.round(confidencePct)))
 
+  // "Time saved" estimate (persuasive, but must stay clearly an estimate).
+  // Heuristic inputs:
+  // - filler token reduction (proxy for cleanup effort saved)
+  // - repetition drop (proxy for stutter/false-start cleanup)
+  // - verified coverage (proxy for confidence in auto-formatting)
+  // - flagged count (reduces saved time because QA must review)
+  const inputFillers = countFillerTokens(params.inputText)
+  const outputFillers = countFillerTokens(params.outputText)
+  const fillerTokenReduction = Math.max(0, inputFillers - outputFillers)
+  const repetitionRateDelta = Math.round((inM.repetitionRate - outM.repetitionRate) * 1000) / 1000
+
+  // Base range: 35–80%. Start from 45 and adjust.
+  let qaReductionPct = 45
+  qaReductionPct += Math.min(20, Math.round((fillerTokenReduction / Math.max(1, inM.tokenCount)) * 400)) // up to +20
+  qaReductionPct += Math.min(10, Math.round(Math.max(0, repetitionRateDelta) * 200)) // up to +10
+  qaReductionPct += Math.round((verifiedSummary.passed / Math.max(1, verifiedSummary.total)) * 15) // up to +15
+  qaReductionPct -= Math.min(20, params.flaggedCount * 3) // each flagged item reduces
+  qaReductionPct = Math.max(10, Math.min(90, qaReductionPct))
+
   return {
     summary: {
-      verified: summarize('verified'),
-      likelyCompliant: summarize('likely_compliant'),
-      needsReview: summarize('needs_review'),
+      verified: verifiedSummary,
+      likelyCompliant: likelySummary,
+      needsReview: reviewSummary,
       confidencePct,
+      qaReductionPct,
+      qaReductionBasis: {
+        inputTokens: inM.tokenCount,
+        outputTokens: outM.tokenCount,
+        fillerTokenReduction,
+        repetitionRateDelta,
+        verifiedChecksPassed: verifiedSummary.passed,
+        verifiedChecksTotal: verifiedSummary.total,
+        flaggedCount: params.flaggedCount,
+      },
     },
     checks,
   }

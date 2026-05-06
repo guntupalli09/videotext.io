@@ -57,6 +57,16 @@ type JobStatusResponse = {
       likelyCompliant?: { passed: number; total: number }
       needsReview?: { passed: number; total: number }
       confidencePct?: number
+      qaReductionPct?: number
+      qaReductionBasis?: {
+        inputTokens: number
+        outputTokens: number
+        fillerTokenReduction: number
+        repetitionRateDelta: number
+        verifiedChecksPassed: number
+        verifiedChecksTotal: number
+        flaggedCount: number
+      }
     }
     checks?: Array<{
       id: string
@@ -878,6 +888,20 @@ export default function GuidelineFormat() {
                           </span>
                         )}
                       </div>
+                      {typeof jobStatus.validationReport.summary.qaReductionPct === 'number' && (
+                        <div className="rounded-lg border border-violet-200/60 dark:border-violet-900/40 bg-violet-50/60 dark:bg-violet-950/20 px-3 py-2">
+                          <p className="text-sm text-gray-800 dark:text-gray-100">
+                            Estimated QA reduction:{' '}
+                            <span className="font-semibold text-violet-700 dark:text-violet-300">
+                              ~{jobStatus.validationReport.summary.qaReductionPct}%
+                            </span>{' '}
+                            fewer manual formatting edits
+                          </p>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                            Based on automated cleanup signals and verification coverage — an estimate, not a guarantee.
+                          </p>
+                        </div>
+                      )}
                       <div className="flex flex-wrap gap-4 text-sm text-gray-700 dark:text-gray-300">
                         <span>
                           ✓ <strong className="text-gray-900 dark:text-white">{jobStatus.validationReport.summary.verified?.passed ?? 0}</strong>{' '}
