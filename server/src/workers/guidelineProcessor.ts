@@ -8,6 +8,7 @@ import { computeTranscriptDiff } from '../services/diffEngine'
 import { getLogger } from '../lib/logger'
 import { updateJobCompleted, updateJobFailed, updateJobStarted } from '../lib/jobAnalytics'
 import { pushLogEntry } from '../lib/logRing'
+import { buildValidationReport } from '../services/guidelineValidation'
 // Note: server has numeric-time subtitle utilities, but this formatting job runs on pasted text.
 // We preserve original timestamp strings and serialize captions on the client.
 
@@ -37,6 +38,33 @@ export const guidelineQueue = new Queue<GuidelineJobPayload>('guideline-formatti
 
 let guidelineWorkerStarted = false
 
+function formatSrtTime(t: string): string {
+  // Normalize HH:MM:SS.mmm or HH:MM:SS,mmm → SRT uses comma
+  return t.replace('.', ',')
+}
+function formatVttTime(t: string): string {
+  return t.replace(',', '.')
+}
+function cuesToSrt(cues: CaptionCue[]): string {
+  const blocks: string[] = []
+  cues.forEach((c, i) => {
+    blocks.push(String(i + 1))
+    blocks.push(`${formatSrtTime(c.startTime)} --> ${formatSrtTime(c.endTime)}`)
+    blocks.push(c.text || '')
+    blocks.push('')
+  })
+  return blocks.join('\n')
+}
+function cuesToVtt(cues: CaptionCue[]): string {
+  const lines: string[] = ['WEBVTT', '']
+  cues.forEach((c) => {
+    lines.push(`${formatVttTime(c.startTime)} --> ${formatVttTime(c.endTime)}`)
+    lines.push(c.text || '')
+    lines.push('')
+  })
+  return lines.join('\n')
+}
+
 async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<void> {
   const { formattingJobId, transcriptText, rules, inputFormat, cues } = job.data
   const started = Date.now()
@@ -59,16 +87,23 @@ async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<
       data: { status: 'processing' },
     })
 
+    // Stage: formatting
+    await prisma.formattingJob.update({
+      where: { id: formattingJobId },
+      data: { stage: 'formatting' },
+    })
+
     let outputText: string
     let flaggedSegments: unknown[]
     let appliedRules: string[]
+    let captionMetaPreserved: boolean | undefined = undefined
 
     if (inputFormat && cues && cues.length > 0) {
       const result = await enforceGuidelineCaptions(inputFormat, cues, rules)
-      // We preserve timing metadata and serialize SRT/VTT on the client. Store plain cue text so UI can render outputText.
-      outputText = result.cues.map((c) => c.text).join('\n\n')
+      outputText = inputFormat === 'vtt' ? cuesToVtt(result.cues) : cuesToSrt(result.cues)
       flaggedSegments = result.flaggedSegments
       appliedRules = result.appliedRules
+      captionMetaPreserved = true
     } else {
       const result = await enforceGuideline(transcriptText, rules)
       outputText = result.outputText
@@ -78,14 +113,30 @@ async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<
 
     const diffSegments = computeTranscriptDiff(transcriptText, outputText)
 
+    // Stage: validating (build verification report)
+    await prisma.formattingJob.update({
+      where: { id: formattingJobId },
+      data: { stage: 'validating' },
+    })
+
+    const report = buildValidationReport({
+      inputText: transcriptText,
+      outputText,
+      flaggedCount: Array.isArray(flaggedSegments) ? flaggedSegments.length : 0,
+      isCaptionMode: Boolean(inputFormat && cues && cues.length > 0),
+      captionMetaPreserved,
+    })
+
     await prisma.formattingJob.update({
       where: { id: formattingJobId },
       data: {
         status: 'completed',
+        stage: 'completed',
         outputText,
         diffData: diffSegments as unknown as Prisma.InputJsonValue,
         flaggedSegments: flaggedSegments as unknown as Prisma.InputJsonValue,
         appliedRules: appliedRules as unknown as Prisma.InputJsonValue,
+        validationReport: report as unknown as Prisma.InputJsonValue,
       },
     })
 
@@ -105,6 +156,7 @@ async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<
         where: { id: formattingJobId },
         data: {
           status: 'failed',
+          stage: 'failed',
           failureReason: msg.slice(0, 4000),
         },
       })

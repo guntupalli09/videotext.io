@@ -253,10 +253,12 @@ model FormattingJob {
   userId           String
   inputText        String   @db.Text
   status           String   // queued | processing | completed | failed
+  stage            String?  // queued | formatting | validating | completed | failed
   outputText       String?  @db.Text
   diffData         Json?
   flaggedSegments  Json?
   appliedRules     Json
+  validationReport Json?
   presetId         String?
   failureReason    String?
   createdAt        DateTime @default(now())

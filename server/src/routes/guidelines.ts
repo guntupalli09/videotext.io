@@ -88,6 +88,7 @@ router.post('/format', async (req: Request, res: Response) => {
         userId,
         inputText: trimmed,
         status: 'queued',
+        stage: 'queued',
         appliedRules: rules as unknown as Prisma.InputJsonValue,
         presetId,
       },
@@ -164,10 +165,12 @@ router.get('/jobs/:jobId', async (req: Request, res: Response) => {
 
     return res.status(200).json({
       status: row.status,
+      stage: row.stage,
       outputText: row.outputText,
       diffData: row.diffData,
       flaggedSegments: row.flaggedSegments,
       appliedRules: row.appliedRules,
+      validationReport: row.validationReport,
       createdAt: row.createdAt.toISOString(),
     })
   } catch (e) {

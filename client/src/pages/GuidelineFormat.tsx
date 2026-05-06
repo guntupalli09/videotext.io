@@ -46,10 +46,26 @@ type FlaggedSegment = {
 
 type JobStatusResponse = {
   status: string
+  stage?: string | null
   outputText: string | null
   diffData: DiffSegment[] | null
   flaggedSegments: FlaggedSegment[] | null
   appliedRules: string[] | null
+  validationReport?: {
+    summary?: {
+      verified?: { passed: number; total: number }
+      likelyCompliant?: { passed: number; total: number }
+      needsReview?: { passed: number; total: number }
+    }
+    checks?: Array<{
+      id: string
+      label: string
+      bucket: 'verified' | 'likely_compliant' | 'needs_review'
+      passed: boolean
+      details?: string
+      metrics?: Record<string, number>
+    }>
+  } | null
   createdAt: string
 }
 
@@ -497,7 +513,18 @@ export default function GuidelineFormat() {
   const appliedRulesList = Array.isArray(jobStatus?.appliedRules) ? jobStatus!.appliedRules! : []
   const diffSegments = Array.isArray(jobStatus?.diffData) ? jobStatus!.diffData! : []
   const showLoadingMessage = isSubmitting && !jobStatus
-  const showProcessingMessage = isSubmitting && jobStatus && (jobStatus.status === 'queued' || jobStatus.status === 'processing')
+  const showProcessingMessage =
+    isSubmitting && jobStatus && (jobStatus.status === 'queued' || jobStatus.status === 'processing')
+  const stageLabel =
+    jobStatus?.stage === 'formatting'
+      ? 'Formatting…'
+      : jobStatus?.stage === 'validating'
+        ? 'Verifying…'
+        : jobStatus?.status === 'queued'
+          ? 'Queued…'
+          : jobStatus?.status === 'processing'
+            ? 'Processing…'
+            : null
 
   return (
     <>
@@ -749,7 +776,36 @@ export default function GuidelineFormat() {
                 </p>
               )}
               {showProcessingMessage && (
-                <p className="text-sm text-gray-800 dark:text-gray-100 leading-relaxed">Formatting in progress…</p>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm text-gray-800 dark:text-gray-100 leading-relaxed">
+                      {stageLabel ?? 'Formatting in progress…'}
+                    </p>
+                    {jobStatus?.stage && (
+                      <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        Stage: {jobStatus.stage}
+                      </span>
+                    )}
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-violet-200/50 dark:bg-violet-900/30 overflow-hidden">
+                    <div
+                      className="h-full bg-violet-600 transition-all"
+                      style={{
+                        width:
+                          jobStatus?.stage === 'formatting'
+                            ? '55%'
+                            : jobStatus?.stage === 'validating'
+                              ? '85%'
+                              : '35%',
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {jobStatus?.stage === 'validating'
+                      ? 'Running verification checks for a professional handoff…'
+                      : 'Applying style guide rules to your transcript…'}
+                  </p>
+                </div>
               )}
               {submitError && (
                 <div className="space-y-3">
@@ -777,6 +833,59 @@ export default function GuidelineFormat() {
               )}
               {jobStatus?.status === 'completed' && !submitError && (
                 <div className="space-y-6">
+                  {jobStatus.validationReport?.summary && (
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-4 space-y-2">
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Validation Report</p>
+                      <div className="flex flex-wrap gap-4 text-sm text-gray-700 dark:text-gray-300">
+                        <span>
+                          ✓ <strong className="text-gray-900 dark:text-white">{jobStatus.validationReport.summary.verified?.passed ?? 0}</strong>{' '}
+                          checks verified
+                        </span>
+                        <span>
+                          ⚠ <strong className="text-gray-900 dark:text-white">{jobStatus.validationReport.summary.likelyCompliant?.passed ?? 0}</strong>{' '}
+                          likely compliant
+                        </span>
+                        <span>
+                          👀 <strong className="text-gray-900 dark:text-white">
+                            {(jobStatus.validationReport.summary.needsReview?.total ?? 0) - (jobStatus.validationReport.summary.needsReview?.passed ?? 0)}
+                          </strong>{' '}
+                          require review
+                        </span>
+                      </div>
+                      {Array.isArray(jobStatus.validationReport.checks) && jobStatus.validationReport.checks.length > 0 && (
+                        <details className="pt-1">
+                          <summary className="cursor-pointer text-xs font-medium text-violet-700 dark:text-violet-300">
+                            Show details
+                          </summary>
+                          <ul className="mt-3 space-y-2 text-xs text-gray-700 dark:text-gray-300">
+                            {jobStatus.validationReport.checks.map((c) => {
+                              const prefix = c.bucket === 'verified' ? '✓' : c.bucket === 'likely_compliant' ? '⚠' : '👀'
+                              const tone =
+                                c.bucket === 'verified'
+                                  ? c.passed
+                                    ? 'text-emerald-700 dark:text-emerald-300'
+                                    : 'text-red-700 dark:text-red-300'
+                                  : c.bucket === 'likely_compliant'
+                                    ? 'text-amber-800 dark:text-amber-200'
+                                    : 'text-gray-700 dark:text-gray-300'
+                              return (
+                                <li key={c.id} className={`rounded-lg border border-gray-200/60 dark:border-gray-700/60 bg-white/60 dark:bg-gray-950/30 px-3 py-2 ${tone}`}>
+                                  <div className="flex items-start justify-between gap-3">
+                                    <span className="font-semibold">{prefix} {c.label}</span>
+                                    <span className="text-[10px] font-semibold uppercase tracking-wide opacity-80">
+                                      {c.bucket === 'verified' ? 'Verified' : c.bucket === 'likely_compliant' ? 'Likely compliant' : 'Needs review'}
+                                    </span>
+                                  </div>
+                                  {c.details && <p className="mt-1 text-gray-600 dark:text-gray-300">{c.details}</p>}
+                                </li>
+                              )
+                            })}
+                          </ul>
+                        </details>
+                      )}
+                    </div>
+                  )}
+
                   <div className="flex flex-wrap gap-4 text-sm text-gray-700 dark:text-gray-300">
                     <span>
                       <strong className="text-gray-900 dark:text-white">{flaggedList.length}</strong> sections flagged for review
