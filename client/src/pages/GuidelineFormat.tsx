@@ -213,18 +213,25 @@ export default function GuidelineFormat() {
   const originalScrollRef = useRef<HTMLDivElement>(null)
   const formattedScrollRef = useRef<HTMLDivElement>(null)
   const syncScrollLockRef = useRef<'original' | 'formatted' | null>(null)
-  const txtInputRef = useRef<HTMLInputElement>(null)
-  const docxTranscriptRef = useRef<HTMLInputElement>(null)
+  const transcriptFileInputRef = useRef<HTMLInputElement>(null)
+  const transcriptTextareaRef = useRef<HTMLTextAreaElement>(null)
   const customGuideRef = useRef<HTMLInputElement>(null)
+  /** Set when transcript text came from a file upload (for banner + clarity) */
+  const [transcriptLoadedFromFile, setTranscriptLoadedFromFile] = useState<string | null>(null)
 
   useEffect(() => {
     const raw = sessionStorage.getItem('vt_prefill_transcript')
     if (raw != null && raw !== '') {
       setTranscript(raw)
+      setTranscriptLoadedFromFile(null)
       sessionStorage.removeItem('vt_prefill_transcript')
       setPrefillBanner(true)
     }
   }, [])
+
+  useEffect(() => {
+    if (!transcript.trim()) setTranscriptLoadedFromFile(null)
+  }, [transcript])
 
   const wordCount = useMemo(() => {
     const t = transcript.trim()
@@ -637,27 +644,50 @@ export default function GuidelineFormat() {
     setRules((prev) => prev.map((r) => ({ ...r, currentValue: r.defaultValue, isEdited: false })))
   }
 
-  const readTxtFile = useCallback((file: File) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      const text = typeof reader.result === 'string' ? reader.result : ''
-      setTranscript(text)
-    }
-    reader.readAsText(file)
+  const focusTranscriptEditor = useCallback(() => {
+    requestAnimationFrame(() => {
+      const el = transcriptTextareaRef.current
+      if (!el) return
+      el.focus({ preventScroll: false })
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    })
   }, [])
 
-  const readDocxIntoTranscript = useCallback(async (file: File) => {
-    const mammoth = await import('mammoth')
-    const ab = await file.arrayBuffer()
-    const { value } = await mammoth.extractRawText({ arrayBuffer: ab })
-    const text = String(value ?? '')
-      .replace(/\u0000/g, '')
-      .trim()
-    if (!text) {
-      throw new Error('No text could be extracted from this DOCX.')
-    }
-    setTranscript(text)
-  }, [])
+  const readTxtFile = useCallback(
+    (file: File) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const text = typeof reader.result === 'string' ? reader.result : ''
+        setTranscriptLoadedFromFile(file.name)
+        setTranscript(text)
+        toast.success(`Loaded ${file.name}`)
+        focusTranscriptEditor()
+      }
+      reader.onerror = () => {
+        toast.error('Could not read this file.')
+      }
+      reader.readAsText(file, 'UTF-8')
+    },
+    [focusTranscriptEditor]
+  )
+
+  const readDocxIntoTranscript = useCallback(
+    async (file: File) => {
+      const mammoth = await import('mammoth')
+      const ab = await file.arrayBuffer()
+      const { value } = await mammoth.extractRawText({ arrayBuffer: ab })
+      const text = String(value ?? '')
+        .replace(/\u0000/g, '')
+        .trim()
+      if (!text) {
+        throw new Error('No text could be extracted from this DOCX.')
+      }
+      setTranscriptLoadedFromFile(file.name)
+      setTranscript(text)
+      focusTranscriptEditor()
+    },
+    [focusTranscriptEditor]
+  )
 
   const onTranscriptFile = (files: FileList | null) => {
     const file = files?.[0]
@@ -672,7 +702,7 @@ export default function GuidelineFormat() {
     if (lower.endsWith('.docx') || isDocxMime) {
       void toast.promise(readDocxIntoTranscript(file), {
         loading: 'Reading DOCX…',
-        success: 'Transcript loaded from document',
+        success: () => `Loaded ${file.name} — scroll to preview below`,
         error: (e) => (e instanceof Error ? e.message : 'Could not read this DOCX.'),
       })
       return
@@ -909,52 +939,67 @@ export default function GuidelineFormat() {
                   Keep speaker labels exactly as-is. We’ll format punctuation, casing, tags, and spacing based on the rules.
                 </p>
               </div>
-              <textarea
-                value={transcript}
-                onChange={(e) => setTranscript(e.target.value)}
-                placeholder="Paste or type your raw transcript…"
-                className="w-full min-h-[200px] rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500"
-              />
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => txtInputRef.current?.click()}
-                  className="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => transcriptFileInputRef.current?.click()}
+                    className="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    Upload file
+                  </button>
+                  <input
+                    ref={transcriptFileInputRef}
+                    type="file"
+                    accept=".txt,.srt,.vtt,.docx,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    className="hidden"
+                    onChange={(e) => {
+                      onTranscriptFile(e.target.files)
+                      e.target.value = ''
+                    }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Allowed formats: <span className="font-medium text-gray-600 dark:text-gray-300">.txt</span>,{' '}
+                  <span className="font-medium text-gray-600 dark:text-gray-300">.srt</span>,{' '}
+                  <span className="font-medium text-gray-600 dark:text-gray-300">.vtt</span>,{' '}
+                  <span className="font-medium text-gray-600 dark:text-gray-300">.docx</span>
+                </p>
+                <p
+                  className="text-xs text-gray-500 dark:text-gray-400 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    onTranscriptFile(e.dataTransfer.files)
+                  }}
                 >
-                  Upload .txt
-                </button>
-                <button
-                  type="button"
-                  onClick={() => docxTranscriptRef.current?.click()}
-                  className="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-                >
-                  Upload .docx
-                </button>
-                <input
-                  ref={txtInputRef}
-                  type="file"
-                  accept=".txt,.srt,.vtt,text/plain"
-                  className="hidden"
-                  onChange={(e) => onTranscriptFile(e.target.files)}
-                />
-                <input
-                  ref={docxTranscriptRef}
-                  type="file"
-                  accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                  className="hidden"
-                  onChange={(e) => onTranscriptFile(e.target.files)}
+                  Or drop a file here (same formats as above)
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <label htmlFor="guideline-transcript-editor" className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                    Transcript content
+                  </label>
+                  {transcriptLoadedFromFile && (
+                    <span className="text-[11px] font-medium text-emerald-700 dark:text-emerald-300" title="You can edit this text before formatting">
+                      From file: {transcriptLoadedFromFile}
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  Everything we format is taken from this box — upload fills it for you; you can edit before running Step 3.
+                </p>
+                <textarea
+                  id="guideline-transcript-editor"
+                  ref={transcriptTextareaRef}
+                  value={transcript}
+                  onChange={(e) => setTranscript(e.target.value)}
+                  placeholder="Paste, type, or upload a file — the full text appears here…"
+                  spellCheck={false}
+                  className="w-full min-h-[min(24rem,50vh)] max-h-[min(32rem,60vh)] rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 font-mono leading-relaxed overflow-y-auto"
                 />
               </div>
-              <p
-                className="text-xs text-gray-500 dark:text-gray-400 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  onTranscriptFile(e.dataTransfer.files)
-                }}
-              >
-                Or drop a .txt or .docx file here
-              </p>
               {wordCount > 0 && (
                 <p className="text-sm text-gray-600 dark:text-gray-300">{wordCount.toLocaleString()} words</p>
               )}
