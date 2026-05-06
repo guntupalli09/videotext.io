@@ -42,6 +42,8 @@ import { attachLiveTranscription } from './routes/liveTranscription'
 import { maybeRunYoutubeCanary } from './services/youtubeCanary'
 import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
+import guidelinesRoutes from './routes/guidelines'
+import { guidelineQueue, startGuidelineWorker } from './workers/guidelineProcessor'
 
 const log = getLogger('api')
 
@@ -189,6 +191,7 @@ app.use('/api/upload', apiKeyAuth)
 app.use('/api/job', apiKeyAuth)
 app.use('/api/batch', apiKeyAuth)
 app.use('/api/translate-transcript', apiKeyAuth)
+app.use('/api/guidelines', apiKeyAuth)
 
 // Routes
 app.use('/api/upload', uploadRoutes)
@@ -200,6 +203,7 @@ app.use('/api/batch', batchRoutes)
 app.use('/api/billing', billingRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/translate-transcript', translateTranscriptRoutes)
+app.use('/api/guidelines', guidelinesRoutes)
 app.use('/api/shares', shareRoutes)
 app.use('/api/feedback', feedbackRoutes)
 app.use('/api/events', eventsRoutes)
@@ -239,6 +243,7 @@ const server = app.listen(PORT, () => {
   // Worker runs in a separate container when Dockerized (DISABLE_WORKER=true).
   if (process.env.DISABLE_WORKER !== 'true') {
     startWorker()
+    startGuidelineWorker()
     log.info({ msg: 'Background worker started' })
   }
 
@@ -458,6 +463,7 @@ async function shutdown() {
   await Promise.allSettled([
     fileQueue?.close(),
     priorityQueue?.close(),
+    guidelineQueue?.close(),
   ])
   server.close(() => {
     log.info({ msg: 'Server closed' })

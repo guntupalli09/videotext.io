@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FileText } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { ToolLayout } from '../components/figma/ToolLayout'
+import { api, getAuthToken } from '../lib/api'
 import { PRESET_DATA, type GuidelinePresetKey } from './guidelineFormatPresetData'
 
 type EditableRule = {
@@ -24,6 +25,32 @@ const CATEGORY_ORDER = [
 ] as const
 
 type SelectValue = '' | GuidelinePresetKey | 'custom'
+
+type ParsedRule = {
+  id: string
+  category: string
+  label: string
+  currentValue: string
+}
+
+type DiffSegment = { type: 'unchanged' | 'added' | 'removed'; text: string }
+
+type FlaggedSegment = {
+  originalText: string
+  suggestedText: string
+  ruleApplied: string
+  confidence: string
+  reason: string
+}
+
+type JobStatusResponse = {
+  status: string
+  outputText: string | null
+  diffData: DiffSegment[] | null
+  flaggedSegments: FlaggedSegment[] | null
+  appliedRules: string[] | null
+  createdAt: string
+}
 
 function rulesFromPreset(preset: (typeof PRESET_DATA)[GuidelinePresetKey]): EditableRule[] {
   return preset.rules.map((r) => ({
@@ -74,10 +101,12 @@ export default function GuidelineFormat() {
   const [selectedPreset, setSelectedPreset] = useState<GuidelinePresetKey | 'custom' | null>(null)
   const [rules, setRules] = useState<EditableRule[]>([])
   const [customFile, setCustomFile] = useState<File | null>(null)
-  const [formatSummary, setFormatSummary] = useState<null | {
-    presetLabel: string
-    rulesSnapshot: { id: string; label: string; value: string }[]
-  }>(null)
+  const [jobId, setJobId] = useState<string | null>(null)
+  const [jobStatus, setJobStatus] = useState<JobStatusResponse | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  /** Transcript snapshot for the active job — used so "Original" stays stable while user edits textarea. */
+  const [originalTranscriptForJob, setOriginalTranscriptForJob] = useState('')
   const txtInputRef = useRef<HTMLInputElement>(null)
   const docxTranscriptRef = useRef<HTMLInputElement>(null)
   const customGuideRef = useRef<HTMLInputElement>(null)
@@ -100,13 +129,137 @@ export default function GuidelineFormat() {
   const hasGuidelineSelected =
     selectedPreset != null && (selectedPreset !== 'custom' || customFile !== null)
 
-  const canSubmit = transcript.trim().length > 0 && hasGuidelineSelected
+  const canSubmit = transcript.trim().length > 0 && hasGuidelineSelected && !isSubmitting
 
   const anyRuleEdited = rules.some((r) => r.isEdited)
 
+  const resetJobUi = () => {
+    setJobId(null)
+    setJobStatus(null)
+    setSubmitError(null)
+    setIsSubmitting(false)
+    setOriginalTranscriptForJob('')
+  }
+
+  const buildRulesPayload = (): ParsedRule[] => {
+    if (selectedPreset === 'custom') {
+      return [
+        {
+          id: 'custom-upload',
+          category: 'Custom',
+          label: 'Client style guide file',
+          currentValue: customFile?.name || 'attached',
+        },
+      ]
+    }
+    if (selectedPreset) {
+      return rules.map((r) => ({
+        id: r.id,
+        category: r.category,
+        label: r.label,
+        currentValue: r.currentValue,
+      }))
+    }
+    return []
+  }
+
+  useEffect(() => {
+    if (!jobId) return
+    let stopped = false
+    let timer: ReturnType<typeof setInterval> | undefined
+
+    const poll = async () => {
+      try {
+        const res = await api(`/api/guidelines/jobs/${jobId}`, { timeout: 15000 })
+        const data = (await res.json()) as JobStatusResponse & { error?: string }
+        if (stopped) return
+        if (!res.ok) {
+          setSubmitError(data.error || 'Failed to fetch job status')
+          setIsSubmitting(false)
+          if (timer) clearInterval(timer)
+          return
+        }
+        setJobStatus(data)
+        if (data.status === 'completed' || data.status === 'failed') {
+          setIsSubmitting(false)
+          if (timer) clearInterval(timer)
+        }
+      } catch (e) {
+        if (stopped) return
+        setSubmitError(e instanceof Error ? e.message : 'Network error')
+        setIsSubmitting(false)
+        if (timer) clearInterval(timer)
+      }
+    }
+
+    poll()
+    timer = setInterval(poll, 2000)
+    return () => {
+      stopped = true
+      if (timer) clearInterval(timer)
+    }
+  }, [jobId])
+
+  const submitFormat = async () => {
+    if (!canSubmit || !selectedPreset) return
+    if (!getAuthToken()) {
+      toast.error('Sign in to format your transcript')
+      return
+    }
+    const rulesPayload = buildRulesPayload()
+    if (!rulesPayload.length) {
+      toast.error('Select rules or a style guide file')
+      return
+    }
+    setIsSubmitting(true)
+    setSubmitError(null)
+    setJobStatus(null)
+    setJobId(null)
+    setOriginalTranscriptForJob(transcript.trim())
+    try {
+      const res = await api('/api/guidelines/format', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          transcriptText: transcript.trim(),
+          rules: rulesPayload,
+          presetId: selectedPreset,
+        }),
+        timeout: 60000,
+      })
+      const data = (await res.json()) as { jobId?: string; error?: string }
+      if (!res.ok) {
+        setSubmitError(data.error || 'Failed to start formatting')
+        setIsSubmitting(false)
+        return
+      }
+      if (!data.jobId) {
+        setSubmitError('Invalid response from server')
+        setIsSubmitting(false)
+        return
+      }
+      setJobId(data.jobId)
+    } catch (e) {
+      setSubmitError(e instanceof Error ? e.message : 'Network error')
+      setIsSubmitting(false)
+    }
+  }
+
+  const downloadFormattedTxt = () => {
+    const text = jobStatus?.outputText
+    if (!text) return
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'formatted_transcript.txt'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const onSelectPreset = (v: SelectValue) => {
     setSelectValue(v)
-    setFormatSummary(null)
+    resetJobUi()
     if (v === '' || !v) {
       setSelectedPreset(null)
       setRules([])
@@ -174,26 +327,7 @@ export default function GuidelineFormat() {
       return
     }
     setCustomFile(file)
-    setFormatSummary(null)
-  }
-
-  const presetLabelForMessage =
-    selectedPreset != null && selectedPreset !== 'custom'
-      ? PRESET_DATA[selectedPreset].label
-      : selectedPreset === 'custom' && customFile
-        ? customFile.name
-        : 'custom guideline'
-
-  const handleFormat = () => {
-    if (!canSubmit) return
-    const snapshot =
-      selectedPreset && selectedPreset !== 'custom'
-        ? rules.map((r) => ({ id: r.id, label: r.label, value: r.currentValue }))
-        : []
-    setFormatSummary({
-      presetLabel: presetLabelForMessage,
-      rulesSnapshot: snapshot,
-    })
+    resetJobUi()
   }
 
   const rulesByCategory = useMemo(() => {
@@ -207,6 +341,12 @@ export default function GuidelineFormat() {
     }
     return map
   }, [rules])
+
+  const flaggedList = Array.isArray(jobStatus?.flaggedSegments) ? jobStatus!.flaggedSegments! : []
+  const appliedRulesList = Array.isArray(jobStatus?.appliedRules) ? jobStatus!.appliedRules! : []
+  const diffSegments = Array.isArray(jobStatus?.diffData) ? jobStatus!.diffData! : []
+  const showLoadingMessage = isSubmitting && !jobStatus
+  const showProcessingMessage = isSubmitting && jobStatus && (jobStatus.status === 'queued' || jobStatus.status === 'processing')
 
   return (
     <>
@@ -417,31 +557,144 @@ export default function GuidelineFormat() {
           <button
             type="button"
             disabled={!canSubmit}
-            onClick={handleFormat}
+            onClick={() => void submitFormat()}
             className="w-full rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold py-3.5 text-sm shadow-md transition-colors"
           >
             Format Transcript →
           </button>
 
-          {formatSummary && (
+          {(showLoadingMessage || showProcessingMessage || submitError || jobStatus) && (
             <div className="rounded-2xl border border-violet-200 dark:border-violet-900/50 bg-violet-50/60 dark:bg-violet-950/25 p-6 space-y-4">
-              <p className="text-sm text-gray-800 dark:text-gray-100 leading-relaxed">
-                Guideline enforcement is being set up. Your transcript and <strong>{formatSummary.presetLabel}</strong> have been
-                received.
-              </p>
-              {formatSummary.rulesSnapshot.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
-                    Current rule values (edited text)
-                  </p>
-                  <ul className="space-y-2 max-h-64 overflow-y-auto text-xs text-gray-700 dark:text-gray-300">
-                    {formatSummary.rulesSnapshot.map((r) => (
-                      <li key={r.id}>
-                        <span className="font-medium text-gray-900 dark:text-white">{r.label}: </span>
-                        {r.value.length > 180 ? `${r.value.slice(0, 180)}…` : r.value}
-                      </li>
-                    ))}
-                  </ul>
+              {showLoadingMessage && (
+                <p className="text-sm text-gray-800 dark:text-gray-100 leading-relaxed">
+                  Applying style guide rules to your transcript… This takes 30–60 seconds for a 1-hour transcript.
+                </p>
+              )}
+              {showProcessingMessage && (
+                <p className="text-sm text-gray-800 dark:text-gray-100 leading-relaxed">Formatting in progress…</p>
+              )}
+              {submitError && (
+                <div className="space-y-3">
+                  <p className="text-sm text-red-700 dark:text-red-300">{submitError}</p>
+                  <button
+                    type="button"
+                    onClick={resetJobUi}
+                    className="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-800 dark:text-gray-200 hover:bg-white/80 dark:hover:bg-gray-900/60"
+                  >
+                    Try again
+                  </button>
+                </div>
+              )}
+              {jobStatus?.status === 'failed' && !submitError && (
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-800 dark:text-gray-100">Formatting failed. Please try again.</p>
+                  <button
+                    type="button"
+                    onClick={resetJobUi}
+                    className="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-800 dark:text-gray-200 hover:bg-white/80 dark:hover:bg-gray-900/60"
+                  >
+                    Try again
+                  </button>
+                </div>
+              )}
+              {jobStatus?.status === 'completed' && !submitError && (
+                <div className="space-y-6">
+                  <div className="flex flex-wrap gap-4 text-sm text-gray-700 dark:text-gray-300">
+                    <span>
+                      <strong className="text-gray-900 dark:text-white">{flaggedList.length}</strong> sections flagged for review
+                    </span>
+                    <span>
+                      <strong className="text-gray-900 dark:text-white">{appliedRulesList.length}</strong> rules applied
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-4 min-h-[120px]">
+                      <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</h3>
+                      <pre className="text-xs text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-sans leading-relaxed">
+                        {originalTranscriptForJob}
+                      </pre>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-4 min-h-[120px]">
+                      <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+                        Formatted
+                      </h3>
+                      <div className="text-xs leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-sans">
+                        {diffSegments.length > 0 ? (
+                          diffSegments.map((seg, i) => {
+                            const key = `${i}-${seg.type}-${seg.text.slice(0, 12)}`
+                            if (seg.type === 'added') {
+                              return (
+                                <span key={key} className="bg-emerald-200/80 dark:bg-emerald-900/50 px-0.5 rounded-sm">
+                                  {seg.text}
+                                </span>
+                              )
+                            }
+                            if (seg.type === 'removed') {
+                              return (
+                                <span key={key} className="text-red-600 dark:text-red-400 line-through decoration-red-500/70 px-0.5">
+                                  {seg.text}
+                                </span>
+                              )
+                            }
+                            return <span key={key}>{seg.text}</span>
+                          })
+                        ) : (
+                          <pre className="whitespace-pre-wrap font-sans">{jobStatus.outputText ?? ''}</pre>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {flaggedList.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Sections flagged for review</h3>
+                      <ul className="space-y-3">
+                        {flaggedList.map((seg, i) => {
+                          const c = (seg.confidence || '').toLowerCase()
+                          const badgeClass =
+                            c === 'high'
+                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200'
+                              : c === 'low'
+                                ? 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200'
+                                : 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100'
+                          return (
+                            <li
+                              key={i}
+                              className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/50 p-4 space-y-2 text-sm"
+                            >
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${badgeClass}`}>
+                                  {seg.confidence || 'medium'}
+                                </span>
+                                <span className="text-xs font-medium text-violet-700 dark:text-violet-300">{seg.ruleApplied}</span>
+                              </div>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                <span className="font-semibold text-gray-700 dark:text-gray-300">Original: </span>
+                                {seg.originalText}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                <span className="font-semibold text-gray-700 dark:text-gray-300">Suggested: </span>
+                                {seg.suggestedText}
+                              </p>
+                              <p className="text-xs text-gray-600 dark:text-gray-300">{seg.reason}</p>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-violet-200/60 dark:border-violet-900/40">
+                    <button
+                      type="button"
+                      onClick={downloadFormattedTxt}
+                      disabled={!jobStatus.outputText}
+                      className="rounded-lg bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2"
+                    >
+                      Download TXT
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
