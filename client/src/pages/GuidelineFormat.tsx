@@ -646,16 +646,35 @@ export default function GuidelineFormat() {
     reader.readAsText(file)
   }, [])
 
+  const readDocxIntoTranscript = useCallback(async (file: File) => {
+    const mammoth = await import('mammoth')
+    const ab = await file.arrayBuffer()
+    const { value } = await mammoth.extractRawText({ arrayBuffer: ab })
+    const text = String(value ?? '')
+      .replace(/\u0000/g, '')
+      .trim()
+    if (!text) {
+      throw new Error('No text could be extracted from this DOCX.')
+    }
+    setTranscript(text)
+  }, [])
+
   const onTranscriptFile = (files: FileList | null) => {
     const file = files?.[0]
     if (!file) return
     const lower = file.name.toLowerCase()
-    if (lower.endsWith('.txt')) {
+    const mime = (file.type || '').toLowerCase()
+    const isDocxMime = mime.includes('officedocument') && mime.includes('wordprocessing')
+    if (lower.endsWith('.txt') || lower.endsWith('.srt') || lower.endsWith('.vtt')) {
       readTxtFile(file)
       return
     }
-    if (lower.endsWith('.docx')) {
-      toast('DOCX parsing coming soon')
+    if (lower.endsWith('.docx') || isDocxMime) {
+      void toast.promise(readDocxIntoTranscript(file), {
+        loading: 'Reading DOCX…',
+        success: 'Transcript loaded from document',
+        error: (e) => (e instanceof Error ? e.message : 'Could not read this DOCX.'),
+      })
       return
     }
     toast('Please upload a .txt, .srt, .vtt, or .docx file')
