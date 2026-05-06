@@ -5,7 +5,7 @@ import { createRedisClient } from '../utils/redis'
 import { prisma } from '../db'
 import { enforceGuideline, enforceGuidelineCaptions, type CaptionCue, type CaptionFormat, type ParsedRule } from '../services/guidelineEnforcer'
 import { computeTranscriptDiff } from '../services/diffEngine'
-import { getLogger } from '../lib/logger'
+import { getLogger, withJobContext } from '../lib/logger'
 import { updateJobCompleted, updateJobFailed, updateJobStarted } from '../lib/jobAnalytics'
 import { pushLogEntry } from '../lib/logRing'
 import { buildValidationReport } from '../services/guidelineValidation'
@@ -66,13 +66,21 @@ function cuesToVtt(cues: CaptionCue[]): string {
 }
 
 async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<void> {
-  const { formattingJobId, transcriptText, rules, inputFormat, cues } = job.data
+  const { formattingJobId, transcriptText, rules, userId, inputFormat, cues } = job.data
   const started = Date.now()
+  const jobLog = withJobContext(formattingJobId)
 
   try {
     // Dashboard-visible Job status
     void updateJobStarted(formattingJobId)
 
+    jobLog.info({
+      msg: 'guideline_format_started',
+      userId,
+      rulesCount: rules.length,
+      captionMode: Boolean(inputFormat && cues && cues.length > 0),
+      inputFormat: inputFormat ?? null,
+    })
     pushLogEntry({
       ts: new Date().toISOString(),
       level: 'info',
@@ -141,6 +149,13 @@ async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<
     })
 
     void updateJobCompleted(formattingJobId, Math.max(0, Date.now() - started))
+    const flaggedN = Array.isArray(flaggedSegments) ? flaggedSegments.length : 0
+    jobLog.info({
+      msg: 'guideline_format_completed',
+      durationMs: Date.now() - started,
+      flaggedCount: flaggedN,
+      appliedRulesCount: appliedRules.length,
+    })
     pushLogEntry({
       ts: new Date().toISOString(),
       level: 'info',
@@ -165,6 +180,11 @@ async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<
     }
 
     void updateJobFailed(formattingJobId, msg)
+    jobLog.error({
+      msg: 'guideline_format_failed',
+      error: msg,
+      stack: err instanceof Error ? err.stack : undefined,
+    })
     pushLogEntry({
       ts: new Date().toISOString(),
       level: 'error',
