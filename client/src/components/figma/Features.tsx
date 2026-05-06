@@ -10,7 +10,6 @@ import {
   FolderSync,
   ChevronRight,
   Mic,
-  Youtube,
   CheckCircle2,
   ArrowRight,
   ClipboardCheck,
@@ -39,48 +38,77 @@ const SPOTLIGHT_TOOLS = [
     ],
   },
   {
-    id: 'voice-recorder',
-    badge: 'New',
-    badgeColor: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/20',
-    icon: Mic,
-    name: 'Voice → Text',
-    tagline: 'Speak naturally. Get an accurate transcript instantly.',
+    id: 'guideline-format',
+    badge: 'Client-ready',
+    badgeColor: 'bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/20',
+    icon: ClipboardCheck,
+    name: 'Format → Client guidelines',
+    tagline: 'Validate + format transcripts to match client rules.',
     description:
-      'Record up to 1 hour directly in your browser — no app, no upload. AI transcribes with 98.5% accuracy across 99 languages. Copy or download in one click.',
-    bullets: ['Noise suppression built-in', '99 languages auto-detected', 'Up to 1 hour recording', 'Pro: share links for original or translated text'],
-    gradient: 'from-purple-500 to-violet-600',
-    glowColor: 'rgba(168,85,247,0.08)',
-    href: '/voice-recorder',
-    cta: 'Record your audio, get transcript',
+      'Drop in transcript text and get a clear pass/fail summary, suggested fixes, and rule-by-rule checks — tuned for Rev, GoTranscript, TranscribeMe, Scribie, and custom client style guides.',
+    bullets: ['Validation summary (what failed + why)', 'Rule cards you can edit per client', 'Consistency checks (labels, numbers, punctuation)', 'Export cleaned text for delivery'],
+    gradient: 'from-violet-500 to-fuchsia-600',
+    glowColor: 'rgba(217,70,239,0.07)',
+    href: '/guideline-format',
+    cta: 'Format transcript →',
     outputPreview: [
-      { time: '00:03', text: 'Welcome everyone, today we are going to cover...' },
-      { time: '00:11', text: 'The key insight that changed how I approach this is...' },
-      { time: '00:24', text: 'Let me break it down into three simple steps for you.' },
+      { time: 'SUM', text: 'Pass: 38 • Fix: 7 • Risk: Low • Ready to deliver' },
+      { time: 'Rule', text: 'Speaker labels: consistent casing + colon formatting' },
+      { time: 'Rule', text: 'Numbers: 1–9 spelled out, 10+ as numerals (client-specific)' },
     ],
   },
   {
-    id: 'youtube-transcript',
-    badge: 'No download needed',
-    badgeColor: 'bg-red-500/15 text-red-300 border border-red-500/20',
-    icon: Youtube,
-    name: 'YouTube → Transcript',
-    tagline: 'Paste a URL. Get the full transcript in seconds.',
+    id: 'translate-subtitles',
+    badge: '70+ languages',
+    badgeColor: 'bg-pink-500/15 text-pink-300 border border-pink-500/20',
+    icon: Languages,
+    name: 'Translate',
+    tagline: 'Translate subtitles and docs — keep formatting.',
     description:
-      'Extract transcripts from any YouTube video — no download, no upload. Get the full text, AI summary, chapters, and export-ready output instantly.',
-    bullets: ['No video download required', 'AI summary & chapters included', 'Export TXT, PDF, DOCX, JSON', '99 languages · Translation to 70+'],
-    gradient: 'from-red-500 to-rose-600',
-    glowColor: 'rgba(239,68,68,0.08)',
-    href: '/youtube-transcript-generator',
-    cta: 'Paste URL, get transcript',
+      'Translate subtitles, documents, DOCX, TXT, and JSON into 70+ languages with formatting preserved.',
+    bullets: ['Subtitles + documents', 'Formatting preserved', 'Fast turnaround', 'Export in common formats'],
+    gradient: 'from-pink-500 to-purple-600',
+    glowColor: 'rgba(236,72,153,0.07)',
+    href: '/translate-subtitles',
+    cta: 'Translate your file',
     outputPreview: [
-      { time: '00:00', text: "Hey everyone! Welcome back to the channel. In today's video..." },
-      { time: '00:12', text: "We're covering the three biggest mistakes I see creators make..." },
-      { time: '00:28', text: 'The first one is probably the most common, and easy to fix...' },
+      { time: 'EN', text: 'Let’s get started — here are the three key steps.' },
+      { time: 'ES', text: 'Empecemos: estos son los tres pasos clave.' },
+      { time: 'FR', text: 'Commençons — voici les trois étapes clés.' },
     ],
   },
+  // Temporarily disabled — will reactivate later.
+  // {
+  //   id: 'youtube-transcript',
+  //   badge: 'No download needed',
+  //   badgeColor: 'bg-red-500/15 text-red-300 border border-red-500/20',
+  //   icon: Youtube,
+  //   name: 'YouTube → Transcript',
+  //   tagline: 'Paste a URL. Get the full transcript in seconds.',
+  //   description:
+  //     'Extract transcripts from any YouTube video — no download, no upload. Get the full text, AI summary, chapters, and export-ready output instantly.',
+  //   bullets: ['No video download required', 'AI summary & chapters included', 'Export TXT, PDF, DOCX, JSON', '99 languages · Translation to 70+'],
+  //   gradient: 'from-red-500 to-rose-600',
+  //   glowColor: 'rgba(239,68,68,0.08)',
+  //   href: '/youtube-transcript-generator',
+  //   cta: 'Paste URL, get transcript',
+  //   outputPreview: [
+  //     { time: '00:00', text: "Hey everyone! Welcome back to the channel. In today's video..." },
+  //     { time: '00:12', text: "We're covering the three biggest mistakes I see creators make..." },
+  //     { time: '00:28', text: 'The first one is probably the most common, and easy to fix...' },
+  //   ],
+  // },
 ];
 
 const SECONDARY_TOOLS = [
+  {
+    icon: Mic,
+    name: 'Voice → Text',
+    description: 'Record in your browser — no file, no upload. Transcript in seconds.',
+    gradient: 'from-purple-500 to-violet-600',
+    accent: 'text-violet-400',
+    href: '/voice-recorder',
+  },
   {
     icon: MessageSquare,
     name: 'Video → Subtitles',
@@ -290,7 +318,7 @@ export function Features() {
             <span className="block text-gray-300 dark:text-white/20 mt-1">Nothing you don't.</span>
           </h2>
           <p className="text-lg text-gray-500 dark:text-white/40 max-w-xl mx-auto transition-colors duration-500">
-            Upload a video, record your voice, or paste a YouTube URL — purpose-built tools for every stage of your workflow. No bloated editor. No learning curve.
+            Upload a video, format against client guidelines, or translate into 70+ languages — purpose-built tools for every stage of your workflow. No bloated editor. No learning curve.
           </p>
         </motion.div>
 

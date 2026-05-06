@@ -10,7 +10,6 @@ import {
   Sparkles,
   List,
   Languages,
-  Link2,
 } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
 
@@ -112,8 +111,8 @@ function HeroDropzone() {
         <div className="flex-1 h-px bg-white/[0.07]" />
       </div>
 
-      {/* Voice + YouTube — equal-weight side-by-side */}
-      <div className="grid grid-cols-2 gap-2">
+      {/* Voice */}
+      <div className="grid grid-cols-1 gap-2">
         <Link
           to="/voice-recorder"
           className="group flex flex-col gap-2.5 rounded-xl border border-violet-300/30 bg-gradient-to-b from-violet-500/14 to-indigo-500/12 shadow-[0_0_0_1px_rgba(139,92,246,0.2),0_10px_30px_rgba(48,21,114,0.35)] hover:border-violet-300/60 hover:from-violet-500/22 hover:to-indigo-500/16 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.42),0_0_30px_rgba(139,92,246,0.2)] px-4 py-3.5 transition-all duration-200"
@@ -130,26 +129,6 @@ function HeroDropzone() {
             Record in-browser — no upload needed
           </p>
           <div className="flex items-center gap-1 text-[11px] font-semibold text-violet-400 group-hover:gap-1.5 transition-all">
-            Try now <ChevronRight className="w-3 h-3" />
-          </div>
-        </Link>
-
-        <Link
-          to="/youtube-transcript-generator"
-          className="group flex flex-col gap-2.5 rounded-xl border border-red-300/35 bg-gradient-to-b from-red-500/14 to-rose-500/10 shadow-[0_0_0_1px_rgba(239,68,68,0.2),0_10px_30px_rgba(127,29,29,0.25)] hover:border-red-300/65 hover:from-red-500/22 hover:to-rose-500/14 hover:shadow-[0_0_0_1px_rgba(239,68,68,0.35),0_0_30px_rgba(239,68,68,0.18)] px-4 py-3.5 transition-all duration-200"
-        >
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-red-500/25 transition-colors">
-              <Link2 className="w-4 h-4 text-red-300" />
-            </div>
-            <p className="text-white font-semibold text-[12px] leading-tight">
-              YouTube URL
-            </p>
-          </div>
-          <p className="text-white/35 text-[11px] leading-snug">
-            Paste any YouTube URL — instant transcript
-          </p>
-          <div className="flex items-center gap-1 text-[11px] font-semibold text-red-400 group-hover:gap-1.5 transition-all">
             Try now <ChevronRight className="w-3 h-3" />
           </div>
         </Link>
@@ -198,7 +177,7 @@ export function Hero() {
 
         {/* Sub-headline */}
         <p className="text-center text-[16px] sm:text-[17px] text-white/50 max-w-lg mx-auto leading-relaxed mb-8">
-          Upload a video, record your voice, or paste a YouTube URL — get a transcript, AI summary, chapters,{' '}
+          Upload a video or record your voice — get a transcript, AI summary, chapters,{' '}
           <span className="text-violet-300 font-medium">and translation</span>{' '}
           automatically.
         </p>
@@ -226,7 +205,7 @@ export function Hero() {
             {
               icon: List,
               label: 'Chapters',
-              preview: 'Auto-detected chapter markers with timestamps for YouTube and podcast players.',
+              preview: 'Auto-detected chapter markers with timestamps for any player workflow.',
               color: 'text-blue-400',
               bg: 'bg-blue-500/10',
             },
