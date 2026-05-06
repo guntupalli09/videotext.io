@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { FileText } from 'lucide-react'
+import { ChevronDown, ChevronRight, FileText } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { api, getAuthToken } from '../lib/api'
@@ -46,6 +46,8 @@ type FlaggedSegment = {
   confidence: string
   reason: string
 }
+
+type ResultMode = 'summary' | 'review' | 'full'
 
 type JobStatusResponse = {
   status: string
@@ -127,6 +129,32 @@ function AutoGrowTextarea({
   )
 }
 
+function applyReviewEditsToOutputText(
+  outputText: string,
+  flagged: FlaggedSegment[],
+  edits: Record<number, string>
+): { text: string; warnings: string[] } {
+  let text = outputText
+  const warnings: string[] = []
+  for (const [k, v] of Object.entries(edits)) {
+    const i = Number(k)
+    if (!Number.isFinite(i) || i < 0) continue
+    const seg = flagged[i]
+    if (!seg) continue
+    const next = String(v ?? '')
+    if (!next.trim()) continue
+    const needle = seg.suggestedText || ''
+    if (!needle.trim()) continue
+    const idx = text.indexOf(needle)
+    if (idx === -1) {
+      warnings.push(`Could not apply edit for issue ${i + 1} (text not found in formatted output).`)
+      continue
+    }
+    text = text.slice(0, idx) + next + text.slice(idx + needle.length)
+  }
+  return { text, warnings }
+}
+
 export default function GuidelineFormat() {
   const [transcript, setTranscript] = useState('')
   const [prefillBanner, setPrefillBanner] = useState(false)
@@ -148,6 +176,16 @@ export default function GuidelineFormat() {
   const [inputCaptionFormat, setInputCaptionFormat] = useState<'srt' | 'vtt' | null>(null)
   const [originalCaptionCues, setOriginalCaptionCues] = useState<ReturnType<typeof parseSrt> | null>(null)
   const [focusSegment, setFocusSegment] = useState<number | null>(null)
+  const [resultMode, setResultMode] = useState<ResultMode>('summary')
+  const [categoryOpen, setCategoryOpen] = useState<Record<string, boolean>>({})
+  const [reviewIssueCursor, setReviewIssueCursor] = useState(0)
+  const [reviewEdits, setReviewEdits] = useState<Record<number, string>>({})
+  const [reviewWarnings, setReviewWarnings] = useState<string[]>([])
+  const [fullTranscriptMode, setFullTranscriptMode] = useState<'all' | 'focus'>('all')
+  const [focusContextExpanded, setFocusContextExpanded] = useState<Record<number, boolean>>({})
+  const originalScrollRef = useRef<HTMLDivElement>(null)
+  const formattedScrollRef = useRef<HTMLDivElement>(null)
+  const syncScrollLockRef = useRef<'original' | 'formatted' | null>(null)
   const txtInputRef = useRef<HTMLInputElement>(null)
   const docxTranscriptRef = useRef<HTMLInputElement>(null)
   const customGuideRef = useRef<HTMLInputElement>(null)
@@ -186,6 +224,12 @@ export default function GuidelineFormat() {
     setFocusSegment(null)
     setCustomGuideError(null)
     setCustomGuideConflicts([])
+    setResultMode('summary')
+    setReviewIssueCursor(0)
+    setReviewEdits({})
+    setReviewWarnings([])
+    setFullTranscriptMode('all')
+    setFocusContextExpanded({})
   }
 
   const buildRulesPayload = (): ParsedRule[] => {
@@ -306,9 +350,19 @@ export default function GuidelineFormat() {
     }
   }
 
+  const getExportText = (): { text: string; warnings: string[] } => {
+    const base = jobStatus?.outputText || ''
+    if (!base) return { text: '', warnings: [] }
+    return applyReviewEditsToOutputText(base, flaggedList, reviewEdits)
+  }
+
   const downloadFormattedTxt = () => {
-    const text = jobStatus?.outputText
+    const { text, warnings } = getExportText()
     if (!text) return
+    if (warnings.length) {
+      setReviewWarnings(warnings)
+      toast('Some review edits could not be applied. Exporting best-effort output.')
+    }
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -321,8 +375,12 @@ export default function GuidelineFormat() {
   const downloadFormattedSrt = () => {
     if (inputCaptionFormat !== 'srt' && inputCaptionFormat !== 'vtt') return
     const original = originalCaptionCues
-    const formattedText = jobStatus?.outputText || ''
+    const { text: formattedText, warnings } = getExportText()
     if (!original || !formattedText) return
+    if (warnings.length) {
+      setReviewWarnings(warnings)
+      toast('Some review edits could not be applied. Exporting best-effort output.')
+    }
     const formattedCues = (inputCaptionFormat === 'vtt' ? parseVtt(formattedText) : parseSrt(formattedText))
     if (!formattedCues.length) {
       toast.error('SRT export failed (formatted captions could not be parsed).')
@@ -339,8 +397,12 @@ export default function GuidelineFormat() {
 
   const downloadFormattedVtt = () => {
     if (inputCaptionFormat !== 'srt' && inputCaptionFormat !== 'vtt') return
-    const formattedText = jobStatus?.outputText || ''
+    const { text: formattedText, warnings } = getExportText()
     if (!formattedText) return
+    if (warnings.length) {
+      setReviewWarnings(warnings)
+      toast('Some review edits could not be applied. Exporting best-effort output.')
+    }
     const formattedCues = (inputCaptionFormat === 'vtt' ? parseVtt(formattedText) : parseSrt(formattedText))
     if (!formattedCues.length) {
       toast.error('VTT export failed (formatted captions could not be parsed).')
@@ -357,10 +419,13 @@ export default function GuidelineFormat() {
 
   const downloadFormattedJson = () => {
     if (!jobStatus) return
+    const { text, warnings } = getExportText()
     const payload = {
       ...jobStatus,
       jobId,
       originalText: originalTranscriptForJob,
+      outputText: text || jobStatus.outputText,
+      reviewWarnings: warnings.length ? warnings : undefined,
     }
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' })
     const a = document.createElement('a')
@@ -385,8 +450,12 @@ export default function GuidelineFormat() {
   }
 
   const downloadFormattedRtf = () => {
-    const text = jobStatus?.outputText
+    const { text, warnings } = getExportText()
     if (!text) return
+    if (warnings.length) {
+      setReviewWarnings(warnings)
+      toast('Some review edits could not be applied. Exporting best-effort output.')
+    }
     const rtfEscaped = text
       .replace(/\\/g, '\\\\')
       .replace(/{/g, '\\{')
@@ -402,8 +471,12 @@ export default function GuidelineFormat() {
   }
 
   const downloadFormattedDocx = async () => {
-    const text = jobStatus?.outputText
+    const { text, warnings } = getExportText()
     if (!text) return
+    if (warnings.length) {
+      setReviewWarnings(warnings)
+      toast('Some review edits could not be applied. Exporting best-effort output.')
+    }
     try {
       const { Document: D, Paragraph: P, TextRun: T, Packer } = await import('docx')
       const paras = text.split('\n').map((line) => new P({ children: [new T({ text: line })] }))
@@ -421,8 +494,12 @@ export default function GuidelineFormat() {
   }
 
   const downloadFormattedPdf = async () => {
-    const text = jobStatus?.outputText
+    const { text, warnings } = getExportText()
     if (!text) return
+    if (warnings.length) {
+      setReviewWarnings(warnings)
+      toast('Some review edits could not be applied. Exporting best-effort output.')
+    }
     try {
       const { jsPDF } = await import('jspdf')
       const doc = new jsPDF({ unit: 'mm', format: 'a4' })
@@ -626,16 +703,95 @@ export default function GuidelineFormat() {
     [originalSegments]
   )
 
+  useEffect(() => {
+    if (jobStatus?.status === 'completed') {
+      setResultMode('summary')
+      setReviewIssueCursor(0)
+      setReviewWarnings([])
+      setFullTranscriptMode('all')
+      setFocusContextExpanded({})
+    }
+  }, [jobStatus?.status])
+
+  useEffect(() => {
+    if (!selectedPreset || rules.length === 0) return
+    setCategoryOpen((prev) => {
+      const next: Record<string, boolean> = { ...prev }
+      for (const [cat, list] of rulesByCategory.entries()) {
+        if (!list.length) continue
+        if (typeof next[cat] !== 'boolean') next[cat] = false
+      }
+      return next
+    })
+  }, [rules.length, rulesByCategory, selectedPreset])
+
+  const effectiveOutputText = useMemo(() => {
+    const base = jobStatus?.outputText
+    if (!base) return ''
+    const { text, warnings } = applyReviewEditsToOutputText(base, flaggedList, reviewEdits)
+    return warnings.length ? text : text
+  }, [flaggedList, jobStatus?.outputText, reviewEdits])
+
+  const validationHealth = useMemo(() => {
+    const report = jobStatus?.validationReport
+    const checks = Array.isArray(report?.checks) ? report!.checks! : []
+    const byId = new Map(checks.map((c) => [c.id, c]))
+    const speaker = byId.get('speaker_labels')
+    const artifacts = byId.get('no_ai_artifacts')
+    const outputPresent = byId.get('output_non_empty')
+    const caption = byId.get('caption_metadata_preserved')
+    const confidencePct = report?.summary?.confidencePct
+    return {
+      confidencePct: typeof confidencePct === 'number' ? confidencePct : null,
+      outputPresent,
+      artifacts,
+      speaker,
+      caption,
+      reviewSuggestions: flaggedList.length,
+      isCaptionMode: Boolean(inputCaptionFormat),
+    }
+  }, [flaggedList.length, inputCaptionFormat, jobStatus?.validationReport])
+
+  const onScrollSynced = useCallback((source: 'original' | 'formatted') => {
+    const from = source === 'original' ? originalScrollRef.current : formattedScrollRef.current
+    const to = source === 'original' ? formattedScrollRef.current : originalScrollRef.current
+    if (!from || !to) return
+    if (syncScrollLockRef.current && syncScrollLockRef.current !== source) return
+    syncScrollLockRef.current = source
+    const fromMax = Math.max(1, from.scrollHeight - from.clientHeight)
+    const toMax = Math.max(1, to.scrollHeight - to.clientHeight)
+    const ratio = from.scrollTop / fromMax
+    to.scrollTop = ratio * toMax
+    window.setTimeout(() => {
+      if (syncScrollLockRef.current === source) syncScrollLockRef.current = null
+    }, 0)
+  }, [])
+
   return (
     <>
       <ToolLayout
         breadcrumbs={[{ label: 'Format to client guidelines', href: '/guideline-format' }]}
-        title="Format transcripts to match any client style guide"
-        subtitle="Paste your transcript, choose a preset or upload a client guide, then get a verified, review-ready transcript with a diff, flagged sections, and exports."
+        title="Turn Raw Transcripts Into Client-Ready Deliverables"
+        subtitle="Apply Rev, GoTranscript, or your client’s custom style guide automatically — with validation-backed formatting, QA checks, and a review queue."
         icon={<FileText className="text-violet-600 dark:text-violet-400" strokeWidth={1.75} />}
         sidebar={null}
       >
         <div className="max-w-6xl mx-auto space-y-8">
+          <div className="flex flex-wrap gap-2">
+            {[
+              'Validation-backed formatting',
+              'Caption-safe exports',
+              'Segment-linked review',
+              'Works with custom client guides',
+            ].map((t) => (
+              <span
+                key={t}
+                className="inline-flex items-center rounded-full border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/40 px-3 py-1 text-xs font-medium text-gray-700 dark:text-gray-200"
+              >
+                ✓ {t}
+              </span>
+            ))}
+          </div>
           {prefillBanner && (
             <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/90 dark:bg-emerald-950/30 px-4 py-3 text-sm text-emerald-900 dark:text-emerald-100">
               <p>Transcript loaded from your VideoText job — ready to format.</p>
@@ -776,80 +932,98 @@ export default function GuidelineFormat() {
                     (cat) => {
                       const list = rulesByCategory.get(cat) ?? []
                       if (!list.length) return null
+                      const isOpen = Boolean(categoryOpen[cat])
                       return (
-                      <details
-                        key={cat}
-                        open
-                        className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-950/30"
-                      >
-                        <summary className="cursor-pointer select-none px-4 py-3 text-sm font-semibold text-violet-700 dark:text-violet-300">
-                          {cat} <span className="text-xs font-medium text-gray-400 dark:text-gray-500">({list.length})</span>
-                        </summary>
-                        <div className="px-4 pb-4 space-y-4">
-                          {list.map((rule) => (
-                            <div
-                              key={rule.id}
-                              className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-white/80 dark:bg-gray-900/40"
-                            >
-                              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                                <label className="text-sm font-medium text-gray-800 dark:text-gray-200" htmlFor={`rule-${rule.id}`}>
-                                  {rule.label}
-                                </label>
-                                {rule.isEdited && (
-                                  <div className="flex items-center gap-2 shrink-0">
-                                    <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded">
-                                      Edited <span aria-hidden className="text-amber-500">●</span>
-                                    </span>
-                                    <button
-                                      type="button"
-                                      onClick={() => resetOneRule(rule.id)}
-                                      className="text-xs text-violet-600 dark:text-violet-400 hover:underline font-medium"
-                                    >
-                                      Reset
-                                    </button>
-                                  </div>
-                                )}
-                                {selectedPreset === 'custom' && rule.extractionConfidence && (
-                                  <span
-                                    className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${
-                                      rule.extractionConfidence === 'high'
-                                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200'
-                                        : rule.extractionConfidence === 'medium'
-                                          ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100'
-                                          : 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200'
-                                    }`}
-                                    title={rule.extractionReason || undefined}
-                                  >
-                                    {rule.extractionConfidence === 'high'
-                                      ? 'High confidence'
-                                      : rule.extractionConfidence === 'medium'
-                                        ? 'Medium confidence'
-                                        : 'Needs review'}
-                                  </span>
-                                )}
-                              </div>
-                              {selectedPreset === 'custom' && (rule.extractionReason || rule.sourceQuote) && (
-                                <div className="mb-2 space-y-1">
-                                  {rule.extractionReason && (
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">{rule.extractionReason}</p>
-                                  )}
-                                  {rule.sourceQuote && (
-                                    <p className="text-[11px] text-gray-500 dark:text-gray-400 border-l-2 border-gray-200 dark:border-gray-700 pl-2">
-                                      “{rule.sourceQuote}”
-                                    </p>
-                                  )}
-                                </div>
-                              )}
-                              <AutoGrowTextarea
-                                aria-label={rule.label}
-                                value={rule.currentValue}
-                                onChange={(v) => updateRuleValue(rule.id, v)}
-                                className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 leading-relaxed focus:outline-none focus:ring-2 focus:ring-violet-500/30"
-                              />
+                        <div
+                          key={cat}
+                          className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-950/30 overflow-hidden"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => setCategoryOpen((p) => ({ ...p, [cat]: !Boolean(p[cat]) }))}
+                            className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left"
+                            aria-expanded={isOpen}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center justify-center text-violet-700 dark:text-violet-300">
+                                {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                              </span>
+                              <span className="text-sm font-semibold text-violet-700 dark:text-violet-300">
+                                {cat}{' '}
+                                <span className="text-xs font-medium text-gray-400 dark:text-gray-500">({list.length} rules)</span>
+                              </span>
                             </div>
-                          ))}
+                            <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                              {isOpen ? 'Hide' : 'Show'}
+                            </span>
+                          </button>
+                          {isOpen && (
+                            <div className="px-4 pb-4 space-y-4">
+                              {list.map((rule) => (
+                                <div
+                                  key={rule.id}
+                                  className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-white/80 dark:bg-gray-900/40"
+                                >
+                                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                    <label className="text-sm font-medium text-gray-800 dark:text-gray-200" htmlFor={`rule-${rule.id}`}>
+                                      {rule.label}
+                                    </label>
+                                    {rule.isEdited && (
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded">
+                                          Edited <span aria-hidden className="text-amber-500">●</span>
+                                        </span>
+                                        <button
+                                          type="button"
+                                          onClick={() => resetOneRule(rule.id)}
+                                          className="text-xs text-violet-600 dark:text-violet-400 hover:underline font-medium"
+                                        >
+                                          Reset
+                                        </button>
+                                      </div>
+                                    )}
+                                    {selectedPreset === 'custom' && rule.extractionConfidence && (
+                                      <span
+                                        className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${
+                                          rule.extractionConfidence === 'high'
+                                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200'
+                                            : rule.extractionConfidence === 'medium'
+                                              ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100'
+                                              : 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200'
+                                        }`}
+                                        title={rule.extractionReason || undefined}
+                                      >
+                                        {rule.extractionConfidence === 'high'
+                                          ? 'High confidence'
+                                          : rule.extractionConfidence === 'medium'
+                                            ? 'Medium confidence'
+                                            : 'Needs review'}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {selectedPreset === 'custom' && (rule.extractionReason || rule.sourceQuote) && (
+                                    <div className="mb-2 space-y-1">
+                                      {rule.extractionReason && (
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">{rule.extractionReason}</p>
+                                      )}
+                                      {rule.sourceQuote && (
+                                        <p className="text-[11px] text-gray-500 dark:text-gray-400 border-l-2 border-gray-200 dark:border-gray-700 pl-2">
+                                          “{rule.sourceQuote}”
+                                        </p>
+                                      )}
+                                    </div>
+                                  )}
+                                  <AutoGrowTextarea
+                                    aria-label={rule.label}
+                                    value={rule.currentValue}
+                                    onChange={(v) => updateRuleValue(rule.id, v)}
+                                    className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 leading-relaxed focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </details>
                       )
                     }
                   )}
@@ -930,7 +1104,7 @@ export default function GuidelineFormat() {
                 onClick={() => void submitFormat()}
                 className="rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold px-5 py-3 text-sm shadow-md transition-colors"
               >
-                {isSubmitting ? 'Formatting…' : 'Format Transcript →'}
+                {isSubmitting ? 'Generating…' : 'Generate Client-Ready Transcript →'}
               </button>
             </div>
           </div>
@@ -953,6 +1127,38 @@ export default function GuidelineFormat() {
                         Stage: {jobStatus.stage}
                       </span>
                     )}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                    {[
+                      { key: 'queued', label: 'Preparing transcript…' },
+                      { key: 'formatting', label: 'Applying style guide…' },
+                      { key: 'validating', label: 'Verifying checks…' },
+                      { key: 'completed', label: 'Generating review queue…' },
+                    ].map((s) => {
+                      const active =
+                        jobStatus?.stage === s.key ||
+                        (s.key === 'queued' && (jobStatus?.status === 'queued' || jobStatus?.stage === 'queued')) ||
+                        (s.key === 'completed' && jobStatus?.status === 'completed')
+                      const done =
+                        jobStatus?.stage === 'completed' ||
+                        (jobStatus?.stage === 'validating' && (s.key === 'queued' || s.key === 'formatting')) ||
+                        (jobStatus?.stage === 'formatting' && s.key === 'queued')
+                      return (
+                        <div
+                          key={s.key}
+                          className={`rounded-xl border px-3 py-2 text-xs ${
+                            active
+                              ? 'border-violet-300 dark:border-violet-800 bg-white/70 dark:bg-gray-900/40 text-gray-900 dark:text-gray-100'
+                              : 'border-gray-200/60 dark:border-gray-800 bg-white/40 dark:bg-gray-950/20 text-gray-600 dark:text-gray-300'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-semibold">{s.label}</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-wide opacity-80">{done ? '✓' : active ? '…' : ''}</span>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                   <div className="h-2 w-full rounded-full bg-violet-200/50 dark:bg-violet-900/30 overflow-hidden">
                     <div
@@ -1001,45 +1207,104 @@ export default function GuidelineFormat() {
               {jobStatus?.status === 'completed' && !submitError && (
                 <div className="space-y-6">
                   {jobStatus.validationReport?.summary && (
-                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-4 space-y-2">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Validation Report</p>
-                        {typeof jobStatus.validationReport.summary.confidencePct === 'number' && (
-                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">
-                            Validation confidence:{' '}
-                            <span className="text-violet-700 dark:text-violet-300">{jobStatus.validationReport.summary.confidencePct}%</span>
-                          </span>
-                        )}
-                      </div>
-                      {typeof jobStatus.validationReport.summary.qaReductionPct === 'number' && (
-                        <div className="rounded-lg border border-violet-200/60 dark:border-violet-900/40 bg-violet-50/60 dark:bg-violet-950/20 px-3 py-2">
-                          <p className="text-sm text-gray-800 dark:text-gray-100">
-                            Estimated QA reduction:{' '}
-                            <span className="font-semibold text-violet-700 dark:text-violet-300">
-                              ~{jobStatus.validationReport.summary.qaReductionPct}%
-                            </span>{' '}
-                            fewer manual formatting edits
-                          </p>
-                          <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
-                            Based on automated cleanup signals and verification coverage — an estimate, not a guarantee.
+                    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 p-5 shadow-sm">
+                      <div className="flex flex-wrap items-start justify-between gap-4">
+                        <div className="space-y-1">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">System health</p>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">Validation Summary</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-300">
+                            Calm checks that answer: “Can I trust this deliverable?”
                           </p>
                         </div>
-                      )}
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-700 dark:text-gray-300">
-                        <span>
-                          ✓ <strong className="text-gray-900 dark:text-white">{jobStatus.validationReport.summary.verified?.passed ?? 0}</strong>{' '}
-                          checks verified
-                        </span>
-                        <span>
-                          ⚠ <strong className="text-gray-900 dark:text-white">{jobStatus.validationReport.summary.likelyCompliant?.passed ?? 0}</strong>{' '}
-                          likely compliant
-                        </span>
-                        <span>
-                          👀 <strong className="text-gray-900 dark:text-white">
-                            {(jobStatus.validationReport.summary.needsReview?.total ?? 0) - (jobStatus.validationReport.summary.needsReview?.passed ?? 0)}
-                          </strong>{' '}
-                          require review
-                        </span>
+                        <div className="text-right">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Validation confidence</p>
+                          <p className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                            {validationHealth.confidencePct ?? jobStatus.validationReport.summary.confidencePct}%
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 h-px bg-gray-200/70 dark:bg-gray-700/70" />
+
+                      <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div className="space-y-2 text-sm">
+                          {[
+                            {
+                              key: 'formatting_integrity',
+                              label: 'Formatting integrity verified',
+                              passed: Boolean(validationHealth.outputPresent?.passed && validationHealth.artifacts?.passed),
+                              details:
+                                validationHealth.outputPresent?.passed && validationHealth.artifacts?.passed
+                                  ? undefined
+                                  : validationHealth.outputPresent?.details || validationHealth.artifacts?.details,
+                            },
+                            {
+                              key: 'speaker_preservation',
+                              label: 'Speaker preservation verified',
+                              passed: validationHealth.speaker?.passed ?? true,
+                              details: validationHealth.speaker?.details,
+                            },
+                            ...(validationHealth.isCaptionMode
+                              ? [
+                                  {
+                                    key: 'caption_export',
+                                    label: 'Caption export validated',
+                                    passed: validationHealth.caption?.passed ?? true,
+                                    details: validationHealth.caption?.details,
+                                  },
+                                ]
+                              : []),
+                          ].map((row) => (
+                            <div
+                              key={row.key}
+                              className="flex items-start justify-between gap-3 rounded-xl border border-gray-200/70 dark:border-gray-700/70 bg-white/60 dark:bg-gray-950/20 px-3 py-2"
+                            >
+                              <div className="min-w-0">
+                                <p className="font-medium text-gray-900 dark:text-gray-100">{row.label}</p>
+                                {row.details ? <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">{row.details}</p> : null}
+                              </div>
+                              <span
+                                className={`shrink-0 text-xs font-semibold ${
+                                  row.passed ? 'text-emerald-700 dark:text-emerald-300' : 'text-red-700 dark:text-red-300'
+                                }`}
+                              >
+                                {row.passed ? '✓' : '✕'}
+                              </span>
+                            </div>
+                          ))}
+
+                          <div className="flex items-center justify-between gap-3 rounded-xl border border-gray-200/70 dark:border-gray-700/70 bg-white/60 dark:bg-gray-950/20 px-3 py-2">
+                            <div>
+                              <p className="font-medium text-gray-900 dark:text-gray-100">Review suggestions</p>
+                              <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
+                                Flagged sections that may need a human pass.
+                              </p>
+                            </div>
+                            <span className="text-xs font-semibold text-amber-800 dark:text-amber-200">
+                              {validationHealth.reviewSuggestions ? `⚠ ${validationHealth.reviewSuggestions}` : '✓ 0'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="rounded-xl border border-violet-200/60 dark:border-violet-900/40 bg-violet-50/60 dark:bg-violet-950/20 px-4 py-3">
+                          <p className="text-sm text-gray-800 dark:text-gray-100">
+                            Estimated formatting cleanup reduced by{' '}
+                            <span className="font-semibold text-violet-700 dark:text-violet-300">
+                              ~{jobStatus.validationReport.summary.qaReductionPct}%
+                            </span>
+                          </p>
+                          <p className="text-[11px] text-gray-600 dark:text-gray-300 mt-1">
+                            Based on automated cleanup signals + verification coverage — an estimate, not a guarantee.
+                          </p>
+                          <div className="mt-3 flex flex-wrap gap-3 text-xs text-gray-700 dark:text-gray-300">
+                            <span className="rounded-full border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 px-3 py-1">
+                              ✓ {jobStatus.validationReport.summary.verified?.passed ?? 0}/{jobStatus.validationReport.summary.verified?.total ?? 0} verified
+                            </span>
+                            <span className="rounded-full border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 px-3 py-1">
+                              ⚠ {jobStatus.validationReport.summary.likelyCompliant?.passed ?? 0}/{jobStatus.validationReport.summary.likelyCompliant?.total ?? 0} likely compliant
+                            </span>
+                          </div>
+                        </div>
                       </div>
                       {Array.isArray(jobStatus.validationReport.checks) && jobStatus.validationReport.checks.length > 0 && (
                         <details className="pt-1">
@@ -1108,125 +1373,460 @@ export default function GuidelineFormat() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-4 min-h-[120px]">
-                      <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</h3>
-                      <div className="space-y-3">
-                        {originalSegments.length > 0 ? (
-                          originalSegments.map((seg, idx) => {
-                            const n = idx + 1
-                            const isFocused = focusSegment === n
-                            return (
-                              <div
-                                key={n}
-                                id={`seg-${n}`}
-                                className={`rounded-lg border px-3 py-2 text-xs whitespace-pre-wrap font-sans leading-relaxed transition-colors ${
-                                  isFocused
-                                    ? 'border-violet-400 bg-violet-50 dark:border-violet-700 dark:bg-violet-950/30'
-                                    : 'border-gray-200/70 dark:border-gray-700/70 bg-white/60 dark:bg-gray-950/20'
-                                }`}
-                              >
-                                <div className="flex items-center justify-between mb-1">
-                                  <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Segment {n}</span>
-                                </div>
-                                <div className="text-gray-800 dark:text-gray-200">{seg}</div>
-                              </div>
-                            )
-                          })
-                        ) : (
-                          <pre className="text-xs text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-sans leading-relaxed">
-                            {originalTranscriptForJob}
-                          </pre>
-                        )}
+                  <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Ready for review</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
+                          Start with flagged sections (lowest cognitive load), then review the full transcript.
+                        </p>
                       </div>
-                    </div>
-                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-4 min-h-[120px]">
-                      <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
-                        Formatted
-                      </h3>
-                      <div className="text-xs leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-sans">
-                        {diffSegments.length > 0 ? (
-                          diffSegments.map((seg, i) => {
-                            const key = `${i}-${seg.type}-${seg.text.slice(0, 12)}`
-                            if (seg.type === 'added') {
-                              return (
-                                <span key={key} className="bg-emerald-200/80 dark:bg-emerald-900/50 px-0.5 rounded-sm">
-                                  {seg.text}
-                                </span>
-                              )
-                            }
-                            if (seg.type === 'removed') {
-                              return (
-                                <span key={key} className="text-red-600 dark:text-red-400 line-through decoration-red-500/70 px-0.5">
-                                  {seg.text}
-                                </span>
-                              )
-                            }
-                            return <span key={key}>{seg.text}</span>
-                          })
-                        ) : (
-                          <pre className="whitespace-pre-wrap font-sans">{jobStatus.outputText ?? ''}</pre>
-                        )}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={flaggedList.length === 0}
+                          onClick={() => {
+                            setResultMode('review')
+                            setReviewIssueCursor(0)
+                            setReviewWarnings([])
+                          }}
+                          className="rounded-lg bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2"
+                        >
+                          Review Issues ({flaggedList.length})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setResultMode('full')}
+                          className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                        >
+                          Open full transcript
+                        </button>
                       </div>
                     </div>
                   </div>
 
-                  {flaggedList.length > 0 && (
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Sections flagged for review</h3>
-                      <ul className="space-y-3">
-                        {flaggedList.map((seg, i) => {
-                          const c = (seg.confidence || '').toLowerCase()
-                          const badgeClass =
-                            c === 'high'
-                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200'
-                              : c === 'low'
-                                ? 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200'
-                                : 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100'
-                          const segIndex = findSegmentForText(seg.originalText)
-                          const canJump = typeof segIndex === 'number' && segIndex > 0
-                          return (
-                            <li
-                              key={i}
-                              className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/50 p-4 space-y-2 text-sm"
-                            >
-                              <div className="flex flex-wrap items-center justify-between gap-2">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <span
-                                    className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${badgeClass}`}
+                  {resultMode === 'review' && (
+                    <div className="space-y-4">
+                      {flaggedList.length === 0 ? (
+                        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-4">
+                          <p className="text-sm text-gray-800 dark:text-gray-100">No issues flagged. You’re good to export.</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                Issue {reviewIssueCursor + 1} of {flaggedList.length}
+                              </p>
+                              <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">Resolve issues one at a time, then export.</p>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setResultMode('full')}
+                                className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                              >
+                                Full transcript
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setResultMode('summary')}
+                                className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                              >
+                                Back to summary
+                              </button>
+                            </div>
+                          </div>
+
+                          {(() => {
+                            const seg = flaggedList[Math.min(flaggedList.length - 1, Math.max(0, reviewIssueCursor))]
+                            const c = (seg?.confidence || '').toLowerCase()
+                            const badgeClass =
+                              c === 'high'
+                                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200'
+                                : c === 'low'
+                                  ? 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200'
+                                  : 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100'
+                            const segIndex = seg ? findSegmentForText(seg.originalText) : null
+                            const canJump = typeof segIndex === 'number' && segIndex > 0
+                            const issueIdx = Math.min(flaggedList.length - 1, Math.max(0, reviewIssueCursor))
+                            const editValue = typeof reviewEdits[issueIdx] === 'string' ? reviewEdits[issueIdx] : seg?.suggestedText || ''
+                            const goNext = () => {
+                              const nextWarnings: string[] = []
+                              const base = jobStatus.outputText ?? ''
+                              if (base) {
+                                const { warnings } = applyReviewEditsToOutputText(base, flaggedList, reviewEdits)
+                                nextWarnings.push(...warnings)
+                              }
+                              setReviewWarnings(nextWarnings)
+                              setReviewIssueCursor((v) => Math.min(flaggedList.length - 1, v + 1))
+                            }
+                            return (
+                              <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-5 space-y-4">
+                                <div className="flex flex-wrap items-start justify-between gap-3">
+                                  <div className="space-y-1">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <span className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${badgeClass}`}>
+                                        {seg?.confidence || 'medium'}
+                                      </span>
+                                      <span className="text-xs font-semibold text-violet-700 dark:text-violet-300">{seg?.ruleApplied}</span>
+                                    </div>
+                                    <p className="text-sm text-gray-800 dark:text-gray-100">{seg?.reason}</p>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    disabled={!canJump}
+                                    onClick={() => {
+                                      if (!canJump) return
+                                      setResultMode('full')
+                                      setFocusSegment(segIndex as number)
+                                      window.setTimeout(() => {
+                                        const el = document.getElementById(`seg-${segIndex}`)
+                                        el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                                      }, 50)
+                                    }}
+                                    className={`text-xs font-semibold ${
+                                      canJump ? 'text-violet-700 dark:text-violet-300 hover:underline' : 'text-gray-400 dark:text-gray-500'
+                                    }`}
+                                    title={canJump ? `Open full transcript at segment ${segIndex}` : 'Could not locate this text in the original transcript'}
                                   >
-                                    {seg.confidence || 'medium'}
-                                  </span>
-                                  <span className="text-xs font-medium text-violet-700 dark:text-violet-300">{seg.ruleApplied}</span>
+                                    {canJump ? `Open at segment ${segIndex}` : 'Open at segment unavailable'}
+                                  </button>
                                 </div>
-                                <button
-                                  type="button"
-                                  disabled={!canJump}
-                                  onClick={() => {
-                                    if (!canJump) return
-                                    setFocusSegment(segIndex as number)
-                                    const el = document.getElementById(`seg-${segIndex}`)
-                                    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                                  }}
-                                  className={`text-xs font-semibold ${canJump ? 'text-violet-700 dark:text-violet-300 hover:underline' : 'text-gray-400 dark:text-gray-500'}`}
-                                  title={canJump ? `Jump to segment ${segIndex}` : 'Could not locate this exact text in the original transcript'}
-                                >
-                                  {canJump ? `Jump to segment ${segIndex}` : 'Jump unavailable'}
-                                </button>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                                  <div className="lg:col-span-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/40 dark:bg-gray-950/20 p-4">
+                                    <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</p>
+                                    <div className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed opacity-75">
+                                      {seg?.originalText || ''}
+                                    </div>
+                                  </div>
+                                  <div className="lg:col-span-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950/10 p-4">
+                                    <div className="flex items-center justify-between gap-3 mb-2">
+                                      <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Formatted</p>
+                                      <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                        {issueIdx in reviewEdits ? 'Edited' : 'Suggested'}
+                                      </span>
+                                    </div>
+                                    <AutoGrowTextarea
+                                      aria-label="Formatted suggestion"
+                                      value={editValue}
+                                      onChange={(v) => setReviewEdits((p) => ({ ...p, [issueIdx]: v }))}
+                                      className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950/20 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 leading-relaxed focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (seg?.suggestedText) setReviewEdits((p) => ({ ...p, [issueIdx]: seg.suggestedText }))
+                                        goNext()
+                                      }}
+                                      className="rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2"
+                                    >
+                                      Accept & Next
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setReviewEdits((p) => {
+                                          if (!(issueIdx in p)) return p
+                                          const { [issueIdx]: _omit, ...rest } = p
+                                          return rest
+                                        })
+                                        goNext()
+                                      }}
+                                      className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                    >
+                                      Skip
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setReviewIssueCursor((v) => Math.max(0, v - 1))}
+                                      className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                    >
+                                      Previous
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={goNext}
+                                      className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                    >
+                                      Next
+                                    </button>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => setResultMode('full')}
+                                    className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                  >
+                                    Review full transcript
+                                  </button>
+                                </div>
                               </div>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">
-                                <span className="font-semibold text-gray-700 dark:text-gray-300">Original: </span>
-                                {seg.originalText}
-                              </p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">
-                                <span className="font-semibold text-gray-700 dark:text-gray-300">Suggested: </span>
-                                {seg.suggestedText}
-                              </p>
-                              <p className="text-xs text-gray-600 dark:text-gray-300">{seg.reason}</p>
-                            </li>
-                          )
-                        })}
-                      </ul>
+                            )
+                          })()}
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {resultMode === 'full' && (
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">Transcript view</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
+                            Original is dimmed (40%). Formatted is primary (60%). Scrolling stays synced — or switch to Focus Mode.
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <div className="inline-flex rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 overflow-hidden">
+                            <button
+                              type="button"
+                              onClick={() => setFullTranscriptMode('all')}
+                              className={`px-3 py-2 text-sm font-semibold ${
+                                fullTranscriptMode === 'all'
+                                  ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                                  : 'text-gray-900 dark:text-gray-100 hover:bg-white dark:hover:bg-gray-900/40'
+                              }`}
+                            >
+                              Full
+                            </button>
+                            <button
+                              type="button"
+                              disabled={flaggedList.length === 0}
+                              onClick={() => setFullTranscriptMode('focus')}
+                              className={`px-3 py-2 text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed ${
+                                fullTranscriptMode === 'focus'
+                                  ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                                  : 'text-gray-900 dark:text-gray-100 hover:bg-white dark:hover:bg-gray-900/40'
+                              }`}
+                              title={flaggedList.length ? 'Show only flagged sections with expandable context' : 'No flagged sections available'}
+                            >
+                              Focus
+                            </button>
+                          </div>
+                          {flaggedList.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setResultMode('review')}
+                              className="rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2"
+                            >
+                              Review Issues ({flaggedList.length})
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => setResultMode('summary')}
+                            className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                          >
+                            Back to summary
+                          </button>
+                        </div>
+                      </div>
+
+                      {fullTranscriptMode === 'focus' ? (
+                        <div className="space-y-3">
+                          {flaggedList.length === 0 ? (
+                            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-4">
+                              <p className="text-sm text-gray-800 dark:text-gray-100">No flagged sections. Switch back to Full view to review everything.</p>
+                            </div>
+                          ) : (
+                            flaggedList.map((seg, i) => {
+                              const segIndex = findSegmentForText(seg.originalText)
+                              const expanded = Boolean(focusContextExpanded[i])
+                              const centerIdx = typeof segIndex === 'number' ? segIndex - 1 : null
+                              const context =
+                                centerIdx != null && originalSegments.length
+                                  ? expanded
+                                    ? [centerIdx - 1, centerIdx, centerIdx + 1].filter((x) => x >= 0 && x < originalSegments.length)
+                                    : [centerIdx]
+                                  : []
+                              const formatted = typeof reviewEdits[i] === 'string' ? reviewEdits[i] : seg.suggestedText
+                              const c = (seg.confidence || '').toLowerCase()
+                              const badgeClass =
+                                c === 'high'
+                                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200'
+                                  : c === 'low'
+                                    ? 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200'
+                                    : 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100'
+                              return (
+                                <div key={i} className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-5 space-y-4">
+                                  <div className="flex flex-wrap items-start justify-between gap-3">
+                                    <div className="space-y-1">
+                                      <div className="flex flex-wrap items-center gap-2">
+                                        <span className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${badgeClass}`}>
+                                          {seg.confidence || 'medium'}
+                                        </span>
+                                        <span className="text-xs font-semibold text-violet-700 dark:text-violet-300">{seg.ruleApplied}</span>
+                                        <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                          Issue {i + 1} of {flaggedList.length}
+                                        </span>
+                                      </div>
+                                      <p className="text-sm text-gray-800 dark:text-gray-100">{seg.reason}</p>
+                                    </div>
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => setFocusContextExpanded((p) => ({ ...p, [i]: !Boolean(p[i]) }))}
+                                        className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                      >
+                                        {expanded ? 'Collapse context' : 'Expand surrounding context'}
+                                      </button>
+                                      <button
+                                        type="button"
+                                        disabled={typeof segIndex !== 'number' || segIndex <= 0}
+                                        onClick={() => {
+                                          if (typeof segIndex !== 'number' || segIndex <= 0) return
+                                          setFullTranscriptMode('all')
+                                          setFocusSegment(segIndex)
+                                          window.setTimeout(() => {
+                                            const el = document.getElementById(`seg-${segIndex}`)
+                                            el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                                          }, 50)
+                                        }}
+                                        className={`rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 text-sm font-semibold px-4 py-2 ${
+                                          typeof segIndex === 'number' && segIndex > 0
+                                            ? 'text-gray-900 dark:text-gray-100 hover:bg-white dark:hover:bg-gray-900/40'
+                                            : 'text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
+                                        }`}
+                                      >
+                                        Open in full view
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                                    <div className="lg:col-span-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/40 dark:bg-gray-950/20 p-4">
+                                      <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</p>
+                                      {context.length ? (
+                                        <div className="space-y-2">
+                                          {context.map((idx) => (
+                                            <div key={idx} className="rounded-lg border border-gray-200/60 dark:border-gray-700/60 bg-white/60 dark:bg-gray-950/20 px-3 py-2">
+                                              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Segment {idx + 1}</p>
+                                              <div className="mt-1 text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed opacity-75">
+                                                {originalSegments[idx]}
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      ) : (
+                                        <div className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed opacity-75">
+                                          {seg.originalText}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="lg:col-span-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950/10 p-4">
+                                      <div className="flex items-center justify-between gap-3 mb-2">
+                                        <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Formatted</p>
+                                        <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                          {i in reviewEdits ? 'Edited' : 'Suggested'}
+                                        </span>
+                                      </div>
+                                      <AutoGrowTextarea
+                                        aria-label="Formatted suggestion"
+                                        value={formatted}
+                                        onChange={(v) => setReviewEdits((p) => ({ ...p, [i]: v }))}
+                                        className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950/20 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 leading-relaxed focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            })
+                          )}
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                          <div className="lg:col-span-2 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/30 p-4">
+                            <h3 className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</h3>
+                            <div
+                              ref={originalScrollRef}
+                              onScroll={() => onScrollSynced('original')}
+                              className="h-[60vh] overflow-auto pr-2"
+                            >
+                              <div className="space-y-3">
+                                {originalSegments.length > 0 ? (
+                                  originalSegments.map((seg, idx) => {
+                                    const n = idx + 1
+                                    const isFocused = focusSegment === n
+                                    return (
+                                      <div
+                                        key={n}
+                                        id={`seg-${n}`}
+                                        className={`rounded-xl border px-3 py-2 text-xs whitespace-pre-wrap font-sans leading-relaxed transition-colors opacity-70 ${
+                                          isFocused
+                                            ? 'border-violet-400 bg-violet-50 dark:border-violet-700 dark:bg-violet-950/30 opacity-100'
+                                            : 'border-gray-200/70 dark:border-gray-700/70 bg-white/60 dark:bg-gray-950/20'
+                                        }`}
+                                      >
+                                        <div className="flex items-center justify-between mb-1">
+                                          <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Segment {n}</span>
+                                        </div>
+                                        <div className="text-gray-800 dark:text-gray-200">{seg}</div>
+                                      </div>
+                                    )
+                                  })
+                                ) : (
+                                  <pre className="text-xs text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-sans leading-relaxed opacity-75">
+                                    {originalTranscriptForJob}
+                                  </pre>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="lg:col-span-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-4 shadow-sm">
+                            <h3 className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Formatted</h3>
+                            <div
+                              ref={formattedScrollRef}
+                              onScroll={() => onScrollSynced('formatted')}
+                              className="h-[60vh] overflow-auto pr-2"
+                            >
+                              <div className="text-sm leading-relaxed text-gray-900 dark:text-gray-100 whitespace-pre-wrap font-sans">
+                                {diffSegments.length > 0 ? (
+                                  diffSegments.map((seg, i) => {
+                                    const key = `${i}-${seg.type}-${seg.text.slice(0, 12)}`
+                                    if (seg.type === 'added') {
+                                      return (
+                                        <span key={key} className="bg-emerald-200/60 dark:bg-emerald-900/40 px-0.5 rounded-sm">
+                                          {seg.text}
+                                        </span>
+                                      )
+                                    }
+                                    if (seg.type === 'removed') {
+                                      return (
+                                        <span key={key} className="text-red-600 dark:text-red-400 line-through decoration-red-500/70 px-0.5 opacity-70">
+                                          {seg.text}
+                                        </span>
+                                      )
+                                    }
+                                    return <span key={key}>{seg.text}</span>
+                                  })
+                                ) : (
+                                  <pre className="whitespace-pre-wrap font-sans">{effectiveOutputText}</pre>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {reviewWarnings.length > 0 && (
+                        <div className="rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/70 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-100">
+                          <p className="font-semibold">Some edits could not be applied to the full output:</p>
+                          <ul className="mt-2 space-y-1 text-xs">
+                            {reviewWarnings.slice(0, 5).map((w, i) => (
+                              <li key={i}>{w}</li>
+                            ))}
+                            {reviewWarnings.length > 5 ? <li>…and {reviewWarnings.length - 5} more</li> : null}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   )}
 
