@@ -131,6 +131,8 @@ export default function GuidelineFormat() {
   const [selectedPreset, setSelectedPreset] = useState<GuidelinePresetKey | 'custom' | null>(null)
   const [rules, setRules] = useState<EditableRule[]>([])
   const [customFile, setCustomFile] = useState<File | null>(null)
+  const [customGuideLoading, setCustomGuideLoading] = useState(false)
+  const [customGuideError, setCustomGuideError] = useState<string | null>(null)
   const [jobId, setJobId] = useState<string | null>(null)
   const [jobStatus, setJobStatus] = useState<JobStatusResponse | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -160,7 +162,8 @@ export default function GuidelineFormat() {
   }, [transcript])
 
   const hasGuidelineSelected =
-    selectedPreset != null && (selectedPreset !== 'custom' || customFile !== null)
+    selectedPreset != null &&
+    (selectedPreset !== 'custom' ? true : customFile !== null && rules.length > 0 && !customGuideLoading && !customGuideError)
 
   const canSubmit = transcript.trim().length > 0 && hasGuidelineSelected && !isSubmitting
 
@@ -175,18 +178,17 @@ export default function GuidelineFormat() {
     setInputCaptionFormat(null)
     setOriginalCaptionCues(null)
     setFocusSegment(null)
+    setCustomGuideError(null)
   }
 
   const buildRulesPayload = (): ParsedRule[] => {
     if (selectedPreset === 'custom') {
-      return [
-        {
-          id: 'custom-upload',
-          category: 'Custom',
-          label: 'Client style guide file',
-          currentValue: customFile?.name || 'attached',
-        },
-      ]
+      return rules.map((r) => ({
+        id: r.id,
+        category: r.category,
+        label: r.label,
+        currentValue: r.currentValue,
+      }))
     }
     if (selectedPreset) {
       return rules.map((r) => ({
@@ -509,7 +511,37 @@ export default function GuidelineFormat() {
       return
     }
     setCustomFile(file)
+    setCustomGuideLoading(true)
+    setCustomGuideError(null)
+    setRules([])
     resetJobUi()
+    const fd = new FormData()
+    fd.append('file', file)
+    api('/api/guidelines/parse-guide', { method: 'POST', body: fd, timeout: 60000 })
+      .then(async (res) => {
+        const data = (await res.json()) as { rules?: Array<{ id: string; category: string; label: string; currentValue: string }>; error?: string }
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to parse style guide')
+        }
+        const list = Array.isArray(data.rules) ? data.rules : []
+        if (!list.length) throw new Error('No rules extracted from this guide')
+        setRules(
+          list.map((r) => ({
+            id: r.id,
+            category: r.category,
+            label: r.label,
+            defaultValue: r.currentValue,
+            currentValue: r.currentValue,
+            isEdited: false,
+          }))
+        )
+        toast.success('Style guide parsed — rules loaded')
+      })
+      .catch((e) => {
+        setCustomGuideError(e instanceof Error ? e.message : 'Failed to parse style guide')
+        toast.error('Style guide parsing failed')
+      })
+      .finally(() => setCustomGuideLoading(false))
   }
 
   const rulesByCategory = useMemo(() => {
@@ -518,6 +550,7 @@ export default function GuidelineFormat() {
       map.set(cat, [])
     }
     for (const r of rules) {
+      if (!map.has(r.category)) map.set(r.category, [])
       const list = map.get(r.category)
       if (list) list.push(r)
     }
@@ -689,12 +722,13 @@ export default function GuidelineFormat() {
                 </select>
               </div>
 
-              {selectedPreset && selectedPreset !== 'custom' && rules.length > 0 && (
+              {selectedPreset && rules.length > 0 && (
                 <div className="space-y-4">
-                  {CATEGORY_ORDER.map((cat) => {
-                    const list = rulesByCategory.get(cat) ?? []
-                    if (!list.length) return null
-                    return (
+                  {[...CATEGORY_ORDER, ...[...rulesByCategory.keys()].filter((k) => !(CATEGORY_ORDER as readonly string[]).includes(k))].map(
+                    (cat) => {
+                      const list = rulesByCategory.get(cat) ?? []
+                      if (!list.length) return null
+                      return (
                       <details
                         key={cat}
                         open
@@ -738,8 +772,9 @@ export default function GuidelineFormat() {
                           ))}
                         </div>
                       </details>
-                    )
-                  })}
+                      )
+                    }
+                  )}
                   {anyRuleEdited && (
                     <button
                       type="button"
@@ -784,8 +819,18 @@ export default function GuidelineFormat() {
                   </p>
                   {customFile && (
                     <p className="text-sm text-gray-700 dark:text-gray-200 rounded-lg bg-gray-100 dark:bg-gray-800 px-3 py-2">
-                      {customFile.name} received — parsing coming soon
+                      {customFile.name} received
                     </p>
+                  )}
+                  {customGuideLoading && (
+                    <p className="text-sm text-gray-700 dark:text-gray-200 rounded-lg bg-gray-100 dark:bg-gray-800 px-3 py-2">
+                      Parsing style guide… extracting rules
+                    </p>
+                  )}
+                  {customGuideError && (
+                    <div className="rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50/70 dark:bg-red-950/20 px-3 py-2">
+                      <p className="text-sm text-red-700 dark:text-red-300">{customGuideError}</p>
+                    </div>
                   )}
                 </div>
               )}

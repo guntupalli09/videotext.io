@@ -6,8 +6,17 @@ import { guidelineQueue } from '../workers/guidelineProcessor'
 import type { CaptionCue, CaptionFormat, ParsedRule } from '../services/guidelineEnforcer'
 import { insertJobRecord } from '../lib/jobAnalytics'
 import { pushLogEntry } from '../lib/logRing'
+import multer from 'multer'
+import { PDFParse, VerbosityLevel } from 'pdf-parse'
+import mammoth from 'mammoth'
+import { extractRulesFromGuideText } from '../services/guidelineRuleExtractor'
 
 const router = express.Router()
+
+const guideUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024 }, // 8MB is enough for most style guides
+})
 
 function validateRules(body: unknown): ParsedRule[] | null {
   if (!body || typeof body !== 'object') return null
@@ -137,6 +146,62 @@ router.post('/format', async (req: Request, res: Response) => {
     })
 
     return res.status(200).json({ jobId: job.id })
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Internal error'
+    return res.status(500).json({ error: msg })
+  }
+})
+
+router.post('/parse-guide', guideUpload.single('file'), async (req: Request, res: Response) => {
+  try {
+    const userId = getEffectiveUserId(req)
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' })
+    }
+
+    const file = req.file
+    if (!file) {
+      return res.status(400).json({ error: 'Missing file' })
+    }
+
+    const name = (file.originalname || '').toLowerCase()
+    let text = ''
+
+    if (name.endsWith('.txt') || file.mimetype.startsWith('text/')) {
+      text = file.buffer.toString('utf-8')
+    } else if (name.endsWith('.pdf') || file.mimetype === 'application/pdf') {
+      const parser = new PDFParse({ data: file.buffer, verbosity: VerbosityLevel.ERRORS })
+      const tr = await parser.getText()
+      text = typeof tr === 'string' ? tr : (tr as { text?: string }).text || ''
+    } else if (
+      name.endsWith('.docx') ||
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ) {
+      const result = await mammoth.extractRawText({ buffer: file.buffer })
+      text = result.value || ''
+    } else {
+      return res.status(400).json({ error: 'Unsupported file type. Upload PDF, DOCX, or TXT.' })
+    }
+
+    const cleaned = text.replace(/\u0000/g, '').trim()
+    if (!cleaned) {
+      return res.status(400).json({ error: 'Could not extract any text from this file.' })
+    }
+
+    const rules = await extractRulesFromGuideText(cleaned)
+    if (!rules.length) {
+      return res.status(400).json({ error: 'Could not extract rules from this guide. Try a different file or use a preset.' })
+    }
+
+    pushLogEntry({
+      ts: new Date().toISOString(),
+      level: 'info',
+      service: 'api',
+      msg: 'guideline_custom_guide_parsed',
+      module: 'guidelines',
+    })
+
+    return res.status(200).json({ rules })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Internal error'
     return res.status(500).json({ error: msg })
