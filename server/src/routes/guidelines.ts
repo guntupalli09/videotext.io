@@ -3,7 +3,7 @@ import type { Prisma } from '@prisma/client'
 import { getEffectiveUserId } from '../utils/auth'
 import { prisma } from '../db'
 import { guidelineQueue } from '../workers/guidelineProcessor'
-import type { ParsedRule } from '../services/guidelineEnforcer'
+import type { CaptionCue, CaptionFormat, ParsedRule } from '../services/guidelineEnforcer'
 import { insertJobRecord } from '../lib/jobAnalytics'
 import { pushLogEntry } from '../lib/logRing'
 
@@ -33,6 +33,30 @@ function validateRules(body: unknown): ParsedRule[] | null {
     })
   }
   return out
+}
+
+function validateCaptionPayload(body: unknown): { format: CaptionFormat; cues: CaptionCue[] } | null {
+  if (!body || typeof body !== 'object') return null
+  const b = body as Record<string, unknown>
+  const f = b.inputFormat
+  if (f !== 'srt' && f !== 'vtt') return null
+  const cues = b.cues
+  if (!Array.isArray(cues) || cues.length === 0) return null
+  const out: CaptionCue[] = []
+  for (const c of cues) {
+    if (!c || typeof c !== 'object') return null
+    const o = c as Record<string, unknown>
+    if (
+      typeof o.index !== 'number' ||
+      typeof o.startTime !== 'string' ||
+      typeof o.endTime !== 'string' ||
+      typeof o.text !== 'string'
+    ) {
+      return null
+    }
+    out.push({ index: o.index, startTime: o.startTime, endTime: o.endTime, text: o.text })
+  }
+  return { format: f, cues: out }
 }
 
 router.post('/format', async (req: Request, res: Response) => {
@@ -77,13 +101,24 @@ router.post('/format', async (req: Request, res: Response) => {
       toolType: 'guideline-formatting',
     })
 
+    const caption = validateCaptionPayload(req.body)
+
     await guidelineQueue.add(
-      {
-        formattingJobId: job.id,
-        transcriptText: trimmed,
-        rules,
-        userId,
-      },
+      caption
+        ? {
+            formattingJobId: job.id,
+            transcriptText: trimmed,
+            rules,
+            userId,
+            inputFormat: caption.format,
+            cues: caption.cues,
+          }
+        : {
+            formattingJobId: job.id,
+            transcriptText: trimmed,
+            rules,
+            userId,
+          },
       {
         attempts: 3,
         backoff: { type: 'exponential', delay: 2000 },

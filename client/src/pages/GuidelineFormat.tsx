@@ -3,6 +3,7 @@ import { FileText } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { api, getAuthToken } from '../lib/api'
+import { detectFormat, parseSrt, parseVtt, cuesToSrt, cuesToVtt } from '../lib/subtitleUtils'
 import { PRESET_DATA, type GuidelinePresetKey } from './guidelineFormatPresetData'
 
 type EditableRule = {
@@ -107,6 +108,8 @@ export default function GuidelineFormat() {
   const [submitError, setSubmitError] = useState<string | null>(null)
   /** Transcript snapshot for the active job — used so "Original" stays stable while user edits textarea. */
   const [originalTranscriptForJob, setOriginalTranscriptForJob] = useState('')
+  const [inputCaptionFormat, setInputCaptionFormat] = useState<'srt' | 'vtt' | null>(null)
+  const [originalCaptionCues, setOriginalCaptionCues] = useState<ReturnType<typeof parseSrt> | null>(null)
   const txtInputRef = useRef<HTMLInputElement>(null)
   const docxTranscriptRef = useRef<HTMLInputElement>(null)
   const customGuideRef = useRef<HTMLInputElement>(null)
@@ -139,6 +142,8 @@ export default function GuidelineFormat() {
     setSubmitError(null)
     setIsSubmitting(false)
     setOriginalTranscriptForJob('')
+    setInputCaptionFormat(null)
+    setOriginalCaptionCues(null)
   }
 
   const buildRulesPayload = (): ParsedRule[] => {
@@ -211,19 +216,35 @@ export default function GuidelineFormat() {
       toast.error('Select rules or a style guide file')
       return
     }
+    const trimmedTranscript = transcript.trim()
+    const detected = detectFormat(trimmedTranscript)
+    const captionMode = detected === 'srt' || detected === 'vtt' ? detected : null
+    let cuesPayload: any = null
+    if (captionMode) {
+      const cues = captionMode === 'vtt' ? parseVtt(trimmedTranscript) : parseSrt(trimmedTranscript)
+      if (!cues.length) {
+        toast.error('Could not parse your captions. Please paste a valid SRT or VTT file.')
+        return
+      }
+      setInputCaptionFormat(captionMode)
+      setOriginalCaptionCues(cues)
+      cuesPayload = cues.map((c) => ({ index: c.index, startTime: c.startTime, endTime: c.endTime, text: c.text }))
+    }
+
     setIsSubmitting(true)
     setSubmitError(null)
     setJobStatus(null)
     setJobId(null)
-    setOriginalTranscriptForJob(transcript.trim())
+    setOriginalTranscriptForJob(trimmedTranscript)
     try {
       const res = await api('/api/guidelines/format', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          transcriptText: transcript.trim(),
+          transcriptText: trimmedTranscript,
           rules: rulesPayload,
           presetId: selectedPreset,
+          ...(captionMode ? { inputFormat: captionMode, cues: cuesPayload } : {}),
         }),
         timeout: 60000,
       })
@@ -255,6 +276,136 @@ export default function GuidelineFormat() {
     a.download = 'formatted_transcript.txt'
     a.click()
     URL.revokeObjectURL(url)
+  }
+
+  const downloadFormattedSrt = () => {
+    if (inputCaptionFormat !== 'srt' && inputCaptionFormat !== 'vtt') return
+    const original = originalCaptionCues
+    const formattedText = jobStatus?.outputText || ''
+    if (!original || !formattedText) return
+    const formattedCues = (inputCaptionFormat === 'vtt' ? parseVtt(formattedText) : parseSrt(formattedText))
+    if (!formattedCues.length) {
+      toast.error('SRT export failed (formatted captions could not be parsed).')
+      return
+    }
+    const content = cuesToSrt(formattedCues)
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = 'formatted_transcript.srt'
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
+  const downloadFormattedVtt = () => {
+    if (inputCaptionFormat !== 'srt' && inputCaptionFormat !== 'vtt') return
+    const formattedText = jobStatus?.outputText || ''
+    if (!formattedText) return
+    const formattedCues = (inputCaptionFormat === 'vtt' ? parseVtt(formattedText) : parseSrt(formattedText))
+    if (!formattedCues.length) {
+      toast.error('VTT export failed (formatted captions could not be parsed).')
+      return
+    }
+    const content = cuesToVtt(formattedCues)
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = 'formatted_transcript.vtt'
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
+  const downloadFormattedJson = () => {
+    if (!jobStatus) return
+    const payload = {
+      ...jobStatus,
+      jobId,
+      originalText: originalTranscriptForJob,
+    }
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = 'formatted_transcript.json'
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
+  const downloadFlaggedCsv = () => {
+    const list = Array.isArray(jobStatus?.flaggedSegments) ? jobStatus!.flaggedSegments! : []
+    const escape = (v: string) => `"${String(v ?? '').replace(/"/g, '""')}"`
+    const header = ['confidence', 'ruleApplied', 'reason', 'originalText', 'suggestedText']
+    const rows = list.map((x) => [x.confidence, x.ruleApplied, x.reason, x.originalText, x.suggestedText].map(escape).join(','))
+    const csv = [header.join(','), ...rows].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = 'flagged_segments.csv'
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
+  const downloadFormattedRtf = () => {
+    const text = jobStatus?.outputText
+    if (!text) return
+    const rtfEscaped = text
+      .replace(/\\/g, '\\\\')
+      .replace(/{/g, '\\{')
+      .replace(/}/g, '\\}')
+      .replace(/\r?\n/g, '\\par\n')
+    const rtf = `{\\rtf1\\ansi\\deff0\n${rtfEscaped}\n}`
+    const blob = new Blob([rtf], { type: 'application/rtf;charset=utf-8' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = 'formatted_transcript.rtf'
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
+  const downloadFormattedDocx = async () => {
+    const text = jobStatus?.outputText
+    if (!text) return
+    try {
+      const { Document: D, Paragraph: P, TextRun: T, Packer } = await import('docx')
+      const paras = text.split('\n').map((line) => new P({ children: [new T({ text: line })] }))
+      const doc = new D({ sections: [{ children: paras }] })
+      const blob = await Packer.toBlob(doc)
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = 'formatted_transcript.docx'
+      a.click()
+      URL.revokeObjectURL(a.href)
+      toast.success('DOCX downloaded')
+    } catch {
+      toast.error('DOCX export failed')
+    }
+  }
+
+  const downloadFormattedPdf = async () => {
+    const text = jobStatus?.outputText
+    if (!text) return
+    try {
+      const { jsPDF } = await import('jspdf')
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+      const margin = 20
+      const textWidth = doc.internal.pageSize.getWidth() - margin * 2
+      const pageH = doc.internal.pageSize.getHeight()
+      const lineH = 6
+      let y = margin
+      doc.setFontSize(11)
+      const allLines = doc.splitTextToSize(text, textWidth) as string[]
+      for (const line of allLines) {
+        if (y + lineH > pageH - margin) {
+          doc.addPage()
+          y = margin
+        }
+        doc.text(line, margin, y)
+        y += lineH
+      }
+      doc.save('formatted_transcript.pdf')
+      toast.success('PDF downloaded')
+    } catch {
+      toast.error('PDF export failed')
+    }
   }
 
   const onSelectPreset = (v: SelectValue) => {
@@ -315,7 +466,7 @@ export default function GuidelineFormat() {
       toast('DOCX parsing coming soon')
       return
     }
-    toast('Please upload a .txt or .docx file')
+    toast('Please upload a .txt, .srt, .vtt, or .docx file')
   }
 
   const onCustomGuideFiles = (files: FileList | null) => {
@@ -374,7 +525,13 @@ export default function GuidelineFormat() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
             {/* Left — transcript */}
             <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Your Transcript</h2>
+              <div className="space-y-1">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Step 1</p>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Paste your transcript</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Keep speaker labels exactly as-is. We’ll format punctuation, casing, tags, and spacing based on the rules.
+                </p>
+              </div>
               <textarea
                 value={transcript}
                 onChange={(e) => setTranscript(e.target.value)}
@@ -399,7 +556,7 @@ export default function GuidelineFormat() {
                 <input
                   ref={txtInputRef}
                   type="file"
-                  accept=".txt,text/plain"
+                  accept=".txt,.srt,.vtt,text/plain"
                   className="hidden"
                   onChange={(e) => onTranscriptFile(e.target.files)}
                 />
@@ -428,9 +585,13 @@ export default function GuidelineFormat() {
 
             {/* Right — guidelines */}
             <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">
-                Built-in presets: Rev, GoTranscript, TranscribeMe, Scribie
-              </h2>
+              <div className="space-y-1">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Step 2</p>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Choose a style guide</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Start from a preset, then tweak any rule cards below to match your assignment.
+                </p>
+              </div>
 
               <div>
                 <label htmlFor="guideline-preset" className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
@@ -458,18 +619,24 @@ export default function GuidelineFormat() {
               </div>
 
               {selectedPreset && selectedPreset !== 'custom' && rules.length > 0 && (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {CATEGORY_ORDER.map((cat) => {
                     const list = rulesByCategory.get(cat) ?? []
                     if (!list.length) return null
                     return (
-                      <div key={cat}>
-                        <h3 className="text-sm font-semibold text-violet-700 dark:text-violet-300 mb-3">{cat}</h3>
-                        <div className="space-y-4">
+                      <details
+                        key={cat}
+                        open
+                        className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-950/30"
+                      >
+                        <summary className="cursor-pointer select-none px-4 py-3 text-sm font-semibold text-violet-700 dark:text-violet-300">
+                          {cat} <span className="text-xs font-medium text-gray-400 dark:text-gray-500">({list.length})</span>
+                        </summary>
+                        <div className="px-4 pb-4 space-y-4">
                           {list.map((rule) => (
                             <div
                               key={rule.id}
-                              className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-gray-50/80 dark:bg-gray-950/40"
+                              className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-white/80 dark:bg-gray-900/40"
                             >
                               <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                                 <label className="text-sm font-medium text-gray-800 dark:text-gray-200" htmlFor={`rule-${rule.id}`}>
@@ -485,7 +652,7 @@ export default function GuidelineFormat() {
                                       onClick={() => resetOneRule(rule.id)}
                                       className="text-xs text-violet-600 dark:text-violet-400 hover:underline font-medium"
                                     >
-                                      Reset to default
+                                      Reset
                                     </button>
                                   </div>
                                 )}
@@ -499,7 +666,7 @@ export default function GuidelineFormat() {
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </details>
                     )
                   })}
                   {anyRuleEdited && (
@@ -554,14 +721,25 @@ export default function GuidelineFormat() {
             </section>
           </div>
 
-          <button
-            type="button"
-            disabled={!canSubmit}
-            onClick={() => void submitFormat()}
-            className="w-full rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold py-3.5 text-sm shadow-md transition-colors"
-          >
-            Format Transcript →
-          </button>
+          <div className="rounded-2xl border border-violet-200/60 dark:border-violet-900/40 bg-white/70 dark:bg-gray-900/30 p-5 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="space-y-1">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Step 3</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">Run formatting</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  We’ll apply your rules and return a review-ready diff and flagged sections.
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={!canSubmit}
+                onClick={() => void submitFormat()}
+                className="rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold px-5 py-3 text-sm shadow-md transition-colors"
+              >
+                {isSubmitting ? 'Formatting…' : 'Format Transcript →'}
+              </button>
+            </div>
+          </div>
 
           {(showLoadingMessage || showProcessingMessage || submitError || jobStatus) && (
             <div className="rounded-2xl border border-violet-200 dark:border-violet-900/50 bg-violet-50/60 dark:bg-violet-950/25 p-6 space-y-4">
@@ -694,6 +872,71 @@ export default function GuidelineFormat() {
                     >
                       Download TXT
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => void downloadFormattedDocx()}
+                      disabled={!jobStatus.outputText}
+                      className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                    >
+                      DOCX
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void downloadFormattedPdf()}
+                      disabled={!jobStatus.outputText}
+                      className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                    >
+                      PDF
+                    </button>
+                    <button
+                      type="button"
+                      onClick={downloadFormattedRtf}
+                      disabled={!jobStatus.outputText}
+                      className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                    >
+                      RTF
+                    </button>
+                    <button
+                      type="button"
+                      onClick={downloadFormattedJson}
+                      disabled={!jobStatus}
+                      className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                    >
+                      JSON
+                    </button>
+                    <button
+                      type="button"
+                      onClick={downloadFlaggedCsv}
+                      disabled={flaggedList.length === 0}
+                      className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                    >
+                      CSV (flags)
+                    </button>
+                    {inputCaptionFormat ? (
+                      <div className="flex flex-wrap items-center gap-2 ml-auto">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Caption mode detected ({inputCaptionFormat.toUpperCase()})</span>
+                        <button
+                          type="button"
+                          onClick={downloadFormattedSrt}
+                          disabled={!jobStatus.outputText}
+                          className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                        >
+                          SRT
+                        </button>
+                        <button
+                          type="button"
+                          onClick={downloadFormattedVtt}
+                          disabled={!jobStatus.outputText}
+                          className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                        >
+                          VTT
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
+                        Tip: paste SRT/VTT to enable caption-safe exports.
+                      </span>
+                    )}
                   </div>
                 </div>
               )}

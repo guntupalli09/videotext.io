@@ -3,11 +3,13 @@ import Queue from 'bull'
 import type { Prisma } from '@prisma/client'
 import { createRedisClient } from '../utils/redis'
 import { prisma } from '../db'
-import { enforceGuideline, type ParsedRule } from '../services/guidelineEnforcer'
+import { enforceGuideline, enforceGuidelineCaptions, type CaptionCue, type CaptionFormat, type ParsedRule } from '../services/guidelineEnforcer'
 import { computeTranscriptDiff } from '../services/diffEngine'
 import { getLogger } from '../lib/logger'
 import { updateJobCompleted, updateJobFailed, updateJobStarted } from '../lib/jobAnalytics'
 import { pushLogEntry } from '../lib/logRing'
+// Note: server has numeric-time subtitle utilities, but this formatting job runs on pasted text.
+// We preserve original timestamp strings and serialize captions on the client.
 
 const log = getLogger('worker')
 
@@ -27,6 +29,8 @@ export interface GuidelineJobPayload {
   transcriptText: string
   rules: ParsedRule[]
   userId: string
+  inputFormat?: CaptionFormat
+  cues?: CaptionCue[]
 }
 
 export const guidelineQueue = new Queue<GuidelineJobPayload>('guideline-formatting', QUEUE_SETTINGS)
@@ -34,7 +38,7 @@ export const guidelineQueue = new Queue<GuidelineJobPayload>('guideline-formatti
 let guidelineWorkerStarted = false
 
 async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<void> {
-  const { formattingJobId, transcriptText, rules } = job.data
+  const { formattingJobId, transcriptText, rules, inputFormat, cues } = job.data
   const started = Date.now()
 
   try {
@@ -55,17 +59,33 @@ async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<
       data: { status: 'processing' },
     })
 
-    const result = await enforceGuideline(transcriptText, rules)
-    const diffSegments = computeTranscriptDiff(transcriptText, result.outputText)
+    let outputText: string
+    let flaggedSegments: unknown[]
+    let appliedRules: string[]
+
+    if (inputFormat && cues && cues.length > 0) {
+      const result = await enforceGuidelineCaptions(inputFormat, cues, rules)
+      // We preserve timing metadata and serialize SRT/VTT on the client. Store plain cue text so UI can render outputText.
+      outputText = result.cues.map((c) => c.text).join('\n\n')
+      flaggedSegments = result.flaggedSegments
+      appliedRules = result.appliedRules
+    } else {
+      const result = await enforceGuideline(transcriptText, rules)
+      outputText = result.outputText
+      flaggedSegments = result.flaggedSegments
+      appliedRules = result.appliedRules
+    }
+
+    const diffSegments = computeTranscriptDiff(transcriptText, outputText)
 
     await prisma.formattingJob.update({
       where: { id: formattingJobId },
       data: {
         status: 'completed',
-        outputText: result.outputText,
+        outputText,
         diffData: diffSegments as unknown as Prisma.InputJsonValue,
-        flaggedSegments: result.flaggedSegments as unknown as Prisma.InputJsonValue,
-        appliedRules: result.appliedRules as unknown as Prisma.InputJsonValue,
+        flaggedSegments: flaggedSegments as unknown as Prisma.InputJsonValue,
+        appliedRules: appliedRules as unknown as Prisma.InputJsonValue,
       },
     })
 
