@@ -398,6 +398,20 @@ const FEATURE_ROWS: FeatureSection[] = [
         highlight: true,
       },
       {
+        label: 'Marketplace / client style-guide presets (Rev, GoTranscript, Scribie, TranscribeMe)',
+        videotext: true,
+        descript: false,
+        otter: false,
+        trint: false,
+        turboscribe: false,
+        easyscribe: false,
+        gotranscript: false,
+        notta: false,
+        sonix: false,
+        granola: false,
+        highlight: true,
+      },
+      {
         label: 'Burn subtitles into video (hardcode)',
         videotext: true,
         descript: true,
@@ -868,10 +882,7 @@ export default function Compare() {
               <span className="text-[12px] font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">Full Competitor Comparison</span>
             </div>
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
-              VideoText vs{' '}
-              <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                Descript, Otter.ai & Trint
-              </span>
+              VideoText vs Descript, Otter.ai & Trint — speed, price, subtitles, privacy
             </h1>
             <p className="text-base sm:text-lg text-gray-500 dark:text-white/45 max-w-3xl mx-auto mb-3">
               Also compared:{' '}
@@ -880,7 +891,14 @@ export default function Compare() {
               </span>
             </p>
             <p className="text-base text-gray-400 dark:text-white/35 max-w-2xl mx-auto mb-8">
-              We built VideoText because existing tools are slow, bloated, and expensive — and none of them give you AI Summary, auto Chapters, Batch Processing, and Translation all in one place at $10/mo. See exactly how we stack up.
+              VideoText is built for fast video-to-transcript and subtitle export, with files removed after processing. Pro includes summary, chapters, speaker labels, batch jobs, and transcript translation—see the table below for limits and how each alternative handles video, SRT/VTT, and storage.
+            </p>
+            <p className="text-sm text-gray-500 dark:text-white/40 max-w-2xl mx-auto mb-6">
+              Freelancers: after you export text from Video → Transcript, use{' '}
+              <Link to="/guideline-format" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">
+                format transcripts to client transcription style guides
+              </Link>
+              {' '}to walk Rev-, GoTranscript-, TranscribeMe-, or Scribie-style rule cards before you invoice.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to="/video-to-transcript">
@@ -890,6 +908,14 @@ export default function Compare() {
                 >
                   Try VideoText free
                   <ChevronRight className="w-4 h-4" />
+                </motion.span>
+              </Link>
+              <Link to="/guideline-format">
+                <motion.span
+                  whileHover={{ scale: 1.03, y: -1 }}
+                  className="inline-flex items-center gap-2 border border-purple-300 dark:border-purple-500/50 text-purple-700 dark:text-purple-300 bg-white/80 dark:bg-gray-900/80 px-6 py-3.5 rounded-xl font-semibold text-[15px] hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-all"
+                >
+                  Format your transcript to a client style guide →
                 </motion.span>
               </Link>
               <span className="text-sm text-gray-400">No credit card · Files deleted instantly</span>
@@ -1075,7 +1101,7 @@ export default function Compare() {
             {[
               { icon: Zap, label: 'Fastest', desc: '6–8x faster than AI competitors on 2-hour videos. First words in under 30 seconds.' },
               { icon: Shield, label: 'Safest', desc: 'Files deleted immediately. Zero data stored. Never used for AI training.' },
-              { icon: Star, label: 'Most Complete', desc: 'Transcript + Subtitles + AI Summary + Chapters + Translation + Batch — one platform.' },
+              { icon: Star, label: 'Most Complete', desc: 'Transcript + Subtitles + Summary + Chapters + Translation + Batch + client guideline presets — one platform.' },
               { icon: DollarSign, label: 'Best Value', desc: 'Start free, no card. Pro at $10/mo includes AI features no competitor matches at that price.' },
             ].map((item) => {
               const Icon = item.icon;
@@ -1125,6 +1151,7 @@ export default function Compare() {
                 { title: 'Compress Video', path: '/compress-video', icon: '📦' },
                 { title: 'Batch Process', path: '/batch-process', icon: '⚡' },
                 { title: 'YouTube Transcripts', path: '/youtube-transcript-generator', icon: '▶️' },
+                { title: 'Client transcription style guide presets', path: '/guideline-format', icon: '📋' },
               ].map((tool) => (
                 <Link
                   key={tool.path}
@@ -1239,6 +1266,7 @@ export default function Compare() {
               { to: '/korean-transcription', label: 'Korean Transcription', desc: 'Transcribe Korean audio and video with high accuracy.' },
               { to: '/spanish-transcription', label: 'Spanish Transcription', desc: 'Convert Spanish audio to text with full language support.' },
               { to: '/video-to-subtitles', label: 'Video → Subtitles', desc: 'Generate SRT/VTT subtitles from any video file.' },
+              { to: '/guideline-format', label: 'Format your transcript to a client style guide →', desc: 'Editable marketplace rule cards; attach PDF/DOCX/TXT for records while parsing ships later.' },
             ].map(({ to, label, desc }) => (
               <Link key={to} to={to} className="block bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-white/[0.08] rounded-xl p-4 hover:border-violet-300 dark:hover:border-violet-500 hover:shadow-md dark:hover:shadow-lg/20 transition-all">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{label}</h3>

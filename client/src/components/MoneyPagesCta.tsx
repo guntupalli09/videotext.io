@@ -8,6 +8,7 @@ type MoneyPagesCtaProps = {
 
 const MONEY_PAGE_LINKS = [
   { to: '/video-to-transcript', label: 'Video to transcript' },
+  { to: '/guideline-format', label: 'Format transcript to client transcription style guide' },
   { to: '/youtube-transcript-generator', label: 'YouTube transcript generator' },
   { to: '/video-to-subtitles', label: 'Video to subtitles' },
   { to: '/translate-subtitles', label: 'Translate subtitles' },

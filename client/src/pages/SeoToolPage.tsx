@@ -129,12 +129,18 @@ export default function SeoToolPage() {
             <p className="text-sm font-semibold text-violet-900">Ready to run this workflow?</p>
             <p className="text-xs text-violet-700">Primary CTA is mapped from intent class ({intentClass.replace('comparisonAlternative', 'comparison/alternative')}).</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
             <Link
               to={primaryCtaPath}
               className="inline-flex items-center justify-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700"
             >
               {primaryCtaText}
+            </Link>
+            <Link
+              to="/guideline-format"
+              className="inline-flex items-center justify-center rounded-lg border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-700 hover:bg-violet-100"
+            >
+              Format your transcript to a client style guide →
             </Link>
             <Link
               to="/samples"

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { ChevronDown, Shield, HelpCircle, CreditCard, FileVideo, Languages, Zap, BarChart2 } from "lucide-react"
+import { ChevronDown, Shield, HelpCircle, CreditCard, FileVideo, Languages, Zap, BarChart2, ClipboardList } from "lucide-react"
 
 const FAQ_ITEMS = [
   // Privacy & data
@@ -147,6 +147,24 @@ const FAQ_ITEMS = [
   },
   {
     category: "Tools",
+    icon: ClipboardList,
+    q: "How do I format a transcript for a client's style guide or Rev-type rules?",
+    a: 'Use Format → Client guidelines (/guideline-format). Paste your raw transcript (or jump from Video → Transcript with "Make this client-ready →"). Pick presets such as Rev, GoTranscript, TranscribeMe, or Scribie, tweak the editable rule cards to match what you were assigned, or upload your own PDF/DOCX guidance. Automated enforcement ships in our next guideline API phase.',
+  },
+  {
+    category: "Tools",
+    icon: ClipboardList,
+    q: 'What does "clean verbatim vs full verbatim" mean for freelancers?',
+    a: 'Clean verbatim removes most filler words, stutters, and false starts for readability while keeping meaning. Full verbatim keeps ums, repeated words, and disfluencies. Marketplaces attach different mixes to jobs — check your customer brief. Quick primer: /blog/clean-verbatim-vs-full-verbatim',
+  },
+  {
+    category: "Tools",
+    icon: ClipboardList,
+    q: "What is transcript QA and how does VideoText help before I invoice?",
+    a: 'Transcript QA (quality assurance) is the pass where you proof names, punctuation, timestamps, formatting, glossary hits, and style-guide compliance against the client checklist. Collect your text inside Video → Transcript, then organize platform rules inside /guideline-format so your team knows exactly which preset you proofed against. Full automated QA tagging is rolling out alongside the guideline formatter.',
+  },
+  {
+    category: "Tools",
     icon: FileVideo,
     q: "Can I process multiple videos at once?",
     a: "Yes, with Batch Processing (Pro and Agency plans). Drop multiple video files at once on the Video to Transcript or Batch Process page. Each video processes in parallel and you get a single ZIP with one SRT per video when all jobs complete. Pro: up to 20 videos. Agency: up to 100 videos. Failed videos are listed in an error_log.txt inside the ZIP.",
@@ -209,17 +227,37 @@ export default function Faq() {
           ← Back to home
         </Link>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Frequently asked questions</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">VideoText FAQ — privacy, billing, transcription, and client style guides</h1>
         <p className="text-gray-600 mb-6">
-          Quick answers about privacy, accuracy, tools, and billing. For a step-by-step guide to each tool, see our{" "}
-          <Link to="/guide" className="text-violet-600 hover:text-violet-700 font-medium">Guide</Link>.
-          For comparisons, see <Link to="/compare" className="text-violet-600 hover:text-violet-700 font-medium">VideoText vs competitors</Link>.
+          Quick answers about privacy, accuracy, tools, billing, and client guideline prep. For step-by-step tool flows, see the{" "}
+          <Link to="/guide" className="text-violet-600 hover:text-violet-700 font-medium">how-to guide</Link>
+          {" "}(includes Format → Client guidelines). For competitor context, see{" "}
+          <Link to="/compare" className="text-violet-600 hover:text-violet-700 font-medium">VideoText vs Descript, Otter.ai, Trint</Link>.
         </p>
+
+        <div className="mb-8 rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 to-white p-5 sm:p-6 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 mb-2">Freelancers & QA teams</p>
+          <h2 className="text-lg font-bold text-gray-900 mb-2">Rev-style presets, client guideline upload, transcription QA prep</h2>
+          <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+            Low-friction transcription style guide checklist inside VideoText: align clean vs full verbatim, tags, speaker labels, and payout-ready exports before you send work back.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/guideline-format" className="inline-flex items-center justify-center rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition-colors">
+              Format your transcript to a client style guide →
+            </Link>
+            <Link to="/video-to-transcript" className="inline-flex items-center justify-center rounded-xl border border-violet-300 bg-white text-violet-700 text-sm font-semibold px-4 py-2.5 hover:bg-violet-50 transition-colors">
+              Transcribe first →
+            </Link>
+            <Link to="/blog/rev-style-guide-transcript-formatter" className="inline-flex items-center text-sm font-medium text-violet-600 hover:text-violet-800 underline-offset-2 hover:underline">
+              Read: Rev style guide transcript tips
+            </Link>
+          </div>
+        </div>
 
         {/* Trust highlight */}
         <div className="mb-8 p-4 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-between gap-4 flex-wrap">
           <p className="text-sm font-medium text-gray-800">
-            Your files are processed and deleted. We don"t store your data.
+            Your files are processed and deleted. We don’t store your data.
           </p>
           <Link to="/privacy" className="text-xs text-violet-600 hover:text-violet-700 font-medium whitespace-nowrap">
             Read our privacy policy →
@@ -267,11 +305,12 @@ export default function Faq() {
         </div>
 
         {/* Cross-links */}
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { to: "/guide", label: "Full tool guide →", desc: "Step-by-step for every tool." },
             { to: "/compare", label: "Compare competitors →", desc: "VideoText vs Descript, Otter, Trint." },
-            { to: "/blog", label: "Blog & how-tos →", desc: "Zoom transcription, SRT vs VTT, more." },
+            { to: "/guideline-format", label: "Format your transcript to a client style guide →", desc: "Rev-, GoTranscript-, TranscribeMe-, Scribie-style cards + optional client file slot." },
+            { to: "/blog", label: "Blog & how-tos →", desc: "QA, verbatim, freelance rates." },
           ].map(({ to, label, desc }) => (
             <Link key={to} to={to} className="block bg-white border border-gray-200 rounded-xl p-4 hover:border-violet-300 hover:shadow-sm transition-all">
               <span className="text-sm font-semibold text-violet-600">{label}</span>

@@ -13,6 +13,7 @@ import {
   Youtube,
   CheckCircle2,
   ArrowRight,
+  ClipboardCheck,
 } from 'lucide-react';
 import { trackEvent } from '../../lib/analytics';
 
@@ -87,6 +88,14 @@ const SECONDARY_TOOLS = [
     gradient: 'from-blue-500 to-blue-600',
     accent: 'text-blue-400',
     href: '/video-to-subtitles',
+  },
+  {
+    icon: ClipboardCheck,
+    name: 'Format → Client guidelines',
+    description: 'Prep transcript text against editable Rev-, GoTranscript-, TranscribeMe-, and Scribie-style rule cards before QA.',
+    gradient: 'from-violet-500 to-fuchsia-600',
+    accent: 'text-violet-400',
+    href: '/guideline-format',
   },
   {
     icon: Languages,

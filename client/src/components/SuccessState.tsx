@@ -1,7 +1,39 @@
 import { Check, Download, File } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { formatFileSize } from '../lib/utils'
 import { trackEvent } from '../lib/analytics'
 import { motion } from 'framer-motion'
+
+/** Shared with tool pages — saves plain transcript for /guideline-format prefill (sessionStorage vt_prefill_transcript). */
+export function MakeClientReadyTranscriptButton({
+  plainTranscript,
+  className = 'w-full',
+}: {
+  plainTranscript: string
+  className?: string
+}) {
+  const navigate = useNavigate()
+  const text = plainTranscript.trim()
+  if (!text) return null
+
+  const handleClick = () => {
+    sessionStorage.setItem('vt_prefill_transcript', text)
+    navigate('/guideline-format')
+  }
+
+  return (
+    <>
+      <div className="my-4 border-t border-gray-200 dark:border-gray-700 w-full" role="separator" />
+      <button
+        type="button"
+        onClick={handleClick}
+        className={`${className} rounded-xl border border-gray-300 dark:border-gray-600 bg-transparent py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/70 transition-colors shadow-none`}
+      >
+        Make this client-ready →
+      </button>
+    </>
+  )
+}
 
 interface SuccessStateProps {
   fileName?: string
@@ -17,6 +49,8 @@ interface SuccessStateProps {
   downloadLabel?: string
   /** Show "Processed in XX.Xs ⚡" above download when set (e.g. from job_completed). */
   processedInSeconds?: number
+  /** Plain transcript text — when set, enables "Make this client-ready" below export actions. */
+  jobTranscriptPlainText?: string
 }
 
 export default function SuccessState({
@@ -29,6 +63,7 @@ export default function SuccessState({
   onDownloadClick,
   downloadLabel = 'Download',
   processedInSeconds,
+  jobTranscriptPlainText,
 }: SuccessStateProps) {
   const trackDownload = () => {
     try {
@@ -112,6 +147,12 @@ export default function SuccessState({
           </a>
         )
       )}
+
+      {jobTranscriptPlainText?.trim() ? (
+        <div className="w-full max-w-md mx-auto">
+          <MakeClientReadyTranscriptButton plainTranscript={jobTranscriptPlainText} />
+        </div>
+      ) : null}
 
       {onProcessAnother && (
         <button

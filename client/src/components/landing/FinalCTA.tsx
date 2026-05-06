@@ -69,6 +69,15 @@ export function FinalCTA() {
             </Link>
           </motion.div>
 
+          <p className="text-sm text-white/45 max-w-lg mx-auto mb-8">
+            <Link
+              to="/guideline-format"
+              className="font-semibold text-violet-300 hover:text-violet-200 underline-offset-4 hover:underline"
+            >
+              Format your transcript to a client style guide →
+            </Link>
+          </p>
+
           {/* Trust signals */}
           <div className="flex flex-wrap items-center justify-center gap-5 text-[13px] text-white/35">
             <div className="flex items-center gap-1.5">

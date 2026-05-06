@@ -182,6 +182,7 @@ export default function Home() {
               { label: 'Zoom Meeting Transcript', path: '/zoom-meeting-transcript', desc: 'Download Zoom recording, upload once, and get structured transcript output' },
               { label: 'Meeting Recording to Transcript', path: '/meeting-recording-to-transcript', desc: 'Hub workflow for Zoom, Meet, Teams, and webinar recordings' },
               { label: 'Interview Transcription Tool', path: '/interview-transcription-tool', desc: 'Speaker-structured transcripts for newsroom and research' },
+              { label: 'Client transcription style guide formatter', path: '/guideline-format', desc: 'Prep transcript text against Rev-, GoTranscript-, and related marketplace rule cards before QA' },
             ].map((item) => (
               <Link
                 key={item.path}
