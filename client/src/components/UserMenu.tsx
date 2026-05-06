@@ -8,16 +8,9 @@ import { createBillingPortalSession } from '../lib/billing'
 import { useTheme } from '../lib/theme'
 import { isLoggedIn, logout, isDemo } from '../lib/auth'
 import { useFounderStatus } from '../hooks/useFounderStatus'
+import { CORE_AI_TOOLS_NAV } from '../config/coreAiToolsNav'
 
-const tools = [
-  { name: 'Video → Transcript', path: '/video-to-transcript' },
-  { name: 'Video → Subtitles', path: '/video-to-subtitles' },
-  { name: 'Translate', path: '/translate-subtitles' },
-  { name: 'Fix Subtitles', path: '/fix-subtitles' },
-  { name: 'Burn Subtitles', path: '/burn-subtitles' },
-  { name: 'Compress Video', path: '/compress-video' },
-  { name: 'Batch Processing', path: '/batch-process' },
-]
+const tools = [...CORE_AI_TOOLS_NAV]
 
 const SUPPORT_EMAIL = 'support@videotext.io'
 /** Set to true to re-enable referral program */
