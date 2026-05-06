@@ -129,6 +129,33 @@ function AutoGrowTextarea({
   )
 }
 
+/** Fetch / AbortController / timeouts — suppress user-facing noise and avoid treating cancels as hard failures */
+function isAbortLikeError(e: unknown): boolean {
+  if (e instanceof DOMException && e.name === 'AbortError') return true
+  if (e instanceof Error && e.name === 'AbortError') return true
+  const msg = e instanceof Error ? e.message : String(e)
+  return /aborted|abort/i.test(msg)
+}
+
+const GUIDELINE_POLL_INITIAL_MS = 2000
+const GUIDELINE_POLL_MAX_BACKOFF_MS = 10_000
+const GUIDELINE_POLL_VISIBILITY_MS = 5000
+const GUIDELINE_POLL_OVERLAP_GUARD_MS = 1500
+/** Hard stop if job never reaches terminal (stale 200s, worker stuck, etc.) */
+const GUIDELINE_POLL_MAX_DURATION_MS = 15 * 60 * 1000
+
+/** Never downgrade terminal UI from a late / reordered poll response */
+function mergeGuidelinePollStatus(prev: JobStatusResponse | null, incoming: JobStatusResponse): JobStatusResponse {
+  if (
+    prev &&
+    (prev.status === 'completed' || prev.status === 'failed') &&
+    (incoming.status === 'queued' || incoming.status === 'processing')
+  ) {
+    return prev
+  }
+  return incoming
+}
+
 function applyReviewEditsToOutputText(
   outputText: string,
   flagged: FlaggedSegment[],
@@ -254,38 +281,86 @@ export default function GuidelineFormat() {
 
   useEffect(() => {
     if (!jobId) return
-    let stopped = false
-    let timer: ReturnType<typeof setInterval> | undefined
+    /** False after cleanup — rejects ghost setState / schedules from an old effect.run */
+    let active = true
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let inFlight = false
+    /** Monotonic guard: stale async completion after StrictMode remount + new poll session */
+    let pollSession = 0
+    const pollSessionAtStart = ++pollSession
+    const pollingStartedAt = Date.now()
+    let pollDelayMs = GUIDELINE_POLL_INITIAL_MS
+
+    const scheduleNext = (ms: number) => {
+      if (!active) return
+      if (timer) clearTimeout(timer)
+      timer = setTimeout(() => void poll(), ms)
+    }
 
     const poll = async () => {
+      if (!active) return
+      if (pollSessionAtStart !== pollSession) return
+      if (Date.now() - pollingStartedAt > GUIDELINE_POLL_MAX_DURATION_MS) {
+        if (!active) return
+        setSubmitError('Formatting took too long — please try again or check status later.')
+        setIsSubmitting(false)
+        return
+      }
+      if (document.visibilityState === 'hidden') {
+        scheduleNext(GUIDELINE_POLL_VISIBILITY_MS)
+        return
+      }
+      if (inFlight) {
+        scheduleNext(GUIDELINE_POLL_OVERLAP_GUARD_MS)
+        return
+      }
+      /** When false: job finished, hard HTTP error, or non-abort failure — stop polling */
+      let scheduleMore = true
+      inFlight = true
       try {
+        // Do not pass signal + timeout together: api() skips its timeout branch when signal is set.
         const res = await api(`/api/guidelines/jobs/${jobId}`, { timeout: 15000 })
         const data = (await res.json()) as JobStatusResponse & { error?: string }
-        if (stopped) return
+        if (!active || pollSessionAtStart !== pollSession) return
         if (!res.ok) {
+          scheduleMore = false
           setSubmitError(data.error || 'Failed to fetch job status')
           setIsSubmitting(false)
-          if (timer) clearInterval(timer)
           return
         }
-        setJobStatus(data)
+        pollDelayMs = GUIDELINE_POLL_INITIAL_MS
+        setJobStatus((prev) => mergeGuidelinePollStatus(prev, data))
         if (data.status === 'completed' || data.status === 'failed') {
+          scheduleMore = false
           setIsSubmitting(false)
-          if (timer) clearInterval(timer)
+          return
         }
       } catch (e) {
-        if (stopped) return
-        setSubmitError(e instanceof Error ? e.message : 'Network error')
-        setIsSubmitting(false)
-        if (timer) clearInterval(timer)
+        if (!active || pollSessionAtStart !== pollSession) return
+        if (isAbortLikeError(e)) {
+          pollDelayMs = Math.min(pollDelayMs * 2, GUIDELINE_POLL_MAX_BACKOFF_MS)
+        } else {
+          scheduleMore = false
+          setSubmitError(e instanceof Error ? e.message : 'Network error')
+          setIsSubmitting(false)
+        }
+      } finally {
+        inFlight = false
+        if (active && pollSessionAtStart === pollSession && scheduleMore) scheduleNext(pollDelayMs)
       }
     }
 
-    poll()
-    timer = setInterval(poll, 2000)
+    const onVis = () => {
+      if (document.visibilityState === 'visible') scheduleNext(100)
+    }
+    document.addEventListener('visibilitychange', onVis)
+
+    void poll()
     return () => {
-      stopped = true
-      if (timer) clearInterval(timer)
+      active = false
+      pollSession += 1
+      if (timer) clearTimeout(timer)
+      document.removeEventListener('visibilitychange', onVis)
     }
   }, [jobId])
 

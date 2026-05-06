@@ -118,22 +118,6 @@ const SECONDARY_TOOLS = [
     href: '/video-to-subtitles',
   },
   {
-    icon: ClipboardCheck,
-    name: 'Format → Client guidelines',
-    description: 'Prep transcript text against editable Rev-, GoTranscript-, TranscribeMe-, and Scribie-style rule cards before QA.',
-    gradient: 'from-violet-500 to-fuchsia-600',
-    accent: 'text-violet-400',
-    href: '/guideline-format',
-  },
-  {
-    icon: Languages,
-    name: 'Translate',
-    description: 'Translate subtitles, documents, DOCX, TXT, and JSON into 70+ languages with formatting preserved.',
-    gradient: 'from-pink-500 to-purple-600',
-    accent: 'text-pink-400',
-    href: '/translate-subtitles',
-  },
-  {
     icon: FolderSync,
     name: 'Batch Processing',
     description: 'Upload a whole season at once. Process 50+ videos in parallel and download as a ZIP.',
