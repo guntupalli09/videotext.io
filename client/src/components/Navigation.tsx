@@ -6,18 +6,9 @@ import { prefetchRoute } from '../lib/prefetch'
 import { isLoggedIn } from '../lib/auth'
 import { useFounderStatus } from '../hooks/useFounderStatus'
 import { trackEvent } from '../lib/analytics'
+import { CORE_AI_TOOLS_NAV } from '../config/coreAiToolsNav'
 
-/** Order = paid / core AI tools first (SEO + conversion). */
-const AI_TOOLS = [
-  { name: 'Video → Transcript', path: '/video-to-transcript' },
-  { name: 'Voice → Text', path: '/voice-recorder' },
-  { name: 'Translate', path: '/translate-subtitles' },
-  { name: 'Batch processing', path: '/batch-process' },
-  { name: 'Video → Subtitles', path: '/video-to-subtitles' },
-  { name: 'Fix Subtitles', path: '/fix-subtitles' },
-  { name: 'Burn Subtitles', path: '/burn-subtitles' },
-  { name: 'Compress Video', path: '/compress-video' },
-]
+const AI_TOOLS = [...CORE_AI_TOOLS_NAV]
 
 const FREE_TOOLS = [
   { name: 'SRT → VTT Converter', path: '/tools/srt-to-vtt' },
