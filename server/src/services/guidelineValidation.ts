@@ -7,6 +7,8 @@ export interface ValidationCheck {
   passed: boolean
   details?: string
   metrics?: Record<string, number>
+  segmentIndex?: number
+  snippet?: string
 }
 
 export interface ValidationReport {
@@ -14,12 +16,41 @@ export interface ValidationReport {
     verified: { passed: number; total: number }
     likelyCompliant: { passed: number; total: number }
     needsReview: { passed: number; total: number }
+    confidencePct: number
   }
   checks: ValidationCheck[]
 }
 
 function normalizeLines(s: string): string[] {
   return s.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n')
+}
+
+function splitIntoSegments(text: string): string[] {
+  // Paragraph-ish segments: split on blank lines first; fallback to line chunks.
+  const blocks = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split(/\n\s*\n+/).map((b) => b.trim()).filter(Boolean)
+  if (blocks.length > 1) return blocks
+  const lines = normalizeLines(text).map((l) => l.trim()).filter(Boolean)
+  if (lines.length <= 1) return blocks.length ? blocks : (lines.length ? [lines.join('\n')] : [])
+  // Group every ~4 lines to create stable anchors.
+  const out: string[] = []
+  for (let i = 0; i < lines.length; i += 4) out.push(lines.slice(i, i + 4).join('\n'))
+  return out
+}
+
+function findSegmentIndex(segments: string[], needle: string): { index: number; snippet: string } | null {
+  const n = needle.trim()
+  if (!n) return null
+  const lowerNeedle = n.toLowerCase()
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i]
+    const idx = seg.toLowerCase().indexOf(lowerNeedle)
+    if (idx >= 0) {
+      const start = Math.max(0, idx - 60)
+      const end = Math.min(seg.length, idx + Math.min(120, n.length + 60))
+      return { index: i + 1, snippet: seg.slice(start, end).trim() }
+    }
+  }
+  return null
 }
 
 function extractSpeakerPrefixes(lines: string[]): string[] {
@@ -97,6 +128,7 @@ export function buildValidationReport(params: {
   captionMetaPreserved?: boolean
 }): ValidationReport {
   const checks: ValidationCheck[] = []
+  const inputSegments = splitIntoSegments(params.inputText)
 
   // Verified
   const outputNonEmpty = params.outputText.trim().length > 0
@@ -157,6 +189,7 @@ export function buildValidationReport(params: {
     passed: params.flaggedCount === 0,
     details: params.flaggedCount === 0 ? 'No uncertain sections flagged.' : `${params.flaggedCount} section(s) flagged.`,
     metrics: { flaggedCount: params.flaggedCount },
+    segmentIndex: params.flaggedCount > 0 ? 1 : undefined,
   })
 
   // Likely compliant: semantic-density signals (not a proof)
@@ -189,12 +222,15 @@ export function buildValidationReport(params: {
   const inNouns = new Set(detectProperNouns(params.inputText))
   const outNouns = new Set(detectProperNouns(params.outputText))
   const missingNouns = [...inNouns].filter((w) => !outNouns.has(w)).slice(0, 20)
+  const nounAnchor = missingNouns.length > 0 ? findSegmentIndex(inputSegments, missingNouns[0]) : null
   checks.push({
     id: 'proper_nouns',
     label: 'Proper nouns preserved (warning only)',
     bucket: 'likely_compliant',
     passed: missingNouns.length === 0,
     details: missingNouns.length === 0 ? 'No notable proper nouns changed.' : `Some proper nouns changed/removed: ${missingNouns.join(', ')}${missingNouns.length >= 20 ? '…' : ''}`,
+    segmentIndex: nounAnchor?.index,
+    snippet: nounAnchor?.snippet,
   })
 
   const summarize = (bucket: ValidationBucket) => {
@@ -205,11 +241,28 @@ export function buildValidationReport(params: {
     }
   }
 
+  // Confidence score: simple, monotonic, explainable.
+  // - Failed verified checks are most costly
+  // - Likely compliant failures are moderate
+  // - Needs review items reduce confidence when unresolved
+  const verified = checks.filter((c) => c.bucket === 'verified')
+  const likely = checks.filter((c) => c.bucket === 'likely_compliant')
+  const review = checks.filter((c) => c.bucket === 'needs_review')
+  const failedVerified = verified.filter((c) => !c.passed).length
+  const failedLikely = likely.filter((c) => !c.passed).length
+  const unresolvedReview = review.filter((c) => !c.passed).length
+  let confidencePct = 100
+  confidencePct -= failedVerified * 18
+  confidencePct -= failedLikely * 7
+  confidencePct -= unresolvedReview * 10
+  confidencePct = Math.max(0, Math.min(100, Math.round(confidencePct)))
+
   return {
     summary: {
       verified: summarize('verified'),
       likelyCompliant: summarize('likely_compliant'),
       needsReview: summarize('needs_review'),
+      confidencePct,
     },
     checks,
   }

@@ -56,6 +56,7 @@ type JobStatusResponse = {
       verified?: { passed: number; total: number }
       likelyCompliant?: { passed: number; total: number }
       needsReview?: { passed: number; total: number }
+      confidencePct?: number
     }
     checks?: Array<{
       id: string
@@ -64,6 +65,8 @@ type JobStatusResponse = {
       passed: boolean
       details?: string
       metrics?: Record<string, number>
+      segmentIndex?: number
+      snippet?: string
     }>
   } | null
   createdAt: string
@@ -126,6 +129,7 @@ export default function GuidelineFormat() {
   const [originalTranscriptForJob, setOriginalTranscriptForJob] = useState('')
   const [inputCaptionFormat, setInputCaptionFormat] = useState<'srt' | 'vtt' | null>(null)
   const [originalCaptionCues, setOriginalCaptionCues] = useState<ReturnType<typeof parseSrt> | null>(null)
+  const [focusSegment, setFocusSegment] = useState<number | null>(null)
   const txtInputRef = useRef<HTMLInputElement>(null)
   const docxTranscriptRef = useRef<HTMLInputElement>(null)
   const customGuideRef = useRef<HTMLInputElement>(null)
@@ -160,6 +164,7 @@ export default function GuidelineFormat() {
     setOriginalTranscriptForJob('')
     setInputCaptionFormat(null)
     setOriginalCaptionCues(null)
+    setFocusSegment(null)
   }
 
   const buildRulesPayload = (): ParsedRule[] => {
@@ -526,6 +531,13 @@ export default function GuidelineFormat() {
             ? 'Processing…'
             : null
 
+  const originalSegments = useMemo(() => {
+    const t = originalTranscriptForJob.trim()
+    if (!t) return []
+    const blocks = t.split(/\n\s*\n+/).map((b) => b.trim()).filter(Boolean)
+    return blocks.length ? blocks : [t]
+  }, [originalTranscriptForJob])
+
   return (
     <>
       <ToolLayout
@@ -835,7 +847,15 @@ export default function GuidelineFormat() {
                 <div className="space-y-6">
                   {jobStatus.validationReport?.summary && (
                     <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-4 space-y-2">
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Validation Report</p>
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Validation Report</p>
+                        {typeof jobStatus.validationReport.summary.confidencePct === 'number' && (
+                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">
+                            Validation confidence:{' '}
+                            <span className="text-violet-700 dark:text-violet-300">{jobStatus.validationReport.summary.confidencePct}%</span>
+                          </span>
+                        )}
+                      </div>
                       <div className="flex flex-wrap gap-4 text-sm text-gray-700 dark:text-gray-300">
                         <span>
                           ✓ <strong className="text-gray-900 dark:text-white">{jobStatus.validationReport.summary.verified?.passed ?? 0}</strong>{' '}
@@ -868,15 +888,39 @@ export default function GuidelineFormat() {
                                   : c.bucket === 'likely_compliant'
                                     ? 'text-amber-800 dark:text-amber-200'
                                     : 'text-gray-700 dark:text-gray-300'
+                              const canJump = typeof c.segmentIndex === 'number' && c.segmentIndex > 0
                               return (
-                                <li key={c.id} className={`rounded-lg border border-gray-200/60 dark:border-gray-700/60 bg-white/60 dark:bg-gray-950/30 px-3 py-2 ${tone}`}>
+                                <li
+                                  key={c.id}
+                                  className={`rounded-lg border border-gray-200/60 dark:border-gray-700/60 bg-white/60 dark:bg-gray-950/30 px-3 py-2 ${tone}`}
+                                >
                                   <div className="flex items-start justify-between gap-3">
-                                    <span className="font-semibold">{prefix} {c.label}</span>
+                                    <button
+                                      type="button"
+                                      disabled={!canJump}
+                                      onClick={() => {
+                                        if (!canJump) return
+                                        const idx = c.segmentIndex as number
+                                        setFocusSegment(idx)
+                                        const el = document.getElementById(`seg-${idx}`)
+                                        el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                                      }}
+                                      className={`text-left font-semibold ${canJump ? 'hover:underline' : ''}`}
+                                      title={canJump ? `Jump to segment ${c.segmentIndex}` : undefined}
+                                    >
+                                      {prefix} {c.label}
+                                      {canJump ? <span className="ml-2 text-[10px] font-semibold opacity-80">(Segment {c.segmentIndex})</span> : null}
+                                    </button>
                                     <span className="text-[10px] font-semibold uppercase tracking-wide opacity-80">
                                       {c.bucket === 'verified' ? 'Verified' : c.bucket === 'likely_compliant' ? 'Likely compliant' : 'Needs review'}
                                     </span>
                                   </div>
                                   {c.details && <p className="mt-1 text-gray-600 dark:text-gray-300">{c.details}</p>}
+                                  {c.snippet && (
+                                    <p className="mt-2 text-[11px] text-gray-500 dark:text-gray-400 border-l-2 border-gray-200 dark:border-gray-700 pl-2">
+                                      “{c.snippet}”
+                                    </p>
+                                  )}
                                 </li>
                               )
                             })}
@@ -898,9 +942,34 @@ export default function GuidelineFormat() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-4 min-h-[120px]">
                       <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</h3>
-                      <pre className="text-xs text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-sans leading-relaxed">
-                        {originalTranscriptForJob}
-                      </pre>
+                      <div className="space-y-3">
+                        {originalSegments.length > 0 ? (
+                          originalSegments.map((seg, idx) => {
+                            const n = idx + 1
+                            const isFocused = focusSegment === n
+                            return (
+                              <div
+                                key={n}
+                                id={`seg-${n}`}
+                                className={`rounded-lg border px-3 py-2 text-xs whitespace-pre-wrap font-sans leading-relaxed transition-colors ${
+                                  isFocused
+                                    ? 'border-violet-400 bg-violet-50 dark:border-violet-700 dark:bg-violet-950/30'
+                                    : 'border-gray-200/70 dark:border-gray-700/70 bg-white/60 dark:bg-gray-950/20'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Segment {n}</span>
+                                </div>
+                                <div className="text-gray-800 dark:text-gray-200">{seg}</div>
+                              </div>
+                            )
+                          })
+                        ) : (
+                          <pre className="text-xs text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-sans leading-relaxed">
+                            {originalTranscriptForJob}
+                          </pre>
+                        )}
+                      </div>
                     </div>
                     <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-4 min-h-[120px]">
                       <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
