@@ -607,8 +607,8 @@ export default function GuidelineFormat() {
     <>
       <ToolLayout
         breadcrumbs={[{ label: 'Format to client guidelines', href: '/guideline-format' }]}
-        title="Format transcripts to match client transcription style guides"
-        subtitle="Paste or upload transcript text, pick a marketplace preset or attach a client guideline file, edit the rule cards to match what you were assigned, then run Format to log your checklist before human QA."
+        title="Format transcripts to match any client style guide"
+        subtitle="Paste your transcript, choose a preset or upload a client guide, then get a verified, review-ready transcript with a diff, flagged sections, and exports."
         icon={<FileText className="text-violet-600 dark:text-violet-400" strokeWidth={1.75} />}
         sidebar={null}
       >

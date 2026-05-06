@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
 import type { Prisma } from '@prisma/client'
-import { getEffectiveUserId } from '../utils/auth'
+import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
 import { prisma } from '../db'
 import { guidelineQueue } from '../workers/guidelineProcessor'
 import type { CaptionCue, CaptionFormat, ParsedRule } from '../services/guidelineEnforcer'
@@ -10,6 +10,8 @@ import multer from 'multer'
 import { PDFParse, VerbosityLevel } from 'pdf-parse'
 import mammoth from 'mammoth'
 import { extractRulesFromGuideText } from '../services/guidelineRuleExtractor'
+import Redis from 'ioredis'
+import type { PlanType } from '../models/User'
 
 const router = express.Router()
 
@@ -17,6 +19,60 @@ const guideUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 8 * 1024 * 1024 }, // 8MB is enough for most style guides
 })
+
+const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379'
+const gateRedis = new Redis(redisUrl, {
+  ...(redisUrl.startsWith('rediss://') ? { tls: {} } : {}),
+  enableReadyCheck: false,
+  maxRetriesPerRequest: 2,
+  connectTimeout: 5000,
+  commandTimeout: 3000,
+  lazyConnect: true,
+})
+
+function secondsUntilMidnightUTC(): number {
+  const now = new Date()
+  const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1))
+  return Math.max(1, Math.ceil((midnight.getTime() - now.getTime()) / 1000))
+}
+
+function todayUTCString(): string {
+  const now = new Date()
+  return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`
+}
+
+function guidelineDailyKey(userId: string): string {
+  return `guidelines:daily:${userId}:${todayUTCString()}`
+}
+
+async function checkAndRecordGuidelineDaily(userId: string, limit: number): Promise<boolean> {
+  const key = guidelineDailyKey(userId)
+  const ttl = secondsUntilMidnightUTC()
+  try {
+    const pipeline = gateRedis.pipeline()
+    pipeline.incr(key)
+    pipeline.expire(key, ttl)
+    const results = await pipeline.exec()
+    const count = (results?.[0]?.[1] as number) ?? 1
+    return count <= limit
+  } catch {
+    // fail-open; do not block formatting if Redis is unavailable
+    return true
+  }
+}
+
+function estimateTranscriptMinutes(text: string): number {
+  // Conservative: ~150 words/minute
+  const words = text.trim().split(/\s+/).filter(Boolean).length
+  return words / 150
+}
+
+function getPlanFromRequest(req: Request): PlanType {
+  const auth = getAuthFromRequest(req)
+  if (auth?.plan) return auth.plan
+  const apiKeyPlan = (req as unknown as { apiKeyUser?: { plan?: PlanType } }).apiKeyUser?.plan
+  return apiKeyPlan || 'free'
+}
 
 function validateRules(body: unknown): ParsedRule[] | null {
   if (!body || typeof body !== 'object') return null
@@ -75,11 +131,25 @@ router.post('/format', async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Authentication required' })
     }
 
+    const plan = getPlanFromRequest(req)
+
     const transcriptText =
       typeof req.body?.transcriptText === 'string' ? req.body.transcriptText : ''
     const trimmed = transcriptText.trim()
     if (!trimmed) {
       return res.status(400).json({ error: 'transcriptText must be a non-empty string' })
+    }
+
+    // Plan gating: free users get limited daily runs + transcript size cap.
+    if (plan === 'free') {
+      const allowed = await checkAndRecordGuidelineDaily(userId, 3)
+      if (!allowed) {
+        return res.status(429).json({ error: 'Free plan limit reached: 3 guideline formats per day. Upgrade to Pro for unlimited.' })
+      }
+      const mins = estimateTranscriptMinutes(trimmed)
+      if (mins > 30) {
+        return res.status(400).json({ error: 'Free plan supports up to ~30 minutes of transcript text per run. Upgrade to Pro for longer transcripts.' })
+      }
     }
 
     const rules = validateRules(req.body)
