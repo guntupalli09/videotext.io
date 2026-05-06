@@ -3,9 +3,14 @@ import Queue from 'bull'
 import type { Prisma } from '@prisma/client'
 import { createRedisClient } from '../utils/redis'
 import { prisma } from '../db'
-import { enforceGuideline, type ParsedRule } from '../services/guidelineEnforcer'
+import { enforceGuideline, enforceGuidelineCaptions, type CaptionCue, type CaptionFormat, type ParsedRule } from '../services/guidelineEnforcer'
 import { computeTranscriptDiff } from '../services/diffEngine'
 import { getLogger } from '../lib/logger'
+import { updateJobCompleted, updateJobFailed, updateJobStarted } from '../lib/jobAnalytics'
+import { pushLogEntry } from '../lib/logRing'
+import { buildValidationReport } from '../services/guidelineValidation'
+// Note: server has numeric-time subtitle utilities, but this formatting job runs on pasted text.
+// We preserve original timestamp strings and serialize captions on the client.
 
 const log = getLogger('worker')
 
@@ -25,33 +30,124 @@ export interface GuidelineJobPayload {
   transcriptText: string
   rules: ParsedRule[]
   userId: string
+  inputFormat?: CaptionFormat
+  cues?: CaptionCue[]
 }
 
 export const guidelineQueue = new Queue<GuidelineJobPayload>('guideline-formatting', QUEUE_SETTINGS)
 
 let guidelineWorkerStarted = false
 
+function formatSrtTime(t: string): string {
+  // Normalize HH:MM:SS.mmm or HH:MM:SS,mmm → SRT uses comma
+  return t.replace('.', ',')
+}
+function formatVttTime(t: string): string {
+  return t.replace(',', '.')
+}
+function cuesToSrt(cues: CaptionCue[]): string {
+  const blocks: string[] = []
+  cues.forEach((c, i) => {
+    blocks.push(String(i + 1))
+    blocks.push(`${formatSrtTime(c.startTime)} --> ${formatSrtTime(c.endTime)}`)
+    blocks.push(c.text || '')
+    blocks.push('')
+  })
+  return blocks.join('\n')
+}
+function cuesToVtt(cues: CaptionCue[]): string {
+  const lines: string[] = ['WEBVTT', '']
+  cues.forEach((c) => {
+    lines.push(`${formatVttTime(c.startTime)} --> ${formatVttTime(c.endTime)}`)
+    lines.push(c.text || '')
+    lines.push('')
+  })
+  return lines.join('\n')
+}
+
 async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<void> {
-  const { formattingJobId, transcriptText, rules } = job.data
+  const { formattingJobId, transcriptText, rules, inputFormat, cues } = job.data
+  const started = Date.now()
 
   try {
+    // Dashboard-visible Job status
+    void updateJobStarted(formattingJobId)
+
+    pushLogEntry({
+      ts: new Date().toISOString(),
+      level: 'info',
+      service: 'worker',
+      msg: 'guideline_format_started',
+      jobId: formattingJobId,
+      module: 'guidelineProcessor',
+    })
+
     await prisma.formattingJob.update({
       where: { id: formattingJobId },
       data: { status: 'processing' },
     })
 
-    const result = await enforceGuideline(transcriptText, rules)
-    const diffSegments = computeTranscriptDiff(transcriptText, result.outputText)
+    // Stage: formatting
+    await prisma.formattingJob.update({
+      where: { id: formattingJobId },
+      data: { stage: 'formatting' },
+    })
+
+    let outputText: string
+    let flaggedSegments: unknown[]
+    let appliedRules: string[]
+    let captionMetaPreserved: boolean | undefined = undefined
+
+    if (inputFormat && cues && cues.length > 0) {
+      const result = await enforceGuidelineCaptions(inputFormat, cues, rules)
+      outputText = inputFormat === 'vtt' ? cuesToVtt(result.cues) : cuesToSrt(result.cues)
+      flaggedSegments = result.flaggedSegments
+      appliedRules = result.appliedRules
+      captionMetaPreserved = true
+    } else {
+      const result = await enforceGuideline(transcriptText, rules)
+      outputText = result.outputText
+      flaggedSegments = result.flaggedSegments
+      appliedRules = result.appliedRules
+    }
+
+    const diffSegments = computeTranscriptDiff(transcriptText, outputText)
+
+    // Stage: validating (build verification report)
+    await prisma.formattingJob.update({
+      where: { id: formattingJobId },
+      data: { stage: 'validating' },
+    })
+
+    const report = buildValidationReport({
+      inputText: transcriptText,
+      outputText,
+      flaggedCount: Array.isArray(flaggedSegments) ? flaggedSegments.length : 0,
+      isCaptionMode: Boolean(inputFormat && cues && cues.length > 0),
+      captionMetaPreserved,
+    })
 
     await prisma.formattingJob.update({
       where: { id: formattingJobId },
       data: {
         status: 'completed',
-        outputText: result.outputText,
+        stage: 'completed',
+        outputText,
         diffData: diffSegments as unknown as Prisma.InputJsonValue,
-        flaggedSegments: result.flaggedSegments as unknown as Prisma.InputJsonValue,
-        appliedRules: result.appliedRules as unknown as Prisma.InputJsonValue,
+        flaggedSegments: flaggedSegments as unknown as Prisma.InputJsonValue,
+        appliedRules: appliedRules as unknown as Prisma.InputJsonValue,
+        validationReport: report as unknown as Prisma.InputJsonValue,
       },
+    })
+
+    void updateJobCompleted(formattingJobId, Math.max(0, Date.now() - started))
+    pushLogEntry({
+      ts: new Date().toISOString(),
+      level: 'info',
+      service: 'worker',
+      msg: 'guideline_format_completed',
+      jobId: formattingJobId,
+      module: 'guidelineProcessor',
     })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
@@ -60,12 +156,24 @@ async function handleGuidelineJob(job: Queue.Job<GuidelineJobPayload>): Promise<
         where: { id: formattingJobId },
         data: {
           status: 'failed',
+          stage: 'failed',
           failureReason: msg.slice(0, 4000),
         },
       })
     } catch (e) {
       log.warn({ msg: 'Failed to mark FormattingJob as failed', id: formattingJobId, error: String(e) })
     }
+
+    void updateJobFailed(formattingJobId, msg)
+    pushLogEntry({
+      ts: new Date().toISOString(),
+      level: 'error',
+      service: 'worker',
+      msg: 'guideline_format_failed',
+      jobId: formattingJobId,
+      module: 'guidelineProcessor',
+      extra: msg.slice(0, 300),
+    })
     throw err
   }
 }
