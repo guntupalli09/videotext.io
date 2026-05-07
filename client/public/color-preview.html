@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Palette Preview — videotext.io</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #F8FAFC; color: #0F172A; padding: 40px 24px; }
+  h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: #0F172A; }
+  .subtitle { color: #64748B; margin-bottom: 48px; font-size: 0.95rem; }
+  .current-badge { display: inline-block; background: #7C3AED22; color: #7C3AED; padding: 2px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; margin-left: 8px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; }
+  .palette { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04); }
+  .palette-header { padding: 24px 24px 20px; }
+  .palette-name { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
+  .palette-desc { font-size: 0.85rem; color: #64748B; line-height: 1.5; }
+  .palette-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; margin-top: 8px; }
+
+  .swatches { display: flex; height: 72px; }
+  .swatch { flex: 1; display: flex; align-items: flex-end; padding: 6px; }
+  .swatch-label { font-size: 0.65rem; font-weight: 500; padding: 2px 4px; border-radius: 4px; }
+
+  .components { padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+  .comp-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #94A3B8; margin-bottom: 4px; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; border-radius: 12px; padding: 0 20px; font-size: 0.9rem; font-weight: 600; border: none; cursor: pointer; font-family: inherit; }
+  .input-row { display: flex; gap: 8px; align-items: center; }
+  .input { border-radius: 10px; border: 1.5px solid; padding: 10px 14px; font-size: 0.9rem; font-family: inherit; flex: 1; outline: none; }
+  .badge-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+
+  .card { border-radius: 12px; padding: 16px; }
+  .card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+  .card-sub { font-size: 0.8rem; color: #64748B; }
+  .progress-bar { height: 6px; border-radius: 999px; background: #E2E8F0; overflow: hidden; margin-top: 10px; }
+  .progress-fill { height: 100%; border-radius: 999px; }
+
+  /* Current */
+  .s0-swatches .s1 { background: #7C3AED; } .s0-swatches .s2 { background: #6D28D9; } .s0-swatches .s3 { background: #A78BFA; } .s0-swatches .s4 { background: #EDE9FE; } .s0-swatches .s5 { background: #F5F3FF; }
+
+  /* Sapphire */
+  .s1-swatches .s1 { background: #1D4ED8; } .s1-swatches .s2 { background: #1E40AF; } .s1-swatches .s3 { background: #60A5FA; } .s1-swatches .s4 { background: #DBEAFE; } .s1-swatches .s5 { background: #EFF6FF; }
+
+  /* Midnight Indigo */
+  .s2-swatches .s1 { background: #4338CA; } .s2-swatches .s2 { background: #3730A3; } .s2-swatches .s3 { background: #818CF8; } .s2-swatches .s4 { background: #E0E7FF; } .s2-swatches .s5 { background: #EEF2FF; }
+
+  /* Teal */
+  .s3-swatches .s1 { background: #0D9488; } .s3-swatches .s2 { background: #0F766E; } .s3-swatches .s3 { background: #2DD4BF; } .s3-swatches .s4 { background: #CCFBF1; } .s3-swatches .s5 { background: #F0FDFA; }
+
+  .divider { border: none; border-top: 1px solid #F1F5F9; margin: 0; }
+</style>
+</head>
+<body>
+
+<h1>Color Palette Options <span class="current-badge">current: Violet #7C3AED</span></h1>
+<p class="subtitle">Each option rendered as real UI components — buttons, inputs, badges, cards.</p>
+
+<div class="grid">
+
+  <!-- OPTION 0: CURRENT -->
+  <div class="palette">
+    <div class="swatches s0-swatches">
+      <div class="swatch s1"><span class="swatch-label" style="color:white;background:rgba(0,0,0,0.3)">#7C3AED</span></div>
+      <div class="swatch s2"></div>
+      <div class="swatch s3"></div>
+      <div class="swatch s4"></div>
+      <div class="swatch s5"></div>
+    </div>
+    <div class="palette-header">
+      <div class="palette-name">⚠ Current — Violet</div>
+      <div class="palette-desc">The default "vibecoded" purple. Common in AI tool MVPs. Creative but not authoritative.</div>
+      <span class="palette-tag" style="background:#F3E8FF;color:#7C3AED">Playful • Common • Low trust</span>
+    </div>
+    <hr class="divider">
+    <div class="components">
+      <div>
+        <div class="comp-label">Buttons</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" style="background:#7C3AED;color:white">Get Started</button>
+          <button class="btn" style="background:#F3F4F6;color:#374151;border:1.5px solid #E5E7EB">Cancel</button>
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Input focus</div>
+        <div class="input-row">
+          <input class="input" placeholder="Paste YouTube URL…" style="border-color:#A78BFA;box-shadow:0 0 0 3px rgba(124,58,237,0.15)">
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Badges</div>
+        <div class="badge-row">
+          <span class="badge" style="background:#EDE9FE;color:#7C3AED">Transcribing</span>
+          <span class="badge" style="background:#D1FAE5;color:#065F46">Done</span>
+          <span class="badge" style="background:#FEF3C7;color:#92400E">Processing</span>
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Progress card</div>
+        <div class="card" style="background:#F5F3FF">
+          <div class="card-title">Extracting transcript</div>
+          <div class="card-sub">Usually takes 20–30 seconds</div>
+          <div class="progress-bar"><div class="progress-fill" style="background:#7C3AED;width:55%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION 1: SAPPHIRE -->
+  <div class="palette" style="outline:2.5px solid #1D4ED8">
+    <div class="swatches s1-swatches">
+      <div class="swatch s1"><span class="swatch-label" style="color:white;background:rgba(0,0,0,0.3)">#1D4ED8</span></div>
+      <div class="swatch s2"></div>
+      <div class="swatch s3"></div>
+      <div class="swatch s4"></div>
+      <div class="swatch s5"></div>
+    </div>
+    <div class="palette-header">
+      <div class="palette-name">★ Option A — Sapphire & Slate</div>
+      <div class="palette-desc">Deep jewel-blue. The color of trust — used deliberately by banks, enterprise software, Stripe, Linear. Rich, not flat.</div>
+      <span class="palette-tag" style="background:#DBEAFE;color:#1D4ED8">Trustworthy • Modern • Professional</span>
+    </div>
+    <hr class="divider">
+    <div class="components">
+      <div>
+        <div class="comp-label">Buttons</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" style="background:#1D4ED8;color:white">Get Started</button>
+          <button class="btn" style="background:#F3F4F6;color:#374151;border:1.5px solid #E5E7EB">Cancel</button>
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Input focus</div>
+        <div class="input-row">
+          <input class="input" placeholder="Paste YouTube URL…" style="border-color:#60A5FA;box-shadow:0 0 0 3px rgba(29,78,216,0.15)">
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Badges</div>
+        <div class="badge-row">
+          <span class="badge" style="background:#DBEAFE;color:#1D4ED8">Transcribing</span>
+          <span class="badge" style="background:#D1FAE5;color:#065F46">Done</span>
+          <span class="badge" style="background:#FEF3C7;color:#92400E">Processing</span>
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Progress card</div>
+        <div class="card" style="background:#EFF6FF">
+          <div class="card-title">Extracting transcript</div>
+          <div class="card-sub">Usually takes 20–30 seconds</div>
+          <div class="progress-bar"><div class="progress-fill" style="background:#1D4ED8;width:55%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION 2: MIDNIGHT INDIGO -->
+  <div class="palette">
+    <div class="swatches s2-swatches">
+      <div class="swatch s1"><span class="swatch-label" style="color:white;background:rgba(0,0,0,0.3)">#4338CA</span></div>
+      <div class="swatch s2"></div>
+      <div class="swatch s3"></div>
+      <div class="swatch s4"></div>
+      <div class="swatch s5"></div>
+    </div>
+    <div class="palette-header">
+      <div class="palette-name">Option B — Midnight Indigo</div>
+      <div class="palette-desc">Deeper, cooler indigo — halfway between the current violet and blue. Premium feel. Think Notion, Figma.</div>
+      <span class="palette-tag" style="background:#E0E7FF;color:#4338CA">Premium • Calm • Distinctive</span>
+    </div>
+    <hr class="divider">
+    <div class="components">
+      <div>
+        <div class="comp-label">Buttons</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" style="background:#4338CA;color:white">Get Started</button>
+          <button class="btn" style="background:#F3F4F6;color:#374151;border:1.5px solid #E5E7EB">Cancel</button>
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Input focus</div>
+        <div class="input-row">
+          <input class="input" placeholder="Paste YouTube URL…" style="border-color:#818CF8;box-shadow:0 0 0 3px rgba(67,56,202,0.15)">
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Badges</div>
+        <div class="badge-row">
+          <span class="badge" style="background:#E0E7FF;color:#4338CA">Transcribing</span>
+          <span class="badge" style="background:#D1FAE5;color:#065F46">Done</span>
+          <span class="badge" style="background:#FEF3C7;color:#92400E">Processing</span>
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Progress card</div>
+        <div class="card" style="background:#EEF2FF">
+          <div class="card-title">Extracting transcript</div>
+          <div class="card-sub">Usually takes 20–30 seconds</div>
+          <div class="progress-bar"><div class="progress-fill" style="background:#4338CA;width:55%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION 3: TEAL -->
+  <div class="palette">
+    <div class="swatches s3-swatches">
+      <div class="swatch s1"><span class="swatch-label" style="color:white;background:rgba(0,0,0,0.3)">#0D9488</span></div>
+      <div class="swatch s2"></div>
+      <div class="swatch s3"></div>
+      <div class="swatch s4"></div>
+      <div class="swatch s5"></div>
+    </div>
+    <div class="palette-header">
+      <div class="palette-name">Option C — Deep Teal</div>
+      <div class="palette-desc">Calm, confident, and unique. Not overdone. Conveys clarity and precision — used in medical, data, and editorial tools.</div>
+      <span class="palette-tag" style="background:#CCFBF1;color:#0D9488">Fresh • Unique • Clear</span>
+    </div>
+    <hr class="divider">
+    <div class="components">
+      <div>
+        <div class="comp-label">Buttons</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" style="background:#0D9488;color:white">Get Started</button>
+          <button class="btn" style="background:#F3F4F6;color:#374151;border:1.5px solid #E5E7EB">Cancel</button>
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Input focus</div>
+        <div class="input-row">
+          <input class="input" placeholder="Paste YouTube URL…" style="border-color:#2DD4BF;box-shadow:0 0 0 3px rgba(13,148,136,0.15)">
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Badges</div>
+        <div class="badge-row">
+          <span class="badge" style="background:#CCFBF1;color:#0D9488">Transcribing</span>
+          <span class="badge" style="background:#D1FAE5;color:#065F46">Done</span>
+          <span class="badge" style="background:#FEF3C7;color:#92400E">Processing</span>
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">Progress card</div>
+        <div class="card" style="background:#F0FDFA">
+          <div class="card-title">Extracting transcript</div>
+          <div class="card-sub">Usually takes 20–30 seconds</div>
+          <div class="progress-bar"><div class="progress-fill" style="background:#0D9488;width:55%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p style="margin-top:40px;color:#94A3B8;font-size:0.8rem;text-align:center">All options use the same gray scale, spacing, and typography as the current app. Only the primary color changes.</p>
+
+</body>
+</html>
