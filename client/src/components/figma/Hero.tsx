@@ -1,7 +1,7 @@
 import { useRef, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Mic,
+  ClipboardCheck,
   Shield,
   CheckCircle2,
   Upload,
@@ -111,25 +111,25 @@ function HeroDropzone() {
         <div className="flex-1 h-px bg-white/[0.07]" />
       </div>
 
-      {/* Voice */}
+      {/* Guideline formatter */}
       <div className="grid grid-cols-1 gap-2">
         <Link
-          to="/voice-recorder"
+          to="/guideline-format"
           className="group flex flex-col gap-2.5 rounded-xl border border-violet-300/30 bg-gradient-to-b from-violet-500/14 to-indigo-500/12 shadow-[0_0_0_1px_rgba(139,92,246,0.2),0_10px_30px_rgba(48,21,114,0.35)] hover:border-violet-300/60 hover:from-violet-500/22 hover:to-indigo-500/16 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.42),0_0_30px_rgba(139,92,246,0.2)] px-4 py-3.5 transition-all duration-200"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-violet-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-500/25 transition-colors">
-              <Mic className="w-4 h-4 text-violet-400" />
+              <ClipboardCheck className="w-4 h-4 text-violet-400" />
             </div>
             <p className="text-white font-semibold text-[12px] leading-tight">
-              Record Voice
+              Format transcripts in seconds
             </p>
           </div>
           <p className="text-white/35 text-[11px] leading-snug">
-            Record in-browser — no upload needed
+            Apply client guideline rules — ready for QA
           </p>
           <div className="flex items-center gap-1 text-[11px] font-semibold text-violet-400 group-hover:gap-1.5 transition-all">
-            Try now <ChevronRight className="w-3 h-3" />
+            Format now <ChevronRight className="w-3 h-3" />
           </div>
         </Link>
       </div>
@@ -177,12 +177,12 @@ export function Hero() {
 
         {/* Sub-headline */}
         <p className="text-center text-[16px] sm:text-[17px] text-white/50 max-w-lg mx-auto leading-relaxed mb-8">
-          Upload a video or record your voice — get a transcript, AI summary, chapters,{' '}
+          Upload a video or format your transcript — get AI summary, chapters,{' '}
           <span className="text-violet-300 font-medium">and translation</span>{' '}
           automatically.
         </p>
 
-        {/* Dropzone + Record */}
+        {/* Dropzone + Formatter */}
         <HeroDropzone />
 
         {/* Output preview strip — shows what you actually get */}
