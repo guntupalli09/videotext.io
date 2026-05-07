@@ -212,6 +212,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             setLastProcessingMs(processingMs)
             setStatus('completed')
             setResult(jobStatus.result ?? null)
+            setIssues(jobStatus.result?.issues ?? [])
             trackAppEvent('transcription_completed', { toolId: 'fix-subtitles' })
             // emitToolCompleted({ toolId: 'fix-subtitles', pathname: '/fix-subtitles', processingMs })
             setWarnings(jobStatus.result?.warnings ?? [])
@@ -279,6 +280,122 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       large_gap: 'Large gap',
     }
     return labels[type] || type
+  }
+
+  const downloadFixedSubtitles = async () => {
+    if (!result?.downloadUrl) {
+      toast.error('Download is not ready yet')
+      return
+    }
+
+    if (plan === 'free' && freeExportsUsed >= 2) {
+      toast('You\'ve used your 2 free downloads. Upgrade for more.')
+      return
+    }
+
+    try {
+      const token = getAuthToken()
+      const shouldWatermark = plan === 'free'
+      const downloadUrl = `${getDownloadUrl()}${shouldWatermark ? '?wm=1' : ''}`
+      const res = await fetch(downloadUrl, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+      if (!res.ok) throw new Error('Download request failed')
+
+      const blob = await res.blob()
+      const objectUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = objectUrl
+      a.download = result.fileName || fallbackFixedName
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(objectUrl)
+
+      try { trackEvent('result_downloaded', { tool: 'fix-subtitles', plan }) } catch { /* non-blocking */ }
+      if (plan === 'free') {
+        setFreeExportsUsed((prev) => prev + 1)
+        toast.success('Download started (with watermark)')
+      } else {
+        toast.success('Download started')
+      }
+    } catch {
+      toast.error('Download failed')
+    }
+  }
+
+  const renderIssueEditor = () => {
+    const totalFindings = issues.length + warnings.length
+    if (totalFindings === 0) {
+      return (
+        <div className="rounded-2xl border border-green-200 bg-green-50 p-5 text-green-900 dark:border-green-800 dark:bg-green-950/30 dark:text-green-100">
+          <p className="font-medium">No issues found after fixing.</p>
+          <p className="mt-1 text-sm text-green-800 dark:text-green-200">Your downloadable subtitle file passed the available validation checks.</p>
+        </div>
+      )
+    }
+
+    return (
+      <section
+        className="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+        aria-labelledby="fixed-subtitle-findings-heading"
+      >
+        <div className="flex flex-col gap-2 border-b border-gray-200 p-5 dark:border-gray-800 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 id="fixed-subtitle-findings-heading" className="text-lg font-semibold text-gray-900 dark:text-white">
+              Issues fixed and validation notes
+            </h3>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Showing about 5 findings at a time. Scroll inside this editor to review all {totalFindings}.
+            </p>
+          </div>
+          <span className="inline-flex w-fit rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-900/40 dark:text-violet-200">
+            {issues.length} issue{issues.length !== 1 ? 's' : ''}
+            {warnings.length > 0 ? ` · ${warnings.length} warning${warnings.length !== 1 ? 's' : ''}` : ''}
+          </span>
+        </div>
+
+        <div className="max-h-96 overflow-y-auto p-5" tabIndex={0}>
+          {issues.length > 0 && (
+            <ol className="space-y-3">
+              {issues.map((issue, index) => (
+                <li
+                  key={`${issue.type ?? 'issue'}-${issue.index ?? index}-${index}`}
+                  className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-800 dark:bg-gray-950/50"
+                >
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                    <p className="font-semibold text-gray-900 dark:text-gray-100">
+                      {index + 1}. {getIssueTypeLabel(String(issue.type ?? 'issue'))}
+                    </p>
+                    {issue.index != null && (
+                      <span className="font-mono text-xs text-gray-500 dark:text-gray-400">Cue {issue.index}</span>
+                    )}
+                  </div>
+                  <p className="mt-2 text-gray-700 dark:text-gray-300">{issue.message ?? 'Subtitle issue detected and processed.'}</p>
+                </li>
+              ))}
+            </ol>
+          )}
+
+          {warnings.length > 0 && (
+            <div className={issues.length > 0 ? 'mt-5 border-t border-gray-200 pt-5 dark:border-gray-800' : ''}>
+              <p className="mb-3 text-sm font-semibold text-amber-800 dark:text-amber-200">Warnings (informational)</p>
+              <ol className="space-y-3">
+                {warnings.map((warning, index) => (
+                  <li key={`${warning.type}-${warning.line ?? index}-${index}`} className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                      <p className="font-semibold">{warning.type || 'Warning'}</p>
+                      {warning.line != null && <span className="font-mono text-xs">Line {warning.line}</span>}
+                    </div>
+                    <p className="mt-2">{warning.message}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+        </div>
+      </section>
+    )
   }
 
   const breadcrumbs = [{ label: 'Fix Subtitles', href: '/fix-subtitles' }]
@@ -455,49 +572,8 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               fileName={result.fileName ?? fallbackFixedName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               downloadLabel={plan === 'free' ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download with watermark') : 'Download fixed subtitles'}
-              onDownload={
-                plan === 'free'
-                  ? async () => {
-                      if (freeExportsUsed >= 2) {
-                        toast('You\'ve used your 2 free downloads. Upgrade for more.')
-                        return
-                      }
-                      try {
-                        const token = getAuthToken()
-                        const res = await fetch(getDownloadUrl() + '?wm=1', {
-                          headers: token ? { Authorization: `Bearer ${token}` } : {},
-                        })
-                        const blob = await res.blob()
-                        const a = document.createElement('a')
-                        a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || fallbackFixedName
-                        a.click()
-                        URL.revokeObjectURL(a.href)
-                        try { trackEvent('result_downloaded', { tool: 'fix-subtitles', plan: 'free' }) } catch { /* non-blocking */ }
-                        setFreeExportsUsed((prev) => prev + 1)
-                        toast.success('Download started (with watermark)')
-                      } catch {
-                        toast.error('Download failed')
-                      }
-                    }
-                  : async () => {
-                      try {
-                        const token = getAuthToken()
-                        const res = await fetch(getDownloadUrl() + '?wm=1', {
-                          headers: token ? { Authorization: `Bearer ${token}` } : {},
-                        })
-                        const blob = await res.blob()
-                        const a = document.createElement('a')
-                        a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || fallbackFixedName
-                        a.click()
-                        URL.revokeObjectURL(a.href)
-                        try { trackEvent('result_downloaded', { tool: 'fix-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
-                      } catch {
-                        toast.error('Download failed')
-                      }
-                    }
-              }
+              onDownload={downloadFixedSubtitles}
+              afterDownloadContent={renderIssueEditor()}
               onProcessAnother={handleProcessAnother}
               relatedTools={[
                 { path: '/burn-subtitles', name: 'Burn Subtitles', description: 'Hardcode into video' },
@@ -541,25 +617,6 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               </div>
             )}
 
-            {warnings.length > 0 && (
-              <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
-                <p className="text-amber-800 font-medium mb-2">Warnings (informational)</p>
-                <ul className="text-sm text-amber-900 space-y-1">
-                  {warnings.slice(0, 5).map((w, i) => (
-                    <li key={i}>{w.line != null ? `Line ${w.line}: ` : ''}{w.message}</li>
-                  ))}
-                  {warnings.length > 5 && <li>… and {warnings.length - 5} more</li>}
-                </ul>
-              </div>
-            )}
-
-            {issues.length > 0 && (
-              <div className="bg-green-50 rounded-2xl p-6 shadow-card border border-green-100">
-                <p className="text-green-800 font-medium">
-                  ✓ Fixed {issues.length} issue{issues.length !== 1 ? 's' : ''}
-                </p>
-              </div>
-            )}
 
             <CrossToolSuggestions
               workflowHint="Burn into video, translate, or generate subtitles from video."
