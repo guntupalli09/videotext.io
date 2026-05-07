@@ -7,7 +7,6 @@ import SamplesModule from '../components/SamplesModule'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import UpgradeBanner from '../components/UpgradeBanner'
-import ActivationWizardCard from '../components/ActivationWizardCard'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import { isLoggedIn } from '../lib/auth'
 import { ToolLayout } from '../components/figma/ToolLayout'
@@ -1950,7 +1949,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
   }, [])
 
   const isPaidPlan = typeof window !== 'undefined' && (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
-  const hasSeenFirstOutput = typeof window !== 'undefined' && localStorage.getItem('vt:first_output_seen') === '1'
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -2308,9 +2306,6 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     <>
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" />
-        {!isPaidPlan && !hasSeenFirstOutput && (
-          <ActivationWizardCard completed={status === 'completed'} />
-        )}
         {freeImportsRemaining != null && freeImportsRemaining <= 1 && (
           <div className="mb-4 rounded-xl border border-amber-300/70 bg-amber-50/80 dark:border-amber-700/60 dark:bg-amber-950/25 px-4 py-3">
             <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">
