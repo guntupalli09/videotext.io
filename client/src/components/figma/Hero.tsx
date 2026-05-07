@@ -94,7 +94,7 @@ function HeroDropzone() {
         {/* Text */}
         <div className="text-center">
           <p className="text-white font-bold text-base leading-snug">
-            {dragging ? 'Release to start transcribing' : 'Upload your video or audio — get results in minutes'}
+            {dragging ? 'Release to start transcribing' : 'Upload video or audio — get results in minutes'}
           </p>
           <p className="text-white/40 text-sm mt-0.5">
             MP4, MOV, MKV, AVI, WebM · MP3, WAV, M4A, FLAC, AAC
