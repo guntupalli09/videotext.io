@@ -1,8 +1,11 @@
+import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Download, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface TranslateResultProps {
+  /** Content rendered immediately after the primary download button. */
+  afterDownloadContent?: ReactNode;
   title?: string;
   fileName: string;
   processingTime: string;
@@ -27,6 +30,7 @@ export function TranslateResult({
   fileSize,
   downloadLabel = 'Download translated subtitles',
   onDownload,
+  afterDownloadContent,
   onProcessAnother,
   relatedTools = defaultRelatedTools,
 }: TranslateResultProps) {
@@ -76,6 +80,8 @@ export function TranslateResult({
           {downloadLabel}
         </motion.button>
       )}
+
+      {afterDownloadContent}
 
       {onProcessAnother && (
         <div className="text-center">
