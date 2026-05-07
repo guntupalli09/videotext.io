@@ -27,8 +27,8 @@ const SPOTLIGHT_TOOLS = [
     description:
       'Upload any video and get a clean, timestamped transcript. AI-powered with 98.5% accuracy. Export as TXT, PDF, DOCX, or JSON.',
     bullets: ['Speaker detection & labels', 'Auto chapters & summary', 'Pro: share read-only transcript links', '99 languages · Translation to 70+'],
-    gradient: 'from-violet-500 to-indigo-600',
-    glowColor: 'rgba(139,92,246,0.08)',
+    gradient: 'from-violet-500 to-violet-600',
+    glowColor: 'rgba(29,78,216,0.08)',
     href: '/video-to-transcript',
     cta: 'Upload a video, get transcript',
     outputPreview: [
@@ -67,7 +67,7 @@ const SPOTLIGHT_TOOLS = [
     description:
       'Translate subtitles, documents, DOCX, TXT, and JSON into 70+ languages with formatting preserved.',
     bullets: ['Subtitles + documents', 'Formatting preserved', 'Fast turnaround', 'Export in common formats'],
-    gradient: 'from-pink-500 to-purple-600',
+    gradient: 'from-pink-500 to-violet-600',
     glowColor: 'rgba(236,72,153,0.07)',
     href: '/translate-subtitles',
     cta: 'Translate your file',
@@ -105,7 +105,7 @@ const SECONDARY_TOOLS = [
     icon: Mic,
     name: 'Voice → Text',
     description: 'Record in your browser — no file, no upload. Transcript in seconds.',
-    gradient: 'from-purple-500 to-violet-600',
+    gradient: 'from-violet-500 to-violet-600',
     accent: 'text-violet-400',
     href: '/voice-recorder',
   },
@@ -121,8 +121,8 @@ const SECONDARY_TOOLS = [
     icon: FolderSync,
     name: 'Batch Processing',
     description: 'Upload a whole season at once. Process 50+ videos in parallel and download as a ZIP.',
-    gradient: 'from-indigo-500 to-purple-600',
-    accent: 'text-indigo-400',
+    gradient: 'from-violet-500 to-violet-600',
+    accent: 'text-violet-400',
     href: '/batch-process',
   },
   {
@@ -331,7 +331,7 @@ export function Features() {
           <Link to="/video-to-transcript">
             <motion.span
               whileHover={{ scale: 1.03, y: -1 }}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-7 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-violet-500/20 hover:shadow-xl hover:shadow-violet-500/30 transition-all"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-violet-600 text-white px-7 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-violet-500/20 hover:shadow-xl hover:shadow-violet-500/30 transition-all"
             >
               Start transcribing free
               <ArrowRight className="w-4 h-4" />

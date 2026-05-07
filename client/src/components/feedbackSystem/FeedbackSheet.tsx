@@ -65,7 +65,7 @@ export default function FeedbackSheet({
             aria-modal="true"
           >
             {/* Accent bar */}
-            <div className="h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-violet-600" />
+            <div className="h-1 bg-gradient-to-r from-violet-500 via-violet-500 to-violet-600" />
 
             {/* Drag handle (mobile only) */}
             <div className="flex justify-center pt-2 pb-0 sm:hidden">

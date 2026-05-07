@@ -15,7 +15,7 @@ const PLAN_STYLES: Record<string, string> = {
   basic: 'bg-primary/10 text-primary border-primary/20',
   pro: 'bg-primary/20 text-primary border-primary/30',
   agency: 'bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-700',
-  founding_workflow: 'bg-purple-50 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 border-purple-200 dark:border-purple-700',
+  founding_workflow: 'bg-violet-50 dark:bg-violet-900/30 text-violet-800 dark:text-violet-200 border-violet-200 dark:border-violet-700',
 }
 
 export default function PlanBadge() {

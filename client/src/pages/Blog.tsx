@@ -61,7 +61,7 @@ const POSTS: BlogPost[] = [
         </p>
         <p>
           Try it now — no signup needed:{' '}
-          <a href="/voice-recorder" className="text-purple-600 dark:text-purple-400 hover:underline font-medium">Voice to Text →</a>
+          <a href="/voice-recorder" className="text-violet-600 dark:text-violet-400 hover:underline font-medium">Voice to Text →</a>
         </p>
       </div>
     ),
@@ -89,7 +89,7 @@ const POSTS: BlogPost[] = [
           <li><strong>Consistency:</strong> The process must work for every new video, not one-off hacks.</li>
         </ul>
         <p>
-          Try the dedicated workflow here: <a className="text-purple-600 dark:text-purple-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
+          Try the dedicated workflow here: <a className="text-violet-600 dark:text-violet-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
         </p>
       </div>
     ),
@@ -119,7 +119,7 @@ const POSTS: BlogPost[] = [
           <li><strong>Cross-tool workflow:</strong> cleaner handoff into CMS, docs, and content ops.</li>
         </ul>
         <p>
-          If your goal is to publish text derivatives quickly, use a dedicated URL-first workflow: <a className="text-purple-600 dark:text-purple-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
+          If your goal is to publish text derivatives quickly, use a dedicated URL-first workflow: <a className="text-violet-600 dark:text-violet-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
         </p>
       </div>
     ),
@@ -147,7 +147,7 @@ const POSTS: BlogPost[] = [
           This keeps subtitle generation tied to transcript generation so your content and timing stay consistent across channels.
         </p>
         <p>
-          Start from here: <a className="text-purple-600 dark:text-purple-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
+          Start from here: <a className="text-violet-600 dark:text-violet-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
         </p>
       </div>
     ),

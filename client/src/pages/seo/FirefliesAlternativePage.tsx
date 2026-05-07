@@ -12,7 +12,7 @@ const COMPARE_ROWS = [
 ]
 
 function Cell({ val, isUs = false }: { val: boolean | string; isUs?: boolean }) {
-  if (typeof val === 'string') return <span className={`text-sm font-semibold ${isUs ? 'text-purple-600 dark:text-purple-400' : 'text-gray-600 dark:text-gray-300'}`}>{val}</span>
+  if (typeof val === 'string') return <span className={`text-sm font-semibold ${isUs ? 'text-violet-600 dark:text-violet-400' : 'text-gray-600 dark:text-gray-300'}`}>{val}</span>
   return val ? <CheckCircle2 className={`w-5 h-5 mx-auto ${isUs ? 'text-emerald-500' : 'text-emerald-400'}`} /> : <XCircle className="w-5 h-5 mx-auto text-gray-300 dark:text-gray-700" />
 }
 
@@ -20,13 +20,13 @@ export default function FirefliesAlternativePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-500">
       <section className="relative py-20 sm:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-purple-950/20 dark:via-gray-950 dark:to-indigo-950/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-white to-violet-50 dark:from-violet-950/20 dark:via-gray-950 dark:to-violet-950/20" />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">Fireflies alternative for teams that want post-meeting outputs without a bot in the call</h1>
           <p className="text-lg text-gray-500 dark:text-white/50 max-w-3xl mx-auto mb-8">
             This page is for teams deciding between a bot-first meeting assistant and a file-first transcription workflow after the meeting. Fireflies is strong for in-call capture. VideoText is stronger when your priority is what happens next: clean transcript outputs, summaries, chapters, and export files from recordings.
           </p>
-          <Link to="/video-to-transcript?source=fireflies-alternative" className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-purple-500/25">
+          <Link to="/video-to-transcript?source=fireflies-alternative" className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-violet-600 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-violet-500/25">
             Compare with your next recorded meeting
             <ChevronRight className="w-4 h-4" />
           </Link>
@@ -82,7 +82,7 @@ export default function FirefliesAlternativePage() {
           <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
             <div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-white/[0.05]">
               <div />
-              <div className="text-center text-[11px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wide">VideoText</div>
+              <div className="text-center text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide">VideoText</div>
               <div className="text-center text-[11px] font-medium text-gray-400 uppercase tracking-wide">Fireflies</div>
             </div>
             <div className="divide-y divide-gray-100 dark:divide-white/[0.03] bg-white dark:bg-gray-900/50">
@@ -100,21 +100,21 @@ export default function FirefliesAlternativePage() {
         <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Related alternatives</h2>
           <div className="flex flex-wrap gap-3 text-sm">
-            <Link to="/otter-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Otter alternative</Link>
-            <Link to="/notta-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Notta alternative</Link>
-            <Link to="/meeting-transcription-tool" className="text-purple-600 dark:text-purple-400 hover:underline">Meeting transcription tool</Link>
-            <Link to="/meeting-recording-to-transcript" className="text-purple-600 dark:text-purple-400 hover:underline">Meeting recording to transcript</Link>
-            <Link to="/google-meet-transcript" className="text-purple-600 dark:text-purple-400 hover:underline">Google Meet transcript</Link>
-            <Link to="/zoom-meeting-transcript" className="text-purple-600 dark:text-purple-400 hover:underline">Zoom meeting transcript</Link>
-            <Link to="/transcription-benchmark" className="text-purple-600 dark:text-purple-400 hover:underline">Transcription benchmark</Link>
-            <Link to="/blog/best-transcription-software-2026" className="text-purple-600 dark:text-purple-400 hover:underline">Best transcription software 2026</Link>
+            <Link to="/otter-alternative" className="text-violet-600 dark:text-violet-400 hover:underline">Otter alternative</Link>
+            <Link to="/notta-alternative" className="text-violet-600 dark:text-violet-400 hover:underline">Notta alternative</Link>
+            <Link to="/meeting-transcription-tool" className="text-violet-600 dark:text-violet-400 hover:underline">Meeting transcription tool</Link>
+            <Link to="/meeting-recording-to-transcript" className="text-violet-600 dark:text-violet-400 hover:underline">Meeting recording to transcript</Link>
+            <Link to="/google-meet-transcript" className="text-violet-600 dark:text-violet-400 hover:underline">Google Meet transcript</Link>
+            <Link to="/zoom-meeting-transcript" className="text-violet-600 dark:text-violet-400 hover:underline">Zoom meeting transcript</Link>
+            <Link to="/transcription-benchmark" className="text-violet-600 dark:text-violet-400 hover:underline">Transcription benchmark</Link>
+            <Link to="/blog/best-transcription-software-2026" className="text-violet-600 dark:text-violet-400 hover:underline">Best transcription software 2026</Link>
           </div>
         </section>
 
-        <section className="bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-700 rounded-3xl p-8 sm:p-12 text-white text-center">
+        <section className="bg-gradient-to-br from-violet-600 via-violet-600 to-violet-700 rounded-3xl p-8 sm:p-12 text-white text-center">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3">Try a no-bot workflow on your next meeting recording</h2>
           <p className="text-white/75 mb-8 max-w-xl mx-auto">Upload one completed call recording and compare how quickly you get usable transcript, summary, chapter, and export outputs.</p>
-          <Link to="/video-to-transcript?source=fireflies-alternative" className="inline-flex items-center gap-2 bg-white text-purple-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">
+          <Link to="/video-to-transcript?source=fireflies-alternative" className="inline-flex items-center gap-2 bg-white text-violet-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">
             Start the meeting-file comparison
             <ChevronRight className="w-4 h-4" />
           </Link>

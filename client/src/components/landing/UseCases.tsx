@@ -22,7 +22,7 @@ const USE_CASES = [
   },
   {
     icon: Mic,
-    iconBg: 'bg-purple-600',
+    iconBg: 'bg-violet-600',
     label: 'For Podcasters',
     headline: 'Upload once, get everything.',
     description: 'Drop your episode and get a full transcript, AI chapter markers, a bullet-point summary, and clean show notes — all from one upload.',
@@ -33,9 +33,9 @@ const USE_CASES = [
     ],
     cta: 'Try podcast transcription',
     href: '/podcast-transcription',
-    gradient: 'from-purple-600 to-indigo-600',
-    bgGlow: 'from-purple-500/10 via-transparent to-transparent dark:from-purple-500/5',
-    borderHover: 'hover:border-purple-200 dark:hover:border-purple-500/20',
+    gradient: 'from-violet-600 to-violet-600',
+    bgGlow: 'from-violet-500/10 via-transparent to-transparent dark:from-violet-500/5',
+    borderHover: 'hover:border-violet-200 dark:hover:border-violet-500/20',
   },
   {
     icon: Building2,
@@ -68,7 +68,7 @@ export function UseCases() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-3 transition-colors duration-500">
+          <p className="text-sm font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-widest mb-3 transition-colors duration-500">
             Built for your workflow
           </p>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-500">

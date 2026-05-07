@@ -43,7 +43,7 @@ export function ProcessingProgress({
                   step.status === 'completed'
                     ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
                     : step.status === 'active'
-                    ? 'bg-purple-600 text-white'
+                    ? 'bg-violet-600 text-white'
                     : step.status === 'error'
                     ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
@@ -62,7 +62,7 @@ export function ProcessingProgress({
               <span
                 className={`text-xs font-medium ${
                   step.status === 'active'
-                    ? 'text-purple-600 dark:text-purple-400'
+                    ? 'text-violet-600 dark:text-violet-400'
                     : step.status === 'completed'
                     ? 'text-green-600 dark:text-green-400'
                     : 'text-gray-500 dark:text-gray-400'
@@ -96,7 +96,7 @@ export function ProcessingProgress({
       <div className="space-y-2">
         <div className="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
           <motion.div
-            className="absolute h-full bg-gradient-to-r from-purple-600 to-blue-600"
+            className="absolute h-full bg-gradient-to-r from-violet-600 to-blue-600"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: 'easeOut' }}

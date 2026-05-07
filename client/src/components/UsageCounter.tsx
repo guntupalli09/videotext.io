@@ -195,7 +195,7 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
         <div className="w-full h-1.5 rounded-full bg-gray-700 overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-500 ${
-              isExhausted ? 'bg-red-500' : 'bg-gradient-to-r from-violet-500 to-indigo-500'
+              isExhausted ? 'bg-red-500' : 'bg-gradient-to-r from-violet-500 to-violet-500'
             }`}
             style={{ width: `${usedPercent}%` }}
           />

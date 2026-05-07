@@ -650,7 +650,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   )
 
   const kindSelector = (status === 'idle' || inputKind === 'documents') && !docTranslated && (
-    <div className="mb-5 rounded-2xl border border-violet-300/60 dark:border-violet-500/40 bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-violet-950/30 dark:to-indigo-950/20 p-4 sm:p-5">
+    <div className="mb-5 rounded-2xl border border-violet-300/60 dark:border-violet-500/40 bg-gradient-to-r from-violet-50 to-violet-50 dark:from-violet-950/30 dark:to-violet-950/20 p-4 sm:p-5">
       <p className="text-xs font-bold tracking-wide uppercase text-violet-700 dark:text-violet-300">Choose what to translate</p>
       <p className="mt-1 text-sm text-gray-700 dark:text-gray-200">Translate subtitle files or full transcript documents from this same page.</p>
       <div className="mt-3 flex flex-col sm:flex-row gap-2">

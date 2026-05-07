@@ -86,12 +86,12 @@ export default function TranscriptionToolsHub() {
         canonicalPath="/transcription-tools"
       />
       {/* Hero */}
-      <div className="bg-gradient-to-br from-purple-600 to-purple-800 text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-violet-600 to-violet-800 text-white py-16 px-4">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
             Transcription Tools & Resources
           </h1>
-          <p className="text-lg text-purple-100 max-w-2xl">
+          <p className="text-lg text-violet-100 max-w-2xl">
             Complete collection of transcription tools, guides, and comparisons. From podcasts to interviews to video files — we've got you covered.
           </p>
         </div>
@@ -106,7 +106,7 @@ export default function TranscriptionToolsHub() {
               <div key={idx} className="space-y-4">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-                    <Icon className="w-6 h-6 text-purple-600" />
+                    <Icon className="w-6 h-6 text-violet-600" />
                     {category.title}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">{category.description}</p>
@@ -116,12 +116,12 @@ export default function TranscriptionToolsHub() {
                     <li key={link.path}>
                       <Link
                         to={link.path}
-                        className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-gray-800 transition-colors group"
+                        className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-violet-400 dark:hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-gray-800 transition-colors group"
                       >
-                        <span className="text-gray-900 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                        <span className="text-gray-900 dark:text-gray-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
                           {link.label}
                         </span>
-                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-violet-600 transition-colors" />
                       </Link>
                     </li>
                   ))}
@@ -135,7 +135,7 @@ export default function TranscriptionToolsHub() {
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <Mic className="w-5 h-5 text-purple-600" />
+              <Mic className="w-5 h-5 text-violet-600" />
               Quick Start
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
@@ -143,7 +143,7 @@ export default function TranscriptionToolsHub() {
             </p>
             <Link
               to="/guide"
-              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-semibold text-sm flex items-center gap-1"
+              className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-semibold text-sm flex items-center gap-1"
             >
               Read Guide <ArrowRight className="w-3 h-3" />
             </Link>
@@ -151,7 +151,7 @@ export default function TranscriptionToolsHub() {
 
           <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-purple-600" />
+              <MessageSquare className="w-5 h-5 text-violet-600" />
               Compare & Choose
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
@@ -159,7 +159,7 @@ export default function TranscriptionToolsHub() {
             </p>
             <Link
               to="/compare"
-              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-semibold text-sm flex items-center gap-1"
+              className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-semibold text-sm flex items-center gap-1"
             >
               View Comparison <ArrowRight className="w-3 h-3" />
             </Link>
@@ -167,7 +167,7 @@ export default function TranscriptionToolsHub() {
 
           <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <Zap className="w-5 h-5 text-purple-600" />
+              <Zap className="w-5 h-5 text-violet-600" />
               Start Transcribing
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
@@ -175,7 +175,7 @@ export default function TranscriptionToolsHub() {
             </p>
             <Link
               to="/video-to-transcript"
-              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-semibold text-sm flex items-center gap-1"
+              className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-semibold text-sm flex items-center gap-1"
             >
               Start Now <ArrowRight className="w-3 h-3" />
             </Link>

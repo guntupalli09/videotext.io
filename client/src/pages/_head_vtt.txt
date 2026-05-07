@@ -1535,7 +1535,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     breadcrumbs,
     title: seoH1 ?? 'Video ΓåÆ Transcript',
     subtitle: seoIntro ?? 'Extract spoken text from any video in seconds',
-    icon: <FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />,
+    icon: <FileText className="w-8 h-8 text-violet-600 dark:text-violet-400" />,
     sidebar: null,
   }
 
@@ -1552,13 +1552,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               <div className="space-y-3 sm:space-y-4">
                 {batchUploadEligible() && (
                   <div
-                    className="rounded-xl sm:rounded-2xl border-2 border-purple-400/55 dark:border-purple-500/45 bg-gradient-to-br from-purple-500/[0.12] via-violet-600/[0.08] to-fuchsia-600/[0.06] dark:from-purple-950/60 dark:via-violet-950/40 dark:to-fuchsia-950/25 px-4 py-3.5 sm:px-5 sm:py-4 shadow-sm shadow-purple-500/10"
+                    className="rounded-xl sm:rounded-2xl border-2 border-violet-400/55 dark:border-violet-500/45 bg-gradient-to-br from-violet-500/[0.12] via-violet-600/[0.08] to-fuchsia-600/[0.06] dark:from-violet-950/60 dark:via-violet-950/40 dark:to-fuchsia-950/25 px-4 py-3.5 sm:px-5 sm:py-4 shadow-sm shadow-violet-500/10"
                     role="status"
                     aria-live="polite"
                   >
                     <div className="flex gap-3 sm:gap-4">
-                      <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-purple-600/25 dark:bg-purple-400/20 ring-2 ring-purple-500/35">
-                        <Layers className="h-5 w-5 sm:h-6 sm:w-6 text-purple-700 dark:text-purple-200" aria-hidden />
+                      <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-violet-600/25 dark:bg-violet-400/20 ring-2 ring-violet-500/35">
+                        <Layers className="h-5 w-5 sm:h-6 sm:w-6 text-violet-700 dark:text-violet-200" aria-hidden />
                       </div>
                       <div className="min-w-0 text-left flex-1">
                         <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white leading-snug">
@@ -1676,7 +1676,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           type="checkbox"
                           checked={includeSummary}
                           onChange={(e) => setIncludeSummary(e.target.checked)}
-                          className="rounded border-gray-300 text-purple-600"
+                          className="rounded border-gray-300 text-violet-600"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">Include AI summary &amp; bullets</span>
                       </label>
@@ -1693,7 +1693,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           type="checkbox"
                           checked={includeChapters}
                           onChange={(e) => setIncludeChapters(e.target.checked)}
-                          className="rounded border-gray-300 text-purple-600"
+                          className="rounded border-gray-300 text-violet-600"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">Auto-generate chapters</span>
                       </label>
@@ -1710,7 +1710,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           type="checkbox"
                           checked={speakerDiarization}
                           onChange={(e) => setSpeakerDiarization(e.target.checked)}
-                          className="rounded border-gray-300 text-purple-600"
+                          className="rounded border-gray-300 text-violet-600"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">Speaker labels (who said what)</span>
                       </label>
@@ -1735,7 +1735,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                               value={numSpeakers}
                               onChange={(e) => setNumSpeakers(e.target.value)}
                               placeholder="Auto-detect"
-                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-violet-500"
                             />
                           </div>
                           <div className="flex-1">
@@ -1745,7 +1745,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                               value={diarizationLanguage}
                               onChange={(e) => setDiarizationLanguage(e.target.value)}
                               placeholder="Auto-detect (e.g. en)"
-                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-violet-500"
                             />
                           </div>
                         </div>
@@ -1988,7 +1988,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           value={numSpeakers}
                           onChange={(e) => setNumSpeakers(e.target.value)}
                           placeholder="Auto-detect"
-                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-violet-500"
                         />
                       </div>
                       <div className="flex-1">
@@ -1998,7 +1998,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           value={diarizationLanguage}
                           onChange={(e) => setDiarizationLanguage(e.target.value)}
                           placeholder="Auto-detect (e.g. en)"
-                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-violet-500"
                         />
                       </div>
                     </div>
@@ -2162,8 +2162,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         )}
 
         {!isBatchMode && status === 'processing' && (
-          <div className="bg-purple-50 dark:bg-purple-900/10 rounded-2xl p-8 border border-purple-100 dark:border-purple-900/30">
-            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-purple-200 dark:border-purple-900/30">
+          <div className="bg-violet-50 dark:bg-violet-900/10 rounded-2xl p-8 border border-violet-100 dark:border-violet-900/30">
+            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-violet-200 dark:border-violet-900/30">
               {/* YouTube thumbnail or file icon */}
               {youtubeThumbnailUrl ? (
                 <div className="w-20 h-14 sm:w-24 sm:h-16 rounded-lg overflow-hidden shrink-0 bg-gray-200 dark:bg-gray-800">
@@ -2175,8 +2175,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   />
                 </div>
               ) : (
-                <div className="w-16 h-16 bg-purple-200 dark:bg-purple-900/50 rounded-lg flex items-center justify-center shrink-0">
-                  <FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                <div className="w-16 h-16 bg-violet-200 dark:bg-violet-900/50 rounded-lg flex items-center justify-center shrink-0">
+                  <FileText className="w-8 h-8 text-violet-600 dark:text-violet-400" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
@@ -2992,7 +2992,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       placeholder="Search in transcript"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                     />
                   </div>
                   {isPaidPlan && (
@@ -3033,7 +3033,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         <div key={i} className="flex gap-3 items-start">
                           <span className="shrink-0 text-[11px] text-gray-400 dark:text-gray-500 font-mono mt-2 w-10">{formatTimestamp(seg.start)}</span>
                           <textarea
-                            className="flex-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded p-1.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                            className="flex-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded p-1.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-violet-500"
                             value={seg.text}
                             rows={2}
                             onChange={(e) => setEditableSegments((prev) => prev ? prev.map((s, j) => j === i ? { ...s, text: e.target.value } : s) : prev)}

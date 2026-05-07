@@ -7,9 +7,9 @@ export function FinalCTA() {
     <section className="relative py-16 overflow-hidden bg-gray-950">
       {/* Background */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-950/80 via-gray-950 to-indigo-950/80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-950/80 via-gray-950 to-violet-950/80" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-violet-600/[0.18] rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-indigo-600/[0.12] rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-violet-600/[0.12] rounded-full blur-[120px]" />
       </div>
 
       {/* Dot grid */}
@@ -44,7 +44,7 @@ export function FinalCTA() {
           {/* Headline */}
           <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-white leading-[1.05] mb-6 font-display">
             Start transcribing
-            <span className="block bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-violet-400 via-violet-400 to-violet-400 bg-clip-text text-transparent">
               right now.
             </span>
           </h2>

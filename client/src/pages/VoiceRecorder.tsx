@@ -279,7 +279,7 @@ export default function VoiceRecorder() {
         const y = (H - bh) / 2
         const a = 0.5 + barsRef.current[i] * 0.5
 
-        ctx.fillStyle = isRec ? `rgba(239,68,68,${a})` : `rgba(124,58,237,${a})`
+        ctx.fillStyle = isRec ? `rgba(239,68,68,${a})` : `rgba(29,78,216,${a})`
 
         // Rounded bars via arcTo
         const r = Math.min(bw / 2, 3)
@@ -963,7 +963,7 @@ export default function VoiceRecorder() {
                 {phase === 'uploading' && (
                   <div className="w-full max-w-xs bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full"
+                      className="h-full bg-gradient-to-r from-violet-500 to-violet-500 rounded-full"
                       initial={{ width: '0%' }}
                       animate={{ width: `${uploadPct}%` }}
                       transition={{ duration: 0.25 }}

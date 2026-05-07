@@ -68,7 +68,7 @@ Today we'll cover subtitle formats.`,
               {
                 name: 'ASS / SSA — Advanced SubStation Alpha (.ass / .ssa)',
                 badge: 'Advanced styling',
-                badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400',
+                badgeColor: 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-400',
                 desc: 'A format commonly used for anime fansubs and karaoke subtitles. ASS supports advanced per-character styling, positioning, animations, and multi-line karaoke effects. It is not supported by most streaming platforms but is widely used by media players like MPC-HC and mpv.',
                 points: [
                   'Supports rich per-character styling (color, size, font, outline)',

@@ -33,7 +33,7 @@ const PLAN_COLORS: Record<string, string> = {
 }
 
 const TOOL_COLORS_BAR: Record<string, string> = {
-  'video-to-transcript': '#7c3aed',
+  'video-to-transcript': '#1d4ed8',
   'voice-to-transcript': '#f43f5e',
   'video-to-subtitles': '#2563eb',
   'translate-subtitles': '#db2777',
@@ -384,8 +384,8 @@ function MrrLineChart({ data }: { data: { monthStart: string; mrrCents: number }
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }} preserveAspectRatio="none">
       <defs>
         <linearGradient id="mrr-grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.02" />
+          <stop offset="0%" stopColor="#1d4ed8" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0.02" />
         </linearGradient>
       </defs>
       {yTicks.map((v, i) => (
@@ -395,10 +395,10 @@ function MrrLineChart({ data }: { data: { monthStart: string; mrrCents: number }
         </g>
       ))}
       <path d={areaD} fill="url(#mrr-grad)" />
-      <path d={pathD} fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={pathD} fill="none" stroke="#1d4ed8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       {sorted.map((d, i) => (
         <g key={d.monthStart}>
-          <circle cx={toX(i)} cy={toY(d.mrrCents)} r="3" fill="#7c3aed" />
+          <circle cx={toX(i)} cy={toY(d.mrrCents)} r="3" fill="#1d4ed8" />
           {(i === 0 || i === sorted.length - 1 || i === Math.floor(sorted.length / 2)) && (
             <text x={toX(i)} y={H - 8} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.35)">
               {new Date(d.monthStart).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}
@@ -422,7 +422,7 @@ function JobsByTool({ data }: { data: { toolType: string; count: number }[] }) {
             <span className="text-zinc-500 tabular-nums">{j.count}</span>
           </div>
           <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-            <div className="h-full rounded-full" style={{ width: `${(j.count / max) * 100}%`, backgroundColor: TOOL_COLORS_BAR[j.toolType] ?? '#7c3aed' }} />
+            <div className="h-full rounded-full" style={{ width: `${(j.count / max) * 100}%`, backgroundColor: TOOL_COLORS_BAR[j.toolType] ?? '#1d4ed8' }} />
           </div>
         </div>
       ))}

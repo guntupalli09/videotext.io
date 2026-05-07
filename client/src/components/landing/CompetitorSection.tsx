@@ -110,7 +110,7 @@ export function CompetitorSection() {
           </div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
-            <span className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-600 to-violet-600 bg-clip-text text-transparent">
               {speedMultiple}× faster
             </span>
             {' '}than Descript.
@@ -160,7 +160,7 @@ export function CompetitorSection() {
                     <motion.div
                       className={`absolute inset-y-0 left-0 rounded-xl flex items-center ${
                         bar.isUs
-                          ? 'bg-gradient-to-r from-violet-600 to-indigo-600'
+                          ? 'bg-gradient-to-r from-violet-600 to-violet-600'
                           : 'bg-gray-300 dark:bg-gray-600'
                       }`}
                       initial={{ width: 0 }}
@@ -212,7 +212,7 @@ export function CompetitorSection() {
             <Link to="/video-to-transcript">
               <motion.span
                 whileHover={{ scale: 1.03, y: -1 }}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-violet-500/20 hover:shadow-xl hover:shadow-violet-500/30 transition-all"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-violet-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-violet-500/20 hover:shadow-xl hover:shadow-violet-500/30 transition-all"
               >
                 Try VideoText free
                 <ChevronRight className="w-4 h-4" />
@@ -305,7 +305,7 @@ export function CompetitorSection() {
             <Link to="/video-to-transcript">
               <motion.span
                 whileHover={{ scale: 1.03, y: -1 }}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-7 py-3 rounded-xl font-bold text-sm shadow-lg shadow-violet-500/20 hover:shadow-xl hover:shadow-violet-500/30 transition-all"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-violet-600 text-white px-7 py-3 rounded-xl font-bold text-sm shadow-lg shadow-violet-500/20 hover:shadow-xl hover:shadow-violet-500/30 transition-all"
               >
                 Start Transcribing Free
                 <ChevronRight className="w-4 h-4" />

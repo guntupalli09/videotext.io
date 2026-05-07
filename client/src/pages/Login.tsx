@@ -70,7 +70,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex bg-gray-50 dark:bg-gray-950 transition-colors duration-500">
       {/* Left panel — context / social proof (hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-[44%] xl:w-[42%] bg-gradient-to-br from-purple-700 via-violet-700 to-indigo-800 flex-col justify-between p-10 xl:p-14 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[44%] xl:w-[42%] bg-gradient-to-br from-violet-700 via-violet-700 to-violet-800 flex-col justify-between p-10 xl:p-14 relative overflow-hidden">
         {/* Ambient glow */}
         <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-white/10 rounded-full blur-[80px] pointer-events-none" />
 
@@ -239,7 +239,7 @@ export default function Login() {
               disabled={loading}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 disabled:opacity-60 text-white font-semibold transition-all text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-violet-600 hover:from-violet-700 hover:to-violet-700 disabled:opacity-60 text-white font-semibold transition-all text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20"
             >
               {loading ? (
                 <>

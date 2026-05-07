@@ -9,7 +9,7 @@ const steps = [
     title: 'Drop your file',
     description:
       'Any video or audio — MP4, MOV, MKV, MP3, WAV, and more. Drag and drop or click to browse.',
-    color: 'from-violet-500 to-indigo-600',
+    color: 'from-violet-500 to-violet-600',
     shadowColor: 'shadow-violet-500/30',
     glow: 'bg-violet-500/10',
     detail: 'All formats supported',
@@ -57,7 +57,7 @@ export function HowItWorks() {
         className="absolute inset-0 z-0 opacity-30"
         style={{
           backgroundImage:
-            'radial-gradient(circle at 1px 1px, rgba(139,92,246,0.15) 1px, transparent 0)',
+            'radial-gradient(circle at 1px 1px, rgba(29,78,216,0.15) 1px, transparent 0)',
           backgroundSize: '36px 36px',
         }}
       />
@@ -65,7 +65,7 @@ export function HowItWorks() {
       {/* Ambient blobs */}
       <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/4 w-[500px] h-[400px] bg-violet-600/[0.08] rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-indigo-600/[0.07] rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-violet-600/[0.07] rounded-full blur-[100px]" />
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto">
@@ -83,7 +83,7 @@ export function HowItWorks() {
           </p>
           <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 font-display leading-tight">
             Three steps.{' '}
-            <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-400 to-violet-400 bg-clip-text text-transparent">
               Seconds to transcript.
             </span>
           </h2>
@@ -162,7 +162,7 @@ export function HowItWorks() {
                   <span className="text-[12px] text-white/40 w-20 flex-shrink-0 tabular-nums">{b.length}</span>
                   <div className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
                     <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500"
+                      className="h-full rounded-full bg-gradient-to-r from-violet-500 to-violet-500"
                       initial={{ width: 0 }}
                       whileInView={{ width: `${b.pct}%` }}
                       viewport={{ once: true }}

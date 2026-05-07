@@ -45,7 +45,7 @@ const FAQ = [
 
 function Cell({ val, isUs = false }: { val: boolean | string; isUs?: boolean }) {
   if (typeof val === 'string') {
-    return <span className={`text-sm font-semibold ${isUs ? 'text-purple-600 dark:text-purple-400' : 'text-gray-600 dark:text-gray-300'}`}>{val}</span>
+    return <span className={`text-sm font-semibold ${isUs ? 'text-violet-600 dark:text-violet-400' : 'text-gray-600 dark:text-gray-300'}`}>{val}</span>
   }
   return val
     ? <CheckCircle2 className={`w-5 h-5 mx-auto ${isUs ? 'text-emerald-500' : 'text-emerald-400'}`} />
@@ -57,14 +57,14 @@ export default function OtterAiAlternativePage() {
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-500">
       {/* Hero */}
       <section className="relative py-20 sm:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-purple-950/20 dark:via-gray-950 dark:to-indigo-950/20 transition-colors duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-white to-violet-50 dark:from-violet-950/20 dark:via-gray-950 dark:to-violet-950/20 transition-colors duration-500" />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 dark:bg-purple-500/10 border border-purple-200/60 dark:border-purple-500/20 mb-6">
-            <span className="text-[12px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Otter.ai Alternative</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-50 dark:bg-violet-500/10 border border-violet-200/60 dark:border-violet-500/20 mb-6">
+            <span className="text-[12px] font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide">Otter.ai Alternative</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
             Switch from Otter when your workflow is{' '}
-            <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-600 to-violet-600 bg-clip-text text-transparent">
               post-recording and export-first
             </span>{' '}
             instead of live-assistant-first
@@ -74,7 +74,7 @@ export default function OtterAiAlternativePage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link to="/video-to-transcript?source=otter-alternative">
-              <span className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all">
+              <span className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-violet-600 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-violet-500/25 hover:shadow-xl transition-all">
                 Compare your next meeting recording
                 <ChevronRight className="w-4 h-4" />
               </span>
@@ -125,7 +125,7 @@ export default function OtterAiAlternativePage() {
               'Accuracy on pre-recorded content with background noise is lower (~90%).',
             ].map((point) => (
               <li key={point} className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-300">
-                <CheckCircle2 className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-violet-500 mt-0.5 flex-shrink-0" />
                 {point}
               </li>
             ))}
@@ -138,7 +138,7 @@ export default function OtterAiAlternativePage() {
           <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
             <div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-white/[0.05]">
               <div />
-              <div className="text-center text-[11px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wide">VideoText</div>
+              <div className="text-center text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide">VideoText</div>
               <div className="text-center text-[11px] font-medium text-gray-400 uppercase tracking-wide">Otter.ai</div>
             </div>
             <div className="divide-y divide-gray-100 dark:divide-white/[0.03] bg-white dark:bg-gray-900/50">
@@ -183,8 +183,8 @@ export default function OtterAiAlternativePage() {
             { icon: DollarSign, title: 'Translation in 70+ languages', body: 'Translate your transcript or subtitle file to any language. Otter.ai has no subtitle translation feature.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
-              <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center mb-3">
-                <Icon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <div className="w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center mb-3">
+                <Icon className="w-5 h-5 text-violet-600 dark:text-violet-400" />
               </div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-1">{title}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">{body}</p>
@@ -196,12 +196,12 @@ export default function OtterAiAlternativePage() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Compare nearby switch paths</h2>
           <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Otter switch intent is close to Notta and Fireflies intent. These pages help users pick by workflow, not hype.</p>
           <div className="flex flex-wrap gap-3 text-sm">
-            <Link to="/notta-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Notta alternative</Link>
-            <Link to="/fireflies-alternative" className="text-purple-600 dark:text-purple-400 hover:underline">Fireflies alternative</Link>
-            <Link to="/meeting-transcription-tool" className="text-purple-600 dark:text-purple-400 hover:underline">Meeting transcription tool</Link>
-            <Link to="/meeting-recording-to-transcript" className="text-purple-600 dark:text-purple-400 hover:underline">Meeting recording to transcript</Link>
-            <Link to="/transcription-benchmark" className="text-purple-600 dark:text-purple-400 hover:underline">Transcription benchmark</Link>
-            <Link to="/blog/best-transcription-software-2026" className="text-purple-600 dark:text-purple-400 hover:underline">Best transcription software 2026</Link>
+            <Link to="/notta-alternative" className="text-violet-600 dark:text-violet-400 hover:underline">Notta alternative</Link>
+            <Link to="/fireflies-alternative" className="text-violet-600 dark:text-violet-400 hover:underline">Fireflies alternative</Link>
+            <Link to="/meeting-transcription-tool" className="text-violet-600 dark:text-violet-400 hover:underline">Meeting transcription tool</Link>
+            <Link to="/meeting-recording-to-transcript" className="text-violet-600 dark:text-violet-400 hover:underline">Meeting recording to transcript</Link>
+            <Link to="/transcription-benchmark" className="text-violet-600 dark:text-violet-400 hover:underline">Transcription benchmark</Link>
+            <Link to="/blog/best-transcription-software-2026" className="text-violet-600 dark:text-violet-400 hover:underline">Best transcription software 2026</Link>
           </div>
         </section>
 
@@ -219,11 +219,11 @@ export default function OtterAiAlternativePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-700 rounded-3xl p-8 sm:p-12 text-white text-center">
+        <section className="bg-gradient-to-br from-violet-600 via-violet-600 to-violet-700 rounded-3xl p-8 sm:p-12 text-white text-center">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3">Try a no-bot workflow on your next call recording</h2>
           <p className="text-white/70 mb-8 max-w-xl mx-auto">Upload the file after your meeting and compare how quickly you get a usable transcript package for recaps, subtitles, and handoffs.</p>
           <Link to="/video-to-transcript?source=otter-alternative">
-            <span className="inline-flex items-center gap-2 bg-white text-purple-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">
+            <span className="inline-flex items-center gap-2 bg-white text-violet-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">
               Start your no-bot test
               <ChevronRight className="w-4 h-4" />
             </span>

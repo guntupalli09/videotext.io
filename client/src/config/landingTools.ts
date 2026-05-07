@@ -18,7 +18,7 @@ export const LANDING_TOOLS: LandingToolConfig[] = [
     description: 'Record in your browser — no file, no upload. Transcript in seconds.',
     icon: Mic,
     gradientFrom: 'from-violet-600',
-    gradientTo: 'to-purple-600',
+    gradientTo: 'to-violet-600',
     href: '/voice-recorder',
   },
   {
@@ -26,8 +26,8 @@ export const LANDING_TOOLS: LandingToolConfig[] = [
     name: 'Video → Transcript',
     description: 'Extract spoken text from any video in seconds',
     icon: FileText,
-    gradientFrom: 'from-purple-600',
-    gradientTo: 'to-purple-600',
+    gradientFrom: 'from-violet-600',
+    gradientTo: 'to-violet-600',
     href: '/video-to-transcript',
   },
   {
@@ -45,7 +45,7 @@ export const LANDING_TOOLS: LandingToolConfig[] = [
     description: 'Translate subtitles, DOCX, TXT, and JSON into 70+ languages',
     icon: Languages,
     gradientFrom: 'from-pink-600',
-    gradientTo: 'to-purple-600',
+    gradientTo: 'to-violet-600',
     href: '/translate-subtitles',
   },
   {
@@ -80,8 +80,8 @@ export const LANDING_TOOLS: LandingToolConfig[] = [
     name: 'Batch Processing',
     description: 'Upload multiple videos and process them together',
     icon: FolderSync,
-    gradientFrom: 'from-indigo-600',
-    gradientTo: 'to-purple-600',
+    gradientFrom: 'from-violet-600',
+    gradientTo: 'to-violet-600',
     href: '/batch-process',
   },
 ];

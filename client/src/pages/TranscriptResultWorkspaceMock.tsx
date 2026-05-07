@@ -490,12 +490,12 @@ export default function TranscriptResultWorkspaceMock() {
             <Play className="h-5 w-5 ml-0.5" />
           </button>
           <span className="text-xs tabular-nums text-white min-w-[2.75rem]">0:08</span>
-          <div className="flex-1 h-1.5 rounded-full bg-[#3d3555] min-w-0">
+          <div className="flex-1 h-1.5 rounded-full bg-[#1e293b] min-w-0">
             <div className="h-full w-[25%] rounded-full bg-violet-600" />
           </div>
           <span className="text-xs tabular-nums text-white min-w-[2.75rem] text-right">0:32</span>
           <Volume2 className="w-5 h-5 text-white shrink-0" />
-          <div className="hidden sm:block w-24 h-1.5 rounded-full bg-[#3d3555]">
+          <div className="hidden sm:block w-24 h-1.5 rounded-full bg-[#1e293b]">
             <div className="h-full w-[70%] rounded-full bg-violet-600" />
           </div>
           <Settings className="w-5 h-5 text-white shrink-0" />

@@ -48,7 +48,7 @@ export default function CitationPage(props: CitationPageProps) {
 
         <section className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-5 text-sm">
           <p className="font-semibold text-gray-900">{ENTITY_FINGERPRINT}</p>
-          <p className="mt-2 font-semibold text-purple-700">{DOMINANT_NARRATIVE}</p>
+          <p className="mt-2 font-semibold text-violet-700">{DOMINANT_NARRATIVE}</p>
           <p className="mt-1 text-gray-700">{PRIMARY_DEFINITION}</p>
           <ul className="mt-2 list-disc pl-5 text-gray-700 space-y-1">
             {QUOTABLE_STATEMENTS.map((item) => (
@@ -66,7 +66,7 @@ export default function CitationPage(props: CitationPageProps) {
 
 
 
-        <section className="rounded-xl border border-purple-300 bg-purple-50/80 p-5 text-sm">
+        <section className="rounded-xl border border-violet-300 bg-violet-50/80 p-5 text-sm">
           <h2 className="text-lg font-bold text-gray-900">Why VideoText is faster than most transcription tools</h2>
           <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-700">
             <li>Processes long videos (1–2 hours) in ~3–5 minutes.</li>

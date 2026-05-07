@@ -76,8 +76,8 @@ function HeroDropzone() {
           relative cursor-pointer rounded-2xl border-2 border-dashed px-8 py-8
           flex flex-col items-center gap-3 transition-all duration-200 select-none
           ${dragging
-            ? 'border-violet-300 bg-violet-500/18 shadow-[0_0_0_1px_rgba(139,92,246,0.45),0_0_34px_rgba(139,92,246,0.34)] scale-[1.015]'
-            : 'border-violet-300/45 bg-gradient-to-b from-violet-500/18 to-indigo-500/12 shadow-[0_0_0_1px_rgba(139,92,246,0.28),0_12px_44px_rgba(48,21,114,0.45)] hover:border-violet-300/70 hover:from-violet-500/25 hover:to-indigo-500/16 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.45),0_0_38px_rgba(139,92,246,0.25)]'
+            ? 'border-violet-300 bg-violet-500/18 shadow-[0_0_0_1px_rgba(29,78,216,0.45),0_0_34px_rgba(29,78,216,0.34)] scale-[1.015]'
+            : 'border-violet-300/45 bg-gradient-to-b from-violet-500/18 to-violet-500/12 shadow-[0_0_0_1px_rgba(29,78,216,0.28),0_12px_44px_rgba(30,58,138,0.45)] hover:border-violet-300/70 hover:from-violet-500/25 hover:to-violet-500/16 hover:shadow-[0_0_0_1px_rgba(29,78,216,0.45),0_0_38px_rgba(29,78,216,0.25)]'
           }
         `}
       >
@@ -115,7 +115,7 @@ function HeroDropzone() {
       <div className="grid grid-cols-1 gap-2">
         <Link
           to="/voice-recorder"
-          className="group flex flex-col gap-2.5 rounded-xl border border-violet-300/30 bg-gradient-to-b from-violet-500/14 to-indigo-500/12 shadow-[0_0_0_1px_rgba(139,92,246,0.2),0_10px_30px_rgba(48,21,114,0.35)] hover:border-violet-300/60 hover:from-violet-500/22 hover:to-indigo-500/16 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.42),0_0_30px_rgba(139,92,246,0.2)] px-4 py-3.5 transition-all duration-200"
+          className="group flex flex-col gap-2.5 rounded-xl border border-violet-300/30 bg-gradient-to-b from-violet-500/14 to-violet-500/12 shadow-[0_0_0_1px_rgba(29,78,216,0.2),0_10px_30px_rgba(30,58,138,0.35)] hover:border-violet-300/60 hover:from-violet-500/22 hover:to-violet-500/16 hover:shadow-[0_0_0_1px_rgba(29,78,216,0.42),0_0_30px_rgba(29,78,216,0.2)] px-4 py-3.5 transition-all duration-200"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-violet-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-500/25 transition-colors">
@@ -145,7 +145,7 @@ export function Hero() {
         className="absolute inset-0 z-0"
         style={{
           backgroundImage:
-            'radial-gradient(circle at 1px 1px, rgba(139,92,246,0.18) 1px, transparent 0)',
+            'radial-gradient(circle at 1px 1px, rgba(29,78,216,0.18) 1px, transparent 0)',
           backgroundSize: '32px 32px',
         }}
       />
@@ -153,8 +153,8 @@ export function Hero() {
       {/* Ambient glow */}
       <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[700px] bg-violet-600/[0.13] rounded-full blur-[160px]" />
-        <div className="absolute top-[20%] left-[5%] w-[450px] h-[450px] bg-purple-700/[0.08] rounded-full blur-[120px]" />
-        <div className="absolute top-[35%] right-[5%] w-[350px] h-[350px] bg-indigo-600/[0.07] rounded-full blur-[100px]" />
+        <div className="absolute top-[20%] left-[5%] w-[450px] h-[450px] bg-violet-700/[0.08] rounded-full blur-[120px]" />
+        <div className="absolute top-[35%] right-[5%] w-[350px] h-[350px] bg-violet-600/[0.07] rounded-full blur-[100px]" />
       </div>
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-12 sm:pt-16 pb-8">
@@ -170,7 +170,7 @@ export function Hero() {
         {/* H1 */}
         <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5">
           Turn any video into transcript,
-          <span className="block mt-3 pb-2 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+          <span className="block mt-3 pb-2 bg-gradient-to-r from-violet-400 via-violet-400 to-violet-400 bg-clip-text text-transparent">
             summary &amp; chapters — in minutes.
           </span>
         </h1>

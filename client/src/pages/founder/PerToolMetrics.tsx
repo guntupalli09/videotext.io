@@ -27,7 +27,7 @@ const TOOL_COLOR: Record<string, string> = {
   'fix-subtitles': 'text-emerald-400',
   'burn-subtitles': 'text-orange-400',
   'compress-video': 'text-cyan-400',
-  'batch-process': 'text-indigo-400',
+  'batch-process': 'text-violet-400',
 }
 
 function fmtDuration(ms: number | null): string {

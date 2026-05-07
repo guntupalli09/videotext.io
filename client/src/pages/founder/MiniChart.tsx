@@ -16,7 +16,7 @@ interface LineChartProps {
   className?: string
 }
 
-export function LineChart({ data, color = '#7c3aed', height = 120, formatY, className = '' }: LineChartProps) {
+export function LineChart({ data, color = '#1d4ed8', height = 120, formatY, className = '' }: LineChartProps) {
   if (data.length === 0) return <EmptyChart height={height} className={className} />
 
   const W = 500
@@ -99,7 +99,7 @@ interface BarChartProps {
   className?: string
 }
 
-export function BarChart({ data, color = '#7c3aed', height = 120, formatY, className = '' }: BarChartProps) {
+export function BarChart({ data, color = '#1d4ed8', height = 120, formatY, className = '' }: BarChartProps) {
   if (data.length === 0) return <EmptyChart height={height} className={className} />
 
   const W = 500

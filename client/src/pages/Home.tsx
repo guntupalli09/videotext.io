@@ -80,7 +80,7 @@ function PricingSection() {
               to="/pricing"
               className={`group relative rounded-2xl p-6 text-left transition-all duration-200 ${
                 plan.popular
-                  ? 'bg-gradient-to-b from-violet-600 to-indigo-700 text-white shadow-2xl shadow-violet-500/30 ring-1 ring-violet-400/30'
+                  ? 'bg-gradient-to-b from-violet-600 to-violet-700 text-white shadow-2xl shadow-violet-500/30 ring-1 ring-violet-400/30'
                   : 'bg-white/[0.04] text-white hover:bg-white/[0.07] border border-white/[0.08] hover:border-white/[0.15]'
               }`}
             >
@@ -318,7 +318,7 @@ export default function Home() {
               <Link
                 key={item.path}
                 to={item.path}
-                className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-transparent to-purple-50/20 dark:to-purple-900/10 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300 dark:hover:border-violet-600 transition-all"
+                className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-transparent to-violet-50/20 dark:to-violet-900/10 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300 dark:hover:border-violet-600 transition-all"
               >
                 {item.label} →
               </Link>

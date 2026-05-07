@@ -33,12 +33,12 @@ export default function TexAvatar({ size = 'md', className = '', pose = 'default
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full max-w-full max-h-full tex-avatar-breathing"
-        style={isOnDark ? undefined : { filter: 'drop-shadow(0 0 8px rgba(139, 92, 246, 0.35))' }}
+        style={isOnDark ? undefined : { filter: 'drop-shadow(0 0 8px rgba(29, 78, 216, 0.35))' }}
       >
         <defs>
           <linearGradient id="tex-violet-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#a78bfa" />
-            <stop offset="100%" stopColor="#6d28d9" />
+            <stop offset="0%" stopColor="#60a5fa" />
+            <stop offset="100%" stopColor="#1e40af" />
           </linearGradient>
         </defs>
 

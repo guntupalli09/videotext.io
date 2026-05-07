@@ -155,7 +155,7 @@ export default function FeedbackModal({ isOpen, onClose, toolId, initialStars }:
           aria-modal="true"
         >
           {/* Top accent bar */}
-          <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-purple-500 to-violet-600" />
+          <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-violet-500 to-violet-600" />
 
           <div className="p-6">
             <button

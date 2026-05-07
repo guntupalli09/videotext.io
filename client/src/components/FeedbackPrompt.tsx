@@ -120,7 +120,7 @@ export default function FeedbackPrompt() {
           >
             <div className="relative rounded-2xl bg-white dark:bg-gray-900 shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
               {/* Accent bar */}
-              <div className="h-0.5 w-full bg-gradient-to-r from-violet-500 via-purple-500 to-violet-600" />
+              <div className="h-0.5 w-full bg-gradient-to-r from-violet-500 via-violet-500 to-violet-600" />
 
               <AnimatePresence mode="wait">
                 {bannerState === 'prompt' ? (

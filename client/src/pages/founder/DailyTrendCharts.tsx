@@ -118,7 +118,7 @@ export default function DailyTrendCharts({ daily }: { daily: DashboardDailyPoint
         value={totalNewUsers}
         sub="total new users"
         data={newUsersData}
-        color="#7c3aed"
+        color="#1d4ed8"
       />
       <ChartCard
         title="Total users (growth)"

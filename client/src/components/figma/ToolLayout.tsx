@@ -39,7 +39,7 @@ export function ToolLayout({
         >
           <Link
             to="/"
-            className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors shrink-0"
+            className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors shrink-0"
           >
             <Home className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>Home</span>
@@ -51,8 +51,8 @@ export function ToolLayout({
                 to={crumb.href}
                 className={`truncate max-w-[140px] sm:max-w-none ${
                   index === breadcrumbs.length - 1
-                    ? 'text-purple-600 dark:text-purple-400 font-medium'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400'
+                    ? 'text-violet-600 dark:text-violet-400 font-medium'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400'
                 }`}
               >
                 {crumb.label}
@@ -74,8 +74,8 @@ export function ToolLayout({
               transition={{ type: 'spring', damping: 15, stiffness: 300, delay: 0.2 }}
               className="relative shrink-0"
             >
-              <div className="absolute inset-0 bg-purple-500/20 blur-2xl rounded-2xl" />
-              <div className="relative w-11 h-11 sm:w-12 sm:h-12 bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl flex items-center justify-center border border-purple-200 dark:border-purple-800 shadow-sm [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6">
+              <div className="absolute inset-0 bg-violet-500/20 blur-2xl rounded-2xl" />
+              <div className="relative w-11 h-11 sm:w-12 sm:h-12 bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl flex items-center justify-center border border-violet-200 dark:border-violet-800 shadow-sm [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6">
                 {icon}
               </div>
             </motion.div>
@@ -99,7 +99,7 @@ export function ToolLayout({
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.4 + index * 0.05 }}
-                  className="px-2.5 sm:px-3 py-0.5 sm:py-1 bg-gray-100 dark:bg-gray-800 hover:bg-purple-100 dark:hover:bg-purple-900/30 text-gray-700 dark:text-gray-300 rounded-lg text-xs sm:text-sm font-medium transition-colors cursor-default"
+                  className="px-2.5 sm:px-3 py-0.5 sm:py-1 bg-gray-100 dark:bg-gray-800 hover:bg-violet-100 dark:hover:bg-violet-900/30 text-gray-700 dark:text-gray-300 rounded-lg text-xs sm:text-sm font-medium transition-colors cursor-default"
                 >
                   {tag}
                 </motion.span>

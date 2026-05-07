@@ -231,7 +231,7 @@ export default function JobAuthGateModal({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => { setMode('signup-combo'); setError(null) }}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-violet-500/25 hover:shadow-xl hover:shadow-violet-500/35 transition-all mb-3"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-violet-600 text-white font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-violet-500/25 hover:shadow-xl hover:shadow-violet-500/35 transition-all mb-3"
               >
                 Sign up with email — it's free
                 <ChevronRight className="w-4 h-4" />
@@ -332,7 +332,7 @@ export default function JobAuthGateModal({
                   type="submit"
                   disabled={loading}
                   whileHover={{ scale: 1.01 }}
-                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-violet-600 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
                 >
                   {loading
                     ? 'Sending code…'
@@ -387,7 +387,7 @@ export default function JobAuthGateModal({
                   type="submit"
                   disabled={loading || otp.length !== 6}
                   whileHover={{ scale: 1.01 }}
-                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-violet-600 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
                 >
                   {loading
                     ? 'Creating account…'
@@ -472,7 +472,7 @@ export default function JobAuthGateModal({
                   type="submit"
                   disabled={loading}
                   whileHover={{ scale: 1.01 }}
-                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-violet-600 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
                 >
                   {loading
                     ? 'Logging in…'
