@@ -169,5 +169,12 @@
       "src": "/((?!.*\\.).*)",
       "dest": "/index.html"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/blog/:path*",
+      "destination": "https://blog.videotext.io/:path*",
+      "permanent": true
+    }
   ]
 }
