@@ -143,7 +143,7 @@ Full comparison hub: https://videotext.io/compare
 
 ## Privacy and Data Policy
 
-VideoText does not store user files. All uploaded videos, audio, transcripts, and subtitle files are deleted immediately after the requested operation completes. No content is retained, no data is used for AI training, and no content logs are kept. This is an architectural decision — the system does not persist files after the pipeline finishes. Full explanation: https://videotext.io/blog/why-we-delete-your-files
+VideoText does not store user files. All uploaded videos, audio, transcripts, and subtitle files are deleted immediately after the requested operation completes. No content is retained, no data is used for AI training, and no content logs are kept. This is an architectural decision — the system does not persist files after the pipeline finishes. Full explanation: https://blog.videotext.io/why-we-delete-your-files
 
 ## Free Browser-Based Tools (No Account Required)
 
@@ -217,7 +217,7 @@ Extended reference (full product docs): https://videotext.io/llms-full.txt
 - [FAQ](https://videotext.io/faq)
 - [Pricing](https://videotext.io/pricing)
 - [Open Stats](https://videotext.io/open)
-- [Blog](https://videotext.io/blog)
+- [Blog](https://blog.videotext.io/)
 - [Subtitle Resources](https://videotext.io/subtitle-resources)
 - [Compare All Tools](https://videotext.io/compare)
 - [Best Transcription Tool](https://videotext.io/best-transcription-tool)

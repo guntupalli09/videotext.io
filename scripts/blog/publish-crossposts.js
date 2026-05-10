@@ -15,9 +15,9 @@
  *   DEVTO_ORGANIZATION_ID=12345
  *   HASHNODE_ENDPOINT=https://gql.hashnode.com
  *   HASHNODE_PUBLISH_AS=published | draft
- *   CANONICAL_TEMPLATE=https://videotext.io/blog/{slug}
- *   DEVTO_CANONICAL_TEMPLATE=https://videotext.io/blog/{slug}
- *   HASHNODE_CANONICAL_TEMPLATE=https://videotext.io/blog/{slug}
+ *   CANONICAL_TEMPLATE=https://blog.videotext.io/{slug}
+ *   DEVTO_CANONICAL_TEMPLATE=https://blog.videotext.io/{slug}
+ *   HASHNODE_CANONICAL_TEMPLATE=https://blog.videotext.io/{slug}
  */
 
 const fs = require('node:fs/promises');
@@ -28,7 +28,7 @@ const shouldPublish = args.has('--publish');
 const target = getArgValue('--target') || 'both';
 const selectedSlug = getArgValue('--slug');
 const blogDir = path.resolve(process.env.BLOG_DIR || 'content/blog');
-const siteUrl = trimTrailingSlash(process.env.SITE_URL || 'https://videotext.io');
+const defaultCanonicalTemplate = 'https://blog.videotext.io/{slug}';
 const hashnodeEndpoint = process.env.HASHNODE_ENDPOINT || 'https://gql.hashnode.com';
 const publishHashnodeAs = process.env.HASHNODE_PUBLISH_AS || 'published';
 
@@ -172,7 +172,7 @@ function normalizeTags(tags) {
 
 function buildCanonicalUrl(slug, explicitCanonical) {
   if (explicitCanonical) return String(explicitCanonical).trim();
-  return renderCanonicalTemplate(process.env.CANONICAL_TEMPLATE || `${siteUrl}/blog/{slug}`, slug);
+  return renderCanonicalTemplate(process.env.CANONICAL_TEMPLATE || defaultCanonicalTemplate, slug);
 }
 
 function buildPlatformCanonicalUrl(envName, slug, fallback) {
@@ -321,10 +321,6 @@ function needsHashnode(value) {
   return value === 'both' || value === 'hashnode';
 }
 
-function trimTrailingSlash(value) {
-  return value.replace(/\/+$/, '');
-}
-
 function unquote(value) {
   const trimmed = String(value).trim();
   if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
@@ -347,7 +343,7 @@ Examples:
   node scripts/blog/publish-crossposts.js --target=devto --slug=why-transcription-tools-fail --publish
 
 Canonical URLs:
-  Each post gets its own canonical URL from CANONICAL_TEMPLATE, defaulting to ${siteUrl}/blog/{slug}.
+  Each post gets its own canonical URL from CANONICAL_TEMPLATE, defaulting to ${defaultCanonicalTemplate}.
   This avoids DEV.to duplicate-canonical failures caused by reusing one canonical URL for multiple articles.
 `);
 }
