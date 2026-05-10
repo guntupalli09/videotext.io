@@ -37,7 +37,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog</loc>
+    <loc>https://blog.videotext.io/</loc>
     <lastmod>2026-05-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -438,159 +438,159 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <!-- Blog posts — all at videotext.io/blog/slug (React SPA routes) -->
+  <!-- Blog posts — hosted at blog.videotext.io subdomain -->
   <url>
-    <loc>https://videotext.io/blog/best-transcription-software-2026</loc>
+    <loc>https://blog.videotext.io/best-transcription-software-2026</loc>
     <lastmod>2026-05-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/best-video-captioning-tools-2026</loc>
+    <loc>https://blog.videotext.io/best-video-captioning-tools-2026</loc>
     <lastmod>2026-05-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/best-free-transcription-tools-2026</loc>
+    <loc>https://blog.videotext.io/best-free-transcription-tools-2026</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/how-to-transcribe-zoom-recording</loc>
+    <loc>https://blog.videotext.io/how-to-transcribe-zoom-recording</loc>
     <lastmod>2026-03-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/srt-vs-vtt-subtitle-formats</loc>
+    <loc>https://blog.videotext.io/srt-vs-vtt-subtitle-formats</loc>
     <lastmod>2026-03-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/how-to-add-subtitles-to-video-free</loc>
+    <loc>https://blog.videotext.io/how-to-add-subtitles-to-video-free</loc>
     <lastmod>2026-03-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/best-way-to-get-youtube-transcript</loc>
+    <loc>https://blog.videotext.io/best-way-to-get-youtube-transcript</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/youtube-captions-vs-ai-transcription</loc>
+    <loc>https://blog.videotext.io/youtube-captions-vs-ai-transcription</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/how-to-download-youtube-subtitles</loc>
+    <loc>https://blog.videotext.io/how-to-download-youtube-subtitles</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/how-to-get-youtube-transcript</loc>
+    <loc>https://blog.videotext.io/how-to-get-youtube-transcript</loc>
     <lastmod>2026-03-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/how-to-transcribe-audio-to-text-free</loc>
+    <loc>https://blog.videotext.io/how-to-transcribe-audio-to-text-free</loc>
     <lastmod>2026-03-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/how-to-translate-subtitles</loc>
+    <loc>https://blog.videotext.io/how-to-translate-subtitles</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/how-to-transcribe-podcast-episode</loc>
+    <loc>https://blog.videotext.io/how-to-transcribe-podcast-episode</loc>
     <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/how-to-add-captions-youtube-video</loc>
+    <loc>https://blog.videotext.io/how-to-add-captions-youtube-video</loc>
     <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/video-transcription-accuracy-whisper</loc>
+    <loc>https://blog.videotext.io/video-transcription-accuracy-whisper</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/how-to-translate-video-subtitles</loc>
+    <loc>https://blog.videotext.io/how-to-translate-video-subtitles</loc>
     <lastmod>2026-04-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/srt-file-format-explained</loc>
+    <loc>https://blog.videotext.io/srt-file-format-explained</loc>
     <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/batch-subtitles-for-creators</loc>
+    <loc>https://blog.videotext.io/batch-subtitles-for-creators</loc>
     <lastmod>2026-02-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/processing-speed-breakdown</loc>
+    <loc>https://blog.videotext.io/processing-speed-breakdown</loc>
     <lastmod>2026-02-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/why-we-delete-your-files</loc>
+    <loc>https://blog.videotext.io/why-we-delete-your-files</loc>
     <lastmod>2026-02-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/how-we-handle-support</loc>
+    <loc>https://blog.videotext.io/how-we-handle-support</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/rev-style-guide-transcript-formatter</loc>
+    <loc>https://blog.videotext.io/rev-style-guide-transcript-formatter</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/how-to-earn-more-per-hour-as-a-transcriptionist</loc>
+    <loc>https://blog.videotext.io/how-to-earn-more-per-hour-as-a-transcriptionist</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/clean-verbatim-vs-full-verbatim</loc>
+    <loc>https://blog.videotext.io/clean-verbatim-vs-full-verbatim</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/what-is-transcript-qa</loc>
+    <loc>https://blog.videotext.io/what-is-transcript-qa</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videotext.io/blog/freelance-transcription-style-guide-cheatsheet</loc>
+    <loc>https://blog.videotext.io/freelance-transcription-style-guide-cheatsheet</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
