@@ -1,556 +1,577 @@
 # VideoText.io — Subreddit Strategy
-> Goal: generate leads, drive tool-page visits, increase paid conversion, post feature updates.
+> Two money pages: `/video-to-transcript` + `/guideline-format`
+> Two audiences: content creators who need transcription + freelance transcriptionists who need formatting/QA
+> Goal: leads, tool-page visits, paid conversion, feature updates
 
 ---
 
 ## Recommended Subreddit Name
 
-### **r/VideoToText** ← Top Pick
+### **r/TranscriptionWorkflow** ← Top Pick
 
-**Why this wins:**
-- "video to text" is the exact phrase people type into Google when they need VideoText — Reddit posts rank in Google and this subreddit name will pull organic search traffic.
-- It describes the community's *purpose*, not the brand — feels like a real resource, not a marketing page. Users join communities that serve them, not ones that pitch them.
-- Captures all of VideoText's tools under one umbrella: transcript, subtitles, captions, translation, burn, compress.
-- Every post becomes a natural entry point to the tool: someone searches "video to text reddit" and lands directly in your community.
+**Why this wins over everything else:**
 
-**Runner-up options (if r/VideoToText is taken):**
+The two money pages serve two different people with one overlapping pain:
 
-| Name | Pros | Cons |
+| Audience | Their job | Their pain |
 |---|---|---|
-| `r/VideoTranscription` | Broader, more professional tone | Lower search volume than "video to text" |
-| `r/SubtitleTools` | Captures subtitle-heavy users | Narrower than the full product |
-| `r/VideoTextIO` | Brand-exact | Feels promotional, low organic appeal |
-| `r/TranscribeVideo` | Good keyword | Less natural phrasing |
+| YouTubers, podcasters, video editors | Need video transcribed fast | Slow tools, bad accuracy, storage concerns |
+| Rev / Scribie / GoTranscript / TranscribeMe freelancers | Type transcripts for clients | Getting work kicked back for style guide violations — unpaid rework |
+
+"Transcription workflow" is the one phrase that captures both.
+- A Rev freelancer Googling "transcription workflow tips" lands here.
+- A podcaster Googling "video transcription workflow" lands here.
+- The word "workflow" signals a practical, tool-forward community — not a brand page.
+- Google indexes subreddit names as H1s. "Transcription workflow" has strong organic search value.
+
+**Runner-up options if r/TranscriptionWorkflow is taken:**
+
+| Name | Best for | Weakness |
+|---|---|---|
+| `r/TranscriptionTools` | Both audiences | Less specific to the QA pain |
+| `r/FreelanceTranscription` | Rev/Scribie/GoTranscript users | Excludes content creators |
+| `r/TranscriptQA` | Formatting/QA freelancers | Too narrow for video creators |
+| `r/VideoToText` | Content creators | Misses the formatting/QA audience entirely |
+| `r/TranscriptionPro` | Professional tone | Vague, harder to rank |
 
 ---
 
 ## Subreddit Setup
 
-### Description (160 chars — shows in Google preview)
+### Description (160 chars — Google snippet)
 ```
-Tools, tips, and workflows for video transcription, subtitles, captions, and translation.
-Free resources. Honest reviews. No spam.
+Tools, tips, and workflows for video transcription, subtitle formatting, and QA.
+For creators, freelancers, and anyone who works with transcripts.
 ```
 
 ### Full "About" Sidebar Copy
 ```
-**r/VideoToText** is for anyone who works with video-to-text workflows:
+**r/TranscriptionWorkflow** is for anyone who works with transcription — whether you're
+a video creator generating transcripts for SEO and captions, or a freelance transcriptionist
+formatting work for Rev, GoTranscript, Scribie, TranscribeMe, or custom client briefs.
 
-- Generating transcripts from video or audio
-- Creating or fixing SRT/VTT subtitles
-- Translating captions into other languages
-- Burning subtitles into video
-- Batch processing and compression
-- Comparing transcription tools
+**What we cover:**
+- AI video transcription (speed, accuracy, tools)
+- Style guide formatting (verbatim modes, bracket tags, speaker labels)
+- Transcript QA — what to check before you deliver
+- Subtitle generation, translation, and burning
+- Rate-per-audio-minute productivity tips
 
-**Maintained by the team at VideoText.io** — a free-to-try transcription and subtitle platform.
-We post feature updates, tutorials, and tool comparisons here. All community posts welcome.
+**Run by the team at VideoText.io** — an AI transcription + guideline formatting platform.
 
-**Free to try:** videotext.io (3 imports/month, no credit card)
+**Two free tools:**
+- Video → Transcript: videotext.io/video-to-transcript (3 free imports, no card)
+- Format → Client Guidelines: videotext.io/guideline-format (free to use)
+
+Community posts, questions, and honest tool comparisons always welcome.
 ```
 
 ### Recommended Flairs
 - `Tool Update` — new VideoText features
-- `Workflow Tip` — how-to posts
+- `Style Guide Help` — Rev/GoTranscript/Scribie formatting questions
+- `Workflow Tip` — productivity posts
 - `Tool Comparison` — vs competitors
-- `Question` — community help
+- `QA Checklist` — pre-delivery quality checks
 - `Tutorial` — step-by-step guides
-- `Show & Tell` — user results
+- `Question` — community help
 
-### Subreddit Rules (keep short)
-1. No spam or self-promotion without value-first content
-2. Be specific — "here's what I did" beats "this tool is great"
-3. Include a workflow, not just a link
+### Subreddit Rules
+1. Posts must include a specific workflow, tip, or example — not just a link
+2. No duplicate self-promotion without value-first content
+3. Style guide questions: name the platform (Rev, Scribie, etc.) and the specific rule
 4. No NSFW content
 5. Flair your posts
 
 ---
 
-## Post Series — Aligned to Tool Pages
-
-Each series maps to a VideoText.io tool page. Post one per week, rotating through series.
+## Post Series 1 — Format Guide / Guideline Formatter (`/guideline-format`)
+*These posts target Rev, Scribie, GoTranscript, TranscribeMe, CoTranscript freelancers.*
+*The pain: style guide violations get work kicked back = unpaid rework = lower effective hourly rate.*
 
 ---
 
-### Series 1 — Video → Transcript (`/video-to-transcript`)
-
-**Post 1 — Lead Gen / Value-first**
+**Post 1 — Lead Gen / Freelancer pain point (highest priority)**
 ```
-Title: I transcribed 113 minutes of video in 2 minutes 25 seconds — here's how (and why it matters)
+Title: Rev rejected my transcript for "verbatim mode violation" — here's what actually happened
+and how I stopped it recurring
 
 Body:
-I've been testing transcription speeds across Otter, Descript, TurboScribe, and VideoText.
-For a 1h 53min file (705 MB), here's what I found:
+If you work for Rev you've probably had a job come back with a note like:
+- "Speaker labeling does not match guidelines"
+- "Inaudibles not tagged correctly"
+- "Verbatim mode: you removed content that should have been retained"
 
-- Otter: 18 min
+The problem isn't accuracy. It's applying the right rule card for this specific client
+while you're also mentally holding three other job specs from this week.
+
+Here's what I changed:
+
+Instead of keeping the Rev style guide PDF open in a second tab (and half-reading it),
+I mapped it to preset rule cards in VideoText's guideline formatter:
+videotext.io/guideline-format
+
+Each card covers one rule: verbatim mode, inaudibles/crosstalk tagging, laughter brackets,
+contraction expansion, number formatting, speaker label format.
+
+When your job deviates from the preset (some clients add extra rules in the brief),
+you edit the card. An "Edited" badge logs what you changed — so if you get a dispute,
+you have a paper trail of what rule you applied and why.
+
+Result for me: rejections dropped from ~1 in 12 jobs to ~1 in 40 jobs.
+Effective hourly rate went up ~18% because I stopped re-doing jobs for free.
+
+Has anyone else been using rule cards or a cheatsheet system? I know a lot of people
+just re-read the PDF each shift but that has obvious failure modes at 1am.
+```
+
+---
+
+**Post 2 — Tutorial / GoTranscript + Scribie users**
+```
+Title: GoTranscript vs Scribie vs Rev — style guide differences that trip up freelancers
+(with a fix that takes 5 minutes to set up)
+
+Body:
+If you work multiple platforms, here are the rules that differ most and cause the most rejections:
+
+**Contractions:**
+- Rev: keep natural contractions ("it's", "don't") — do not expand
+- GoTranscript: expand in formal content, keep in conversational
+- Scribie: keep unless client PDF says otherwise
+- TranscribeMe: platform default is keep; enterprise clients often expand
+
+**Laughter / non-verbal tags:**
+- Rev: [laughs] on new line
+- GoTranscript: (laughs) inline
+- Scribie: [laughter] on new line, newline after
+- TranscribeMe: [laughter] inline
+
+**Inaudibles:**
+- Rev: [inaudible 00:02:14]
+- GoTranscript: (inaudible)
+- Scribie: [inaudible]
+- TranscribeMe: [inaudible]
+
+**Numbers:**
+- Rev: spell out one–nine, numerals for 10+
+- GoTranscript: numerals throughout
+- Scribie: spell out one–ten, numerals for 11+
+
+These seem minor until you get three jobs in one night and mix up which client wants what.
+
+Fix I use: VideoText's guideline formatter (videotext.io/guideline-format) has presets
+for Rev, GoTranscript, Scribie, and TranscribeMe that put all of this in one view.
+Each card is editable when your specific client brief overrides a default.
+You open the preset, confirm it matches your current brief, then run your listen pass
+with the cards visible — no second tab, no PDF re-reading.
+
+What platforms do you work on? Curious if CoTranscript or Verbit follow similar patterns
+or if they have completely different conventions.
+```
+
+---
+
+**Post 3 — QA / Pre-delivery checklist**
+```
+Title: My 8-point QA checklist before submitting any transcription job (cuts rejections significantly)
+
+Body:
+Every platform has a reviewer waiting to kick back work. Here's what I check before
+submitting — in this order:
+
+1. **Speaker labels** — match the screenshot sample in the brief exactly, including punctuation after the name
+2. **Inaudibles** — tagged in the mandated format with timestamp if required
+3. **Verbatim mode** — confirm with the rule card, not memory (fillers in or out?)
+4. **Contractions** — match this client's preference, not last night's client
+5. **Numbers** — spell out or numerals, per the platform default or override
+6. **Laughter / crosstalk** — correct bracket style, correct line position
+7. **Timestamps** — if required, format exactly matches spec
+8. **Glossary / proper nouns** — cross-check against the order form notes
+
+Step 1 and 3 are where most rejections come from in my experience.
+
+For step 3 specifically — VideoText's guideline formatter (videotext.io/guideline-format)
+has the verbatim settings for Rev, Scribie, GoTranscript, TranscribeMe as editable preset cards
+so I confirm the rule before I start the listen pass, not after I've already made 200 decisions.
+
+What's your rejection rate? And what's the most common reason your work comes back?
+```
+
+---
+
+**Post 4 — Clean verbatim vs full verbatim (SEO aligned)**
+```
+Title: Clean verbatim vs full verbatim — when to remove fillers and when to keep them
+(the rule most reviewers cite in rejections)
+
+Body:
+This is the most misunderstood distinction in transcription, and it causes more rejections
+than almost any other issue.
+
+**Clean verbatim:**
+Remove fillers ("um", "uh", "like", "you know"), false starts, and obvious stumbles.
+Keep meaning. This is the default for most corporate, interview, and podcast transcription.
+
+**Full verbatim:**
+Capture everything audible — every filler, false start, stutter, and disfluency.
+Required on: legal transcripts, some academic corpora, forensic work, any PDF that says
+"no omission" or "type exactly as spoken."
+
+**What trips people up:**
+- Rev defaults to clean verbatim for most jobs — but some legal review jobs require full
+- GoTranscript is mostly clean verbatim
+- TranscribeMe enterprise clients often have unique verbatim specs in their PDF
+- CoTranscript: varies by client order
+
+**Practical test:** if the reviewer's rubric says "retain all speech elements" — full verbatim.
+If it says "professional/clean" — clean verbatim. If it doesn't say either, ask in job notes
+or default to clean for non-legal content.
+
+For mapping this to VideoText's formatter presets: there's a verbatim mode card in each
+platform preset at videotext.io/guideline-format that shows what the platform default is,
+so you're not relying on memory at midnight.
+
+What's the most unusual verbatim requirement you've seen in a client brief?
+```
+
+---
+
+**Post 5 — Feature Update (guideline formatter)**
+```
+Title: [Update] Format → Client Guidelines now has presets for Rev, GoTranscript, Scribie,
+and TranscribeMe — editable rule cards with dispute proof
+
+Body:
+Quick update on the guideline formatting tool at videotext.io/guideline-format:
+
+**What it does:**
+After you run a transcript through Video → Transcript, you hit "Make this client-ready →"
+which loads the text into the guideline workspace with your chosen platform preset.
+
+**Platform presets available:**
+- Rev (verbatim mode, inaudibles, laughter brackets, speaker format, timestamps)
+- GoTranscript (contractions, number format, crosstalk, laughter inline)
+- Scribie (verbatim, bracket style, line rules)
+- TranscribeMe (corporate vs. standard verbatim tiers)
+
+**How to use it:**
+1. Run transcript in VideoText → Video to Transcript
+2. Hit "Make this client-ready →" on the result page
+3. Select your platform preset
+4. Compare each card to your current job brief
+5. Edit any card where your client overrides the default — it gets an "Edited" badge
+6. Run your listen pass with the cards visible
+7. If disputed: the card state is your paper trail
+
+**Why "Edited" badges matter:**
+If a client disputes a formatting choice, you can screenshot the card showing
+you deliberately applied a specific rule — not that you forgot the default.
+
+Free to use: videotext.io/guideline-format
+
+What platforms should we add presets for next? CoTranscript, Verbit, Speechpad?
+```
+
+---
+
+## Post Series 2 — Video → Transcript (`/video-to-transcript`)
+*These posts target content creators: YouTubers, podcasters, video editors.*
+
+---
+
+**Post 6 — Speed / Lead Gen**
+```
+Title: I transcribed a 113-minute video in 2 minutes 25 seconds — here's what tool and why the speed gap matters
+
+Body:
+Speed comparison for a 1h 53min, 705 MB video file:
+
+- Otter.ai: 18 min
 - Descript: 11 min
 - TurboScribe: 8 min
-- VideoText: 2 min 25 sec ← parallel chunked processing
+- VideoText: 2 min 25 sec
 
-The speed difference matters if you're doing batch work or working under deadlines.
+VideoText does parallel chunked transcription — audio is split into ~3 minute chunks,
+each chunk hits Whisper simultaneously, then segments are merged. Wall-clock time
+is driven by the slowest batch, not the sum of all chunks.
 
-VideoText does this via parallel chunked transcription — your audio is split into ~3-minute chunks,
-each chunk is transcribed simultaneously, then merged. It's the same approach used in cloud speech APIs
-but applied to the full file automatically.
+For a single video this matters if you're on a deadline.
+For batch work (10+ videos) the gap is enormous.
 
-Full comparison (with timestamps): videotext.io/otter-vs-descript-vs-turboscribe
+Output from one upload: full transcript + speaker labels + AI summary + chapter markers
++ keywords + highlights + export (TXT, DOCX, SRT, PDF, Markdown, Notion-ready).
 
-Has anyone benchmarked other tools? Curious where Whisper-based tools actually land vs the marketing claims.
+Privacy: files are deleted after processing — nothing stored on their servers.
+
+Free tier: 3 imports/month, no card: videotext.io/video-to-transcript
+
+What transcription tool do you use for long-form content? Curious if anyone's benchmarked
+against Fireflies or Riverside's built-in transcription.
 ```
 
-**Post 2 — SEO / Tutorial aligned to `/youtube-url-to-transcript`**
+---
+
+**Post 7 — SEO / YouTube creators**
 ```
-Title: How to get a full transcript from any YouTube video without downloading it (paste URL, done)
+Title: How to generate YouTube chapter timestamps automatically from any video (no manual timing)
 
 Body:
-If you need a YouTube transcript for:
-- Writing a blog post from a video
-- Repurposing content into a newsletter
-- SEO — adding transcript text to your own YouTube description
-- Fact-checking a claim someone made in a video
+YouTube chapters are one of the most underused SEO features. They:
+- Appear in Google search results as jump links
+- Increase average view duration (viewers find the section they want)
+- Make videos more accessible
 
-You don't need to download the video. Most transcription tools now accept a YouTube URL directly.
+Manual process: watch the video, note the time, write a title, repeat 8–12 times.
+That's 20–40 minutes per video.
 
-Here's the workflow I use:
-1. Copy the YouTube URL
-2. Paste it into VideoText.io → Video to Transcript
-3. Get full text + speaker labels + timestamps in ~90 seconds
+Auto process with VideoText:
+1. Upload or paste the YouTube URL
+2. VideoText transcribes and generates chapters automatically
+3. Copy the chapter list — it's formatted as "00:00 Intro / 02:14 Topic A / 08:31 Topic B"
+4. Paste directly into the YouTube description
 
-It also outputs: AI summary, chapter markers, key quotes, and keywords.
-Export to TXT, DOCX, Markdown, Notion, PDF, or SRT.
+Takes under 3 minutes total. Chapter titles are generated from the content, not guessed.
 
-Full guide: [videotext.io/youtube-url-to-transcript-without-download]
+Also outputs: AI summary for show notes, key quotes for social posts, keywords for tags.
 
-What do you use YouTube transcripts for? Trying to understand the most common use cases.
+Tool: videotext.io/video-to-transcript
+
+Does anyone else automate chapter generation? The manual way is where I used to waste
+the most time in post-production.
 ```
 
-**Post 3 — Feature Update**
+---
+
+**Post 8 — Podcasters**
 ```
-Title: [Update] Video → Transcript now outputs speaker labels, chapters, highlights, and keywords from one upload
+Title: How to write podcast show notes in 5 minutes without watching your own episode back
 
 Body:
-Quick update on what the transcript tool generates now from a single video upload:
+Most podcasters I know spend 30–60 minutes on show notes.
+Here's the workflow that cut mine to under 5 minutes:
 
-- Full transcript with timestamps (searchable, editable in-app)
-- Speaker labels (who said what)
-- AI summary + bullet points + action items
-- Chapter markers with timestamps (paste straight into YouTube description)
-- Key quotes and definitions (Highlights tab)
-- Keywords linked to the section where they appear
-- Clean version — fillers removed, casing normalized
+1. Upload the episode recording to VideoText → Video to Transcript
+2. Switch to the Summary tab: AI-generated episode summary + key points + action items
+3. Switch to Chapters: timestamps you can paste as episode timestamps
+4. Switch to Keywords: the main terms repeated in the episode (good for search tags)
+5. Export as Markdown → paste into your CMS, format in 2 minutes
 
-Export formats: TXT, SRT, VTT, DOCX, PDF, JSON, CSV, Markdown, Notion-ready.
+The speaker labels tab is useful if you interview guests — you can pull specific quotes
+attributed to the right person.
 
-The chapter markers specifically have been the most-used feature by YouTubers — it saves
-writing the timestamp section manually.
+I export the full transcript to the episode page too. Google can index it, which
+consistently improves episode discoverability over time.
 
 Free to try (3 imports, no card): videotext.io/video-to-transcript
 
-If you've used the transcript tool and have a feature request, drop it here. We read all of them.
+What's your current show notes process? I know some people use AI tools to write them
+from scratch but I find starting from the actual transcript produces much better output.
 ```
 
 ---
 
-### Series 2 — Video → Subtitles (`/video-to-subtitles`)
-
-**Post 4 — Lead Gen / Workflow**
+**Post 9 — Freelance transcriptionists (bridge post between both audiences)**
 ```
-Title: The fastest way to generate SRT subtitles for YouTube — upload video, get SRT in 60 seconds
+Title: How I went from typing every word manually to using AI for the first pass
+(and what changed in my quality and rate)
 
 Body:
-YouTube's auto-captions are:
-- Inaccurate for anything technical, accented, or non-English
-- Not downloadable as SRT (you get a .sbv you have to convert)
-- Not editable before publishing
+I've done transcription work for GoTranscript and Scribie for 3 years.
+Last year I switched my workflow to use AI for the first pass and only do the human listen pass.
 
-Here's the workflow I now use for every video:
+Here's the honest breakdown:
 
-1. Upload to VideoText → Video to Subtitles
-2. Choose SRT or VTT output
-3. Download and upload to YouTube Studio → Subtitles → Add new → Upload file
+**Before:** Type from scratch → 1 hour of audio = 4–5 hours of work
+**After:** AI first pass → listen and correct → 1 hour of audio = 1–1.5 hours of work
 
-For multilingual channels: you can output 5 languages in one go on the Pro plan.
-Each language gets its own SRT file, zipped together.
+Effective hourly rate roughly tripled.
 
-Takes under 2 minutes per video.
-Tool page: videotext.io/video-to-subtitles
+The tool I use for the AI pass: VideoText → Video to Transcript
+- Handles accents and technical vocabulary better than most hosted Whisper wrappers
+- Speaker diarization means I know who said what before I start the listen pass
+- Outputs SRT so I can use it as a time-synced edit guide while I listen
 
-What format does YouTube actually prefer — SRT or VTT? Had a few people ask this.
-(Answer: YouTube accepts both. SRT is simpler and more universal. VTT has more features but
-YouTube ignores most of them.)
-```
+For formatting after the transcript: videotext.io/guideline-format
+- Platform presets for Rev, Scribie, GoTranscript, TranscribeMe
+- Rule cards I edit once per job so I'm not reading the PDF again
 
-**Post 5 — SEO-aligned to `/video-to-srt`**
-```
-Title: SRT vs VTT — what's the actual difference, and which one should you upload to YouTube?
+The common objection is "platforms don't allow AI."
+Reality: every platform cares about output quality, not how you got there.
+You're responsible for accuracy. AI gets you 85–90% there; your listen pass closes the gap.
 
-Body:
-SRT (SubRip Text) and VTT (WebVTT) both store subtitle text + timestamps.
-Here's what actually matters:
-
-| | SRT | VTT |
-|---|---|---|
-| YouTube | ✅ Supported | ✅ Supported |
-| Vimeo | ✅ | ✅ |
-| HTML5 video | ✅ | ✅ (native) |
-| Styling (bold, color) | ❌ | ✅ |
-| Chapter markers | ❌ | ✅ |
-| Universal compatibility | ✅✅ | ✅ |
-
-**For 90% of use cases: SRT.**
-It works everywhere, is simpler to edit by hand, and has no hidden browser quirks.
-
-Use VTT if you're embedding video on a web page and want inline styling (bold, italic, positioning).
-
-Converting between the two: videotext.io/video-to-subtitles has a "Convert format" button
-that converts SRT ↔ VTT ↔ TXT without re-uploading the video.
-
-Any edge cases where you've had to use one over the other?
+What tools do other freelancers use for the first pass? Curious whether others find
+a significant accuracy difference between different Whisper wrappers.
 ```
 
 ---
 
-### Series 3 — Translate Subtitles (`/translate-subtitles`)
+## Post Series 3 — Competitor / Tool Comparison (SEO)
 
-**Post 6 — Lead Gen / International Creator**
+**Post 10 — Rev alternative**
 ```
-Title: How I doubled my video reach by translating subtitles into 5 languages (and how long it took)
+Title: Rev transcription vs VideoText — what each is actually for (honest comparison)
 
 Body:
-I make tutorial videos in English. My analytics showed 40% of my audience was non-English speaking.
+Rev and VideoText are not really competing for the same user. Here's the honest breakdown:
 
-I was leaving half my audience with a worse experience because YouTube's auto-translate
-is noticeably worse than a properly translated SRT file.
-
-Here's what I switched to:
-
-1. Generate subtitles from the video (VideoText, ~90 sec)
-2. Translate the SRT into Spanish, Hindi, Portuguese, French, German (VideoText, another ~60 sec)
-3. Upload each translated SRT to YouTube Studio as a separate subtitle track
-
-Now viewers can switch to their language and get a properly translated subtitle track,
-not YouTube's machine translation of machine captions.
-
-Result: 18% increase in average view duration on non-English viewing sessions.
-
-Translation tool: videotext.io/translate-subtitles (supports 50+ languages)
-
-Has anyone else done this? Curious if the watch time improvement is consistent across niches.
-```
-
-**Post 7 — Feature Update**
-```
-Title: [Update] Translate Subtitles now supports 50+ languages — same timestamps, no reformatting
-
-Body:
-Quick update on the Translate Subtitles tool:
-
-- 50+ target languages now supported
-- Translated SRT/VTT preserves the original timestamps exactly
-- No reformatting needed — upload straight to YouTube, Vimeo, or wherever you publish
-- For multi-language output: VideoText → Subtitles generates up to 10 language SRTs in one batch (Pro/Agency)
-
-Supported language list includes: Spanish, French, Portuguese, Hindi, German, Arabic, Chinese,
-Japanese, Korean, Italian, Dutch, Turkish, Polish, and 30+ more.
-
-If you do international content and want to test it: videotext.io/translate-subtitles
-(3 free imports, no credit card)
-
-What languages are most requested? We're looking at expanding the in-app viewer too.
-```
-
----
-
-### Series 4 — Fix Subtitles (`/fix-subtitles`)
-
-**Post 8 — Tutorial / High Conversion**
-```
-Title: My subtitle file had 200+ sync errors — here's how I fixed all of them in 30 seconds
-
-Body:
-Common subtitle problems after auto-generation:
-
-1. Off-sync timestamps (captions appear 0.5–2 sec late)
-2. Filler words ("um", "uh", "you know") cluttering the text
-3. Line breaks cutting a sentence in the wrong place
-4. Inconsistent capitalization
-5. Gaps between subtitle cues
-
-Manually fixing these in a text editor on a 200-line SRT file takes 20–30 minutes.
-
-VideoText's Fix Subtitles tool handles all 5 in one pass:
-- Auto-corrects timing sync
-- Removes filler words (optional)
-- Fixes line breaks to natural reading length
-- Normalises casing
-- Fills timing gaps
-
-Upload your SRT or VTT → fixed file downloads in seconds.
-
-Tool: videotext.io/fix-subtitles
-
-If you're doing this manually in Subtitle Edit or Notepad++, give the tool a try and
-tell me if it catches things you'd have fixed by hand.
-```
-
----
-
-### Series 5 — Burn Subtitles (`/burn-subtitles`)
-
-**Post 9 — Lead Gen / Video Editor Audience**
-```
-Title: How to hardcode subtitles into a video file without Premiere Pro or DaVinci
-
-Body:
-"Hardcoded" or "burned-in" subtitles are baked into the video permanently.
-They show on every platform — even if the viewer has subtitles turned off.
-Essential for: Instagram Reels, TikTok, LinkedIn, any platform where text-on-screen
-drives scroll-stopping.
-
-You don't need Premiere Pro or DaVinci Resolve to do this.
-
-VideoText → Burn Subtitles:
-1. Upload your video
-2. Upload your SRT or VTT file
-3. Choose font size, position (top/center/bottom), and background style
-4. Download the video with burned captions
-
-Runs server-side with FFmpeg. No install. Works on Mac, Windows, Linux, mobile.
-File is deleted after download — nothing stored.
-
-Tool: videotext.io/burn-subtitles
-
-What's your current workflow for burned captions? Most people I've talked to are either
-in Premiere (slow) or CapCut (good but limited export quality).
-```
-
----
-
-### Series 6 — Compress Video (`/compress-video`)
-
-**Post 10 — Tutorial / Utility**
-```
-Title: I reduced a 1.2 GB video to 180 MB without visible quality loss — here's the setting
-
-Body:
-Large video files are a problem when:
-- Uploading to a client portal
-- Sending via email or Slack
-- Uploading to LinkedIn (200 MB limit)
-- Storing on a drive you're trying to keep organised
-
-VideoText's Compress Video tool uses FFmpeg under the hood with three profiles:
-
-- **Web** (light) — reduces file to ~40–50% of original. Best for sharing with visible quality.
-- **Mobile** (medium) — reduces to ~25–30%. Good for social media.
-- **Archive** (heavy) — reduces to ~15–20%. For storage where quality is secondary.
-
-My test: 1.2 GB source → 178 MB on Mobile profile. Quality difference was not visible at 1080p playback.
-
-Files are deleted after you download. Nothing stored.
-Tool: videotext.io/compress-video
-
-What's your usual workflow for compressing video before delivery?
-```
-
----
-
-### Series 7 — Batch Processing (`/batch-process`)
-
-**Post 11 — Lead Gen / Agency + Power User**
-```
-Title: I transcribed 47 videos in one afternoon — here's the batch setup
-
-Body:
-Scenario: 47 recorded webinar sessions, each 30–60 minutes.
-Client needed SRT files for every video to upload to their learning platform.
-
-Manual one-by-one: not happening.
-
-VideoText Batch Processing (Pro/Agency):
-- Upload up to 100 videos at once
-- All processed in parallel (not sequentially)
-- Download a single ZIP with all SRT/VTT files when complete
-
-Each file in the ZIP is named after the source video, so matching them up is instant.
-
-For 47 videos averaging 45 minutes each: full batch completed in ~22 minutes.
-
-Plan required: Pro ($X/mo) or Agency ($X/mo) — batch is not on Free or Basic.
-
-Tool: videotext.io/batch-process
-
-If you do any volume transcription work (courses, events, podcasts), this is the
-workflow change that made the most difference for me. What do you currently use for batch work?
-```
-
----
-
-### Series 8 — Competitor Comparison (SEO / Conversion)
-
-**Post 12 — TurboScribe Alternative**
-```
-Title: TurboScribe vs VideoText — honest comparison after using both for 3 months
-
-Body:
-I've been using both TurboScribe and VideoText regularly. Here's an honest breakdown:
-
-**TurboScribe:**
-- Good accuracy (Whisper-based, same engine)
-- Simple UI, easy to get started
-- Stores your transcripts in a library
-- No subtitle tools beyond basic SRT export
+**Rev:**
+- Human transcription option (you're paying people to type it)
+- Very high accuracy for the human tier
+- Expensive: $1.50+/min for human
+- AI tier is cheaper but slower than dedicated Whisper tools
+- Great for: legal, medical, anything where you're paying for human accuracy guarantee
 
 **VideoText:**
-- Same Whisper accuracy
-- 47× realtime speed on long files (parallel chunking — TurboScribe processes sequentially)
-- Full subtitle toolchain: generate → translate → fix → burn in one place
-- Privacy-first: no file storage, deleted after processing
-- Batch processing for multiple videos
+- AI only (Whisper-based), 47x realtime on long files
+- Speaker labels, chapters, summaries in one pass
+- Formatting tool for people who work FOR Rev: videotext.io/guideline-format
+- No human tier — you're responsible for the listen pass
+- Great for: creators who need transcripts at volume, freelancers doing the first pass
 
-**When TurboScribe is still better:**
-- You want a transcript library/history to revisit old jobs
-- You prefer a simpler interface with fewer options
+If you work for Rev as a transcriptionist: VideoText is a first-pass tool that saves you
+typing time, and the guideline formatter helps you stay inside the Rev style spec.
 
-**When VideoText is better:**
-- Long videos (1–2 hours) — the speed gap is significant
-- You need subtitles, not just transcripts
-- You handle client footage and care about data not being stored
-- You do volume work and need batch
+If you're a client buying transcription: Rev is for when you need human accuracy guarantee;
+VideoText is for when you're comfortable doing your own QA pass.
 
-Full comparison with table: videotext.io/turboscribe-alternative
+Full comparison: videotext.io/turboscribe-alternative (similar positioning)
 
-Which one do you use? I know there are users of both in this sub.
+What tier do you use on Rev? The pricing gap between human and AI tier has gotten pretty wide.
 ```
 
-**Post 13 — Whisper Online (high-volume keyword)**
+**Post 11 — Whisper online (2,400/mo search volume)**
 ```
-Title: How to use Whisper AI online without installing anything or writing code
+Title: How to run Whisper AI transcription online without Python, GPU, or command line
 
 Body:
-OpenAI's Whisper is widely regarded as the best open-source speech-to-text model.
-Problem: running it locally requires Python, ffmpeg, a GPU (for speed), and command-line setup.
+OpenAI's Whisper is the best open-source speech-to-text model.
+The problem: running it locally requires Python, ffmpeg, a GPU, and command-line setup
+that takes 30–60 minutes if you haven't done it before.
 
-For anyone who just wants to use Whisper without the setup:
+For anyone who wants Whisper's accuracy without the setup:
 
-VideoText.io runs Whisper on the backend. You upload a file (or paste a URL),
-it runs Whisper in parallel chunks (for speed), and you get a transcript or subtitle file back.
+VideoText runs Whisper on its backend. You upload a file or paste a URL.
+The key difference from other hosted Whisper tools: it uses parallel chunked processing
+for long files — so a 2-hour recording takes ~2.5 minutes, not 20 minutes.
 
-What you get that you wouldn't get from raw Whisper:
-- Speaker diarization (who said what)
-- AI summary, chapters, keywords
-- SRT/VTT output (not just plain text)
+What you get beyond raw Whisper:
+- Speaker labels (who said what)
+- AI summary + chapters + keywords
+- SRT/VTT subtitle output
 - Translate to 50+ languages
-- Fix, burn, compress in the same tool
+- Format to Rev/Scribie/GoTranscript/TranscribeMe style guides
 
-Free tier: 3 imports/month, no signup required to try.
+Free: 3 imports/month, no card: videotext.io
 
-Full guide: videotext.io/whisper-online
-
-If you've set up local Whisper, was the setup worth it vs just using a hosted version?
+If you've set up local Whisper — was the setup worth it vs just using a hosted version?
+I know some people prefer local for privacy reasons (though VideoText deletes files after processing).
 ```
 
 ---
 
-## Feature Update Post Template
+## Feature Update Template
 
-Use this every time a new feature ships:
+Use every time a feature ships:
 
 ```
-Title: [New] [Feature Name] — [one-line description of what it does]
+Title: [Update] [Feature Name] — [one sentence on what it does]
 
 Body:
 **What's new:**
 [2–3 sentences. What the feature does, why we built it, what problem it solves.]
 
+**Who it's for:**
+[Specific: "freelancers working Rev or GoTranscript who..." / "creators who batch-produce content and..."]
+
 **How to use it:**
-1. [Step 1]
+1. [Step 1 — specific, not vague]
 2. [Step 2]
 3. [Step 3]
 
-**Who it's for:**
-[Specific user type — "podcasters who...", "video editors who..."]
+**Free tier:** [what free users can access]
+**Paid plans:** [what's gated, if anything]
 
-**Free tier:** [What free users can access]
-**Paid plans:** [What's gated, if anything]
+Try it: [specific tool page — /video-to-transcript or /guideline-format]
 
-Try it: [specific tool page URL]
-
-What would you add to this feature? We're in active development and this is where
-we pick up the most useful feedback.
+What would you add to this? We read all the feedback in this sub.
 ```
 
 ---
 
-## Posting Schedule
+## 12-Week Posting Schedule
 
-| Week | Post | Series | Tool Page |
+| Week | Post | Audience | Tool Page |
 |---|---|---|---|
-| 1 | Speed benchmark post | Video → Transcript | `/video-to-transcript` |
-| 2 | YouTube URL transcript guide | Transcript | `/youtube-url-to-transcript-without-download` |
-| 3 | SRT vs VTT breakdown | Subtitles | `/video-to-srt` |
-| 4 | Translate subtitles for international reach | Translate | `/translate-subtitles` |
-| 5 | Fix subtitles — sync errors post | Fix | `/fix-subtitles` |
-| 6 | Burn subtitles without Premiere | Burn | `/burn-subtitles` |
-| 7 | TurboScribe vs VideoText | Competitor | `/turboscribe-alternative` |
-| 8 | Compress video post | Compress | `/compress-video` |
-| 9 | Batch processing for agencies | Batch | `/batch-process` |
-| 10 | Whisper online guide | Competitor/SEO | `/whisper-online` |
-| 11 | Feature update post (next release) | Any | Relevant tool |
-| 12 | Community feedback request post | All tools | `/` (homepage) |
+| 1 | Rev rejection → rule cards fix | Freelancers | `/guideline-format` |
+| 2 | Speed benchmark (2 min 25 sec) | Creators | `/video-to-transcript` |
+| 3 | GoTranscript vs Scribie vs Rev style differences | Freelancers | `/guideline-format` |
+| 4 | YouTube chapter timestamps auto-generate | YouTubers | `/video-to-transcript` |
+| 5 | Clean verbatim vs full verbatim guide | Freelancers | `/guideline-format` + blog |
+| 6 | Podcast show notes in 5 min | Podcasters | `/video-to-transcript` |
+| 7 | 8-point QA checklist before submission | Freelancers | `/guideline-format` |
+| 8 | AI first pass → 3x hourly rate | Both audiences | `/video-to-transcript` + `/guideline-format` |
+| 9 | Rev vs VideoText honest comparison | Both | Blog + tools |
+| 10 | Whisper AI online (no setup) | Developers / freelancers | `/video-to-transcript` |
+| 11 | Feature update post (next release) | Both | Relevant tool |
+| 12 | Community feedback: what platforms should we add? | Freelancers | `/guideline-format` |
 
 **Timing:** Tuesday–Thursday, 9–11 AM EST.
+**Reply to every comment in the first 30 minutes** — Reddit's algorithm rewards active threads.
 **Never cross-post the same body to another subreddit on the same day.**
-**Reply to every comment within the first 30 minutes.**
 
 ---
 
-## Lead Generation Mechanics
+## Conversion Hooks by Audience
 
-### In every post, include:
-
-1. **A genuine question at the end** — this invites comments, which bumps the post in Reddit's algorithm. Never close with just a link.
-2. **Free tier mention** — always note "3 free imports, no credit card" in posts targeting new users. This reduces friction at the click.
-3. **Privacy hook** — "Files deleted after download, nothing stored" consistently resonates with creators handling client footage. Use it in posts targeting professional/agency users.
-4. **Specific tool page link** — never link to the homepage. Link to the exact tool page that matches the post topic. This drives higher-intent page visits and improves SEO signal (Reddit links pass traffic intent).
-
-### Conversion triggers by audience:
-
-| Audience | Highest-converting hook |
-|---|---|
-| YouTubers | Speed (2 min for a 2-hour video) + chapter markers |
-| Podcasters | Speaker labels + summary + show notes export |
-| Video editors | Burn subtitles without Premiere + batch ZIP |
-| International creators | 50+ languages + multi-language SRT ZIP |
-| Agencies / freelancers | Batch processing + privacy (client footage) |
-| Developers | Whisper-based, no setup, API-level speed |
+| Audience | Where they come from | Hook that converts |
+|---|---|---|
+| Rev freelancers | r/Transcription, r/beermoney | "Stop getting work kicked back — rule cards track which override you applied" |
+| GoTranscript workers | r/WorkOnline, r/slavelabour | "Format for GoTranscript spec in one view — no re-reading the PDF each shift" |
+| Scribie workers | r/Scribie (community), r/Transcription | "Scribie preset + Edited badges = paper trail for any dispute" |
+| TranscribeMe workers | r/beermoney, r/slavelabour | "AI first pass + TranscribeMe formatter = 3x effective hourly rate" |
+| YouTubers | r/youtubers, r/PartneredYoutube | "Chapters + summary + keywords from one upload — 2 min per video" |
+| Podcasters | r/podcasting | "Show notes in 5 min from the actual transcript — not a hallucinated summary" |
+| Video editors | r/VideoEditing | "Burn subtitles without Premiere; batch SRT in one ZIP" |
 
 ---
 
-## SEO Value of the Subreddit
+## Lead Generation Rules for Every Post
 
-Reddit posts rank in Google, especially for informational queries.
-Every post in r/VideoToText that targets a specific keyword will appear in Google results for that keyword — this is additional organic surface area beyond the VideoText.io blog.
-
-Target keywords for subreddit posts (highest Google value):
-- "video to text online" — 22,000/mo
-- "transcribe video online free" — 18,000/mo
-- "srt file generator" — 8,400/mo
-- "translate subtitle file" — 4,200/mo
-- "whisper ai online" — 2,400/mo
-- "turboscribe alternative" — 1,800/mo
-- "burn subtitles into video" — 1,400/mo
-- "batch video transcription" — 900/mo
-
-Write post **titles** to include these phrases naturally. Google indexes Reddit post titles as H1s.
+1. **End with a genuine question** — invites replies, which bumps Reddit rank and builds trust. Never end with just a link.
+2. **Mention free tier** — "free to try, no card" removes the biggest friction point.
+3. **Link to the specific tool page**, not the homepage. `/guideline-format` for formatting posts. `/video-to-transcript` for transcription posts.
+4. **Privacy hook for client-footage posts** — "files deleted after processing, nothing stored" consistently resonates with freelancers handling client audio.
+5. **Be specific about the pain** — "Rev rejected my job" outperforms "improve your transcription quality." The more specific the pain, the more comments and the more clicks.
 
 ---
 
-## What NOT to Do
+## SEO Value of Posts
 
-- **Don't only post feature updates.** 80% value-first content, 20% product announcements.
-- **Don't link to the homepage.** Always link to the specific tool page. Higher intent, better analytics.
-- **Don't delete low-performing posts.** They build link equity over time and can rank in Google even with low Reddit upvotes.
-- **Don't ignore comments.** Responding to every comment in the first hour significantly boosts post ranking and builds trust.
-- **Don't repost the same body to multiple subs.** Reddit detects duplicate content and shadowbans.
-- **Don't launch the subreddit cold.** Post 3–5 high-quality posts before making it public so new visitors see an active community.
+Google indexes subreddit posts and titles. Writing post titles around specific search phrases creates additional organic search surface area beyond the videotext.io blog.
+
+High-value phrases to use in post titles:
+
+| Phrase | Monthly searches | Target post |
+|---|---|---|
+| "rev style guide" | 4,800/mo | Post 1 |
+| "clean verbatim vs full verbatim" | 2,100/mo | Post 4 |
+| "transcript qa checklist" | 1,400/mo | Post 3 |
+| "gotranscript style guide" | 1,100/mo | Post 2 |
+| "whisper ai online" | 2,400/mo | Post 11 |
+| "video to transcript free" | 8,400/mo | Post 6 |
+| "podcast show notes generator" | 3,200/mo | Post 8 |
+| "how to earn more as transcriptionist" | 900/mo | Post 9 |
+| "scribie style guide" | 700/mo | Post 2 |
+
+---
+
+## Launch Sequence (Before Making the Sub Public)
+
+Post these 4 threads before opening the community so new visitors see activity:
+
+1. The 8-point QA checklist (value-first, no product mention needed)
+2. Clean verbatim vs full verbatim explainer (evergreen reference)
+3. GoTranscript vs Scribie vs Rev style differences (saves bookmark)
+4. Speed benchmark post for video transcription
+
+Then pin a welcome post explaining what the sub is for. Then open it.
