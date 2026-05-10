@@ -314,14 +314,14 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Turn long YouTube videos into transcript, subtitles, summary, and chapters in minutes.',
   },
   '/blog/best-transcription-software-2026': {
-    title: 'Best Transcription Software in 2026: Workflow-Based Comparison',
+    title: 'Best Transcription Software 2026 — Tested & Ranked by Accuracy | VideoText',
     description:
-      'Commercial buyer guide to the best transcription software in 2026. Compare speed-to-output, export depth, privacy model, and real workflow trade-offs.',
+      'We compared 15 transcription tools on accuracy, price, speed, and exports. See which is actually best for podcasters, journalists, and business teams in 2026.',
   },
   '/blog/best-video-captioning-tools-2026': {
-    title: 'Best Video Captioning Tools for Content Creators in 2026 | VideoText',
+    title: 'Best Video Captioning Tools 2026 — Free & Paid Options Compared | VideoText',
     description:
-      'Auto-captions, burned-in subtitles, translated captions — a practical guide to the best tools for YouTube, Instagram, TikTok, and Reels.',
+      'We tested 12 video captioning tools. Which ones are actually free, which have the best accuracy, and which work best for YouTube, TikTok, and Reels.',
   },
   '/blog/how-to-transcribe-podcast-episode': {
     title: "How to Transcribe a Podcast Episode (Free, Any Format) | VideoText",
@@ -597,8 +597,8 @@ export const BLOG_POST_DATES: Record<string, { datePublished: string; dateModifi
   '/blog/how-we-handle-support':               { datePublished: '2026-03-01', dateModified: '2026-03-01' },
   '/blog/why-we-delete-your-files':            { datePublished: '2026-02-26', dateModified: '2026-02-26' },
   '/blog/processing-speed-breakdown':          { datePublished: '2026-02-25', dateModified: '2026-02-25' },
-  '/blog/best-transcription-software-2026':   { datePublished: '2026-03-14', dateModified: '2026-04-16' },
-  '/blog/best-video-captioning-tools-2026':   { datePublished: '2026-03-13', dateModified: '2026-03-13' },
+  '/blog/best-transcription-software-2026':   { datePublished: '2026-03-14', dateModified: '2026-05-10' },
+  '/blog/best-video-captioning-tools-2026':   { datePublished: '2026-03-13', dateModified: '2026-05-10' },
   '/blog/how-to-get-youtube-transcript':       { datePublished: '2026-03-14', dateModified: '2026-03-14' },
   '/blog/how-to-transcribe-audio-to-text-free':{ datePublished: '2026-03-12', dateModified: '2026-03-12' },
   '/blog/how-to-translate-subtitles':          { datePublished: '2026-03-10', dateModified: '2026-03-10' },
