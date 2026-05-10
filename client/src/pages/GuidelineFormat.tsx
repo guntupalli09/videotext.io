@@ -2094,6 +2094,305 @@ export default function GuidelineFormat() {
           ))}
         </dl>
       </section>
+
+      {/* ── QA Workflow Section ── */}
+      <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="Transcription QA workflow">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          The 7-Stage Transcription QA Workflow
+        </h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">
+          Professional transcription agencies and marketplace platforms use a structured QA pipeline before accepting deliverables. This tool automates stages 2 through 5 — the most time-consuming and error-prone steps for freelancers.
+        </p>
+        <ol className="space-y-0">
+          {([
+            {
+              stage: '1',
+              title: 'Draft transcript generation',
+              detail: 'Raw transcript produced from audio — either AI-generated (Whisper, Otter, etc.) or a rough human first pass. At this stage the text is accurate but unformatted: speaker labels are inconsistent, filler words are present, punctuation is uneven.',
+              label: 'Manual / AI',
+              violet: false,
+            },
+            {
+              stage: '2',
+              title: 'Formatting pass',
+              detail: 'Apply the client style guide: normalize speaker labels to the required format ([Speaker Name]: vs SPEAKER 1: vs Speaker 1:), correct number formatting (spell out one–nine, numerals for 10+), apply capitalization rules, normalize ellipsis and dash usage. VideoText automates this pass entirely based on the selected preset.',
+              label: 'Automated here',
+              violet: true,
+            },
+            {
+              stage: '3',
+              title: 'Filler word and verbatim cleanup',
+              detail: 'Remove or retain filler words (um, uh, like, you know) based on the platform spec. Non-verbatim platforms (Rev, GoTranscript, Scribie) require removal unless fillers are meaningful. Full verbatim platforms retain every word. False starts and stutters are cleaned in this stage. VideoText applies the correct ruleset automatically per preset.',
+              label: 'Automated here',
+              violet: true,
+            },
+            {
+              stage: '4',
+              title: 'Speaker label consistency check',
+              detail: 'Every speaker transition must be labeled. No speaker label should appear inconsistently — mixing "Speaker 1" and "SPK 1" for the same person is a common rejection reason on Rev and GoTranscript. VideoText flags all speaker label inconsistencies in the QA compliance report before export.',
+              label: 'Automated here',
+              violet: true,
+            },
+            {
+              stage: '5',
+              title: 'Timestamp validation',
+              detail: 'GoTranscript requires timestamps every 2 minutes; TranscribeMe requires them every paragraph. VideoText validates that required timestamps are present, correctly formatted ([00:02:00] not 00:02:00), and fall on speaker turns rather than mid-sentence. Missing or malformed timestamps are flagged before export.',
+              label: 'Automated here',
+              violet: true,
+            },
+            {
+              stage: '6',
+              title: 'Human reviewer QA pass',
+              detail: 'A human reviewer reads through the formatted transcript against the original audio. Focus areas: proper nouns the AI may have misheard, inaudible sections that need [inaudible] tags, and any segments flagged as below the QA confidence threshold. VideoText surfaces exactly which segments need manual review — no need to scan the whole document.',
+              label: 'Manual',
+              violet: false,
+            },
+            {
+              stage: '7',
+              title: 'Final submission',
+              detail: 'Export in the required format: plain TXT for most marketplaces, DOCX for agency clients, SRT for caption deliverables. The QA compliance score documents that style guide rules were applied systematically — useful for agencies that need to demonstrate process to clients.',
+              label: 'Manual',
+              violet: false,
+            },
+          ] as Array<{ stage: string; title: string; detail: string; label: string; violet: boolean }>).map(({ stage, title, detail, label, violet }, i, arr) => (
+            <li key={stage} className="flex gap-4">
+              <div className="flex flex-col items-center">
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${violet ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
+                  {stage}
+                </span>
+                {i < arr.length - 1 && <div className="mt-1 w-px flex-1 bg-gray-200 dark:bg-gray-700 mb-1" />}
+              </div>
+              <div className="pb-7 pt-0.5 min-w-0">
+                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm">{title}</h3>
+                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${violet ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
+                    {label}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{detail}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* ── Before / After Format Examples ── */}
+      <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="Transcript formatting examples">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          Raw → Formatted → Client-Ready: What the Formatter Actually Does
+        </h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+          These are realistic examples of what a raw AI-generated transcript looks like, what it looks like after formatting, and what the final client-ready output contains. Every transformation shown here is applied automatically.
+        </p>
+        <div className="space-y-10">
+          {/* Example 1 — Rev non-verbatim */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Example: Rev non-verbatim format</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Raw AI output</p>
+                <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`spk_0: um so like the the thing that we uh found was that you know the results were uh really quite significant i mean we we ran it three times
+
+spk_1: yeah yeah and and the second run was i think more more compelling right`}</pre>
+              </div>
+              <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-500 dark:text-amber-400 mb-2">After formatting pass</p>
+                <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`[Speaker 1]: The thing that we found was that the results were really quite significant. We ran it three times.
+
+[Speaker 2]: Yeah, and the second run was more compelling, right?`}</pre>
+              </div>
+              <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-500 dark:text-emerald-400 mb-2">Client-ready (Rev spec)</p>
+                <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`[Speaker 1]: The thing we found was that the results were really quite significant. We ran it three times.
+
+[Speaker 2]: Yeah, and the second run was more compelling, right?`}</pre>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-2">✓ Fillers removed ✓ Labels formatted ✓ False starts cleaned</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Example 2 — GoTranscript with timestamps */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Example: GoTranscript format with 2-minute timestamps</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Raw AI output</p>
+                <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`Speaker 1: so we launched in Q3 and uh the response was better than we thought
+
+[00:02:14]
+
+Speaker 1: the first 30 days we had 4,000 signups which is uh which is above projections`}</pre>
+              </div>
+              <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-500 dark:text-amber-400 mb-2">After formatting pass</p>
+                <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`Speaker 1: We launched in Q3 and the response was better than we thought.
+
+[00:02:14]
+
+Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}</pre>
+              </div>
+              <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-500 dark:text-emerald-400 mb-2">Client-ready (GoTranscript spec)</p>
+                <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`Speaker 1: We launched in Q3 and the response was better than we thought.
+
+[00:02:14]
+
+Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}</pre>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-2">✓ Fillers removed ✓ Timestamps validated ✓ Numerals correct</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Example 3 — Full verbatim */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Example: Full verbatim (legal / research format)</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Raw AI output</p>
+                <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`spk_0: I- I wasn't at the location on that date. I mean, uh, I was definitely not there.`}</pre>
+              </div>
+              <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-500 dark:text-emerald-400 mb-2">Full verbatim output</p>
+                <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`WITNESS: I-- I wasn't at the location on that date. I mean, uh, I was definitely not there.`}</pre>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-2">✓ Fillers retained ✓ False starts formatted ✓ Label normalized</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Style Guide Comparison Table ── */}
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="Transcription platform style guide comparison">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          Style Guide Comparison: Rev, GoTranscript, TranscribeMe, Scribie
+        </h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+          Every platform has a distinct style guide. Submitting to the wrong format is the leading cause of transcript rejection and reduced QA scores. This table documents the key formatting rules for each platform as of 2026.
+        </p>
+        <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700">
+          <table className="min-w-full text-xs">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                <th className="py-3 px-4 text-left font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">Rule</th>
+                <th className="py-3 px-4 text-left font-semibold text-violet-700 dark:text-violet-300 whitespace-nowrap">Rev</th>
+                <th className="py-3 px-4 text-left font-semibold text-blue-700 dark:text-blue-300 whitespace-nowrap">GoTranscript</th>
+                <th className="py-3 px-4 text-left font-semibold text-emerald-700 dark:text-emerald-300 whitespace-nowrap">TranscribeMe</th>
+                <th className="py-3 px-4 text-left font-semibold text-amber-700 dark:text-amber-300 whitespace-nowrap">Scribie</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {([
+                ['Verbatim type', 'Non-verbatim (clean)', 'Non-verbatim (clean)', 'Non-verbatim (clean)', 'Non-verbatim (clean)'],
+                ['Filler words (um, uh)', 'Remove', 'Remove', 'Remove', 'Remove'],
+                ['False starts', 'Remove', 'Remove', 'Remove', 'Remove'],
+                ['Speaker label format', '[Speaker Name]:', 'Speaker 1:', '[Speaker Name]', 'Speaker 1:'],
+                ['Timestamps', 'Not required', 'Every 2 minutes', 'Every paragraph', 'Not required'],
+                ['Timestamp format', 'N/A', '[00:02:00]', '[00:01:30]', 'N/A'],
+                ['Numbers 1–9', 'Spell out', 'Spell out', 'Numerals', 'Spell out'],
+                ['Numbers 10+', 'Numerals', 'Numerals', 'Numerals', 'Numerals'],
+                ['Inaudible sections', '[inaudible]', '[inaudible]', '[inaudible]', '[inaudible]'],
+                ['Crosstalk / overlap', '[crosstalk]', '[crosstalk]', '[crosstalk]', '[crosstalk]'],
+                ['Profanity', 'Transcribe as spoken', 'Transcribe as spoken', 'Bleep optional', 'Transcribe as spoken'],
+                ['QA strictness', 'High — automated scoring', 'Medium — manual review', 'High — automated scoring', 'Medium — manual review'],
+                ['Typical rejection cause', 'Retained fillers, wrong label format', 'Missing timestamps', 'Numeral inconsistency', 'Retained fillers'],
+              ] as string[][]).map(([rule, rev, gt, tm, scribie]) => (
+                <tr key={rule} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                  <td className="py-3 px-4 font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">{rule}</td>
+                  <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{rev}</td>
+                  <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{gt}</td>
+                  <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{tm}</td>
+                  <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{scribie}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs text-gray-500 dark:text-gray-500 mt-3">
+          Style guide details verified against platform documentation. Rules may be updated by platforms without notice — always check the current platform guidelines for final submissions.
+        </p>
+      </section>
+
+      {/* ── Technical Validation Section ── */}
+      <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="How transcript format validation works">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          How the Format Validation Engine Works
+        </h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+          The QA compliance score is not a spell-checker. It runs a structured checklist against the selected style guide, detects specific rule violations, and surfaces exactly which segments need manual review — not the entire document.
+        </p>
+        <div className="space-y-4">
+          {[
+            {
+              title: 'Speaker label consistency detection',
+              body: 'The validator scans every speaker-attributed line and checks that: (1) the label format matches the selected preset exactly, (2) the same speaker is not referred to by two different label strings, and (3) no speaker turn is missing a label. Inconsistent labels — the most common QA rejection reason on Rev and GoTranscript — are flagged individually with the problematic label shown.',
+            },
+            {
+              title: 'Filler word presence check',
+              body: 'For non-verbatim presets, the engine scans for retained filler words (um, uh, like, you know, kind of, sort of) and flags any that were not removed during the formatting pass. Fillers inside quoted speech or technical terms are excluded from flagging. Each flagged filler is linked to the segment it appears in for one-click navigation.',
+            },
+            {
+              title: 'Timestamp integrity validation',
+              body: 'For formats that require timestamps (GoTranscript every 2 min, TranscribeMe every paragraph), the validator checks that: timestamps are present at required intervals, the format matches the platform spec exactly ([HH:MM:SS] vs HH:MM:SS), and timestamps fall on speaker turn boundaries rather than mid-sentence. Missing or misplaced timestamps are flagged by position in the transcript.',
+            },
+            {
+              title: 'Formatting conflict detection',
+              body: 'Some editing decisions create conflicts: a speaker label that appears in both short and long form within the same document, a number rendered as both a word and a numeral within a paragraph, or punctuation that violates the selected preset. The validator surfaces these as "needs review" flags rather than treating them as outright errors, since some conflicts are intentional.',
+            },
+            {
+              title: 'Subtitle-safe formatting checks (for SRT/VTT export)',
+              body: 'When the input is a subtitle file (SRT or VTT), the validator additionally checks: no subtitle cue exceeds 42 characters per line, no more than 2 lines per cue, no overlapping timestamps between adjacent cues, and correct decimal separator in timestamps (comma for SRT, period for VTT). Subtitle-specific failures are surfaced separately from transcript-level formatting issues.',
+            },
+            {
+              title: 'QA confidence score interpretation',
+              body: 'The confidence score represents the percentage of verifiable checklist items that passed. Scores above 90% indicate the transcript is likely compliant for submission. Scores between 70–90% mean flagged issues remain — review the flagged segments before submitting. Scores below 70% indicate systematic formatting issues that likely require re-running the formatter with corrected rule settings.',
+            },
+          ].map(({ title, body }) => (
+            <article key={title} className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-5 shadow-sm">
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-2">{title}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Professional Transcriptionist Section ── */}
+      <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="For professional transcriptionists">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          Built for Professional Transcriptionists, Not Just Beginners
+        </h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+          If you work on Rev, GoTranscript, TranscribeMe, or Scribie — or deliver transcripts for agencies and direct clients — this tool was designed around your specific workflow problems.
+        </p>
+        <div className="space-y-6">
+          {[
+            {
+              heading: 'The repetitive formatting problem',
+              body: 'Experienced transcriptionists spend 20–40% of their working time on formatting tasks that have nothing to do with listening accuracy: normalizing speaker labels, removing fillers, fixing number formats, adding timestamps. These are mechanical rules applied identically to every document. This tool handles all of them in a single pass so you can focus on the parts that require human judgment — catching mishears, marking inaudibles, handling ambiguous speech.',
+            },
+            {
+              heading: 'Submission rejection: the real cost',
+              body: 'A rejected submission on Rev or GoTranscript does not just cost the time to fix and resubmit. It impacts your quality score, which affects job availability and pay rates on the platform. The most common rejection causes — retained filler words, wrong speaker label format, missing timestamps — are all checkable before submission. The QA compliance score tells you whether these issues exist before you click submit.',
+            },
+            {
+              heading: 'Custom client guides, not just platform presets',
+              body: 'Agency clients and direct clients often have their own style guides that differ from marketplace standards. Some clients want timestamps every paragraph. Some require INTERVIEWER: / RESPONDENT: rather than speaker numbers. Some have custom verbatim rules for specific terminology. Upload your client\'s style guide as a PDF, DOCX, or TXT file and the tool will parse it into editable rule cards. Adjust any card before running the formatter.',
+            },
+            {
+              heading: 'The two-tool workflow for maximum throughput',
+              body: 'The highest-output professional transcription workflow combines AI first-pass transcription with style guide formatting: (1) transcribe audio with VideoText — the full transcript, including speaker labels, is generated in minutes; (2) paste the output into this formatter; (3) select your platform preset; (4) review flagged segments only. This workflow cuts total time-per-file by 60–80% compared to transcribing manually from scratch, while keeping human review in the loop for the segments that need it.',
+            },
+            {
+              heading: 'Caption and subtitle delivery',
+              body: 'If you deliver SRT or VTT files alongside or instead of plain transcripts — for captioning clients, media companies, or platforms — this tool handles the subtitle formatting pass as well. Paste your SRT or VTT content directly: the formatter preserves timestamp structure, applies verbatim rules to caption text, validates line length against broadcast standards, and exports in caption-ready format. The QA report includes subtitle-specific checks for overlapping timestamps and character limits.',
+            },
+          ].map(({ heading, body }) => (
+            <div key={heading} className="border-l-2 border-violet-200 dark:border-violet-800 pl-5">
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-2">{heading}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
     </>
   )
 }
