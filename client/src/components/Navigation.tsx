@@ -7,6 +7,7 @@ import { isLoggedIn } from '../lib/auth'
 import { useFounderStatus } from '../hooks/useFounderStatus'
 import { trackEvent } from '../lib/analytics'
 import { CORE_AI_TOOLS_NAV } from '../config/coreAiToolsNav'
+import { getBlogOutboundUrl } from '../lib/blogOutbound'
 
 const AI_TOOLS = [...CORE_AI_TOOLS_NAV]
 
@@ -127,13 +128,12 @@ export default function Navigation() {
               Pricing
             </Link>
 
-            <Link
-              to="/blog"
+            <a
+              href={getBlogOutboundUrl('/blog')}
               className="text-sm font-medium text-white/70 hover:text-white transition-colors"
-              onMouseEnter={() => prefetchRoute('/blog')}
             >
               Blog
-            </Link>
+            </a>
 
             {!loading && isFounder && (
               <Link

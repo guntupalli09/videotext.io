@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { getBlogOutboundUrl } from '../lib/blogOutbound'
 
-/** Mirrors Blog.tsx BlogPost shape for client-guideline SEO cluster. */
+/** Mirrors Blog.tsx BlogPost shape for client-guideline SEO cluster.
+ *  Markdown mirrors for Hashnode: content/blog/<slug>.md (scripts/blog/publish-crossposts.js). */
 export interface FormattingGuideBlogPost {
   slug: string
   date: string
@@ -45,13 +47,13 @@ export const FORMATTING_GUIDE_BLOG_POSTS: FormattingGuideBlogPost[] = [
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mt-6">Related reads</h2>
         <p>
           Compare verbatim modes in{' '}
-          <Link className="text-violet-600 dark:text-violet-400 hover:underline font-medium" to="/blog/clean-verbatim-vs-full-verbatim">
+          <a className="text-violet-600 dark:text-violet-400 hover:underline font-medium" href={getBlogOutboundUrl('/blog/clean-verbatim-vs-full-verbatim')}>
             clean verbatim vs full verbatim
-          </Link>{' '}
+          </a>{' '}
           and QA scope in{' '}
-          <Link className="text-violet-600 dark:text-violet-400 hover:underline font-medium" to="/blog/what-is-transcript-qa">
+          <a className="text-violet-600 dark:text-violet-400 hover:underline font-medium" href={getBlogOutboundUrl('/blog/what-is-transcript-qa')}>
             what transcript QA covers
-          </Link>
+          </a>
           .
         </p>
         <p>
@@ -144,13 +146,13 @@ export const FORMATTING_GUIDE_BLOG_POSTS: FormattingGuideBlogPost[] = [
         </p>
         <p>
           Read the Rev playbook next:{' '}
-          <Link className="text-violet-600 dark:text-violet-400 hover:underline font-medium" to="/blog/rev-style-guide-transcript-formatter">
+          <a className="text-violet-600 dark:text-violet-400 hover:underline font-medium" href={getBlogOutboundUrl('/blog/rev-style-guide-transcript-formatter')}>
             Rev-style preset workflow →
-          </Link>{' '}
+          </a>{' '}
           · QA glossary:{' '}
-          <Link className="text-violet-600 dark:text-violet-400 hover:underline font-medium" to="/blog/what-is-transcript-qa">
+          <a className="text-violet-600 dark:text-violet-400 hover:underline font-medium" href={getBlogOutboundUrl('/blog/what-is-transcript-qa')}>
             what transcript QA covers →
-          </Link>
+          </a>
           .
         </p>
         <p>
@@ -198,13 +200,13 @@ export const FORMATTING_GUIDE_BLOG_POSTS: FormattingGuideBlogPost[] = [
         </p>
         <p>
           Freelancers tightening throughput should pair this with{' '}
-          <Link className="text-violet-600 dark:text-violet-400 hover:underline font-medium" to="/blog/how-to-earn-more-per-hour-as-a-transcriptionist">
+          <a className="text-violet-600 dark:text-violet-400 hover:underline font-medium" href={getBlogOutboundUrl('/blog/how-to-earn-more-per-hour-as-a-transcriptionist')}>
             transcriptionist workflow notes →
-          </Link>{' '}
+          </a>{' '}
           and{' '}
-          <Link className="text-violet-600 dark:text-violet-400 hover:underline font-medium" to="/blog/clean-verbatim-vs-full-verbatim">
+          <a className="text-violet-600 dark:text-violet-400 hover:underline font-medium" href={getBlogOutboundUrl('/blog/clean-verbatim-vs-full-verbatim')}>
             clean vs full verbatim →
-          </Link>
+          </a>
           .
         </p>
         <p>

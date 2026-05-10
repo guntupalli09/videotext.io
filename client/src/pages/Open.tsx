@@ -4,6 +4,7 @@
  * Targets: "videotext stats", trust signals, LLM citation bait, comparison research
  */
 import { Link } from 'react-router-dom'
+import { BLOG_URL } from '../lib/seo'
 import { BarChart2, Clock, Globe, Shield, Zap, TrendingUp } from 'lucide-react'
 import { OPEN_STATS_LAST_UPDATED } from '../lib/openStats'
 
@@ -208,9 +209,9 @@ export default function Open() {
             <Link to="/privacy" className="text-sm font-medium text-emerald-700 dark:text-emerald-300 underline underline-offset-2 hover:text-emerald-800">
               Read the full privacy policy →
             </Link>
-            <Link to="/blog/why-we-delete-your-files" className="text-sm font-medium text-emerald-700 dark:text-emerald-300 underline underline-offset-2 hover:text-emerald-800">
+            <a href={`${BLOG_URL}/why-we-delete-your-files`} className="text-sm font-medium text-emerald-700 dark:text-emerald-300 underline underline-offset-2 hover:text-emerald-800">
               Why we delete your files (blog) →
-            </Link>
+            </a>
           </div>
         </section>
 

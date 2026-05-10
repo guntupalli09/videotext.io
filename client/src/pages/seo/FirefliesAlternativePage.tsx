@@ -107,7 +107,7 @@ export default function FirefliesAlternativePage() {
             <Link to="/google-meet-transcript" className="text-purple-600 dark:text-purple-400 hover:underline">Google Meet transcript</Link>
             <Link to="/zoom-meeting-transcript" className="text-purple-600 dark:text-purple-400 hover:underline">Zoom meeting transcript</Link>
             <Link to="/transcription-benchmark" className="text-purple-600 dark:text-purple-400 hover:underline">Transcription benchmark</Link>
-            <Link to="/blog/best-transcription-software-2026" className="text-purple-600 dark:text-purple-400 hover:underline">Best transcription software 2026</Link>
+            <a href="https://blog.videotext.io/best-transcription-software-2026" className="text-purple-600 dark:text-purple-400 hover:underline">Best transcription software 2026</a>
           </div>
         </section>
 

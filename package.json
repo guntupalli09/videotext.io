@@ -22,7 +22,9 @@
     "seo:health": "tsx scripts/ops/seo-health-check.ts",
 
     "blog:generate": "npx tsx scripts/blog/generate-blog-post.ts",
-    "blog:publish-crossposts": "node scripts/blog/publish-crossposts.js"
+    "blog:publish-crossposts": "node scripts/blog/publish-crossposts.js",
+    "blog:publish-crossposts:publish": "node scripts/blog/publish-crossposts.js --publish",
+    "blog:publish-crossposts:hashnode": "node scripts/blog/publish-crossposts.js --publish --target=hashnode"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

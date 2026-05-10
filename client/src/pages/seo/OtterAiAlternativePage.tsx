@@ -201,7 +201,7 @@ export default function OtterAiAlternativePage() {
             <Link to="/meeting-transcription-tool" className="text-purple-600 dark:text-purple-400 hover:underline">Meeting transcription tool</Link>
             <Link to="/meeting-recording-to-transcript" className="text-purple-600 dark:text-purple-400 hover:underline">Meeting recording to transcript</Link>
             <Link to="/transcription-benchmark" className="text-purple-600 dark:text-purple-400 hover:underline">Transcription benchmark</Link>
-            <Link to="/blog/best-transcription-software-2026" className="text-purple-600 dark:text-purple-400 hover:underline">Best transcription software 2026</Link>
+            <a href="https://blog.videotext.io/best-transcription-software-2026" className="text-purple-600 dark:text-purple-400 hover:underline">Best transcription software 2026</a>
           </div>
         </section>
 

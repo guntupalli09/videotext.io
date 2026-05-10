@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { getPopularFooterLinks } from '../lib/seoRegistry'
+import { getBlogOutboundUrl } from '../lib/blogOutbound'
 
 export default function Footer() {
   const popularLinks = getPopularFooterLinks()
@@ -28,7 +29,7 @@ export default function Footer() {
               <li><Link to="/" className="hover:text-white transition-colors">All tools</Link></li>
               <li><Link to="/guide" className="hover:text-white transition-colors">Guide</Link></li>
               <li><Link to="/compare" className="hover:text-white transition-colors">Compare</Link></li>
-              <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+              <li><a href={getBlogOutboundUrl('/blog')} className="hover:text-white transition-colors">Blog</a></li>
               <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
               <li><Link to="/samples" className="hover:text-white transition-colors">Samples</Link></li>
               <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>

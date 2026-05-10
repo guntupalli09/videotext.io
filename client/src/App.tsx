@@ -49,7 +49,7 @@ const FeedbackView = lazy(() => import('./pages/FeedbackView'))
 const SurveyPage = lazy(() => import('./pages/SurveyPage'))
 const FounderDashboard = lazy(() => import('./pages/founder/FounderDashboard'))
 const Changelog = lazy(() => import('./pages/Changelog'))
-const Blog = lazy(() => import('./pages/Blog'))
+import BlogRoute from './components/BlogRoute'
 const Compare = lazy(() => import('./pages/Compare'))
 const AlternativesHub = lazy(() => import('./pages/AlternativesHub'))
 const TranscriptionToolsHub = lazy(() => import('./pages/TranscriptionToolsHub'))
@@ -503,8 +503,8 @@ function App() {
             <Route path="/guide" element={<Guide />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/changelog" element={<Changelog />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<Blog />} />
+            <Route path="/blog" element={<BlogRoute />} />
+            <Route path="/blog/:slug" element={<BlogRoute />} />
             <Route path="/compare" element={<Compare />} />
             <Route path="/alternatives" element={<AlternativesHub />} />
             <Route path="/transcription-tools" element={<TranscriptionToolsHub />} />

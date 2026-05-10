@@ -95,7 +95,7 @@ export default function TranscriptionBenchmark() {
           <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-700">
             <li>Need the working tool right now? Start at <Link to="/video-to-transcript" className="text-violet-700 hover:underline">video-to-transcript</Link>.</li>
             <li>Need buyer guidance by workflow and trade-off? Read <Link to="/best-transcription-tool" className="text-violet-700 hover:underline">best-transcription-tool</Link>.</li>
-            <li>Need broad software context for stakeholders? Use <Link to="/blog/best-transcription-software-2026" className="text-violet-700 hover:underline">best transcription software 2026</Link>.</li>
+            <li>Need broad software context for stakeholders? Use <a href="https://blog.videotext.io/best-transcription-software-2026" className="text-violet-700 hover:underline">best transcription software 2026</a>.</li>
           </ul>
         </section>
 

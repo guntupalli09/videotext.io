@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { getBlogOutboundUrl } from '../lib/blogOutbound'
 
 interface ChangelogEntry {
   date: string
@@ -192,9 +193,9 @@ export default function Changelog() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Changelog</h1>
           <p className="text-gray-600 dark:text-gray-400">
             What’s been shipped. Updated every time something meaningful changes.{' '}
-            <Link to="/blog" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-medium">
+            <a href={getBlogOutboundUrl('/blog')} className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-medium">
               Read the blog →
-            </Link>
+            </a>
             {' · '}
             <Link to="/guideline-format" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-semibold">
               Format your transcript to a client style guide →

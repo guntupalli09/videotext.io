@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
+import { BLOG_URL } from "../lib/seo"
 import { ChevronDown, Shield, HelpCircle, CreditCard, FileVideo, Languages, Zap, BarChart2, ClipboardList } from "lucide-react"
 
 const FAQ_ITEMS = [
@@ -248,9 +249,9 @@ export default function Faq() {
             <Link to="/video-to-transcript" className="inline-flex items-center justify-center rounded-xl border border-violet-300 bg-white text-violet-700 text-sm font-semibold px-4 py-2.5 hover:bg-violet-50 transition-colors">
               Transcribe first →
             </Link>
-            <Link to="/blog/rev-style-guide-transcript-formatter" className="inline-flex items-center text-sm font-medium text-violet-600 hover:text-violet-800 underline-offset-2 hover:underline">
+            <a href={`${BLOG_URL}/rev-style-guide-transcript-formatter`} className="inline-flex items-center text-sm font-medium text-violet-600 hover:text-violet-800 underline-offset-2 hover:underline">
               Read: Rev style guide transcript tips
-            </Link>
+            </a>
           </div>
         </div>
 
