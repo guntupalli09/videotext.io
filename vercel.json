@@ -172,6 +172,11 @@
   ],
   "redirects": [
     {
+      "source": "/blog",
+      "destination": "https://blog.videotext.io/",
+      "permanent": true
+    },
+    {
       "source": "/blog/:path*",
       "destination": "https://blog.videotext.io/:path*",
       "permanent": true
