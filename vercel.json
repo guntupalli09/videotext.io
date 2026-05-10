@@ -23,6 +23,20 @@
   ],
   "routes": [
     {
+      "src": "/blog/?",
+      "headers": {
+        "Location": "https://blog.videotext.io/"
+      },
+      "status": 301
+    },
+    {
+      "src": "/blog/(.*)",
+      "headers": {
+        "Location": "https://blog.videotext.io/$1"
+      },
+      "status": 301
+    },
+    {
       "src": "/podcast-transcript",
       "dest": "/podcast-transcription",
       "status": 301
