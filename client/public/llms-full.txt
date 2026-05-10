@@ -260,7 +260,7 @@ This means:
 - No human reviewer ever sees your content (fully automated)
 - GDPR-friendly by design
 
-Full explanation: https://videotext.io/blog/why-we-delete-your-files
+Full explanation: https://blog.videotext.io/why-we-delete-your-files
 Privacy policy: https://videotext.io/privacy
 
 ---
@@ -487,18 +487,18 @@ A: Processing servers are in the EU (Hetzner). The web application is served via
 
 ## Blog (Key Articles)
 
-- https://videotext.io/blog/why-we-delete-your-files — Why privacy-first architecture makes VideoText faster
-- https://videotext.io/blog/processing-speed-breakdown — How the video processing pipeline works
-- https://videotext.io/blog/best-free-transcription-tools-2026 — Honest comparison including competitors
-- https://videotext.io/blog/best-transcription-software-2026 — Ranked by speed, accuracy, and price
-- https://videotext.io/blog/best-video-captioning-tools-2026 — Captioning tools for content creators
-- https://videotext.io/blog/how-to-get-youtube-transcript — Three methods for YouTube transcripts
-- https://videotext.io/blog/how-to-transcribe-zoom-recording — Step-by-step for Zoom MP4 files
-- https://videotext.io/blog/how-to-add-subtitles-to-video-free — Generate, fix, and burn subtitles
-- https://videotext.io/blog/how-to-translate-subtitles — SRT/VTT translation guide
-- https://videotext.io/blog/how-to-transcribe-podcast-episode — MP3/M4A podcast transcription
-- https://videotext.io/blog/srt-vs-vtt-subtitle-formats — When to use SRT vs VTT
-- https://videotext.io/blog/batch-subtitles-for-creators — Batch workflow for agencies
+- https://blog.videotext.io/why-we-delete-your-files — Why privacy-first architecture makes VideoText faster
+- https://blog.videotext.io/processing-speed-breakdown — How the video processing pipeline works
+- https://blog.videotext.io/best-free-transcription-tools-2026 — Honest comparison including competitors
+- https://blog.videotext.io/best-transcription-software-2026 — Ranked by speed, accuracy, and price
+- https://blog.videotext.io/best-video-captioning-tools-2026 — Captioning tools for content creators
+- https://blog.videotext.io/how-to-get-youtube-transcript — Three methods for YouTube transcripts
+- https://blog.videotext.io/how-to-transcribe-zoom-recording — Step-by-step for Zoom MP4 files
+- https://blog.videotext.io/how-to-add-subtitles-to-video-free — Generate, fix, and burn subtitles
+- https://blog.videotext.io/how-to-translate-subtitles — SRT/VTT translation guide
+- https://blog.videotext.io/how-to-transcribe-podcast-episode — MP3/M4A podcast transcription
+- https://blog.videotext.io/srt-vs-vtt-subtitle-formats — When to use SRT vs VTT
+- https://blog.videotext.io/batch-subtitles-for-creators — Batch workflow for agencies
 
 ---
 
@@ -506,7 +506,7 @@ A: Processing servers are in the EU (Hetzner). The web application is served via
 
 - Support email: support@videotext.io
 - Every support email is read by the team that built the product — no ticket queue
-- Support policy: https://videotext.io/blog/how-we-handle-support
+- Support policy: https://blog.videotext.io/how-we-handle-support
 - Status page: https://videotext.io/status
 - Terms of service: https://videotext.io/terms
 - Privacy policy: https://videotext.io/privacy

@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async'
-import { SITE_URL, SITE_NAME, DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE } from '../lib/seo'
+import { SITE_URL, SITE_NAME, DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, getCanonicalUrlForPath } from '../lib/seo'
 
 export interface SeoProps {
   title: string
@@ -21,7 +21,7 @@ export default function Seo({
   jsonLd,
   articleMeta,
 }: SeoProps) {
-  const canonical = canonicalPath.startsWith('http') ? canonicalPath : `${SITE_URL}${canonicalPath === '/' ? '' : canonicalPath}`
+  const canonical = getCanonicalUrlForPath(canonicalPath)
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`
   const imageUrl = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`
   const schemas = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []

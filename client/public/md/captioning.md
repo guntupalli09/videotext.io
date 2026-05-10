@@ -87,7 +87,7 @@ Free tools to check your captions:
 - Upload SRT file to YouTube Studio → better accuracy than YouTube auto-captions
 - Use VideoText's SRT for SEO (YouTube indexes caption text)
 - Generate chapters from the transcript for YouTube timestamp navigation
-- Guide: https://videotext.io/blog/how-to-add-captions-youtube-video
+- Guide: https://blog.videotext.io/how-to-add-captions-youtube-video
 
 ### Instagram Reels / TikTok / YouTube Shorts
 - Burn subtitles directly into the video for guaranteed caption rendering
@@ -135,8 +135,8 @@ All 19 free tools run in the browser — no upload, no account:
 
 - [Subtitle Resources & Standards](https://videotext.io/subtitle-resources)
 - [All Free Subtitle Tools](https://videotext.io/tools)
-- [Best Video Captioning Tools 2026](https://videotext.io/blog/best-video-captioning-tools-2026)
-- [How to Add Subtitles to a Video Free](https://videotext.io/blog/how-to-add-subtitles-to-video-free)
-- [SRT vs VTT Format Guide](https://videotext.io/blog/srt-vs-vtt-subtitle-formats)
+- [Best Video Captioning Tools 2026](https://blog.videotext.io/best-video-captioning-tools-2026)
+- [How to Add Subtitles to a Video Free](https://blog.videotext.io/how-to-add-subtitles-to-video-free)
+- [SRT vs VTT Format Guide](https://blog.videotext.io/srt-vs-vtt-subtitle-formats)
 
 *VideoText — https://videotext.io*

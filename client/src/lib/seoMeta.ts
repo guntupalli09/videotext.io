@@ -2,7 +2,7 @@
  * Thin SEO meta adapter. Single source of truth for SEO pages is seoRegistry.
  * Static routes (home, pricing, core tools, legal) are defined here only.
  */
-import { SITE_URL, SITE_NAME } from './seo'
+import { SITE_URL, SITE_NAME, getCanonicalUrlForPath } from './seo'
 import { ENTITY_DESCRIPTION, PRODUCT_CATEGORY, PRIMARY_DEFINITION } from './productDna'
 import { getAllSeoEntries } from './seoRegistry'
 import { resolveInternalLinkPath } from './primaryUrls'
@@ -621,12 +621,12 @@ export function getBlogPostingJsonLd(pathname: string, title: string, descriptio
     '@type': 'BlogPosting',
     headline: title,
     description,
-    url: `${SITE_URL}${pathname}`,
+    url: getCanonicalUrlForPath(pathname),
     datePublished: dates.datePublished,
     dateModified: dates.dateModified,
     author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
     publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}${pathname}` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': getCanonicalUrlForPath(pathname) },
   }
 }
 

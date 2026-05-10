@@ -9,6 +9,7 @@ import { CORE_PATHS, getSitemap2Paths } from './registry'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
 
 const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
+const BLOG_URL = (process.env.BLOG_URL || 'https://blog.videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const PUBLIC_DIR = path.join(REPO_ROOT, 'client', 'public')
 
@@ -35,11 +36,17 @@ function assertNoMixedDomains(urls: string[]): void {
   }
 }
 
+function getCanonicalLoc(canonicalPath: string): string {
+  if (canonicalPath === '/blog') return `${BLOG_URL}/`
+  if (canonicalPath.startsWith('/blog/')) return `${BLOG_URL}/${canonicalPath.slice('/blog/'.length)}`
+  return canonicalPath === '/' ? `${SITE_URL}/` : `${SITE_URL}${canonicalPath}`
+}
+
 function buildNormalizedLocs(paths: string[]): string[] {
   const uniqueUrls = new Set<string>()
   for (const p of paths.filter((x) => x !== '*')) {
     const canonicalPath = getCanonicalPathForRoute(p)
-    const loc = canonicalPath === '/' ? `${SITE_URL}/` : `${SITE_URL}${canonicalPath}`
+    const loc = getCanonicalLoc(canonicalPath)
     uniqueUrls.add(normalizeUrl(loc))
   }
   const urls = [...uniqueUrls]
@@ -50,7 +57,8 @@ function buildNormalizedLocs(paths: string[]): string[] {
 function buildUrlSet(paths: string[], today: string): string {
   const urls = buildNormalizedLocs(paths)
     .map((loc) => {
-      const pathPart = loc === SITE_URL ? '/' : loc.slice(SITE_URL.length) || '/'
+      const url = new URL(loc)
+      const pathPart = url.pathname || '/'
       const priority = pathPart === '/' ? '1.0' : pathPart === '/pricing' ? '0.9' : pathPart.startsWith('/video-to-') || pathPart.startsWith('/mp4-') || pathPart.startsWith('/youtube-') || pathPart.startsWith('/transcribe-youtube') ? '0.9' : '0.8'
       const changefreq = pathPart === '/' ? 'weekly' : 'monthly'
       return `  <url>

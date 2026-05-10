@@ -25,6 +25,7 @@ const REPO_ROOT = path.resolve(__dirname, '..')
 const DIST_DIR = path.join(REPO_ROOT, 'dist')
 const REGISTRY_PATH = path.join(REPO_ROOT, 'client', 'src', 'lib', 'seoRegistry.ts')
 const SITE_URL = 'https://videotext.io'
+const BLOG_URL = 'https://blog.videotext.io'
 const SITE_NAME = 'VideoText'
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`
 
@@ -871,6 +872,14 @@ function parseRegistryEntries(): ParsedEntry[] {
 
 // ── HTML injection ────────────────────────────────────────────────────────────
 
+
+function getCanonicalUrlForPath(pathOrUrl: string): string {
+  if (pathOrUrl.startsWith('http')) return pathOrUrl
+  if (pathOrUrl === '/blog') return `${BLOG_URL}/`
+  if (pathOrUrl.startsWith('/blog/')) return `${BLOG_URL}/${pathOrUrl.slice('/blog/'.length)}`
+  return pathOrUrl === '/' ? SITE_URL + '/' : `${SITE_URL}${pathOrUrl}`
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, '&amp;')
@@ -1640,7 +1649,7 @@ function injectHead(template: string, meta: RouteMeta): string {
 
   // Replace canonical (match SPA primary map so static HTML agrees with Helmet)
   const primaryPath = getCanonicalPathForRoute(meta.path)
-  const canonicalUrl = primaryPath === '/' ? SITE_URL + '/' : `${SITE_URL}${primaryPath}`
+  const canonicalUrl = getCanonicalUrlForPath(primaryPath)
   html = html.replace(
     /<link\s+rel="canonical"\s+href="[^"]*"\s*\/>/,
     `<link rel="canonical" href="${canonicalUrl}" />`
