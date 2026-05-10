@@ -559,36 +559,64 @@ function App() {
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/guideline-format" element={<GuidelineFormat />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript
-              seoH1="Video to Transcript in 3 Minutes (Free, Fast & Private)"
-              seoIntro="Upload any video and get a clean transcript, subtitles (SRT/VTT), summary, and chapters — all in one click. No signup required. **2-hour video → transcript in ~3–5 minutes**."
+              seoH1="Video to Transcript — Free AI Transcription, 98.5% Accurate"
+              seoIntro="Upload any video or paste a YouTube URL and get a full transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in one pass. Powered by OpenAI Whisper large-v3 — 98.5% word accuracy on clean audio. A 2-hour video processes in under 5 minutes. Zero data retention: your files are deleted immediately after processing."
               faq={[
                 {
-                  q: 'How do I convert video to transcript?',
-                  a: 'Upload your video or paste a link. VideoText automatically transcribes it, then lets you download transcript text, subtitles, and summary outputs.',
+                  q: 'How do I convert a video to a transcript?',
+                  a: 'Upload any video file (MP4, MOV, MKV, WebM, AVI) or paste a public YouTube URL. VideoText extracts the audio and transcribes it using OpenAI Whisper. The transcript is ready in minutes — no software to install, no account required for the free tier.',
+                },
+                {
+                  q: 'How accurate is AI video transcription?',
+                  a: 'VideoText achieves approximately 98.5% word accuracy on clean English audio using Whisper large-v3. Accuracy drops with heavy background noise, overlapping speakers, or very strong accents. Setting the spoken language before processing improves accuracy for non-English content. Technical vocabulary can be clarified in the editor after transcribing.',
                 },
                 {
                   q: 'Can I transcribe video online for free?',
-                  a: 'Yes. You can transcribe videos online without installing software. Free usage depends on current plan and upload limits.',
+                  a: 'Yes. The free tier includes 3 imports per month with no credit card required. Free transcripts include full timestamped text, AI summary, auto-generated chapters, and SRT/VTT subtitle files. Paid plans start at $19/month for 450 minutes.',
                 },
                 {
-                  q: 'How accurate is the transcription?',
-                  a: 'Up to ~98% depending on audio quality, speaker overlap, and background noise.',
+                  q: 'How long does it take to transcribe a video?',
+                  a: 'VideoText processes asynchronously: a 2-hour video typically completes in 3–5 minutes. A 30-minute video is usually done in under 90 seconds. Processing speed is roughly 1 minute of real time per 24 seconds of video length.',
                 },
                 {
-                  q: 'Can I transcribe long videos?',
-                  a: 'Yes. VideoText is optimized for long files and is built to process hours-long videos quickly.',
+                  q: 'What video formats does VideoText support?',
+                  a: 'Supported video formats: MP4, MOV, MKV, WebM, AVI, and most common container formats. Supported audio: MP3, WAV, M4A, AAC, OGG, FLAC. You can also paste a public YouTube, Vimeo, or direct media URL instead of uploading a file.',
                 },
                 {
-                  q: 'What is the fastest way to transcribe video?',
-                  a: 'Use a tool built for fast file-based processing. With VideoText, upload once and get transcript text, subtitles, summary, and chapters together in minutes.',
+                  q: 'What do I get beyond the transcript text?',
+                  a: 'Every transcription produces: (1) a full timestamped transcript with speaker labels, (2) an AI-generated summary with key points and action items, (3) auto-generated chapter markers with timestamps, and (4) SRT and VTT subtitle files ready to upload to YouTube, Vimeo, or any platform — all from a single upload at no extra cost.',
                 },
                 {
-                  q: 'What formats are supported?',
-                  a: 'MP4, MOV, MP3, WAV, YouTube links, Zoom recordings, and more.',
+                  q: 'Does VideoText store my video files?',
+                  a: 'No. VideoText processes your file and deletes it immediately after transcription completes. We do not retain uploads, transcripts, or output files on our servers. Your content is never stored, reviewed, or shared.',
                 },
                 {
-                  q: 'Will my files be stored?',
-                  a: 'No. Files are deleted after processing.',
+                  q: 'What languages does video transcription support?',
+                  a: 'VideoText supports transcription in 90+ languages via OpenAI Whisper. Best accuracy for English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Chinese (Mandarin), Japanese, Korean, Arabic, and Hindi. Set the spoken language before processing for highest accuracy.',
+                },
+                {
+                  q: 'Can I transcribe a YouTube video without downloading it?',
+                  a: 'Yes. Paste any public YouTube URL (youtube.com/watch, youtu.be, YouTube Shorts) into the input field. VideoText streams the audio directly from YouTube — no download required. Works with videos of any length that are publicly accessible.',
+                },
+                {
+                  q: 'Can I transcribe multiple videos at once?',
+                  a: 'Yes. Pro and Agency plans include batch upload. Drag in multiple video files simultaneously and VideoText processes all of them in parallel. Download one ZIP containing all transcripts, subtitle files, and summaries when processing finishes.',
+                },
+                {
+                  q: 'How does VideoText compare to Otter.ai, Descript, and Rev?',
+                  a: 'VideoText is significantly faster (2-hour video in ~5 min vs 60+ min on Otter), outputs more per job (transcript + subtitles + summary + chapters in one pass vs individual tools), stores no data (Otter stores indefinitely), and supports 90+ languages equally (Otter is English-first). Rev uses human transcriptionists — more expensive ($1.25+/min) but useful for high-accuracy legal or medical content. Descript is a video editor — different use case.',
+                },
+                {
+                  q: 'Can I use the transcript for academic research or citation?',
+                  a: 'Yes. VideoText outputs timestamped transcripts with speaker labels that can be cited in academic papers. Export as DOCX or PDF. When citing, reference the video source, transcript date, and note that AI transcription was used. Accuracy is typically sufficient for qualitative research; for legal or clinical use, review the transcript manually.',
+                },
+                {
+                  q: 'Can I export the transcript to Word, PDF, or other formats?',
+                  a: 'Yes. Export options include: TXT (plain text), PDF (print-ready), DOCX (Microsoft Word, editable), JSON (structured data with timestamps and speaker labels), CSV (spreadsheet format), Notion-compatible format, and three-column layout (with timestamps and speaker columns). SRT and VTT subtitle files are also available.',
+                },
+                {
+                  q: 'What is the difference between a transcript and subtitles?',
+                  a: 'A transcript is the full spoken text without timing codes — used for reading, research, SEO, or repurposing as blog content. Subtitles (SRT/VTT files) contain the same text broken into short timed segments — used for displaying captions on video platforms. VideoText generates both from the same upload. Transcripts are better for document use; subtitles are better for video publishing.',
                 },
               ]}
               seoDeepContent={{

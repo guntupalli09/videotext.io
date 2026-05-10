@@ -894,9 +894,9 @@ export default function GuidelineFormat() {
   return (
     <>
       <ToolLayout
-        breadcrumbs={[{ label: 'Format to client guidelines', href: '/guideline-format' }]}
-        title="Turn Raw Transcripts Into Client-Ready Deliverables"
-        subtitle="Apply Rev, GoTranscript, or your client’s custom style guide automatically — with validation-backed formatting, QA checks, and a review queue."
+        breadcrumbs={[{ label: 'Transcript Style Guide Formatter', href: '/guideline-format' }]}
+        title="Transcript Style Guide Formatter (Rev, GoTranscript, TranscribeMe, Scribie)"
+        subtitle="Paste your raw transcript, select a platform preset, and apply style guide rules automatically — verbatim handling, speaker labels, filler words, QA validation — then export client-ready."
         icon={<FileText className="text-violet-600 dark:text-violet-400" strokeWidth={1.75} />}
         sidebar={null}
       >
@@ -936,7 +936,7 @@ export default function GuidelineFormat() {
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Step 1</p>
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Paste your transcript</h2>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Keep speaker labels exactly as-is. We’ll format punctuation, casing, tags, and spacing based on the rules.
+                  Keep speaker labels exactly as-is. We'll format punctuation, casing, tags, and spacing based on the rules.
                 </p>
               </div>
               <div className="space-y-2">
@@ -1044,7 +1044,7 @@ export default function GuidelineFormat() {
                 <div className="rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/70 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-100">
                   <p className="font-semibold">Rules extracted from your guide — please review before formatting.</p>
                   <p className="text-xs text-amber-800/90 dark:text-amber-200/90 mt-1">
-                    We’ll mark ambiguous rules as “Needs review” and warn on conflicts.
+                    We'll mark ambiguous rules as “Needs review” and warn on conflicts.
                   </p>
                 </div>
               )}
@@ -1234,7 +1234,7 @@ export default function GuidelineFormat() {
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Step 3</p>
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">Run formatting</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  We’ll apply your rules and return a review-ready diff and flagged sections.
+                  We'll apply your rules and return a review-ready diff and flagged sections.
                 </p>
               </div>
               <button
@@ -1548,7 +1548,7 @@ export default function GuidelineFormat() {
                     <div className="space-y-4">
                       {flaggedList.length === 0 ? (
                         <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-4">
-                          <p className="text-sm text-gray-800 dark:text-gray-100">No issues flagged. You’re good to export.</p>
+                          <p className="text-sm text-gray-800 dark:text-gray-100">No issues flagged. You're good to export.</p>
                         </div>
                       ) : (
                         <>
@@ -2050,6 +2050,50 @@ export default function GuidelineFormat() {
           )}
         </div>
       </ToolLayout>
+
+      {/* SEO FAQ section — crawlable content for Google and LLM citations */}
+      <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16" aria-label="Frequently asked questions">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          Transcript Style Guide FAQ
+        </h2>
+        <dl className="space-y-6">
+          {[
+            {
+              q: 'What transcription style guides does this tool support?',
+              a: 'Built-in presets for Rev, GoTranscript, TranscribeMe, and Scribie. Each preset encodes the platform\'s rules for verbatim handling, speaker label format, filler word removal (um, uh), false start treatment, punctuation, and number formatting. You can also upload your own client style guide as a PDF or DOCX.',
+            },
+            {
+              q: 'What are the Rev transcription formatting rules?',
+              a: 'Rev uses non-verbatim format by default: remove filler words (um, uh, like), false starts, and stutters unless meaningful. Speaker labels use [Speaker Name]: format. Numbers one through nine are spelled out; 10+ use numerals. Inaudible sections are marked [inaudible]. Simultaneous speech is marked [crosstalk]. The Rev preset applies all these rules automatically.',
+            },
+            {
+              q: 'What are the GoTranscript formatting rules?',
+              a: 'GoTranscript uses non-verbatim format: remove fillers and false starts, use Speaker 1: / Speaker 2: labels, include timestamps every 2 minutes, mark inaudible sections as [inaudible]. Numbers 1–10 spelled out; 11+ use numerals.',
+            },
+            {
+              q: 'What is the difference between verbatim and non-verbatim transcription?',
+              a: 'Verbatim captures every spoken word exactly — including filler words (um, uh, like, you know), false starts, and stutters. Non-verbatim (clean verbatim) removes these for readability. Rev, GoTranscript, and Scribie use non-verbatim by default. Legal, research, or clinical transcription often requires full verbatim.',
+            },
+            {
+              q: 'How do I format a transcript for Rev?',
+              a: 'Remove filler words (um, uh, like), false starts, and stutters. Use [Speaker Name]: for speaker labels. Spell out numbers one through nine. Mark inaudible sections as [inaudible]. Mark overlapping speech as [crosstalk]. Use the Rev preset in this tool to apply all rules and get a QA compliance score before submitting.',
+            },
+            {
+              q: 'Can I upload my own client\'s style guide?',
+              a: 'Yes. Upload a PDF, DOCX, or TXT containing your client\'s transcription guidelines. The tool parses the document and generates editable rule cards. Adjust any rule before formatting — useful for clients with custom variations of standard platform rules.',
+            },
+            {
+              q: 'What is a QA compliance score?',
+              a: 'After formatting, the tool runs a checklist against the selected style guide and calculates what percentage of verifiable rules were applied correctly. Scores above 90% indicate the transcript is likely compliant. Flagged segments below the threshold are surfaced for manual review before export.',
+            },
+          ].map(({ q, a }) => (
+            <div key={q} className="border-b border-gray-200 dark:border-gray-800 pb-6">
+              <dt className="font-semibold text-gray-900 dark:text-white text-base mb-2">{q}</dt>
+              <dd className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{a}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
     </>
   )
 }

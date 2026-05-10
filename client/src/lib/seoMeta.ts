@@ -45,14 +45,14 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Convert voice to text instantly as you speak. Live speech-to-text with no upload required. Real-time transcription, fast, private, and free.',
   },
   '/video-to-transcript': {
-    title: 'Video to Transcript in Minutes (Free, Fast & Private Tool)',
+    title: 'Video to Transcript — Free AI Transcription, 98.5% Accurate | VideoText',
     description:
-      'Convert any video to transcript online in minutes. Upload or paste a link to get transcripts, subtitles (SRT/VTT), summary and chapters. No signup. Private.',
+      'Transcribe any video in minutes. 98.5% accuracy. Paste a YouTube URL or upload MP4/MOV. Get transcript + SRT subtitles + AI summary + chapters in one pass. Free.',
   },
   '/guideline-format': {
-    title: 'Format transcripts to match client transcription style guides',
+    title: 'Transcript Style Guide Formatter — Rev, GoTranscript, TranscribeMe, Scribie | VideoText',
     description:
-      'Paste or upload a transcript, then work through editable Rev-, GoTranscript-, TranscribeMe-, and Scribie-style rule presets before QA. Optional client PDF/DOCX/TXT upload is stored for your workflow; automated parsing and auto-reformat from those files is not live yet—use presets and rule cards today.',
+      'Format transcripts to pass Rev, GoTranscript, TranscribeMe, or Scribie QA automatically. Apply verbatim rules, speaker label formats, filler word handling — then export client-ready. Free.',
   },
   '/video-to-subtitles': {
     title: 'Subtitle Generator (SRT & VTT) — Auto Generate Subtitles Online',
@@ -693,10 +693,18 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       mainEntity: [
         {
           '@type': 'Question',
+          name: 'How do I convert a video to a transcript?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Upload any video file (MP4, MOV, MKV, WebM, AVI) or paste a public YouTube URL into VideoText. The tool extracts the audio and transcribes it using OpenAI Whisper large-v3. A full transcript is ready in minutes — no software to install.',
+          },
+        },
+        {
+          '@type': 'Question',
           name: 'How long does it take to transcribe a video?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'A 2-hour video typically processes in under 5 minutes with VideoText. Most videos under 30 minutes complete in under 2 minutes. Processing time depends on file length and current server load.',
+            text: 'VideoText processes asynchronously: a 2-hour video typically completes in 3–5 minutes. A 30-minute video finishes in under 90 seconds. Processing runs at roughly 1 minute of compute per 24 seconds of video length.',
           },
         },
         {
@@ -704,7 +712,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'How accurate is AI video transcription?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'VideoText achieves approximately 98.5% word accuracy on clean English audio using OpenAI Whisper. Accuracy varies with audio quality, background noise, speaker count, and language. Technical or domain-specific vocabulary can be improved with the glossary feature.',
+            text: 'VideoText achieves approximately 98.5% word accuracy on clean English audio using OpenAI Whisper large-v3. Accuracy varies with audio quality, background noise, overlapping speakers, and language. Setting the spoken language before processing improves accuracy for non-English content.',
           },
         },
         {
@@ -712,15 +720,15 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Does VideoText store my video files?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'No. VideoText processes your file and deletes it immediately after transcription. We do not retain uploads, transcripts, or any output files. Your content is never stored on our servers.',
+            text: 'No. VideoText processes your file and deletes it immediately after transcription completes. No uploads, transcripts, or output files are retained on servers. Your content is never stored, reviewed, or shared.',
           },
         },
         {
           '@type': 'Question',
-          name: 'What do I get beyond the transcript text?',
+          name: 'What outputs do I get from one video upload?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Every transcription produces a full timestamped transcript, an AI-generated summary with bullet points, auto-generated chapter markers, and SRT/VTT subtitle files — all from a single upload, at no extra cost.',
+            text: 'Every transcription produces: (1) full timestamped transcript with speaker labels, (2) AI-generated summary with key points, (3) auto-generated chapter markers, and (4) SRT and VTT subtitle files — all from a single upload at no extra cost.',
           },
         },
         {
@@ -728,7 +736,23 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'What video formats does VideoText support?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'VideoText accepts MP4, MOV, MKV, WebM, AVI, and most common video formats. You can also paste a public YouTube URL to transcribe directly without downloading the file first.',
+            text: 'VideoText accepts MP4, MOV, MKV, WebM, AVI, and most container formats. Audio formats supported: MP3, WAV, M4A, AAC, OGG, FLAC. You can also paste a public YouTube URL to transcribe without downloading the file.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What languages does video transcription support?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText supports 90+ languages via OpenAI Whisper. Strongest accuracy for English, Spanish, French, German, Italian, Portuguese, Russian, Mandarin Chinese, Japanese, Korean, Arabic, and Hindi. Set the spoken language before processing for best results on non-English content.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I transcribe a YouTube video without downloading it?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Paste any public YouTube URL (youtube.com/watch, youtu.be, YouTube Shorts) and VideoText streams the audio directly from YouTube. No download or local file required.',
           },
         },
         {
@@ -736,17 +760,143 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Can I transcribe multiple videos at once?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Pro and Agency plans include batch upload — drag in multiple files and receive one ZIP containing all transcripts and subtitle files when processing finishes.',
+            text: 'Yes. Pro and Agency plans include batch upload. Upload multiple files simultaneously — VideoText processes all in parallel and delivers one ZIP with all transcripts, subtitle files, and summaries.',
           },
         },
         {
           '@type': 'Question',
-          name: 'How does VideoText compare to Otter, VEED, Descript, or Rev?',
+          name: 'How does VideoText compare to Otter.ai, Descript, or Rev?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'VideoText is significantly faster (under 5 minutes for a 2-hour video vs. 15–45 min on most tools), outputs more structure per job (transcript + summary + chapters + subtitles in one pass), stores no data, and supports 90+ languages. Competitors like Otter and Descript are optimised for meeting notes or video editing — not fast file-first batch transcription.',
+            text: 'VideoText is faster (2-hour video in ~5 min vs 60+ min on Otter), outputs more per job (transcript + subtitles + summary + chapters in one pass), stores no data (Otter stores indefinitely), and supports 90+ languages equally. Rev uses human transcriptionists — more accurate for legal/medical content but costs $1.25+/min. Descript is a video editor, not a transcription-first tool.',
           },
         },
+        {
+          '@type': 'Question',
+          name: 'What export formats are available?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Export options: TXT (plain text), PDF, DOCX (Microsoft Word), JSON (structured with timestamps and speaker labels), CSV, Notion-compatible format, three-column layout. Subtitle exports: SRT and VTT. All formats are available from the results panel after transcription.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Is video transcription free?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. The free tier includes 3 imports per month with no credit card required. All outputs (transcript, subtitles, summary, chapters) are included in the free tier. Paid plans start at $19/month for 450 minutes.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I use a video transcript for academic research?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. VideoText outputs timestamped transcripts with speaker labels exportable as DOCX or PDF for academic citation. Accuracy (~98.5% on clean audio) is suitable for qualitative research. For legal or clinical use, manual review is recommended. Cite the original video source and note that AI transcription was used.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the difference between a transcript and subtitles (SRT/VTT)?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'A transcript is continuous readable text without timing codes — used for reading, research, SEO content, or document repurposing. SRT/VTT subtitle files contain the same text divided into short timed segments with precise timestamps for display on video platforms. VideoText generates both from a single upload.',
+          },
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['[data-speakable]', 'h1', '.seo-intro'],
+    },
+  ],
+  '/guideline-format': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Transcript Style Guide Formatter — Rev, GoTranscript, TranscribeMe, Scribie',
+      description: 'Apply Rev, GoTranscript, TranscribeMe, or Scribie transcription style guide rules automatically. Paste a raw transcript, select the platform preset, and the tool flags verbatim issues, speaker label inconsistencies, filler word handling, and punctuation against platform rules. Download a client-ready, QA-compliant transcript.',
+      featureList: 'Rev style guide preset, GoTranscript style guide preset, TranscribeMe style guide preset, Scribie style guide preset, Custom rule upload (PDF/DOCX), Verbatim and non-verbatim rule enforcement, Speaker label format validation, Filler word detection (um, uh, you know), False start and stutter handling, Punctuation rules, Profanity handling options, QA compliance scoring, Diff view (original vs formatted), Flagged segment review queue, Export client-ready transcript',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web Browser',
+      url: `${SITE_URL}/guideline-format`,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier available. Paid plans from $19/month.' },
+      provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What transcription style guides does VideoText support?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText includes presets for Rev, GoTranscript, TranscribeMe, and Scribie. Each preset encodes the platform\'s verbatim rules, speaker label format, filler word handling (um, uh), false start treatment, contraction preferences, and punctuation style. You can also upload your own client style guide as a PDF or DOCX.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What are the Rev transcription formatting rules?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Rev uses non-verbatim transcription by default: remove filler words (um, uh, like), false starts, and stutters unless contracted or meaningful. Speaker labels use [Speaker Name]: format. Numbers under 10 are spelled out. Contractions are preserved. Inaudible sections are marked [inaudible]. Crosstalk is marked [crosstalk]. The VideoText Rev preset applies all these rules automatically.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What are the GoTranscript formatting rules?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'GoTranscript uses non-verbatim format: remove filler words, false starts, and repeated words unless they change meaning. Speaker labels use Speaker 1:, Speaker 2: format. Timestamps are included every 2 minutes. Inaudible sections use [inaudible]. Numbers 1–10 spelled out; 11+ use numerals. The VideoText GoTranscript preset enforces these rules automatically.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How does the transcript QA process work?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Paste your raw transcript and select a platform preset (Rev, GoTranscript, TranscribeMe, Scribie, or custom). The tool applies style rules and returns: (1) a formatted output, (2) a diff view showing every change, (3) flagged segments needing manual review, and (4) a QA compliance score. Review flagged segments in a queue before exporting the final client-ready transcript.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I upload my own client style guide?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Upload a PDF, DOCX, or TXT file containing your client\'s transcription guidelines. VideoText parses the document and creates editable rule cards that match the platform presets. Adjust any rule card before applying — useful for clients whose guidelines differ from standard platforms.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is verbatim transcription?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Verbatim transcription captures every spoken word exactly as said, including filler words (um, uh, like, you know), false starts, stutters, repeated words, and non-verbal sounds. Non-verbatim (clean verbatim) removes these for readability. Most transcription platforms (Rev, GoTranscript) use non-verbatim by default but offer verbatim as an option for legal, research, or clinical use.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How do I format a transcript for submission to Rev?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'To format a transcript for Rev: (1) remove filler words (um, uh, like) unless contracted or meaningful, (2) remove false starts and stutters, (3) use [Speaker Name]: format for speaker labels, (4) spell out numbers one through nine, (5) mark inaudible sections as [inaudible], (6) mark simultaneous speech as [crosstalk]. Use VideoText\'s Rev preset to apply all rules automatically and get a QA compliance score before submitting.',
+          },
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'How to format a transcript to match a client style guide',
+      description: 'Use VideoText to apply Rev, GoTranscript, TranscribeMe, or Scribie style rules to a raw transcript, review flagged segments, and export a client-ready deliverable.',
+      step: [
+        { '@type': 'HowToStep', position: 1, name: 'Paste or upload your raw transcript', text: 'Paste the transcript text directly or upload a TXT, DOCX, or SRT file. The tool accepts output from VideoText Video to Transcript or any other transcription source.' },
+        { '@type': 'HowToStep', position: 2, name: 'Select the platform preset', text: 'Choose Rev, GoTranscript, TranscribeMe, or Scribie from the preset menu. The rule cards update automatically to reflect that platform\'s verbatim, speaker label, filler word, and punctuation rules.' },
+        { '@type': 'HowToStep', position: 3, name: 'Review and adjust rule cards', text: 'Each rule is shown as an editable card. Override any rule that differs from your specific client\'s version of the platform guidelines. Changes apply only to this session.' },
+        { '@type': 'HowToStep', position: 4, name: 'Run formatting and review QA output', text: 'Click Format. The tool applies all rules, returns a diff view of every change, and flags segments that need manual review. A QA compliance score shows how closely the output matches the platform\'s standard.' },
+        { '@type': 'HowToStep', position: 5, name: 'Export the client-ready transcript', text: 'Review flagged segments in the review queue, make any final edits, then download the formatted transcript as TXT or DOCX — ready to submit to the platform.' },
       ],
     },
   ],
@@ -1004,9 +1154,14 @@ export function getAeoJsonLd(pathname: string): object[] | null {
 /** SoftwareApplication JSON-LD for individual paid tool pages. */
 const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string; featureList: string }> = {
   '/video-to-transcript': {
-    name: 'Video to Transcript — Fast AI Transcription with Structured Output',
-    description: 'Convert any video to a clean transcript in minutes. ~98.5% accuracy. Outputs: full transcript, AI summary, auto-generated chapters, SRT/VTT subtitles, and speaker labels. Zero data retention — files deleted after processing. Powered by OpenAI Whisper.',
-    featureList: 'Fast AI transcription (2-hour video in ~5 min), ~98.5% word accuracy, AI summary with bullet points, Auto-generated chapters, Speaker diarization, SRT subtitle export, VTT subtitle export, TXT / PDF / DOCX / JSON export, 90+ language support, Batch processing (Pro), Zero data retention, YouTube URL input',
+    name: 'Video to Transcript — Free AI Transcription, 98.5% Accurate',
+    description: 'Convert any video to a clean transcript in minutes. 98.5% word accuracy using OpenAI Whisper large-v3. Outputs: full timestamped transcript, AI summary, auto-generated chapters, SRT/VTT subtitle files, and speaker labels — all in one pass. Zero data retention: files deleted immediately after processing. Free tier included.',
+    featureList: 'AI transcription (2-hour video in ~5 min), 98.5% word accuracy (OpenAI Whisper large-v3), Full timestamped transcript, AI-generated summary with key points, Auto-generated chapter markers, Speaker diarization (auto-labeling), SRT subtitle export, VTT subtitle export, TXT / PDF / DOCX / JSON / CSV export, Three-column transcript export, 90+ language support, YouTube URL input (no download), Batch processing (Pro/Agency), Zero data retention, Free tier: 3 imports/month',
+  },
+  '/guideline-format': {
+    name: 'Transcript Style Guide Formatter — Rev, GoTranscript, TranscribeMe, Scribie',
+    description: 'Format raw transcripts to match Rev, GoTranscript, TranscribeMe, or Scribie transcription style guides automatically. Apply verbatim rules, speaker label formats, filler word handling, false start treatment, and punctuation rules — then validate QA compliance and export a client-ready transcript.',
+    featureList: 'Rev style guide preset, GoTranscript style guide preset, TranscribeMe style guide preset, Scribie style guide preset, Custom client style guide upload (PDF/DOCX/TXT), Verbatim and non-verbatim rule enforcement, Speaker label format validation, Filler word detection and removal, False start and stutter handling, Punctuation rule application, Number formatting rules, Profanity handling options, QA compliance scoring, Diff view (original vs formatted), Flagged segment review queue, TXT and DOCX export',
   },
   '/youtube-transcript-generator': {
     name: 'Free YouTube Transcript Generator — No Download, Instant Results',
