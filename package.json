@@ -21,7 +21,8 @@
     "seo:verify": "tsx scripts/seo/verify.ts",
     "seo:health": "tsx scripts/ops/seo-health-check.ts",
 
-    "blog:generate": "npx tsx scripts/blog/generate-blog-post.ts"
+    "blog:generate": "npx tsx scripts/blog/generate-blog-post.ts",
+    "blog:publish-crossposts": "node scripts/blog/publish-crossposts.js"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
