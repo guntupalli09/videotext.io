@@ -3768,10 +3768,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/buzz-alternative',
-    title: 'Best Buzz Alternative in 2026 (Speed, Exports, Workflow) | VideoText',
+    title: 'Buzz Alternative — No Local Setup, Works on Windows | VideoText',
     description:
-      'Looking for a Buzz alternative? Compare desktop Buzz vs VideoText on speed, transcript quality, exports, summaries, subtitles, and workflow fit before you switch.',
-    h1: 'Buzz Alternative — Should You Switch?',
+      'Unlike Buzz, VideoText runs Whisper in the browser — no Python, no GPU, no model downloads. Transcript + SRT subtitles + summary in one pass. Windows supported. Free tier.',
+    h1: 'Buzz Alternative — Browser-Based Whisper Without Local Setup',
     intro:
       "If Buzz feels too manual for day-to-day transcription, here's the short answer: Buzz is excellent for local, offline transcription. VideoText is better when you want faster throughput, structured outputs (transcript + subtitles + summary), and a browser workflow your team can use without installing models. This page compares both directly so you can pick the right fit.",
     breadcrumbLabel: 'Buzz Alternative',
