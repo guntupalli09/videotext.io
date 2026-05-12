@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { TrendingUp } from 'lucide-react'
 
 interface PublicStats {
   totalJobsCompleted: number
@@ -73,16 +72,8 @@ export default function TrustBadge() {
           <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-48 h-16 bg-violet-500/10 rounded-full blur-2xl" />
         </div>
 
-        {/* Icon + label */}
-        <div className="relative flex items-center gap-2 sm:pr-5 sm:border-r sm:border-white/[0.08]">
-          <TrendingUp className="w-4 h-4 flex-shrink-0 text-violet-400" />
-          <span className="text-[11px] font-bold uppercase tracking-widest text-violet-400/80 whitespace-nowrap">
-            Live usage
-          </span>
-        </div>
-
         {/* Stats */}
-        <div className="relative flex items-center gap-6 sm:pl-5 flex-1 justify-center sm:justify-start">
+        <div className="relative flex items-center gap-6 flex-1 justify-center sm:justify-start">
           <Stat
             value={formatMinutes(minutesDisplay) + ' min'}
             label="processed"
