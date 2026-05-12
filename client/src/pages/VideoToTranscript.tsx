@@ -1051,7 +1051,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       if (!preflight.allowed) {
         uploadAbortRef.current = null
         setStatus('idle')
-        toast.error(preflight.reason ?? 'Video exceeds plan limits.')
+        const isDurationLimit = preflight.maxDurationMinutes !== undefined
+        if (isDurationLimit) {
+          setPaywallReason('VIDEO_TOO_LONG')
+          setShowPaywall(true)
+        } else {
+          toast.error(preflight.reason ?? 'Video exceeds plan limits.')
+        }
         trackEvent('paywall_shown', { tool: 'video-to-transcript', reason: 'preflight' })
         trackEvent('upgrade_prompt_seen', { ...getFunnelProps('preflight'), reason: preflight.reason ?? 'plan_limit' })
         try {
