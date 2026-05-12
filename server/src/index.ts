@@ -44,6 +44,7 @@ import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
 import guidelinesRoutes from './routes/guidelines'
 import { guidelineQueue, startGuidelineWorker } from './workers/guidelineProcessor'
+import publicStatsRoutes from './routes/publicStats'
 
 const log = getLogger('api')
 
@@ -211,6 +212,7 @@ app.use('/api/feedback', feedbackSystemRoutes)
 app.use('/api/admin/feedback', feedbackSystemRoutes)
 app.use('/api/admin', adminDashboardRoutes)
 app.use('/api/admin', adminSupportRoutes)
+app.use('/api/stats', publicStatsRoutes)
 
 // Health and ops (no /api prefix)
 app.use(healthRoutes)

@@ -12,6 +12,7 @@ import {
   Languages,
 } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
+import TrustBadge from '../TrustBadge';
 
 const CREATOR_AVATARS = [
   'https://i.pravatar.cc/80?img=12',
@@ -230,6 +231,9 @@ export function Hero() {
             </Link>
           ))}
         </div>
+
+        {/* Live usage trust badge */}
+        <TrustBadge />
 
         {/* Trust signals + Social proof — single compact row */}
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-5 text-[12px] text-white/35">
