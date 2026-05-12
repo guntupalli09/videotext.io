@@ -22,6 +22,7 @@ const BurnSubtitles = lazy(() => import('./BurnSubtitles'))
 const CompressVideo = lazy(() => import('./CompressVideo'))
 const BatchProcess = lazy(() => import('./BatchProcess'))
 const VoiceRecorder = lazy(() => import('./VoiceRecorder'))
+const GuidelineFormat = lazy(() => import('./GuidelineFormat'))
 
 const TOOL_MAP: Record<SeoToolKey, React.LazyExoticComponent<React.ComponentType<any>>> = {
   'video-to-transcript': VideoToTranscript,
@@ -32,6 +33,7 @@ const TOOL_MAP: Record<SeoToolKey, React.LazyExoticComponent<React.ComponentType
   'compress-video': CompressVideo,
   'batch-process': BatchProcess,
   'voice-to-text': VoiceRecorder,
+  'guideline-format': GuidelineFormat,
 }
 
 const PRIMARY_CTA_BY_INTENT_CLASS = {
@@ -50,6 +52,7 @@ const PRIMARY_TOOL_PATH_BY_KEY: Record<SeoToolKey, string> = {
   'compress-video': '/compress-video',
   'batch-process': '/batch-process',
   'voice-to-text': '/voice-recorder',
+  'guideline-format': '/guideline-format',
 }
 
 function getIntentClass(intentKey: string, toolKey: SeoToolKey): keyof typeof PRIMARY_CTA_BY_INTENT_CLASS {
@@ -70,6 +73,7 @@ function getIntentClass(intentKey: string, toolKey: SeoToolKey): keyof typeof PR
   if (toolKey === 'video-to-transcript' || toolKey === 'video-to-subtitles') return 'generator'
   if (toolKey === 'voice-to-text' || toolKey === 'batch-process') return 'howTo'
   if (toolKey === 'translate-subtitles' || toolKey === 'fix-subtitles' || toolKey === 'burn-subtitles' || toolKey === 'compress-video') return 'converter'
+  if (toolKey === 'guideline-format') return 'howTo'
   return 'converter'
 }
 

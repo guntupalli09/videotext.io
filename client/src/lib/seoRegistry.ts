@@ -63,6 +63,7 @@ export type SeoToolKey =
   | 'compress-video'
   | 'batch-process'
   | 'voice-to-text'
+  | 'guideline-format'
 
 export interface SeoRegistryEntry {
   /** Path (e.g. /video-to-text). Must match route path. */
@@ -5153,6 +5154,677 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'transcription-tools-hub',
     faq: [],
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FORMAT GUIDELINES CLUSTER — Transcriptionists, QA Reviewers, Proofreaders
+  // Topic cluster: /guideline-format is the canonical tool.
+  // Hub: /transcription-style-guide-formatter
+  // Spokes: platform-specific, audience-specific, how-to, problem/solution
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ── HUB / PILLAR ───────────────────────────────────────────────────────────
+  {
+    path: '/transcription-style-guide-formatter',
+    title: 'Transcription Style Guide Formatter — Rev, GoTranscript, TranscribeMe, Scribie | VideoText',
+    description:
+      'Apply any transcription platform style guide automatically. Format transcripts for Rev, GoTranscript, TranscribeMe, or Scribie in seconds. Built for freelancers, QA reviewers, and proofreaders. Free.',
+    h1: 'Transcription Style Guide Formatter',
+    intro:
+      'Stop re-reading platform style guides before every submission. Paste your transcript, choose a preset (Rev, GoTranscript, TranscribeMe, Scribie), and our AI applies every rule — verbatim mode, filler words, speaker labels, inaudible tags — in one pass. Upload a custom PDF or DOCX style guide and we extract the rules automatically.',
+    breadcrumbLabel: 'Style Guide Formatter',
+    toolKey: 'guideline-format',
+    keywords: [
+      'transcription style guide formatter',
+      'auto format transcript style guide',
+      'rev style guide formatter',
+      'gotranscript style guide formatter',
+      'transcribeme style guide formatter',
+      'scribie style guide formatter',
+      'transcription formatting tool',
+      'apply transcription style guide automatically',
+      'transcript formatting checker',
+      'style guide compliance checker transcription',
+    ],
+    relatedSlugs: [
+      '/rev-style-guide-formatter',
+      '/gotranscript-style-guide-formatter',
+      '/transcribeme-style-guide-formatter',
+      '/scribie-style-guide-formatter',
+      '/transcription-qa-formatting-tool',
+      '/transcript-proofreader-tool',
+    ],
+    indexable: true,
+    intentKey: 'transcription-style-guide-formatter-hub',
+    deepContent: {
+      proofPoints: [
+        'Preset rules for Rev, GoTranscript, TranscribeMe, and Scribie — updated to match current platform guidelines',
+        'Upload your own PDF or DOCX style guide; AI extracts and applies every rule automatically',
+        'Edit any rule before processing — change verbatim mode, filler word handling, speaker label format on the fly',
+        'Handles inaudible tags, crosstalk markers, false starts, and platform-specific punctuation rules',
+        'Export client-ready TXT, DOCX, or PDF — same file format your platform expects',
+        'Works with SRT and VTT files: preserves timestamps while reformatting transcript text',
+        'Free tier available — no credit card needed to format your first transcript',
+      ],
+      workflowSteps: [
+        { title: 'Paste or upload your raw transcript', detail: 'Drop a TXT, DOCX, SRT, or VTT file, or paste the transcript directly into the editor.' },
+        { title: 'Choose a platform preset', detail: 'Select Rev, GoTranscript, TranscribeMe, or Scribie to load that platform\'s built-in style guide rules.' },
+        { title: 'Review and adjust rules', detail: 'Each rule shows as an editable card — override verbatim mode, filler word list, or speaker label format before processing.' },
+        { title: 'Apply style guide in one click', detail: 'Our AI reads every rule card and rewrites the transcript to be fully compliant. Inaudible tags, crosstalk, false starts — all handled.' },
+        { title: 'Export client-ready output', detail: 'Download TXT, DOCX, or PDF. SRT/VTT files have timestamps preserved. Ready to submit without additional edits.' },
+      ],
+      useCases: [
+        { title: 'Freelance transcriptionists on Rev', body: 'Apply Rev\'s non-verbatim rules, speaker label format, and inaudible tag syntax without memorizing the entire style guide.' },
+        { title: 'QA reviewers checking submissions', body: 'Run a transcript through the preset before approving or rejecting. Spot inconsistencies in verbatim mode, filler handling, and tag usage instantly.' },
+        { title: 'Proofreaders on GoTranscript', body: 'GoTranscript clean verbatim rules differ from full verbatim — apply the correct mode and have every filler word handled per the official guide.' },
+        { title: 'New transcriptionists learning platform rules', body: 'See exactly which rule changed each part of the transcript. Learn the style guide by watching it applied in real time.' },
+        { title: 'Agencies with custom style guides', body: 'Upload any client PDF or DOCX style guide and apply it to every transcript in a consistent, repeatable way.' },
+        { title: 'TranscribeMe and Scribie contractors', body: 'TranscribeMe uses false-start dashes and specific tag formats. Scribie uses ellipsis pauses and underscores. Both are built-in presets.' },
+      ],
+    },
+    faq: [
+      { q: 'Which transcription platforms are supported as presets?', a: 'We ship built-in presets for Rev, GoTranscript, TranscribeMe, and Scribie. Each preset loads the current platform style guide rules as editable cards — verbatim mode, filler word handling, speaker label format, inaudible tags, crosstalk markers, and punctuation rules.' },
+      { q: 'Can I upload my own style guide?', a: 'Yes. Upload a PDF or DOCX style guide and our AI extracts the rules into editable cards automatically. You can then adjust individual rules before applying. This works for client-specific guides, in-house standards, or any custom format.' },
+      { q: 'Does this help me pass platform QA?', a: 'Yes. The presets match current platform requirements. Running your transcript through the formatter before submission catches the most common QA rejection reasons: wrong verbatim mode, inconsistent filler word handling, incorrect tag syntax, and speaker label format errors.' },
+      { q: 'Does it work with SRT subtitle files?', a: 'Yes. Upload an SRT or VTT file and we apply the style guide rules to the transcript text while keeping every timestamp exactly in place. The formatted SRT file is ready to download when done.' },
+      { q: 'Is this free to use?', a: 'Yes. The free tier lets you format transcripts without a credit card. Sign up for free to start. Paid plans unlock higher volume, batch processing, and full export formats (DOCX, PDF).' },
+      { q: 'What is the difference between clean verbatim and full verbatim?', a: 'Full verbatim includes every filler word (uh, um, like), false starts, repetitions, and non-verbal sounds. Clean verbatim removes most fillers and false starts for readability. GoTranscript offers both modes; choosing the wrong one is one of the most common QA rejection reasons. Our formatter applies whichever mode you select.' },
+    ],
+  },
+
+  // ── PLATFORM-SPECIFIC: REV ─────────────────────────────────────────────────
+  {
+    path: '/rev-style-guide-formatter',
+    title: 'Rev Style Guide Formatter — Auto-Apply Rev Transcription Rules | VideoText',
+    description:
+      'Format transcripts to Rev\'s style guide automatically. Apply verbatim mode, speaker labels, inaudible tags, and filler word rules in one click. Free. Used by Rev transcriptionists before QA.',
+    h1: 'Rev Style Guide Formatter — Auto-Apply Rev Rules',
+    intro:
+      'Apply Rev\'s transcription style guide to any transcript automatically. Our Rev preset loads the platform\'s current rules — non-verbatim vs verbatim mode, [inaudible] and [crosstalk] tag format, speaker label syntax, filler word handling — as editable cards. Adjust any rule, then apply in one click. Export client-ready and submit without extra cleanup.',
+    breadcrumbLabel: 'Rev Style Guide Formatter',
+    toolKey: 'guideline-format',
+    keywords: [
+      'rev style guide formatter',
+      'format transcript for rev',
+      'rev transcription formatting tool',
+      'rev style guide checker',
+      'apply rev style guide automatically',
+      'rev transcription rules formatter',
+      'rev non-verbatim formatter',
+      'rev inaudible tag formatter',
+      'rev speaker label format',
+      'rev transcription qa tool',
+    ],
+    relatedSlugs: [
+      '/transcription-style-guide-formatter',
+      '/how-to-format-transcripts-for-rev',
+      '/how-to-pass-rev-transcription-test',
+      '/gotranscript-style-guide-formatter',
+      '/transcription-qa-formatting-tool',
+      '/transcript-formatting-checker',
+    ],
+    indexable: true,
+    intentKey: 'rev-style-guide-formatter',
+    deepContent: {
+      proofPoints: [
+        'Rev preset includes all current Rev style guide rules — non-verbatim, verbatim, and strict verbatim modes',
+        'Correct [inaudible] and [crosstalk] tag format applied automatically wherever needed',
+        'Speaker labels formatted as Rev requires: "Speaker 1:" with correct spacing and capitalization',
+        'Filler words (uh, um, like, you know) handled per Rev\'s non-verbatim guidelines',
+        'False starts removed or preserved depending on selected verbatim mode',
+        'Timestamps preserved when formatting SRT files for Rev subtitle work',
+        'Edit any rule card before applying — override specific rules without losing the rest of the preset',
+      ],
+      workflowSteps: [
+        { title: 'Paste your raw Rev transcript', detail: 'Upload TXT, DOCX, or SRT, or paste directly. Works with transcripts from any source.' },
+        { title: 'Select the Rev preset', detail: 'Load all current Rev style guide rules as editable cards in one click.' },
+        { title: 'Set verbatim mode', detail: 'Choose Non-verbatim, Verbatim, or Strict Verbatim to match your Rev job instructions.' },
+        { title: 'Apply rules', detail: 'AI applies every rule: filler words, tags, speaker labels, punctuation. One pass, fully compliant output.' },
+        { title: 'Download and submit', detail: 'Export TXT or DOCX. Your transcript meets Rev\'s style guide without a final manual review pass.' },
+      ],
+      useCases: [
+        { title: 'Rev freelancers before submission', body: 'Run every transcript through the formatter before submitting. Catch filler word inconsistencies, wrong tag format, and speaker label errors that cause QA rejections.' },
+        { title: 'New Rev transcriptionists', body: 'Learning Rev\'s style guide takes time. The formatter shows exactly which rule changed each sentence, teaching the guide while getting the work done.' },
+        { title: 'Rev QA reviewers', body: 'Use the formatter to quickly validate a submitted transcript against Rev\'s preset rules. Spot deviations in seconds rather than reading line by line.' },
+      ],
+    },
+    faq: [
+      { q: 'What Rev style guide rules does the preset include?', a: 'The Rev preset includes verbatim mode selection (non-verbatim, verbatim, strict verbatim), [inaudible] and [crosstalk] tag format, speaker label syntax, filler word handling (uh, um, like, you know), false start removal, and Rev-specific punctuation rules. All rules are editable before applying.' },
+      { q: 'How do I choose the right verbatim mode for Rev?', a: 'Check your Rev job instructions. Most general transcription jobs use Non-verbatim (lightly edit for readability). Legal and medical transcription jobs typically require Verbatim or Strict Verbatim. The formatter lets you set the mode before applying and shows exactly what changes.' },
+      { q: 'What is the correct format for Rev inaudible tags?', a: 'Rev requires [inaudible HH:MM:SS] with a timestamp. Our formatter detects unclear sections and inserts the correct tag format automatically. You can review and adjust timestamps after processing.' },
+      { q: 'Will this help me avoid Rev QA rejections?', a: 'Yes. The most common Rev QA rejection reasons — wrong verbatim mode, incorrect tag format, inconsistent speaker labels, missed filler words — are all covered by the formatter. Running your transcript through before submission significantly reduces rejection rates.' },
+      { q: 'Can I format Rev subtitle files (SRT) too?', a: 'Yes. Upload an SRT file and the formatter applies Rev\'s text rules while keeping every timestamp in place. The output SRT is ready to upload to the Rev portal.' },
+    ],
+  },
+
+  // ── PLATFORM-SPECIFIC: GOTRANSCRIPT ────────────────────────────────────────
+  {
+    path: '/gotranscript-style-guide-formatter',
+    title: 'GoTranscript Style Guide Formatter — Clean & Full Verbatim | VideoText',
+    description:
+      'Format transcripts for GoTranscript automatically. Apply clean verbatim or full verbatim rules, filler word handling, and GoTranscript tag format in one click. Free. Used by GoTranscript contractors.',
+    h1: 'GoTranscript Style Guide Formatter — Clean & Full Verbatim',
+    intro:
+      'Apply GoTranscript\'s style guide to any transcript automatically. Choose Clean Verbatim (fillers removed, readability-focused) or Full Verbatim (every word preserved), and our formatter applies the correct rules throughout. Handles [inaudible], [crosstalk], speaker labels, and GoTranscript\'s specific punctuation rules — all editable before processing.',
+    breadcrumbLabel: 'GoTranscript Style Guide Formatter',
+    toolKey: 'guideline-format',
+    keywords: [
+      'gotranscript style guide formatter',
+      'format transcript for gotranscript',
+      'gotranscript clean verbatim formatter',
+      'gotranscript full verbatim formatter',
+      'gotranscript formatting rules',
+      'gotranscript transcription tool',
+      'gotranscript filler word handling',
+      'gotranscript qa tool',
+      'apply gotranscript style guide',
+      'gotranscript transcript checker',
+    ],
+    relatedSlugs: [
+      '/transcription-style-guide-formatter',
+      '/rev-style-guide-formatter',
+      '/transcribeme-style-guide-formatter',
+      '/transcription-qa-formatting-tool',
+      '/freelance-transcription-style-guide',
+      '/transcript-formatting-checker',
+    ],
+    indexable: true,
+    intentKey: 'gotranscript-style-guide-formatter',
+    deepContent: {
+      proofPoints: [
+        'Preset covers both GoTranscript Clean Verbatim and Full Verbatim modes',
+        'Filler words handled correctly for each mode — removed in Clean, preserved in Full Verbatim',
+        'GoTranscript-specific [inaudible] and [crosstalk] tag syntax applied automatically',
+        'Speaker labels formatted to GoTranscript requirements',
+        'False starts: marked with dashes in Full Verbatim, removed in Clean Verbatim',
+        'Repetitions handled per GoTranscript\'s current guidelines',
+        'Every rule is an editable card — change the mode without re-loading the preset',
+      ],
+      workflowSteps: [
+        { title: 'Upload your GoTranscript draft', detail: 'Paste text or upload TXT/DOCX from your transcription editor.' },
+        { title: 'Select GoTranscript preset', detail: 'Loads all current GoTranscript style guide rules as editable cards.' },
+        { title: 'Choose verbatim mode', detail: 'Select Clean Verbatim or Full Verbatim to match your job type.' },
+        { title: 'Apply rules', detail: 'Formatter applies filler word, tag, speaker label, and punctuation rules in one pass.' },
+        { title: 'Export and submit', detail: 'Download TXT or DOCX and submit. GoTranscript-compliant, no extra editing.' },
+      ],
+      useCases: [
+        { title: 'GoTranscript contractors before grading', body: 'GoTranscript grades every submission. Formatting errors in filler words or tag syntax directly lower your score. Run the formatter first.' },
+        { title: 'Switching between Clean and Full Verbatim jobs', body: 'Different GoTranscript jobs specify different modes. The formatter makes switching trivial — change one card and reprocess.' },
+        { title: 'New GoTranscript freelancers', body: 'Understand the difference between Clean and Full Verbatim by watching which changes each mode makes to your transcript.' },
+      ],
+    },
+    faq: [
+      { q: 'What is the difference between GoTranscript Clean Verbatim and Full Verbatim?', a: 'Clean Verbatim removes most filler words (uh, um, like), false starts, and repetitions for a readable transcript. Full Verbatim preserves every word exactly as spoken, including fillers and repetitions. GoTranscript specifies which mode to use in the job description — using the wrong one is one of the top reasons for low grades.' },
+      { q: 'Does the formatter handle GoTranscript inaudible tags correctly?', a: 'Yes. GoTranscript requires [inaudible] for unclear sections. The formatter detects unintelligible content and inserts the tag in the correct format. You can review and adjust after processing.' },
+      { q: 'Why do GoTranscript submissions get graded down for formatting?', a: 'GoTranscript automated grading checks for filler word consistency, correct tag usage, speaker label format, and verbatim mode adherence. A single inconsistent [inaudible] format or a missed "um" in Full Verbatim mode can affect your score. The formatter ensures every rule is applied uniformly.' },
+      { q: 'Can I use this for GoTranscript proofreading jobs?', a: 'Yes. GoTranscript\'s proofreading jobs involve reviewing submitted transcripts for style compliance. Run the original transcript through the formatter to see exactly which rules are violated before writing your corrections.' },
+    ],
+  },
+
+  // ── PLATFORM-SPECIFIC: TRANSCRIBEME ────────────────────────────────────────
+  {
+    path: '/transcribeme-style-guide-formatter',
+    title: 'TranscribeMe Style Guide Formatter — False Starts, Tags & Rules | VideoText',
+    description:
+      'Format transcripts for TranscribeMe automatically. Apply clean verbatim rules, false start dashes, [inaudible] tags, and TranscribeMe\'s specific formatting in one click. Free.',
+    h1: 'TranscribeMe Style Guide Formatter — Apply Rules Automatically',
+    intro:
+      'TranscribeMe\'s style guide has specific rules for false starts (marked with a dash), [inaudible] tags, speaker labels, and clean verbatim handling. Our formatter applies all of them in one pass. Paste your transcript, select the TranscribeMe preset, review the editable rule cards, and export a submission-ready file.',
+    breadcrumbLabel: 'TranscribeMe Style Guide Formatter',
+    toolKey: 'guideline-format',
+    keywords: [
+      'transcribeme style guide formatter',
+      'format transcript for transcribeme',
+      'transcribeme false start formatter',
+      'transcribeme clean verbatim tool',
+      'transcribeme formatting rules',
+      'transcribeme inaudible tag format',
+      'apply transcribeme style guide',
+      'transcribeme transcript checker',
+      'transcribeme qa tool',
+    ],
+    relatedSlugs: [
+      '/transcription-style-guide-formatter',
+      '/rev-style-guide-formatter',
+      '/scribie-style-guide-formatter',
+      '/gotranscript-style-guide-formatter',
+      '/transcription-qa-formatting-tool',
+      '/freelance-transcription-style-guide',
+    ],
+    indexable: true,
+    intentKey: 'transcribeme-style-guide-formatter',
+    deepContent: {
+      proofPoints: [
+        'TranscribeMe preset covers clean verbatim rules, false start dashes, and inaudible tag format',
+        'False starts correctly marked with a dash (–) per TranscribeMe\'s current guide',
+        '[inaudible] tag inserted in the correct TranscribeMe format automatically',
+        'Speaker labels formatted to TranscribeMe requirements',
+        'Filler words handled per TranscribeMe clean verbatim guidelines',
+        'Every rule editable as a card — adjust before applying without reloading the preset',
+      ],
+      useCases: [
+        { title: 'TranscribeMe contractors', body: 'False start formatting and [inaudible] tag syntax are the top formatting issues on TranscribeMe. The formatter handles both automatically.' },
+        { title: 'QA reviewers on TranscribeMe', body: 'Quickly validate whether a submitted transcript follows TranscribeMe\'s false start and tag conventions before approving.' },
+      ],
+    },
+    faq: [
+      { q: 'How does TranscribeMe format false starts?', a: 'TranscribeMe requires false starts to be marked with a dash (–) immediately after the false start, before the corrected word. For example: "I was– I went to the store." Our formatter detects false starts and applies this format automatically.' },
+      { q: 'What is the TranscribeMe inaudible tag format?', a: 'TranscribeMe uses [inaudible] (lowercase, in square brackets) for sections that cannot be heard clearly. The formatter inserts this tag wherever unclear audio would appear in the transcript.' },
+      { q: 'Does TranscribeMe use clean verbatim or full verbatim?', a: 'TranscribeMe primarily uses clean verbatim for most jobs — fillers and most repetitions are removed unless the job specifically requests full verbatim. Our preset defaults to clean verbatim, and you can adjust the verbatim mode card before applying.' },
+      { q: 'Will formatting to TranscribeMe\'s guide improve my accuracy score?', a: 'Yes. TranscribeMe scores submissions on accuracy and style. Formatting errors (wrong false start syntax, incorrect tags, filler word inconsistency) directly affect your style score, which impacts job access and pay rates.' },
+    ],
+  },
+
+  // ── PLATFORM-SPECIFIC: SCRIBIE ─────────────────────────────────────────────
+  {
+    path: '/scribie-style-guide-formatter',
+    title: 'Scribie Style Guide Formatter — Ellipsis, Underscores & Rules | VideoText',
+    description:
+      'Format transcripts for Scribie automatically. Apply ellipsis pauses, underscore inaudible tags, contraction rules, and Scribie\'s full style guide in one click. Free.',
+    h1: 'Scribie Style Guide Formatter — Apply Scribie Rules Automatically',
+    intro:
+      'Scribie\'s style guide uses ellipsis (...) for pauses, underscores for inaudible sections, and has specific rules for contractions and speaker labels. Our Scribie preset applies every rule as an editable card. Adjust what you need, apply in one click, and download a Scribie-compliant transcript ready for submission.',
+    breadcrumbLabel: 'Scribie Style Guide Formatter',
+    toolKey: 'guideline-format',
+    keywords: [
+      'scribie style guide formatter',
+      'format transcript for scribie',
+      'scribie ellipsis pause formatter',
+      'scribie inaudible underscore formatter',
+      'scribie formatting rules',
+      'scribie transcript checker',
+      'apply scribie style guide',
+      'scribie contraction rules',
+      'scribie qa tool',
+    ],
+    relatedSlugs: [
+      '/transcription-style-guide-formatter',
+      '/rev-style-guide-formatter',
+      '/transcribeme-style-guide-formatter',
+      '/transcription-qa-formatting-tool',
+      '/transcript-proofreader-tool',
+      '/transcript-formatting-checker',
+    ],
+    indexable: true,
+    intentKey: 'scribie-style-guide-formatter',
+    deepContent: {
+      proofPoints: [
+        'Scribie preset applies ellipsis (...) for pauses per Scribie\'s current style guide',
+        'Inaudible sections formatted with underscores as Scribie requires',
+        'Contractions kept (can\'t, won\'t, it\'s) per Scribie\'s contraction rules',
+        'Speaker labels formatted to Scribie\'s exact requirements',
+        'Filler words handled per Scribie verbatim guidelines',
+        'All rules editable as cards — override individual rules without losing the rest',
+      ],
+      useCases: [
+        { title: 'Scribie freelancers and self-checkers', body: 'Scribie\'s unique ellipsis and underscore conventions differ from every other platform. The formatter handles both so you never mix up tag syntax between platforms.' },
+        { title: 'Transcriptionists working across multiple platforms', body: 'Work on Rev in the morning and Scribie in the afternoon — switch presets without confusing the style guides.' },
+      ],
+    },
+    faq: [
+      { q: 'How does Scribie format pauses?', a: 'Scribie uses ellipsis (...) to represent pauses in speech. Our Scribie preset detects pause indicators and formats them correctly throughout the transcript.' },
+      { q: 'How does Scribie format inaudible sections?', a: 'Scribie uses underscores (_____) for inaudible sections, which is different from the [inaudible] bracket format used by Rev and GoTranscript. The formatter applies Scribie\'s underscore format automatically.' },
+      { q: 'Does Scribie allow contractions?', a: 'Yes. Unlike some transcription platforms that require expanded forms (cannot, will not), Scribie allows and prefers contractions (can\'t, won\'t). Our Scribie preset preserves contractions as they appear in speech rather than expanding them.' },
+      { q: 'What verbatim mode does Scribie use?', a: 'Scribie uses clean verbatim for most jobs — standard fillers are removed, but other spoken patterns are kept unless specified otherwise. The formatter applies clean verbatim as the default for Scribie jobs.' },
+    ],
+  },
+
+  // ── AUDIENCE: QA REVIEWERS ─────────────────────────────────────────────────
+  {
+    path: '/transcription-qa-formatting-tool',
+    title: 'Transcription QA Formatting Tool — Validate Style Guide Compliance | VideoText',
+    description:
+      'QA transcripts against Rev, GoTranscript, TranscribeMe, or Scribie style guides instantly. Check verbatim mode, tag format, speaker labels, and filler word handling before approving. Free.',
+    h1: 'Transcription QA Formatting Tool — Validate Style Compliance',
+    intro:
+      'Validate transcripts against platform style guides before approving or returning them. Load the Rev, GoTranscript, TranscribeMe, or Scribie preset, run the transcript through the formatter, and see exactly which rules were violated. Built for QA reviewers and team leads who need consistent, fast compliance checking across large transcript volumes.',
+    breadcrumbLabel: 'Transcription QA Formatting Tool',
+    toolKey: 'guideline-format',
+    keywords: [
+      'transcription qa formatting tool',
+      'transcript style guide compliance checker',
+      'qa transcription formatting',
+      'transcription quality assurance tool',
+      'check transcript against style guide',
+      'transcript qa checker online',
+      'transcription formatting validator',
+      'style guide compliance transcription',
+      'rev qa tool',
+      'gotranscript qa checker',
+    ],
+    relatedSlugs: [
+      '/transcription-style-guide-formatter',
+      '/rev-style-guide-formatter',
+      '/gotranscript-style-guide-formatter',
+      '/transcript-proofreader-tool',
+      '/transcript-formatting-checker',
+      '/freelance-transcription-style-guide',
+    ],
+    indexable: true,
+    intentKey: 'transcription-qa-formatting-tool',
+    deepContent: {
+      proofPoints: [
+        'Run any transcript through a platform preset and see exactly which rules it violates',
+        'Consistent, repeatable QA — every transcript checked against the same rule set',
+        'Covers the top QA rejection reasons: verbatim mode, tag format, speaker labels, filler handling',
+        'Custom style guide upload for in-house QA standards beyond marketplace platforms',
+        'Works with SRT/VTT for subtitle QA in addition to transcript QA',
+        'Fast — process a full transcript in seconds, not minutes',
+      ],
+      workflowSteps: [
+        { title: 'Receive submitted transcript', detail: 'Load the transcript from the transcriptionist\'s submission.' },
+        { title: 'Select the platform preset', detail: 'Choose the platform the transcript was submitted for — Rev, GoTranscript, TranscribeMe, or Scribie.' },
+        { title: 'Run the formatter', detail: 'The formatter applies all rules and flags where the transcript deviates from the style guide.' },
+        { title: 'Review changes', detail: 'Compare the formatted output to the original to identify which rules were violated and where.' },
+        { title: 'Approve or return with specific feedback', detail: 'Use the formatter output to give exact, rule-specific feedback rather than general style comments.' },
+      ],
+      useCases: [
+        { title: 'QA managers reviewing transcript batches', body: 'Process multiple transcripts quickly using the same preset, ensuring every submission is evaluated against identical criteria.' },
+        { title: 'Transcription agencies with client style guides', body: 'Upload a client\'s PDF style guide and validate every transcriptionist\'s output against it. Consistent quality at scale.' },
+        { title: 'Marketplace QA reviewers', body: 'Rev, GoTranscript, and similar platforms rely on QA reviewers to maintain quality. The formatter speeds up the review cycle significantly.' },
+      ],
+    },
+    faq: [
+      { q: 'How does the QA tool identify style guide violations?', a: 'The formatter applies every rule in the selected preset to the transcript. Where the original transcript differs from the formatted output, that is a style guide violation. You can compare the before/after to identify exactly what changed and why.' },
+      { q: 'Can I use this to give specific feedback to transcriptionists?', a: 'Yes. Instead of general feedback ("fix formatting"), you can point to specific rule violations: "verbatim mode should be non-verbatim — filler words should be removed" or "[inaudible] tag format should include timestamp." The formatter makes feedback precise and actionable.' },
+      { q: 'Does this work for in-house transcription QA?', a: 'Yes. Upload your company\'s PDF or DOCX style guide and our AI extracts the rules into editable cards. Every transcript can then be validated against the same internal standard.' },
+      { q: 'How fast can I QA a transcript?', a: 'Processing takes seconds for a typical transcript. The manual part is reviewing the diff between original and formatted output — typically 2–5 minutes for a 10-minute transcript, compared to 15–20 minutes for a manual read-through.' },
+    ],
+  },
+
+  // ── AUDIENCE: PROOFREADERS ─────────────────────────────────────────────────
+  {
+    path: '/transcript-proofreader-tool',
+    title: 'Transcript Proofreader Tool — Style Guide Compliance for Proofreaders | VideoText',
+    description:
+      'Proofreading transcripts? Auto-apply platform style guide rules before your line edit. Rev, GoTranscript, TranscribeMe, Scribie presets or custom guide upload. Free.',
+    h1: 'Transcript Proofreader Tool — Auto-Apply Style Guide Before You Line-Edit',
+    intro:
+      'Proofreading a transcript is faster when style guide compliance is handled automatically before you start. Select the platform preset, run the formatter, and begin your line edit on a clean, rule-compliant base. Focus your attention on language quality — not tag format and filler word consistency.',
+    breadcrumbLabel: 'Transcript Proofreader Tool',
+    toolKey: 'guideline-format',
+    keywords: [
+      'transcript proofreader tool',
+      'proofread transcript style guide',
+      'transcript proofreading formatter',
+      'style guide compliance proofreading',
+      'proofreading transcription tool online',
+      'check transcript formatting proofreading',
+      'transcript editing style guide tool',
+      'rev proofreading tool',
+      'gotranscript proofreading formatter',
+    ],
+    relatedSlugs: [
+      '/transcription-style-guide-formatter',
+      '/transcription-qa-formatting-tool',
+      '/rev-style-guide-formatter',
+      '/gotranscript-style-guide-formatter',
+      '/transcript-formatting-checker',
+      '/freelance-transcription-style-guide',
+    ],
+    indexable: true,
+    intentKey: 'transcript-proofreader-tool',
+    faq: [
+      { q: 'Why run the formatter before proofreading?', a: 'Style guide compliance issues (wrong tags, inconsistent filler words, wrong speaker label format) are mechanical — they should not consume your proofreading attention. Running the formatter first auto-fixes the mechanical layer so you can focus your line edit on language quality, accuracy, and clarity.' },
+      { q: 'Which platforms\' style guides are supported?', a: 'Rev, GoTranscript, TranscribeMe, and Scribie are built-in presets. You can also upload any PDF or DOCX style guide and have the rules extracted automatically.' },
+      { q: 'Does this work for GoTranscript proofreading jobs specifically?', a: 'Yes. GoTranscript proofreading jobs require checking against their style guide before submitting corrections. Load the GoTranscript preset, run the original transcript through, and use the formatted output as your clean proofread base.' },
+      { q: 'Can I use this for academic or legal transcript proofreading?', a: 'Yes. Upload a custom PDF or DOCX style guide for academic citation formats, legal verbatim standards, or any other specialized proofreading context. The AI extracts and applies the rules automatically.' },
+      { q: 'Does the formatter change the words or just the formatting?', a: 'The formatter applies style guide rules — it removes or preserves fillers, inserts correct tags, adjusts speaker label format, and handles punctuation per the guide. It does not rephrase or alter the substantive content of the transcript.' },
+    ],
+  },
+
+  // ── AUDIENCE: FREELANCERS ──────────────────────────────────────────────────
+  {
+    path: '/freelance-transcription-style-guide',
+    title: 'Style Guide Tool for Freelance Transcriptionists — Rev, GoTranscript & More | VideoText',
+    description:
+      'Freelance transcriptionist? Apply platform style guides automatically. Rev, GoTranscript, TranscribeMe, Scribie presets. Stop memorizing rules — format right the first time. Free.',
+    h1: 'Style Guide Tool for Freelance Transcriptionists',
+    intro:
+      'Freelancing across multiple transcription platforms means juggling different style guides simultaneously. Rev wants [inaudible] with a timestamp. GoTranscript wants [inaudible] without. Scribie wants underscores. Memorizing every rule for every platform is impractical — our formatter handles it for you. Choose a preset, apply it, submit with confidence.',
+    breadcrumbLabel: 'Freelance Transcription Style Guide Tool',
+    toolKey: 'guideline-format',
+    keywords: [
+      'freelance transcription style guide tool',
+      'transcription style guide for freelancers',
+      'freelance transcriptionist formatting tool',
+      'rev gotranscript scribie style guide',
+      'transcription platform style guide comparison',
+      'multi-platform transcription formatter',
+      'transcription freelancer qa tool',
+      'style guide tool for transcriptionists',
+    ],
+    relatedSlugs: [
+      '/transcription-style-guide-formatter',
+      '/rev-style-guide-formatter',
+      '/gotranscript-style-guide-formatter',
+      '/scribie-style-guide-formatter',
+      '/transcribeme-style-guide-formatter',
+      '/how-to-pass-rev-transcription-test',
+    ],
+    indexable: true,
+    intentKey: 'freelance-transcription-style-guide',
+    deepContent: {
+      proofPoints: [
+        'One tool for all four major platforms — stop switching between style guide PDFs',
+        'Switch presets in seconds — work Rev jobs in the morning and Scribie jobs in the afternoon',
+        'Catch platform-specific errors before submitting — reduce QA rejections and low grades',
+        'Custom style guide upload for client direct work outside marketplace platforms',
+        'Learn platform rules faster by watching the formatter explain each change',
+        'Free tier to get started — no commitment before your first formatted transcript',
+      ],
+      useCases: [
+        { title: 'Multi-platform freelancers', body: 'Working across Rev, GoTranscript, and Scribie simultaneously is common for full-time transcriptionists. Each platform\'s style guide is a preset — switch instantly without confusion.' },
+        { title: 'New freelancers on Rev or GoTranscript', body: 'Use the formatter as a learning tool while earning. Every change comes with a rule explanation — the style guide teaches itself.' },
+        { title: 'Transcriptionists with direct clients', body: 'Upload your client\'s style guide as a PDF or DOCX and apply it every time. Consistent, professional output that impresses direct clients.' },
+      ],
+    },
+    faq: [
+      { q: 'Which transcription platforms are supported?', a: 'Rev, GoTranscript, TranscribeMe, and Scribie all have built-in presets with current style guide rules. Switch between presets in seconds within the same tool.' },
+      { q: 'How is this different from just reading the style guide PDF?', a: 'Reading the style guide tells you what to do. The formatter does it — automatically, consistently, across the entire transcript. For freelancers paid by the audio minute, speed matters. The formatter removes the manual style compliance step entirely.' },
+      { q: 'Can I use this for direct client work?', a: 'Yes. Upload any client-provided PDF or DOCX style guide and we extract the rules automatically. Apply the same guide to every transcript you deliver to that client, ensuring consistent output.' },
+      { q: 'Will this help me maintain a high Rev or GoTranscript rating?', a: 'Yes. Style guide compliance is one of the primary factors in platform ratings and job access. Consistent formatting reduces QA rejections and low grades, which protects your account standing and income.' },
+    ],
+  },
+
+  // ── HOW-TO: FORMAT FOR REV ─────────────────────────────────────────────────
+  {
+    path: '/how-to-format-transcripts-for-rev',
+    title: 'How to Format Transcripts for Rev — Style Guide Rules Explained | VideoText',
+    description:
+      'Learn how to format transcripts for Rev. Verbatim modes, inaudible tags, speaker labels, filler words, and crosstalk — explained with examples. Plus a free auto-formatter tool.',
+    h1: 'How to Format Transcripts for Rev — Complete Style Guide Guide',
+    intro:
+      'Rev\'s style guide covers verbatim mode, [inaudible] tags, [crosstalk] markers, speaker label format, filler words, and punctuation. Getting any of these wrong is the most common reason for QA rejections. This guide explains every key rule with examples — then shows you how to apply them automatically with our Rev preset formatter.',
+    breadcrumbLabel: 'How to Format for Rev',
+    toolKey: 'guideline-format',
+    keywords: [
+      'how to format transcripts for rev',
+      'rev transcription formatting guide',
+      'rev style guide explained',
+      'rev inaudible tag format example',
+      'rev speaker label format',
+      'rev verbatim mode explained',
+      'rev transcription rules guide',
+      'rev filler word handling',
+      'format transcript rev style',
+    ],
+    relatedSlugs: [
+      '/rev-style-guide-formatter',
+      '/how-to-pass-rev-transcription-test',
+      '/transcription-style-guide-formatter',
+      '/transcription-qa-formatting-tool',
+      '/freelance-transcription-style-guide',
+      '/transcript-formatting-checker',
+    ],
+    indexable: true,
+    intentKey: 'how-to-format-transcripts-for-rev',
+    tutorialContent: {
+      steps: [
+        { title: 'Identify your verbatim mode', detail: 'Check your job instructions. Non-verbatim means lightly edit for readability (remove most fillers). Verbatim preserves more natural speech patterns. Strict Verbatim preserves everything. The mode is specified per job.' },
+        { title: 'Apply the correct verbatim rules', detail: 'Non-verbatim: remove uh, um, like, you know unless they carry meaning. Verbatim: keep most fillers. Strict Verbatim: keep everything including false starts and repetitions.' },
+        { title: 'Format inaudible sections', detail: 'Use [inaudible HH:MM:SS] with a timestamp for audio you cannot hear. The timestamp should match where the inaudible section occurs in the recording.' },
+        { title: 'Mark crosstalk', detail: 'When two speakers talk at the same time, use [crosstalk HH:MM:SS] with the start timestamp. Each overlapping speaker still gets their own speaker label on a new line.' },
+        { title: 'Format speaker labels', detail: 'Use "Speaker 1:", "Speaker 2:", etc. followed by a single space and then the transcript. Each new speaker turn starts on a new line. Rev does not use timestamps in the body of the transcript.' },
+        { title: 'Handle false starts (Strict Verbatim)', detail: 'In Strict Verbatim mode, keep false starts as spoken: "I was go– I was going to the store." Do not clean these up in Strict Verbatim; do remove them in Non-verbatim.' },
+        { title: 'Use the auto-formatter to apply all rules', detail: 'Load the Rev preset in VideoText\'s Format → Guidelines tool. Review the editable rule cards and click Apply. Every rule is applied uniformly in one pass.' },
+      ],
+      commonMistakes: [
+        'Using Non-verbatim rules on a Strict Verbatim job (removing fillers that should be kept)',
+        'Omitting the timestamp from [inaudible] and [crosstalk] tags',
+        'Inconsistent speaker label format (mixing "Speaker 1:" with "S1:" or "Speaker1")',
+        'Leaving filler words in a Non-verbatim job or removing them in a Full Verbatim job',
+        'Starting each paragraph with a lowercase letter after a speaker label',
+      ],
+    },
+    faq: [
+      { q: 'What are the three Rev verbatim modes?', a: 'Non-verbatim: clean up the transcript for readability, remove most filler words. Verbatim: transcribe more closely to speech, keep some fillers. Strict Verbatim: transcribe exactly as spoken, keep all fillers, false starts, and repetitions. Your job instructions will specify which mode to use.' },
+      { q: 'What is the correct Rev inaudible tag format?', a: 'Rev requires [inaudible HH:MM:SS] — square brackets, the word "inaudible," and the timestamp of where the unclear audio occurs. For example: [inaudible 00:03:42]. Omitting the timestamp is a common QA rejection reason.' },
+      { q: 'Does Rev require timestamps in the transcript body?', a: 'No. Rev transcripts do not include timestamps in the body text. Timestamps only appear in [inaudible] and [crosstalk] tags. Subtitle (SRT) work is different — those files include timestamps on every caption line.' },
+      { q: 'How should I handle multiple speakers in Rev format?', a: 'Each speaker gets a label on a new line: "Speaker 1: [transcribed speech]". When the speaker changes, start a new line with the new label. If two speakers overlap, insert [crosstalk HH:MM:SS] and then continue with each speaker\'s line.' },
+      { q: 'Is there a faster way to apply all Rev formatting rules?', a: 'Yes. Our Rev style guide formatter applies every rule automatically. Load the Rev preset, review the editable rule cards to confirm the verbatim mode, and click Apply. The formatter handles tags, speaker labels, fillers, and punctuation in one pass.' },
+    ],
+  },
+
+  // ── HOW-TO: PASS REV TEST ──────────────────────────────────────────────────
+  {
+    path: '/how-to-pass-rev-transcription-test',
+    title: 'How to Pass the Rev Transcription Test — Style Guide & Formatting Tips | VideoText',
+    description:
+      'Pass the Rev transcription test with our formatting guide. Learn verbatim modes, [inaudible] tags, speaker labels, and the exact rules Rev QA checks. Plus a free formatter.',
+    h1: 'How to Pass the Rev Transcription Test',
+    intro:
+      'The Rev transcription qualification test is harder than most new freelancers expect — not because of the typing, but because of the style guide. Most failed tests come down to formatting errors: wrong verbatim mode, missing timestamps in tags, inconsistent speaker labels. This guide covers exactly what Rev checks, how to apply the rules, and how to use our formatter to make sure your test submission is correct.',
+    breadcrumbLabel: 'How to Pass Rev Test',
+    toolKey: 'guideline-format',
+    keywords: [
+      'how to pass rev transcription test',
+      'rev transcription test tips',
+      'rev qualification test formatting',
+      'pass rev transcription exam',
+      'rev transcription test style guide',
+      'rev test verbatim mode',
+      'rev test inaudible tags',
+      'rev transcription test prep',
+      'rev freelancer qualification tips',
+    ],
+    relatedSlugs: [
+      '/rev-style-guide-formatter',
+      '/how-to-format-transcripts-for-rev',
+      '/transcription-style-guide-formatter',
+      '/freelance-transcription-style-guide',
+      '/transcription-qa-formatting-tool',
+      '/transcript-proofreader-tool',
+    ],
+    indexable: true,
+    intentKey: 'how-to-pass-rev-transcription-test',
+    tutorialContent: {
+      steps: [
+        { title: 'Read the Rev style guide before attempting the test', detail: 'Rev provides its style guide before the test. Read it fully, especially the verbatim mode section — this is where most test failures originate.' },
+        { title: 'Identify the verbatim mode in the test instructions', detail: 'The test will specify which verbatim mode to use. Non-verbatim is the most common. Apply that mode consistently throughout — inconsistency is flagged by Rev QA.' },
+        { title: 'Use correct [inaudible] tag format with timestamp', detail: 'If any audio is unclear, use [inaudible HH:MM:SS]. Omitting the timestamp is one of the top reasons for test failure. Practice identifying the timestamp before typing the tag.' },
+        { title: 'Format speaker labels exactly as Rev requires', detail: '"Speaker 1: " with a capital S, space after the colon. Each new speaker turn on a new line. Do not number speakers inconsistently or abbreviate.' },
+        { title: 'Remove fillers correctly in Non-verbatim mode', detail: 'In Non-verbatim mode, remove uh, um, like, you know, and hmm. Keep "uh" or "um" only if removing it would change the meaning (very rare). Leaving fillers in Non-verbatim is one of the top test failure reasons.' },
+        { title: 'Proofread with the formatter before submitting', detail: 'Run your test transcript through the Rev preset in our formatter. Review the diff — anywhere the formatter changes something is a potential style guide violation in your submission.' },
+      ],
+      commonMistakes: [
+        'Applying Non-verbatim rules to a Verbatim or Strict Verbatim test',
+        'Writing [inaudible] without a timestamp',
+        'Inconsistent capitalization in speaker labels',
+        'Keeping filler words (uh, um) in Non-verbatim mode',
+        'Adding timestamps to the transcript body (Rev does not use body timestamps)',
+        'Confusing [crosstalk] with [inaudible] when speakers overlap',
+      ],
+    },
+    faq: [
+      { q: 'What does Rev check for in the transcription qualification test?', a: 'Rev\'s test primarily checks: correct verbatim mode application (did you remove the right fillers?), [inaudible] and [crosstalk] tag format (including timestamps), speaker label consistency, punctuation, and overall accuracy. Style guide compliance accounts for a large part of the pass/fail decision.' },
+      { q: 'How difficult is the Rev transcription test?', a: 'The test itself is not difficult to type — it\'s designed to be accessible. The challenge is style guide compliance. Transcriptionists who fail usually fail on formatting, not accuracy. Reading the style guide carefully and using a formatter for the test submission gives you a significant advantage.' },
+      { q: 'Can I reapply if I fail the Rev test?', a: 'Yes. Rev typically allows reapplication after a waiting period. Use the time to practice with the formatter against the Rev preset until your transcripts are consistently compliant before reapplying.' },
+      { q: 'Does the format matter more than accuracy on the Rev test?', a: 'Both matter. Accuracy (correctly hearing what was said) and formatting (applying the style guide correctly) are both evaluated. Most rejections are formatting-related because the style guide has specific rules that are easy to miss without practice.' },
+      { q: 'How can the VideoText formatter help with the Rev test?', a: 'Format your test transcript using the Rev preset before submitting. Compare the formatted output with your original — anywhere the formatter makes a change is a place your formatting deviated from Rev\'s rules. Fix those before submitting.' },
+    ],
+  },
+
+  // ── PROBLEM/SOLUTION: FORMATTING CHECKER ──────────────────────────────────
+  {
+    path: '/transcript-formatting-checker',
+    title: 'Transcript Formatting Checker — Validate Style Guide Compliance Online | VideoText',
+    description:
+      'Check transcripts for formatting errors against Rev, GoTranscript, TranscribeMe, or Scribie style guides. Catch tag errors, speaker label issues, and verbatim violations before submitting. Free.',
+    h1: 'Transcript Formatting Checker — Catch Errors Before Submission',
+    intro:
+      'A transcript formatting checker applies the platform style guide to your transcript and shows you every deviation — wrong tags, inconsistent speaker labels, filler words in the wrong mode, punctuation issues. Use it before submitting to any transcription platform to catch what you missed during your manual review.',
+    breadcrumbLabel: 'Transcript Formatting Checker',
+    toolKey: 'guideline-format',
+    keywords: [
+      'transcript formatting checker',
+      'check transcript formatting online',
+      'transcript style guide compliance checker',
+      'transcription formatting error checker',
+      'transcript format validator',
+      'rev formatting checker',
+      'gotranscript formatting checker',
+      'transcription formatting tool online',
+      'transcript error checker',
+    ],
+    relatedSlugs: [
+      '/transcription-style-guide-formatter',
+      '/transcription-qa-formatting-tool',
+      '/rev-style-guide-formatter',
+      '/transcript-proofreader-tool',
+      '/freelance-transcription-style-guide',
+      '/how-to-format-transcripts-for-rev',
+    ],
+    indexable: true,
+    intentKey: 'transcript-formatting-checker',
+    faq: [
+      { q: 'How does a transcript formatting checker work?', a: 'It applies the selected platform\'s style guide rules to your transcript and compares the result to your original. Every difference between the formatted output and your original is a formatting deviation. The checker shows exactly which rules were violated and where.' },
+      { q: 'Which platforms\' formatting rules can be checked?', a: 'Rev, GoTranscript, TranscribeMe, and Scribie all have built-in presets. Upload a custom PDF or DOCX for other platforms or client-specific guides.' },
+      { q: 'What formatting errors does the checker catch?', a: 'The checker catches: wrong verbatim mode (fillers present when they should be removed, or missing when they should be kept), incorrect tag format ([inaudible] without timestamp, wrong bracket style), inconsistent speaker label format, wrong pause notation, and punctuation rule violations.' },
+      { q: 'Can I use this as a final check before every submission?', a: 'Yes. Running the checker before every submission is a practical quality control step. It takes seconds and catches mechanical formatting errors that QA reviewers or grading systems will flag — protecting your rating and reducing rejection rates.' },
+      { q: 'Is this the same as a grammar checker?', a: 'No. A grammar checker focuses on language correctness (spelling, grammar, sentence structure). A transcript formatting checker focuses on style guide compliance — verbatim mode, platform-specific tag syntax, speaker label format, and formatting rules that are specific to transcription platforms.' },
+    ],
+  },
+
+  // ── PROBLEM/SOLUTION: CLEAN VERBATIM ──────────────────────────────────────
+  {
+    path: '/clean-verbatim-transcription-formatter',
+    title: 'Clean Verbatim Transcription Formatter — Remove Fillers, Keep Accuracy | VideoText',
+    description:
+      'Format clean verbatim transcripts correctly. Remove filler words, handle false starts, and apply clean verbatim rules for GoTranscript, TranscribeMe, and other platforms. Free.',
+    h1: 'Clean Verbatim Transcription Formatter',
+    intro:
+      'Clean verbatim transcription removes filler words, false starts, and repetitions while keeping the speech meaning intact. Getting this right consistently — across a full transcript, for multiple platforms with slightly different rules — is where the formatter saves time. Select the platform preset, choose clean verbatim mode, and apply. Every filler word handled correctly, every false start resolved.',
+    breadcrumbLabel: 'Clean Verbatim Formatter',
+    toolKey: 'guideline-format',
+    keywords: [
+      'clean verbatim transcription formatter',
+      'clean verbatim filler word remover',
+      'clean verbatim transcript tool',
+      'remove filler words transcription',
+      'clean verbatim vs full verbatim tool',
+      'transcription filler word formatter',
+      'clean verbatim formatting online',
+      'gotranscript clean verbatim tool',
+      'transcribeme clean verbatim formatter',
+    ],
+    relatedSlugs: [
+      '/transcription-style-guide-formatter',
+      '/gotranscript-style-guide-formatter',
+      '/transcribeme-style-guide-formatter',
+      '/transcript-formatting-checker',
+      '/transcription-qa-formatting-tool',
+      '/freelance-transcription-style-guide',
+    ],
+    indexable: true,
+    intentKey: 'clean-verbatim-transcription-formatter',
+    faq: [
+      { q: 'What is clean verbatim transcription?', a: 'Clean verbatim transcription removes filler words (uh, um, like, you know), false starts, and excessive repetitions from the transcript. The goal is a readable text that still captures everything said, without the speech disfluencies. It is the default mode for most GoTranscript and TranscribeMe jobs.' },
+      { q: 'What is the difference between clean verbatim and full verbatim?', a: 'Full verbatim preserves every word exactly as spoken — including all fillers, false starts, and repetitions. Clean verbatim edits these out for readability. The choice depends on your platform and job type: GoTranscript specifies which mode per job. Rev calls these verbatim, non-verbatim, and strict verbatim.' },
+      { q: 'Which filler words should be removed in clean verbatim?', a: 'Standard fillers to remove: uh, um, like (when used as a filler, not a comparison), you know, hmm, er. False starts (incomplete words before correction) and direct repetitions (saying the same word twice in a row without emphasis) are also typically removed in clean verbatim mode. Platform-specific rules apply.' },
+      { q: 'Does the formatter remove ALL filler words?', a: 'The formatter removes fillers per the platform preset rules. Some fillers carry meaning (keeping "um, no" vs. removing the um in "um, let me think") — the AI applies rules contextually. You can review and adjust after processing.' },
+      { q: 'What platforms use clean verbatim by default?', a: 'GoTranscript Clean Verbatim mode, TranscribeMe (most jobs), and Rev Non-verbatim are all effectively clean verbatim modes. Each has slightly different rules about which fillers to remove and how to handle false starts, which is why platform-specific presets matter.' },
+    ],
+  },
 ]
 
 /** Full registry: manual + programmatic (targets × intents). */
@@ -5247,6 +5919,7 @@ const CATEGORY_HUBS: Partial<Record<SeoToolKey, readonly string[]>> = {
   'compress-video': ['/video-to-transcript'],
   'batch-process': ['/video-to-transcript'],
   'voice-to-text': ['/fastest-transcription-tool'],
+  'guideline-format': ['/transcription-style-guide-formatter', '/rev-style-guide-formatter'],
 }
 
 function isPathIndexable(path: string): boolean {

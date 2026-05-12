@@ -52,7 +52,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/guideline-format': {
     title: 'Transcript Style Guide Formatter — Rev, GoTranscript, TranscribeMe, Scribie | VideoText',
     description:
-      'Format transcripts to pass Rev, GoTranscript, TranscribeMe, or Scribie QA automatically. Apply verbatim rules, speaker label formats, filler word handling — then export client-ready. Free.',
+      'Format transcripts to Rev, GoTranscript, TranscribeMe, or Scribie style guides automatically. Built for transcriptionists, QA reviewers, and proofreaders. Verbatim rules, speaker labels, filler words, inaudible tags — one click. Free.',
   },
   '/video-to-subtitles': {
     title: 'Subtitle Generator (SRT & VTT) — Auto Generate Subtitles Online',
