@@ -7,11 +7,8 @@ interface PublicStats {
   cachedAt: string
 }
 
-function formatLargeNumber(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M+'
-  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K+'
-  return n.toLocaleString()
-}
+// Manual formatting is ~4x audio duration (industry rule of thumb)
+const FORMATTING_MULTIPLIER = 4
 
 function formatMinutes(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M+'
@@ -30,7 +27,6 @@ function useCountUp(target: number, duration = 1200): number {
     const tick = (now: number) => {
       const elapsed = now - start.current
       const progress = Math.min(elapsed / duration, 1)
-      // ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3)
       setValue(Math.round(eased * target))
       if (progress < 1) raf.current = requestAnimationFrame(tick)
@@ -62,8 +58,10 @@ export default function TrustBadge() {
     return () => clearInterval(id)
   }, [])
 
-  const jobsDisplay = useCountUp(stats?.totalJobsCompleted ?? 0)
   const minutesDisplay = useCountUp(stats?.totalMinutesProcessed ?? 0)
+  const savedDisplay = useCountUp(
+    stats ? stats.totalMinutesProcessed * FORMATTING_MULTIPLIER : 0
+  )
 
   if (!stats) return null
 
@@ -76,8 +74,8 @@ export default function TrustBadge() {
         </div>
 
         {/* Icon + label */}
-        <div className="relative flex items-center gap-2 text-violet-400 sm:pr-5 sm:border-r sm:border-white/[0.08]">
-          <TrendingUp className="w-4 h-4 flex-shrink-0" />
+        <div className="relative flex items-center gap-2 sm:pr-5 sm:border-r sm:border-white/[0.08]">
+          <TrendingUp className="w-4 h-4 flex-shrink-0 text-violet-400" />
           <span className="text-[11px] font-bold uppercase tracking-widest text-violet-400/80 whitespace-nowrap">
             Live usage
           </span>
@@ -86,13 +84,14 @@ export default function TrustBadge() {
         {/* Stats */}
         <div className="relative flex items-center gap-6 sm:pl-5 flex-1 justify-center sm:justify-start">
           <Stat
-            value={formatLargeNumber(jobsDisplay)}
-            label="jobs completed"
+            value={formatMinutes(minutesDisplay) + ' min'}
+            label="processed"
           />
           <div className="w-px h-8 bg-white/[0.07] hidden sm:block" />
           <Stat
-            value={formatMinutes(minutesDisplay) + ' min'}
-            label="of audio/video processed"
+            value={'~' + formatMinutes(savedDisplay) + ' min'}
+            label="saved on formatting"
+            note="est."
           />
         </div>
       </div>
@@ -100,10 +99,13 @@ export default function TrustBadge() {
   )
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Stat({ value, label, note }: { value: string; label: string; note?: string }) {
   return (
     <div className="text-center sm:text-left">
-      <div className="text-base font-extrabold text-white tabular-nums leading-none">{value}</div>
+      <div className="text-base font-extrabold text-white tabular-nums leading-none">
+        {value}
+        {note && <span className="text-[10px] font-medium text-white/30 ml-1">{note}</span>}
+      </div>
       <div className="text-[11px] text-white/35 mt-0.5 leading-tight">{label}</div>
     </div>
   )
