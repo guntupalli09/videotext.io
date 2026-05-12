@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { TrendingUp } from 'lucide-react'
 
 interface PublicStats {
   totalJobsCompleted: number
@@ -6,12 +7,12 @@ interface PublicStats {
   cachedAt: string
 }
 
-// Manual formatting is ~4x audio duration (industry rule of thumb)
+// Manual formatting + QA is ~4x audio duration (industry rule of thumb)
 const FORMATTING_MULTIPLIER = 4
 
 function formatMinutes(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M+'
-  if (n >= 1_000) return Math.round(n / 1_000) + 'K+'
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'
+  if (n >= 1_000) return Math.round(n / 1_000) + 'K'
   return n.toLocaleString()
 }
 
@@ -39,7 +40,7 @@ function useCountUp(target: number, duration = 1200): number {
 
 const REFRESH_INTERVAL_MS = 60 * 60 * 1000 // 1 hour
 
-export default function TrustBadge() {
+export default function TrustBadge({ className = '' }: { className?: string }) {
   const [stats, setStats] = useState<PublicStats | null>(null)
 
   const fetchStats = () => {
@@ -65,39 +66,17 @@ export default function TrustBadge() {
   if (!stats) return null
 
   return (
-    <div className="w-full max-w-xl mx-auto mt-5">
-      <div className="relative rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm px-5 py-4 flex flex-col sm:flex-row items-center gap-4 sm:gap-0 overflow-hidden">
-        {/* Subtle glow accent */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-48 h-16 bg-violet-500/10 rounded-full blur-2xl" />
-        </div>
-
-        {/* Stats */}
-        <div className="relative flex items-center gap-6 flex-1 justify-center sm:justify-start">
-          <Stat
-            value={formatMinutes(minutesDisplay) + ' min'}
-            label="processed"
-          />
-          <div className="w-px h-8 bg-white/[0.07] hidden sm:block" />
-          <Stat
-            value={'~' + formatMinutes(savedDisplay) + ' min'}
-            label="saved on formatting"
-            note="est."
-          />
-        </div>
+    <div className={`flex justify-center ${className}`}>
+      <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/25 backdrop-blur-sm">
+        <TrendingUp className="w-3 h-3 text-violet-400 flex-shrink-0" />
+        <span className="text-[11px] font-semibold text-violet-300 tracking-wide tabular-nums">
+          {formatMinutes(minutesDisplay)} min processed
+        </span>
+        <span className="w-px h-3 bg-violet-500/30" />
+        <span className="text-[11px] font-semibold text-violet-300 tracking-wide tabular-nums">
+          ~{formatMinutes(savedDisplay)} min saved on formatting &amp; QA
+        </span>
       </div>
-    </div>
-  )
-}
-
-function Stat({ value, label, note }: { value: string; label: string; note?: string }) {
-  return (
-    <div className="text-center sm:text-left">
-      <div className="text-base font-extrabold text-white tabular-nums leading-none">
-        {value}
-        {note && <span className="text-[10px] font-medium text-white/30 ml-1">{note}</span>}
-      </div>
-      <div className="text-[11px] text-white/35 mt-0.5 leading-tight">{label}</div>
     </div>
   )
 }
