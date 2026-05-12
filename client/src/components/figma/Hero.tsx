@@ -12,6 +12,7 @@ import {
   Languages,
 } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
+import TrustBadge from '../TrustBadge';
 
 const CREATOR_AVATARS = [
   'https://i.pravatar.cc/80?img=12',
@@ -159,13 +160,8 @@ export function Hero() {
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-12 sm:pt-16 pb-8">
 
-        {/* Badge */}
-        <div className="flex justify-center mb-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/25 backdrop-blur-sm">
-            <Sparkles className="w-3 h-3 text-violet-400" />
-            <span className="text-[11px] font-semibold text-violet-300 tracking-wide">AI Summary + Chapters on every transcript</span>
-          </div>
-        </div>
+        {/* Trust badge — live stats pill */}
+        <TrustBadge className="mb-4" />
 
         {/* H1 */}
         <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5">
