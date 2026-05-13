@@ -4,6 +4,7 @@ import { ChevronDown, ChevronRight, FileText, BookOpen } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { api, getAuthToken } from '../lib/api'
+import JobAuthGateModal from '../components/JobAuthGateModal'
 import { detectFormat, parseSrt, parseVtt, cuesToSrt, cuesToVtt } from '../lib/subtitleUtils'
 import { PRESET_DATA, type GuidelinePresetKey } from './guidelineFormatPresetData'
 
@@ -203,6 +204,7 @@ export default function GuidelineFormat() {
   const [originalTranscriptForJob, setOriginalTranscriptForJob] = useState('')
   const [inputCaptionFormat, setInputCaptionFormat] = useState<'srt' | 'vtt' | null>(null)
   const [originalCaptionCues, setOriginalCaptionCues] = useState<ReturnType<typeof parseSrt> | null>(null)
+  const [showAuthGate, setShowAuthGate] = useState(false)
   const [focusSegment, setFocusSegment] = useState<number | null>(null)
   const [resultMode, setResultMode] = useState<ResultMode>('summary')
   const [categoryOpen, setCategoryOpen] = useState<Record<string, boolean>>({})
@@ -375,7 +377,7 @@ export default function GuidelineFormat() {
   const submitFormat = async () => {
     if (!canSubmit || !selectedPreset) return
     if (!getAuthToken()) {
-      toast.error('Sign in to format your transcript')
+      setShowAuthGate(true)
       return
     }
     const rulesPayload = buildRulesPayload()
@@ -2528,6 +2530,17 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
           </div>
         ))}
       </section>
+
+      <JobAuthGateModal
+        isOpen={showAuthGate}
+        onClose={() => setShowAuthGate(false)}
+        onAuthSuccess={() => {
+          setShowAuthGate(false)
+          void submitFormat()
+        }}
+        jobDescription="Your transcript is ready to format"
+        dismissable
+      />
     </>
   )
 }
