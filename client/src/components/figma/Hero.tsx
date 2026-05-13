@@ -165,9 +165,9 @@ export function Hero() {
 
         {/* H1 */}
         <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5">
-          Turn any video into transcript,
+          Transcribe, Format Guidelines, Translate, Subtitles.
           <span className="block mt-3 pb-2 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-            summary &amp; chapters — in minutes.
+            Every tool your workflow needs - FAST
           </span>
         </h1>
 
