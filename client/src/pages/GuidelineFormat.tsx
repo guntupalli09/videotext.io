@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ChevronDown, ChevronRight, FileText } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { ChevronDown, ChevronRight, FileText, BookOpen } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { api, getAuthToken } from '../lib/api'
@@ -2392,6 +2393,140 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Brand-specific guideline pages hub */}
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="Transcription service style guides">
+        <div className="flex items-center gap-3 mb-2">
+          <BookOpen className="w-5 h-5 text-violet-500" />
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Platform-Specific Transcription Style Guides</h2>
+        </div>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mb-7 max-w-2xl">
+          Each transcription platform has its own formatting rules. Browse detailed style guides for the services below — verbatim levels, speaker labels, timestamps, and every rule you need to pass QA.
+        </p>
+        {[
+          {
+            brand: 'Rev',
+            color: 'blue',
+            links: [
+              { label: 'Rev Transcript Guidelines', path: '/rev-transcript-guidelines' },
+              { label: 'Rev Format Guide', path: '/rev-transcription-format' },
+              { label: 'Rev Style Guide', path: '/rev-style-guide' },
+              { label: 'Rev Captioning Guidelines', path: '/rev-captioning-guidelines' },
+              { label: 'Rev Requirements', path: '/rev-transcription-requirements' },
+              { label: 'Rev AI Transcription Guide', path: '/rev-ai-transcription-guide' },
+            ],
+          },
+          {
+            brand: 'GoTranscript',
+            color: 'green',
+            links: [
+              { label: 'GoTranscript Guidelines', path: '/gotranscript-guidelines' },
+              { label: 'GoTranscript Format', path: '/gotranscript-transcription-format' },
+              { label: 'GoTranscript Style Guide', path: '/gotranscript-style-guide' },
+              { label: 'GoTranscript Rules', path: '/gotranscript-transcription-rules' },
+              { label: 'GoTranscript Test Guide', path: '/gotranscript-test-guide' },
+            ],
+          },
+          {
+            brand: 'TranscribeMe',
+            color: 'purple',
+            links: [
+              { label: 'TranscribeMe Guidelines', path: '/transcribeme-guidelines' },
+              { label: 'TranscribeMe Style', path: '/transcribeme-transcription-style' },
+              { label: 'TranscribeMe Format Guide', path: '/transcribeme-format-guide' },
+              { label: 'TranscribeMe Style Guide', path: '/transcribeme-style-guide' },
+              { label: 'TranscribeMe Exam Guide', path: '/transcribeme-exam-guide' },
+            ],
+          },
+          {
+            brand: 'Scribie',
+            color: 'orange',
+            links: [
+              { label: 'Scribie Guidelines', path: '/scribie-transcription-guidelines' },
+              { label: 'Scribie Format Guide', path: '/scribie-format-guide' },
+              { label: 'Scribie Rules', path: '/scribie-transcription-rules' },
+              { label: 'Scribie Style Guide', path: '/scribie-style-guide' },
+            ],
+          },
+          {
+            brand: 'Daily Transcripts',
+            color: 'teal',
+            links: [
+              { label: 'Daily Transcripts Guidelines', path: '/daily-transcripts-guidelines' },
+              { label: 'Daily Transcripts Format', path: '/daily-transcripts-format-guide' },
+              { label: 'Daily Transcripts Style', path: '/daily-transcripts-style-guide' },
+            ],
+          },
+          {
+            brand: 'Transcribio',
+            color: 'indigo',
+            links: [
+              { label: 'Transcribio Guidelines', path: '/transcribio-guidelines' },
+              { label: 'Transcribio Format Guide', path: '/transcribio-format-guide' },
+              { label: 'Transcribio Style Guide', path: '/transcribio-style-guide' },
+            ],
+          },
+          {
+            brand: 'Verbit',
+            color: 'slate',
+            links: [
+              { label: 'Verbit Guidelines', path: '/verbit-transcription-guidelines' },
+              { label: 'Verbit Format Guide', path: '/verbit-format-guide' },
+            ],
+          },
+          {
+            brand: 'Speechpad',
+            color: 'red',
+            links: [
+              { label: 'Speechpad Guidelines', path: '/speechpad-transcription-guidelines' },
+              { label: 'Speechpad Format Guide', path: '/speechpad-format-guide' },
+            ],
+          },
+          {
+            brand: 'Happy Scribe',
+            color: 'yellow',
+            links: [
+              { label: 'Happy Scribe Guidelines', path: '/happy-scribe-transcription-guidelines' },
+              { label: 'Happy Scribe Format Guide', path: '/happy-scribe-format-guide' },
+            ],
+          },
+          {
+            brand: '3Play Media',
+            color: 'cyan',
+            links: [
+              { label: '3Play Media Guidelines', path: '/3play-media-transcription-guidelines' },
+              { label: '3Play Media Format Guide', path: '/3play-media-format-guide' },
+            ],
+          },
+          {
+            brand: 'GMR Transcription',
+            color: 'emerald',
+            links: [
+              { label: 'GMR Transcription Guidelines', path: '/gmr-transcription-guidelines' },
+              { label: 'GMR Format Guide', path: '/gmr-transcript-format-guide' },
+            ],
+          },
+        ].map(({ brand, links }) => (
+          <div key={brand} className="mb-6">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+              <FileText className="w-3.5 h-3.5 text-violet-400" />
+              {brand}
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {links.map(({ label, path }) => (
+                <Link
+                  key={path}
+                  to={path}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs font-medium text-gray-600 dark:text-gray-300 hover:border-violet-300 dark:hover:border-violet-700 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-950/20 transition-all"
+                >
+                  {label}
+                  <ChevronRight className="w-3 h-3 opacity-50" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
       </section>
     </>
   )
