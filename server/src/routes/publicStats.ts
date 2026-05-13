@@ -8,7 +8,7 @@ import express, { Request, Response } from 'express'
 import { prisma } from '../db'
 import { getLogger } from '../lib/logger'
 
-const log = getLogger('publicStats')
+const log = getLogger('api')
 const router = express.Router()
 export default router
 
