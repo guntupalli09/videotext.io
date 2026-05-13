@@ -22,6 +22,7 @@ const BurnSubtitles = lazy(() => import('./BurnSubtitles'))
 const CompressVideo = lazy(() => import('./CompressVideo'))
 const BatchProcess = lazy(() => import('./BatchProcess'))
 const VoiceRecorder = lazy(() => import('./VoiceRecorder'))
+const BrandGuidelinePage = lazy(() => import('./BrandGuidelinePage'))
 
 const TOOL_MAP: Record<SeoToolKey, React.LazyExoticComponent<React.ComponentType<any>>> = {
   'video-to-transcript': VideoToTranscript,
@@ -32,6 +33,7 @@ const TOOL_MAP: Record<SeoToolKey, React.LazyExoticComponent<React.ComponentType
   'compress-video': CompressVideo,
   'batch-process': BatchProcess,
   'voice-to-text': VoiceRecorder,
+  'brand-guideline': BrandGuidelinePage,
 }
 
 const PRIMARY_CTA_BY_INTENT_CLASS = {
@@ -50,6 +52,7 @@ const PRIMARY_TOOL_PATH_BY_KEY: Record<SeoToolKey, string> = {
   'compress-video': '/compress-video',
   'batch-process': '/batch-process',
   'voice-to-text': '/voice-recorder',
+  'brand-guideline': '/guideline-format',
 }
 
 function getIntentClass(intentKey: string, toolKey: SeoToolKey): keyof typeof PRIMARY_CTA_BY_INTENT_CLASS {
