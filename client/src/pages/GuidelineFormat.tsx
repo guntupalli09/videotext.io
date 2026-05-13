@@ -895,7 +895,7 @@ export default function GuidelineFormat() {
     <>
       <ToolLayout
         breadcrumbs={[{ label: 'Transcript Style Guide Formatter', href: '/guideline-format' }]}
-        title="Transcript Style Guide Formatter (Rev, GoTranscript, TranscribeMe, Scribie)"
+        title="Client Ready Transcripts in Minutes - Save Time on QA, Formatting and QA"
         subtitle="Paste your raw transcript, select a platform preset, and apply style guide rules automatically — verbatim handling, speaker labels, filler words, QA validation — then export client-ready."
         icon={<FileText className="text-violet-600 dark:text-violet-400" strokeWidth={1.75} />}
         sidebar={null}
