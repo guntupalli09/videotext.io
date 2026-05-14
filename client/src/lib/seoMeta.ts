@@ -286,8 +286,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Switch from transcript-only workflows. VideoText generates transcript, SRT/VTT subtitles, speaker labels, summary, and chapters in one upload.',
   },
   '/videotext-vs-rev': {
-    title: 'VideoText vs Rev — AI Workflow vs Service Comparison',
-    description: 'Compare VideoText and Rev across speed, workflow depth, output structure, and use-case fit.',
+    title: 'VideoText vs Rev (2025) — Pricing, Accuracy & Features Compared',
+    description: 'Rev AI charges $0.25/min. Rev Human charges $1.50+/min. VideoText is 6× cheaper, supports 90+ languages, produces transcript + subtitles + summary + chapters, and deletes files immediately. Full comparison.',
+  },
+  '/temi-vs-videotext': {
+    title: 'Temi vs VideoText (2025) — Pricing, Accuracy, Speed & Features Compared',
+    description: 'Temi charges $0.25/min and supports English only. VideoText is 6× cheaper, supports 90+ languages, and produces transcript + SRT + VTT + summary + chapters per upload. Full 360° comparison also covering Rev vs VideoText.',
   },
   '/best-otter-alternatives': {
     title: 'Best Otter Alternatives — Fast Transcription Tools',
@@ -492,6 +496,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
 
   '/videotext-vs-turboscribe': [{ name: 'Home', path: '/' }, { name: 'VideoText vs TurboScribe', path: '/videotext-vs-turboscribe' }],
   '/videotext-vs-rev': [{ name: 'Home', path: '/' }, { name: 'VideoText vs Rev', path: '/videotext-vs-rev' }],
+  '/temi-vs-videotext': [{ name: 'Home', path: '/' }, { name: 'Compare', path: '/compare' }, { name: 'Temi vs VideoText', path: '/temi-vs-videotext' }],
   '/best-otter-alternatives': [{ name: 'Home', path: '/' }, { name: 'Best Otter Alternatives', path: '/best-otter-alternatives' }],
   '/best-descript-alternatives': [{ name: 'Home', path: '/' }, { name: 'Best Descript Alternatives', path: '/best-descript-alternatives' }],
   '/ai-transcription-workflow': [{ name: 'Home', path: '/' }, { name: 'AI Transcription Workflow', path: '/ai-transcription-workflow' }],
@@ -1002,6 +1007,88 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       itemReviewed: { '@type': 'SoftwareApplication', name: 'VideoText and Rev' },
       reviewBody: 'Comparison between AI workflow throughput and service-based transcription models.',
       author: { '@type': 'Organization', name: SITE_NAME },
+    },
+  ],
+  '/temi-vs-videotext': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: 'Temi vs VideoText — Full 2025 Comparison',
+      description: 'A 360-degree comparison of Temi and VideoText covering pricing, accuracy, speed, output formats, language support, and data privacy. Also covers Rev vs VideoText.',
+      author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      url: `${SITE_URL}/temi-vs-videotext`,
+      dateModified: '2025-05-01',
+      about: [
+        { '@type': 'SoftwareApplication', name: 'Temi' },
+        { '@type': 'SoftwareApplication', name: 'Rev' },
+        { '@type': 'SoftwareApplication', name: 'VideoText', url: SITE_URL },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Is VideoText cheaper than Temi?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Temi charges $0.25/minute for every file. VideoText Pro costs $19/month for 450 minutes — roughly $0.042/minute. That is more than 6× cheaper per minute for any regular workload. VideoText also offers 60 minutes per month free with no credit card required.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the best alternative to Temi?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText is the best Temi alternative for most workflows. It is 6× cheaper per minute on a flat subscription, supports 90+ languages via OpenAI Whisper large-v3, produces transcript + SRT subtitles + VTT subtitles + AI summary + chapter markers in one upload, and deletes your files immediately after processing with zero data retention.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Does Temi support languages other than English?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'No. Temi supports English only. This is not a configuration option — the platform was built for English and never expanded. VideoText supports 90+ languages using the full OpenAI Whisper large-v3 model at the same speed and quality for all major languages.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How does Rev compare to VideoText?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Rev AI costs $0.25/minute — the same as Temi. Rev Human costs $1.50+/minute. VideoText Pro costs approximately $0.042/minute (flat $19/month for 450 min). VideoText also generates more outputs per file and has zero data retention versus Rev\'s 30-day retention policy.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How fast is VideoText compared to Temi for transcription?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Temi processes audio near real-time — a 60-minute video takes approximately 60 minutes. VideoText uses parallel async processing and completes the same file in 3–5 minutes. A 2-hour video: approximately 8–12 minutes on VideoText versus 120 minutes on Temi.',
+          },
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Temi vs VideoText — Key Differences',
+      description: 'The 6 most important differences between Temi and VideoText transcription tools.',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Price: VideoText ~$0.042/min vs Temi $0.25/min — 6× cheaper on Pro subscription' },
+        { '@type': 'ListItem', position: 2, name: 'Languages: VideoText 90+ vs Temi English only' },
+        { '@type': 'ListItem', position: 3, name: 'Speed: VideoText 3–5 min/hr vs Temi ~60 min/hr (near real-time)' },
+        { '@type': 'ListItem', position: 4, name: 'Outputs: VideoText transcript + SRT + VTT + summary + chapters vs Temi transcript only' },
+        { '@type': 'ListItem', position: 5, name: 'Privacy: VideoText zero data retention vs Temi stores files on servers' },
+        { '@type': 'ListItem', position: 6, name: 'YouTube: VideoText accepts direct URLs vs Temi requires manual file download' },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['[data-speakable]', 'h1', '.seo-intro'],
     },
   ],
   '/best-otter-alternatives': [
