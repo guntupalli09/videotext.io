@@ -172,10 +172,9 @@ export function Hero() {
         </h1>
 
         {/* Sub-headline */}
-        <p className="text-center text-[16px] sm:text-[17px] text-white/50 max-w-lg mx-auto leading-relaxed mb-8">
-          Upload a video or format your transcript — get AI summary, chapters,{' '}
-          <span className="text-violet-300 font-medium">and translation</span>{' '}
-          automatically.
+        <p className="text-center text-[16px] sm:text-[17px] text-white/60 max-w-xl mx-auto leading-relaxed mb-8">
+          One clean transcription engine for video, audio, YouTube links, subtitles, and transcript formatting —
+          <span className="text-violet-300 font-medium"> upload once and export everything</span>.
         </p>
 
         {/* Dropzone + Formatter */}

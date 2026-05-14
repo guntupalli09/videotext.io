@@ -42,6 +42,119 @@ const PLANS = [
   },
 ];
 
+
+const INTENT_LINK_GROUPS = [
+  {
+    title: 'Convert audio or video to text',
+    links: [
+      'AI audio transcription',
+      'Audio to text converter',
+      'Video to text converter',
+      'Convert MP3 to text',
+      'Convert audio files to accurate text',
+      'Transcribe audio recordings to text',
+      'Transcribe video to text',
+      'Voice to text online',
+    ],
+  },
+  {
+    title: 'Create captions and subtitles',
+    links: [
+      'Generate SRT subtitles',
+      'Generate VTT captions',
+      'Create YouTube captions',
+      'Convert MP4 to subtitles',
+      'Subtitle generator for video',
+      'Translate subtitle files',
+      'Burn subtitles into video',
+      'Fix subtitle timing',
+    ],
+  },
+  {
+    title: 'Workflow and team use cases',
+    links: [
+      'Meeting transcription tool',
+      'Podcast transcription tool',
+      'Interview transcription tool',
+      'Lecture transcription',
+      'Sermon transcription',
+      'Legal transcription workflow',
+      'Medical transcription workflow',
+      'Research interview transcripts',
+    ],
+  },
+  {
+    title: 'Alternative and comparison intent',
+    links: [
+      'TurboScribe alternative',
+      'Otter.ai alternative',
+      'Descript alternative',
+      'Rev alternative',
+      'Sonix alternative',
+      'Trint alternative',
+      'Happy Scribe alternative',
+      'Best transcription software',
+    ],
+  },
+];
+
+function slugifyIntent(label: string) {
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function TranscriptionIntentLinks() {
+  return (
+    <section className="relative overflow-hidden bg-white dark:bg-gray-950 py-12 border-t border-gray-100 dark:border-gray-800 transition-colors duration-500">
+      <div className="absolute inset-0 pointer-events-none opacity-[0.45] dark:opacity-[0.18]" style={{ backgroundImage: 'linear-gradient(115deg, transparent 0 48%, rgba(124,58,237,.12) 48% 49%, transparent 49% 100%)', backgroundSize: '72px 72px' }} />
+      <div className="relative max-w-5xl mx-auto px-6">
+        <div className="max-w-3xl mb-7">
+          <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">
+            One engine, many search paths
+          </p>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white font-display transition-colors duration-500">
+            Every transcription need should land on the same simple upload flow.
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 leading-relaxed transition-colors duration-500">
+            Instead of sending visitors through separate feature pages before they understand the product, keep one clean transcription engine and use clear anchor text to show it handles audio, video, YouTube, subtitles, meetings, interviews, podcasts, and competitor-switcher intent.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {INTENT_LINK_GROUPS.map((group) => (
+            <div key={group.title} className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/70 p-4 shadow-sm">
+              <h3 className="text-sm font-extrabold text-gray-900 dark:text-white mb-3">{group.title}</h3>
+              <div className="space-y-2">
+                {group.links.map((label) => (
+                  <Link
+                    key={label}
+                    to={`/video-to-transcript?intent=${slugifyIntent(label)}`}
+                    className="block text-sm leading-snug text-gray-600 dark:text-gray-300 hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-violet-200 dark:border-violet-800/70 bg-violet-50 dark:bg-violet-950/30 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="font-extrabold text-gray-900 dark:text-white">Simple path: search phrase → upload → transcript.</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">All high-intent links above keep the visitor focused on the same primary transcription workflow.</p>
+          </div>
+          <Link
+            to="/video-to-transcript"
+            className="inline-flex items-center justify-center rounded-xl bg-violet-600 px-5 py-3 text-sm font-bold text-white hover:bg-violet-700 transition-colors whitespace-nowrap"
+          >
+            Open transcription engine →
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function PricingSection() {
   return (
     <section id="pricing" className="relative py-12 bg-gray-950 transition-colors duration-500 overflow-hidden">
@@ -156,48 +269,8 @@ export default function Home() {
       {/* 8 — FAQ */}
       <FAQ />
 
-      {/* 8.5 — High-intent transcription hub links */}
-      <section className="bg-white dark:bg-gray-950 py-10 border-t border-gray-100 dark:border-gray-800 transition-colors duration-500">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="mb-5">
-            <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">
-              High-intent guides
-            </p>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white font-display transition-colors duration-500">
-              Choose your workflow path (without competing with the core tool page)
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-3xl transition-colors duration-500">
-              Core entry points are <span className="font-semibold text-gray-700 dark:text-gray-200">Video to Transcript</span>, <span className="font-semibold text-gray-700 dark:text-gray-200">Voice to Text</span>, and <span className="font-semibold text-gray-700 dark:text-gray-200">YouTube Transcript Generator</span>. These supporting pages handle specific contexts like comparisons and meeting workflows.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {[
-              { label: 'Video to Transcript (Primary)', path: '/video-to-transcript', desc: 'Main page for broad video-to-text and transcript intent' },
-              { label: 'Best Transcription Tool', path: '/best-transcription-tool', desc: 'Decision support by speed, outputs, and workflow fit' },
-              { label: 'YouTube Transcript Generator (Primary)', path: '/youtube-transcript-generator', desc: 'Paste a YouTube link and generate transcript-ready output in minutes' },
-              { label: 'Podcast Transcription Tool', path: '/podcast-transcription-tool', desc: 'Create show notes, clips, and searchable transcript assets' },
-              { label: 'Meeting Transcription Tool', path: '/meeting-transcription-tool', desc: 'Turn calls into summaries, transcripts, and follow-ups' },
-              { label: 'Google Meet Transcript', path: '/google-meet-transcript', desc: 'Download the Meet recording, upload, and get transcript outputs fast' },
-              { label: 'Zoom Meeting Transcript', path: '/zoom-meeting-transcript', desc: 'Download Zoom recording, upload once, and get structured transcript output' },
-              { label: 'Meeting Recording to Transcript', path: '/meeting-recording-to-transcript', desc: 'Hub workflow for Zoom, Meet, Teams, and webinar recordings' },
-              { label: 'Interview Transcription Tool', path: '/interview-transcription-tool', desc: 'Speaker-structured transcripts for newsroom and research' },
-              { label: 'Client transcription style guide formatter', path: '/guideline-format', desc: 'Prep transcript text against Rev-, GoTranscript-, and related marketplace rule cards before QA' },
-            ].map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className="group rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4 hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-md transition-all duration-200"
-              >
-                <p className="font-bold text-sm text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors">
-                  {item.label}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-snug">{item.desc}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* 8.5 — TurboScribe-inspired intent links routed to one engine */}
+      <TranscriptionIntentLinks />
 
       {/* 9 — Free Tools cluster */}
       <section className="bg-gray-50 dark:bg-gray-900/60 border-y border-gray-100 dark:border-gray-800 py-8 transition-colors duration-500">
