@@ -15,6 +15,8 @@ import VideoTextVsRev from './pages/VideoTextVsRev'
 import OtterVsVideoText from './pages/OtterVsVideoText'
 import DescriptVsVideoText from './pages/DescriptVsVideoText'
 import VideoTextVsTurboScribe from './pages/VideoTextVsTurboScribe'
+import BestOtterAlternatives from './pages/BestOtterAlternatives'
+import BestDescriptAlternatives from './pages/BestDescriptAlternatives'
 
 const SSR_PAGES: Record<string, React.ComponentType> = {
   '/temi-vs-videotext': TemiVsVideoText,
@@ -22,6 +24,8 @@ const SSR_PAGES: Record<string, React.ComponentType> = {
   '/otter-vs-videotext': OtterVsVideoText,
   '/descript-vs-videotext': DescriptVsVideoText,
   '/videotext-vs-turboscribe': VideoTextVsTurboScribe,
+  '/best-otter-alternatives': BestOtterAlternatives,
+  '/best-descript-alternatives': BestDescriptAlternatives,
 }
 
 /**

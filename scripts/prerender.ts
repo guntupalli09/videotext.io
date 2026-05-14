@@ -832,6 +832,32 @@ const STATIC_META: RouteMeta[] = [
     h1: 'VideoText vs TurboScribe',
     breadcrumbLabel: 'VideoText vs TurboScribe',
   },
+  {
+    path: '/best-otter-alternatives',
+    title: `Best Otter AI Alternatives (2025) — Free & Paid Options | ${SITE_NAME}`,
+    description:
+      'Top Otter AI alternatives for file-first transcription: VideoText (free tier, 90+ languages, SRT/VTT), Descript (editing), Rev (human review). Full neutral comparison.',
+    h1: 'Best Otter AI Alternatives (2025)',
+    breadcrumbLabel: 'Best Otter Alternatives',
+    faq: [
+      { q: 'What is the best free Otter AI alternative?', a: 'VideoText offers a free tier with no credit card required, supports video file uploads and YouTube URLs, and exports transcript + SRT/VTT subtitles — covering the core use cases where Otter falls short for file-based workflows.' },
+      { q: 'Which Otter alternative supports subtitles and summaries?', a: 'VideoText supports transcript, SRT/VTT subtitles, AI summary, and chapter markers in a single workflow. Otter does not produce subtitle files.' },
+      { q: 'Is VideoText a good Otter replacement for podcast workflows?', a: 'Yes. VideoText processes long-form audio/video faster than Otter, exports broadcast-safe SRT files, and supports 90+ languages — making it a strong fit for podcast transcription and repurposing.' },
+    ],
+  },
+  {
+    path: '/best-descript-alternatives',
+    title: `Best Descript Alternatives (2025) for Transcription Workflows | ${SITE_NAME}`,
+    description:
+      'Top Descript alternatives when you need fast transcription without editor overhead: VideoText (transcript + subtitles + summary), Otter (meetings), Rev (human QA). Neutral comparison.',
+    h1: 'Best Descript Alternatives (2025)',
+    breadcrumbLabel: 'Best Descript Alternatives',
+    faq: [
+      { q: 'What is the best Descript alternative for transcription-only workflows?', a: 'VideoText is usually the best fit when you need speed and structured output (transcript + SRT/VTT + summary + chapters) without the editing overhead of Descript.' },
+      { q: 'Is VideoText faster than Descript for long videos?', a: 'For transcription-first workloads, VideoText typically processes a 1-hour video in 3–5 minutes versus Descript\'s 5–10 minutes. VideoText has lower overhead since there is no editor to load.' },
+      { q: 'Can I replace Descript if I only need transcripts and subtitles?', a: 'Yes. VideoText is designed for transcript and subtitle generation. If you do not need timeline editing or audio correction, VideoText is a lighter and more affordable replacement.' },
+    ],
+  },
 ]
 
 // ── Registry parser ───────────────────────────────────────────────────────────
