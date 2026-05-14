@@ -125,6 +125,12 @@ export const CORE_PATHS: string[] = [
   '/compare',
   '/open',
   '/changelog',
+  // Cluster I — Comparison / vs pages (fully SSR-prerendered)
+  '/temi-vs-videotext',
+  '/videotext-vs-rev',
+  '/otter-vs-videotext',
+  '/descript-vs-videotext',
+  '/videotext-vs-turboscribe',
   // Cluster F — Journalist & Student pages - moved to Sitemap 2 via seoRegistry.ts
   // Cluster G — High-volume meeting platform alternatives - moved to Sitemap 2 via seoRegistry.ts
   // Cluster H — Voice-to-Text

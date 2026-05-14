@@ -18,6 +18,7 @@ import { getProgrammaticSeoEntries } from '../client/src/lib/generateSeoPages'
 import { getCanonicalPathForRoute } from '../client/src/lib/primaryUrls'
 import { getSoftwareApplicationJsonLd, getHowToJsonLd } from '../client/src/lib/seoMeta'
 import { getIndexablePaths } from './seo/registry'
+import { renderPageToHtml } from '../client/src/ssr-render'
 
 const REPO_ROOT = path.resolve(__dirname, '..')
 // Vercel outputDirectory is the root-level dist/ (build copies client/dist → dist/).
@@ -788,6 +789,48 @@ const STATIC_META: RouteMeta[] = [
     description:
       'Subtitle format specs, Netflix delivery requirements, platform character limits, reading speed standards, and timing rules — all in one reference guide.',
     breadcrumbLabel: 'Subtitle Resources',
+  },
+
+  // ── Comparison / vs pages ────────────────────────────────────────────────
+  {
+    path: '/temi-vs-videotext',
+    title: `Temi vs VideoText (2025) — Pricing, Accuracy, Speed & Features Compared | ${SITE_NAME}`,
+    description:
+      'Temi charges $0.25/min and supports English only. VideoText is 6× cheaper, supports 90+ languages, and produces transcript + SRT + VTT + summary + chapters per upload. Full 360° comparison.',
+    h1: 'Temi vs VideoText (2025): The Full 360° Comparison',
+    breadcrumbLabel: 'Temi vs VideoText',
+  },
+  {
+    path: '/videotext-vs-rev',
+    title: `VideoText vs Rev (2025) — AI Pricing, Accuracy & Features Compared | ${SITE_NAME}`,
+    description:
+      'Rev AI charges $0.25/min; VideoText Pro is ~$0.042/min flat. VideoText adds 90+ languages, zero data retention, AI summary, chapters, and subtitle burn-in. Full comparison.',
+    h1: 'VideoText vs Rev (2025): Full Comparison',
+    breadcrumbLabel: 'VideoText vs Rev',
+  },
+  {
+    path: '/otter-vs-videotext',
+    title: `Otter vs VideoText — Meeting Notes vs File Transcription | ${SITE_NAME}`,
+    description:
+      'Otter is optimised for live meeting capture. VideoText is stronger for file-first transcription: faster processing, SRT/VTT subtitle export, YouTube URL input, and benchmark transparency.',
+    h1: 'Otter vs VideoText',
+    breadcrumbLabel: 'Otter vs VideoText',
+  },
+  {
+    path: '/descript-vs-videotext',
+    title: `Descript vs VideoText — Editor Workflow vs Transcription Throughput | ${SITE_NAME}`,
+    description:
+      'Descript is an editor-first tool. VideoText is transcription-first: 6× faster, starts at $0, no desktop install. Choose based on whether editing or throughput is your bottleneck.',
+    h1: 'Descript vs VideoText',
+    breadcrumbLabel: 'Descript vs VideoText',
+  },
+  {
+    path: '/videotext-vs-turboscribe',
+    title: `VideoText vs TurboScribe — Full 2025 Comparison | ${SITE_NAME}`,
+    description:
+      'VideoText vs TurboScribe: both are fast, but VideoText adds SRT/VTT subtitles, AI summary, chapter markers, YouTube URL input, and subtitle burn-in in one workflow.',
+    h1: 'VideoText vs TurboScribe',
+    breadcrumbLabel: 'VideoText vs TurboScribe',
   },
 ]
 
@@ -1748,8 +1791,13 @@ function main() {
     let html = injectHead(template, meta)
     html = injectStructuredData(html, routePath, meta)
 
-    // Inject visible prerender H1 block so non-JS crawlers can read headings and context.
-    if (meta.h1) {
+    // Full SSR: inject complete React-rendered HTML into the root div for comparison/vs pages.
+    // Non-JS crawlers (LLM training pipelines, etc.) will see the full page content.
+    const ssrHtml = renderPageToHtml(routePath)
+    if (ssrHtml) {
+      html = html.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`)
+    } else if (meta.h1) {
+      // For all other pages: inject minimal H1 + description for non-JS crawlers.
       const h1Html = buildH1Html(meta)
       html = html.replace('</body>', `${h1Html}\n</body>`)
     }
