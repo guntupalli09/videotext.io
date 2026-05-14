@@ -1003,10 +1003,60 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
   '/videotext-vs-rev': [
     {
       '@context': 'https://schema.org',
-      '@type': 'Review',
-      itemReviewed: { '@type': 'SoftwareApplication', name: 'VideoText and Rev' },
-      reviewBody: 'Comparison between AI workflow throughput and service-based transcription models.',
-      author: { '@type': 'Organization', name: SITE_NAME },
+      '@type': 'Article',
+      headline: 'VideoText vs Rev — Full 2025 Comparison',
+      description: 'A complete comparison of VideoText and Rev covering pricing, AI vs human transcription, accuracy, speed, output formats, language support, and data privacy.',
+      author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      url: `${SITE_URL}/videotext-vs-rev`,
+      dateModified: '2025-05-01',
+      about: [
+        { '@type': 'SoftwareApplication', name: 'Rev' },
+        { '@type': 'SoftwareApplication', name: 'VideoText', url: SITE_URL },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Is VideoText cheaper than Rev?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Rev AI charges $0.25/minute per file. Rev Human charges $1.50+/minute. VideoText Pro is $19/month for 450 minutes (~$0.042/minute) — approximately 6× cheaper than Rev AI and 36× cheaper than Rev Human at equivalent usage.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the best Rev alternative?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText is the best Rev AI alternative for most workflows: 6× cheaper per minute, 90+ language support, zero data retention, and produces transcript + SRT + VTT subtitles + AI summary + chapters in one upload. For human-reviewed transcription required by compliance policy, Rev Human remains the option — but for AI transcription, VideoText wins on every dimension.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How fast is VideoText compared to Rev AI?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText processes a 1-hour video in 3–5 minutes using parallel async processing. Rev AI takes approximately 5–10 minutes. Rev Human takes 12–24 hours. VideoText is the fastest option.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Does Rev store my audio files?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Rev retains uploaded files for up to 30 days. Rev Human transcriptionists actively listen to your audio content. VideoText processes files in a transient environment and deletes them immediately — zero retention, no humans access your content.',
+          },
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['[data-speakable]', 'h1', '.seo-intro'],
     },
   ],
   '/temi-vs-videotext': [

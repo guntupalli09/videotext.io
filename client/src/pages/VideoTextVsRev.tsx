@@ -1,100 +1,13 @@
 import { Link } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
 import AnswerBlock from '../components/AnswerBlock'
 
-const SITE_URL = 'https://videotext.io'
 const CHECK = <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm">✓</span>
 const CROSS = <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 font-bold text-sm">✗</span>
 const PARTIAL = <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 font-bold text-sm">~</span>
 
-const faqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: [
-    {
-      '@type': 'Question',
-      name: 'Is VideoText cheaper than Rev?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Yes. Rev AI charges $0.25/minute per file. Rev Human charges $1.50+/minute. VideoText Pro is $19/month for 450 minutes (~$0.042/minute) — approximately 6× cheaper than Rev AI and 36× cheaper than Rev Human at equivalent usage.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'What is the best Rev alternative?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'VideoText is the best Rev AI alternative for most workflows: 6× cheaper per minute, 90+ language support, zero data retention, and produces transcript + SRT + VTT subtitles + AI summary + chapters in one upload. For human-reviewed transcription required by compliance policy, Rev Human remains the option — but for AI transcription, VideoText wins on every dimension.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'Does VideoText match Rev accuracy?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'VideoText uses OpenAI Whisper large-v3 and achieves 96–99% accuracy on clean audio. Rev AI uses a proprietary model with approximately 94–96% accuracy. VideoText is equal or better on English, and supports 90+ languages where Rev AI is limited to ~36.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'How fast is VideoText compared to Rev AI?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'VideoText processes a 1-hour video in 3–5 minutes using parallel async processing. Rev AI takes approximately 5–10 minutes. Rev Human takes 12–24 hours. VideoText is the fastest option among the three.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'Does Rev store my audio files?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Yes. Rev retains uploaded files for up to 30 days. Rev Human transcriptionists actively listen to your audio content. VideoText processes files in a transient environment and deletes them immediately — zero retention, no humans access your content.',
-      },
-    },
-  ],
-}
-
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: 'VideoText vs Rev — Full 2025 Comparison',
-  description: 'A complete comparison of VideoText and Rev covering pricing, AI vs human transcription, accuracy, speed, output formats, language support, and data privacy.',
-  author: { '@type': 'Organization', name: 'VideoText', url: SITE_URL },
-  publisher: { '@type': 'Organization', name: 'VideoText', url: SITE_URL },
-  url: `${SITE_URL}/videotext-vs-rev`,
-  dateModified: '2025-05-01',
-}
-
-const breadcrumbSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-    { '@type': 'ListItem', position: 2, name: 'Compare', item: `${SITE_URL}/compare` },
-    { '@type': 'ListItem', position: 3, name: 'VideoText vs Rev', item: `${SITE_URL}/videotext-vs-rev` },
-  ],
-}
-
 export default function VideoTextVsRev() {
   return (
-    <>
-      <Helmet>
-        <title>VideoText vs Rev (2025) — Pricing, Accuracy & Feature Comparison</title>
-        <meta
-          name="description"
-          content="Rev AI charges $0.25/min. Rev Human charges $1.50+/min. VideoText is 6× cheaper, supports 90+ languages, produces transcript + subtitles + summary + chapters per upload, and deletes files immediately. Full 2025 comparison."
-        />
-        <meta name="keywords" content="VideoText vs Rev, Rev alternative, best Rev alternative, Rev AI alternative, Rev transcription review, cheaper than Rev, Rev competitor" />
-        <link rel="canonical" href={`${SITE_URL}/videotext-vs-rev`} />
-        <meta property="og:title" content="VideoText vs Rev — Full 2025 Comparison" />
-        <meta property="og:description" content="Rev charges $0.25–$1.50+/min and retains your files for 30 days. VideoText is 6× cheaper, produces more outputs, and deletes files immediately." />
-        <meta property="og:type" content="article" />
-        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
-      </Helmet>
-
-      <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
 
         {/* Hero */}
         <div className="bg-gradient-to-br from-slate-900 via-violet-950 to-violet-900 text-white py-16 px-6">
@@ -377,6 +290,5 @@ export default function VideoTextVsRev() {
 
         </div>
       </div>
-    </>
   )
 }
