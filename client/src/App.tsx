@@ -83,6 +83,7 @@ const AiTranscriptionTools = lazy(() => import('./pages/AiTranscriptionTools'))
 const VideoTextVsTurboScribe = lazy(() => import('./pages/VideoTextVsTurboScribe'))
 const TurboScribeAlternative = lazy(() => import('./pages/TurboScribeAlternative'))
 const VideoTextVsRev = lazy(() => import('./pages/VideoTextVsRev'))
+const TemiVsVideoText = lazy(() => import('./pages/TemiVsVideoText'))
 const BestOtterAlternatives = lazy(() => import('./pages/BestOtterAlternatives'))
 const BestDescriptAlternatives = lazy(() => import('./pages/BestDescriptAlternatives'))
 const AiTranscriptionWorkflow = lazy(() => import('./pages/AiTranscriptionWorkflow'))
@@ -539,6 +540,8 @@ function App() {
             <Route path="/videotext-vs-turboscribe" element={<VideoTextVsTurboScribe />} />
             <Route path="/turboscribe-alternative" element={<TurboScribeAlternative />} />
             <Route path="/videotext-vs-rev" element={<VideoTextVsRev />} />
+            <Route path="/temi-vs-videotext" element={<TemiVsVideoText />} />
+            <Route path="/rev-vs-videotext" element={<TemiVsVideoText />} />
             <Route path="/best-otter-alternatives" element={<BestOtterAlternatives />} />
             <Route path="/best-descript-alternatives" element={<BestDescriptAlternatives />} />
             <Route path="/ai-transcription-workflow" element={<AiTranscriptionWorkflow />} />
