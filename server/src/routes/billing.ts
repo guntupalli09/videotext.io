@@ -21,7 +21,7 @@ interface CheckoutRequestBody {
   email?: string
   stripeCustomerId?: string
   frontendOrigin?: string
-  /** Promo code for early testers (e.g. EARLY30, EARLY50, EARLY70, EARLY100). Only applied for Basic and Pro. */
+  /** Promo code for early testers (e.g. EARLY30, EARLY50, EARLY70, EARLY100). Applied for Pro and Founding Pro. */
   promotionCode?: string
   /** JWT from POST /api/auth/verify-otp; required for subscription so we use verified email. */
   emailVerificationToken?: string
@@ -128,12 +128,13 @@ router.post('/checkout', async (req: Request, res: Response) => {
         priceId = annual && prices.agencyAnnualPriceId ? prices.agencyAnnualPriceId : prices.agencyPriceId
       }
 
-      // Promo codes for Pro (30/50/70/100% off for early testers)
+      // Promo codes for Pro and Founding Pro (30/50/70/100% off for early testers)
+      const planSupportsPromo = plan === 'basic' || plan === 'pro' || plan === 'founding_workflow'
       const promoId =
-        (plan === 'basic' || plan === 'pro') && promotionCode
+        planSupportsPromo && promotionCode
           ? getStripePromotionCodeId(promotionCode)
           : null
-      if (promotionCode && (plan === 'basic' || plan === 'pro') && !promoId) {
+      if (promotionCode && planSupportsPromo && !promoId) {
         return res.status(400).json({ message: 'Invalid or expired promo code. Check the code and try again.' })
       }
 
