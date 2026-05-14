@@ -1,6 +1,5 @@
 import { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
 import AnswerBlock from '../components/AnswerBlock'
 
 const CHECK = (
@@ -12,8 +11,6 @@ const CROSS = (
 const PARTIAL = (
   <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 font-bold text-sm">~</span>
 )
-
-const SITE_URL = 'https://videotext.io'
 
 function SectionHeading({ id, children }: { id?: string; children: ReactNode }) {
   return (
@@ -29,157 +26,9 @@ function SubHeading({ children }: { children: ReactNode }) {
   )
 }
 
-// ── Structured data ──────────────────────────────────────────────────────────
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: 'Temi vs VideoText — Full 2025 Comparison',
-  description:
-    'A 360-degree comparison of Temi and VideoText covering pricing, accuracy, speed, output formats, language support, and data privacy. Also covers Rev vs VideoText.',
-  author: { '@type': 'Organization', name: 'VideoText', url: SITE_URL },
-  publisher: { '@type': 'Organization', name: 'VideoText', url: SITE_URL },
-  url: `${SITE_URL}/temi-vs-videotext`,
-  dateModified: '2025-05-01',
-  mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/temi-vs-videotext` },
-  about: [
-    { '@type': 'SoftwareApplication', name: 'Temi', url: 'https://www.temi.com' },
-    { '@type': 'SoftwareApplication', name: 'Rev', url: 'https://www.rev.com' },
-    { '@type': 'SoftwareApplication', name: 'VideoText', url: SITE_URL },
-  ],
-}
-
-const faqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: [
-    {
-      '@type': 'Question',
-      name: 'Is VideoText cheaper than Temi?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Yes. Temi charges $0.25/minute for every file. VideoText Pro costs $19/month for 450 minutes — roughly $0.042/minute. That is more than 6× cheaper for any regular workload. VideoText also offers 60 minutes per month free with no credit card required.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'Does Temi support languages other than English?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'No. Temi supports English only. VideoText supports 90+ languages using OpenAI Whisper large-v3 with no speed or accuracy degradation on major languages such as Spanish, French, German, Japanese, Hindi, Arabic, and Portuguese.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'What is the best alternative to Temi?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'VideoText is the best Temi alternative for most workflows. It is 6× cheaper per minute on the Pro subscription, supports 90+ languages, produces transcript + SRT subtitles + VTT subtitles + AI summary + chapter markers in one upload, and deletes your files immediately after processing with zero data retention.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'How does Rev compare to VideoText?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Rev AI costs $0.25/minute — the same as Temi. Rev Human costs $1.50+/minute. VideoText Pro costs approximately $0.042/minute (flat $19/month for 450 min). VideoText also generates more outputs per file (transcript + subtitles + summary + chapters) and has zero data retention versus Rev\'s 30-day retention.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'How fast is VideoText compared to Temi?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Temi processes audio near real-time, meaning a 60-minute video takes approximately 60 minutes to transcribe. VideoText uses parallel async processing and completes the same file in 3–5 minutes. A 2-hour video takes about 8–12 minutes on VideoText versus 120 minutes on Temi.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'Does VideoText store my audio or video files?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'No. VideoText processes your file and deletes it immediately after transcription completes. Zero retention — nothing stored on servers. Temi stores files on their servers. Rev retains files for up to 30 days.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'Does Temi generate SRT or VTT subtitle files?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Temi exports a basic SRT file but does not apply broadcast-safe line lengths, reading speed caps, or break optimization. VideoText generates properly formatted SRT and VTT files with broadcast-safe line wrapping ready for YouTube, social media, and broadcast.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'Can VideoText process YouTube videos directly?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Yes. Paste a YouTube URL and VideoText downloads, processes, and transcribes it automatically. Temi and Rev require you to download the video file manually first.',
-      },
-    },
-  ],
-}
-
-const comparisonSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'ItemList',
-  name: 'Temi vs VideoText vs Rev — Feature Comparison',
-  description: 'Side-by-side feature comparison of Temi, Rev AI, and VideoText transcription tools.',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Pricing: VideoText $0.042/min vs Temi $0.25/min — 6× cheaper' },
-    { '@type': 'ListItem', position: 2, name: 'Language support: VideoText 90+ languages vs Temi English-only' },
-    { '@type': 'ListItem', position: 3, name: 'Processing speed: VideoText 3–5 min/hr vs Temi 60 min/hr (near real-time)' },
-    { '@type': 'ListItem', position: 4, name: 'Outputs: VideoText transcript + SRT + VTT + summary + chapters vs Temi transcript only' },
-    { '@type': 'ListItem', position: 5, name: 'Data privacy: VideoText zero retention vs Temi stores files' },
-    { '@type': 'ListItem', position: 6, name: 'YouTube URL: VideoText direct input vs Temi requires manual download' },
-    { '@type': 'ListItem', position: 7, name: 'Batch processing: VideoText yes vs Temi no' },
-  ],
-}
-
-const speakableSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'SpeakableSpecification',
-  cssSelector: ['[data-speakable]', 'h1', '.seo-intro'],
-}
-
-const breadcrumbSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-    { '@type': 'ListItem', position: 2, name: 'Compare', item: `${SITE_URL}/compare` },
-    { '@type': 'ListItem', position: 3, name: 'Temi vs VideoText', item: `${SITE_URL}/temi-vs-videotext` },
-  ],
-}
-
 export default function TemiVsVideoText() {
   return (
-    <>
-      <Helmet>
-        <title>Temi vs VideoText (2025) — Complete Comparison | VideoText</title>
-        <meta
-          name="description"
-          content="Temi costs $0.25/min and only transcribes English. VideoText is 6× cheaper, supports 90+ languages, and produces transcript + subtitles + summary + chapters in one upload. Full 2025 comparison with pricing, accuracy, speed, privacy, and use-case guidance."
-        />
-        <meta
-          name="keywords"
-          content="Temi vs VideoText, Temi alternative, best Temi alternative, Rev vs VideoText, Rev alternative, Temi transcription review, cheaper than Temi, VideoText vs Rev, Temi competitors, Temi vs Rev"
-        />
-        <link rel="canonical" href={`${SITE_URL}/temi-vs-videotext`} />
-        <meta property="og:title" content="Temi vs VideoText — Full 2025 Comparison" />
-        <meta
-          property="og:description"
-          content="Temi is pay-per-minute, English-only, and outputs only a basic transcript. VideoText is subscription-based, 90+ languages, delivers transcript + subtitles + summary + chapters in minutes."
-        />
-        <meta property="og:type" content="article" />
-        <meta property="og:url" content={`${SITE_URL}/temi-vs-videotext`} />
-        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(comparisonSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(speakableSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
-      </Helmet>
-
-      <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
 
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
         <div className="bg-gradient-to-br from-violet-950 via-violet-900 to-violet-800 text-white py-16 px-6">
@@ -1046,6 +895,5 @@ export default function TemiVsVideoText() {
 
         </div>
       </div>
-    </>
   )
 }

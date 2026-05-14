@@ -541,7 +541,7 @@ function App() {
             <Route path="/turboscribe-alternative" element={<TurboScribeAlternative />} />
             <Route path="/videotext-vs-rev" element={<VideoTextVsRev />} />
             <Route path="/temi-vs-videotext" element={<TemiVsVideoText />} />
-            <Route path="/rev-vs-videotext" element={<TemiVsVideoText />} />
+            <Route path="/rev-vs-videotext" element={<Navigate to="/temi-vs-videotext" replace />} />
             <Route path="/best-otter-alternatives" element={<BestOtterAlternatives />} />
             <Route path="/best-descript-alternatives" element={<BestDescriptAlternatives />} />
             <Route path="/ai-transcription-workflow" element={<AiTranscriptionWorkflow />} />
