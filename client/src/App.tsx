@@ -138,6 +138,17 @@ function RouteTransitionLayout() {
   )
 }
 
+function LowercaseRedirect() {
+  const { pathname, search, hash } = useLocation()
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (pathname !== pathname.toLowerCase()) {
+      navigate(pathname.toLowerCase() + search + hash, { replace: true })
+    }
+  }, [pathname, search, hash, navigate])
+  return null
+}
+
 function AppSeo() {
   const { pathname } = useLocation()
   const hasRoute = pathname in ROUTE_SEO
@@ -468,6 +479,7 @@ function App() {
   return (
     <BrowserRouter>
       {/* <WorkflowProvider> */}
+      <LowercaseRedirect />
       <AppSeo />
       <SessionTracker />
       <PostCheckoutHandler />
