@@ -180,7 +180,7 @@ export default function TemiVsVideoText() {
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                   {[
-                    ['60 min/month (1 hr video)', '$15.00', 'FREE (free tier)', '$15+/mo'],
+                    ['1 hr video/month', '$15.00', 'FREE (free tier)', '$15+/mo'],
                     ['2 hrs/week (≈8 hrs/mo)', '$120.00', '$40.00 flat (Pro)', '$80/mo'],
                     ['Daily 30-min podcast (≈13 hrs/mo)', '$195.00', '$40.00 flat (Pro)', '$155/mo'],
                     ['25 hrs/month', '$375.00', '$40.00 flat (Pro, unlimited)', '$335/mo'],

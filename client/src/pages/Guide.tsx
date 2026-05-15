@@ -301,8 +301,8 @@ const TOOL_GUIDES: ToolGuide[] = [
 
 /** Plan limits at a glance (authoritative summary; exact values in server/utils/limits.ts). */
 const PLAN_LIMITS = [
-  { plan: 'Free', minutes: '3 imports/day', maxDuration: '30 min', maxSize: '2 GB', languages: '1', batch: '-', aiFeatures: '-' },
-  { plan: 'Pro', minutes: 'Unlimited', maxDuration: '2 h', maxSize: '10 GB', languages: '70+', batch: 'Unlimited', aiFeatures: 'Summary, Chapters, Speakers, Translation' },
+  { plan: 'Free', uploads: '3/day', maxDuration: '30 min', maxSize: '2 GB', languages: '1', batch: '-', aiFeatures: '-' },
+  { plan: 'Pro', uploads: 'Unlimited', maxDuration: '2 h', maxSize: '10 GB', languages: '70+', batch: 'Unlimited', aiFeatures: 'Summary, Chapters, Speakers, Translation' },
 ]
 
 export default function Guide() {
@@ -509,7 +509,7 @@ export default function Guide() {
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
                   <th className="px-4 py-3 font-semibold text-gray-900">Plan</th>
-                  <th className="px-4 py-3 font-semibold text-gray-900">Quota</th>
+                  <th className="px-4 py-3 font-semibold text-gray-900">Uploads</th>
                   <th className="px-4 py-3 font-semibold text-gray-900">Max duration</th>
                   <th className="px-4 py-3 font-semibold text-gray-900">Max file size</th>
                   <th className="px-4 py-3 font-semibold text-gray-900">Languages</th>
@@ -521,7 +521,7 @@ export default function Guide() {
                 {PLAN_LIMITS.map((row) => (
                   <tr key={row.plan} className={`border-b border-gray-100 ${row.plan === 'Pro' ? 'bg-violet-50/40' : ''}`}>
                     <td className="px-4 py-3 font-medium text-gray-800">{row.plan}{row.plan === 'Pro' ? <span className="ml-2 text-[10px] bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full font-semibold">Popular</span> : ''}</td>
-                    <td className="px-4 py-3 text-gray-700">{row.minutes}</td>
+                    <td className="px-4 py-3 text-gray-700">{row.uploads}</td>
                     <td className="px-4 py-3 text-gray-700">{row.maxDuration}</td>
                     <td className="px-4 py-3 text-gray-700">{row.maxSize}</td>
                     <td className="px-4 py-3 text-gray-700">{row.languages}</td>

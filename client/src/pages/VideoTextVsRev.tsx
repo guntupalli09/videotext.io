@@ -98,7 +98,7 @@ export default function VideoTextVsRev() {
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                   {[
-                    ['60 min/month', '$15', '$90', 'FREE (free tier)'],
+                    ['1 hr/month', '$15', '$90', 'FREE (free tier)'],
                     ['8 hrs/month', '$120', '$720', '$40 flat'],
                     ['13 hrs/month (daily 30-min podcast)', '$195', '$1,170', '$40 flat'],
                     ['25 hrs/month', '$375', '$2,250', '$40 flat (Pro, unlimited)'],

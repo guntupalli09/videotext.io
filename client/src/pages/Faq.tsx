@@ -206,7 +206,7 @@ const FAQ_ITEMS = [
     category: "Speed",
     icon: Zap,
     q: "What is the maximum video duration?",
-    a: "Free: 30 minutes per video. Basic: 45 minutes. Pro: 2 hours. Agency: 4 hours. Longer videos are rejected at upload. To transcribe a longer video, trim it first or split it into segments before uploading.",
+    a: "Free: 30 minutes per video. Pro: 2 hours. Longer videos are rejected at upload. To transcribe a longer video, trim it first or split it into segments before uploading.",
   },
 ]
 

@@ -44,7 +44,7 @@ export default function Privacy() {
               Account and usage data
             </h2>
             <p>
-              If you sign up or subscribe, we store account information (e.g., email, plan) and usage data (e.g., minutes used per month) necessary for billing and product limits. We do not use your content for training models or for any purpose other than providing the service you requested.
+              If you sign up or subscribe, we store account information (e.g., email, plan) and usage data (e.g., uploads used today) necessary for billing and product limits. We do not use your content for training models or for any purpose other than providing the service you requested.
             </p>
           </section>
 

@@ -474,7 +474,7 @@ Today we are covering subtitle formats.`}
         </p>
         <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Our current SLA</h3>
         <p>
-          We aim to reply to all support emails within 24 hours, usually faster. If your job fails, the minutes are automatically returned to your account — no chasing required. If you are on a paid plan and something is wrong, we will prioritise a fix the same day.
+          We aim to reply to all support emails within 24 hours, usually faster. If your job fails, the upload is automatically returned to your daily quota — no chasing required. If you are on a paid plan and something is wrong, we will prioritise a fix the same day.
         </p>
         <p className="text-gray-500 dark:text-gray-400 italic">
           Email us at support@videotext.io. Or use the Feedback button in the app.

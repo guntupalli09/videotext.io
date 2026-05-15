@@ -609,7 +609,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'hardcoded-captions',
     faq: [
       { q: 'What are hardcoded captions?', a: 'Hardcoded captions (also called burned-in or open captions) are subtitles permanently embedded into the video frame so they are always visible without the viewer toggling anything. Upload your video and an SRT or VTT file, and we produce a single MP4 with captions baked in — ready for Instagram, TikTok, or silent autoplay environments.' },
-      { q: 'Are hardcoded captions free to create?', a: 'Yes. The free tier is available after signing up for free. Upload your video and subtitle file, choose your font size, position, and opacity, and download the output video at no cost within the monthly free limit. Upgrade to a paid plan for more minutes and larger video files.' },
+      { q: 'Are hardcoded captions free to create?', a: 'Yes. The free tier includes 3 uploads per day — no credit card required. Upload your video and subtitle file, choose your font size, position, and opacity, and download the output video. Upgrade to Pro for unlimited processing and larger video files.' },
       { q: 'Can I choose font size and position for hardcoded captions?', a: 'Yes. Before processing, set font size (small, medium, or large), vertical position (bottom or middle of screen), and background opacity (transparent to solid black box). These options let you match the caption style to your brand without needing a video editing tool.' },
     ],
   },
@@ -827,7 +827,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Free video transcription. Sign up for free to try. Upload video and get a text transcript in seconds. 3 imports/month free tier (resets on the 1st). AI-powered. MP4, MOV, AVI, WebM supported.',
     h1: 'Free Transcription Online',
     intro:
-      'Get a free transcript from any video — sign up for free. Upload an MP4, MOV, AVI, or WebM, and our AI transcribes the speech into text in seconds. The free tier gives you 3 uploads per day with no credit card required. Sign up when you need more minutes or multi-language output.',
+      'Get a free transcript from any video — sign up for free. Upload an MP4, MOV, AVI, or WebM, and our AI transcribes the speech into text in seconds. The free tier gives you 3 uploads per day with no credit card required. Upgrade to Pro for unlimited processing or multi-language output.',
     breadcrumbLabel: 'Free Transcription',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/transcribe-video', '/video-to-text', '/ai-transcription'],
@@ -836,7 +836,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Is transcription really free?', a: 'Yes. You get 3 uploads per day after signing up for free. No credit card needed to try.' },
       { q: 'What formats are supported for free?', a: 'MP4, MOV, AVI, WebM, and MKV. All formats are available on the free tier.' },
-      { q: 'What is the free tier limit?', a: '3 uploads per day, single language output. Sign up for a plan to unlock more minutes and multi-language support.' },
+      { q: 'What is the free tier limit?', a: '3 uploads per day, single language output. Upgrade to Pro for unlimited processing and multi-language support.' },
       { q: 'Do I need to install anything?', a: 'No. The tool runs in your browser. Upload your file and get a transcript — no installation required.' },
     ],
   },
@@ -1764,7 +1764,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       ],
       comparisonRows: [
         { feature: 'Turnaround time (60-min file)', videotext: 'Under 5 minutes', alternatives: 'Rev AI: ~5 min | Rev Human: 12–24 hours' },
-        { feature: 'Cost per minute', videotext: '$0.04/min (Pro) — $0 free tier', alternatives: 'Rev: $0.25/min AI, $1.99/min human' },
+        { feature: 'Cost model', videotext: '$40/mo flat, unlimited — $0 free tier', alternatives: 'Rev: $0.25/min AI, $1.99/min human' },
         { feature: 'Accuracy (clear audio)', videotext: '98.5%+ (Whisper large-v3)', alternatives: 'Rev AI: ~90–95% | Rev Human: 99%+' },
         { feature: 'YouTube URL input', videotext: 'Yes — paste and transcribe', alternatives: 'Rev: No' },
         { feature: 'SRT / VTT subtitle export', videotext: 'Yes — free tier', alternatives: 'Rev: AI tier does not include SRT' },
@@ -1925,7 +1925,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         { feature: 'Subtitle translation (70+ languages)', videotext: 'Yes', alternatives: 'HappyScribe: Yes (fewer languages)' },
         { feature: 'Burn subtitles into video', videotext: 'Yes — free built-in tool', alternatives: 'HappyScribe: No — requires separate tool' },
         { feature: 'AI summary + chapters', videotext: 'Yes', alternatives: 'HappyScribe: No' },
-        { feature: 'Minutes per dollar', videotext: '~24 min/$1 (Basic)', alternatives: 'HappyScribe: ~7 min/$1' },
+        { feature: 'Value', videotext: 'Unlimited at $40/mo flat', alternatives: 'HappyScribe: ~7 min/$1 (pay-as-you-go)' },
         { feature: 'File deletion after processing', videotext: 'Immediate — nothing stored', alternatives: 'HappyScribe: Files stored until manual deletion' },
       ],
       outputExamples: [
@@ -4432,7 +4432,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How do I convert iPhone Voice Memos to text?', a: 'Open the Voice Memos app on iPhone, tap the memo, tap the three-dot menu, and share as a file. Upload the M4A file to VideoText and get a full text transcript in seconds.' },
       { q: 'Can I transcribe WhatsApp voice messages?', a: 'Yes. Save the WhatsApp voice message as an audio file (tap and hold → Save) and upload to VideoText. Supports the OGG format used by WhatsApp.' },
       { q: 'What formats are supported for voice memo transcription?', a: 'VideoText supports M4A, MP3, WAV, OGG, FLAC, AAC, and video formats containing audio (MP4, MOV, WebM). All common voice memo formats are accepted.' },
-      { q: 'How long can voice memos be?', a: 'VideoText handles voice memos up to 90 minutes. Free tier includes 3 transcriptions per month.' },
+      { q: 'How long can voice memos be?', a: 'VideoText handles voice memos up to 90 minutes on Pro. Free tier includes 3 uploads per day, files up to 30 minutes.' },
     ],
   },
   {

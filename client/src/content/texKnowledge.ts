@@ -41,7 +41,7 @@ export const TEX_ENTRIES: TexEntry[] = [
     keywords: ['signup', 'sign up', 'account', 'register', 'free signup', 'free trial', 'try free'],
     question: 'Do I need to sign up?',
     answer:
-      "Sign up to try free (3 imports, no credit card). When you're ready for more minutes or features (batch, multi-language, no watermark), subscribe from Pricing.",
+      "Sign up to try free (3 uploads/day, no credit card). When you're ready for unlimited processing or more features (batch, multi-language, no watermark), subscribe from Pricing.",
     link: { path: '/pricing', label: 'See plans' },
   },
   // —— Tools ——
@@ -107,7 +107,7 @@ export const TEX_ENTRIES: TexEntry[] = [
     keywords: ['free', 'free plan', 'free tier', '3 imports', 'free limit', 'imports'],
     question: 'What’s included in the free plan?',
     answer:
-      'Free: 3 lifetime imports (sign up to try), up to 30 min per video. Video → Transcript and Video → Subtitles, one language. No batch. Upgrade for more minutes and features.',
+      'Free: 3 uploads per day, up to 30 min per video. Video → Transcript and Video → Subtitles, one language. No batch. Upgrade for unlimited processing and features.',
     link: { path: '/pricing', label: 'See pricing' },
   },
   {
@@ -120,10 +120,10 @@ export const TEX_ENTRIES: TexEntry[] = [
   },
   {
     id: 'upgrade',
-    keywords: ['upgrade', 'need more', 'limit', 'run out', 'minutes', 'pay'],
-    question: 'I need more minutes. How do I upgrade?',
+    keywords: [‘upgrade’, ‘need more’, ‘limit’, ‘run out’, ‘pro’, ‘pay’],
+    question: ‘How do I upgrade to Pro?’,
     answer:
-      'Go to Pricing, pick Basic, Pro, or Agency, and enter your email. We’ll send a verification code, then you complete checkout. You can change or cancel your plan anytime from the same page.',
+      ‘Go to Pricing, pick Pro or Founding Pro, and enter your email. We’ll send a verification code, then you complete checkout. You can cancel anytime from the same page.’,
     link: { path: '/pricing', label: 'Go to pricing' },
   },
   // —— Privacy & data ——
