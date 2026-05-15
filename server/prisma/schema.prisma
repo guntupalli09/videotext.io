@@ -251,6 +251,7 @@ model UserMetrics {
 model FormattingJob {
   id               String   @id @default(cuid())
   userId           String
+  jobToken         String?  @unique
   inputText        String   @db.Text
   status           String   // queued | processing | completed | failed
   stage            String?  // queued | formatting | validating | completed | failed
