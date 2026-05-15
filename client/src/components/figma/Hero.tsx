@@ -158,7 +158,7 @@ export function Hero() {
         <div className="absolute top-[35%] right-[5%] w-[350px] h-[350px] bg-indigo-600/[0.07] rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-12 sm:pt-16 pb-8">
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-3 sm:pt-4 pb-8">
 
         {/* Trust badge — live stats pill */}
         <TrustBadge className="mb-4" />
