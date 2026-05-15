@@ -123,7 +123,7 @@ function HeroDropzone() {
               <ClipboardCheck className="w-4 h-4 text-violet-400" />
             </div>
             <p className="text-white font-semibold text-[12px] leading-tight">
-              Format transcripts in seconds
+              Apply Formatting Guidelines in Seconds
             </p>
           </div>
           <p className="text-white/35 text-[11px] leading-snug">
