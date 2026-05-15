@@ -123,7 +123,7 @@ function HeroDropzone() {
               <ClipboardCheck className="w-4 h-4 text-violet-400" />
             </div>
             <p className="text-white font-semibold text-[12px] leading-tight">
-              Format transcripts in seconds
+              Apply Formatting Guidelines in Seconds
             </p>
           </div>
           <p className="text-white/35 text-[11px] leading-snug">
@@ -164,18 +164,30 @@ export function Hero() {
         <TrustBadge className="mb-4" />
 
         {/* H1 */}
-        <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5">
-          Transcribe, Format Guidelines, Translate, Subtitles.
-          <span className="block mt-3 pb-2 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-            Every tool your workflow needs - FAST
+        <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.25rem] lg:text-[3.75rem] font-extrabold tracking-tight leading-[1.08] mb-4 italic">
+          <span
+            className="text-white"
+            style={{
+              textShadow:
+                '1px 1px 0 #7c3aed, 2px 2px 0 #6d28d9, 3px 3px 6px rgba(109,40,217,0.35)',
+            }}
+          >
+            Deliver Client-Ready Transcripts —
+          </span>
+          <span
+            className="block mt-1 pb-1 bg-gradient-to-r from-fuchsia-300 via-violet-300 to-indigo-300 bg-clip-text text-transparent"
+            style={{
+              filter: 'drop-shadow(0 2px 8px rgba(192,132,252,0.55))',
+            }}
+          >
+            Fast.
           </span>
         </h1>
 
         {/* Sub-headline */}
-        <p className="text-center text-[16px] sm:text-[17px] text-white/50 max-w-lg mx-auto leading-relaxed mb-8">
-          Upload a video or format your transcript — get AI summary, chapters,{' '}
-          <span className="text-violet-300 font-medium">and translation</span>{' '}
-          automatically.
+        <p className="text-center text-[15px] sm:text-[16px] text-white/55 max-w-md mx-auto leading-relaxed mb-7">
+          Built for transcriptionists, proofreaders, translators, and QA teams. Apply client guidelines automatically, generate subtitles, and{' '}
+          <span className="text-fuchsia-300 font-medium">reduce manual QA work by 60%.</span>
         </p>
 
         {/* Dropzone + Formatter */}
