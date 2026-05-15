@@ -26,19 +26,27 @@ const PLANS = [
   {
     name: 'Free',
     price: '$0',
-    detail: '3 imports per day',
+    detail: '3 uploads per day · files up to 30 minutes',
     cta: null,
     note: 'No card needed',
-    popular: false,
+    highlight: false,
   },
   {
     name: 'Pro',
-    price: '$10',
+    price: '$40',
     period: '/mo',
-    detail: 'No fixed limits — billed annually',
-    cta: 'Get started',
-    popular: true,
-    badge: 'Best Value',
+    detail: 'Full transcription and delivery workflows',
+    cta: 'Start Pro',
+    highlight: false,
+  },
+  {
+    name: 'Founding Pro',
+    price: '$24.99',
+    period: '/mo',
+    detail: 'Everything in Pro · lifetime founding price',
+    cta: 'Claim Founding Pro',
+    highlight: true,
+    badge: '20 Spots Only',
   },
 ];
 
@@ -72,22 +80,22 @@ function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto"
         >
           {PLANS.map((plan) => (
             <Link
               key={plan.name}
               to="/pricing"
               className={`group relative rounded-2xl p-6 text-left transition-all duration-200 ${
-                plan.popular
-                  ? 'bg-gradient-to-b from-violet-600 to-indigo-700 text-white shadow-2xl shadow-violet-500/30 ring-1 ring-violet-400/30'
+                plan.highlight
+                  ? 'bg-gray-900 text-white shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/60'
                   : 'bg-white/[0.04] text-white hover:bg-white/[0.07] border border-white/[0.08] hover:border-white/[0.15]'
               }`}
             >
-              {plan.popular && (
+              {plan.highlight && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="text-[10px] font-bold text-white bg-gradient-to-r from-amber-400 to-orange-400 px-3 py-1 rounded-full shadow-lg">
-                    {plan.badge}
+                  <span className="text-[10px] font-bold text-gray-950 bg-amber-500 px-3 py-1 rounded-full shadow-lg">
+                    ⚡ {plan.badge}
                   </span>
                 </div>
               )}
@@ -99,14 +107,14 @@ function PricingSection() {
                   <span className="text-sm font-normal opacity-60">{plan.period}</span>
                 )}
               </p>
-              <p className={`text-[13px] mb-4 ${plan.popular ? 'text-white/75' : 'text-white/45'}`}>
+              <p className={`text-[13px] mb-4 ${plan.highlight ? 'text-amber-100/80' : 'text-white/45'}`}>
                 {plan.detail}
               </p>
 
               {plan.cta ? (
                 <div
                   className={`inline-flex items-center gap-1.5 text-sm font-bold group-hover:gap-2.5 transition-all ${
-                    plan.popular ? 'text-white' : 'text-violet-400 group-hover:text-violet-300'
+                    plan.highlight ? 'text-amber-300' : 'text-violet-400 group-hover:text-violet-300'
                   }`}
                 >
                   {plan.cta}
