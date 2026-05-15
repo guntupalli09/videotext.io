@@ -4,10 +4,6 @@ import {
   ClipboardCheck,
   Upload,
   ChevronRight,
-  FileText,
-  Sparkles,
-  List,
-  Languages,
 } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
 import TrustBadge from '../TrustBadge';
@@ -190,52 +186,6 @@ export function Hero() {
 
         {/* Dropzone + Formatter */}
         <HeroDropzone />
-
-        {/* Output preview strip — shows what you actually get */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 w-full max-w-xl mx-auto">
-          {[
-            {
-              icon: FileText,
-              label: 'Transcript',
-              preview: 'Full word-for-word text with timestamps, speaker labels, and SRT export.',
-              color: 'text-emerald-400',
-              bg: 'bg-emerald-500/10',
-            },
-            {
-              icon: Sparkles,
-              label: 'AI Summary',
-              preview: 'Key points, bullet takeaways, and a one-paragraph overview — auto-generated.',
-              color: 'text-violet-400',
-              bg: 'bg-violet-500/10',
-            },
-            {
-              icon: List,
-              label: 'Chapters',
-              preview: 'Auto-detected chapter markers with timestamps for any player workflow.',
-              color: 'text-blue-400',
-              bg: 'bg-blue-500/10',
-            },
-            {
-              icon: Languages,
-              label: 'Translation',
-              preview: 'Translate into 70+ languages — subtitles and transcript both covered.',
-              color: 'text-amber-400',
-              bg: 'bg-amber-500/10',
-            },
-          ].map(({ icon: Icon, label, preview, color, bg }) => (
-            <Link
-              key={label}
-              to="/video-to-transcript"
-              className="group rounded-xl border border-white/[0.07] bg-white/[0.03] p-3 text-center flex flex-col items-center gap-2 transition-all duration-200 hover:border-violet-400/55 hover:bg-violet-500/[0.08]"
-            >
-              <div className={`w-7 h-7 rounded-lg ${bg} flex items-center justify-center transition-transform duration-200 group-hover:scale-105`}>
-                <Icon className={`w-3.5 h-3.5 ${color}`} />
-              </div>
-              <p className="text-[11px] font-bold text-white/80 leading-tight">{label}</p>
-              <p className="text-[10px] text-white/30 leading-relaxed hidden sm:block">{preview}</p>
-            </Link>
-          ))}
-        </div>
 
         {/* Unified proof + trust block */}
         <div className="mt-6 w-full max-w-xl mx-auto flex flex-col items-center gap-4">
