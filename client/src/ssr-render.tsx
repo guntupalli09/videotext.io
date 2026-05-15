@@ -53,31 +53,78 @@ const SSR_PAGES: Record<string, React.ComponentType> = {
 const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'title' | 'description'>> = {
   '/site-index': {
     h1: 'All VideoText Pages',
-    intro: 'Browse every prerendered VideoText route from one crawlable HTML index, including transcription tools, subtitle utilities, comparison pages, alternatives, and programmatic SEO landing pages.',
+    intro: 'Browse VideoText transcription workflows, subtitle utilities, comparison pages, alternatives, style-guide resources, and export helpers from one organized index.',
     primaryCta: { text: 'Start with Video to Transcript', path: '/video-to-transcript' },
     deepContent: {
       proofPoints: [
-        'This index concentrates discoverability for crawlers and LLM agents.',
+        'Find the right workflow quickly, from long-video transcription to subtitle repair, translation, formatting, and tool comparisons.',
         'Every important page links back to core transcription, subtitle, and formatting workflows.',
-        'The page is generated during prerender so route inventory and output stay aligned.',
+        'Related pages are grouped so transcript, caption, formatting, and comparison resources stay easy to navigate.',
       ],
       workflowSteps: [
-        { title: '1. Crawl route groups', detail: 'Search engines can find core product pages, alternatives, free tools, and programmatic SEO pages from one HTML document.' },
-        { title: '2. Follow internal links', detail: 'Crawler navigation and related workflow links connect long-tail pages to revenue pages.' },
-        { title: '3. Validate coverage', detail: 'The SSR audit reports whether every indexable page has meaningful HTML output.' },
+        { title: '1. Browse workflow groups', detail: 'Start with core product pages, alternatives, free tools, and detailed transcript or subtitle resources from one organized page.' },
+        { title: '2. Follow task-specific links', detail: 'Related workflow links connect use cases such as YouTube transcripts, meeting notes, subtitle translation, and style-guide formatting.' },
+        { title: '3. Compare options', detail: 'Use comparison and alternatives pages to choose the right transcript, subtitle, or formatting workflow before uploading media.' },
       ],
       ctaText: 'Open the transcription tool',
       ctaPath: '/video-to-transcript',
     },
     faq: [
-      { q: 'Why does VideoText have a site index?', a: 'The index gives crawlers and LLM agents a simple HTML map of prerendered pages and improves discovery of deep workflow pages.' },
-      { q: 'Is the site index generated automatically?', a: 'Yes. It is included in the prerender inventory and validated by the SSR audit.' },
+      { q: 'Why does VideoText have a site index?', a: 'The index gives teams a quick map of transcription, subtitle, formatting, comparison, and free utility pages when they are not sure which workflow to start with.' },
+      { q: 'What can I find in the site index?', a: 'You can find core transcription tools, subtitle workflows, style-guide pages, alternatives, samples, blog guides, and free utilities.' },
     ],
     related: [
       { path: '/video-to-transcript', title: 'Video to Transcript' },
       { path: '/video-to-subtitles', title: 'Video to Subtitles' },
       { path: '/alternatives', title: 'Alternatives Hub' },
       { path: '/tools', title: 'Free Tools' },
+    ],
+  },
+  '/guideline-format': {
+    h1: 'Transcript Style Guide Formatter for Rev and GoTranscript Rules',
+    intro:
+      'Turn a raw transcript into a client-ready draft that follows platform-style rules for speaker labels, timestamps, clean verbatim, full verbatim, punctuation, and QA review. Use it before delivery to reduce formatting rework and catch the issues that often trigger marketplace revision requests.',
+    primaryCta: { text: 'Format a transcript', path: '/guideline-format' },
+    deepContent: {
+      proofPoints: [
+        'Apply Rev-style paragraph breaks, speaker names, timestamps, and notation rules before client handoff.',
+        'Check GoTranscript-style QA details such as label consistency, timestamp placement, inaudible tags, and verbatim level.',
+        'Convert rough ASR output into a cleaner delivery draft without manually reformatting every speaker turn.',
+      ],
+      workflowSteps: [
+        { title: '1. Choose the requested guideline', detail: 'Start from Rev, GoTranscript, TranscribeMe, Scribie, or custom client instructions, then adjust rules for clean verbatim, full verbatim, timestamps, and notation style.' },
+        { title: '2. Normalize transcript structure', detail: 'Standardize speaker labels, paragraph breaks, capitalization, filler-word handling, and timestamp intervals so the file reads consistently from beginning to end.' },
+        { title: '3. Run a QA pass before delivery', detail: 'Review formatting risks such as missing labels, inconsistent brackets, overlong paragraphs, unclear inaudible marks, and timestamp drift before sending the transcript to a reviewer or client.' },
+      ],
+      outputExamples: [
+        { title: 'Rev-ready formatting', body: 'Prepare readable clean verbatim text with consistent speakers, clear paragraphing, and timestamp treatment that matches the client request.' },
+        { title: 'GoTranscript QA checklist', body: 'Catch common rejection triggers: wrong timestamp format, mixed speaker labels, missing crosstalk notes, inconsistent punctuation, and unsupported verbatim choices.' },
+        { title: 'Client-ready transcript handoff', body: 'Export a polished draft that can move into DOCX, PDF, TXT, or team review with fewer manual formatting passes.' },
+      ],
+      useCases: [
+        { title: 'Freelance transcriptionists', body: 'Reduce revision risk before submitting marketplace jobs that require strict style-guide compliance.' },
+        { title: 'Agencies and QA leads', body: 'Give editors a repeatable formatting workflow for client-specific transcript requirements.' },
+        { title: 'Creators and researchers', body: 'Turn automated transcripts into readable documents with speaker structure, timestamps, and clean delivery formatting.' },
+      ],
+      comparisonRows: [
+        { feature: 'Clean vs full verbatim', videotext: 'Helps apply filler-word, false-start, and readability rules consistently', alternatives: 'Often leaves editors to enforce verbatim level manually' },
+        { feature: 'Timestamp formatting', videotext: 'Supports interval and speaker-turn timestamp workflows for review-ready files', alternatives: 'Requires manual timestamp cleanup after transcription' },
+        { feature: 'QA rejection prevention', videotext: 'Surfaces formatting issues before handoff', alternatives: 'Issues are usually found only after reviewer feedback' },
+      ],
+      ctaText: 'Format a transcript for client guidelines',
+      ctaPath: '/guideline-format',
+    },
+    faq: [
+      { q: 'Can I format a transcript for Rev-style rules?', a: 'Yes. Use the formatter to apply speaker labels, paragraph structure, timestamp choices, clean verbatim rules, and notation conventions before exporting the transcript.' },
+      { q: 'How does this help with GoTranscript QA?', a: 'It gives you a structured pass for common QA issues such as inconsistent speaker labels, incorrect timestamp style, missing inaudible or crosstalk notation, and mismatched clean versus full verbatim settings.' },
+      { q: 'What is the difference between clean and full verbatim?', a: 'Clean verbatim removes distracting fillers and false starts for readability. Full verbatim keeps more spoken detail, including fillers, repetitions, and interruptions when the guideline requires them.' },
+    ],
+    related: [
+      { path: '/rev-transcript-guidelines', title: 'Rev Transcript Guidelines' },
+      { path: '/gotranscript-guidelines', title: 'GoTranscript Guidelines' },
+      { path: '/transcribeme-guidelines', title: 'TranscribeMe Guidelines' },
+      { path: '/video-to-transcript', title: 'Video to Transcript' },
+      { path: '/samples', title: 'Transcript Samples' },
     ],
   },
   '/video-to-transcript': {
@@ -87,28 +134,28 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
     primaryCta: { text: 'Transcribe a video now', path: '/video-to-transcript' },
     deepContent: {
       proofPoints: [
-        'One upload produces transcript text, subtitle files, summary, chapters, and share-ready exports.',
-        'Works with common video and audio formats including MP4, MOV, WebM, MP3, WAV, and M4A.',
-        'Zero-retention workflow: uploads and generated outputs are not kept after processing completes.',
+        'One long-video upload produces transcript text, SRT/VTT subtitle files, summaries, chapters, JSON, DOCX, PDF, and share-ready exports.',
+        'Handles long recordings from creators, webinars, interviews, courses, meetings, and research sessions without splitting the job across separate tools.',
+        'Searchable transcripts make it easier to find quotes, decisions, chapters, action items, and reusable clips inside multi-hour recordings.',
       ],
       workflowSteps: [
-        { title: '1. Upload a video or paste a URL', detail: 'Drag in a file or start from a public media URL. Choose language, speaker labels, and export options before processing.' },
-        { title: '2. Generate transcript, subtitles, summary, and chapters', detail: 'VideoText processes the audio and prepares structured outputs in the same workflow, so you do not need multiple tools.' },
-        { title: '3. Review, edit, and export', detail: 'Copy text, download TXT/DOCX/PDF/JSON, export SRT/VTT captions, or continue into subtitle translation and style-guide formatting.' },
+        { title: '1. Upload a video or paste a URL', detail: 'Drag in a file or start from a public media URL. Choose language, speaker labels, long-video handling, and export formats before processing.' },
+        { title: '2. Generate transcript, subtitles, summary, and chapters', detail: 'VideoText prepares transcript text, captions, summaries, chapters, and structured data in the same workflow, replacing separate transcription, captioning, note-taking, and summarization tools.' },
+        { title: '3. Review, edit, and export', detail: 'Copy searchable text, download TXT/DOCX/PDF/JSON, export SRT/VTT captions, share with teammates, or continue into subtitle translation and style-guide formatting.' },
       ],
       outputExamples: [
-        { title: 'Searchable transcript', body: 'Turn a long recording into text that can be searched, quoted, edited, and repurposed.' },
-        { title: 'Subtitle files', body: 'Generate SRT and VTT captions for YouTube, Vimeo, courses, webinars, and social clips.' },
-        { title: 'Summary and chapters', body: 'Create a quick recap and navigable chapter markers for viewers who need the key moments fast.' },
+        { title: 'Searchable transcript', body: 'Turn a long recording into text that can be searched by topic, speaker, quote, decision, or chapter marker.' },
+        { title: 'Subtitle files', body: 'Generate SRT and VTT captions for YouTube, Vimeo, courses, webinars, social clips, and accessibility handoffs.' },
+        { title: 'Summary and chapters', body: 'Create a concise recap and navigable chapter markers so creators and teams can locate key moments without replaying the full video.' },
       ],
       useCases: [
-        { title: 'Creators and marketers', body: 'Repurpose videos into articles, social captions, newsletters, and searchable show notes.' },
-        { title: 'Researchers and journalists', body: 'Scan interviews, lectures, and source footage without replaying every minute.' },
-        { title: 'Agencies and teams', body: 'Standardize transcript, subtitle, and handoff outputs across many client recordings.' },
+        { title: 'Creators and marketers', body: 'Repurpose webinars, podcasts, tutorials, and launches into articles, social captions, newsletters, searchable show notes, and clip briefs.' },
+        { title: 'Researchers and journalists', body: 'Search interviews, lectures, focus groups, and source footage for exact quotes, themes, timestamps, and supporting evidence.' },
+        { title: 'Agencies and teams', body: 'Standardize transcript, subtitle, summary, and client handoff outputs across many recordings and collaborators.' },
       ],
       comparisonRows: [
-        { feature: 'Outputs from one upload', videotext: 'Transcript, SRT/VTT, summary, chapters, and exports', alternatives: 'Usually transcript-only or requires multiple tools' },
-        { feature: 'Long recording workflow', videotext: 'Designed for asynchronous processing and structured exports', alternatives: 'Often forces manual timeline cleanup' },
+        { feature: 'Outputs from one upload', videotext: 'Transcript, SRT/VTT, summary, chapters, JSON, DOCX, PDF, and share links', alternatives: 'Usually transcript-only or requires multiple tools' },
+        { feature: 'Long recording workflow', videotext: 'Designed for long-video processing, structured outputs, and teammate review', alternatives: 'Often requires separate tools for captions, summaries, chapters, or review handoff' },
         { feature: 'Privacy posture', videotext: 'Files deleted after processing', alternatives: 'Uploads may remain in project libraries' },
       ],
       ctaText: 'Upload a video, get transcript in minutes',
@@ -117,7 +164,7 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
     faq: [
       { q: 'How do I convert a video to a transcript?', a: 'Upload a video file or paste a supported URL, choose your options, and start transcription. VideoText returns transcript text plus optional subtitle, summary, and chapter outputs.' },
       { q: 'Does VideoText generate subtitles too?', a: 'Yes. The same flow can produce SRT and VTT files in addition to the transcript, which makes the page useful for captioning and publishing workflows.' },
-      { q: 'Is this page safe to server render?', a: 'The SEO content is server-rendered while uploader, editor, and billing interactions remain client-only after hydration.' },
+      { q: 'Can I use VideoText for long videos?', a: 'Yes. VideoText is designed for long-video processing with transcript text, subtitle files, summaries, chapters, and flexible exports from the same upload.' },
     ],
     related: [
       { path: '/youtube-transcript-generator', title: 'YouTube Transcript Generator' },
@@ -137,8 +184,8 @@ function buildFallbackDeepContent(label: string, description: string): SeoDeepCo
   return {
     proofPoints: [
       `${label} is part of the VideoText transcription, subtitle, and workflow toolkit.`,
-      'This route is rendered as semantic HTML at build time so crawlers see more than an empty SPA shell.',
-      'Interactive controls remain browser-hydrated, preserving the existing client application behavior.',
+      'Each page focuses on a specific transcript, subtitle, formatting, or export task so teams can match the workflow to the outcome they need.',
+      'Use the related workflows to move from raw media to searchable text, captions, summaries, translations, or client-ready transcript formatting.',
     ],
     workflowSteps: [
       { title: '1. Understand the workflow', detail: description },
@@ -146,9 +193,9 @@ function buildFallbackDeepContent(label: string, description: string): SeoDeepCo
       { title: '3. Export a usable asset', detail: 'Turn media, subtitles, or transcript text into an output that is ready for publishing, editing, accessibility, or team handoff.' },
     ],
     outputExamples: [
-      { title: 'Semantic route summary', body: description },
-      { title: 'Crawlable internal links', body: 'The prerendered document links to high-value VideoText workflows so search engines can discover deeper pages.' },
-      { title: 'Hydration-safe app shell', body: 'The static content is available immediately, and the React SPA takes over for uploads, editors, and account-specific behavior.' },
+      { title: 'Workflow summary', body: description },
+      { title: 'Related workflow handoffs', body: 'The page links to transcript, subtitle, translation, formatting, and export workflows that naturally fit the task.' },
+      { title: 'Practical next steps', body: 'Start with the matching VideoText tool, review the output, then export the asset your creator, editor, client, or team needs.' },
     ],
   }
 }
@@ -196,7 +243,7 @@ function getStaticRouteContent(routePath: string): StaticRouteContent | null {
       },
       faq: [
         { q: `What is ${label}?`, a: meta.description },
-        { q: 'Does this prerendered page replace the app?', a: 'No. It provides semantic HTML for crawlers and fast first content, then the existing Vite React SPA hydrates and preserves the full client experience.' },
+        { q: 'How should I use this workflow?', a: 'Use the page to understand the workflow, then start with the recommended transcript, subtitle, translation, formatting, or utility tool for the job.' },
         { q: 'Where should I start?', a: 'Start with Video to Transcript for media-to-text workflows, Video to Subtitles for captions, or the related links below for specialized tools.' },
       ],
       related: [
@@ -232,7 +279,7 @@ function contentFromSeoEntry(entry: SeoRegistryEntry): StaticRouteContent {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="vt-ssr-section">
+    <section className="vt-workflow-section">
       <h2>{title}</h2>
       {children}
     </section>
@@ -246,50 +293,50 @@ function StaticSeoDocument({ content }: { content: StaticRouteContent }) {
   const primaryCta = content.primaryCta || { text: 'Start free', path: '/video-to-transcript' }
 
   return (
-    <main className="vt-ssr-document" data-ssr-mode="seo-document">
+    <main className="vt-workflow-document">
       <style>{`
-        .vt-ssr-document{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:960px;margin:0 auto;padding:48px 20px;color:#111827;line-height:1.65;background:#fff}
-        .vt-ssr-eyebrow{color:#6d28d9;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 12px}
-        .vt-ssr-document h1{font-size:clamp(34px,6vw,60px);line-height:1.02;margin:0 0 18px;font-weight:900;letter-spacing:-.04em;color:#111827}
-        .vt-ssr-intro{font-size:20px;line-height:1.75;color:#374151;margin:0 0 28px;max-width:860px}
-        .vt-ssr-actions{display:flex;flex-wrap:wrap;gap:12px;margin:26px 0 40px}.vt-ssr-actions a{border-radius:999px;padding:12px 18px;text-decoration:none;font-weight:800}.vt-ssr-primary{background:#7c3aed;color:#fff}.vt-ssr-secondary{background:#f5f3ff;color:#5b21b6}
-        .vt-ssr-section{border-top:1px solid #e5e7eb;padding-top:30px;margin-top:34px}.vt-ssr-section h2{font-size:28px;line-height:1.2;margin:0 0 16px;font-weight:850;color:#111827}.vt-ssr-section h3{font-size:18px;margin:0 0 8px;color:#111827}.vt-ssr-section p,.vt-ssr-section li{color:#374151;font-size:16px}.vt-ssr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.vt-ssr-card{border:1px solid #e5e7eb;border-radius:18px;padding:18px;background:#fafafa}.vt-ssr-card p{margin:0}.vt-ssr-proof li{margin:8px 0}.vt-ssr-table{width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden}.vt-ssr-table th,.vt-ssr-table td{border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top;padding:12px}.vt-ssr-table th{background:#f9fafb;color:#111827}.vt-ssr-faq details{border:1px solid #e5e7eb;border-radius:14px;padding:14px 16px;margin:10px 0;background:#fff}.vt-ssr-faq summary{cursor:pointer;font-weight:800;color:#111827}.vt-ssr-links{display:flex;flex-wrap:wrap;gap:10px}.vt-ssr-links a{display:inline-flex;border:1px solid #ddd6fe;border-radius:999px;padding:8px 12px;color:#5b21b6;background:#faf5ff;text-decoration:none;font-weight:700}
+        .vt-workflow-document{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:960px;margin:0 auto;padding:48px 20px;color:#111827;line-height:1.65;background:#fff}
+        .vt-workflow-eyebrow{color:#6d28d9;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 12px}
+        .vt-workflow-document h1{font-size:clamp(34px,6vw,60px);line-height:1.02;margin:0 0 18px;font-weight:900;letter-spacing:-.04em;color:#111827}
+        .vt-workflow-intro{font-size:20px;line-height:1.75;color:#374151;margin:0 0 28px;max-width:860px}
+        .vt-workflow-actions{display:flex;flex-wrap:wrap;gap:12px;margin:26px 0 40px}.vt-workflow-actions a{border-radius:999px;padding:12px 18px;text-decoration:none;font-weight:800}.vt-workflow-primary{background:#7c3aed;color:#fff}.vt-workflow-secondary{background:#f5f3ff;color:#5b21b6}
+        .vt-workflow-section{border-top:1px solid #e5e7eb;padding-top:30px;margin-top:34px}.vt-workflow-section h2{font-size:28px;line-height:1.2;margin:0 0 16px;font-weight:850;color:#111827}.vt-workflow-section h3{font-size:18px;margin:0 0 8px;color:#111827}.vt-workflow-section p,.vt-workflow-section li{color:#374151;font-size:16px}.vt-workflow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.vt-workflow-card{border:1px solid #e5e7eb;border-radius:18px;padding:18px;background:#fafafa}.vt-workflow-card p{margin:0}.vt-workflow-proof li{margin:8px 0}.vt-workflow-table{width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden}.vt-workflow-table th,.vt-workflow-table td{border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top;padding:12px}.vt-workflow-table th{background:#f9fafb;color:#111827}.vt-workflow-faq details{border:1px solid #e5e7eb;border-radius:14px;padding:14px 16px;margin:10px 0;background:#fff}.vt-workflow-faq summary{cursor:pointer;font-weight:800;color:#111827}.vt-workflow-links{display:flex;flex-wrap:wrap;gap:10px}.vt-workflow-links a{display:inline-flex;border:1px solid #ddd6fe;border-radius:999px;padding:8px 12px;color:#5b21b6;background:#faf5ff;text-decoration:none;font-weight:700}
       `}</style>
-      <p className="vt-ssr-eyebrow">VideoText SEO landing page</p>
+      <p className="vt-workflow-eyebrow">VideoText workflow guide</p>
       <h1>{content.h1 || titleToH1(content.title)}</h1>
-      <p className="vt-ssr-intro">{content.intro || content.description}</p>
-      <div className="vt-ssr-actions">
-        <a className="vt-ssr-primary" href={primaryCta.path}>{primaryCta.text}</a>
-        <a className="vt-ssr-secondary" href="/pricing">View pricing</a>
+      <p className="vt-workflow-intro">{content.intro || content.description}</p>
+      <div className="vt-workflow-actions">
+        <a className="vt-workflow-primary" href={primaryCta.path}>{primaryCta.text}</a>
+        <a className="vt-workflow-secondary" href="/pricing">View pricing</a>
       </div>
 
       {deep?.proofPoints?.length ? (
         <Section title="Why teams use this workflow">
-          <ul className="vt-ssr-proof">{deep.proofPoints.map((point) => <li key={point}>{point}</li>)}</ul>
+          <ul className="vt-workflow-proof">{deep.proofPoints.map((point) => <li key={point}>{point}</li>)}</ul>
         </Section>
       ) : null}
 
       {deep?.workflowSteps?.length ? (
         <Section title="How it works">
-          <div className="vt-ssr-grid">{deep.workflowSteps.map((step) => <article className="vt-ssr-card" key={step.title}><h3>{step.title}</h3><p>{step.detail}</p></article>)}</div>
+          <div className="vt-workflow-grid">{deep.workflowSteps.map((step) => <article className="vt-workflow-card" key={step.title}><h3>{step.title}</h3><p>{step.detail}</p></article>)}</div>
         </Section>
       ) : null}
 
       {tutorial?.steps?.length ? (
         <Section title="Step-by-step tutorial">
-          <div className="vt-ssr-grid">{tutorial.steps.map((step) => <article className="vt-ssr-card" key={step.title}><h3>{step.title}</h3><p>{step.detail}</p></article>)}</div>
+          <div className="vt-workflow-grid">{tutorial.steps.map((step) => <article className="vt-workflow-card" key={step.title}><h3>{step.title}</h3><p>{step.detail}</p></article>)}</div>
         </Section>
       ) : null}
 
       {deep?.outputExamples?.length ? (
         <Section title="Outputs you can use immediately">
-          <div className="vt-ssr-grid">{deep.outputExamples.map((item) => <article className="vt-ssr-card" key={item.title}><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
+          <div className="vt-workflow-grid">{deep.outputExamples.map((item) => <article className="vt-workflow-card" key={item.title}><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
         </Section>
       ) : null}
 
       {deep?.comparisonRows?.length ? (
         <Section title="How VideoText compares">
-          <table className="vt-ssr-table">
+          <table className="vt-workflow-table">
             <thead><tr><th>Feature</th><th>VideoText</th><th>Alternatives</th></tr></thead>
             <tbody>{deep.comparisonRows.map((row) => <tr key={row.feature}><td>{row.feature}</td><td>{row.videotext}</td><td>{row.alternatives}</td></tr>)}</tbody>
           </table>
@@ -298,19 +345,19 @@ function StaticSeoDocument({ content }: { content: StaticRouteContent }) {
 
       {deep?.useCases?.length ? (
         <Section title="Use cases">
-          <div className="vt-ssr-grid">{deep.useCases.map((item) => <article className="vt-ssr-card" key={item.title}><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
+          <div className="vt-workflow-grid">{deep.useCases.map((item) => <article className="vt-workflow-card" key={item.title}><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
         </Section>
       ) : null}
 
       {content.faq?.length ? (
         <Section title="Frequently asked questions">
-          <div className="vt-ssr-faq">{content.faq.map((item) => <details open key={item.q}><summary>{item.q}</summary><p>{item.a}</p></details>)}</div>
+          <div className="vt-workflow-faq">{content.faq.map((item) => <details open key={item.q}><summary>{item.q}</summary><p>{item.a}</p></details>)}</div>
         </Section>
       ) : null}
 
       {related.length ? (
         <Section title="Related VideoText workflows">
-          <nav className="vt-ssr-links" aria-label="Related workflows">{related.map((item) => <a key={`${item.path}-${item.title}`} href={item.path}>{item.title}</a>)}</nav>
+          <nav className="vt-workflow-links" aria-label="Related workflows">{related.map((item) => <a key={`${item.path}-${item.title}`} href={item.path}>{item.title}</a>)}</nav>
         </Section>
       ) : null}
     </main>
