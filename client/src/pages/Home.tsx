@@ -146,6 +146,27 @@ export default function Home() {
       {/* 1 — Hero */}
       <Hero />
 
+      {/* 1.5 — Proof strip */}
+      <section className="py-5 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 transition-colors duration-500">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+            {([
+              { stat: '~5 min', label: '2-hour transcript' },
+              { stat: '99+', label: 'source languages' },
+              { stat: '98.5%', label: 'accuracy' },
+              { stat: 'DOCX · SRT · VTT', label: 'export formats' },
+              { stat: 'Speaker labels', label: '& timestamps' },
+              { stat: 'Files deleted', label: 'after processing' },
+            ] as const).map(({ stat, label }) => (
+              <div key={stat} className="flex items-baseline gap-1.5">
+                <span className="font-bold text-gray-900 dark:text-white text-[15px] transition-colors duration-500">{stat}</span>
+                <span className="text-gray-400 dark:text-white/30 text-[13px] transition-colors duration-500">{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 2 — Features / toolkit */}
       <Features />
 
