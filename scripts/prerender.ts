@@ -139,9 +139,9 @@ const STATIC_META: RouteMeta[] = [
 
   {
     path: '/site-index',
-    title: `All VideoText Pages — Complete HTML Index for Crawlers | ${SITE_NAME}`,
+    title: `All VideoText Pages — Transcript, Subtitle, and Formatting Workflows | ${SITE_NAME}`,
     description:
-      'Complete HTML index of VideoText pages for search crawlers and LLM agents. Browse all transcription, subtitle, tools, and comparison pages from one place.',
+      'Browse VideoText transcription, subtitle, formatting, free tool, comparison, and alternatives pages from one organized workflow index.',
     h1: 'Complete VideoText Page Index',
     noindex: false,
   },
@@ -1052,7 +1052,7 @@ function descriptionFromPath(routePath: string): string {
     return 'VideoText helps you transcribe videos, generate subtitles, translate captions, and export clean transcripts in your browser.'
   }
   const label = routePath.replace(/^\//, '').replace(/\//g, ' ').replace(/-/g, ' ')
-  return `VideoText page for ${label}. Fully prerendered HTML for search crawlers, SEO tools, and LLM agents.`
+  return `VideoText workflow page for ${label}. Learn the relevant transcript, subtitle, formatting, export, or comparison path and choose the right tool for the job.`
 }
 
 function optimizeMetaDescription(rawDescription: string, routePath: string): string {
@@ -1661,7 +1661,7 @@ function buildAllPagesIndexHtml(routes: RouteMeta[]): string {
   return `
     <section style="max-width:1280px;margin:32px auto;padding:0 16px">
       <h2 style="font-size:20px;font-weight:700;margin:0 0 16px 0">All VideoText Pages</h2>
-      <p style="margin:0 0 16px 0;color:#4b5563">This crawlable HTML index links to every prerendered page for search engines and LLM agents.</p>
+      <p style="margin:0 0 16px 0;color:#4b5563">Use this index to jump to VideoText transcript, subtitle, formatting, comparison, sample, and utility workflows.</p>
       <ul style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px;list-style:none;padding:0;margin:0">${items}</ul>
     </section>
   `
@@ -1670,7 +1670,7 @@ function buildAllPagesIndexHtml(routes: RouteMeta[]): string {
 function buildGlobalDiscoverabilityLinksHtml(): string {
   return `
     <section style="margin:20px 0;padding:16px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px">
-      <h3 style="font-size:13px;font-weight:600;color:#3730a3;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:0.5px">Crawler Navigation</h3>
+      <h3 style="font-size:13px;font-weight:600;color:#3730a3;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:0.5px">Workflow shortcuts</h3>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
         <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:700">Transcribe video online</a>
         <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">Video to transcript tool</a>
