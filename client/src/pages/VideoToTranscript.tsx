@@ -2386,29 +2386,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   </div>
                 )}
 
-                <div className="rounded-xl border border-violet-200/60 dark:border-violet-800/40 bg-gradient-to-br from-violet-50/40 to-purple-50/20 dark:from-violet-950/30 dark:to-purple-950/20 px-4 py-4 sm:px-6 sm:py-5">
-                  <div className="mb-3 rounded-lg border border-sky-200/70 dark:border-sky-800/50 bg-sky-50/70 dark:bg-sky-950/20 px-3 py-2">
-                    <p className="text-xs font-semibold text-sky-900 dark:text-sky-200">Need transcript-only translation?</p>
-                    <p className="text-[11px] text-sky-800 dark:text-sky-300 mt-0.5">
-                      Upload TXT, DOCX, SRT, or VTT directly — no audio/video required.
-                      <Link to="/translate-subtitles" className="ml-1 underline font-semibold">Open transcript translation</Link>
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-4 sm:gap-6 justify-center sm:justify-start">
-                    <p className="w-full text-sm sm:text-base font-extrabold text-gray-900 dark:text-white">2-hour video → transcript in ~3–5 minutes</p>
-                    <div className="flex flex-col items-start gap-1.5">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">⚡</p>
-                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">3–5 min processing</p>
-                    </div>
-                    <div className="flex flex-col items-start gap-1.5">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">🔒</p>
-                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">No data stored</p>
-                    </div>
-                    <div className="flex flex-col items-start gap-1.5">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">📄</p>
-                      <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Transcript + SRT + summary</p>
-                    </div>
-                  </div>
+                <div className="rounded-lg border border-sky-200/70 dark:border-sky-800/50 bg-sky-50/70 dark:bg-sky-950/20 px-3 py-2">
+                  <p className="text-xs font-semibold text-sky-900 dark:text-sky-200">Need transcript-only translation?</p>
+                  <p className="text-[11px] text-sky-800 dark:text-sky-300 mt-0.5">
+                    Upload TXT, DOCX, SRT, or VTT directly — no audio/video required.
+                    <Link to="/translate-subtitles" className="ml-1 underline font-semibold">Open transcript translation</Link>
+                  </p>
                 </div>
                 <div ref={uploadZoneRef}>
                   <UploadZone
