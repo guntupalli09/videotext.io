@@ -587,7 +587,7 @@ function App() {
                 },
                 {
                   q: 'Can I transcribe video online for free?',
-                  a: 'Yes. The free tier includes 3 imports per month with no credit card required. Free transcripts include full timestamped text, AI summary, auto-generated chapters, and SRT/VTT subtitle files. Paid plans start at $19/month for 450 minutes.',
+                  a: 'Yes. The free tier includes 3 uploads per day with no credit card required. Free transcripts include full timestamped text, AI summary, auto-generated chapters, and SRT/VTT subtitle files. Pro plan is $40/month with no usage limits.',
                 },
                 {
                   q: 'How long does it take to transcribe a video?',
@@ -615,7 +615,7 @@ function App() {
                 },
                 {
                   q: 'Can I transcribe multiple videos at once?',
-                  a: 'Yes. Pro and Agency plans include batch upload. Drag in multiple video files simultaneously and VideoText processes all of them in parallel. Download one ZIP containing all transcripts, subtitle files, and summaries when processing finishes.',
+                  a: 'Yes. The Pro plan includes batch upload. Drag in multiple video files simultaneously and VideoText processes all of them in parallel. Download one ZIP containing all transcripts, subtitle files, and summaries when processing finishes.',
                 },
                 {
                   q: 'How does VideoText compare to Otter.ai, Descript, and Rev?',
@@ -653,7 +653,7 @@ function App() {
                 workflowSteps: [
                   {
                     title: 'Upload once (drag, drop, or paste a URL)',
-                    detail: 'Drag any MP4, MOV, MKV, WebM, MP3, WAV, or M4A file into the upload zone. Or paste a YouTube, Vimeo, or direct media URL — VideoText fetches the audio directly without requiring a download. Files up to 5 hours are supported. Pro and Agency plans include parallel batch upload.',
+                    detail: 'Drag any MP4, MOV, MKV, WebM, MP3, WAV, or M4A file into the upload zone. Or paste a YouTube, Vimeo, or direct media URL — VideoText fetches the audio directly without requiring a download. Files up to 5 hours are supported. Pro plan includes parallel batch upload.',
                   },
                   {
                     title: 'Set language and speaker count (optional)',
@@ -754,7 +754,7 @@ function App() {
                   { feature: 'Subtitle file formats', videotext: 'SRT + VTT both generated, broadcast-safe line breaks', alternatives: 'Otter: SRT only | Descript: SRT only | Rev: SRT | TurboScribe: SRT | none auto-format line breaks' },
                   { feature: 'Batch processing', videotext: 'Pro/Agency: parallel batch, one ZIP output', alternatives: 'Otter: sequential only | Descript: one file at a time | Rev: batch portal (slow, expensive)' },
                   { feature: 'Export formats', videotext: 'TXT, PDF, DOCX, JSON, CSV, SRT, VTT, Notion, 3-column', alternatives: 'Otter: TXT, DOCX, PDF | Descript: TXT, DOCX | Rev: TXT, DOCX, SRT' },
-                  { feature: 'Cost for 450 min/month', videotext: 'Pro: $19/month flat', alternatives: 'Otter: $20/month (limited AI features) | Descript: $24/month | Rev AI: ~$56/month ($0.125/min)' },
+                  { feature: 'Cost per month', videotext: 'Pro: $40/month flat, unlimited', alternatives: 'Otter: $20/month (limited AI features) | Descript: $24/month | Rev AI: ~$56/month ($0.125/min)' },
                 ],
                 useCases: [
                   {
@@ -807,7 +807,7 @@ function App() {
                   },
                   {
                     title: 'Non-profits and community organizations',
-                    body: 'Make recorded board meetings, community events, and program documentation accessible and searchable. Transcription makes oral history archives searchable. Captions make video content accessible to deaf and hard-of-hearing community members. Free tier covers 3 imports per month with no credit card required.',
+                    body: 'Make recorded board meetings, community events, and program documentation accessible and searchable. Transcription makes oral history archives searchable. Captions make video content accessible to deaf and hard-of-hearing community members. Free tier: 3 uploads per day, no credit card required.',
                   },
                   {
                     title: 'Accessibility and captioning specialists',

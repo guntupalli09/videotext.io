@@ -71,8 +71,8 @@ export default function VideoTextVsRev() {
             shortAnswer="VideoText wins for AI transcription — 6× cheaper than Rev AI, more outputs, 90+ languages, zero data retention. Choose Rev Human only when human-verified output is a strict compliance requirement."
             expanded="Rev AI and Rev Human are two different services. Rev AI ($0.25/min) is purely AI transcription — similar to Temi — and VideoText beats it on cost, speed, output depth, and language support. Rev Human ($1.50+/min) employs human transcriptionists for near-100% accuracy — it's expensive but the right choice when a compliance policy explicitly requires a human-reviewed transcript (court reporting, specific legal filings). For everything else — podcasts, interviews, YouTube, training, research, corporate video — VideoText is faster, cheaper, more private, and more productive."
             bullets={[
-              'VideoText Pro: ~$0.042/min flat — Rev AI: $0.25/min (6× more expensive)',
-              'Rev Human: $1.50+/min — VideoText Agency handles same volume for $49/mo flat',
+              'VideoText Pro: $40/mo flat, unlimited — Rev AI: $0.25/min (pay-per-minute)',
+              'Rev Human: $1.50+/min — VideoText Pro handles same volume for $40/mo flat',
               'VideoText zero retention — Rev retains files 30 days, humans hear your audio',
               'VideoText: transcript + SRT + VTT + summary + chapters — Rev: transcript + subtitles only',
               'VideoText: 90+ languages — Rev AI: ~36 languages',
@@ -93,15 +93,15 @@ export default function VideoTextVsRev() {
                     <th className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Usage</th>
                     <th className="px-5 py-3 text-left font-semibold text-orange-600">Rev AI ($0.25/min)</th>
                     <th className="px-5 py-3 text-left font-semibold text-red-600">Rev Human ($1.50/min)</th>
-                    <th className="px-5 py-3 text-left font-semibold text-violet-700 dark:text-violet-400">VideoText Pro ($19/mo)</th>
+                    <th className="px-5 py-3 text-left font-semibold text-violet-700 dark:text-violet-400">VideoText Pro ($40/mo)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                   {[
                     ['60 min/month', '$15', '$90', 'FREE (free tier)'],
-                    ['8 hrs/month', '$120', '$720', '$19 flat'],
-                    ['13 hrs/month (daily 30-min podcast)', '$195', '$1,170', '$19 flat'],
-                    ['25 hrs/month (agency)', '$375', '$2,250', '$49 (Agency plan)'],
+                    ['8 hrs/month', '$120', '$720', '$40 flat'],
+                    ['13 hrs/month (daily 30-min podcast)', '$195', '$1,170', '$40 flat'],
+                    ['25 hrs/month', '$375', '$2,250', '$40 flat (Pro, unlimited)'],
                   ].map(([usage, revai, revhuman, vt]) => (
                     <tr key={usage} className="hover:bg-gray-50 dark:hover:bg-gray-900/40">
                       <td className="px-5 py-3 text-gray-700 dark:text-gray-300">{usage}</td>
@@ -207,7 +207,7 @@ export default function VideoTextVsRev() {
               {[
                 {
                   q: 'Is VideoText cheaper than Rev?',
-                  a: 'Yes. Rev AI: $0.25/min. Rev Human: $1.50+/min. VideoText Pro: ~$0.042/min flat ($19/month for 450 min). For 8 hrs/month: Rev AI = $120, Rev Human = $720, VideoText = $19. VideoText is 6× cheaper than Rev AI and 36× cheaper than Rev Human.',
+                  a: 'Yes. Rev AI: $0.25/min. Rev Human: $1.50+/min. VideoText Pro: $40/month flat, unlimited processing. For 8 hrs/month: Rev AI = $120, Rev Human = $720, VideoText = $40. VideoText is far cheaper than Rev AI and drastically cheaper than Rev Human.',
                 },
                 {
                   q: 'What is the best Rev alternative?',
@@ -235,7 +235,7 @@ export default function VideoTextVsRev() {
                 },
                 {
                   q: 'Is there a free plan for VideoText vs Rev?',
-                  a: 'VideoText has a permanent free tier: 60 min/month, no credit card required. Rev has no free tier — you pay $0.25/min from the first second. VideoText Free is more useful than Temi\'s one-off trial.',
+                  a: 'VideoText has a permanent free tier: 3 uploads per day, no credit card required. Rev has no free tier — you pay $0.25/min from the first second. VideoText Free is more useful than Temi\'s one-off trial.',
                 },
               ].map(({ q, a }) => (
                 <div key={q} className="border-b border-gray-100 dark:border-gray-800 pb-5 last:border-0 last:pb-0">
@@ -260,7 +260,7 @@ export default function VideoTextVsRev() {
                 View Plans
               </Link>
             </div>
-            <p className="mt-4 text-xs text-violet-300">60 min/month free · No credit card · Cancel anytime</p>
+            <p className="mt-4 text-xs text-violet-300">3 uploads/day free · No credit card · Cancel anytime</p>
           </section>
 
           {/* Internal links */}

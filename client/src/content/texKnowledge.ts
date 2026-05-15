@@ -98,7 +98,7 @@ export const TEX_ENTRIES: TexEntry[] = [
     keywords: ['batch', 'batch process', 'multiple videos', 'bulk', 'many videos'],
     question: 'How does Batch Processing work?',
     answer:
-      'Upload multiple videos and process them in one go (transcript or subtitles). Available on Pro and Agency plans. Pro: up to 20 videos per batch, 60 min per batch. Agency: up to 100 videos, 300 min per batch.',
+      'Upload multiple videos and process them in one go (transcript or subtitles). Available on the Pro plan. Up to 20 videos per batch, 60 min per batch.',
     link: { path: '/batch-process', label: 'Try Batch Processing' },
   },
   // —— Pricing & plans ——
@@ -111,28 +111,12 @@ export const TEX_ENTRIES: TexEntry[] = [
     link: { path: '/pricing', label: 'See pricing' },
   },
   {
-    id: 'plan-basic',
-    keywords: ['basic', 'basic plan', '$19', '19'],
-    question: 'What’s in the Basic plan?',
+    id: ‘plan-pro’,
+    keywords: [‘pro’, ‘pro plan’, ‘$40’, ‘40’, ‘batch’, ‘unlimited’],
+    question: ‘What’s in the Pro plan?’,
     answer:
-      'Basic ($19/mo): 450 min/month, up to 45 min per video. No watermark, 2 languages, subtitle editing. No batch. Good for individuals and light use.',
-    link: { path: '/pricing', label: 'See Basic' },
-  },
-  {
-    id: 'plan-pro',
-    keywords: ['pro', 'pro plan', '$49', '49', 'batch', '1200', '1200 min'],
-    question: 'What’s in the Pro plan?',
-    answer:
-      'Pro ($49/mo): 1,200 min/month, up to 120 min per video. Batch processing (20 videos, 60 min per batch), 5 languages, long-form support, priority queue. Best for serious creators.',
-    link: { path: '/pricing', label: 'See Pro' },
-  },
-  {
-    id: 'plan-agency',
-    keywords: ['agency', 'agency plan', '$129', '129', 'team', 'commercial', 'zip'],
-    question: 'What’s in the Agency plan?',
-    answer:
-      'Agency ($129/mo): 3,000 min/month, up to 240 min per video. Heavy batch (100 videos, 300 min per batch), ZIP exports, 10 languages, commercial use allowed. For teams and agencies.',
-    link: { path: '/pricing', label: 'See Agency' },
+      ‘Pro ($40/mo): unlimited processing, up to 2-hour videos. Batch processing (20 videos), 70+ languages, watermark-free exports, AI summary, chapters, speaker labels, priority queue.’,
+    link: { path: ‘/pricing’, label: ‘See Pro’ },
   },
   {
     id: 'upgrade',

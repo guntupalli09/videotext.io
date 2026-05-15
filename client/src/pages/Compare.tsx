@@ -502,7 +502,7 @@ const FEATURE_ROWS: FeatureSection[] = [
       },
       {
         label: 'Starting price',
-        videotext: '$0 free / $10 Creator Pro',
+        videotext: '$0 free / $40 Pro',
         descript: '$24/mo',
         otter: '$16.99/mo',
         trint: '$80/mo',
@@ -1102,7 +1102,7 @@ export default function Compare() {
               { icon: Zap, label: 'Fastest', desc: '6–8x faster than AI competitors on 2-hour videos. First words in under 30 seconds.' },
               { icon: Shield, label: 'Safest', desc: 'Files deleted immediately. Zero data stored. Never used for AI training.' },
               { icon: Star, label: 'Most Complete', desc: 'Transcript + Subtitles + Summary + Chapters + Translation + Batch + client guideline presets — one platform.' },
-              { icon: DollarSign, label: 'Best Value', desc: 'Start free, no card. Pro at $10/mo includes AI features no competitor matches at that price.' },
+              { icon: DollarSign, label: 'Best Value', desc: 'Start free, no card. Pro at $40/mo includes AI features no competitor matches in one platform.' },
             ].map((item) => {
               const Icon = item.icon;
               return (

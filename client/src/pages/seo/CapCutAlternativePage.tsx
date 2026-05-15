@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $10/mo', competitor: 'Free / $9.99/mo' },
+  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: 'Free / $9.99/mo' },
   { label: 'Export SRT / VTT subtitle file', videotext: true, competitor: false },
   { label: 'Upload SRT to YouTube / Vimeo', videotext: true, competitor: false },
   { label: 'Full plain-text transcript export', videotext: true, competitor: false },
@@ -46,7 +46,7 @@ const FAQ = [
   },
   {
     q: 'Is VideoText free like CapCut?',
-    a: 'Yes. VideoText free tier: 3 imports/month with no credit card. Exported SRT files are watermark-free on all paid plans. On the free tier, a VideoText watermark appears in the SRT — upgrade from $10/month to remove it.',
+    a: 'Yes. VideoText free tier: 3 uploads/day with no credit card. Exported SRT files are watermark-free on all paid plans. On the free tier, a VideoText watermark appears in the SRT — upgrade to Pro ($40/month) to remove it.',
   },
 ]
 
