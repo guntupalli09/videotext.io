@@ -1392,16 +1392,50 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
 }
 
 function buildH1Html(meta: RouteMeta): string {
-  const h1Text = meta.h1 ? escapeHtml(meta.h1) : ''
+  const h1Text = meta.h1 ? escapeHtml(meta.h1) : escapeHtml(titleFromPath(meta.path).replace(` | ${SITE_NAME}`, ''))
   const description = escapeHtml(meta.description)
-  const primaryCta = meta.path === '/pricing' ? '/pricing' : '/signup'
+  const primaryCta = meta.path === '/pricing' ? '/pricing' : meta.path.includes('subtitle') || meta.path.includes('caption') ? '/video-to-subtitles' : '/video-to-transcript'
   const primaryLabel = meta.path === '/pricing' ? 'See pricing' : 'Start free'
+  const label = h1Text.replace(/\s+\|\s+VideoText$/i, '')
+  const related = [
+    { path: '/video-to-transcript', label: 'Video to Transcript' },
+    { path: '/video-to-subtitles', label: 'Video to Subtitles' },
+    { path: '/translate-subtitles', label: 'Translate Subtitles' },
+    { path: '/subtitle-tools', label: 'Subtitle Tools' },
+    { path: '/transcription-tools', label: 'Transcription Tools' },
+  ].filter((item) => item.path !== meta.path)
+  const keywordList = (meta.keywords?.length ? meta.keywords : generateKeywordsFromTitle(meta.title, meta.path)).slice(0, 6)
 
   return `
-    <section id="vt-prerender-h1" style="max-width:960px;margin:24px auto 8px auto;padding:0 16px;font-family:system-ui,-apple-system,sans-serif">
+    <section id="vt-prerender-h1" style="max-width:960px;margin:24px auto 8px auto;padding:0 16px;font-family:system-ui,-apple-system,sans-serif;color:#111827">
       <h1 style="margin:0 0 10px 0;font-size:32px;line-height:1.2;font-weight:800;color:#111827">${h1Text}</h1>
-      <p style="margin:0 0 14px 0;font-size:16px;line-height:1.6;color:#4b5563">${description}</p>
+      <p style="margin:0 0 14px 0;font-size:16px;line-height:1.7;color:#4b5563">${description}</p>
       <a href="${primaryCta}" style="display:inline-block;background:#6d28d9;color:#ffffff;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none">${primaryLabel}</a>
+      <section style="margin:28px 0 0 0">
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 10px 0;color:#111827">What this page helps you do</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">Use ${label} to choose the right VideoText workflow for transcript, subtitle, caption, translation, validation, or publishing tasks. The page is designed for practical production work: upload or prepare media, review timing and text quality, and export files that are ready for editors, platforms, clients, or accessibility review.</p>
+      </section>
+      <section style="margin:28px 0 0 0">
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 10px 0;color:#111827">Recommended workflow</h2>
+        <p style="margin:0 0 10px 0;color:#374151;line-height:1.7">Start with the closest VideoText tool, inspect the generated transcript or subtitle output, then download SRT, VTT, TXT, or review-ready text depending on your delivery target. For subtitle pages, check line length, reading speed, timing overlap, and cue structure before publishing.</p>
+        <ul style="margin:0;padding-left:20px;line-height:1.8;color:#374151">
+          <li>Prepare source media, transcript text, or subtitle files before running the workflow.</li>
+          <li>Review timestamps, speaker labels, caption density, and export format requirements.</li>
+          <li>Use related tools for translation, validation, repair, burning captions, or compression.</li>
+        </ul>
+      </section>
+      <section style="margin:28px 0 0 0">
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 10px 0;color:#111827">Quality checks before export</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">Before sharing the result, confirm that the transcript is readable, subtitles are synchronized, paragraphs are not duplicated, captions stay within platform limits, and translated text preserves the original timing. These checks help prevent rework in YouTube, Vimeo, social video, LMS, legal review, and agency handoff workflows.</p>
+      </section>
+      <section style="margin:28px 0 0 0">
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 10px 0;color:#111827">Related VideoText tools</h2>
+        <p style="margin:0 0 10px 0;color:#374151;line-height:1.7">Continue with the adjacent workflow when you need transcript generation, subtitle creation, caption translation, or file-level QA.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          ${related.map((item) => `<a href="${item.path}" style="display:inline-block;border:1px solid #ddd6fe;border-radius:999px;padding:8px 12px;color:#5b21b6;background:#faf5ff;text-decoration:none;font-size:13px;font-weight:700">${escapeHtml(item.label)}</a>`).join('')}
+        </div>
+        ${keywordList.length ? `<p style="margin:14px 0 0 0;color:#6b7280;font-size:13px">Common use cases: ${keywordList.map(escapeHtml).join(', ')}.</p>` : ''}
+      </section>
     </section>
     <script>
       (function () {
@@ -1765,6 +1799,77 @@ function injectHead(template: string, meta: RouteMeta): string {
   return html
 }
 
+interface PrerenderOutputAudit {
+  routePath: string
+  htmlPath: string
+  titleCount: number
+  h1Count: number
+  h2Count: number
+  paragraphCount: number
+  rootIsEmpty: boolean
+  htmlSize: number
+}
+
+function htmlPathForRoute(routePath: string): string {
+  return routePath === '/' ? path.join(DIST_DIR, 'index.html') : path.join(DIST_DIR, routePath.slice(1), 'index.html')
+}
+
+function stripTags(html: string): string {
+  return html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
+function countMatches(html: string, pattern: RegExp): number {
+  return [...html.matchAll(pattern)].length
+}
+
+function auditPrerenderedHtml(routePath: string): PrerenderOutputAudit {
+  const htmlPath = htmlPathForRoute(routePath)
+  if (!fs.existsSync(htmlPath)) {
+    return { routePath, htmlPath, titleCount: 0, h1Count: 0, h2Count: 0, paragraphCount: 0, rootIsEmpty: true, htmlSize: 0 }
+  }
+  const html = fs.readFileSync(htmlPath, 'utf8')
+  const rootMatch = html.match(/<div\s+id=["']root["'][^>]*>([\s\S]*?)<\/div>/i)
+  return {
+    routePath,
+    htmlPath,
+    titleCount: countMatches(html, /<title\b[^>]*>[\s\S]*?<\/title>/gi),
+    h1Count: countMatches(html, /<h1\b[^>]*>[\s\S]*?<\/h1>/gi),
+    h2Count: countMatches(html, /<h2\b[^>]*>[\s\S]*?<\/h2>/gi),
+    paragraphCount: countMatches(html, /<p\b[^>]*>[\s\S]*?<\/p>/gi),
+    rootIsEmpty: rootMatch ? stripTags(rootMatch[1]).length === 0 : true,
+    htmlSize: Buffer.byteLength(html, 'utf8'),
+  }
+}
+
+function assertPrerenderCoverage(allRoutes: RouteMeta[], generatedPaths: Set<string>): void {
+  const indexablePaths = new Set(getIndexablePaths().map((routePath) => getCanonicalPathForRoute(routePath)))
+  const expectedPaths = new Set([...allRoutes.map((route) => route.path), ...indexablePaths])
+  const errors: string[] = []
+
+  for (const routePath of [...expectedPaths].sort()) {
+    const audit = auditPrerenderedHtml(routePath)
+    if (!fs.existsSync(audit.htmlPath)) errors.push(`${routePath}: missing ${path.relative(REPO_ROOT, audit.htmlPath)}`)
+    if (audit.titleCount < 1) errors.push(`${routePath}: missing <title>`)
+    if (audit.h1Count < 1) errors.push(`${routePath}: missing <h1>`)
+    if (audit.h2Count < 2) errors.push(`${routePath}: missing semantic <h2> sections`)
+    if (audit.paragraphCount < 3) errors.push(`${routePath}: insufficient paragraphs (${audit.paragraphCount})`)
+    if (audit.rootIsEmpty && audit.h2Count < 2) errors.push(`${routePath}: empty SPA shell without semantic fallback`)
+    if (!generatedPaths.has(routePath)) errors.push(`${routePath}: expected route was not written by prerender loop`)
+  }
+
+  const generatedIndexableCount = [...generatedPaths].filter((routePath) => indexablePaths.has(routePath)).length
+  if (generatedIndexableCount !== indexablePaths.size) {
+    errors.push(`indexable route count mismatch: generated ${generatedIndexableCount}, registry/sitemap inventory ${indexablePaths.size}`)
+  }
+
+  if (errors.length) {
+    console.error('[prerender] Static HTML validation failed:')
+    for (const error of errors.slice(0, 80)) console.error(`  - ${error}`)
+    if (errors.length > 80) console.error(`  - ...and ${errors.length - 80} more`)
+    process.exit(1)
+  }
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 function main() {
@@ -1812,6 +1917,7 @@ function main() {
   ])
 
   let count = 0
+  const generatedPaths = new Set<string>()
   for (const meta of allRoutes) {
     const routePath = meta.path
     let html = injectHead(template, meta)
@@ -1878,9 +1984,11 @@ function main() {
       fs.writeFileSync(path.join(dir, 'index.html'), html, 'utf8')
     }
 
+    generatedPaths.add(routePath)
     count++
   }
 
+  assertPrerenderCoverage(allRoutes, generatedPaths)
   console.log(`[prerender] Generated ${count} static HTML files in ${DIST_DIR}`)
 }
 

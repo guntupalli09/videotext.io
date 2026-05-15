@@ -90,7 +90,6 @@ const NON_INDEXABLE_REACT_PATHS = new Set([
   '/survey',
   '/founder',
   '/status',
-  '/voice-recorder',
   '/pro-access',
   '/demo',
   '/preview/transcript-results',
@@ -1274,6 +1273,29 @@ function logCliSummary(pages: PageAudit[]): void {
   console.log(`reports/duplication-clusters.md`)
 }
 
+
+function assertBuildQuality(pages: PageAudit[]): void {
+  const failures: string[] = []
+  for (const page of pages) {
+    if (!page.exists) {
+      failures.push(`${page.path}: Missing local prerendered HTML in /dist`)
+      continue
+    }
+    if (!page.title) failures.push(`${page.path}: missing title`)
+    if (!page.h1) failures.push(`${page.path}: missing H1`)
+    if (page.metrics.h2Count < LOW_H2_COUNT) failures.push(`${page.path}: fewer than ${LOW_H2_COUNT} H2s (${page.metrics.h2Count})`)
+    if (page.metrics.paragraphCount < 3) failures.push(`${page.path}: fewer than 3 paragraphs (${page.metrics.paragraphCount})`)
+    if (page.metrics.visibleTextLength < 400) failures.push(`${page.path}: possible empty SPA shell (${page.metrics.visibleTextLength} visible chars)`)
+  }
+
+  if (failures.length) {
+    console.error(color('[content-audit] Build-blocking prerender quality failures:', 'critical'))
+    for (const failure of failures.slice(0, 80)) console.error(`  - ${failure}`)
+    if (failures.length > 80) console.error(`  - ...and ${failures.length - 80} more`)
+    process.exit(1)
+  }
+}
+
 function main(): void {
   if (!fs.existsSync(DIST_DIR) || !fs.existsSync(path.join(DIST_DIR, 'index.html'))) {
     console.error(color('[content-audit] dist/index.html not found. Run npm run build or npm run prerender before auditing local prerendered HTML.', 'critical'))
@@ -1293,6 +1315,7 @@ function main(): void {
   applyThinContentRisk(pages, repeated)
   generateReports(pages, repeated)
   logCliSummary(pages)
+  assertBuildQuality(pages)
 }
 
 main()

@@ -824,6 +824,7 @@ function App() {
             <Route path="/transcribe-meeting-recording" element={<Navigate to="/meeting-recording-to-transcript" replace />} />
             <Route path="/translate-subtitles" element={<TranslateSubtitles />} />
             <Route path="/translation" element={<TranslateSubtitles />} />
+            <Route path="/free-captions-and-subtitles" element={<VideoToSubtitles />} />
             <Route path="/fix-subtitles" element={<FixSubtitles />} />
             <Route path="/burn-subtitles" element={<BurnSubtitles />} />
             <Route path="/compress-video" element={<CompressVideo />} />
@@ -842,6 +843,10 @@ function App() {
             <Route path="/tools/subtitle-reading-speed" element={<SubtitleReadingSpeed />} />
             <Route path="/tools/subtitle-character-checker" element={<SubtitleCharacterChecker />} />
             <Route path="/tools/subtitle-word-counter" element={<SubtitleWordCounter />} />
+            <Route path="/subtitle-validator" element={<SubtitleValidator />} />
+            <Route path="/subtitle-reading-speed" element={<SubtitleReadingSpeed />} />
+            <Route path="/subtitle-character-checker" element={<SubtitleCharacterChecker />} />
+            <Route path="/subtitle-word-counter" element={<SubtitleWordCounter />} />
             <Route path="/tools/video-script-timer" element={<VideoScriptTimer />} />
             <Route path="/tools/words-per-minute-calculator" element={<WordsPerMinute />} />
             <Route path="/tools/video-bitrate-calculator" element={<VideoBitrateCalculator />} />

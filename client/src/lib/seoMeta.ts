@@ -348,6 +348,32 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: 'VTT to SRT Converter — Free Online | VideoText',
     description: 'Convert WebVTT (.vtt) subtitle files to SubRip (.srt) format. Free, browser-based, nothing uploaded to any server.',
   },
+
+  '/free-captions-and-subtitles': {
+    title: 'Free Captions and Subtitles — Create SRT & VTT Online | VideoText',
+    description: 'Create free captions and subtitles for videos. Generate SRT and VTT files, validate timing, check reading speed, and prepare accessible caption files for YouTube, Vimeo, and social video.',
+  },
+  '/translation': {
+    title: 'Translation — Translate Subtitles and Caption Files | VideoText',
+    description: 'Translate subtitle files while preserving timestamps. Use VideoText for SRT and VTT translation workflows, multilingual caption delivery, and accessible translated video publishing.',
+  },
+  '/subtitle-validator': {
+    title: 'Subtitle Validator — Check SRT & VTT Files Free | VideoText',
+    description: 'Validate SRT and VTT subtitles for timestamp overlaps, empty cues, long lines, malformed numbering, and reading speed issues before publishing captions.',
+  },
+  '/subtitle-reading-speed': {
+    title: 'Subtitle Reading Speed Checker — CPS Analyzer | VideoText',
+    description: 'Check subtitle reading speed with characters-per-second and words-per-minute guidance for Netflix, BBC, EBU, YouTube, and social captions.',
+  },
+  '/subtitle-character-checker': {
+    title: 'Subtitle Character Limit Checker — Netflix, YouTube & BBC | VideoText',
+    description: 'Check subtitle line lengths against common caption character limits so SRT and VTT files stay readable on Netflix, YouTube, BBC-style, and social video layouts.',
+  },
+  '/subtitle-word-counter': {
+    title: 'Subtitle Word Counter — Count Words in SRT & VTT Files | VideoText',
+    description: 'Count words, characters, cues, WPM, and CPS in subtitle files. Use the report to estimate subtitle density, reading speed, and caption editing workload.',
+  },
+
   '/tools/shift-subtitle-timing': {
     title: 'Shift Subtitle Timing — Delay or Advance Subtitles Free | VideoText',
     description: 'Fix out-of-sync subtitles by shifting all timestamps forward or backward by any number of seconds. Works with SRT and VTT. Free, browser-based.',
@@ -517,6 +543,13 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/tools/shift-subtitle-timing': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing' }],
   '/tools/merge-srt-files': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Merge SRT Files', path: '/tools/merge-srt-files' }],
   '/tools/srt-to-text': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'SRT to Text', path: '/tools/srt-to-text' }],
+
+  '/free-captions-and-subtitles': [{ name: 'Home', path: '/' }, { name: 'Free Captions and Subtitles', path: '/free-captions-and-subtitles' }],
+  '/translation': [{ name: 'Home', path: '/' }, { name: 'Translation', path: '/translation' }],
+  '/subtitle-validator': [{ name: 'Home', path: '/' }, { name: 'Subtitle Validator', path: '/subtitle-validator' }],
+  '/subtitle-reading-speed': [{ name: 'Home', path: '/' }, { name: 'Reading Speed Checker', path: '/subtitle-reading-speed' }],
+  '/subtitle-character-checker': [{ name: 'Home', path: '/' }, { name: 'Character Limit Checker', path: '/subtitle-character-checker' }],
+  '/subtitle-word-counter': [{ name: 'Home', path: '/' }, { name: 'Subtitle Word Counter', path: '/subtitle-word-counter' }],
   '/tools/subtitle-validator': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Subtitle Validator', path: '/tools/subtitle-validator' }],
   '/tools/subtitle-reading-speed': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed' }],
   '/tools/subtitle-character-checker': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Character Limit Checker', path: '/tools/subtitle-character-checker' }],
