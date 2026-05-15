@@ -1,0 +1,1069 @@
+================================================================================
+                        VIDEOTEXT CONTENT FILE
+              Everything You Need to Know About VideoText.io
+                 (For Internal Use by Marketing Agency)
+================================================================================
+
+Prepared for: Marketing Agency Partner
+Product: VideoText.io
+Purpose: Full product intelligence — features, workflow, ICP benefits, time savings
+Date: May 2026
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+
+  1. What Is VideoText.io? (The One-Liner + The Real Story)
+  2. The Problem We Solve
+  3. Core Product — What It Does
+  4. Complete Feature Breakdown (Every Tool, Every Output)
+  5. Full User Workflow — From Zero to Deliverable
+  6. Who We're Built For (ICP Breakdown)
+  7. How VideoText.io Saves Time (With Numbers)
+  8. Pricing & Plans
+  9. Integrations & Technology
+ 10. Privacy — Our Non-Negotiable Commitment
+ 11. Competitive Positioning
+ 12. Key Messages & Proof Points
+ 13. Tone, Voice & Brand Values
+ 14. Testimonials & Social Proof
+
+================================================================================
+1. WHAT IS VIDEOTEXT.IO?
+================================================================================
+
+ONE-LINER:
+VideoText.io turns any video into transcripts, subtitles, summaries, chapters,
+and client-ready deliverables — in seconds, not hours, with zero data stored.
+
+THE REAL STORY:
+VideoText.io is a professional-grade video transcription and subtitle platform
+built for people who work with video every single day. Whether you're a podcast
+producer handling 24 episodes a month, a media agency delivering to 12 clients
+a week, a YouTube creator who needs SEO-ready transcripts, or a transcriptionist
+formatting to strict style guides — VideoText.io is the tool that replaces your
+fragmented, slow, expensive workflow with a single, fast, private platform.
+
+It's not just a transcription tool. It's a full video text pipeline:
+upload a video once and walk away with a transcript, subtitles in 10 languages,
+a summary, auto-detected chapters, speaker labels, a compressed video, and
+burned-in captions — all from a single upload, processed in parallel.
+
+The three pillars everything is built on:
+
+  SPEED    — 35 seconds for a 15-minute video. No waiting. No queues you can't
+             see. Live progress with queue position shown.
+
+  PRIVACY  — We do not store your video. Files are processed and immediately
+             deleted. No training on your data. No exceptions.
+
+  POWER    — One upload → transcript + subtitles + summary + chapters + speaker
+             labels + multi-language versions + batch outputs for 100 videos.
+             Everything professionals need, nothing they don't.
+
+================================================================================
+2. THE PROBLEM WE SOLVE
+================================================================================
+
+Video content is exploding. Podcasters, agencies, creators, and corporate teams
+produce more video than ever. But turning that video into usable text — the
+transcripts, subtitles, show notes, articles, captions — is still painfully slow,
+fragmented, and expensive.
+
+Here's what the status quo looks like for our users before VideoText.io:
+
+BEFORE VIDEOTEXT.IO:
+  - Upload to one tool for transcription
+  - Download raw transcript, clean it manually
+  - Open a second tool to generate subtitles
+  - Use a third tool to translate subtitles
+  - Pay a fourth service to burn captions into the video
+  - Compress the final video with a standalone app
+  - Format everything manually to match the client's style guide
+  - Repeat this for every single video, every single week
+
+Each step costs time. Each tool costs money. Data sits on multiple third-party
+servers. Clients wait longer. Deadlines slip. Margins shrink.
+
+AFTER VIDEOTEXT.IO:
+  - Upload once
+  - Configure options in 30 seconds
+  - Download transcript, subtitles, summary, chapters, compressed video
+  - Deliver to client
+  - Done.
+
+The transformation isn't incremental. It's a workflow replacement.
+
+================================================================================
+3. CORE PRODUCT — WHAT IT DOES
+================================================================================
+
+VideoText.io is built around 7 core tools that handle every stage of video text
+production. These are not standalone features — they're an integrated pipeline.
+
+  1. VIDEO → TRANSCRIPT
+     The flagship. Upload any video (or paste a YouTube URL) and get back a full,
+     accurate, timestamped transcript. Optional: summary, chapters, speaker
+     identification, glossary enforcement, multi-language translation. Exports in
+     TXT, PDF, DOCX, and JSON. Powered by OpenAI Whisper (large-v3 model) —
+     the most accurate speech-to-text model available.
+
+  2. VIDEO → SUBTITLES
+     Generate professional SRT or VTT subtitle files from any video. Multi-language
+     support: get 2, 5, or 10 languages simultaneously (based on plan) in a single
+     ZIP download. No sequential waiting — all languages processed in parallel.
+
+  3. TRANSLATE SUBTITLES
+     Upload an existing SRT or VTT file (or paste the text) and translate it into
+     any of 70+ languages while perfectly preserving the timing and formatting.
+     Ideal for localizing existing subtitle libraries.
+
+  4. FIX SUBTITLES
+     Automatically repair broken subtitle files — timing drift, overlapping cues,
+     grammar errors, incorrect line breaks, filler words. The tool returns a fixed
+     file plus a detailed warnings list so you know exactly what was corrected.
+
+  5. BURN SUBTITLES
+     Hardcode subtitles permanently into a video. Upload the video + SRT/VTT file,
+     and get back an MP4 with captions baked in — no player required to display them.
+     Essential for social media, reels, and client deliverables.
+
+  6. COMPRESS VIDEO
+     Reduce video file size without visible quality loss. Choose from web, mobile,
+     or archive compression profiles. Optional GPU acceleration for large files.
+     Supports all major video formats.
+
+  7. BATCH PROCESS
+     Process 20 to 100 videos in a single job (Pro and Agency/Business plans).
+     Upload multiple files, set your options once, and download a ZIP with all
+     outputs. Every file processed in parallel — not one after another.
+
+================================================================================
+4. COMPLETE FEATURE BREAKDOWN
+================================================================================
+
+─────────────────────────────────────────────────────────────────────────────
+4A. TRANSCRIPT FEATURES (Video → Transcript)
+─────────────────────────────────────────────────────────────────────────────
+
+INPUT OPTIONS:
+  • Upload any video file (MP4, MOV, WebM, MKV, AVI, and more)
+  • Paste a YouTube URL — VideoText.io fetches the audio automatically
+  • Works with audio files too (MP3, WAV, M4A, etc.)
+  • Trim video: set custom start and end time before processing
+
+LANGUAGE & TRANSLATION:
+  • Auto-detect language from 99 supported languages
+  • Select source language manually if known (faster processing)
+  • Translate transcript into additional languages (Pro: 5 languages, Agency: 10)
+  • In-app translation viewer — toggle between English, Hindi, Telugu, Spanish,
+    Chinese, Russian without re-exporting; translations cached for instant switching
+
+SPEAKER DIARIZATION:
+  • Automatically identify and label individual speakers
+  • Output grouped by speaker: "Speaker 1 said... Speaker 2 replied..."
+  • Optional: manually set expected number of speakers for higher accuracy
+  • Essential for interviews, panel discussions, meetings, podcasts
+
+SUMMARY & CHAPTERS:
+  • AI-generated bullet-point summary of the entire video
+  • Action items extracted from meetings and calls
+  • Auto-detected chapter headings with timestamps
+  • Both generated in parallel after transcription — no extra wait time
+
+GLOSSARY / CUSTOM VOCABULARY:
+  • Add product names, brand terms, technical jargon before processing
+  • Forces correct spelling of words Whisper might mis-transcribe
+  • Critical for technical content, medical recordings, branded terms
+
+TRANSCRIPT VIEWS (All derived from the same upload, no re-processing):
+  • TRANSCRIPT — Full timestamped text; searchable, editable, copyable
+  • SPEAKERS — Text grouped by who said what (diarization view)
+  • SUMMARY — AI bullets, action items, key takeaways
+  • CHAPTERS — Auto-detected sections with timestamps for navigation
+  • HIGHLIGHTS — Definitions, conclusions, key quotes, important statements
+  • KEYWORDS — Repeated terms with section links for easy navigation
+  • CLEAN — Filler words removed (um, uh, like, you know), normalized casing
+  • TRANSLATION — Real-time language switching view
+
+EXPORT FORMATS:
+  • TXT — Plain text with optional timestamps
+  • PDF — Formatted, print-ready with timestamps and speaker labels
+  • DOCX — Editable Word document with full formatting
+  • JSON — Structured data with segments, start/end times, speaker labels
+  • Optional: 3-column layout (original text | timestamps | speaker)
+  • Free plan: watermarked TXT only; Paid plans: all formats, watermark-free
+
+SHARE:
+  • Generate a read-only share link to send the transcript to clients (Pro+)
+  • No login required for recipients — just a clean, professional view
+
+─────────────────────────────────────────────────────────────────────────────
+4B. SUBTITLE FEATURES (Video → Subtitles)
+─────────────────────────────────────────────────────────────────────────────
+
+  • Generate SRT or VTT from any video or YouTube URL
+  • Automatic timing sync — cues precisely matched to speech
+  • Multi-language output: download all languages in one ZIP
+    (Free: 1 language | Basic: 2 | Pro: 5 | Agency/Business: 10)
+  • Warnings output: timing validation, line length checks, overlap detection
+  • Subtitle validation built-in: flagging issues before you deliver
+
+─────────────────────────────────────────────────────────────────────────────
+4C. BATCH PROCESSING
+─────────────────────────────────────────────────────────────────────────────
+
+  • Upload 20–100 videos in a single batch job
+  • Set all options once — applies to every file in the batch
+  • All videos processed in parallel (not sequentially)
+  • Download a single ZIP with:
+      - SRT file per video
+      - VTT file per video
+      - error_log.txt listing any failures with reasons
+  • Per-client style guide validation applied across entire batch
+  • Designed for agencies delivering to multiple clients per week
+  • Pro plan: 20 videos per batch | Agency/Business: 100 videos per batch
+
+─────────────────────────────────────────────────────────────────────────────
+4D. STYLE GUIDE ENFORCEMENT (Guideline Format Tool)
+─────────────────────────────────────────────────────────────────────────────
+
+This is the feature that professional transcriptionists and agencies love most.
+
+  • Paste your client's style guide — VideoText.io reads and extracts the rules
+  • Pre-built profiles: Rev, GoTranscript, TranscribeMe, Scribie
+  • Custom profiles: create and save profiles for any client
+  • Validation output: pass/fail per rule + suggested fixes
+  • Rules checked include:
+      - Capitalization (sentence case, proper nouns, abbreviations)
+      - Speaker label format ("Speaker 1:" vs "[Speaker 1]" vs "JOHN:")
+      - Number formatting (spell out vs numerals, ordinals)
+      - Punctuation style (Oxford comma, em dash, ellipsis format)
+      - Timestamp format and placement
+      - Filler words (include or exclude per guideline)
+      - Line break and paragraph rules
+  • Batch profile creation: "Rev delivery", "GoTranscript standard", "Client X custom"
+  • Saves hours of manual checking on every single delivery
+
+─────────────────────────────────────────────────────────────────────────────
+4E. FREE UTILITY TOOLS (20+ Tools, No Account Required)
+─────────────────────────────────────────────────────────────────────────────
+
+VideoText.io offers a complete ecosystem of free subtitle and video utilities:
+
+SUBTITLE TOOLS:
+  • SRT to VTT Converter — instant format conversion
+  • VTT to SRT Converter
+  • Subtitle Timing Fixer — shift all timestamps by a set offset
+  • Subtitle Overlap Fixer — resolve overlapping cues automatically
+  • Subtitle Grammar Checker — catch grammar issues in subtitle text
+  • Subtitle Line Break Fixer — enforce max characters per line
+  • Subtitle Character Counter — check character-per-line compliance
+  • Subtitle Validator — full compliance check (timing, format, characters)
+  • Subtitle Merger — combine multiple SRT/VTT files
+  • Subtitle File Splitter — break large subtitle files into segments
+
+VIDEO UTILITY TOOLS:
+  • Aspect Ratio Calculator — get exact dimensions for any output format
+  • Video Bitrate Calculator — calculate required bitrate for target file size
+  • WPM Calculator — measure words per minute from transcript text
+  • Frame Rate Converter reference guide
+  • Resolution comparison tool
+
+These free tools serve two purposes:
+  1. Genuine utility that builds trust and drives organic traffic
+  2. Entry points that convert free users to paid plans when they need more
+
+─────────────────────────────────────────────────────────────────────────────
+4F. PLATFORM INTELLIGENCE & AUTOMATION FEATURES
+─────────────────────────────────────────────────────────────────────────────
+
+SMART UPLOAD SYSTEM:
+  • Connection speed detection — automatically adapts chunk size and upload
+    parallelism based on your internet speed (fast/medium/slow/mobile)
+  • Slow network banner: "Slow connection detected — optimizing upload"
+  • Resumable uploads — if your connection drops mid-upload, it continues
+    from where it left off rather than starting over
+  • Instant file preview — shows filename, file size, video duration, and
+    thumbnail the moment you select the file (before upload even starts)
+
+PROCESSING INTELLIGENCE:
+  • Parallel chunking — videos over 2.5 minutes are automatically split into
+    3-minute chunks, all transcribed simultaneously, then merged seamlessly
+  • Result caching — if you process the same video with the same settings,
+    results are returned instantly (no re-processing for 7 days)
+  • Real-time progress — live multi-stage progress bar:
+    Preparing → Uploading → Processing → Completed
+  • Queue visibility — shows your position: "3 jobs ahead of you"
+  • Priority queue — Pro and Agency plans skip ahead of free users
+
+WORKFLOW CHAINING:
+  • After transcription, the platform suggests intelligent next steps:
+    "You transcribed 8 videos — try batch processing"
+    "You generated a transcript — try burning subtitles into the video"
+  • Session-based tracking connects your actions across tools
+
+LIVE TRANSCRIPTION (Experimental):
+  • WebSocket-based real-time captioning
+  • For live events, webinars, or streaming workflows
+
+================================================================================
+5. FULL USER WORKFLOW — FROM ZERO TO DELIVERABLE
+================================================================================
+
+Here is the complete journey a user takes through VideoText.io:
+
+─────────────────────────────────────────────────────────────────────────────
+STEP 1: ARRIVE & SELECT TOOL
+─────────────────────────────────────────────────────────────────────────────
+
+The user lands on VideoText.io — from a Google search, a competitor comparison
+page, a YouTube tutorial, or a referral. They immediately see the tool they need:
+
+  "Turn your video into a transcript in 35 seconds."
+  "Generate subtitles in 10 languages from one upload."
+  "Process 100 videos at once with batch processing."
+
+No lengthy onboarding. No tutorial videos. The interface is the tutorial.
+
+─────────────────────────────────────────────────────────────────────────────
+STEP 2: UPLOAD (OR PASTE A URL)
+─────────────────────────────────────────────────────────────────────────────
+
+  • Drag and drop a video file, or click to browse
+  • Or paste a YouTube URL — VideoText.io fetches the audio automatically
+    using the official YouTube Data API (no scraping, no bot risk)
+  • Instantly see: filename, file size, video duration, thumbnail preview
+  • Trim start/end if only part of the video is needed
+
+─────────────────────────────────────────────────────────────────────────────
+STEP 3: CONFIGURE OPTIONS (30 SECONDS)
+─────────────────────────────────────────────────────────────────────────────
+
+  • Language: auto-detect or manually select from 99 languages
+  • Speaker diarization: on/off, optional speaker count for better accuracy
+  • Summary & chapters: on/off (generated in parallel, no extra wait)
+  • Additional translation languages: select up to 10 (plan-dependent)
+  • Glossary: add brand names or technical terms for accurate spelling
+  • Export format: TXT, PDF, DOCX, JSON (all available to paid users)
+
+─────────────────────────────────────────────────────────────────────────────
+STEP 4: PROCESS (35 Seconds for a 15-Minute Video)
+─────────────────────────────────────────────────────────────────────────────
+
+  • Click Process
+  • Watch the live multi-stage progress bar
+  • See your queue position in real time
+  • Segments start appearing as they complete (pseudo-streaming)
+  • Summary and chapters appear alongside the transcript
+
+─────────────────────────────────────────────────────────────────────────────
+STEP 5: REVIEW & NAVIGATE RESULTS
+─────────────────────────────────────────────────────────────────────────────
+
+Results are organized in tabs — switch between views without any re-processing:
+
+  TRANSCRIPT tab: Full text with timestamps. Search it. Edit it. Copy it.
+  SPEAKERS tab: Grouped by who said what. Essential for interviews.
+  SUMMARY tab: AI bullets and action items ready to paste into a doc.
+  CHAPTERS tab: Auto-detected sections with exact timestamps.
+  HIGHLIGHTS tab: Key quotes, definitions, important conclusions.
+  KEYWORDS tab: Repeated terms linked back to where they appear.
+  CLEAN tab: Filler-free version, normalized casing, ready to publish.
+  TRANSLATION tab: Toggle between 6 languages instantly.
+
+─────────────────────────────────────────────────────────────────────────────
+STEP 6: EXPORT & DELIVER
+─────────────────────────────────────────────────────────────────────────────
+
+  • Download TXT for quick pastes and docs
+  • Download DOCX for client delivery or editorial workflow
+  • Download PDF for formal records, compliance, or archiving
+  • Download JSON for developers integrating into another system
+  • Download SRT/VTT subtitle files for video editing or upload to YouTube
+  • Generate a read-only share link for the client (Pro+)
+  • Everything is watermark-free on paid plans
+
+─────────────────────────────────────────────────────────────────────────────
+STEP 7: NEXT STEPS (WORKFLOW CHAINING)
+─────────────────────────────────────────────────────────────────────────────
+
+VideoText.io doesn't let your workflow end at download. It suggests:
+
+  "Want to burn these subtitles into your video?"
+  "Have more videos? Try batch processing — 100 at once."
+  "Need this in 5 languages? Translate subtitles in one click."
+
+The platform guides you from raw video to fully finished, multi-platform
+content without ever leaving the tab.
+
+================================================================================
+6. WHO WE'RE BUILT FOR — ICP BREAKDOWN
+================================================================================
+
+VideoText.io is purpose-built for professionals who work with video at volume.
+Here are the five primary customer profiles, what their life looks like, and
+exactly how VideoText.io transforms it.
+
+─────────────────────────────────────────────────────────────────────────────
+ICP 1: THE PODCAST PRODUCER
+─────────────────────────────────────────────────────────────────────────────
+
+WHO THEY ARE:
+  Show producers, podcast managers, and audio/video editors handling multiple
+  episodes per week. They work with 30-90 minute recordings. They need show notes,
+  transcripts, chapters, and clips — every single week.
+
+THEIR PAIN BEFORE VIDEOTEXT.IO:
+  • Sending files to a transcription service and waiting 24-48 hours
+  • Paying $1-2 per minute of audio ($30-90 per episode)
+  • Manually writing show notes from a raw transcript
+  • Spending 2-3 hours per episode on text deliverables
+
+WHAT VIDEOTEXT.IO GIVES THEM:
+  • Full transcript in 35 seconds — not 24 hours
+  • Auto-generated show notes summary with key bullets and action items
+  • Auto-detected chapters with timestamps for YouTube and Spotify
+  • Speaker-separated transcript for interview shows
+  • Clean version (fillers removed) ready to post on website
+  • All 7+ output types from a single upload
+
+REAL RESULT:
+  "The Growth Lab Network — 24 episodes/month. VideoText.io reduced their weekly
+  transcript delivery time from 3 days to 2 hours."
+
+KEY FEATURES THEY RELY ON:
+  Video → Transcript, Speaker Diarization, Summary & Chapters, Batch Processing
+
+─────────────────────────────────────────────────────────────────────────────
+ICP 2: THE MEDIA AGENCY
+─────────────────────────────────────────────────────────────────────────────
+
+WHO THEY ARE:
+  Content agencies, video production studios, and media companies managing video
+  workflows for 5-20+ clients simultaneously. Every client has different formatting
+  requirements, style guides, and output preferences.
+
+THEIR PAIN BEFORE VIDEOTEXT.IO:
+  • Different tool for each client's requirements
+  • Hours spent reformatting transcripts to match client style guides
+  • Batch uploads not supported by other tools — one file at a time
+  • Impossible to maintain consistent quality across clients at scale
+
+WHAT VIDEOTEXT.IO GIVES THEM:
+  • Batch process 100 videos in a single job — one ZIP with everything
+  • Save per-client style guide profiles: "Rev format," "Client X format"
+  • Auto-validate every transcript against client rules before delivery
+  • Multi-language subtitles for international clients in one upload
+  • Agency-tier concurrent processing — multiple jobs running simultaneously
+
+REAL RESULT:
+  "Apex Media Agency — 12 clients per week. VideoText.io replaced 4 separate
+  tools and reduced per-client delivery time by 73%."
+
+KEY FEATURES THEY RELY ON:
+  Batch Processing, Style Guide Enforcement, Multi-Language Subtitles,
+  Guideline Format Tool, Concurrent Job Processing
+
+─────────────────────────────────────────────────────────────────────────────
+ICP 3: THE YOUTUBE CREATOR
+─────────────────────────────────────────────────────────────────────────────
+
+WHO THEY ARE:
+  Individual creators, faceless channels, educational YouTubers, and long-form
+  content creators. Growing channels with 50K-1M+ subscribers. They need SEO,
+  international reach, and content repurposing — yesterday.
+
+THEIR PAIN BEFORE VIDEOTEXT.IO:
+  • YouTube's auto-captions are inaccurate and unprofessional
+  • Manually writing descriptions and chapters is time-consuming
+  • No easy way to translate content for international audiences
+  • Can't turn a 40-minute video into a blog post without hours of work
+
+WHAT VIDEOTEXT.IO GIVES THEM:
+  • Accurate transcript in seconds — just paste the YouTube URL
+  • Auto-detected chapters with timestamps for YouTube description
+  • Summary and keywords for SEO-optimized video description
+  • SRT subtitles for YouTube upload or burning into Shorts/Reels
+  • Translation into 5+ languages — same video, broader audience
+  • Clean version ready to post as a blog article or newsletter
+
+REAL RESULT:
+  "Marcus Chen — 480K YouTube subscribers. Uses VideoText.io to turn every video
+  into an SEO-ready transcript, chapters, a blog post, and subtitles in 4
+  languages — all within 10 minutes of posting."
+
+KEY FEATURES THEY RELY ON:
+  YouTube URL input, Chapters, Summary, Keywords, Translate Subtitles,
+  Burn Subtitles, Clean Transcript export
+
+─────────────────────────────────────────────────────────────────────────────
+ICP 4: THE PROFESSIONAL TRANSCRIPTIONIST
+─────────────────────────────────────────────────────────────────────────────
+
+WHO THEY ARE:
+  Freelance transcriptionists and subtitle specialists working on platforms like
+  Rev, GoTranscript, TranscribeMe, and Scribie. They handle high volumes of files
+  and must deliver to strict formatting standards. Accuracy and speed directly
+  determine their income.
+
+THEIR PAIN BEFORE VIDEOTEXT.IO:
+  • Manual transcription is 4-6x slower than speaking speed
+  • Style guide compliance checking is done entirely by hand
+  • One mistake in formatting fails the entire delivery
+  • No tool that both transcribes AND validates against platform rules
+
+WHAT VIDEOTEXT.IO GIVES THEM:
+  • Start with an AI-generated transcript instead of a blank document
+  • Built-in style guide profiles for Rev, GoTranscript, TranscribeMe, Scribie
+  • Automatic pass/fail validation before submission — catch errors before rejection
+  • Speaker diarization for interview files
+  • Clean version with fillers already removed — less manual editing
+  • 4x more files deliverable per day with AI-assist + validation
+
+KEY FEATURES THEY RELY ON:
+  Video → Transcript, Guideline Format Tool, Speaker Diarization,
+  Clean Transcript View, Style Guide Validation
+
+─────────────────────────────────────────────────────────────────────────────
+ICP 5: THE CORPORATE / MEETING RECORDER
+─────────────────────────────────────────────────────────────────────────────
+
+WHO THEY ARE:
+  Operations, HR, legal, compliance, and executive teams recording Zoom calls,
+  Google Meet sessions, webinars, training sessions, and board meetings. They need
+  an accurate record — and they're deeply concerned about data privacy.
+
+THEIR PAIN BEFORE VIDEOTEXT.IO:
+  • Sending confidential meeting recordings to third-party transcription services
+  • No control over where their data goes or how long it's retained
+  • Meeting recordings buried and unsearchable after the call ends
+  • Hours spent writing meeting notes, action items, and follow-ups manually
+
+WHAT VIDEOTEXT.IO GIVES THEM:
+  • Transcribe the recording in seconds — Zoom, Google Meet, Teams, Webex
+  • Speaker labels: know exactly who said what and when
+  • Summary with action items — paste directly into the follow-up email
+  • Chapters: find any decision or discussion point instantly
+  • Privacy guarantee: video is processed and immediately deleted — period
+  • DOCX or PDF export for compliance documentation
+
+KEY FEATURES THEY RELY ON:
+  Video → Transcript, Speaker Diarization, Summary & Action Items,
+  Privacy-First Architecture, DOCX/PDF export
+
+================================================================================
+7. HOW VIDEOTEXT.IO SAVES TIME — WITH NUMBERS
+================================================================================
+
+─────────────────────────────────────────────────────────────────────────────
+SPEED BENCHMARKS — TRANSCRIPTION (15-Minute Video, 155 MB File)
+─────────────────────────────────────────────────────────────────────────────
+
+  VideoText.io .......... 35 seconds
+  Descript .............. 81 seconds (2.3x slower)
+  Otter.ai .............. 85 seconds (2.4x slower)
+  Trint ................. 4+ minutes (7x slower)
+  Manual transcription .. 45-90 minutes (77x-154x slower)
+
+VideoText.io is the fastest professional transcription platform available.
+
+─────────────────────────────────────────────────────────────────────────────
+WORKFLOW TIME SAVINGS — PODCAST PRODUCER
+─────────────────────────────────────────────────────────────────────────────
+
+  BEFORE (industry average per episode):
+    Transcription service turnaround ......... 24-48 hours
+    Manual summary/show notes writing ........ 45 minutes
+    Chapter timestamps (manual) .............. 30 minutes
+    SRT subtitle creation .................... 45 minutes
+    Total time cost per episode .............. 2.5-3 hours of active work
+                                               + 24-48 hours waiting
+
+  AFTER (VideoText.io):
+    Transcription ............................ 35 seconds
+    Summary auto-generated ................... included
+    Chapters auto-detected ................... included
+    SRT subtitles ............................ same upload, 60 seconds
+    Total time cost per episode .............. < 5 minutes
+
+  TIME SAVED PER EPISODE: ~2.5-3 hours
+  TIME SAVED PER MONTH (24 episodes): ~60-72 hours → 1.5-2 full work weeks
+
+─────────────────────────────────────────────────────────────────────────────
+WORKFLOW TIME SAVINGS — MEDIA AGENCY (12 clients/week)
+─────────────────────────────────────────────────────────────────────────────
+
+  BEFORE:
+    Processing videos one-by-one (average 3 min each) ... 36 minutes
+    Reformatting per client style guide .................. 20 min per client
+    Quality checking formatting compliance ............... 15 min per client
+    Total per week ....................................... 36 + (35 x 12) = ~7.5 hours
+
+  AFTER (VideoText.io):
+    Batch upload all 12 clients' videos .................. 5 minutes
+    Per-client style guide auto-applied & validated ...... automated
+    Download ZIP with all outputs ........................ 10 minutes
+    Total per week ....................................... ~15-20 minutes
+
+  TIME SAVED PER WEEK: ~7 hours → equivalent to an entire workday
+
+─────────────────────────────────────────────────────────────────────────────
+WORKFLOW TIME SAVINGS — YOUTUBE CREATOR
+─────────────────────────────────────────────────────────────────────────────
+
+  BEFORE:
+    Writing video description with chapters .... 20-30 minutes
+    Creating SRT subtitles manually ............ 60-90 minutes
+    Writing blog post from video ............... 2-3 hours
+    Translating subtitles for global reach ..... 1-2 hours per language
+
+  AFTER (VideoText.io):
+    Paste YouTube URL .......................... 10 seconds
+    All outputs ready .......................... 35-90 seconds
+    Chapters copied into description ........... 2 minutes
+    Blog post from clean transcript ............ 10-15 minutes editing
+    5 language subtitles downloaded ............ included in same job
+
+  TIME SAVED PER VIDEO: 3-5 hours
+  TIME SAVED PER MONTH (4 videos): 12-20 hours
+
+─────────────────────────────────────────────────────────────────────────────
+THE PARALLEL PROCESSING ADVANTAGE
+─────────────────────────────────────────────────────────────────────────────
+
+Every other platform processes tasks sequentially. VideoText.io runs everything
+in parallel:
+
+  • Long videos split into 3-minute chunks → all chunks transcribed simultaneously
+  • Summary and chapters generated in parallel with each other after transcription
+  • Multi-language translations run simultaneously — not one language at a time
+  • Batch jobs process all 100 videos at the same time — not one after another
+
+This isn't just faster. It fundamentally changes what's possible in a workday.
+
+================================================================================
+8. PRICING & PLANS
+================================================================================
+
+─────────────────────────────────────────────────────────────────────────────
+FREE PLAN — $0/month, No Credit Card Required
+─────────────────────────────────────────────────────────────────────────────
+
+  • 3 uploads per day
+  • 30-minute maximum per video
+  • 2 GB maximum file size
+  • 1 language only
+  • 1 concurrent job
+  • Batch processing: disabled
+  • Exports: Watermarked TXT only
+
+Perfect for trying the platform or occasional personal use.
+
+─────────────────────────────────────────────────────────────────────────────
+PRO PLAN — $40/month
+─────────────────────────────────────────────────────────────────────────────
+
+  • Unlimited minutes (soft daily cap, no hard monthly limit)
+  • 120-minute maximum per video (2-hour files)
+  • 10 GB maximum file size
+  • 5 languages simultaneously
+  • 4 concurrent jobs
+  • Batch: 20 videos per batch, 120 min total duration
+  • Priority queue — skip ahead of free users
+  • All export formats: TXT, PDF, DOCX, JSON (watermark-free)
+  • Read-only share links for client delivery
+  • Full workflow: transcript + subtitles + translation + fix + burn + compress
+
+Built for solo professionals, creators, and small teams with consistent volume.
+
+─────────────────────────────────────────────────────────────────────────────
+FOUNDING PRO PLAN — $24.99/month (Limited: 20 Spots)
+─────────────────────────────────────────────────────────────────────────────
+
+  • Everything in Pro at a locked-forever founding price
+  • Price never increases — ever
+  • Early access to all new features before general release
+  • Direct roadmap influence — your requests get prioritized
+  • Priority support — front of the queue, always
+  • Personalized onboarding session with the team
+  • Private founding member community
+
+For users who want to lock in the best possible rate and shape the product's future.
+
+─────────────────────────────────────────────────────────────────────────────
+AGENCY / BUSINESS PLAN — Premium Pricing
+─────────────────────────────────────────────────────────────────────────────
+
+  • Unlimited minutes
+  • 240-minute maximum per video (4-hour files)
+  • 20 GB maximum file size
+  • 10 languages simultaneously
+  • 8 concurrent jobs
+  • Batch: 100 videos per batch
+  • All Pro features plus:
+      - Per-client style guide profiles
+      - Bulk ZIP download with error logs
+      - Highest priority queue placement
+
+Built for agencies, studios, and teams with high-volume, multi-client workflows.
+
+─────────────────────────────────────────────────────────────────────────────
+RISK-FREE GUARANTEE
+─────────────────────────────────────────────────────────────────────────────
+
+  • 7-day money-back guarantee — no questions asked
+  • Cancel anytime — no lock-in, no cancellation fees
+  • Free trial available to test before any commitment
+
+================================================================================
+9. INTEGRATIONS & TECHNOLOGY
+================================================================================
+
+VideoText.io is built on best-in-class infrastructure. This isn't a hobbyist
+project — it's a production-grade platform with enterprise-level reliability.
+
+─────────────────────────────────────────────────────────────────────────────
+AI & SPEECH RECOGNITION
+─────────────────────────────────────────────────────────────────────────────
+
+  • OpenAI Whisper (large-v3): The gold standard for speech-to-text accuracy.
+    Whisper large-v3 is used by researchers, enterprises, and professional
+    transcription services globally. It's the most accurate model available.
+
+  • OpenAI GPT: Powers summaries, chapter detection, style guide enforcement,
+    translation, and the Guideline Format validation tool.
+
+  • Deepgram SDK: Integrated as an alternative transcription provider for
+    specific use cases and fallback scenarios.
+
+─────────────────────────────────────────────────────────────────────────────
+VIDEO PROCESSING
+─────────────────────────────────────────────────────────────────────────────
+
+  • FFmpeg (with optional GPU acceleration via CUDA/NVENC): Industry standard
+    for video compression, subtitle burning, and format conversion.
+    GPU acceleration available for large files on supported hardware.
+
+─────────────────────────────────────────────────────────────────────────────
+YOUTUBE INTEGRATION
+─────────────────────────────────────────────────────────────────────────────
+
+  • YouTube Data API v3 (official): For metadata fetch — no scraping, no bot
+    detection risk, fully compliant with YouTube's terms of service.
+  • YouTube audio extraction for transcription of any public YouTube video.
+  • yt-dlp integration as a fallback for edge cases.
+
+─────────────────────────────────────────────────────────────────────────────
+PLATFORM & RELIABILITY
+─────────────────────────────────────────────────────────────────────────────
+
+  • Bull Queue (Redis): Async job orchestration — every transcription job is
+    managed in a robust, fault-tolerant queue system.
+  • PostgreSQL + Prisma ORM: Reliable user, usage, and subscription data storage.
+  • Stripe: Secure payment processing, subscription management, customer portal,
+    and promo code handling.
+  • Resend: Transactional email delivery for authentication.
+  • Sentry: Real-time error tracking and performance monitoring.
+  • PostHog: Product analytics for understanding usage and improving the product.
+
+─────────────────────────────────────────────────────────────────────────────
+WHAT THIS MEANS FOR USERS
+─────────────────────────────────────────────────────────────────────────────
+
+  • 99.9% uptime target with health monitoring endpoints
+  • Real-time request tracking from browser to server to output
+  • Automatic retry logic for failed jobs
+  • Connection-adaptive uploads that work on any internet speed
+  • A platform that scales from 1 user to 10,000 without degrading
+
+================================================================================
+10. PRIVACY — OUR NON-NEGOTIABLE COMMITMENT
+================================================================================
+
+Privacy is not a feature at VideoText.io. It is the foundation.
+
+"We do not store your data."
+
+This is stated clearly on the homepage, the pricing page, the FAQ, and the
+privacy policy — because it's the one thing our users cannot compromise on.
+
+─────────────────────────────────────────────────────────────────────────────
+HOW IT WORKS:
+─────────────────────────────────────────────────────────────────────────────
+
+  1. You upload a video to VideoText.io
+  2. VideoText.io processes it — transcribes, subtitles, compresses, whatever
+  3. You download the output
+  4. The video file is immediately and permanently deleted from our servers
+  5. Your transcripts and outputs are not stored after delivery
+  6. We do not train AI models on your content
+  7. We do not share your data with third parties
+
+─────────────────────────────────────────────────────────────────────────────
+WHY THIS MATTERS FOR OUR ICP:
+─────────────────────────────────────────────────────────────────────────────
+
+  PODCASTERS: Episode recordings often contain pre-release content, exclusive
+  interviews, or business-sensitive conversations.
+
+  AGENCIES: Client videos are confidential by nature — brands, unreleased
+  campaigns, proprietary strategies.
+
+  CORPORATE TEAMS: Meeting recordings contain legal, financial, HR, and
+  strategic information that cannot sit on a third-party server.
+
+  CREATORS: Raw footage contains content that isn't ready for public eyes.
+
+VideoText.io is the only platform that delivers enterprise-speed transcription
+with a privacy guarantee that holds up to scrutiny.
+
+================================================================================
+11. COMPETITIVE POSITIONING
+================================================================================
+
+VideoText.io competes against every major transcription and subtitle platform.
+Here's how we stack up:
+
+─────────────────────────────────────────────────────────────────────────────
+VS. DESCRIPT ($12-24/mo)
+─────────────────────────────────────────────────────────────────────────────
+  Descript: Multi-purpose video editor with transcription as a feature
+  VideoText.io: Purpose-built transcription powerhouse with everything pros need
+
+  VideoText.io advantages:
+  ✓ 2.3x faster transcription (35s vs 81s for 15-min video)
+  ✓ No data storage vs Descript's cloud editing model
+  ✓ Batch processing for 100 videos vs Descript's one-at-a-time
+  ✓ Style guide enforcement — Descript has no equivalent
+  ✓ Multi-language subtitles in one job vs sequential translation
+
+─────────────────────────────────────────────────────────────────────────────
+VS. OTTER.AI ($10-30/mo)
+─────────────────────────────────────────────────────────────────────────────
+  Otter.ai: Meeting transcription focused, limited video support
+  VideoText.io: Full video pipeline — any file, any format, any workflow
+
+  VideoText.io advantages:
+  ✓ 2.4x faster
+  ✓ All video formats vs Otter.ai's limited import
+  ✓ Subtitle generation, burning, translation — Otter has none of this
+  ✓ Batch processing — Otter is one-at-a-time
+  ✓ Complete privacy vs Otter.ai's cloud storage model
+
+─────────────────────────────────────────────────────────────────────────────
+VS. REV ($1.50/min AI, $1.99-$3.99/min human)
+─────────────────────────────────────────────────────────────────────────────
+  Rev: Human + AI transcription marketplace
+  VideoText.io: Faster AI with style guide enforcement
+
+  VideoText.io advantages:
+  ✓ Instant vs Rev's 12-hour human transcription
+  ✓ Built-in Rev style guide profile for transcriptionists using Rev
+  ✓ Flat subscription vs per-minute pricing that multiplies fast
+  ✓ Pro plan pays back in < 2 hours of Rev-equivalent usage
+
+─────────────────────────────────────────────────────────────────────────────
+VS. TRINT ($48-92/mo)
+─────────────────────────────────────────────────────────────────────────────
+  Trint: Team-focused transcription with collaboration features
+  VideoText.io: 7x faster, more affordable, fully private
+
+  VideoText.io advantages:
+  ✓ 7x faster transcription (35s vs 4+ min)
+  ✓ $40/mo Pro vs Trint's $48/mo entry — with more features
+  ✓ No data storage vs Trint's cloud model
+  ✓ Burn subtitles, compress video — Trint has no video tools
+
+─────────────────────────────────────────────────────────────────────────────
+THE SUMMARY POSITION:
+─────────────────────────────────────────────────────────────────────────────
+
+  VideoText.io is the only platform that combines:
+  1. The fastest transcription speed available (35 seconds)
+  2. A complete video text pipeline in one place
+  3. Batch processing for agency-scale volume
+  4. Style guide enforcement for professional delivery
+  5. A genuine no-data-storage privacy commitment
+
+No other platform does all five. Most do one or two.
+
+================================================================================
+12. KEY MESSAGES & PROOF POINTS
+================================================================================
+
+─────────────────────────────────────────────────────────────────────────────
+PRIMARY MESSAGE (The Big Idea):
+─────────────────────────────────────────────────────────────────────────────
+
+  "Your video, fully processed — in the time it takes to pour a coffee."
+
+─────────────────────────────────────────────────────────────────────────────
+SPEED MESSAGES:
+─────────────────────────────────────────────────────────────────────────────
+
+  • "35 seconds. That's how long it takes to transcribe a 15-minute video."
+  • "2.3x faster than Descript. 7x faster than Trint. The fastest in the game."
+  • "By the time a competitor confirms your upload, you're already downloading
+    your transcript."
+  • "Process 100 videos in the same time your old tool processed 1."
+
+─────────────────────────────────────────────────────────────────────────────
+PRIVACY MESSAGES:
+─────────────────────────────────────────────────────────────────────────────
+
+  • "We process your video. Then we delete it. Full stop."
+  • "Your clients' content stays between you and your clients."
+  • "No cloud storage. No AI training on your data. No exceptions."
+  • "Privacy isn't a setting — it's how we built the whole thing."
+
+─────────────────────────────────────────────────────────────────────────────
+WORKFLOW MESSAGES:
+─────────────────────────────────────────────────────────────────────────────
+
+  • "One upload. Transcript. Subtitles. Summary. Chapters. Speaker labels.
+    10 languages. Ready to deliver."
+  • "Replace four tools with one platform."
+  • "Stop copying outputs between apps. VideoText.io is the whole pipeline."
+  • "Your transcript doesn't end at the download — it's the beginning of your
+    content workflow."
+
+─────────────────────────────────────────────────────────────────────────────
+PROFESSIONAL CREDIBILITY MESSAGES:
+─────────────────────────────────────────────────────────────────────────────
+
+  • "Built for professionals who deliver to clients — not just hobbyists who
+    transcribe occasionally."
+  • "Style guide enforcement built in. Rev, GoTranscript, TranscribeMe, Scribie —
+    or your custom client profile."
+  • "Powered by Whisper large-v3 — the most accurate speech-to-text model in
+    the world."
+  • "From raw recording to client-ready deliverable in under 5 minutes."
+
+─────────────────────────────────────────────────────────────────────────────
+VOLUME/SCALE MESSAGES:
+─────────────────────────────────────────────────────────────────────────────
+
+  • "100 videos. One batch. One ZIP. One click to deliver."
+  • "Agencies run on VideoText.io because it's the only platform that works
+    at agency scale."
+  • "Your content volume is growing. Your tool should keep up."
+
+================================================================================
+13. TONE, VOICE & BRAND VALUES
+================================================================================
+
+─────────────────────────────────────────────────────────────────────────────
+BRAND PERSONALITY:
+─────────────────────────────────────────────────────────────────────────────
+
+  CONFIDENT, NOT ARROGANT.
+  We know we're the fastest. We say it with data, not bluster.
+
+  PROFESSIONAL, NOT CORPORATE.
+  We're built for professionals, so we talk like one — clear, direct,
+  no jargon, no filler.
+
+  HONEST, NOT SALESY.
+  We tell you exactly what each plan does and doesn't include. We're not
+  hiding limits in fine print.
+
+  PRIVACY-FIRST, NOT JUST PRIVACY-COMPLIANT.
+  We didn't add privacy to a platform that already stored data. We built
+  the entire product around not storing your data.
+
+─────────────────────────────────────────────────────────────────────────────
+TONE GUIDELINES FOR CONTENT:
+─────────────────────────────────────────────────────────────────────────────
+
+  DO:
+  • Lead with time savings and specific numbers ("35 seconds," "100 videos")
+  • Use the language of the professional ("deliverable," "client-ready,"
+    "style guide," "batch workflow")
+  • Make privacy concrete ("files deleted immediately after processing")
+  • Acknowledge the user's real pain before offering the solution
+  • Use short sentences. Professionals don't have time to read long ones.
+
+  DON'T:
+  • Use vague superlatives without proof ("best," "amazing," "revolutionary")
+  • Make it sound complicated — the product is powerful AND simple
+  • Bury the speed claim — it's the #1 purchase driver
+  • Forget the privacy commitment — it's a non-negotiable differentiator
+    for corporate and agency audiences
+
+─────────────────────────────────────────────────────────────────────────────
+VISUAL & CONTENT DIRECTION:
+─────────────────────────────────────────────────────────────────────────────
+
+  • Before/after: Show the old workflow (fragmented, slow) vs new (unified, fast)
+  • Timers: Literal countdowns showing 35s transcription vs competitor time
+  • Side-by-side comparisons: Pricing tables, feature matrices
+  • Workflow diagrams: Upload → options → result → deliver (visual pipeline)
+  • Persona-specific content: Podcaster, agency, creator, transcriptionist,
+    corporate — each with their own pain points and wins
+
+================================================================================
+14. TESTIMONIALS & SOCIAL PROOF
+================================================================================
+
+─────────────────────────────────────────────────────────────────────────────
+PODCAST PRODUCER
+─────────────────────────────────────────────────────────────────────────────
+
+  "We produce 24 episodes a month. Before VideoText.io, transcript and subtitle
+  delivery took us 3 days from recording. Now it takes 2 hours — and the quality
+  is better. The batch processing alone paid for the subscription in the first week."
+
+  — Sarah Okonkwo, The Growth Lab Network
+
+─────────────────────────────────────────────────────────────────────────────
+MEDIA AGENCY
+─────────────────────────────────────────────────────────────────────────────
+
+  "Managing 12 clients a week with different style guides was a nightmare before.
+  Now I batch process the week's videos on Monday morning and everything is styled,
+  validated, and zipped by lunch. My clients think I have a team. I don't."
+
+  — James Rivera, Apex Media Agency
+
+─────────────────────────────────────────────────────────────────────────────
+YOUTUBE CREATOR
+─────────────────────────────────────────────────────────────────────────────
+
+  "I have 480,000 subscribers. Every video needs a description, chapters,
+  subtitles, and a blog post. VideoText.io gives me all of that in the time
+  it takes to make coffee. It's the only tool in my content stack I couldn't
+  replace."
+
+  — Marcus Chen, YouTube Creator (480K subscribers)
+
+─────────────────────────────────────────────────────────────────────────────
+KEY STATS FOR MARKETING USE:
+─────────────────────────────────────────────────────────────────────────────
+
+  • 35 seconds — transcription speed for a 15-minute video
+  • 2.3x faster than Descript
+  • 7x faster than Trint
+  • 99 languages supported for transcription
+  • 70+ languages for subtitle translation
+  • 100 videos in a single batch job
+  • 10 languages per batch subtitle job
+  • 20+ free utility tools — no account required
+  • 7-day money-back guarantee
+  • 0 bytes of your video stored after processing
+  • 7 core professional tools in one platform
+  • 4 export formats per transcript (TXT, PDF, DOCX, JSON)
+
+================================================================================
+                              END OF DOCUMENT
+================================================================================
+
+VideoText.io Content File | Prepared for Marketing Agency Use | May 2026
+For questions about any feature or claim in this document, contact the
+VideoText.io product team directly.
+
+All benchmarks and performance figures are from internal testing.
+Competitor speed comparisons measured under equivalent conditions:
+15-minute video, 155 MB, standard upload speed.
+
+================================================================================
