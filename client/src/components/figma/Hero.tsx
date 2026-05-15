@@ -2,14 +2,8 @@ import { useRef, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ClipboardCheck,
-  Shield,
-  CheckCircle2,
   Upload,
   ChevronRight,
-  FileText,
-  Sparkles,
-  List,
-  Languages,
 } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
 import TrustBadge from '../TrustBadge';
@@ -193,103 +187,65 @@ export function Hero() {
         {/* Dropzone + Formatter */}
         <HeroDropzone />
 
-        {/* Output preview strip — shows what you actually get */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 w-full max-w-xl mx-auto">
-          {[
-            {
-              icon: FileText,
-              label: 'Transcript',
-              preview: 'Full word-for-word text with timestamps, speaker labels, and SRT export.',
-              color: 'text-emerald-400',
-              bg: 'bg-emerald-500/10',
-            },
-            {
-              icon: Sparkles,
-              label: 'AI Summary',
-              preview: 'Key points, bullet takeaways, and a one-paragraph overview — auto-generated.',
-              color: 'text-violet-400',
-              bg: 'bg-violet-500/10',
-            },
-            {
-              icon: List,
-              label: 'Chapters',
-              preview: 'Auto-detected chapter markers with timestamps for any player workflow.',
-              color: 'text-blue-400',
-              bg: 'bg-blue-500/10',
-            },
-            {
-              icon: Languages,
-              label: 'Translation',
-              preview: 'Translate into 70+ languages — subtitles and transcript both covered.',
-              color: 'text-amber-400',
-              bg: 'bg-amber-500/10',
-            },
-          ].map(({ icon: Icon, label, preview, color, bg }) => (
-            <Link
-              key={label}
-              to="/video-to-transcript"
-              className="group rounded-xl border border-white/[0.07] bg-white/[0.03] p-3 text-center flex flex-col items-center gap-2 transition-all duration-200 hover:border-violet-400/55 hover:bg-violet-500/[0.08]"
-            >
-              <div className={`w-7 h-7 rounded-lg ${bg} flex items-center justify-center transition-transform duration-200 group-hover:scale-105`}>
-                <Icon className={`w-3.5 h-3.5 ${color}`} />
-              </div>
-              <p className="text-[11px] font-bold text-white/80 leading-tight">{label}</p>
-              <p className="text-[10px] text-white/30 leading-relaxed hidden sm:block">{preview}</p>
-            </Link>
-          ))}
-        </div>
+        {/* Unified proof + trust block */}
+        <div className="mt-6 w-full max-w-xl mx-auto flex flex-col items-center gap-4">
 
-        {/* Trust signals + Social proof — single compact row */}
-        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-5 text-[12px] text-white/35">
-          <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-            No signup required
-          </span>
-          <span className="hidden sm:block w-px h-3 bg-white/10" />
-          <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-violet-400" />
-            Frictionless
-          </span>
-          <span className="hidden sm:block w-px h-3 bg-white/10" />
-          <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
-            98.5% accuracy
-          </span>
-          <span className="hidden sm:block w-px h-3 bg-white/10" />
-          <span className="flex items-center gap-1.5">
-            <Shield className="w-3.5 h-3.5 text-emerald-400" />
-            Zero data retention
-          </span>
-          <span className="hidden sm:block w-px h-3 bg-white/10" />
-          {/* Avatars */}
-          <span className="flex items-center gap-2">
-            <span className="flex items-center -space-x-2">
-              {CREATOR_AVATARS.map((src, i) => (
-                <ImageWithFallback
-                  key={i}
-                  src={src}
-                  alt=""
-                  width={22}
-                  height={22}
-                  className="w-[22px] h-[22px] rounded-full border-2 border-gray-950 object-cover"
-                />
-              ))}
-              <span className="w-[22px] h-[22px] rounded-full border-2 border-gray-950 bg-violet-500/25 flex items-center justify-center">
-                <span className="text-[7px] font-bold text-violet-300">12K+</span>
-              </span>
-            </span>
-            <span><span className="text-white/55 font-semibold">12,000+ creators</span> trust VideoText</span>
-          </span>
-          <span className="hidden sm:block w-px h-3 bg-white/10" />
-          {/* Stars */}
-          <span className="flex items-center gap-1">
-            {[1,2,3,4,5].map((i) => (
-              <svg key={i} className="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
+          {/* Operational proof grid */}
+          <div className="w-full grid grid-cols-3 gap-x-6 gap-y-2.5">
+            {([
+              { stat: '~5 min', label: '2-hour transcript' },
+              { stat: '99+', label: 'source languages' },
+              { stat: '98.5%', label: 'accuracy' },
+              { stat: 'DOCX · SRT · VTT', label: 'export formats' },
+              { stat: 'Speaker labels', label: '& timestamps' },
+              { stat: 'Files deleted', label: 'after processing' },
+            ] as const).map(({ stat, label }) => (
+              <div key={stat} className="flex flex-col gap-0.5">
+                <span className="text-[13px] font-bold text-white leading-tight">{stat}</span>
+                <span className="text-[11px] text-white/35 leading-tight">{label}</span>
+              </div>
             ))}
-            <span className="ml-0.5">4.9 / 5</span>
-          </span>
+          </div>
+
+          {/* Divider */}
+          <div className="w-full h-px bg-white/[0.07]" />
+
+          {/* Social proof + friction line */}
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[12px] text-white/35">
+              {/* Stars */}
+              <span className="flex items-center gap-1">
+                {[1,2,3,4,5].map((i) => (
+                  <svg key={i} className="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+                <span className="ml-1 font-semibold text-white/50">4.9 / 5</span>
+              </span>
+              <span className="w-px h-3 bg-white/10" />
+              {/* Avatars + ICP claim */}
+              <span className="flex items-center gap-2">
+                <span className="flex items-center -space-x-2">
+                  {CREATOR_AVATARS.map((src, i) => (
+                    <ImageWithFallback
+                      key={i}
+                      src={src}
+                      alt=""
+                      width={22}
+                      height={22}
+                      className="w-[22px] h-[22px] rounded-full border-2 border-gray-950 object-cover"
+                    />
+                  ))}
+                  <span className="w-[22px] h-[22px] rounded-full border-2 border-gray-950 bg-violet-500/25 flex items-center justify-center">
+                    <span className="text-[7px] font-bold text-violet-300">12K+</span>
+                  </span>
+                </span>
+                <span>Trusted by <span className="text-white/55 font-semibold">transcriptionists, translators &amp; QA teams</span></span>
+              </span>
+            </div>
+            <p className="text-[11px] text-white/20">3 free imports · No card required</p>
+          </div>
+
         </div>
 
       </div>

@@ -298,11 +298,11 @@ export function Features() {
             The full toolkit
           </p>
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
-            Every tool your workflow needs.
-            <span className="block text-gray-300 dark:text-white/20 mt-1">Nothing you don't.</span>
+            Everything to deliver client-ready transcripts.
+            <span className="block text-gray-300 dark:text-white/20 mt-1">One platform. Every stage of your workflow.</span>
           </h2>
           <p className="text-lg text-gray-500 dark:text-white/40 max-w-xl mx-auto transition-colors duration-500">
-            Upload a video, format against client guidelines, or translate into 70+ languages — purpose-built tools for every stage of your workflow. No bloated editor. No learning curve.
+            Transcribe, format against client guidelines, and translate into 70+ languages — purpose-built for professional transcript production and delivery. No bloated editor. No learning curve.
           </p>
         </motion.div>
 
