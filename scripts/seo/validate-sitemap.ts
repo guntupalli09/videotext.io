@@ -6,11 +6,13 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import { getIndexablePaths } from './registry'
+import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const PUBLIC_DIR = path.join(REPO_ROOT, 'client', 'public')
 const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
 const CANONICAL_HOST = 'https://videotext.io'
+const BLOG_URL = (process.env.BLOG_URL || 'https://blog.videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
 
 function extractUrlsFromXml(xml: string): string[] {
   const locRe = /<loc>([^<]+)<\/loc>/g
@@ -24,6 +26,22 @@ function extractUrlsFromXml(xml: string): string[] {
 
 function normalizeUrl(url: string): string {
   return url.replace('https://www.', 'https://').replace(/\/+$/, '')
+}
+
+
+function canonicalUrlForPath(routePath: string): string {
+  const canonicalPath = getCanonicalPathForRoute(routePath)
+  if (canonicalPath === '/blog') return `${BLOG_URL}/`
+  if (canonicalPath.startsWith('/blog/')) return `${BLOG_URL}/${canonicalPath.slice('/blog/'.length)}`
+  return canonicalPath === '/' ? `${SITE_URL}/` : `${SITE_URL}${canonicalPath}`
+}
+
+function pathFromCanonicalUrl(url: string): string | null {
+  if (url === SITE_URL || url === `${SITE_URL}/`) return '/'
+  if (url.startsWith(`${SITE_URL}/`)) return url.slice(SITE_URL.length) || '/'
+  if (url === BLOG_URL || url === `${BLOG_URL}/`) return '/blog'
+  if (url.startsWith(`${BLOG_URL}/`)) return `/blog/${url.slice(`${BLOG_URL}/`.length)}`
+  return null
 }
 
 function main(): void {
@@ -41,7 +59,7 @@ function main(): void {
 
   const indexablePaths = getIndexablePaths()
   const expectedUrls = new Set(
-    indexablePaths.map((p) => normalizeUrl(p === '/' ? `${SITE_URL}/` : `${SITE_URL}${p}`))
+    indexablePaths.map((p) => normalizeUrl(canonicalUrlForPath(p)))
   )
 
   const foundSet = new Set(found)
@@ -58,8 +76,8 @@ function main(): void {
     console.error('[validate-sitemap] Mixed www/non-www URLs detected in sitemap')
     failed = true
   }
-  if (found.some((u) => !u.startsWith(CANONICAL_HOST))) {
-    console.error('[validate-sitemap] Found non-canonical host in sitemap (expected https://videotext.io)')
+  if (found.some((u) => !u.startsWith(CANONICAL_HOST) && !u.startsWith(BLOG_URL))) {
+    console.error('[validate-sitemap] Found non-canonical host in sitemap (expected https://videotext.io or configured blog host)')
     failed = true
   }
 
@@ -71,9 +89,8 @@ function main(): void {
   }
 
   for (const url of found) {
-    const pathPart = (url === SITE_URL || url === `${SITE_URL}/`) ? '/' : url.slice(SITE_URL.length)
-    const expectedPath = pathPart || '/'
-    if (!indexablePaths.includes(expectedPath)) {
+    const expectedPath = pathFromCanonicalUrl(url)
+    if (!expectedPath || !indexablePaths.includes(expectedPath)) {
       console.error('[validate-sitemap] Sitemap contains path not in indexable inventory:', url)
       failed = true
     }
