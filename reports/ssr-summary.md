@@ -1,16 +1,16 @@
 # SSR Coverage Report
 
-Generated: 2026-05-15T02:09:31.116Z
+Generated: 2026-05-15T04:26:12.023Z
 
 ```txt
 SSR COVERAGE REPORT
 
-Total routes: 338
-SEO/indexable routes: 254
-Total prerendered routes: 253
-Currently SSR-rendered: 319
+Total routes: 345
+SEO/indexable routes: 268
+Total prerendered routes: 267
+Currently SSR-rendered: 327
 Missing SSR coverage: 0
-Meaningful SSR validation passes: 306/306
+Meaningful SSR validation passes: 321/321
 ```
 
 ## SSR modes

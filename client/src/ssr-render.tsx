@@ -28,6 +28,9 @@ import {
   getRouteFamily,
   getFamilySectionTitles,
   getFamilyPrimaryCta,
+  getContextualCta,
+  getWorkflowStageCtas,
+  shouldReplaceRegistryCta,
   buildFamilyDeepContent,
   buildFamilyFaq,
   type RouteFamily,
@@ -63,7 +66,7 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
   '/site-index': {
     h1: 'All VideoText Pages',
     intro: 'Browse VideoText transcription workflows, subtitle utilities, comparison pages, alternatives, style-guide resources, and export helpers from one organized index.',
-    primaryCta: { text: 'Start with Video to Transcript', path: '/video-to-transcript' },
+    primaryCta: { text: 'Choose the right transcript, subtitle, or formatting workflow', path: '/site-index' },
     deepContent: {
       proofPoints: [
         'Find the right workflow quickly, from long-video transcription to subtitle repair, translation, formatting, and tool comparisons.',
@@ -75,7 +78,7 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
         { title: '2. Follow task-specific links', detail: 'Related workflow links connect use cases such as YouTube transcripts, meeting notes, subtitle translation, and style-guide formatting.' },
         { title: '3. Compare options', detail: 'Use comparison and alternatives pages to choose the right transcript, subtitle, or formatting workflow before uploading media.' },
       ],
-      ctaText: 'Open the transcription tool',
+      ctaText: 'Move from raw media to export-ready text',
       ctaPath: '/video-to-transcript',
     },
     faq: [
@@ -93,7 +96,7 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
     h1: 'Transcript Style Guide Formatter for Rev and GoTranscript Rules',
     intro:
       'Turn a raw transcript into a client-ready draft that follows platform-style rules for speaker labels, timestamps, clean verbatim, full verbatim, punctuation, and QA review. Use it before delivery to reduce formatting rework and catch the issues that often trigger marketplace revision requests.',
-    primaryCta: { text: 'Format a transcript', path: '/guideline-format' },
+    primaryCta: { text: 'Apply client transcript formatting rules', path: '/guideline-format' },
     deepContent: {
       proofPoints: [
         'Apply Rev-style paragraph breaks, speaker names, timestamps, and notation rules before client handoff.',
@@ -120,7 +123,7 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
         { feature: 'Timestamp formatting', videotext: 'Supports interval and speaker-turn timestamp workflows for review-ready files', alternatives: 'Requires manual timestamp cleanup after transcription' },
         { feature: 'QA rejection prevention', videotext: 'Surfaces formatting issues before handoff', alternatives: 'Issues are usually found only after reviewer feedback' },
       ],
-      ctaText: 'Format a transcript for client guidelines',
+      ctaText: 'Generate a client-ready formatted transcript',
       ctaPath: '/guideline-format',
     },
     faq: [
@@ -140,7 +143,7 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
     h1: 'Video to Transcript — Free AI Transcription, 98.5% Accurate',
     intro:
       'Upload any video or paste a YouTube URL and get a full transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in one pass. VideoText is built for creators, teams, researchers, and agencies that need searchable text from long recordings without manual cleanup.',
-    primaryCta: { text: 'Transcribe a video now', path: '/video-to-transcript' },
+    primaryCta: { text: 'Generate transcript, subtitles, summary, and chapters together', path: '/video-to-transcript' },
     deepContent: {
       proofPoints: [
         'One long-video upload produces transcript text, SRT/VTT subtitle files, summaries, chapters, JSON, DOCX, PDF, and share-ready exports.',
@@ -167,7 +170,7 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
         { feature: 'Long recording workflow', videotext: 'Designed for long-video processing, structured outputs, and teammate review', alternatives: 'Often requires separate tools for captions, summaries, chapters, or review handoff' },
         { feature: 'Privacy posture', videotext: 'Files deleted after processing', alternatives: 'Uploads may remain in project libraries' },
       ],
-      ctaText: 'Upload a video, get transcript in minutes',
+      ctaText: 'Turn long video into structured transcript outputs',
       ctaPath: '/video-to-transcript',
     },
     faq: [
@@ -222,7 +225,7 @@ function getStaticRouteContent(routePath: string): StaticRouteContent | null {
 
   if (meta) {
     const label = getPageLabel(routePath) || titleToH1(meta.title)
-    const familyCta = getFamilyPrimaryCta(family)
+    const familyCta = getFamilyPrimaryCta(family, routePath)
     return {
       path: routePath,
       title: meta.title,
@@ -251,7 +254,11 @@ function getStaticRouteContent(routePath: string): StaticRouteContent | null {
 }
 
 function contentFromSeoEntry(entry: SeoRegistryEntry, family: RouteFamily): StaticRouteContent {
-  const fallbackCta = getFamilyPrimaryCta(family)
+  const contextualCta = getContextualCta(family, entry.path, 'hero')
+  const registryCtaText = entry.deepContent?.ctaText || entry.tutorialContent?.ctaText
+  const registryCtaPath = entry.deepContent?.ctaPath || entry.tutorialContent?.ctaPath
+  const selectedCta = shouldReplaceRegistryCta(registryCtaText) ? contextualCta : { ...contextualCta, text: registryCtaText!, path: registryCtaPath || contextualCta.path }
+  const deepContent = entry.deepContent || buildFamilyDeepContent(family, entry.breadcrumbLabel, entry.description)
   return {
     path: entry.path,
     title: entry.title,
@@ -260,12 +267,16 @@ function contentFromSeoEntry(entry: SeoRegistryEntry, family: RouteFamily): Stat
     intro: entry.intro,
     faq: entry.faq,
     routeFamily: family,
-    deepContent: entry.deepContent || buildFamilyDeepContent(family, entry.breadcrumbLabel, entry.description),
+    deepContent: {
+      ...deepContent,
+      ctaText: shouldReplaceRegistryCta(deepContent.ctaText) ? getContextualCta(family, entry.path, 'footer').text : deepContent.ctaText,
+      ctaPath: shouldReplaceRegistryCta(deepContent.ctaText) ? getContextualCta(family, entry.path, 'footer').path : deepContent.ctaPath,
+    },
     tutorialContent: entry.tutorialContent,
     related: getRelatedSuggestionsForEntry(entry),
     primaryCta: {
-      text: entry.deepContent?.ctaText || entry.tutorialContent?.ctaText || fallbackCta.text,
-      path: resolveInternalLinkPath(entry.deepContent?.ctaPath || entry.tutorialContent?.ctaPath || fallbackCta.path),
+      text: selectedCta.text,
+      path: resolveInternalLinkPath(selectedCta.path),
     },
   }
 }
@@ -283,7 +294,7 @@ function StaticSeoDocument({ content }: { content: StaticRouteContent }) {
   const deep = content.deepContent
   const tutorial = content.tutorialContent
   const related = content.related || []
-  const primaryCta = content.primaryCta || getFamilyPrimaryCta(content.routeFamily ?? 'generic')
+  const primaryCta = content.primaryCta || getFamilyPrimaryCta(content.routeFamily ?? 'generic', content.path)
   const titles = getFamilySectionTitles(content.routeFamily ?? 'generic')
 
   return (
@@ -293,7 +304,7 @@ function StaticSeoDocument({ content }: { content: StaticRouteContent }) {
         .vt-workflow-eyebrow{color:#6d28d9;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 12px}
         .vt-workflow-document h1{font-size:clamp(34px,6vw,60px);line-height:1.02;margin:0 0 18px;font-weight:900;letter-spacing:-.04em;color:#111827}
         .vt-workflow-intro{font-size:20px;line-height:1.75;color:#374151;margin:0 0 28px;max-width:860px}
-        .vt-workflow-actions{display:flex;flex-wrap:wrap;gap:12px;margin:26px 0 40px}.vt-workflow-actions a{border-radius:999px;padding:12px 18px;text-decoration:none;font-weight:800}.vt-workflow-primary{background:#7c3aed;color:#fff}.vt-workflow-secondary{background:#f5f3ff;color:#5b21b6}
+        .vt-workflow-actions{display:flex;flex-wrap:wrap;gap:12px;margin:26px 0 14px}.vt-workflow-actions a{border-radius:999px;padding:12px 18px;text-decoration:none;font-weight:800}.vt-workflow-primary{background:#7c3aed;color:#fff}.vt-workflow-secondary{background:#f5f3ff;color:#5b21b6}.vt-workflow-contextual-ctas{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 40px}.vt-workflow-contextual-ctas a{display:inline-flex;border:1px solid #e5e7eb;border-radius:999px;padding:8px 12px;color:#374151;background:#fff;text-decoration:none;font-weight:700;font-size:13px}
         .vt-workflow-section{border-top:1px solid #e5e7eb;padding-top:30px;margin-top:34px}.vt-workflow-section h2{font-size:28px;line-height:1.2;margin:0 0 16px;font-weight:850;color:#111827}.vt-workflow-section h3{font-size:18px;margin:0 0 8px;color:#111827}.vt-workflow-section p,.vt-workflow-section li{color:#374151;font-size:16px}.vt-workflow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.vt-workflow-card{border:1px solid #e5e7eb;border-radius:18px;padding:18px;background:#fafafa}.vt-workflow-card p{margin:0}.vt-workflow-proof li{margin:8px 0}.vt-workflow-table{width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden}.vt-workflow-table th,.vt-workflow-table td{border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top;padding:12px}.vt-workflow-table th{background:#f9fafb;color:#111827}.vt-workflow-faq details{border:1px solid #e5e7eb;border-radius:14px;padding:14px 16px;margin:10px 0;background:#fff}.vt-workflow-faq summary{cursor:pointer;font-weight:800;color:#111827}.vt-workflow-links{display:flex;flex-wrap:wrap;gap:10px}.vt-workflow-links a{display:inline-flex;border:1px solid #ddd6fe;border-radius:999px;padding:8px 12px;color:#5b21b6;background:#faf5ff;text-decoration:none;font-weight:700}
       `}</style>
       <p className="vt-workflow-eyebrow">VideoText workflow guide</p>
@@ -301,7 +312,12 @@ function StaticSeoDocument({ content }: { content: StaticRouteContent }) {
       <p className="vt-workflow-intro">{content.intro || content.description}</p>
       <div className="vt-workflow-actions">
         <a className="vt-workflow-primary" href={primaryCta.path}>{primaryCta.text}</a>
-        <a className="vt-workflow-secondary" href="/pricing">View pricing</a>
+        <a className="vt-workflow-secondary" href="/pricing">Compare workflow capacity</a>
+      </div>
+      <div className="vt-workflow-contextual-ctas" aria-label="Workflow-specific next steps">
+        {getWorkflowStageCtas(content.routeFamily ?? 'generic', content.path).slice(0, 3).map((cta) => (
+          <a key={`${cta.stage}-${cta.text}`} href={cta.path}>{cta.text}</a>
+        ))}
       </div>
 
       {deep?.proofPoints?.length ? (

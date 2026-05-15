@@ -1,5 +1,7 @@
+import React from 'react'
 import { Link } from 'react-router-dom'
 import AnswerBlock from '../components/AnswerBlock'
+void React
 
 const CHECK = <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm">✓</span>
 const CROSS = <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 font-bold text-sm">✗</span>

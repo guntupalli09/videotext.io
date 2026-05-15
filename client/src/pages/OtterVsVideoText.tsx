@@ -1,4 +1,6 @@
+import React from 'react'
 import CitationPage from '../components/CitationPage'
+void React
 
 export default function OtterVsVideoText() {
   return (

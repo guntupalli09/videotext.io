@@ -12,7 +12,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/': {
     title: 'Video to Text Transcription Software | Fast AI Transcript & Subtitles',
     description:
-      'VideoText is AI transcription software for turning video to text, transcript, subtitles, summary, and chapters in one workflow. Start free and export TXT, DOCX, PDF, SRT, and VTT.',
+      'VideoText turns long video into structured transcripts, subtitles, summaries, and chapters in one workflow, with export support for TXT, DOCX, PDF, SRT, and VTT.',
   },
   '/pricing': {
     title: 'Pricing — Free, Basic, Pro & Agency Plans',
