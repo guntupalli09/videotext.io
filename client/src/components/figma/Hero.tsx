@@ -127,10 +127,10 @@ function HeroDropzone() {
             </p>
           </div>
           <p className="text-white/35 text-[11px] leading-snug">
-            Apply client guideline rules — ready for QA
+            Apply client formatting guidelines — ready for QA
           </p>
           <div className="flex items-center gap-1 text-[11px] font-semibold text-violet-400 group-hover:gap-1.5 transition-all">
-            Format now <ChevronRight className="w-3 h-3" />
+            Generate Client-Ready Transcript <ChevronRight className="w-3 h-3" />
           </div>
         </Link>
       </div>
@@ -164,22 +164,9 @@ export function Hero() {
         <TrustBadge className="mb-4" />
 
         {/* H1 */}
-        <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.25rem] lg:text-[3.75rem] font-extrabold tracking-tight leading-[1.08] mb-4 italic">
-          <span
-            className="text-white"
-            style={{
-              textShadow:
-                '1px 1px 0 #7c3aed, 2px 2px 0 #6d28d9, 3px 3px 6px rgba(109,40,217,0.35)',
-            }}
-          >
-            Deliver Client-Ready Transcripts —
-          </span>
-          <span
-            className="block mt-1 pb-1 bg-gradient-to-r from-fuchsia-300 via-violet-300 to-indigo-300 bg-clip-text text-transparent"
-            style={{
-              filter: 'drop-shadow(0 2px 8px rgba(192,132,252,0.55))',
-            }}
-          >
+        <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.25rem] lg:text-[3.75rem] font-extrabold tracking-tight leading-[1.08] mb-4">
+          <span className="text-white">Deliver Client-Ready Transcripts —{' '}</span>
+          <span className="bg-gradient-to-r from-fuchsia-300 via-violet-300 to-indigo-300 bg-clip-text text-transparent">
             Fast.
           </span>
         </h1>
