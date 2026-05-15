@@ -6,6 +6,7 @@ import { getJobPartial, trimPartialPayloadForResponse, segmentsToPartialTranscri
 import { getJobSummary } from '../utils/jobSummary'
 import { getJobStage, type YoutubeJobStage } from '../utils/jobStage'
 import { getLogger } from '../lib/logger'
+import { prisma } from '../db'
 
 const log = getLogger('api')
 const router = express.Router()
@@ -291,6 +292,18 @@ router.post('/:jobId/claim', async (req: Request, res: Response) => {
         error: updateErr instanceof Error ? updateErr.message : String(updateErr),
       })
       return res.status(500).json({ message: 'Failed to claim job. Please try again.' })
+    }
+
+    // Update Prisma Job record with real userId so founder dashboard shows user's email
+    try {
+      await prisma.job.updateMany({ where: { id: jobId }, data: { userId } })
+    } catch (prismaErr: unknown) {
+      log.warn({
+        msg: 'Claim job prisma update failed',
+        jobId,
+        error: prismaErr instanceof Error ? prismaErr.message : String(prismaErr),
+      })
+      // non-blocking — queue update already succeeded
     }
 
     // Increment real user's import count to reflect the guest trial job
