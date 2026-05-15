@@ -13,6 +13,7 @@
  */
 import type { SeoRegistryEntry, FaqItem } from './seoRegistry'
 import { transcriptionTargets, targetToSlug, slugToTitle } from '../data/seoPages'
+import { getContextualCta, getRouteFamily } from './routeFamilyTemplates'
 
 // Only these targets should generate intent pages (not money pages)
 const INTENT_PAGE_TARGETS = new Set([
@@ -40,7 +41,7 @@ const INTENT_PATTERNS: Array<{
 
 const DEFAULT_FAQ: FaqItem[] = [
   { q: 'How do I transcribe this?', a: 'Upload or paste a URL. Click Transcribe and get a full transcript in seconds. Export as SRT, TXT.' },
-  { q: 'Is it free?', a: 'Yes. Free tier includes 3 imports/month. Sign up free to try.' },
+  { q: 'How do I test the workflow?', a: 'Use a short real recording first, then compare transcript structure, speaker labels, subtitles, and cleanup time before moving longer files through the same workflow.' },
   { q: 'What formats can I export?', a: 'TXT, SRT, VTT. Paid plans add JSON, CSV, Markdown.' },
 ]
 
@@ -359,12 +360,14 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
         ...(slug.includes('language') || slug.includes('korean') ? ['/video-to-subtitles', '/translate-subtitles'] : ['/video-to-subtitles']),
       ].filter((v, i, a) => a.indexOf(v) === i) // dedupe
 
+      const cta = getContextualCta(getRouteFamily(path), path, 'footer')
+
       entries.push({
         path,
         title: titleTmpl(titleCase),
         description: descTmpl(titleCase),
         h1: h1Tmpl(titleCase),
-        intro: `Transcribe ${titleCase.toLowerCase()} to text in seconds. Upload your file or paste a URL. Our AI extracts speech and produces a clean transcript. Sign up free to try.`,
+        intro: `Convert ${titleCase.toLowerCase()} into searchable transcript output with speaker labels, timestamps, and export-ready subtitle files from the same workflow.`,
         faq: DEFAULT_FAQ,
         breadcrumbLabel: h1Tmpl(titleCase),
         toolKey,
@@ -374,8 +377,8 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
         keywords: generateKeywords(slug, titleCase),
         deepContent: {
           ...personalizeDeepContent(categoryContent, slug, titleCase),
-          ctaText: `Transcribe Your ${titleCase} Free`,
-          ctaPath: cluster.hub,
+          ctaText: cta.text,
+          ctaPath: cta.path || cluster.hub,
         },
       })
     }

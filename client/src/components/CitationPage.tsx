@@ -1,7 +1,9 @@
+import React from 'react'
 import { Link } from 'react-router-dom'
 import AnswerBlock from './AnswerBlock'
 import MoneyPagesCta from './MoneyPagesCta'
 import { DOMINANT_NARRATIVE, ENTITY_FINGERPRINT, PRIMARY_DEFINITION, QUOTABLE_STATEMENTS } from '../lib/productDna'
+void React
 
 type ComparisonRow = {
   tool: string

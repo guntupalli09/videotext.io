@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-05-15T02:09:31.114Z",
+  "generatedAt": "2026-05-15T04:26:12.021Z",
   "summary": {
-    "totalRoutes": 338,
-    "seoIndexable": 254,
-    "prerendered": 253,
-    "currentlySsr": 319,
+    "totalRoutes": 345,
+    "seoIndexable": 268,
+    "prerendered": 267,
+    "currentlySsr": 327,
     "missingSsr": 0
   },
   "routes": [
@@ -59,8 +59,8 @@
     {
       "path": "/accuracy-test",
       "source": "react-router",
-      "indexable": false,
-      "prerendered": false,
+      "indexable": true,
+      "prerendered": true,
       "ssrMode": "seo-document",
       "ssrCovered": true
     },
@@ -115,16 +115,16 @@
     {
       "path": "/ai-transcription-tools",
       "source": "react-router",
-      "indexable": false,
-      "prerendered": false,
+      "indexable": true,
+      "prerendered": true,
       "ssrMode": "seo-document",
       "ssrCovered": true
     },
     {
       "path": "/ai-transcription-workflow",
       "source": "react-router",
-      "indexable": false,
-      "prerendered": false,
+      "indexable": true,
+      "prerendered": true,
       "ssrMode": "seo-document",
       "ssrCovered": true
     },
@@ -563,8 +563,8 @@
     {
       "path": "/fastest-transcription-software",
       "source": "react-router",
-      "indexable": false,
-      "prerendered": false,
+      "indexable": true,
+      "prerendered": true,
       "ssrMode": "seo-document",
       "ssrCovered": true
     },
@@ -631,6 +631,14 @@
       "prerendered": false,
       "ssrMode": null,
       "ssrCovered": false
+    },
+    {
+      "path": "/free-captions-and-subtitles",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
     },
     {
       "path": "/free-speech-to-text",
@@ -738,6 +746,14 @@
     },
     {
       "path": "/google-meet-transcript",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/google-meet-transcription",
       "source": "seo-registry",
       "indexable": true,
       "prerendered": true,
@@ -1721,6 +1737,14 @@
       "ssrCovered": true
     },
     {
+      "path": "/subtitle-character-checker",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
       "path": "/subtitle-converter",
       "source": "seo-registry",
       "indexable": false,
@@ -1785,6 +1809,14 @@
       "ssrCovered": true
     },
     {
+      "path": "/subtitle-reading-speed",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
       "path": "/subtitle-resources",
       "source": "react-router",
       "indexable": true,
@@ -1825,6 +1857,22 @@
       "ssrCovered": true
     },
     {
+      "path": "/subtitle-validator",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-word-counter",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
       "path": "/subtitles-vs-closed-captions",
       "source": "seo-registry",
       "indexable": true,
@@ -1858,6 +1906,14 @@
     },
     {
       "path": "/teams-meeting-transcript",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/teams-meeting-transcription",
       "source": "seo-registry",
       "indexable": true,
       "prerendered": true,
@@ -2155,8 +2211,8 @@
     {
       "path": "/transcription-benchmark",
       "source": "react-router",
-      "indexable": false,
-      "prerendered": false,
+      "indexable": true,
+      "prerendered": true,
       "ssrMode": "seo-document",
       "ssrCovered": true
     },
@@ -2219,10 +2275,10 @@
     {
       "path": "/translation",
       "source": "react-router",
-      "indexable": false,
-      "prerendered": false,
-      "ssrMode": null,
-      "ssrCovered": false
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
     },
     {
       "path": "/trint-alternative",
@@ -2451,8 +2507,8 @@
     {
       "path": "/voice-recorder",
       "source": "react-router",
-      "indexable": false,
-      "prerendered": false,
+      "indexable": true,
+      "prerendered": true,
       "ssrMode": "seo-document",
       "ssrCovered": true
     },

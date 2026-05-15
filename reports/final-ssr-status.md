@@ -1,13 +1,13 @@
 # Final SSR Status
 
-Generated: 2026-05-15T02:09:31.118Z
+Generated: 2026-05-15T04:26:12.039Z
 
 ## Before vs after
 
 - Before: 7 comparison pages were direct React SSR; most SEO pages received metadata, JSON-LD, crawler links, and minimal injected copy.
-- After: 319 total routes have SSR coverage through direct `react-page` rendering or registry-driven `seo-document` rendering.
-- SEO/indexable coverage: 100% (254/254).
-- Render validation meaningful outputs: 306/306.
+- After: 327 total routes have SSR coverage through direct `react-page` rendering or registry-driven `seo-document` rendering.
+- SEO/indexable coverage: 100% (268/268).
+- Render validation meaningful outputs: 321/321.
 
 ## Routes fixed
 
@@ -84,6 +84,7 @@ Generated: 2026-05-15T02:09:31.118Z
 - /fix-subtitles (seo-document)
 - /flac-to-text (seo-document)
 - /fliki-alternative (seo-document)
+- /free-captions-and-subtitles (seo-document)
 - /free-speech-to-text (seo-document)
 - /free-subtitle-generator (seo-document)
 - /free-transcription (seo-document)
@@ -98,6 +99,7 @@ Generated: 2026-05-15T02:09:31.118Z
 - /gmr-transcription-guidelines (seo-document)
 - /google-docs-voice-typing-alternative (seo-document)
 - /google-meet-transcript (seo-document)
+- /google-meet-transcription (seo-document)
 - /gotranscript-guidelines (seo-document)
 - /gotranscript-style-guide (seo-document)
 - /gotranscript-test-guide (seo-document)
@@ -209,6 +211,7 @@ Generated: 2026-05-15T02:09:31.118Z
 - /status (seo-document)
 - /subly-alternative (seo-document)
 - /submagic-alternative (seo-document)
+- /subtitle-character-checker (seo-document)
 - /subtitle-converter (seo-document)
 - /subtitle-edit-alternative (seo-document)
 - /subtitle-editor (seo-document)
@@ -217,15 +220,19 @@ Generated: 2026-05-15T02:09:31.118Z
 - /subtitle-language-checker (seo-document)
 - /subtitle-line-break-fixer (seo-document)
 - /subtitle-maker (seo-document)
+- /subtitle-reading-speed (seo-document)
 - /subtitle-resources (seo-document)
 - /subtitle-timing-fixer (seo-document)
 - /subtitle-tools (seo-document)
 - /subtitle-translator (seo-document)
 - /subtitle-validation (seo-document)
+- /subtitle-validator (seo-document)
+- /subtitle-word-counter (seo-document)
 - /subtitles-vs-closed-captions (seo-document)
 - /superwhisper-alternative (seo-document)
 - /tactiq-alternative (seo-document)
 - /teams-meeting-transcript (seo-document)
+- /teams-meeting-transcription (seo-document)
 - /temi-vs-videotext (react-page)
 - /terms (seo-document)
 - /tiktok-captions (seo-document)
@@ -270,6 +277,7 @@ Generated: 2026-05-15T02:09:31.118Z
 - /transcription-tools (seo-document)
 - /translate-subtitles (seo-document)
 - /translate-video (seo-document)
+- /translation (seo-document)
 - /trint-alternative (seo-document)
 - /turboscribe-alternative (seo-document)
 - /verbit-format-guide (seo-document)

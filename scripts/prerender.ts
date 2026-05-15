@@ -19,6 +19,7 @@ import { getCanonicalPathForRoute } from '../client/src/lib/primaryUrls'
 import { getSoftwareApplicationJsonLd, getHowToJsonLd } from '../client/src/lib/seoMeta'
 import { getIndexablePaths } from './seo/registry'
 import { renderPageToHtml } from '../client/src/ssr-render'
+import { getContextualCta, getRouteFamily, getWorkflowStageCtas } from '../client/src/lib/routeFamilyTemplates'
 
 const REPO_ROOT = path.resolve(__dirname, '..')
 // Vercel outputDirectory is the root-level dist/ (build copies client/dist → dist/).
@@ -1394,8 +1395,10 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
 function buildH1Html(meta: RouteMeta): string {
   const h1Text = meta.h1 ? escapeHtml(meta.h1) : escapeHtml(titleFromPath(meta.path).replace(` | ${SITE_NAME}`, ''))
   const description = escapeHtml(meta.description)
-  const primaryCta = meta.path === '/pricing' ? '/pricing' : meta.path.includes('subtitle') || meta.path.includes('caption') ? '/video-to-subtitles' : '/video-to-transcript'
-  const primaryLabel = meta.path === '/pricing' ? 'See pricing' : 'Start free'
+  const routeFamily = getRouteFamily(meta.path)
+  const contextualCta = meta.path === '/pricing' ? { path: '/pricing', text: 'Compare minute capacity by workflow' } : getContextualCta(routeFamily, meta.path, 'hero')
+  const primaryCta = contextualCta.path
+  const primaryLabel = contextualCta.text
   const label = h1Text.replace(/\s+\|\s+VideoText$/i, '')
   const related = [
     { path: '/video-to-transcript', label: 'Video to Transcript' },
@@ -1417,7 +1420,7 @@ function buildH1Html(meta: RouteMeta): string {
       </section>
       <section style="margin:28px 0 0 0">
         <h2 style="font-size:22px;font-weight:800;margin:0 0 10px 0;color:#111827">Recommended workflow</h2>
-        <p style="margin:0 0 10px 0;color:#374151;line-height:1.7">Start with the closest VideoText tool, inspect the generated transcript or subtitle output, then download SRT, VTT, TXT, or review-ready text depending on your delivery target. For subtitle pages, check line length, reading speed, timing overlap, and cue structure before publishing.</p>
+        <p style="margin:0 0 10px 0;color:#374151;line-height:1.7">Choose the closest VideoText tool, inspect the generated transcript or subtitle output, then download SRT, VTT, TXT, or review-ready text depending on your delivery target. For subtitle pages, check line length, reading speed, timing overlap, and cue structure before publishing.</p>
         <ul style="margin:0;padding-left:20px;line-height:1.8;color:#374151">
           <li>Prepare source media, transcript text, or subtitle files before running the workflow.</li>
           <li>Review timestamps, speaker labels, caption density, and export format requirements.</li>
@@ -1596,11 +1599,12 @@ function buildConversionContent(meta: RouteMeta): string {
   }
 
   // CTA
+  const conversionCta = getContextualCta(getRouteFamily(meta.path), meta.path, 'footer')
   parts.push(`
     <section style="margin:32px 0;padding:24px;background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);border-radius:8px;text-align:center;color:white">
-      <h2 style="margin:0 0 12px 0;font-size:18px;font-weight:bold">Ready to Get Started?</h2>
-      <p style="margin:0 0 16px 0;font-size:14px;opacity:0.95">Sign up free. No credit card required. 3 imports per month included.</p>
-      <a href="/" style="display:inline-block;background:white;color:#2563eb;padding:12px 24px;border-radius:6px;font-weight:600;text-decoration:none;font-size:14px">Start Now Free</a>
+      <h2 style="margin:0 0 12px 0;font-size:18px;font-weight:bold">Run the next workflow step</h2>
+      <p style="margin:0 0 16px 0;font-size:14px;opacity:0.95">Use the same processing pass for structured text, subtitle timing, and export-ready files.</p>
+      <a href="${conversionCta.path}" style="display:inline-block;background:white;color:#2563eb;padding:12px 24px;border-radius:6px;font-weight:600;text-decoration:none;font-size:14px">${escapeHtml(conversionCta.text)}</a>
     </section>
   `)
 
@@ -1701,14 +1705,14 @@ function buildAllPagesIndexHtml(routes: RouteMeta[]): string {
   `
 }
 
-function buildGlobalDiscoverabilityLinksHtml(): string {
+function buildGlobalDiscoverabilityLinksHtml(routePath: string): string {
+  const routeFamily = getRouteFamily(routePath)
+  const stageLinks = getWorkflowStageCtas(routeFamily, routePath).slice(0, 3)
   return `
     <section style="margin:20px 0;padding:16px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px">
       <h3 style="font-size:13px;font-weight:600;color:#3730a3;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:0.5px">Workflow shortcuts</h3>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
-        <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:700">Transcribe video online</a>
-        <a href="/video-to-transcript" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">Video to transcript tool</a>
-        <a href="/fastest-transcription-tool" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">Fast video transcription</a>
+${stageLinks.map((cta, index) => `<a href="${escapeHtml(cta.path)}" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:${index === 0 ? 700 : 600}">${escapeHtml(cta.text)}</a>`).join('')}
         <a href="/site-index" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">All Pages Index</a>
         <a href="/alternatives" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Tool Alternatives</a>
         <a href="/transcription-tools" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Transcription Tools</a>
@@ -1959,7 +1963,7 @@ function main() {
     }
 
     // Inject crawlable discoverability links on ALL pages.
-    const discoverabilityHtml = buildGlobalDiscoverabilityLinksHtml()
+    const discoverabilityHtml = buildGlobalDiscoverabilityLinksHtml(routePath)
     html = html.replace('</body>', `${discoverabilityHtml}\n</body>`)
 
     // Inject authority links to money pages on all indexable pages.

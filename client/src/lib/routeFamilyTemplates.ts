@@ -149,7 +149,7 @@ const FAMILY_PATTERNS: FamilyPattern[] = [
   },
   // Subtitle / caption workflows (excluding translation)
   {
-    pattern: /\b(subtitle|caption|srt|vtt|ass|ttml|burn[-_]subtitle|fix[-_]subtitle|auto[-_]subtitle)\b/,
+    pattern: /\b(subtitles?|captions?|srt|vtt|ass|ttml|burn[-_]subtitles?|fix[-_]subtitles?|auto[-_]subtitles?)\b/,
     family: 'subtitle',
     priority: 6,
   },
@@ -161,7 +161,7 @@ const FAMILY_PATTERNS: FamilyPattern[] = [
   },
   // Transcription — broad catch for all recording-to-text workflows
   {
-    pattern: /\b(transcript|transcri|audio[-_]to[-_]text|speech[-_]to[-_]text|meeting|podcast|interview|zoom|google[-_]meet|teams[-_]meeting|webinar|lecture|video[-_]to[-_]text|voice[-_]to[-_]text)\b/,
+    pattern: /\b(transcripts?|transcri|audio[-_]to[-_]text|speech[-_]to[-_]text|meetings?|podcasts?|interviews?|zoom|google[-_]meet|teams[-_]meeting|webinars?|lectures?|video[-_]to[-_]text|voice[-_]to[-_]text)\b/,
     family: 'transcription',
     priority: 4,
   },
@@ -178,26 +178,219 @@ export function getRouteFamily(path: string): RouteFamily {
   return best.family
 }
 
-// ── Family primary CTA ─────────────────────────────────────────────────────────
+// ── Route-family CTA diversification engine ────────────────────────────────────
+
+export type CtaWorkflowStage = 'hero' | 'proof' | 'workflow' | 'output' | 'comparison' | 'validation' | 'footer'
+export type CtaIntent = 'converter' | 'generator' | 'cleanup' | 'switching' | 'validation' | 'repurposing' | 'accessibility'
 
 export interface FamilyCta {
   text: string
   path: string
+  family: RouteFamily
+  stage: CtaWorkflowStage
+  intent: CtaIntent
+  score: number
 }
 
-const FAMILY_CTAS: Record<RouteFamily, FamilyCta> = {
-  subtitle:      { text: 'Generate subtitles from a video', path: '/video-to-subtitles' },
-  formatting:    { text: 'Format a transcript automatically', path: '/guideline-format' },
-  translation:   { text: 'Translate subtitles while preserving timing', path: '/translate-subtitles' },
-  alternative:   { text: 'Try the faster workflow', path: '/video-to-transcript' },
-  benchmark:     { text: 'Run your own transcript test', path: '/video-to-transcript' },
-  youtube:       { text: 'Paste a YouTube URL', path: '/youtube-transcript-generator' },
-  transcription: { text: 'Upload a recording for transcription', path: '/video-to-transcript' },
-  generic:       { text: 'Start this workflow', path: '/video-to-transcript' },
+interface CtaVariant {
+  text: string
+  path: string
+  stages: CtaWorkflowStage[]
+  intents: CtaIntent[]
+  signals: string[]
 }
 
-export function getFamilyPrimaryCta(family: RouteFamily): FamilyCta {
-  return FAMILY_CTAS[family]
+const CTA_REGISTRY: Record<RouteFamily, CtaVariant[]> = {
+  transcription: [
+    { text: 'Transcribe a 2-hour recording in minutes', path: '/video-to-transcript', stages: ['hero', 'validation'], intents: ['converter', 'validation'], signals: ['speed', 'long-video'] },
+    { text: 'Generate transcript, subtitles, summary, and chapters together', path: '/video-to-transcript', stages: ['hero', 'output'], intents: ['generator', 'repurposing'], signals: ['structured-output', 'workflow-replacement'] },
+    { text: 'Upload a meeting recording for searchable notes', path: '/video-to-transcript?source=meeting-recording', stages: ['hero', 'workflow'], intents: ['converter'], signals: ['meeting', 'searchable'] },
+    { text: 'Export speaker-labeled transcripts from one upload', path: '/video-to-transcript', stages: ['output', 'footer'], intents: ['generator'], signals: ['speaker-labels', 'export'] },
+    { text: 'Turn long recordings into delivery-ready transcripts', path: '/video-to-transcript', stages: ['workflow', 'footer'], intents: ['cleanup'], signals: ['long-video', 'cleanup'] },
+    { text: 'Skip manual transcript cleanup and formatting', path: '/video-to-transcript', stages: ['proof', 'workflow'], intents: ['cleanup'], signals: ['cleanup', 'formatting'] },
+    { text: 'Convert interviews into structured transcripts', path: '/video-to-transcript?source=interview', stages: ['hero', 'workflow'], intents: ['converter'], signals: ['interview', 'structured-output'] },
+    { text: 'Create searchable notes from every speaker turn', path: '/video-to-transcript', stages: ['proof', 'output'], intents: ['generator'], signals: ['speaker-labels', 'searchable'] },
+  ],
+  subtitle: [
+    { text: 'Generate subtitles with readable line timing', path: '/video-to-subtitles', stages: ['hero', 'workflow'], intents: ['generator', 'accessibility'], signals: ['timing', 'accessibility'] },
+    { text: 'Convert subtitles without breaking timestamps', path: '/video-to-subtitles', stages: ['workflow', 'output'], intents: ['converter'], signals: ['timestamps', 'export'] },
+    { text: 'Burn captions directly into video', path: '/burn-subtitles', stages: ['hero', 'footer'], intents: ['generator'], signals: ['burned-captions', 'social'] },
+    { text: 'Validate subtitle timing before export', path: '/fix-subtitles', stages: ['proof', 'validation'], intents: ['validation'], signals: ['timing', 'qa'] },
+    { text: 'Fix subtitle reading-speed issues', path: '/fix-subtitles', stages: ['proof', 'workflow'], intents: ['cleanup', 'accessibility'], signals: ['reading-speed', 'qa'] },
+    { text: 'Export captions for YouTube, TikTok, and Instagram', path: '/video-to-subtitles', stages: ['output', 'footer'], intents: ['repurposing'], signals: ['export', 'platforms'] },
+    { text: 'Produce SRT and VTT from the same subtitle pass', path: '/video-to-subtitles', stages: ['output'], intents: ['generator'], signals: ['export', 'workflow-replacement'] },
+  ],
+  formatting: [
+    { text: 'Format transcripts using Rev-style rules', path: '/guideline-format', stages: ['hero', 'workflow'], intents: ['cleanup'], signals: ['style-guide', 'qa'] },
+    { text: 'Clean filler words before client delivery', path: '/guideline-format', stages: ['proof', 'workflow'], intents: ['cleanup'], signals: ['clean-verbatim', 'client-ready'] },
+    { text: 'Apply speaker labels and timestamps consistently', path: '/guideline-format', stages: ['workflow', 'output'], intents: ['cleanup', 'generator'], signals: ['speaker-labels', 'timestamps'] },
+    { text: 'Reduce transcript QA cleanup before handoff', path: '/guideline-format', stages: ['proof', 'validation'], intents: ['cleanup', 'validation'], signals: ['qa', 'handoff'] },
+    { text: 'Generate client-ready transcript exports', path: '/guideline-format', stages: ['output', 'footer'], intents: ['generator'], signals: ['client-ready', 'export'] },
+    { text: 'Fix inconsistent transcript formatting', path: '/guideline-format', stages: ['hero', 'footer'], intents: ['cleanup'], signals: ['formatting', 'qa'] },
+  ],
+  translation: [
+    { text: 'Translate subtitles without breaking timing', path: '/translate-subtitles', stages: ['hero', 'workflow'], intents: ['converter'], signals: ['timing', 'translation'] },
+    { text: 'Generate multilingual caption files', path: '/translate-subtitles', stages: ['hero', 'output'], intents: ['generator', 'accessibility'], signals: ['multilingual', 'export'] },
+    { text: 'Preserve timestamps across translated subtitles', path: '/translate-subtitles', stages: ['proof', 'validation'], intents: ['validation'], signals: ['timestamps', 'structure'] },
+    { text: 'Translate subtitle files while keeping formatting intact', path: '/translate-subtitles', stages: ['workflow'], intents: ['cleanup', 'converter'], signals: ['formatting', 'translation'] },
+    { text: 'Convert transcripts into multilingual deliverables', path: '/translate-subtitles', stages: ['output', 'footer'], intents: ['converter'], signals: ['deliverables', 'multilingual'] },
+  ],
+  youtube: [
+    { text: 'Paste a YouTube URL for an instant transcript', path: '/youtube-transcript-generator', stages: ['hero', 'workflow'], intents: ['converter'], signals: ['youtube', 'speed'] },
+    { text: 'Turn YouTube videos into searchable text', path: '/youtube-transcript-generator', stages: ['hero', 'output'], intents: ['generator'], signals: ['searchable', 'repurposing'] },
+    { text: 'Generate subtitles and chapters from YouTube videos', path: '/youtube-transcript-generator', stages: ['output', 'footer'], intents: ['repurposing'], signals: ['chapters', 'subtitles'] },
+    { text: 'Repurpose long YouTube videos into content briefs', path: '/youtube-transcript-generator', stages: ['workflow', 'footer'], intents: ['repurposing'], signals: ['long-video', 'creator'] },
+    { text: 'Extract transcript and summary from a YouTube link', path: '/youtube-transcript-generator', stages: ['proof', 'workflow'], intents: ['generator'], signals: ['summary', 'url'] },
+  ],
+  alternative: [
+    { text: 'Compare transcript exports side by side', path: '/video-to-transcript', stages: ['hero', 'comparison'], intents: ['switching'], signals: ['comparison', 'export'] },
+    { text: 'Test a faster transcription workflow', path: '/video-to-transcript', stages: ['hero', 'validation'], intents: ['switching', 'validation'], signals: ['speed', 'workflow-replacement'] },
+    { text: 'See how VideoText handles long recordings', path: '/video-to-transcript', stages: ['proof', 'comparison'], intents: ['switching'], signals: ['long-video', 'comparison'] },
+    { text: 'Compare subtitle workflows before switching', path: '/video-to-subtitles', stages: ['comparison', 'footer'], intents: ['switching'], signals: ['subtitles', 'comparison'] },
+    { text: 'Try structured transcript outputs instead of raw text dumps', path: '/video-to-transcript', stages: ['output', 'footer'], intents: ['switching'], signals: ['structured-output', 'cleanup'] },
+  ],
+  benchmark: [
+    { text: 'Run your own transcript speed test', path: '/video-to-transcript', stages: ['hero', 'validation'], intents: ['validation'], signals: ['speed', 'benchmark'] },
+    { text: 'Upload a long recording to compare outputs', path: '/video-to-transcript', stages: ['hero', 'comparison'], intents: ['validation', 'switching'], signals: ['long-video', 'comparison'] },
+    { text: 'Benchmark subtitle generation speed', path: '/video-to-subtitles', stages: ['validation'], intents: ['validation'], signals: ['subtitles', 'speed'] },
+    { text: 'Compare cleanup time across workflows', path: '/video-to-transcript', stages: ['proof', 'comparison'], intents: ['validation'], signals: ['cleanup', 'comparison'] },
+    { text: 'Test transcript formatting consistency', path: '/guideline-format', stages: ['output', 'footer'], intents: ['validation', 'cleanup'], signals: ['formatting', 'qa'] },
+  ],
+  generic: [
+    { text: 'Choose the transcript, subtitle, or formatting workflow', path: '/site-index', stages: ['hero'], intents: ['converter'], signals: ['routing', 'workflow'] },
+    { text: 'Route this job to the right VideoText tool', path: '/tools', stages: ['workflow', 'footer'], intents: ['converter'], signals: ['routing', 'workflow'] },
+    { text: 'Move from raw media to export-ready text', path: '/video-to-transcript', stages: ['output'], intents: ['generator'], signals: ['export', 'workflow'] },
+  ],
+}
+
+const CTA_TOKEN_WEIGHTS = ['transcript', 'subtitle', 'caption', 'timing', 'speaker', 'export', 'long', 'cleanup', 'format', 'translate', 'youtube', 'meeting', 'podcast', 'chapter', 'summary', 'benchmark']
+
+function stableHash(input: string): number {
+  let hash = 2166136261
+  for (let i = 0; i < input.length; i += 1) {
+    hash ^= input.charCodeAt(i)
+    hash = Math.imul(hash, 16777619)
+  }
+  return hash >>> 0
+}
+
+function tokenize(input: string): string[] {
+  return input.toLowerCase().match(/[a-z0-9]+/g) || []
+}
+
+export function scoreCtaSemanticUniqueness(text: string, routePath = ''): number {
+  const words = tokenize(text)
+  if (!words.length) return 0
+  const uniqueRatio = new Set(words).size / words.length
+  const routeTokens = new Set(tokenize(routePath))
+  const routeOverlap = words.filter((word) => routeTokens.has(word)).length / words.length
+  const operationalSignals = CTA_TOKEN_WEIGHTS.filter((token) => text.toLowerCase().includes(token)).length
+  const genericPenalty = /\b(start free|try now|get started|click here|sign up free|start your journey|ai-powered solution|transform your workflow)\b/i.test(text) ? 0.35 : 0
+  return Math.max(0, Math.min(1, uniqueRatio * 0.45 + Math.min(operationalSignals / 4, 1) * 0.35 + Math.min(routeOverlap * 2, 0.2) - genericPenalty))
+}
+
+
+function routeLabel(routePath: string): string {
+  const raw = routePath
+    .replace(/^\//, '')
+    .replace(/^(tools|blog)\//, '')
+    .replace(/^how-to-/, '')
+    .replace(/-(alternative|transcription|transcript|generator|tool|converter|online|guide|format)$/i, '')
+    .replace(/-vs-videotext|videotext-vs-/i, '-')
+    .replace(/\bfree\b/gi, '')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return (raw.replace(/\b\w/g, (char) => char.toUpperCase()) || 'this workflow')
+    .replace(/\bYoutube\b/g, 'YouTube')
+    .replace(/\bSrt\b/g, 'SRT')
+    .replace(/\bVtt\b/g, 'VTT')
+}
+
+function specializeCtaText(family: RouteFamily, routePath: string, stage: CtaWorkflowStage, text: string): string {
+  const label = routeLabel(routePath)
+  const normalized = routePath.toLowerCase()
+  if (family === 'alternative') {
+    if (stage === 'comparison' || /vs|alternative|compare/.test(normalized)) return `Compare ${label} exports against structured VideoText output`
+    if (stage === 'output' || stage === 'footer') return `Replace ${label} raw text dumps with structured exports`
+    return `Test ${label} against a long-recording workflow`
+  }
+  if (family === 'subtitle' && /(srt|vtt|caption|subtitle|tools)/.test(normalized)) {
+    if (stage === 'output' || stage === 'footer') return `Export ${label} captions without timestamp drift`
+    return `Fix ${label} timing and reading-speed issues`
+  }
+  if (family === 'transcription' && /(meeting|podcast|interview|lecture|webinar|zoom|teams|google-meet|voice|audio)/.test(normalized)) {
+    if (stage === 'workflow' || stage === 'footer') return `Turn ${label} recordings into structured transcripts`
+    return `Process ${label} with speaker labels and timestamps`
+  }
+  if (family === 'formatting' && /(rev|gotranscript|style|format|guideline|verbatim)/.test(normalized)) {
+    return `Apply ${label} formatting rules before delivery`
+  }
+  if (family === 'youtube' && /youtube/.test(normalized)) {
+    return `Extract ${label} transcript, summary, and chapters`
+  }
+  return text
+}
+
+function inferCtaIntent(routePath: string, family: RouteFamily): CtaIntent {
+  const normalized = routePath.toLowerCase()
+  if (family === 'alternative' || /alternative|vs|versus|compare/.test(normalized)) return 'switching'
+  if (family === 'benchmark' || /benchmark|accuracy|speed-test|fastest/.test(normalized)) return 'validation'
+  if (/format|style|verbatim|cleanup|rev|gotranscript/.test(normalized)) return 'cleanup'
+  if (/youtube|tiktok|instagram|creator|repurpose|chapter|summary/.test(normalized)) return 'repurposing'
+  if (/caption|accessibility|subtitle/.test(normalized)) return 'accessibility'
+  if (/generator|generate|summary|chapter/.test(normalized)) return 'generator'
+  return 'converter'
+}
+
+export function getContextualCta(
+  family: RouteFamily,
+  routePath: string,
+  stage: CtaWorkflowStage = 'hero',
+  explicitIntent?: CtaIntent,
+): FamilyCta {
+  const variants = CTA_REGISTRY[family] || CTA_REGISTRY.generic
+  const intent = explicitIntent || inferCtaIntent(routePath, family)
+  const scored = variants.map((variant, index) => {
+    const stageScore = variant.stages.includes(stage) ? 3 : variant.stages.includes('hero') ? 1 : 0
+    const intentScore = variant.intents.includes(intent) ? 3 : 0
+    const routeText = routePath.toLowerCase().replace(/[-_/]/g, ' ')
+    const signalScore = variant.signals.reduce((sum, signal) => sum + (routeText.includes(signal.replace('-', ' ')) ? 1 : 0), 0)
+    const uniqueness = scoreCtaSemanticUniqueness(variant.text, routePath)
+    const rotation = (stableHash(`${routePath}:${stage}:${intent}`) + index) % variants.length
+    return { variant, score: stageScore + intentScore + signalScore + uniqueness + rotation / 100 }
+  })
+  const selected = scored.sort((a, b) => b.score - a.score)[0].variant
+  const text = specializeCtaText(family, routePath, stage, selected.text)
+  return {
+    text,
+    path: selected.path,
+    family,
+    stage,
+    intent,
+    score: scoreCtaSemanticUniqueness(text, routePath),
+  }
+}
+
+export function getFamilyPrimaryCta(family: RouteFamily, routePath = ''): FamilyCta {
+  return getContextualCta(family, routePath || `/${family}`, 'hero')
+}
+
+export function getWorkflowStageCtas(family: RouteFamily, routePath: string): FamilyCta[] {
+  const stages: CtaWorkflowStage[] = ['proof', 'workflow', 'output', 'footer']
+  const seen = new Set<string>()
+  return stages
+    .map((stage) => getContextualCta(family, routePath, stage))
+    .filter((cta) => {
+      if (seen.has(cta.text)) return false
+      seen.add(cta.text)
+      return true
+    })
+}
+
+export function shouldReplaceRegistryCta(text?: string): boolean {
+  if (!text) return true
+  return /\b(start free|try now|get started|sign up free|free|now|try videotext|generate free transcript|upload audio|start this workflow)\b/i.test(text)
 }
 
 // ── Family-specific fallback deep content ──────────────────────────────────────
@@ -207,6 +400,8 @@ export function buildFamilyDeepContent(
   label: string,
   description: string,
 ): SeoDeepContent {
+  const routeHint = `/${label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
+  const footerCta = getContextualCta(family, routeHint, 'footer')
   switch (family) {
     case 'subtitle':
       return {
@@ -257,8 +452,8 @@ export function buildFamilyDeepContent(
             body: 'Export SRT or VTT from raw transcripts, then import into Premiere, DaVinci, or Final Cut without manually reformatting caption timing.',
           },
         ],
-        ctaText: 'Generate subtitles from a video',
-        ctaPath: '/video-to-subtitles',
+        ctaText: footerCta.text,
+        ctaPath: footerCta.path,
       }
 
     case 'formatting':
@@ -310,8 +505,8 @@ export function buildFamilyDeepContent(
             body: 'Turn raw AI transcripts into readable interview documents with speaker structure, clean punctuation, and consistent timestamp placement.',
           },
         ],
-        ctaText: 'Format a transcript automatically',
-        ctaPath: '/guideline-format',
+        ctaText: footerCta.text,
+        ctaPath: footerCta.path,
       }
 
     case 'translation':
@@ -363,8 +558,8 @@ export function buildFamilyDeepContent(
             body: 'Translate interview transcripts into a working language while keeping speaker labels and timestamp structure intact for source review.',
           },
         ],
-        ctaText: 'Translate subtitles while preserving timing',
-        ctaPath: '/translate-subtitles',
+        ctaText: footerCta.text,
+        ctaPath: footerCta.path,
       }
 
     case 'alternative':
@@ -416,8 +611,8 @@ export function buildFamilyDeepContent(
             body: 'Evaluate VideoText when clients require DOCX, JSON, SRT, VTT, and structured summary outputs that the current tool cannot deliver in one workflow.',
           },
         ],
-        ctaText: 'Try the faster workflow',
-        ctaPath: '/video-to-transcript',
+        ctaText: footerCta.text,
+        ctaPath: footerCta.path,
       }
 
     case 'benchmark':
@@ -469,8 +664,8 @@ export function buildFamilyDeepContent(
             body: 'Run controlled accuracy tests across multiple AI transcription providers using standardized test sets and scoring methodology.',
           },
         ],
-        ctaText: 'Run your own transcript test',
-        ctaPath: '/video-to-transcript',
+        ctaText: footerCta.text,
+        ctaPath: footerCta.path,
       }
 
     case 'youtube':
@@ -522,8 +717,8 @@ export function buildFamilyDeepContent(
             body: 'Extract transcripts from recorded lectures and tutorials to create searchable study materials, accurate subtitle files, and structured content outlines.',
           },
         ],
-        ctaText: 'Paste a YouTube URL',
-        ctaPath: '/youtube-transcript-generator',
+        ctaText: footerCta.text,
+        ctaPath: footerCta.path,
       }
 
     case 'transcription':
@@ -575,8 +770,8 @@ export function buildFamilyDeepContent(
             body: 'Extract clean, speaker-labeled transcripts from long interviews and focus groups for qualitative analysis, quotation, and delivery to clients.',
           },
         ],
-        ctaText: 'Upload a recording for transcription',
-        ctaPath: '/video-to-transcript',
+        ctaText: footerCta.text,
+        ctaPath: footerCta.path,
       }
 
     default:
