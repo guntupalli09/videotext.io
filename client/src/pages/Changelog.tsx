@@ -174,8 +174,8 @@ const ENTRIES: ChangelogEntry[] = [
     items: [
       'VideoText launches publicly.',
       '7 core tools: Video → Transcript, Video → Subtitles, Translate Subtitles, Fix Subtitles, Burn Subtitles, Compress Video, Batch Processing.',
-      'Free plan with 3 imports per month, no credit card required.',
-      'Stripe-backed subscriptions: Basic, Pro, Agency, and Creator Pro (early access).',
+      'Free plan with 3 uploads per day, no credit card required.',
+      'Stripe-backed subscriptions: Pro and Founding Pro.',
       'We process your files and delete them — no data stored on our servers.',
     ],
   },

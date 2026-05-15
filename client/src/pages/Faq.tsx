@@ -58,7 +58,7 @@ const FAQ_ITEMS = [
     category: "General",
     icon: FileVideo,
     q: "How do shareable transcript links work?",
-    a: "On Pro (and Agency/Business), after Video → Transcript or Voice → Text finishes processing, use Share with a link on the result screen. You get a separate URL for the original transcript and, if you translated, for the translation. The page is read-only and works for anyone with the link — they do not need a VideoText login. We store only the text snapshot you chose to share. Free and Basic plans do not include share links.",
+    a: "On Pro, after Video → Transcript or Voice → Text finishes processing, use Share with a link on the result screen. You get a separate URL for the original transcript and, if you translated, for the translation. The page is read-only and works for anyone with the link — they do not need a VideoText login. We store only the text snapshot you chose to share. The Free plan does not include share links.",
   },
   {
     category: "General",
@@ -70,7 +70,7 @@ const FAQ_ITEMS = [
     category: "General",
     icon: HelpCircle,
     q: "How do I transcribe a video for free?",
-    a: "Sign up for free (no credit card). You get 3 imports per month. Go to Video to Transcript, upload your video (MP4, MOV, AVI, WebM), set the language, and click Start. Your transcript is ready in 1–8 minutes depending on video length. Copy it or download as TXT.",
+    a: "Sign up for free (no credit card). You get 3 uploads per day. Go to Video to Transcript, upload your video (MP4, MOV, AVI, WebM), set the language, and click Start. Your transcript is ready in 1–8 minutes depending on video length. Copy it or download as TXT.",
   },
   {
     category: "General",
@@ -168,20 +168,20 @@ const FAQ_ITEMS = [
     category: "Tools",
     icon: FileVideo,
     q: "Can I process multiple videos at once?",
-    a: "Yes, with Batch Processing (Pro and Agency plans). Drop multiple video files at once on the Video to Transcript or Batch Process page. Each video processes in parallel and you get a single ZIP with one SRT per video when all jobs complete. Pro: up to 20 videos. Agency: up to 100 videos. Failed videos are listed in an error_log.txt inside the ZIP.",
+    a: "Yes, with Batch Processing (Pro plan). Drop multiple video files at once on the Video to Transcript or Batch Process page. Each video processes in parallel and you get a single ZIP with one SRT per video when all jobs complete. Pro: up to 20 videos. Failed videos are listed in an error_log.txt inside the ZIP.",
   },
   // Billing
   {
     category: "Billing",
     icon: CreditCard,
     q: "How does the free tier work?",
-    a: "Sign up for free (no credit card) to get 3 imports per month, resetting on the 1st. Single language, watermark on subtitle exports. Transcript and subtitles are always available. AI features (Summary, Chapters, Speakers, Translation, Batch) are Pro only. Upgrade any time on the Pricing page.",
+    a: "Sign up for free (no credit card) to get 3 uploads per day. Single language, watermark on subtitle exports. Transcript and subtitles are always available. AI features (Summary, Chapters, Speakers, Translation, Batch) are Pro only. Upgrade any time on the Pricing page.",
   },
   {
     category: "Billing",
     icon: CreditCard,
     q: "What does Pro include that Free doesn't?",
-    a: "Pro unlocks: AI Summary, AI Chapters, Speaker diarization, Transcript translation (70+ languages), Batch processing (up to 20 videos), longer videos (2 hours vs 30 min), more languages, and no watermark on exports. All for $10/month (annual) or $20/month monthly.",
+    a: "Pro unlocks: AI Summary, AI Chapters, Speaker diarization, Transcript translation (70+ languages), Batch processing (up to 20 videos), longer videos (2 hours vs 30 min), more languages, and no watermark on exports. Pro is $40/month.",
   },
   {
     category: "Billing",
@@ -206,7 +206,7 @@ const FAQ_ITEMS = [
     category: "Speed",
     icon: Zap,
     q: "What is the maximum video duration?",
-    a: "Free: 30 minutes per video. Basic: 45 minutes. Pro: 2 hours. Agency: 4 hours. Longer videos are rejected at upload. To transcribe a longer video, trim it first or split it into segments before uploading.",
+    a: "Free: 30 minutes per video. Pro: 2 hours. Longer videos are rejected at upload. To transcribe a longer video, trim it first or split it into segments before uploading.",
   },
 ]
 

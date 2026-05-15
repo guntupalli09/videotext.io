@@ -15,9 +15,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'VideoText turns long video into structured transcripts, subtitles, summaries, and chapters in one workflow, with export support for TXT, DOCX, PDF, SRT, and VTT.',
   },
   '/pricing': {
-    title: 'Pricing — Free, Basic, Pro & Agency Plans',
+    title: 'Pricing — Free & Pro Plans | VideoText',
     description:
-      "VideoText pricing: Free 3 imports/month, Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Multi-language, batch on Pro+. 7-day money-back guarantee. We don't store your data.",
+      "VideoText pricing: Free 3 uploads/day (no card needed), Pro $40/mo (AI features, watermark-free exports, batch processing). 7-day money-back guarantee. We don't store your data.",
   },
   '/privacy': {
     title: 'Privacy Policy — We Don\'t Store Your Data | VideoText',
@@ -82,7 +82,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/batch-process': {
     title: 'Batch Video to Subtitles — Multiple Videos at Once',
     description:
-      'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans. Multi-language optional.',
+      'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro plan. Multi-language optional.',
   },
   '/blog': {
     title: 'VideoText blog — transcription, subtitles, and workflow guides',
@@ -192,12 +192,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/trint-alternative': {
     title: 'Cheaper Trint Alternative That Starts Free | VideoText',
     description:
-      'Trint starts at $80/month. VideoText starts free and scales to $10/month — same Whisper AI accuracy, plus subtitle burning, batch processing, and translation.',
+      'Trint starts at $80/month. VideoText starts free — same Whisper AI accuracy, plus subtitle burning, batch processing, and translation. Pro at $40/month.',
   },
   '/rev-alternative': {
     title: 'Best Rev Alternative with Flat-Rate Pricing | VideoText',
     description:
-      'Rev AI charges $0.25/minute. VideoText starts free and costs $10/month for 450 minutes. Same AI accuracy, plus subtitle export, translation, and YouTube support.',
+      'Rev AI charges $0.25/minute. VideoText starts free — same AI accuracy, plus subtitle export, translation, and YouTube support. Pro at $40/month with no per-minute fees.',
   },
   '/happyscribe-alternative': {
     title: 'Best Free HappyScribe Alternative – Transcription & Subtitles | VideoText',
@@ -207,7 +207,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/sonix-alternative': {
     title: 'Best Free Sonix Alternative – No Per-Minute Fees | VideoText',
     description:
-      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free and is $10/month flat — Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing.',
+      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free — Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing. Pro at $40/month flat.',
   },
   '/easyscribe-alternative': {
     title: 'Best EasyScribe Alternative for Video & Subtitles | VideoText',
@@ -618,9 +618,9 @@ const FAQ_SCHEMA_ITEMS = [
   { q: 'Can I transcribe a YouTube video without downloading it?', a: "YouTube URL support is coming soon. Currently, download the video first (MP4) and upload it to the Video to Transcript tool." },
   { q: 'What file formats are supported?', a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. YouTube URL support is coming soon." },
   { q: 'How accurate is VideoText transcription?', a: "VideoText uses OpenAI Whisper large-v3. On clear speech with minimal background noise, accuracy is approximately 98.5% word accuracy. Setting the spoken language manually improves results for non-English content." },
-  { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 imports per month, resetting on the 1st. Single language, watermark on subtitle exports. Upgrade any time for more imports, AI features, and batch processing." },
+  { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 uploads per day. Single language, watermark on subtitle exports. Upgrade any time for more features and batch processing." },
   { q: 'Can I translate subtitles or transcripts?', a: "Yes. Use the Translate Subtitles tool for SRT/VTT files. For transcripts, use the \"Also translate to\" option before starting to get a full translation in 70+ languages." },
-  { q: 'What is the maximum video duration?', a: "Free: 30 minutes per video. Basic: 45 minutes. Pro: 2 hours. Agency: 4 hours. To transcribe a longer video, trim or split it into segments before uploading." },
+  { q: 'What is the maximum video duration?', a: "Free: 30 minutes per video. Pro: 2 hours. To transcribe a longer video, trim or split it into segments before uploading." },
   { q: 'How do I format a transcript for a client\'s style guide or Rev-type rules?', a: 'Use Format → Client guidelines (/guideline-format). Paste your raw transcript or jump from Video → Transcript with "Make this client-ready →". Pick presets such as Rev, GoTranscript, TranscribeMe, or Scribie, tweak the editable rule cards, or upload PDF/DOCX guidance.' },
   { q: 'What does "clean verbatim vs full verbatim" mean for freelancers?', a: 'Clean verbatim removes filler words and disfluencies for readability; full verbatim keeps them. Marketplace briefs spell out which variant you owe—see /blog/clean-verbatim-vs-full-verbatim.' },
   { q: 'What is transcript QA and how does VideoText help before I invoice?', a: 'Transcript QA is the checklist pass against names, glossary, punctuation, timestamps, and style compliance. Produce the text in Video → Transcript, then map platform rules inside /guideline-format so reviewers know what you matched before payout.' },
@@ -798,7 +798,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Can I transcribe multiple videos at once?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Pro and Agency plans include batch upload. Upload multiple files simultaneously — VideoText processes all in parallel and delivers one ZIP with all transcripts, subtitle files, and summaries.',
+            text: 'Yes. The Pro plan includes batch upload. Upload multiple files simultaneously — VideoText processes all in parallel and delivers one ZIP with all transcripts, subtitle files, and summaries.',
           },
         },
         {
@@ -822,7 +822,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Is video transcription free?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. The free tier includes 3 imports per month with no credit card required. All outputs (transcript, subtitles, summary, chapters) are included in the free tier. Paid plans start at $19/month for 450 minutes.',
+            text: 'Yes. The free tier includes 3 uploads per day with no credit card required. All outputs (transcript, subtitles, summary, chapters) are included in the free tier. Pro plan is $40/month with no usage limits.',
           },
         },
         {
@@ -859,7 +859,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Web Browser',
       url: `${SITE_URL}/guideline-format`,
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier available. Paid plans from $19/month.' },
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier available. Pro plan $40/month.' },
       provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
     },
     {
@@ -1057,7 +1057,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Is VideoText cheaper than Rev?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Rev AI charges $0.25/minute per file. Rev Human charges $1.50+/minute. VideoText Pro is $19/month for 450 minutes (~$0.042/minute) — approximately 6× cheaper than Rev AI and 36× cheaper than Rev Human at equivalent usage.',
+            text: 'Yes. Rev AI charges $0.25/minute per file. Rev Human charges $1.50+/minute. VideoText Pro is $40/month flat with no per-minute charges — dramatically cheaper than Rev for any regular workload.',
           },
         },
         {
@@ -1117,7 +1117,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Is VideoText cheaper than Temi?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Temi charges $0.25/minute for every file. VideoText Pro costs $19/month for 450 minutes — roughly $0.042/minute. That is more than 6× cheaper per minute for any regular workload. VideoText also offers 60 minutes per month free with no credit card required.',
+            text: 'Yes. Temi charges $0.25/minute for every file. VideoText Pro is $40/month flat with no per-minute charges — dramatically cheaper for any regular workload. VideoText also offers a free tier with 3 uploads per day, no credit card required.',
           },
         },
         {
@@ -1141,7 +1141,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'How does Rev compare to VideoText?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Rev AI costs $0.25/minute — the same as Temi. Rev Human costs $1.50+/minute. VideoText Pro costs approximately $0.042/minute (flat $19/month for 450 min). VideoText also generates more outputs per file and has zero data retention versus Rev\'s 30-day retention policy.',
+            text: 'Rev AI costs $0.25/minute — the same as Temi. Rev Human costs $1.50+/minute. VideoText Pro is $40/month flat with no per-minute charges. VideoText also generates more outputs per file and has zero data retention versus Rev\'s 30-day retention policy.',
           },
         },
         {
@@ -1280,7 +1280,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       applicationCategory: 'MultimediaApplication',
       operatingSystem: 'Web Browser',
       url: 'https://videotext.io/youtube-transcript-generator',
-      featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 2 hours/month (no credit card), Pro tier: unlimited transcription ($9.99/month), Zero data retention (files deleted after processing), Batch processing (Pro/Agency)',
+      featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 uploads/day (no credit card), Pro tier: unlimited transcription ($40/month), Zero data retention (files deleted after processing), Batch processing (Pro/Agency)',
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: '4.9',
@@ -1294,7 +1294,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
             '@type': 'Offer',
             price: '0',
             priceCurrency: 'USD',
-            description: 'Free: 2 hours/month (no credit card required)',
+            description: 'Free: 3 uploads/day (no credit card required)',
             url: 'https://videotext.io/youtube-transcript-generator',
           },
           {
@@ -1336,7 +1336,7 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   '/youtube-transcript-generator': {
     name: 'Free YouTube Transcript Generator — No Download, Instant Results',
     description: 'Free YouTube transcript generator. Paste any video URL — get complete transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in 2-3 minutes. No downloading required. 98.5% accurate. 50,000+ creators use VideoText.',
-    featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 2 hours/month (no credit card), Pro tier: unlimited transcription ($9.99/month), Zero data retention (files deleted after processing)',
+    featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 uploads/day (no credit card), Pro tier: unlimited transcription ($40/month), Zero data retention (files deleted after processing)',
   },
   '/video-to-subtitles': {
     name: 'Video to Subtitles — SRT & VTT Generator',
@@ -1365,8 +1365,8 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   },
   '/batch-process': {
     name: 'Batch Video to Subtitles — Multiple Videos at Once',
-    description: 'Transcribe or subtitle many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans.',
-    featureList: 'Batch transcription, Batch subtitle generation, ZIP download, Multi-language batch, Pro and Agency plans',
+    description: 'Transcribe or subtitle many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro plan.',
+    featureList: 'Batch transcription, Batch subtitle generation, ZIP download, Multi-language batch, Pro plan',
   },
 }
 
@@ -1382,7 +1382,7 @@ export function getSoftwareApplicationJsonLd(pathname: string): object | null {
     applicationCategory: 'MultimediaApplication',
     operatingSystem: 'Web Browser',
     url: `${SITE_URL}${pathname}`,
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier: 3 imports/month. Paid plans from $19/month.' },
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier: 3 uploads/day. Pro plan $40/month.' },
     provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
   }
 }

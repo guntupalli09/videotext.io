@@ -1010,7 +1010,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     const trimStartSec = hasTrim ? (durationSeconds * trimStartPercent!) / 100 : trimStart
     const trimEndSec = hasTrim ? (durationSeconds * trimEndPercent!) / 100 : trimEnd
 
-    // Quota check: imports for free, minutes for paid
+    // Quota check: imports for free/pro, minutes for grandfathered legacy plans
     let usageData: Awaited<ReturnType<typeof getCurrentUsage>> | null = null
     try {
       usageData = await getCurrentUsage()

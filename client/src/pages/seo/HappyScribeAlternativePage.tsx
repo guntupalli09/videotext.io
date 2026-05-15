@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $10 Creator Pro', competitor: '$17/month (120 min)' },
+  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: '$17/month (120 min)' },
   { label: 'Free tier (no credit card)', videotext: true, competitor: false },
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: true },
@@ -23,11 +23,11 @@ const COMPARE_ROWS = [
 const FAQ = [
   {
     q: 'What is the best free HappyScribe alternative?',
-    a: 'VideoText is the top free alternative to HappyScribe. HappyScribe has no permanent free tier — it only offers a 10-minute trial. VideoText gives you 3 free imports per month with no credit card, no expiry, and no upload size limit on those imports.',
+    a: 'VideoText is the top free alternative to HappyScribe. HappyScribe has no permanent free tier — it only offers a 10-minute trial. VideoText gives you 3 uploads per day with no credit card, no expiry, and no upload size limit on those imports.',
   },
   {
     q: 'Is VideoText cheaper than HappyScribe?',
-    a: 'Yes. HappyScribe starts at $17/month for only 120 minutes of transcription. VideoText\'s Creator Pro plan is $10/month and covers significantly more volume. The free tier lets you try it with no payment details.',
+    a: 'Yes. HappyScribe starts at $17/month for only 120 minutes of transcription. VideoText Pro is $40/month with unlimited processing. The free tier lets you try it with no payment details.',
   },
   {
     q: 'Can VideoText transcribe YouTube videos like HappyScribe?',

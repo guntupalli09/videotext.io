@@ -426,7 +426,7 @@ const server = app.listen(PORT, () => {
         <tr>
           <td style="padding:24px 40px;border-top:1px solid #2d2d4e;text-align:center">
             <p style="margin:0 0 8px;color:#606080;font-size:12px">Want unlimited transcriptions with no watermark?</p>
-            <a href="${baseUrl}/pricing" style="color:#7c3aed;font-size:12px;text-decoration:none;font-weight:600">Upgrade to Pro → $10/mo annual</a>
+            <a href="${baseUrl}/pricing" style="color:#7c3aed;font-size:12px;text-decoration:none;font-weight:600">Upgrade to Pro → $40/mo</a>
             <p style="margin:16px 0 0;color:#404060;font-size:11px">VideoText.io · <a href="${baseUrl}/unsubscribe?email=${encodeURIComponent(u.email)}" style="color:#404060">unsubscribe</a></p>
           </td>
         </tr>

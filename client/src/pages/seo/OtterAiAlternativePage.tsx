@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $10 Creator Pro', competitor: 'Free (300 min/mo) / $16.99/mo Pro' },
+  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: 'Free (300 min/mo) / $16.99/mo Pro' },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: false },
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
@@ -39,7 +39,7 @@ const FAQ = [
   },
   {
     q: 'Does VideoText have a free tier like Otter.ai?',
-    a: 'Yes. VideoText has a free tier with 3 imports per month (resets on the 1st). No credit card required. Otter.ai also has a free tier (300 minutes/month) but requires an account and does not support video file uploads on any tier.',
+    a: 'Yes. VideoText has a free tier with 3 uploads per day. No credit card required. Otter.ai also has a free tier (300 minutes/month) but requires an account and does not support video file uploads on any tier.',
   },
 ]
 

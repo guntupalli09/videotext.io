@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $10 Creator Pro', competitor: 'Paid plans only' },
+  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: 'Paid plans only' },
   { label: 'Free tier (no credit card)', videotext: true, competitor: false },
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: true },
@@ -27,7 +27,7 @@ const FAQ = [
   },
   {
     q: 'Is VideoText free unlike EasyScribe?',
-    a: 'Yes. VideoText has a permanent free tier — 3 imports per month with no credit card required. You can transcribe your first video right now without entering any payment information.',
+    a: 'Yes. VideoText has a permanent free tier — 3 uploads per day with no credit card required. You can transcribe your first video right now without entering any payment information.',
   },
   {
     q: 'Can VideoText generate subtitle files that EasyScribe cannot?',
