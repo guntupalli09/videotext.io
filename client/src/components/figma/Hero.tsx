@@ -164,15 +164,15 @@ export function Hero() {
         <TrustBadge className="mb-4" />
 
         {/* H1 */}
-        <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.25rem] lg:text-[3.75rem] font-extrabold tracking-tight leading-[1.08] mb-4">
-          <span className="text-white">Deliver Client-Ready Transcripts —{' '}</span>
-          <span className="bg-gradient-to-r from-fuchsia-300 via-violet-300 to-indigo-300 bg-clip-text text-transparent">
-            Fast.
-          </span>
+        <h1
+          className="text-center font-display font-extrabold tracking-tight leading-[1.08] mb-2 whitespace-nowrap"
+          style={{ fontSize: 'clamp(1.4rem, 4.2vw, 3.75rem)' }}
+        >
+          <span className="text-white">Deliver Client-Ready Transcripts — </span><span className="bg-gradient-to-r from-fuchsia-300 via-violet-300 to-indigo-300 bg-clip-text text-transparent">Fast.</span>
         </h1>
 
         {/* Sub-headline */}
-        <p className="text-center text-[15px] sm:text-[16px] text-white/55 max-w-md mx-auto leading-relaxed mb-7">
+        <p className="text-center text-[15px] sm:text-[16px] text-white/55 max-w-md mx-auto leading-relaxed mb-4">
           Built for transcriptionists, proofreaders, translators, and QA teams. Apply client guidelines automatically, generate subtitles, and{' '}
           <span className="text-fuchsia-300 font-medium">reduce manual QA work by 60%.</span>
         </p>
