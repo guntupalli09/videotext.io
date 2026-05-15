@@ -164,9 +164,21 @@ export function Hero() {
         <TrustBadge className="mb-4" />
 
         {/* H1 */}
-        <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5">
+        <h1
+          className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5 italic"
+          style={{
+            textShadow:
+              '1px 1px 0 #6d28d9, 2px 2px 0 #5b21b6, 3px 3px 0 #4c1d95, 4px 4px 12px rgba(109,40,217,0.55), 0 8px 32px rgba(109,40,217,0.25)',
+          }}
+        >
           Deliver Client-Ready Transcripts —
-          <span className="block mt-3 pb-2 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+          <span
+            className="block mt-3 pb-2 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent"
+            style={{
+              filter:
+                'drop-shadow(2px 2px 0 #5b21b6) drop-shadow(3px 3px 0 #4c1d95) drop-shadow(0 6px 18px rgba(139,92,246,0.5))',
+            }}
+          >
             Fast.
           </span>
         </h1>
