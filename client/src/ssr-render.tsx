@@ -24,6 +24,14 @@ import BestDescriptAlternatives from './pages/BestDescriptAlternatives'
 import { ROUTE_SEO } from './lib/seoMeta'
 import { getAllSeoEntries, getPageLabel, getRelatedSuggestionsForEntry, getSeoEntry, type FaqItem, type SeoDeepContent, type SeoRegistryEntry, type SeoTutorialContent } from './lib/seoRegistry'
 import { getCanonicalPathForRoute, resolveInternalLinkPath } from './lib/primaryUrls'
+import {
+  getRouteFamily,
+  getFamilySectionTitles,
+  getFamilyPrimaryCta,
+  buildFamilyDeepContent,
+  buildFamilyFaq,
+  type RouteFamily,
+} from './lib/routeFamilyTemplates'
 
 type SsrMode = 'react-page' | 'seo-document'
 
@@ -38,6 +46,7 @@ interface StaticRouteContent {
   deepContent?: SeoDeepContent
   tutorialContent?: SeoTutorialContent
   primaryCta?: { text: string; path: string }
+  routeFamily?: RouteFamily
 }
 
 const SSR_PAGES: Record<string, React.ComponentType> = {
@@ -180,30 +189,12 @@ function titleToH1(title: string): string {
   return title.replace(/\s*[—–|].*$/, '').trim() || title
 }
 
-function buildFallbackDeepContent(label: string, description: string): SeoDeepContent {
-  return {
-    proofPoints: [
-      `${label} is part of the VideoText transcription, subtitle, and workflow toolkit.`,
-      'Each page focuses on a specific transcript, subtitle, formatting, or export task so teams can match the workflow to the outcome they need.',
-      'Use the related workflows to move from raw media to searchable text, captions, summaries, translations, or client-ready transcript formatting.',
-    ],
-    workflowSteps: [
-      { title: '1. Understand the workflow', detail: description },
-      { title: '2. Use the matching VideoText tool', detail: 'Follow the related links to transcript, subtitle, translation, formatting, or free utility flows that match the page intent.' },
-      { title: '3. Export a usable asset', detail: 'Turn media, subtitles, or transcript text into an output that is ready for publishing, editing, accessibility, or team handoff.' },
-    ],
-    outputExamples: [
-      { title: 'Workflow summary', body: description },
-      { title: 'Related workflow handoffs', body: 'The page links to transcript, subtitle, translation, formatting, and export workflows that naturally fit the task.' },
-      { title: 'Practical next steps', body: 'Start with the matching VideoText tool, review the output, then export the asset your creator, editor, client, or team needs.' },
-    ],
-  }
-}
 
 function getStaticRouteContent(routePath: string): StaticRouteContent | null {
   const canonicalPath = getCanonicalPathForRoute(routePath)
+  const family = getRouteFamily(routePath)
   const seoEntry = getSeoEntry(routePath) || getSeoEntry(canonicalPath)
-  if (seoEntry) return contentFromSeoEntry(seoEntry)
+  if (seoEntry) return contentFromSeoEntry(seoEntry, family)
 
   const meta = ROUTE_SEO[routePath] || ROUTE_SEO[canonicalPath]
   const core = CORE_STATIC_CONTENT[routePath] || CORE_STATIC_CONTENT[canonicalPath]
@@ -212,6 +203,7 @@ function getStaticRouteContent(routePath: string): StaticRouteContent | null {
       path: routePath,
       title: meta.title,
       description: meta.description,
+      routeFamily: family,
       ...core,
     }
   }
@@ -223,29 +215,28 @@ function getStaticRouteContent(routePath: string): StaticRouteContent | null {
       path: routePath,
       title: `${h1} | VideoText`,
       description,
+      routeFamily: family,
       ...core,
     }
   }
 
   if (meta) {
     const label = getPageLabel(routePath) || titleToH1(meta.title)
+    const familyCta = getFamilyPrimaryCta(family)
     return {
       path: routePath,
       title: meta.title,
       description: meta.description,
       h1: titleToH1(meta.title),
       intro: meta.description,
-      primaryCta: { text: 'Start free with VideoText', path: '/video-to-transcript' },
+      routeFamily: family,
+      primaryCta: familyCta,
       deepContent: {
-        ...buildFallbackDeepContent(label, meta.description),
-        ctaText: 'Open the main transcription tool',
-        ctaPath: '/video-to-transcript',
+        ...buildFamilyDeepContent(family, label, meta.description),
+        ctaText: familyCta.text,
+        ctaPath: familyCta.path,
       },
-      faq: [
-        { q: `What is ${label}?`, a: meta.description },
-        { q: 'How should I use this workflow?', a: 'Use the page to understand the workflow, then start with the recommended transcript, subtitle, translation, formatting, or utility tool for the job.' },
-        { q: 'Where should I start?', a: 'Start with Video to Transcript for media-to-text workflows, Video to Subtitles for captions, or the related links below for specialized tools.' },
-      ],
+      faq: buildFamilyFaq(family, label, meta.description),
       related: [
         { path: '/video-to-transcript', title: 'Video to Transcript' },
         { path: '/video-to-subtitles', title: 'Video to Subtitles' },
@@ -259,7 +250,8 @@ function getStaticRouteContent(routePath: string): StaticRouteContent | null {
   return null
 }
 
-function contentFromSeoEntry(entry: SeoRegistryEntry): StaticRouteContent {
+function contentFromSeoEntry(entry: SeoRegistryEntry, family: RouteFamily): StaticRouteContent {
+  const fallbackCta = getFamilyPrimaryCta(family)
   return {
     path: entry.path,
     title: entry.title,
@@ -267,12 +259,13 @@ function contentFromSeoEntry(entry: SeoRegistryEntry): StaticRouteContent {
     h1: entry.h1,
     intro: entry.intro,
     faq: entry.faq,
-    deepContent: entry.deepContent || buildFallbackDeepContent(entry.breadcrumbLabel, entry.description),
+    routeFamily: family,
+    deepContent: entry.deepContent || buildFamilyDeepContent(family, entry.breadcrumbLabel, entry.description),
     tutorialContent: entry.tutorialContent,
     related: getRelatedSuggestionsForEntry(entry),
     primaryCta: {
-      text: entry.deepContent?.ctaText || entry.tutorialContent?.ctaText || 'Start this workflow',
-      path: resolveInternalLinkPath(entry.deepContent?.ctaPath || entry.tutorialContent?.ctaPath || `/${entry.toolKey}`),
+      text: entry.deepContent?.ctaText || entry.tutorialContent?.ctaText || fallbackCta.text,
+      path: resolveInternalLinkPath(entry.deepContent?.ctaPath || entry.tutorialContent?.ctaPath || fallbackCta.path),
     },
   }
 }
@@ -290,7 +283,8 @@ function StaticSeoDocument({ content }: { content: StaticRouteContent }) {
   const deep = content.deepContent
   const tutorial = content.tutorialContent
   const related = content.related || []
-  const primaryCta = content.primaryCta || { text: 'Start free', path: '/video-to-transcript' }
+  const primaryCta = content.primaryCta || getFamilyPrimaryCta(content.routeFamily ?? 'generic')
+  const titles = getFamilySectionTitles(content.routeFamily ?? 'generic')
 
   return (
     <main className="vt-workflow-document">
@@ -311,31 +305,31 @@ function StaticSeoDocument({ content }: { content: StaticRouteContent }) {
       </div>
 
       {deep?.proofPoints?.length ? (
-        <Section title="Why teams use this workflow">
+        <Section title={titles.proofPoints}>
           <ul className="vt-workflow-proof">{deep.proofPoints.map((point) => <li key={point}>{point}</li>)}</ul>
         </Section>
       ) : null}
 
       {deep?.workflowSteps?.length ? (
-        <Section title="How it works">
+        <Section title={titles.workflowSteps}>
           <div className="vt-workflow-grid">{deep.workflowSteps.map((step) => <article className="vt-workflow-card" key={step.title}><h3>{step.title}</h3><p>{step.detail}</p></article>)}</div>
         </Section>
       ) : null}
 
       {tutorial?.steps?.length ? (
-        <Section title="Step-by-step tutorial">
+        <Section title={titles.workflowSteps}>
           <div className="vt-workflow-grid">{tutorial.steps.map((step) => <article className="vt-workflow-card" key={step.title}><h3>{step.title}</h3><p>{step.detail}</p></article>)}</div>
         </Section>
       ) : null}
 
       {deep?.outputExamples?.length ? (
-        <Section title="Outputs you can use immediately">
+        <Section title={titles.outputExamples}>
           <div className="vt-workflow-grid">{deep.outputExamples.map((item) => <article className="vt-workflow-card" key={item.title}><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
         </Section>
       ) : null}
 
       {deep?.comparisonRows?.length ? (
-        <Section title="How VideoText compares">
+        <Section title={titles.comparisonRows}>
           <table className="vt-workflow-table">
             <thead><tr><th>Feature</th><th>VideoText</th><th>Alternatives</th></tr></thead>
             <tbody>{deep.comparisonRows.map((row) => <tr key={row.feature}><td>{row.feature}</td><td>{row.videotext}</td><td>{row.alternatives}</td></tr>)}</tbody>
@@ -344,19 +338,19 @@ function StaticSeoDocument({ content }: { content: StaticRouteContent }) {
       ) : null}
 
       {deep?.useCases?.length ? (
-        <Section title="Use cases">
+        <Section title={titles.useCases}>
           <div className="vt-workflow-grid">{deep.useCases.map((item) => <article className="vt-workflow-card" key={item.title}><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
         </Section>
       ) : null}
 
       {content.faq?.length ? (
-        <Section title="Frequently asked questions">
+        <Section title={titles.faq}>
           <div className="vt-workflow-faq">{content.faq.map((item) => <details open key={item.q}><summary>{item.q}</summary><p>{item.a}</p></details>)}</div>
         </Section>
       ) : null}
 
       {related.length ? (
-        <Section title="Related VideoText workflows">
+        <Section title={titles.related}>
           <nav className="vt-workflow-links" aria-label="Related workflows">{related.map((item) => <a key={`${item.path}-${item.title}`} href={item.path}>{item.title}</a>)}</nav>
         </Section>
       ) : null}
