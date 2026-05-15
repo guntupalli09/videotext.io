@@ -25,12 +25,13 @@ const OPTIONS = [
 
 interface Props {
   isOpen: boolean
+  toolId?: string
   /** 'idle' = user was idle on results page; 'leaving' = user is navigating away */
   reason?: 'idle' | 'leaving'
   onClose: () => void
 }
 
-export default function TriggerC_Dropoff({ isOpen, reason = 'idle', onClose }: Props) {
+export default function TriggerC_Dropoff({ isOpen, toolId, reason = 'idle', onClose }: Props) {
   const [category, setCategory] = useState<string | null>(null)
   const [freeText, setFreeText] = useState('')
   const [sending, setSending] = useState(false)
@@ -38,7 +39,7 @@ export default function TriggerC_Dropoff({ isOpen, reason = 'idle', onClose }: P
 
   function handleClose() {
     if (!sent && !category) {
-      submitStructuredFeedback({ triggerType: 'dropoff', dismissed: true }).catch(() => {})
+      submitStructuredFeedback({ triggerType: 'dropoff', toolId, dismissed: true }).catch(() => {})
     }
     onClose()
   }
@@ -49,6 +50,7 @@ export default function TriggerC_Dropoff({ isOpen, reason = 'idle', onClose }: P
     try {
       await submitStructuredFeedback({
         triggerType: 'dropoff',
+        toolId,
         category,
         freeText: freeText.trim() || undefined,
         rating: reason,
