@@ -165,17 +165,16 @@ export function Hero() {
 
         {/* H1 */}
         <h1 className="text-center font-display text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-white leading-[1.06] mb-5">
-          Transcribe, Format Guidelines, Translate, Subtitles.
+          Deliver Client-Ready Transcripts —
           <span className="block mt-3 pb-2 bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-            Every tool your workflow needs - FAST
+            Fast.
           </span>
         </h1>
 
         {/* Sub-headline */}
         <p className="text-center text-[16px] sm:text-[17px] text-white/50 max-w-lg mx-auto leading-relaxed mb-8">
-          Upload a video or format your transcript — get AI summary, chapters,{' '}
-          <span className="text-violet-300 font-medium">and translation</span>{' '}
-          automatically.
+          Built for transcriptionists, proofreaders, translators, and QA teams. Apply client guidelines automatically, generate subtitles, and{' '}
+          <span className="text-violet-300 font-medium">reduce manual QA work by 60%.</span>
         </p>
 
         {/* Dropzone + Formatter */}
