@@ -24,10 +24,11 @@ const OPTIONS = [
 
 interface Props {
   isOpen: boolean
+  toolId?: string
   onClose: () => void
 }
 
-export default function TriggerE_Competitor({ isOpen, onClose }: Props) {
+export default function TriggerE_Competitor({ isOpen, toolId, onClose }: Props) {
   const [category, setCategory] = useState<string | null>(null)
   const [freeText, setFreeText] = useState('')
   const [sending, setSending] = useState(false)
@@ -35,7 +36,7 @@ export default function TriggerE_Competitor({ isOpen, onClose }: Props) {
 
   function handleClose() {
     if (!sent && !category) {
-      submitStructuredFeedback({ triggerType: 'competitor', dismissed: true }).catch(() => {})
+      submitStructuredFeedback({ triggerType: 'competitor', toolId, dismissed: true }).catch(() => {})
     }
     onClose()
   }
@@ -46,6 +47,7 @@ export default function TriggerE_Competitor({ isOpen, onClose }: Props) {
     try {
       await submitStructuredFeedback({
         triggerType: 'competitor',
+        toolId,
         category,
         freeText: freeText.trim() || undefined,
       })

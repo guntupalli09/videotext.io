@@ -25,10 +25,11 @@ const OPTIONS = [
 
 interface Props {
   isOpen: boolean
+  toolId?: string
   onClose: () => void
 }
 
-export default function TriggerB_Export({ isOpen, onClose }: Props) {
+export default function TriggerB_Export({ isOpen, toolId, onClose }: Props) {
   const [category, setCategory] = useState<string | null>(null)
   const [freeText, setFreeText] = useState('')
   const [sending, setSending] = useState(false)
@@ -36,7 +37,7 @@ export default function TriggerB_Export({ isOpen, onClose }: Props) {
 
   function handleClose() {
     if (!sent && !category) {
-      submitStructuredFeedback({ triggerType: 'export', dismissed: true }).catch(() => {})
+      submitStructuredFeedback({ triggerType: 'export', toolId, dismissed: true }).catch(() => {})
     }
     onClose()
   }
@@ -47,6 +48,7 @@ export default function TriggerB_Export({ isOpen, onClose }: Props) {
     try {
       await submitStructuredFeedback({
         triggerType: 'export',
+        toolId,
         category,
         freeText: freeText.trim() || undefined,
       })

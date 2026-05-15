@@ -23,10 +23,11 @@ const OPTIONS = [
 interface Props {
   isOpen: boolean
   toolName?: string
+  toolId?: string
   onClose: () => void
 }
 
-export default function TriggerA_Result({ isOpen, toolName, onClose }: Props) {
+export default function TriggerA_Result({ isOpen, toolName, toolId, onClose }: Props) {
   const [rating, setRating] = useState<string | null>(null)
   const [freeText, setFreeText] = useState('')
   const [sending, setSending] = useState(false)
@@ -34,7 +35,7 @@ export default function TriggerA_Result({ isOpen, toolName, onClose }: Props) {
 
   function handleClose() {
     if (!sent && !rating) {
-      submitStructuredFeedback({ triggerType: 'result', dismissed: true }).catch(() => {})
+      submitStructuredFeedback({ triggerType: 'result', toolId, dismissed: true }).catch(() => {})
     }
     onClose()
   }
@@ -45,6 +46,7 @@ export default function TriggerA_Result({ isOpen, toolName, onClose }: Props) {
     try {
       await submitStructuredFeedback({
         triggerType: 'result',
+        toolId,
         rating,
         freeText: freeText.trim() || undefined,
       })
