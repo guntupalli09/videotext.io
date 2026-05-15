@@ -103,6 +103,43 @@ const corsHeaders = [
   'X-Chunk-Index',
 ]
 
+function headerValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value.join(', ') : value
+}
+
+function getClientIp(req: express.Request): string | undefined {
+  return (
+    headerValue(req.headers['cf-connecting-ip']) ||
+    headerValue(req.headers['x-forwarded-for']) ||
+    req.socket.remoteAddress ||
+    req.ip
+  )
+}
+
+// Log the full request context for rejected CORS origins before the cors package
+// short-circuits the request. This is intentionally noisy for rejects so we can
+// identify who is calling the API from a disallowed origin in production logs.
+app.use((req, _res, next) => {
+  const rawOrigin = headerValue(req.headers.origin)
+  const normalizedOrigin = rawOrigin ? normalizeOrigin(rawOrigin) : undefined
+
+  if (normalizedOrigin && !isAllowedOrigin(normalizedOrigin)) {
+    log.error({
+      msg: '[cors] rejected origin',
+      origin: normalizedOrigin,
+      rawOrigin,
+      method: req.method,
+      path: req.originalUrl || req.path,
+      referer: headerValue(req.headers.referer),
+      host: headerValue(req.headers.host),
+      userAgent: headerValue(req.headers['user-agent']),
+      ip: getClientIp(req),
+    })
+  }
+
+  next()
+})
+
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
     const normalized = typeof origin === 'string' ? normalizeOrigin(origin) : origin
@@ -113,7 +150,6 @@ const corsOptions: cors.CorsOptions = {
       return
     }
 
-    log.warn({ msg: '[cors] rejected origin', origin: normalized })
     callback(new Error('Not allowed by CORS'))
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
@@ -413,7 +449,7 @@ const server = app.listen(PORT, () => {
 
   // Activation sequence (Day 0/1/3/7) for free users who signed up but never started.
   startOnboardingEmailCron().catch((e) => {
-    console.error('Failed to start onboarding cron:', e)
+    log.error({ msg: 'Failed to start onboarding cron', error: (e as Error)?.message })
   })
 
   // Upgrade rescue sequence for users who clicked upgrade but did not complete payment in 24h.

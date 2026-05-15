@@ -57,7 +57,19 @@ function createRingStream(service: ServiceName): Writable {
         if (levelStr === 'error' || levelStr === 'warn' || levelStr === 'fatal') {
           const ringLevel: LogLevel = levelStr === 'warn' ? 'warn' : 'error'
           // Collect any extra diagnostic fields into a short string
-          const extraParts = [obj.error, obj.stack, obj.reason, obj.vars]
+          const extraParts = [
+            obj.error,
+            obj.stack,
+            obj.reason,
+            obj.vars,
+            obj.origin ? `origin=${String(obj.origin)}` : undefined,
+            obj.method ? `method=${String(obj.method)}` : undefined,
+            obj.path ? `path=${String(obj.path)}` : undefined,
+            obj.referer ? `referer=${String(obj.referer)}` : undefined,
+            obj.host ? `host=${String(obj.host)}` : undefined,
+            obj.userAgent ? `userAgent=${String(obj.userAgent)}` : undefined,
+            obj.ip ? `ip=${String(obj.ip)}` : undefined,
+          ]
             .filter(Boolean)
             .map((v) => String(v).slice(0, 150))
           pushLogEntry({
