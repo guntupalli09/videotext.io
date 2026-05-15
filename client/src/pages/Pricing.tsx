@@ -207,7 +207,56 @@ export default function Pricing() {
             </button>
           </div>
 
-          {/* FOUNDING PRO — centre highlight */}
+          {/* PRO */}
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('pro') ? 'border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
+            {isCurrentPlan('pro') && (
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
+                Current Plan
+              </span>
+            )}
+
+            <div className="mb-6">
+              <h3 className="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-widest">Pro</h3>
+              <div className="mt-2 flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-gray-900 dark:text-white">$40</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">/ mo</span>
+              </div>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-snug">
+                For professionals handling full transcription and delivery workflows.
+              </p>
+            </div>
+
+            <ul className="space-y-3 flex-1 mb-8">
+              {[
+                'Longer file uploads',
+                'Faster processing & priority queue',
+                'Advanced formatting workflows',
+                'Client-ready export delivery',
+                'Translation in 70+ languages',
+                'Batch processing',
+                'Watermark-free exports',
+                'Full workflow automation tools',
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300">
+                  <Check />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+
+            <button
+              onClick={() => isCurrentPlan('pro') ? handleManageSubscription() : handleSubscribe('pro')}
+              disabled={(isCurrentPlan('pro') && portalLoading) || checkoutLoading !== null}
+              className="w-full py-3.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm shadow-lg shadow-violet-900/20 transition-colors disabled:opacity-60"
+            >
+              {isCurrentPlan('pro')
+                ? (portalLoading ? 'Opening…' : 'Manage subscription')
+                : checkoutLoading === 'pro' ? 'Redirecting…'
+                : 'Start Pro — $40/mo'}
+            </button>
+          </div>
+
+          {/* FOUNDING PRO */}
           <div className="relative flex flex-col bg-gray-950 dark:bg-gray-900 rounded-2xl p-7 shadow-2xl shadow-amber-500/10 ring-2 ring-amber-400/60">
             {/* Badges */}
             <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-amber-500 text-gray-950 text-[11px] font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
@@ -259,55 +308,6 @@ export default function Pricing() {
             <p className="mt-3 text-center text-xs text-gray-500">
               Limited to 20 founding members · cancel any time
             </p>
-          </div>
-
-          {/* PRO */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('pro') ? 'border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
-            {isCurrentPlan('pro') && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
-                Current Plan
-              </span>
-            )}
-
-            <div className="mb-6">
-              <h3 className="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-widest">Pro</h3>
-              <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-gray-900 dark:text-white">$40</span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">/ mo</span>
-              </div>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-snug">
-                For professionals handling full transcription and delivery workflows.
-              </p>
-            </div>
-
-            <ul className="space-y-3 flex-1 mb-8">
-              {[
-                'Longer file uploads',
-                'Faster processing & priority queue',
-                'Advanced formatting workflows',
-                'Client-ready export delivery',
-                'Translation in 70+ languages',
-                'Batch processing',
-                'Watermark-free exports',
-                'Full workflow automation tools',
-              ].map((f) => (
-                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300">
-                  <Check />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-
-            <button
-              onClick={() => isCurrentPlan('pro') ? handleManageSubscription() : handleSubscribe('pro')}
-              disabled={(isCurrentPlan('pro') && portalLoading) || checkoutLoading !== null}
-              className="w-full py-3.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm shadow-lg shadow-violet-900/20 transition-colors disabled:opacity-60"
-            >
-              {isCurrentPlan('pro')
-                ? (portalLoading ? 'Opening…' : 'Manage subscription')
-                : checkoutLoading === 'pro' ? 'Redirecting…'
-                : 'Start Pro — $40/mo'}
-            </button>
           </div>
 
         </div>
