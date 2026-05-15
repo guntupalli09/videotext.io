@@ -25,7 +25,8 @@
     "blog:publish-crossposts": "node scripts/blog/publish-crossposts.js",
     "blog:publish-crossposts:publish": "node scripts/blog/publish-crossposts.js --publish",
     "blog:publish-crossposts:hashnode": "node scripts/blog/publish-crossposts.js --publish --target=hashnode",
-    "ssr:audit": "cd client && npx tsx ../scripts/ssr-audit.ts"
+    "ssr:audit": "cd client && npx tsx ../scripts/ssr-audit.ts",
+    "seo:content-audit": "tsx scripts/seo/content-audit.ts"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
