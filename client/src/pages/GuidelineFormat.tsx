@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronDown, ChevronRight, FileText, BookOpen } from 'lucide-react'
+import { ChevronDown, ChevronRight, FileText, BookOpen, Lock } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { ToolLayout } from '../components/figma/ToolLayout'
-import { api, getAuthToken } from '../lib/api'
+import { api } from '../lib/api'
 import { detectFormat, parseSrt, parseVtt, cuesToSrt, cuesToVtt } from '../lib/subtitleUtils'
+import JobAuthGateModal from '../components/JobAuthGateModal'
+import { isLoggedIn } from '../lib/auth'
 import { PRESET_DATA, type GuidelinePresetKey } from './guidelineFormatPresetData'
 
 type EditableRule = {
@@ -196,6 +198,10 @@ export default function GuidelineFormat() {
     Array<{ ruleIdA: string; ruleIdB: string; summary: string; confidence: 'high' | 'medium' }>
   >([])
   const [jobId, setJobId] = useState<string | null>(null)
+  const [jobToken, setJobToken] = useState<string | null>(null)
+  const [showAuthGate, setShowAuthGate] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
   const [jobStatus, setJobStatus] = useState<JobStatusResponse | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -250,6 +256,9 @@ export default function GuidelineFormat() {
 
   const resetJobUi = () => {
     setJobId(null)
+    setJobToken(null)
+    setShowAuthGate(false)
+    setShowAuthModal(false)
     setJobStatus(null)
     setSubmitError(null)
     setIsSubmitting(false)
@@ -327,7 +336,8 @@ export default function GuidelineFormat() {
       inFlight = true
       try {
         // Do not pass signal + timeout together: api() skips its timeout branch when signal is set.
-        const res = await api(`/api/guidelines/jobs/${jobId}`, { timeout: 15000 })
+        const tokenQuery = jobToken ? `?jobToken=${encodeURIComponent(jobToken)}` : ''
+        const res = await api(`/api/guidelines/jobs/${jobId}${tokenQuery}`, { timeout: 15000 })
         const data = (await res.json()) as JobStatusResponse & { error?: string }
         if (!active || pollSessionAtStart !== pollSession) return
         if (!res.ok) {
@@ -370,14 +380,10 @@ export default function GuidelineFormat() {
       if (timer) clearTimeout(timer)
       document.removeEventListener('visibilitychange', onVis)
     }
-  }, [jobId])
+  }, [jobId, jobToken])
 
   const submitFormat = async () => {
     if (!canSubmit || !selectedPreset) return
-    if (!getAuthToken()) {
-      toast.error('Sign in to format your transcript')
-      return
-    }
     const rulesPayload = buildRulesPayload()
     if (!rulesPayload.length) {
       toast.error('Select rules or a style guide file')
@@ -402,6 +408,9 @@ export default function GuidelineFormat() {
     setSubmitError(null)
     setJobStatus(null)
     setJobId(null)
+    setJobToken(null)
+    setShowAuthGate(false)
+    setShowAuthModal(false)
     setOriginalTranscriptForJob(trimmedTranscript)
     try {
       const res = await api('/api/guidelines/format', {
@@ -415,7 +424,7 @@ export default function GuidelineFormat() {
         }),
         timeout: 60000,
       })
-      const data = (await res.json()) as { jobId?: string; error?: string }
+      const data = (await res.json()) as { jobId?: string; jobToken?: string; error?: string }
       if (!res.ok) {
         setSubmitError(data.error || 'Failed to start formatting')
         setIsSubmitting(false)
@@ -426,6 +435,7 @@ export default function GuidelineFormat() {
         setIsSubmitting(false)
         return
       }
+      setJobToken(data.jobToken || null)
       setJobId(data.jobId)
     } catch (e) {
       setSubmitError(e instanceof Error ? e.message : 'Network error')
@@ -769,6 +779,32 @@ export default function GuidelineFormat() {
       .finally(() => setCustomGuideLoading(false))
   }
 
+  const unlockClaimedGuidelineJob = async () => {
+    if (!jobId || !jobToken) {
+      setShowAuthGate(false)
+      setShowAuthModal(false)
+      return
+    }
+    const claimRes = await api(`/api/guidelines/jobs/${jobId}/claim`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobToken }),
+      timeout: 15000,
+    })
+    if (!claimRes.ok && claimRes.status !== 409) {
+      const data = await claimRes.json().catch(() => ({} as { error?: string }))
+      throw new Error(data.error || 'Could not unlock this result. Please try again.')
+    }
+    const statusRes = await api(`/api/guidelines/jobs/${jobId}`, { timeout: 15000 })
+    const data = (await statusRes.json()) as JobStatusResponse & { error?: string }
+    if (!statusRes.ok) {
+      throw new Error(data.error || 'Could not load your formatted transcript.')
+    }
+    setJobStatus((prev) => mergeGuidelinePollStatus(prev, data))
+    setShowAuthGate(false)
+    setShowAuthModal(false)
+  }
+
   const rulesByCategory = useMemo(() => {
     const map = new Map<string, EditableRule[]>()
     for (const cat of CATEGORY_ORDER) {
@@ -835,6 +871,14 @@ export default function GuidelineFormat() {
       setReviewWarnings([])
       setFullTranscriptMode('all')
       setFocusContextExpanded({})
+    }
+  }, [jobStatus?.status])
+
+  useEffect(() => {
+    if (jobStatus?.status === 'completed' && !isLoggedIn()) {
+      setShowAuthGate(true)
+      setShowAuthModal(true)
+      setAuthModalMode('signup-combo')
     }
   }, [jobStatus?.status])
 
@@ -1345,6 +1389,37 @@ export default function GuidelineFormat() {
                 </div>
               )}
               {jobStatus?.status === 'completed' && !submitError && (
+                showAuthGate && !isLoggedIn() ? (
+                  <div className="rounded-2xl border border-violet-200/80 dark:border-violet-900/50 bg-white/85 dark:bg-gray-900/60 p-6 shadow-sm space-y-4">
+                    <div className="flex items-start gap-3">
+                      <span className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300">
+                        <Lock className="h-4 w-4" aria-hidden />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Your formatted transcript is ready</p>
+                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                          We finished processing your style guide. Create a free account or log in to unlock the formatted transcript, validation report, review queue, and exports.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <button
+                        type="button"
+                        onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
+                        className="rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold px-5 py-3 text-sm shadow-md transition-colors"
+                      >
+                        Create free account
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
+                        className="rounded-xl border border-gray-300 dark:border-gray-600 px-5 py-3 text-sm font-semibold text-gray-800 dark:text-gray-100 hover:bg-white/80 dark:hover:bg-gray-900/60"
+                      >
+                        Log in
+                      </button>
+                    </div>
+                  </div>
+                ) : (
                 <div className="space-y-6">
                   {jobStatus.validationReport?.summary && (
                     <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 p-5 shadow-sm">
@@ -2046,11 +2121,26 @@ export default function GuidelineFormat() {
                     )}
                   </div>
                 </div>
+                )
               )}
             </div>
           )}
         </div>
       </ToolLayout>
+
+      <JobAuthGateModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authModalMode}
+        jobDescription="Your formatted transcript is ready!"
+        onAuthSuccess={async () => {
+          try {
+            await unlockClaimedGuidelineJob()
+          } catch (e) {
+            toast.error(e instanceof Error ? e.message : 'Could not unlock your formatted transcript')
+          }
+        }}
+      />
 
       {/* SEO FAQ section — crawlable content for Google and LLM citations */}
       <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16" aria-label="Frequently asked questions">
