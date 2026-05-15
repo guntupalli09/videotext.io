@@ -31,17 +31,21 @@ export interface FamilySectionTitles {
   outputExamples: string
   comparisonRows: string
   useCases: string
+  edgeCases: string
+  platformGuidance: string
   faq: string
   related: string
 }
 
 const SECTION_TITLES: Record<RouteFamily, FamilySectionTitles> = {
   subtitle: {
-    proofPoints: 'Subtitle timing errors that break viewer experience',
+    proofPoints: 'Where subtitle workflows break in real production',
     workflowSteps: 'From raw video to export-ready subtitle file',
     outputExamples: 'SRT, VTT, and burned caption outputs',
     comparisonRows: 'How VideoText handles subtitle workflows',
     useCases: 'Creators and teams running subtitle workflows',
+    edgeCases: 'Subtitle edge cases that cause QA failure',
+    platformGuidance: 'Platform-specific subtitle requirements',
     faq: 'Subtitle workflow questions answered',
     related: 'Related caption and subtitle tools',
   },
@@ -51,6 +55,8 @@ const SECTION_TITLES: Record<RouteFamily, FamilySectionTitles> = {
     outputExamples: 'Clean, verbatim, and platform-ready transcript outputs',
     comparisonRows: 'Formatting consistency: VideoText vs manual cleanup',
     useCases: 'Transcriptionists and editors running formatting workflows',
+    edgeCases: 'Common QA rejection patterns and formatting errors',
+    platformGuidance: 'Style guide differences across platforms',
     faq: 'Transcript formatting and style guide questions',
     related: 'Related formatting and QA workflows',
   },
@@ -60,6 +66,8 @@ const SECTION_TITLES: Record<RouteFamily, FamilySectionTitles> = {
     outputExamples: 'Multilingual subtitle and transcript outputs',
     comparisonRows: 'Translation workflow: VideoText vs standalone tools',
     useCases: 'Teams running multilingual caption workflows',
+    edgeCases: 'Language-specific translation edge cases',
+    platformGuidance: 'Multilingual subtitle QA and platform requirements',
     faq: 'Subtitle translation and localization questions',
     related: 'Related translation and multilingual workflows',
   },
@@ -69,6 +77,8 @@ const SECTION_TITLES: Record<RouteFamily, FamilySectionTitles> = {
     outputExamples: 'Export outputs teams actually compare',
     comparisonRows: 'Side-by-side workflow comparison',
     useCases: 'Teams that switched to VideoText',
+    edgeCases: 'Where alternatives create hidden workflow friction',
+    platformGuidance: 'Export format and integration differences',
     faq: 'Comparison and switching questions',
     related: 'Other VideoText comparisons and alternatives',
   },
@@ -78,24 +88,30 @@ const SECTION_TITLES: Record<RouteFamily, FamilySectionTitles> = {
     outputExamples: 'Benchmark results you can verify yourself',
     comparisonRows: 'Performance numbers side by side',
     useCases: 'Teams that rely on transcription accuracy data',
+    edgeCases: 'Edge cases that stress-test transcription accuracy',
+    platformGuidance: 'Benchmark methodology and scoring approach',
     faq: 'Transcription accuracy and benchmark questions',
     related: 'Related performance and accuracy tests',
   },
   youtube: {
-    proofPoints: 'Why YouTube transcript extraction matters for creators',
-    workflowSteps: 'Turning YouTube videos into searchable transcripts',
+    proofPoints: 'Why auto-captions fail creator workflows',
+    workflowSteps: 'Turning YouTube videos into structured, reusable content',
     outputExamples: 'YouTube transcript outputs for creator workflows',
     comparisonRows: 'YouTube transcript: VideoText vs native captions',
     useCases: 'Creator workflows powered by YouTube transcripts',
+    edgeCases: 'YouTube-specific transcript friction points',
+    platformGuidance: 'YouTube upload and format constraints',
     faq: 'YouTube transcript and workflow questions',
     related: 'Related YouTube and creator workflow tools',
   },
   transcription: {
-    proofPoints: 'How this workflow reduces manual transcription overhead',
+    proofPoints: 'Where transcription cleanup wastes the most time',
     workflowSteps: 'From long recording to structured, usable transcript',
     outputExamples: 'Transcript outputs teams actually deliver',
     comparisonRows: 'Transcription workflow comparison',
     useCases: 'Teams running high-volume transcription workflows',
+    edgeCases: 'Audio conditions that degrade transcript quality',
+    platformGuidance: 'Export format tradeoffs for different delivery scenarios',
     faq: 'Transcription workflow questions answered',
     related: 'Related transcription and workflow tools',
   },
@@ -105,6 +121,8 @@ const SECTION_TITLES: Record<RouteFamily, FamilySectionTitles> = {
     outputExamples: 'Outputs you can use immediately',
     comparisonRows: 'How VideoText compares',
     useCases: 'Use cases',
+    edgeCases: 'Edge cases to be aware of',
+    platformGuidance: 'Platform and export notes',
     faq: 'Frequently asked questions',
     related: 'Related VideoText workflows',
   },
@@ -406,50 +424,90 @@ export function buildFamilyDeepContent(
     case 'subtitle':
       return {
         proofPoints: [
-          'Subtitle timing errors — lines that appear too early, run too long, or overlap dialogue — are the most common reason captions feel unwatchable even when the transcript text is accurate.',
-          'Reading speed matters: most platform standards target 14–17 characters per second, and exceeding 21 CPS on a single line creates a comprehension gap across viewer groups.',
-          `${label} handles the specific formatting and export requirements that differ between burned captions, SRT files, VTT streams, and platform-specific caption uploads.`,
+          'Reading speed is the invisible subtitle constraint: 14–17 characters per second is the readable range for most viewers; anything above 21 CPS causes comprehension failure even when the transcript text is accurate. Most automated subtitle tools generate lines without CPS checks.',
+          'Burned captions create a permanent workflow commitment — any timing correction or text fix after encoding requires re-encoding the full video. For long-form content this is hours of lost render time, which is why burn decisions need to happen after QA, not before.',
+          'Platform subtitle requirements are not interchangeable: TikTok displays a 2-line maximum with specific font rendering; YouTube accepts up to 1,500 SRT blocks and requires UTF-8 encoding; Instagram Reels ignores soft subtitle tracks on autoplay entirely, making burned captions the only reliable option for Reels.',
         ],
         workflowSteps: [
           {
-            title: '1. Generate a subtitle file from your video',
-            detail: 'Upload the video or paste a public URL. VideoText generates a time-coded subtitle file with accurate word-level timestamps and automatic line-break logic based on reading speed.',
+            title: '1. Generate subtitle file with word-level timestamps',
+            detail: 'Upload the video or paste a public URL. Word-level timestamp alignment produces more accurate line breaks than sentence-level alignment — each subtitle break falls at a natural pause rather than a word boundary mid-phrase.',
           },
           {
-            title: '2. Review timing and line length',
-            detail: 'Check that each subtitle line falls within reading-speed limits. Adjust breaks, merge short lines, and split long segments before exporting to your target platform.',
+            title: '2. Review CPS on every subtitle line',
+            detail: 'Flag any line above 17 CPS and split it. An 8-word subtitle in a 1.2-second window hits approximately 24 CPS — unreadable for most viewers. Merge subtitle lines shorter than 0.8 seconds, which display too briefly to register.',
           },
           {
-            title: '3. Export in the format your platform requires',
-            detail: 'Export SRT for YouTube and Vimeo, VTT for HTML5 web players, or burned captions for social clips. Each format carries different timing constraints and encoding requirements.',
+            title: '3. Check for timing overlap and minimum duration',
+            detail: 'Subtitle overlap — where the next block starts before the previous one ends — causes display flicker in most players. Any gap shorter than 0.1 seconds between adjacent subtitles should be merged or widened to prevent rendering artifacts.',
+          },
+          {
+            title: '4. Select platform-appropriate export format',
+            detail: 'Export SRT for YouTube, Vimeo, and video editors. Export VTT for HTML5 web players and streaming platforms that support caption positioning. Choose burned-caption output for Instagram Reels, TikTok clips, and any social context where autoplay without sound is expected.',
           },
         ],
         outputExamples: [
           {
             title: 'SRT subtitle file',
-            body: 'Standard timed subtitle format supported by YouTube, Vimeo, social platforms, and most video editors. Each block contains a sequence number, timestamp pair, and one or two lines of caption text.',
+            body: 'Standard timed subtitle format: sequence number, timestamp pair (00:00:00,000 → 00:00:00,000 with comma separator), and one or two lines of caption text per block. Supported by YouTube, Vimeo, LinkedIn, most video editors, and accessibility workflows.',
           },
           {
             title: 'VTT subtitle stream',
-            body: 'WebVTT format used by HTML5 video players, streaming services, and accessibility workflows. Supports styling metadata and position cues that SRT does not carry.',
+            body: 'WebVTT format with period timestamp separators (00:00:00.000 → 00:00:00.000). Used by HTML5 video players, streaming services, and accessibility platforms. Unlike SRT, VTT supports <cue> positioning metadata, text styling, and karaoke-mode highlighting.',
           },
           {
             title: 'Burned captions',
-            body: 'Permanently embedded text rendered into the video frame itself. Required for platforms that strip external caption tracks and for social clips intended to play without sound.',
+            body: 'Permanently embedded caption text rendered directly into the video frame — cannot be toggled off by the viewer. Required for platforms that strip external caption tracks. Font rendering, shadow depth, and vertical position all need QA review after encoding because video compression can degrade caption legibility.',
           },
         ],
         useCases: [
           {
-            title: 'Video creators',
-            body: 'Generate subtitle files for YouTube, TikTok, and course platforms in one pass — without running separate transcription and captioning tools.',
+            title: 'Video creators publishing to multiple platforms',
+            body: 'Generate SRT for YouTube upload, export burned captions for Instagram Reels, and produce VTT for course platform embeds — all from the same subtitle pass without reformatting timing.',
           },
           {
-            title: 'Accessibility teams',
-            body: 'Produce synchronized captions that meet WCAG timing and reading-speed requirements for public video content.',
+            title: 'Accessibility compliance teams',
+            body: 'Produce synchronized captions that meet WCAG 2.1 timing and reading-speed requirements. CPS validation catches lines that fail accessibility guidelines before the video goes live.',
           },
           {
             title: 'Post-production editors',
-            body: 'Export SRT or VTT from raw transcripts, then import into Premiere, DaVinci, or Final Cut without manually reformatting caption timing.',
+            body: 'Export SRT or VTT for import into Premiere, DaVinci Resolve, or Final Cut Pro. Accurate word-level timestamps eliminate the need to manually re-sync caption timing after import.',
+          },
+        ],
+        visualProof: [
+          {
+            title: 'CPS violation — splitting required',
+            body: 'Eight words spoken in 1.2 seconds: "we need to fix this before the deadline" at 24 CPS. The line must be split into two display segments within the same timing window to hit the readable 14–17 CPS range.',
+          },
+          {
+            title: 'Subtitle timing overlap',
+            body: 'Block ending at 00:01:23,500 overlapping a block starting at 00:01:23,200 causes display flicker and rendering failure in most SRT players. A subtitle validator catches this before upload.',
+          },
+          {
+            title: 'Mobile frame crop',
+            body: 'A two-line subtitle with 44+ characters per line at default font sizes clips at the bottom of mobile video frames. The safe area for mobile subtitles is a single line, 38 characters maximum, positioned at 85% vertical height.',
+          },
+          {
+            title: 'Burned caption rendering after encode',
+            body: 'Font stroke weight, drop shadow depth, and subtitle vertical position all shift slightly after H.264 encoding. Captions that look correct in preview may become harder to read in the encoded file — requires a post-encode QA pass before publishing.',
+          },
+        ],
+        technicalExplanation: [
+          {
+            title: 'YouTube SRT requirements',
+            body: 'UTF-8 encoding required. Maximum 1,500 subtitle blocks per file. Timestamp format: 00:00:00,000 (comma separator, not period). Files over 1,500 blocks need splitting before upload. YouTube auto-syncs uploaded SRT to audio — small timing offsets are corrected automatically.',
+          },
+          {
+            title: 'TikTok caption behavior',
+            body: 'TikTok generates its own auto-captions and displays them over uploaded SRT files in most cases. Burned captions are the reliable method for ensuring accurate captions appear on TikTok content. SRT upload works but TikTok may override it.',
+          },
+          {
+            title: 'Instagram Reels caption handling',
+            body: 'Instagram does not display soft subtitle tracks during autoplay in Feed or Reels. Burned captions are the only reliable method for ensuring captions appear for silent autoplay viewers. Instagram\'s built-in auto-caption feature can also be used after upload, but accuracy varies.',
+          },
+          {
+            title: 'VTT vs SRT encoding difference',
+            body: 'VTT uses period timestamp separators (00:00:00.000) while SRT uses commas (00:00:00,000). Swapping the separator character breaks parsing in most players. VTT files must begin with the WEBVTT header line — SRT files must not.',
           },
         ],
         ctaText: footerCta.text,
@@ -459,50 +517,94 @@ export function buildFamilyDeepContent(
     case 'formatting':
       return {
         proofPoints: [
-          'Clean verbatim removes distracting fillers for readability; full verbatim preserves every utterance. Applying the wrong standard is the most common reason transcripts fail platform QA review.',
-          'Speaker label inconsistency — mixing "Speaker 1", "SPEAKER 1", and "S1" in the same file — triggers rejection at all major transcript marketplaces including Rev and GoTranscript.',
-          `${label} applies a structured formatting pass that catches label drift, timestamp placement errors, bracket notation inconsistencies, and paragraph-length violations before delivery.`,
+          'The five most common transcript QA rejection triggers are: inconsistent speaker label format across the file, wrong verbatim level (clean applied where full was required), missing or incorrectly notated inaudible sections, timestamp placement errors, and paragraph length violations. A formatting pass that checks all five before delivery eliminates most revision cycles.',
+          'Style guide conflicts between platforms create real operational confusion: Rev\'s rules for handling crosstalk differ from GoTranscript\'s, and a transcript formatted correctly for one platform fails QA on the other. Knowing which standard applies before formatting begins saves the rework.',
+          'Speaker label drift — where the same speaker gets labeled "JOHN SMITH", "John", and "Speaker 1" in the same document — is the formatting error that takes the longest to correct manually and the most common reason agency QA reviewers send files back.',
         ],
         workflowSteps: [
           {
-            title: '1. Select the target style guide',
-            detail: 'Choose Rev-style, GoTranscript-style, or a custom client specification. Each guideline has different rules for clean vs verbatim, timestamp intervals, speaker notation, and inaudible handling.',
+            title: '1. Select and configure the target style guide',
+            detail: 'Choose Rev, GoTranscript, TranscribeMe, Scribie, or a custom client specification. Each guideline has distinct rules for verbatim level, speaker label format, timestamp intervals, inaudible notation, and maximum paragraph length.',
           },
           {
-            title: '2. Normalize the transcript structure',
-            detail: 'Standardize speaker labels, apply consistent paragraph breaks, enforce the correct verbatim level, and place timestamps at the requested intervals from beginning to end.',
+            title: '2. Set verbatim level explicitly',
+            detail: 'Clean verbatim removes fillers, false starts, and repetitions for readability. Full verbatim preserves all spoken content. Applying the wrong level is the most common single reason transcripts fail marketplace QA — it cannot be fixed without re-reading the source audio.',
           },
           {
-            title: '3. Run a pre-delivery QA pass',
-            detail: 'Check for missing labels, bracket inconsistencies, overlong paragraphs, crosstalk notation, and timestamp drift before exporting or sending to a reviewer.',
+            title: '3. Normalize speaker labels throughout the file',
+            detail: 'A single speaker must have exactly one label format from the first occurrence to the last. Mixed formats (JOHN SMITH / John / J. Smith) require a find-and-replace pass across the full document before any other formatting work.',
+          },
+          {
+            title: '4. Apply timestamp rules and paragraph breaks',
+            detail: 'Rev-style: timestamps every 2 minutes or at each speaker change. GoTranscript: no timestamp requirement by default. TranscribeMe: per-speaker-turn timestamps. Paragraph length limits range from 8 lines (Rev) to no limit (some custom clients).',
+          },
+          {
+            title: '5. Run pre-delivery QA check',
+            detail: 'Verify inaudible notation consistency (all [inaudible] or all [INAUDIBLE], never mixed), check bracket format for crosstalk sections, confirm verbatim level is consistent throughout, and validate that paragraph length does not exceed the client\'s maximum.',
           },
         ],
         outputExamples: [
           {
             title: 'Rev-style formatted transcript',
-            body: 'Readable clean verbatim text with consistent speaker names, clear paragraph structure, and timestamp treatment that matches client delivery requirements.',
+            body: 'Clean verbatim text. Speaker names in CAPITAL LETTERS followed by a colon. Timestamps in [HH:MM:SS] format at 2-minute intervals and at speaker changes. No paragraph longer than 8 lines. Inaudible sections marked [inaudible]. False starts and fillers removed.',
           },
           {
             title: 'GoTranscript QA-ready file',
-            body: 'Structured transcript that passes common rejection checks: correct timestamp format, consistent labels, proper inaudible notation, and matching verbatim level throughout.',
+            body: 'Optional full or clean verbatim per client request. Speaker labels in "Speaker Name:" format with consistent capitalization. [inaudible] notation for unclear audio. No timestamp requirement unless client specifies. Paragraph breaks at topic shifts rather than fixed intervals.',
           },
           {
-            title: 'Client-ready delivery draft',
-            body: 'Polished output ready for DOCX, PDF, or TXT export — with formatting that reduces back-and-forth revision cycles with clients or QA reviewers.',
+            title: 'Client-ready DOCX handoff',
+            body: 'Structured document with consistent heading-style speaker labels, paragraph breaks, correctly formatted timestamps, and clean or full verbatim as specified. Formatted for direct delivery — no manual cleanup required before attaching to the client email.',
           },
         ],
         useCases: [
           {
             title: 'Freelance transcriptionists',
-            body: 'Reduce revision risk before submitting marketplace jobs that require strict style-guide compliance.',
+            body: 'Reduce revision risk before submitting marketplace jobs. A pre-delivery formatting check catches the label inconsistency, timestamp format error, or verbatim level mismatch that triggers a QA rejection and unpaid revision.',
           },
           {
-            title: 'QA leads and agency editors',
-            body: 'Give reviewers a repeatable formatting workflow for client-specific transcript requirements across a team.',
+            title: 'Agency QA leads and editors',
+            body: 'Create a consistent formatting baseline across a team of transcriptionists working on the same client account — so reviewers spend time on content accuracy, not fixing label formats.',
           },
           {
             title: 'Researchers and journalists',
-            body: 'Turn raw AI transcripts into readable interview documents with speaker structure, clean punctuation, and consistent timestamp placement.',
+            body: 'Turn raw AI-generated transcripts into readable interview documents: speaker structure, consistent punctuation, accurate paragraph breaks, and timestamps that let readers verify context in the source recording.',
+          },
+        ],
+        visualProof: [
+          {
+            title: 'Speaker label drift example',
+            body: 'Page 1: "JOHN SMITH: Thanks for joining us." Page 3: "John: So as I was saying..." Page 7: "Speaker 1: Right, exactly." — All three refer to the same speaker. Label drift of this kind fails QA at every major transcript marketplace.',
+          },
+          {
+            title: 'Timestamp format inconsistency',
+            body: '[00:05:12] on page 2, (00:05:12) on page 4, [5:12] on page 6, and 00:05:12 on page 8 — all in the same document. Most style guides require a single format, and inconsistency triggers automatic rejection on automated QA systems.',
+          },
+          {
+            title: 'Inaudible notation mismatch',
+            body: '"[inaudible]", "[INAUDIBLE]", "[unclear]", and "[crosstalk]" appearing in the same file for the same type of audio problem. Rev requires "[inaudible]" in lowercase brackets. GoTranscript uses a different notation. Neither accepts a mix of styles.',
+          },
+          {
+            title: 'Verbatim level inconsistency',
+            body: 'Pages 1–4 are clean verbatim (fillers removed). Pages 5–8 switch to full verbatim (fillers preserved). This happens when an ASR tool applies different post-processing across transcript segments — and it fails QA because the verbatim level is supposed to be consistent throughout.',
+          },
+        ],
+        technicalExplanation: [
+          {
+            title: 'Rev style guide rules',
+            body: 'Clean verbatim by default. Speaker names in ALL CAPS followed by a colon. Timestamp format [HH:MM:SS] every 2 minutes and at speaker changes. Maximum paragraph: 8 lines. Inaudible: [inaudible]. Crosstalk: [crosstalk]. False starts and filler words removed.',
+          },
+          {
+            title: 'GoTranscript style guide rules',
+            body: 'Clean or full verbatim per client request. Speaker format "Speaker Name:" with title case. [inaudible] for unclear audio. No timestamp requirement by default (client can request). No strict paragraph length limit. Crosstalk marked with [crosstalk].',
+          },
+          {
+            title: 'TranscribeMe style guide rules',
+            body: 'Strict verbatim — all fillers and false starts preserved. Timestamps required at each speaker turn. Speaker format "SPEAKER NAME:" in caps. Specific bracket format for technical notation. Paragraph breaks only at speaker changes.',
+          },
+          {
+            title: 'Custom client formatting conflicts',
+            body: 'Many agencies specify hybrid rules that don\'t map cleanly to any standard guide — for example, Rev-style speaker labels but GoTranscript-style verbatim and no timestamps. These combinations must be documented explicitly because the formatter cannot infer them.',
           },
         ],
         ctaText: footerCta.text,
@@ -512,50 +614,94 @@ export function buildFamilyDeepContent(
     case 'translation':
       return {
         proofPoints: [
-          'Subtitle translation must preserve timestamp boundaries: translated text that runs longer than the original frame duration creates timing desynchronization that breaks the viewing experience.',
-          'Language expansion is a structural challenge — German and Spanish text commonly runs 20–30% longer than equivalent English, requiring line-break restructuring without shifting subtitle timing.',
-          `${label} preserves the original timestamp structure while adapting subtitle text for the target language, reducing the manual timestamp repair work that standard translation tools require.`,
+          'Subtitle translation breaks timing when translators merge or split segments to fit translated text. A translated subtitle that begins 0.3 seconds earlier than the source or ends 0.5 seconds later — because the translator restructured segments — causes desynchronization that propagates through the entire file from that point forward.',
+          'Language expansion rates are predictable and must be accounted for before translation begins: German runs 25–30% longer than English, French 20–25%, Spanish 15–20%, Arabic 20–25%. Subtitle lines already near the CPS limit before translation will overflow the timing window after — requiring line restructuring within the original timestamp boundaries, not new timestamps.',
+          'Right-to-left languages introduce a rendering dependency on the target video player. Arabic and Hebrew subtitle text may display left-to-right in HTML5 players that lack explicit RTL support, even when the SRT file is correctly encoded — requiring post-translation testing in the actual target player before delivery.',
         ],
         workflowSteps: [
           {
-            title: '1. Upload or generate the source subtitle file',
-            detail: 'Start from an existing SRT or VTT file, or generate one from the original video. The source timestamps are locked as the translation baseline.',
+            title: '1. Upload the source subtitle file',
+            detail: 'Start from an existing SRT or VTT file. The source timestamps become locked translation boundaries — translated text must fit within each segment\'s timing window without extending start or end times.',
           },
           {
-            title: '2. Select target language and run translation',
-            detail: 'The workflow translates each subtitle segment while preserving the original timing boundaries. Long expansions trigger automatic line-break restructuring within the existing timing window.',
+            title: '2. Assess expansion risk before translating',
+            detail: 'For German, French, Spanish, Arabic, and other expansion languages, identify source lines already near 17 CPS. These will overflow after translation and need pre-translation line splitting to create capacity for the expanded text.',
           },
           {
-            title: '3. Review and export the translated subtitle file',
-            detail: 'Check translated segments for readability, trim segments that expanded beyond timing limits, and export the translated SRT or VTT in the same format as the source.',
+            title: '3. Translate with timing boundary preservation',
+            detail: 'Each subtitle segment is translated independently. The translated text must fit within the original segment\'s duration — merging two segments to fit translated text shifts all subsequent timestamps.',
+          },
+          {
+            title: '4. Restructure expanded lines within timing windows',
+            detail: 'Where translated text runs longer than the original, split the translated text across two display lines within the same timing window. Do not move timestamp boundaries. Maximum 2 lines per subtitle block on most platforms.',
+          },
+          {
+            title: '5. Validate and export as separate language track',
+            detail: 'Check CPS on translated lines, verify no timestamp boundaries have shifted relative to the source file, and export as a separate SRT or VTT. Upload as a distinct language track on YouTube or Vimeo — not as a replacement for the source track.',
           },
         ],
         outputExamples: [
           {
-            title: 'Translated SRT with preserved timing',
-            body: 'Each subtitle block retains the original start and end timestamps from the source file, with only the text content replaced by the translated equivalent.',
+            title: 'Translated SRT with source timestamps intact',
+            body: 'Each subtitle block retains the original start and end timestamps from the source file. Only the text content changes. Timestamps that have shifted relative to the source indicate segment merging — a translation error that requires correction.',
           },
           {
-            title: 'Bilingual subtitle file',
-            body: 'Side-by-side original and translated captions for dubbing review, multilingual accessibility workflows, or language learning content.',
+            title: 'Bilingual review file',
+            body: 'Source and translated text presented side by side for dubbing review, localization QA, or language learning content. Reviewers can verify translation accuracy and check that meaning is preserved within each timing window.',
           },
           {
             title: 'Translated transcript document',
-            body: 'Full transcript text translated into the target language with speaker structure and timestamp formatting preserved for review and delivery.',
+            body: 'Full transcript text in the target language with speaker labels and timestamp structure preserved. Speaker turn formatting and paragraph structure carry through the translation, making the translated document usable for review, delivery, or subtitle back-conversion.',
           },
         ],
         useCases: [
           {
-            title: 'International content teams',
-            body: 'Localize subtitle files for regional video distribution without rebuilding timing from scratch in each target language.',
+            title: 'International content distribution teams',
+            body: 'Localize subtitle files for regional video distribution. Translated SRT files upload as separate language tracks on YouTube, Vimeo, and course platforms — preserving the source track alongside the localized version.',
           },
           {
-            title: 'Course creators and educators',
-            body: 'Add translated captions to training content for international learners — without separate translation and captioning workflows.',
+            title: 'Online course creators',
+            body: 'Add translated captions to training content for international learners. Language expansion in German, French, and Spanish courses is handled at the segment level rather than requiring a full subtitle retime for each language.',
           },
           {
-            title: 'Journalists and researchers',
-            body: 'Translate interview transcripts into a working language while keeping speaker labels and timestamp structure intact for source review.',
+            title: 'Journalists and documentary researchers',
+            body: 'Translate interview transcripts into a working language for editorial review while keeping speaker labels, paragraph structure, and source timestamps intact for fact-checking against the original recording.',
+          },
+        ],
+        visualProof: [
+          {
+            title: 'German subtitle expansion overflow',
+            body: '"Loading..." (9 chars, 0.8s) → "Wird geladen..." (15 chars, 0.8s): a 67% character expansion that exceeds the timing window. The translated line must be accepted as-is (fast CPS) or the source segment must be split before translation to create capacity.',
+          },
+          {
+            title: 'Arabic RTL rendering failure',
+            body: 'Arabic subtitle text encoded correctly in SRT displays left-to-right in HTML5 players without explicit dir="rtl" attribute. The text reads backwards visually even though the file is technically correct. Requires testing in the actual target player before delivery.',
+          },
+          {
+            title: 'Segment merge timing shift',
+            body: 'Translator combines three short English segments (1.2s + 0.9s + 1.1s) into one Spanish sentence. The merged segment now runs 3.2 seconds and shifts all subsequent timestamps by approximately 0.3 seconds. This timing drift grows progressively through the rest of the file.',
+          },
+          {
+            title: 'Japanese character density reversal',
+            body: 'Japanese conveys the same meaning in 30–40% fewer characters than English. A 2-line English subtitle with 68 characters translates to a single short Japanese line — creating timing windows with large gaps of visible subtitle text that read as incomplete.',
+          },
+        ],
+        technicalExplanation: [
+          {
+            title: 'CPS review for expansion languages',
+            body: 'Any source subtitle line above 14 CPS should be split before translating to German, French, Spanish, or Arabic. Post-translation CPS for expanded languages should be recalculated against the original timing window duration — not recalculated after segment boundary changes.',
+          },
+          {
+            title: 'RTL subtitle handling',
+            body: 'Arabic and Hebrew SRT files require UTF-8 encoding without BOM for most players. VTT files should include lang attributes. Always test RTL subtitles in the specific target player before delivery — rendering behavior varies significantly between players.',
+          },
+          {
+            title: 'Multi-language YouTube upload',
+            body: 'Translated SRT files upload as separate language tracks in YouTube Studio under Subtitles → Add language. Each language requires a separate upload. YouTube displays the viewer\'s browser-language track by default. Source and translated tracks coexist independently.',
+          },
+          {
+            title: 'CJK character count limits',
+            body: 'Japanese, Chinese, and Korean subtitles use full-width characters that render twice as wide as Latin characters in most subtitle renderers. Maximum characters-per-line for CJK scripts is approximately 16–20, versus 38–42 for Latin-script languages.',
           },
         ],
         ctaText: footerCta.text,
@@ -565,50 +711,90 @@ export function buildFamilyDeepContent(
     case 'alternative':
       return {
         proofPoints: [
-          'VideoText processes long recordings — multi-hour interviews, webinars, and lectures — in a single upload without file splitting or multiple jobs, which many alternatives require.',
-          'Export flexibility matters: VideoText generates transcript text, SRT/VTT subtitle files, summaries, chapters, and structured JSON from one upload, replacing workflows that need three or four separate tools.',
-          `${label} covers operational workflow differences rather than feature-list comparisons — the real friction is in how tools handle long files, mixed outputs, and team review handoffs.`,
+          'The operational difference between VideoText and most alternatives is output breadth from a single upload: most tools produce transcript text only; VideoText produces transcript + SRT/VTT subtitle files + AI summary + chapter markers + JSON from the same job. Replacing a two- or three-tool workflow with one upload reduces the friction points where errors are introduced.',
+          'File length limits create hidden workflow friction that only surfaces on real jobs. Otter.ai caps recordings at 4 hours per file with paid plans; Temi imposes file-size limits; some tools require manual file splitting for anything over 30 or 60 minutes. Each split introduces a boundary where context, speaker labels, and timestamps must be manually reconnected.',
+          'Review handoff is where most transcript workflows lose time between tools. Exporting a document, emailing it, receiving edits, and re-importing is the standard cycle — and it happens outside the tool that generated the transcript, which means no version tracking. Shareable review links keep the review cycle inside the same system that generated the output.',
         ],
         workflowSteps: [
           {
-            title: '1. Identify where the current tool creates friction',
-            detail: 'Map the specific points where the alternative fails your workflow: file-length limits, export format restrictions, missing subtitle generation, slow processing, or absent team collaboration.',
+            title: '1. Identify the specific failure point in your current workflow',
+            detail: 'Map where the alternative creates friction: file-length cap requiring splitting, export format restricted to TXT or DOCX only, no subtitle file generation, no chapter output, slow processing, or no shareable review mechanism.',
           },
           {
-            title: '2. Test the VideoText workflow with a real file',
-            detail: 'Upload a long recording or paste a YouTube URL. Run the same workflow you currently run and compare processing speed, output quality, and export options side by side.',
+            title: '2. Test with a recording you have already transcribed',
+            detail: 'Upload the same file to VideoText that you last transcribed with your current tool. Use identical settings. Compare the raw output — formatting structure, speaker label accuracy, timestamp precision — before any editing.',
           },
           {
-            title: '3. Compare outputs directly before switching',
-            detail: 'Download transcript, subtitle, summary, and chapter outputs from both tools and compare formatting quality, timestamp accuracy, and how much manual cleanup each file requires.',
+            title: '3. Count cleanup steps in each output',
+            detail: 'How many speaker label corrections, timestamp format fixes, paragraph restructures, and filler-word passes does each transcript require before it is delivery-ready? The tool with the lower cleanup count has lower operational cost, regardless of the stated accuracy percentage.',
+          },
+          {
+            title: '4. Compare the full output set, not just the transcript',
+            detail: 'Does the alternative generate subtitle files? Chapter markers? A summary? JSON export? If generating those outputs requires additional tools, add the time and cost of those tools to the comparison before concluding which workflow is faster.',
           },
         ],
         outputExamples: [
           {
-            title: 'Side-by-side transcript export',
-            body: 'Compare raw output quality — speaker labeling accuracy, timestamp precision, punctuation, and paragraph structure — between VideoText and the tool you are evaluating.',
+            title: 'Side-by-side transcript quality comparison',
+            body: 'Same 60-minute interview processed by both tools. Compare speaker label accuracy, punctuation consistency, paragraph structure, and the number of correction passes required to reach delivery quality.',
           },
           {
-            title: 'Subtitle file availability',
-            body: 'Check whether the alternative generates subtitle files at all, and whether those files require manual timing correction before they are usable in your publishing workflow.',
+            title: 'Subtitle output availability',
+            body: 'Does the alternative generate SRT or VTT at all, or does reaching a subtitle file require a separate captioning tool? If the alternative produces transcript text only, add the time cost of the captioning step to the workflow comparison.',
           },
           {
-            title: 'Long-video processing results',
-            body: 'Test with a recording over 60 minutes. Compare processing time, whether the file needs splitting, and how structured the output is when the job completes.',
+            title: 'Long-recording handling test',
+            body: 'Test with a 90-minute recording. Does the alternative require splitting into multiple files? If so, how much time does reconnecting the output take? Does the final stitched transcript have coherent speaker labels and timestamps across the boundary?',
           },
         ],
         useCases: [
           {
             title: 'Teams hitting file-length limits',
-            body: 'Switch to VideoText when your current tool caps recordings at 30 or 60 minutes and requires manual file splitting for longer interviews and recordings.',
+            body: 'Switch to VideoText when your current tool caps recordings at 30 or 60 minutes and requires manual file splitting for longer interviews, webinars, and podcast recordings.',
           },
           {
-            title: 'Creators needing subtitle and transcript together',
-            body: 'Replace a two-tool workflow — separate transcription and captioning apps — with a single upload that outputs both in the same pass.',
+            title: 'Creators running separate transcription and captioning tools',
+            body: 'Replace a two-tool workflow with a single upload that outputs transcript text, SRT/VTT, chapter markers, and a summary in the same pass — reducing the file management overhead between separate tools.',
           },
           {
-            title: 'Agencies comparing export flexibility',
-            body: 'Evaluate VideoText when clients require DOCX, JSON, SRT, VTT, and structured summary outputs that the current tool cannot deliver in one workflow.',
+            title: 'Agencies evaluating export flexibility for client delivery',
+            body: 'Evaluate VideoText when clients require DOCX for transcript review, SRT for platform upload, PDF for archiving, and JSON for CMS integration — outputs that typically require separate tools in most alternative workflows.',
+          },
+        ],
+        visualProof: [
+          {
+            title: 'File splitting friction on 90-minute recordings',
+            body: 'A 90-minute interview processed by a 30-minute-cap tool requires 3 separate uploads, 3 separate transcript downloads, manual boundary stitching, and speaker label reconciliation across 3 independent outputs — before any editing begins.',
+          },
+          {
+            title: 'Missing subtitle output requires a third tool',
+            body: 'Alternative generates a clean transcript. Subtitle file requires a separate captioning tool import. That captioning tool re-transcribes from audio (losing the transcript corrections already made) or requires manual SRT authoring. Two tools, two workflows, two potential sources of timing error.',
+          },
+          {
+            title: 'Privacy: recordings retained in project library',
+            body: 'Some alternatives store uploaded recordings in a project library accessible to workspace members. If a recording contains client confidential content, a sensitive interview, or HIPAA-adjacent material, retention behavior becomes a compliance decision — not just a workflow preference.',
+          },
+          {
+            title: 'No chapter generation means manual timestamp entry',
+            body: 'To add chapters to a YouTube description, the creator must manually watch the video and note timestamps. A transcript-based chapter generation workflow replaces that process with auto-detected topic transitions — eliminating the most time-consuming part of long-video publishing.',
+          },
+        ],
+        technicalExplanation: [
+          {
+            title: 'Export format comparison',
+            body: 'Otter.ai: DOCX, PDF, TXT, SRT (paid). Temi: DOCX, TXT. Descript: project-format export; SRT via subtitle track. Notta: DOCX, TXT, SRT. VideoText: DOCX, PDF, TXT, SRT, VTT, JSON, structured summary, chapter markers — all from one upload.',
+          },
+          {
+            title: 'File length and size caps',
+            body: 'Otter.ai: 4-hour limit per recording on paid plans, 40-minute on free. Temi: file-size-based limits. Descript: project-based storage cap. Notta: plan-based minute limits. VideoText: plan-based minute limits with no per-file splitting requirement.',
+          },
+          {
+            title: 'Collaboration mechanisms',
+            body: 'Descript: full video editor with team collaboration and version history. Otter.ai: shared workspace with comment threads. Temi: download-and-email only. VideoText: shareable review links for non-account collaborators, no additional seat cost for reviewers.',
+          },
+          {
+            title: 'Privacy and data handling',
+            body: 'Otter.ai: recordings stored in project library, shareable within workspace. Descript: recordings retained in project archive. VideoText: uploaded files deleted after processing; no permanent recording storage on VideoText servers by default.',
           },
         ],
         ctaText: footerCta.text,
@@ -618,50 +804,90 @@ export function buildFamilyDeepContent(
     case 'benchmark':
       return {
         proofPoints: [
-          'Transcription accuracy benchmarks are only meaningful when tested on real-world audio: multi-speaker interviews, noisy recordings, non-native accents, and long-form content with topic drift.',
-          'Word error rate (WER) measures raw accuracy, but post-processing cleanup time — how much manual editing a transcript requires before it is delivery-ready — often matters more in production workflows.',
-          `${label} uses real recordings across content types to measure not just raw accuracy but structured output quality, processing speed, and how much cleanup each transcript requires before delivery.`,
+          'Word Error Rate measures how many words in the transcript differ from the ground truth — but it does not measure which errors matter. A transcript with 7% WER that misattributes 40% of speaker turns requires more editing than a 10% WER transcript where all speaker labels are correct. WER is a useful starting point, not an operational conclusion.',
+          'Benchmark audio diversity is the most commonly gamed variable in transcription accuracy claims. Testing only studio-quality clear speech (SNR above 30dB) overstates real-world accuracy by 8–15% for typical meeting, interview, and podcast content recorded with consumer-grade microphones in office environments.',
+          'Cleanup time — the number of minutes a human editor spends bringing a raw AI transcript to delivery-ready quality — is the operationally relevant metric that most transcription vendors do not publish. A tool with 94% WER that produces poorly structured output may require more editing time than an 89% WER tool that outputs clean paragraph structure with accurate speaker labels.',
         ],
         workflowSteps: [
           {
-            title: '1. Define the benchmark scope',
-            detail: 'Select test files that represent real workflow conditions: varying audio quality, multiple speakers, long recordings, technical vocabulary, and non-English content.',
+            title: '1. Define a representative test corpus',
+            detail: 'Select recordings that represent real workflow conditions: clear speech, multi-speaker with 3+ participants, recordings with background noise (HVAC, crowd, traffic), technical vocabulary, non-native accents, and fast speech above 175 WPM.',
           },
           {
-            title: '2. Process identical files across tools',
-            detail: 'Upload the same recordings to each tool under identical conditions. Record processing time, output format, and raw transcript quality before any editing.',
+            title: '2. Create verified ground truth transcripts',
+            detail: 'Have two independent transcriptionists produce ground-truth text for each test recording. Resolve disagreements through arbitration. Ground truth quality determines benchmark reliability — a flawed reference transcript produces meaningless WER numbers.',
           },
           {
-            title: '3. Measure cleanup overhead',
-            detail: 'Time how long manual cleanup takes for each output. The transcript that requires the least editing to reach delivery quality wins on operational cost — not just WER.',
+            title: '3. Process identical files across all tools under test',
+            detail: 'Upload the same recordings to each tool without pre-processing. Record wall-clock processing time from upload completion to transcript available. Use default settings unless the specific goal is to benchmark custom configurations.',
+          },
+          {
+            title: '4. Score raw output and measure cleanup time',
+            detail: 'Calculate WER and speaker attribution accuracy from raw output before any editing. Then time how long a single editor takes to bring each raw transcript to delivery-ready quality — same editor, same criteria, measured independently for each tool output.',
           },
         ],
         outputExamples: [
           {
-            title: 'Raw accuracy comparison',
-            body: 'Word error rate measured across diverse audio samples — clear speech, overlapping speakers, background noise, and non-native English — using industry-standard WER calculation.',
+            title: 'WER by audio condition',
+            body: 'Accuracy measured separately for clear speech, moderate noise (SNR 15–25dB), and heavy noise (SNR below 15dB). Results broken out by content type: interview, meeting, podcast, lecture, technical presentation — each has meaningfully different baseline accuracy.',
           },
           {
-            title: 'Processing speed results',
-            body: 'Wall-clock processing time for recordings of 30, 60, and 120 minutes, measured from upload completion to transcript ready for review.',
+            title: 'Processing speed by recording duration',
+            body: 'Wall-clock time from upload completion to transcript ready, measured at 30, 60, and 120 minutes of source audio. Processing time is measured without upload duration — network speed is not a benchmark variable for the transcription engine itself.',
           },
           {
-            title: 'Cleanup time measurement',
-            body: 'Manual editing time required to bring each raw transcript to delivery quality — the most operationally relevant benchmark for teams doing high-volume transcription.',
+            title: 'Cleanup time per hour of audio',
+            body: 'Minutes of human editing time required to bring raw transcript to delivery quality, measured per hour of source audio. This metric captures the total operational cost better than WER alone, since a 92% accurate but unstructured transcript may require more editing than an 88% accurate but well-labeled one.',
           },
         ],
         useCases: [
           {
-            title: 'Procurement teams evaluating tools',
-            body: 'Use benchmark data to compare transcription services before committing to a paid plan or enterprise contract.',
+            title: 'Procurement teams evaluating transcription services',
+            body: 'Use benchmark data across multiple audio conditions — not just the vendor\'s best-case scenario — before committing to a paid plan or enterprise contract. Test with your actual content type.',
           },
           {
-            title: 'Agencies assessing output quality',
-            body: 'Test transcription tools against the specific content types in your workflow before switching providers.',
+            title: 'Agencies comparing output quality before switching providers',
+            body: 'Run the same recordings you process weekly through each tool under consideration. Measure cleanup time, not just WER — it is the cost that your editors pay on every job.',
           },
           {
             title: 'Researchers comparing ASR systems',
-            body: 'Run controlled accuracy tests across multiple AI transcription providers using standardized test sets and scoring methodology.',
+            body: 'Run controlled accuracy tests across multiple providers using a standardized test set with verified ground truth. Document audio conditions precisely — SNR level, speaker count, language, and content type — so results are reproducible.',
+          },
+        ],
+        visualProof: [
+          {
+            title: 'Audio condition effect on accuracy',
+            body: 'Clear studio speech (SNR >30dB): WER typically 3–6%. Office recording with HVAC noise (SNR 20–25dB): WER typically 8–14%. Meeting room with multiple speakers sharing a single microphone (SNR <15dB): WER typically 15–25%. Vendor-published accuracy numbers rarely specify which condition they measured.',
+          },
+          {
+            title: 'Long-file accuracy degradation',
+            body: 'Some transcription models degrade in quality after 30–60 minutes of continuous audio — topic drift, speaker fatigue in the audio signal, and model context limits all contribute. A benchmark that only tests 10-minute clips does not reveal this degradation.',
+          },
+          {
+            title: 'Fast speech accuracy cliff',
+            body: 'Most ASR models maintain accuracy up to approximately 160–170 WPM. Above 175 WPM — common in panel discussions, auction recordings, and some podcast styles — accuracy drops sharply. A benchmark that does not include fast-speech samples misses a common real-world failure mode.',
+          },
+          {
+            title: 'Speaker attribution errors vs word errors',
+            body: 'WER counts incorrect words but does not penalize for speaker misattribution separately. A transcript that is 93% accurate on individual words but assigns 30% of dialogue to the wrong speaker will fail completely for any workflow that depends on knowing who said what.',
+          },
+        ],
+        technicalExplanation: [
+          {
+            title: 'WER calculation methodology',
+            body: 'WER = (Substitutions + Deletions + Insertions) / Total Reference Words. Calculated case-insensitively. Punctuation errors typically excluded. A 5% WER means 5 errors per 100 reference words — which for a 10,000-word transcript produces approximately 500 errors requiring correction.',
+          },
+          {
+            title: 'Audio condition definitions',
+            body: 'Clear speech: single speaker, SNR above 30dB, minimal reverberation. Moderate noise: 2–4 speakers, SNR 15–25dB, background hum or traffic. Challenging: 4+ speakers on shared microphone, SNR below 15dB, overlapping speech and background noise.',
+          },
+          {
+            title: 'Ground truth verification process',
+            body: 'Transcriptionist A produces ground truth. Transcriptionist B independently reviews and marks disagreements. Arbitration resolves disagreements using the source audio as the authoritative reference. Ground truth files are locked before any tool testing begins.',
+          },
+          {
+            title: 'Speaker attribution scoring',
+            body: 'Measured separately from WER. Speaker attribution error rate = percentage of words assigned to the incorrect speaker label in the benchmark output. A separate metric from word accuracy because speaker label errors are categorically different from transcription word errors.',
           },
         ],
         ctaText: footerCta.text,
@@ -671,50 +897,90 @@ export function buildFamilyDeepContent(
     case 'youtube':
       return {
         proofPoints: [
-          "YouTube auto-captions are optimized for display accessibility — they lack formatting, speaker labels, paragraph breaks, and the structured text that makes transcripts searchable and reusable.",
-          'Long YouTube videos — tutorials, interviews, lectures, conference talks — contain dense information that becomes far more valuable as a searchable, segmented transcript with chapters.',
-          `${label} extracts the full audio from YouTube URLs without requiring a manual download, then produces a structured transcript with timestamps, chapters, summaries, and optional subtitle files.`,
+          "YouTube auto-captions are generated for accessibility display — they contain no paragraph structure, no speaker differentiation, no chapter awareness, and no timestamps granular enough to support repurposing. A 60-minute podcast auto-caption dump requires 40–50 minutes of manual cleanup to become a usable transcript — almost as long as producing one from scratch.",
+          'Long-form YouTube content — tutorials, interviews, conference talks, course lectures — contains navigable structure that auto-captions do not expose: topic transitions, speaker exchanges, chapter boundaries. A structured transcript with timestamps and auto-detected chapters makes that structure accessible without rewatching.',
+          'Creator repurposing workflows fail on raw auto-captions because they require structured input. Turning a 90-minute podcast into a blog post, newsletter section, and social caption set requires a transcript with paragraph breaks, speaker attribution, and timestamp-linked chapter markers — none of which auto-captions provide.',
         ],
         workflowSteps: [
           {
-            title: '1. Paste the YouTube URL',
-            detail: 'Copy any public YouTube video URL and paste it directly. No download, no file conversion. VideoText streams the audio directly for transcription without requiring the video file.',
+            title: '1. Paste the YouTube URL — no download required',
+            detail: 'Copy any public YouTube URL and paste it directly. VideoText streams the audio from YouTube without requiring a file download. Age-restricted videos require an optional cookie export from your logged-in browser session.',
           },
           {
-            title: '2. Generate transcript, chapters, and summary',
-            detail: 'VideoText produces a full time-coded transcript, auto-generated chapter markers, and a structured summary — replacing separate note-taking, chaptering, and caption tools.',
+            title: '2. Generate structured transcript with chapters and summary',
+            detail: 'VideoText produces a full time-coded transcript with paragraph structure, speaker labels for interview-format content, auto-detected chapter markers, and a structured summary — not a flat auto-caption dump.',
           },
           {
-            title: '3. Export and repurpose the content',
-            detail: 'Copy the transcript as searchable text, download SRT/VTT subtitle files for re-upload, export chapters for description text, or share a structured summary with your team.',
+            title: '3. Review speaker labels and adjust chapter boundaries',
+            detail: 'For interview-format videos, verify speaker label assignments and rename them from "Speaker 1" / "Speaker 2" to actual names. Chapter markers can be adjusted if the auto-detected boundaries don\'t match natural topic transitions.',
+          },
+          {
+            title: '4. Export for the target repurposing workflow',
+            detail: 'Copy transcript as plain text for blog drafting. Export SRT to YouTube Studio to replace auto-captions. Paste chapter timestamps into the YouTube description. Share the summary with editors and writers as a content brief.',
           },
         ],
         outputExamples: [
           {
-            title: 'Searchable YouTube transcript',
-            body: "Full text with timestamps that can be searched by topic, quote, speaker moment, or chapter marker — far more useful than YouTube's native auto-caption output.",
+            title: 'Structured transcript with timestamps',
+            body: 'Full text with paragraph breaks, speaker labels for interview format, and clickable timestamps. Each paragraph links to its position in the video — searchable by topic, quote, or speaker moment. Suitable for blog conversion, show notes, and editorial search.',
           },
           {
-            title: 'Chapter markers and summaries',
-            body: 'Auto-generated chapter timestamps and a structured summary that can be added to the YouTube video description or shared as a content brief with editors and writers.',
+            title: 'Auto-generated chapter markers',
+            body: 'Chapter timestamps detected from topic transitions in the transcript. Format is paste-ready for YouTube video descriptions: "00:00 Introduction / 04:30 Main topic / 18:45 Q&A" — YouTube auto-links these to video navigation when pasted into the description.',
           },
           {
-            title: 'SRT subtitle file for re-upload',
-            body: "A properly formatted subtitle file that can be uploaded back to YouTube as a custom caption track — replacing YouTube's auto-captions with an edited, accurate version.",
+            title: 'SRT file for YouTube Studio re-upload',
+            body: 'Properly formatted SRT that replaces YouTube\'s auto-captions with the VideoText-processed version. Upload in YouTube Studio → Subtitles → Upload file. The improved captions go live without re-processing the video. For multi-language audiences, upload translated SRT files as separate language tracks.',
           },
         ],
         useCases: [
           {
-            title: 'Podcast and video creators',
-            body: 'Turn long-form YouTube content into show notes, blog articles, newsletters, and social captions without manually transcribing or summarizing the recording.',
+            title: 'Podcast creators publishing to YouTube',
+            body: 'Turn long-form episodes into show notes, blog drafts, newsletter summaries, and timestamped chapter lists. One transcript pass replaces manual note-taking, chapter timing, and caption correction for each episode.',
           },
           {
             title: 'Researchers and journalists',
-            body: 'Search YouTube interviews, lectures, and conference talks for exact quotes, timestamps, and supporting evidence without replaying entire videos.',
+            body: 'Search YouTube interviews, lectures, and conference talks for exact quotes and speaker timestamps without replaying full videos. Structured transcripts are searchable by keyword — auto-captions are not.',
           },
           {
-            title: 'Course developers',
-            body: 'Extract transcripts from recorded lectures and tutorials to create searchable study materials, accurate subtitle files, and structured content outlines.',
+            title: 'Course and tutorial creators',
+            body: 'Extract transcripts from recorded lectures to create searchable study materials, accurate subtitle files for international learners, and structured course outlines organized by video chapter.',
+          },
+        ],
+        visualProof: [
+          {
+            title: 'Auto-caption cleanup overhead',
+            body: '60-minute interview auto-captions arrive as a continuous text block with no speaker attribution, no paragraph breaks, and accuracy problems at every speaker transition. Editing to a usable transcript requires reading along with the video — approximately 45–50 minutes for a skilled editor.',
+          },
+          {
+            title: 'Missing speaker labels in interview format',
+            body: 'YouTube auto-captions merge host and guest dialogue into a continuous stream with no speaker differentiation. For a 90-minute interview podcast, that means manually identifying and labeling approximately 200–400 speaker turns from the audio.',
+          },
+          {
+            title: 'YouTube Shorts subtitle constraints',
+            body: 'Vertical 9:16 Shorts format has a narrower subtitle safe zone than landscape video. Auto-captions in Shorts often exceed the visible width on mobile, clipping at the edge. A custom SRT file with shorter line lengths solves this — but requires re-upload through YouTube Studio.',
+          },
+          {
+            title: 'Chapter description format requirements',
+            body: 'YouTube chapter auto-linking requires: timestamps starting at 00:00, at least 3 chapters, and no special characters in chapter titles. Auto-generated chapter markers from VideoText are formatted to meet these requirements without manual adjustment.',
+          },
+        ],
+        technicalExplanation: [
+          {
+            title: 'SRT re-upload requirements for YouTube',
+            body: 'UTF-8 encoding (no BOM). Timestamp format: 00:00:00,000 → 00:00:00,000 (comma separator). Maximum 1,500 subtitle blocks per file — longer videos need split SRT files. YouTube auto-syncs uploaded captions to audio, correcting small timing offsets automatically.',
+          },
+          {
+            title: 'YouTube chapter format in descriptions',
+            body: 'Chapters activate automatically when a YouTube description contains timestamps in HH:MM:SS or MM:SS format. The first timestamp must be 00:00. Minimum 3 chapters required. Timestamps must be in ascending order. Chapter titles cannot contain special characters or emoji.',
+          },
+          {
+            title: 'Age-restricted and unlisted video handling',
+            body: 'Public videos work with direct URL paste. Age-restricted videos require browser cookie export from a logged-in YouTube session. Unlisted videos are accessible if you have the URL. Private videos cannot be processed — VideoText requires public audio access.',
+          },
+          {
+            title: 'Multi-language track setup',
+            body: 'Upload the English SRT to YouTube Studio first. Then upload translated SRT files as separate language tracks under Subtitles → Add language. YouTube displays the viewer\'s browser language preference by default. Each language is a separate upload — there is no single bilingual SRT track.',
           },
         ],
         ctaText: footerCta.text,
@@ -724,50 +990,94 @@ export function buildFamilyDeepContent(
     case 'transcription':
       return {
         proofPoints: [
-          'Multi-hour recordings — meetings, interviews, lectures, podcasts — contain too much structured information to manually transcribe efficiently. The cleanup and formatting overhead is where most time is lost.',
-          'Transcript + subtitle + summary + chapters from a single upload eliminates the need to run separate tools for each output type, which is how most team transcription workflows are currently structured.',
-          `${label} is built for long-form recordings and structured output workflows — not just short clips. Speaker labels, timestamp formatting, and export-ready files come from the same processing pass.`,
+          'Long-recording cleanup is where transcription workflows lose the most time. The raw transcript is not the final deliverable — it requires speaker label review, verbatim level normalization, paragraph restructuring, timestamp formatting, and at least one QA pass before it is client-ready. For a 2-hour recording, cleanup alone often takes 45–90 minutes regardless of how accurate the initial transcription was.',
+          'Speaker diarization accuracy degrades in predictable conditions: three or more speakers on the same microphone, overlapping speech segments longer than 2 seconds, variable distances between speakers and the microphone, and similar-sounding voices. In these cases, speaker labels require manual review and correction — the raw diarization output is a starting point, not a reliable attribution.',
+          `${label} generates transcript text, SRT/VTT subtitle files, an AI summary, and chapter markers from a single upload — eliminating the workflow where separate tools are required for transcription, captioning, summarization, and chapter creation. Each of those tools is a handoff point where formatting is lost and context must be re-established.`,
         ],
         workflowSteps: [
           {
-            title: '1. Upload a recording or paste a URL',
-            detail: 'Drag in a video or audio file, or paste a YouTube, Zoom cloud recording, or public media URL. Choose speaker labeling, language, and export format preferences before starting.',
+            title: '1. Configure before processing',
+            detail: 'Set spoken language explicitly — auto-detect is less accurate, particularly for accented English and mixed-language recordings. Set speaker count if known. Select verbatim level (clean or full) based on what the client or platform requires. Wrong verbatim level is the most common reason transcripts fail QA.',
           },
           {
-            title: '2. Generate transcript, subtitles, summary, and chapters',
-            detail: 'VideoText produces all structured outputs in one pass: time-coded transcript text, SRT/VTT subtitle files, a summary, and chapter markers. No separate tools required for each output.',
+            title: '2. Process the recording and monitor for segment artifacts',
+            detail: 'For recordings over 30 minutes, check for chunking artifacts at segment boundaries — orphaned words at the end of one chunk and duplicated content at the start of the next. These occur when audio segmentation splits at an ambiguous speech boundary.',
           },
           {
-            title: '3. Review, edit, and export delivery-ready files',
-            detail: 'Edit transcript text inline, adjust speaker labels, download DOCX/PDF/TXT, export subtitle files, or share a review link with teammates before final delivery.',
+            title: '3. Review and rename speaker labels',
+            detail: 'Replace "Speaker 1" / "Speaker 2" labels with actual names before running any formatting pass. Speaker label changes must propagate consistently from first occurrence to last — any inconsistency requires another find-and-replace pass later.',
+          },
+          {
+            title: '4. Apply style-guide formatting',
+            detail: 'If delivering to a client with a specific style guide (Rev, GoTranscript, TranscribeMe, or custom), apply timestamp formatting, paragraph length rules, and inaudible notation conventions at this stage — before exporting, not after.',
+          },
+          {
+            title: '5. Export in the required delivery format',
+            detail: 'DOCX for client review and tracked-changes editing. PDF for locked delivery. TXT for plain-text integrations. SRT/VTT for caption workflows. JSON for search indexing or CMS integration. Each format has different timestamp and structure behaviors.',
           },
         ],
         outputExamples: [
           {
             title: 'Structured transcript with speaker labels',
-            body: 'Full time-coded transcript text with speaker diarization and consistent label formatting — ready for review, editing, or direct delivery to clients.',
+            body: 'Full time-coded transcript with consistent speaker diarization labels, paragraph breaks at topic transitions, and timestamps formatted per the target style guide. Suitable for DOCX delivery, editorial review, or agency handoff.',
           },
           {
-            title: 'Subtitle files alongside transcript',
-            body: 'SRT and VTT caption files generated from the same transcription pass, so subtitle and transcript outputs stay synchronized without a separate captioning step.',
+            title: 'SRT and VTT subtitle files from same pass',
+            body: 'Subtitle files generated from the same transcription job, so timing alignment between transcript text and caption files is guaranteed. No separate captioning tool required, no risk of timing drift between transcript and subtitle outputs.',
           },
           {
-            title: 'Summary and chapter structure',
-            body: 'AI-generated summary and auto-detected chapter markers that make long recordings navigable — useful for meeting notes, podcast show notes, and course content outlines.',
+            title: 'AI summary and chapter markers',
+            body: 'Structured summary and auto-detected chapter timestamps for long-form content. Chapters are formatted for paste-ready YouTube description insertion. Summary is formatted as a structured brief suitable for show notes, team handoffs, or newsletter conversion.',
           },
         ],
         useCases: [
           {
             title: 'Teams transcribing meetings and calls',
-            body: 'Turn Zoom, Google Meet, and Teams recordings into searchable, shareable meeting notes with speaker labels and action item timestamps.',
+            body: 'Turn Zoom, Google Meet, and Teams recordings into searchable, shareable meeting notes with speaker labels and timestamped action items — without replaying the recording to write notes manually.',
           },
           {
-            title: 'Podcast producers and creators',
-            body: 'Convert long episodes into transcripts, show notes, summaries, and subtitle files for YouTube and accessibility without running multiple separate tools.',
+            title: 'Podcast producers and video creators',
+            body: 'Convert long episodes into transcripts, show notes, chapter markers, and subtitle files for YouTube accessibility. One upload replaces separate transcription, captioning, summarization, and chapter-entry tools.',
           },
           {
-            title: 'Researchers and interviewers',
-            body: 'Extract clean, speaker-labeled transcripts from long interviews and focus groups for qualitative analysis, quotation, and delivery to clients.',
+            title: 'Qualitative researchers and interviewers',
+            body: 'Extract speaker-labeled transcripts from long interviews and focus groups for thematic coding, quotation extraction, and client delivery — without manual transcription or re-reviewing hours of recordings.',
+          },
+        ],
+        visualProof: [
+          {
+            title: 'Cross-talk attribution errors',
+            body: 'When two speakers overlap for more than 2 seconds, diarization models frequently misattribute the trailing portion of the overlap to the wrong speaker. In interview transcripts, this produces a block of content assigned to the guest that should belong to the host — or vice versa. Manual review is required to correct this.',
+          },
+          {
+            title: 'Audio quality degradation mid-recording',
+            body: 'Zoom recordings with network instability produce audio dropout gaps — typically 0.5–3 seconds of silence or garbled audio. Transcription of these sections produces either a gap in the text or a run of plausible-sounding but incorrect words. Sections with network dropout require manual review against the audio.',
+          },
+          {
+            title: 'Long-file segment boundary artifacts',
+            body: 'Transcription engines that split audio into 30-minute chunks for processing introduce artifacts at chunk boundaries: the last sentence of chunk 1 and the first sentence of chunk 2 may both contain the same words, or a sentence may be split at an unnatural word boundary. Reviewing segment transitions is part of long-file QA.',
+          },
+          {
+            title: 'Technical vocabulary misrecognition',
+            body: 'Medical, legal, financial, and engineering terminology is consistently misrecognized by general-purpose ASR models. "Tachycardia" becomes "taxi cardia." "EBITDA" becomes "e bit duh." These require a domain-specific post-edit pass — a transcript correction process that benefits from knowing the technical vocabulary in advance.',
+          },
+        ],
+        technicalExplanation: [
+          {
+            title: 'DOCX vs PDF export tradeoffs',
+            body: 'DOCX preserves paragraph structure and allows tracked-changes editing for collaborative review. PDF locks the formatting for delivery but cannot be edited without re-conversion. For client review workflows, DOCX is the correct delivery format; PDF is for final archiving after all revisions are complete.',
+          },
+          {
+            title: 'SRT timestamp format vs VTT',
+            body: 'SRT uses comma separators in timestamps: 00:01:23,456 → 00:01:25,123. VTT uses period separators: 00:01:23.456 → 00:01:25.123. Swapping the separator character causes parsing failures. SRT does not support styling metadata; VTT supports positioning, color, and timing cues.',
+          },
+          {
+            title: 'Timestamp interval tradeoffs',
+            body: 'Per-speaker-turn timestamps are useful for review and quotation but create dense formatting that reduces readability. Fixed-interval timestamps (every 2 minutes) are readable but make it harder to find a specific speaker moment. Most academic and journalistic workflows prefer per-speaker-turn; legal and court transcription typically requires fixed-interval.',
+          },
+          {
+            title: 'JSON export for search and CMS integration',
+            body: 'JSON output includes segment start/end times, speaker labels, confidence scores, and text — structured for import into search platforms, CMS systems, and custom workflows. Per-segment confidence scores identify sections likely to require manual review.',
           },
         ],
         ctaText: footerCta.text,
@@ -818,116 +1128,180 @@ export function buildFamilyFaq(
     case 'subtitle':
       return [
         {
-          q: `What subtitle formats does ${label} export?`,
-          a: 'VideoText exports SRT and VTT subtitle files. SRT works with YouTube, Vimeo, and most video editors. VTT is used by HTML5 players and streaming platforms. Burned caption output is available for social clips that require permanently embedded text.',
+          q: 'What is CPS and why does it matter for subtitle readability?',
+          a: 'CPS stands for characters per second — how fast the viewer must read a subtitle line before it disappears. The readable range is 14–17 CPS for most general audiences. Above 21 CPS, a significant percentage of viewers cannot finish reading the line before it vanishes, even if the text is accurate. Most automated subtitle tools generate lines without a CPS check, which is why reviewing reading speed is part of subtitle QA before any platform upload.',
         },
         {
-          q: 'What is the difference between burned subtitles and soft subtitles?',
-          a: 'Burned (hardcoded) subtitles are rendered directly into the video frame and cannot be turned off by the viewer. Soft subtitles are separate caption tracks that viewers can enable or disable. Most platforms recommend soft subtitles for accessibility; burned captions are used for social content that autoplays without audio.',
+          q: 'Why does Instagram not show my uploaded subtitle file?',
+          a: 'Instagram Reels does not display soft subtitle tracks during autoplay in Feed. External SRT or VTT files uploaded to Instagram are not surfaced for most viewers. For Reels content, burned (hardcoded) captions are the only reliable method for ensuring captions appear — either by using a burn workflow before upload or using Instagram\'s built-in auto-caption feature after upload, which has variable accuracy.',
         },
         {
-          q: 'How do I fix subtitle timing that is off by a few seconds?',
-          a: 'Upload the video along with your existing subtitle file and use the subtitle timing fixer. You can shift all timestamps by a fixed offset or recalculate timing from a new sync point — faster than manually correcting each timestamp in a text editor.',
+          q: 'My burned subtitles look different after video encoding — what happened?',
+          a: 'Video encoding (particularly H.264 and H.265) applies compression that slightly degrades text edges. Font stroke weight, drop shadow contrast, and subtitle position all shift after encoding. Captions that look clean in an editing preview may develop legibility issues in the exported file. A post-encode QA pass — watching 2–3 minutes of the encoded video at actual playback size — should be part of any burned caption workflow before the file is published.',
+        },
+        {
+          q: 'What is the difference between SRT and VTT timestamp formats?',
+          a: 'SRT uses comma separators in timestamps: 00:01:23,456 → 00:01:25,123. VTT uses period separators: 00:01:23.456 → 00:01:25.123. Swapping the separator character causes parsing failures in most players — the file appears empty or throws an error. SRT files must not begin with a header; VTT files must begin with the line "WEBVTT". The two formats are otherwise structurally similar but not interchangeable.',
+        },
+        {
+          q: 'How do I fix subtitle timing that drifts progressively later in the video?',
+          a: 'Progressive timing drift — where captions start slightly late early in the video and progressively fall further behind — usually indicates an audio-video sync issue in the source file, not a transcription error. The subtitle timestamps were generated against audio that does not match the video track timing. Fix: use the subtitle timing fixer to shift all timestamps by the measured offset at a known sync point early in the video. If the drift accelerates over time, the source file has a variable frame rate issue that requires frame-rate normalization before re-captioning.',
+        },
+        {
+          q: 'What subtitle formats does VideoText export?',
+          a: 'VideoText exports SRT and VTT subtitle files. SRT works with YouTube, Vimeo, LinkedIn, and most video editors. VTT is the standard for HTML5 web players and streaming platforms — it also supports styling and positioning metadata that SRT does not carry. Burned caption output is available for social clips that require permanently embedded text. All exports are UTF-8 encoded.',
         },
       ]
 
     case 'formatting':
       return [
         {
-          q: `What formatting guidelines does ${label} support?`,
-          a: 'The formatter supports Rev-style, GoTranscript-style, TranscribeMe-style, and Scribie-style guidelines. You can also configure custom rules for speaker labels, timestamp intervals, verbatim level, and notation style for client-specific delivery requirements.',
+          q: 'Why did my transcript get rejected for inconsistent speaker labels?',
+          a: 'Speaker label inconsistency — where the same speaker appears as "JOHN SMITH" on page 1, "John" on page 3, and "Speaker 1" on page 7 — is one of the top automated rejection triggers at Rev, GoTranscript, and most transcript marketplaces. The QA system expects one label format, used identically, from the first occurrence to the last. Even a single deviation can trigger a rejection. Fix: use find-and-replace to standardize every speaker label before delivery.',
         },
         {
-          q: 'What is the difference between clean verbatim and full verbatim?',
-          a: 'Clean verbatim removes distracting fillers, false starts, and repetitions for readability while keeping the meaning intact. Full verbatim preserves all spoken content including fillers, stutters, and interruptions. The correct choice depends on what the client or platform requires.',
+          q: 'What is the correct way to handle inaudible sections for Rev?',
+          a: 'Rev requires "[inaudible]" in lowercase with square brackets, at the exact point in the text where the inaudible audio occurs. Do not use "[INAUDIBLE]", "[unclear]", or "[???]" — these are not accepted notation styles on Rev and trigger revision requests. For overlapping speech that is audible but unintelligible, use "[crosstalk]" at the point of overlap. Inaudible and crosstalk notations should not be used interchangeably.',
         },
         {
-          q: 'What are the most common transcript QA rejection reasons?',
-          a: 'The most frequent rejection triggers include inconsistent speaker label formats, incorrect timestamp placement or style, missing inaudible or crosstalk notation, wrong verbatim level, overlong paragraphs, and punctuation inconsistency. The formatter checks for these issues before delivery.',
+          q: 'How do I know whether a client wants clean verbatim or full verbatim?',
+          a: 'If the client has not specified, ask before starting — it is not something to infer from the content type. Clean verbatim removes fillers, false starts, and repetitions for readability; full verbatim preserves everything spoken. Medical and legal transcription often requires full verbatim. Corporate meeting and interview transcription usually requires clean verbatim. Applying the wrong standard means re-reading the source audio to add or remove content — it cannot be corrected through text editing alone.',
+        },
+        {
+          q: 'My paragraphs look fine in my editor but are flagged as too long — why?',
+          a: 'Rev\'s style guide sets a maximum paragraph length of approximately 8 lines in the submitted document. If you are writing in a large-font editor view and counting lines visually, the line count in the exported DOCX or PDF at standard font size will differ. The paragraph length check is based on lines in the final exported file at the target font size and page margins — not the line count in your editing view. Export to DOCX and review line count before submitting.',
+        },
+        {
+          q: 'Can I apply GoTranscript formatting rules to a recording transcribed with VideoText?',
+          a: 'Yes. After transcribing with VideoText, use the style guide formatter to apply GoTranscript-style rules: normalize speaker labels, set verbatim level, add or remove timestamps per the client instruction, and normalize [inaudible] notation. The formatter applies rules to the existing transcript text — it does not re-transcribe the audio. Any sections with audio quality problems still require manual review.',
         },
       ]
 
     case 'translation':
       return [
         {
-          q: `What languages does ${label} support for translation?`,
-          a: 'VideoText supports translation into and from major languages including Spanish, French, German, Portuguese, Italian, Dutch, Japanese, Korean, Chinese, Arabic, and Hindi. Subtitle structure and timestamp formatting are preserved during translation.',
+          q: 'Why does my translated subtitle text overflow the video frame?',
+          a: 'Language expansion causes translated text to run longer than the source. German text averages 25–30% longer than equivalent English; Spanish 15–20%; French 20–25%; Arabic 20–25%. If a source subtitle line was already near the CPS limit or the line-length maximum, the expanded translated text overflows the timing window or the display area. The correct fix is to restructure the translated text into two shorter lines within the original timing window — not to extend the timestamp boundaries.',
         },
         {
-          q: 'Will translating subtitles break the timing?',
-          a: 'No. VideoText preserves the original timestamp boundaries from the source subtitle file when translating. Text that expands significantly in the target language triggers automatic line-break restructuring within the existing timing window.',
+          q: 'How do I translate subtitles without shifting the timing?',
+          a: 'Translate each subtitle segment independently, treating the start and end timestamps as fixed constraints. Never merge two segments to fit translated text — that shifts timing for everything that follows. If a single segment\'s translated text is too long for its timing window, split the translated text across two lines within the same timing boundaries. The only acceptable change to a timestamp during translation is correcting an error that existed in the source file.',
         },
         {
-          q: 'Can I translate a transcript instead of a subtitle file?',
-          a: 'Yes. You can translate a full transcript document while preserving speaker labels and timestamp formatting. The translated output retains the same structural layout as the original, making it usable for review, delivery, or conversion back to subtitle format.',
+          q: 'My Arabic subtitles are displaying left-to-right — how do I fix this?',
+          a: 'Arabic subtitle text displaying left-to-right is a player rendering issue, not a file encoding error. HTML5 video players without explicit RTL support render subtitle text in the document\'s default direction. The fix depends on the platform: for web players, add dir="rtl" to the subtitle container CSS. For VTT files, the ::cue(b) positioning can sometimes help. For YouTube, the RTL rendering is handled automatically. Always test Arabic subtitles in the exact target player before delivery — behavior varies significantly between players.',
+        },
+        {
+          q: 'Which languages cause the most line-overflow problems after translation?',
+          a: 'German causes the most frequent overflow issues due to compound word construction — a single German compound word can be as long as an English phrase. Finnish and Estonian also expand significantly. For Spanish and French, the expansion is more predictable and easier to handle with line splitting. Japanese and Chinese actually contract relative to English, which creates the opposite problem: very short subtitle lines with large timing windows that look visually unbalanced.',
+        },
+        {
+          q: 'Can I have both English and Spanish subtitles on the same YouTube video?',
+          a: 'Yes. Upload the English SRT as the primary caption track in YouTube Studio under Subtitles → Upload file. Then add the Spanish track under Subtitles → Add language → Spanish → Upload file. YouTube displays each viewer\'s language track based on their browser language preference by default. Viewers can also manually select the subtitle language from the video settings menu. Each language requires a separate SRT file upload — there is no single bilingual subtitle track format.',
         },
       ]
 
     case 'alternative':
       return [
         {
-          q: 'How does VideoText handle long recordings compared to this alternative?',
-          a: 'VideoText handles multi-hour recordings in a single upload without splitting files. Many alternatives cap recordings at 30–60 minutes or require manual segmentation for longer content, which adds significant friction to interview, meeting, and podcast transcription workflows.',
+          q: 'Does VideoText support longer recordings than Otter.ai?',
+          a: 'VideoText processes recordings up to the per-upload limit of the plan tier — without requiring manual file splitting. Otter.ai limits recordings to 4 hours on paid plans and 40 minutes on the free tier. The operational difference is more significant than the numbers suggest: Otter requires splitting a 5-hour conference recording into multiple jobs, then manually reconciling speaker labels and timestamps across the segments. VideoText processes the full recording as a single job.',
         },
         {
-          q: 'What export formats does VideoText support that alternatives may lack?',
-          a: 'VideoText generates transcript text, SRT/VTT subtitle files, AI summaries, chapter markers, DOCX, PDF, TXT, and JSON from one upload. Most alternatives offer transcript-only output or require separate tools for subtitle generation and structured summaries.',
+          q: 'What export formats does VideoText support that alternatives often lack?',
+          a: 'VideoText generates transcript text (TXT, DOCX, PDF), SRT subtitle files, VTT subtitle files, an AI summary, chapter markers, and structured JSON — all from a single upload. Temi exports TXT and DOCX only. Otter.ai exports DOCX, PDF, TXT, and SRT on paid plans. Descript exports to its own project format with extra steps required for plain SRT/VTT. The operational difference is the number of tools required to produce a complete set of deliverables from one recording.',
+        },
+        {
+          q: 'How does VideoText handle collaboration compared to Descript?',
+          a: 'Descript provides a full video editing environment with team workspaces, version history, and collaborative comment threads. VideoText provides shareable review links that allow reviewers to read and comment on transcripts without a VideoText account — useful for client review cycles. If your workflow requires collaborative video editing with AI transcription, Descript is purpose-built for that. If you need fast transcript-to-delivery output with reviewer access, VideoText\'s link-sharing model has lower overhead.',
+        },
+        {
+          q: 'Does VideoText delete my recordings after processing?',
+          a: 'Yes. VideoText deletes uploaded files after processing completes. The transcript and subtitle outputs are retained in your account, but the source media is not stored on VideoText servers. This is relevant for workflows involving sensitive recordings — client interviews, confidential meetings, HIPAA-adjacent content — where media retention by a third-party service creates compliance risk.',
         },
         {
           q: 'How do I test VideoText against the tool I am currently using?',
-          a: 'Upload a real recording you have already transcribed with your current tool. Compare the VideoText output for accuracy, structure, and the amount of manual cleanup it requires before it is delivery-ready. Processing time for a 60-minute file is typically under 4 minutes.',
+          a: 'Upload the same recording you most recently processed with your current tool. Use the same language settings. Compare the raw output before any editing: speaker label accuracy, paragraph structure, punctuation, and timestamp formatting. Then count how many corrections each transcript requires to reach delivery quality. Processing time for a 60-minute file in VideoText is typically under 4 minutes.',
         },
       ]
 
     case 'benchmark':
       return [
         {
-          q: 'How is transcription accuracy measured in this benchmark?',
-          a: 'Accuracy is measured using Word Error Rate (WER): the percentage of words in the transcript that differ from the ground-truth text. Lower WER means fewer errors. Tests are run on diverse audio samples including clear speech, overlapping speakers, and recordings with background noise.',
+          q: 'What does Word Error Rate actually measure?',
+          a: 'WER (Word Error Rate) = (Substitutions + Deletions + Insertions) / Total Reference Words. A 5% WER means approximately 5 errors per 100 words. WER is calculated against a verified ground-truth transcript, case-insensitively, typically excluding punctuation errors. It measures word-level accuracy but does not score speaker attribution errors, formatting quality, or the readability of the output — which is why WER alone is an incomplete operational benchmark.',
         },
         {
-          q: 'Does VideoText perform well on long recordings?',
-          a: 'VideoText is optimized for long-form content. Processing quality for multi-hour recordings does not degrade compared to short clips, and structured outputs like chapters and summaries become more valuable as recording length increases.',
+          q: 'How do you benchmark cleanup time fairly across tools?',
+          a: 'The same human editor processes the raw output from each tool under identical conditions: same recording, same quality criteria for "delivery-ready," timed start-to-finish. The editor is not told which tool produced which output to prevent bias. Cleanup time is measured in minutes per hour of source audio. This metric captures speaker label corrections, paragraph restructuring, inaudible-section review, and verbatim level normalization — all the editing steps WER does not measure.',
         },
         {
-          q: 'How much manual cleanup do AI transcripts typically require?',
-          a: 'Cleanup time depends on audio quality and content complexity. Clear speech with minimal background noise typically requires 10–15 minutes of editing per hour of audio. Challenging recordings with multiple speakers or heavy accents may require 20–30 minutes per hour even with AI transcription.',
+          q: 'Why do transcription accuracy numbers vary so much between vendors?',
+          a: 'Most vendor-published accuracy numbers are measured on best-case audio conditions: studio-quality single-speaker speech at low noise levels. Real-world recordings — meetings, podcasts, interviews with consumer microphones — produce meaningfully lower accuracy across all tools. A vendor reporting 99% accuracy has likely measured on clean studio audio. The relevant question is accuracy at the SNR level and speaker count of your actual recordings.',
+        },
+        {
+          q: 'Does transcription accuracy degrade for long recordings?',
+          a: 'It depends on the architecture. Some ASR models process audio in fixed chunks (typically 30 minutes) and reassemble independently. These models maintain consistent accuracy across length but may introduce artifacts at chunk boundaries. Other models use longer context windows that can handle topic drift better but may slow down for very long files. Testing with your actual recording duration, not just short samples, is the only reliable way to evaluate long-file behavior.',
+        },
+        {
+          q: 'How should I test transcription tools for my specific use case?',
+          a: 'Use recordings from your actual workflow — same audio conditions, same speaker count, same content type. Do not use vendor-provided sample audio for evaluation. Measure three things: raw WER against a verified transcript, processing time per hour of audio, and cleanup time for one editor to bring the raw output to your delivery standard. The tool with the best combination of those three metrics for your content type is the right choice, regardless of marketing accuracy claims.',
         },
       ]
 
     case 'youtube':
       return [
         {
-          q: 'Can I get a transcript from any YouTube video?',
-          a: 'VideoText can transcribe any public YouTube video. Paste the URL and VideoText streams the audio directly — no download required. Age-restricted videos require an optional cookie configuration for access.',
+          q: 'Why are YouTube auto-captions inaccurate for my content?',
+          a: "YouTube auto-captions use Google's speech recognition optimized for broad coverage — not accuracy on specialized content. Technical vocabulary, strong accents, fast speech, and multiple overlapping speakers all degrade auto-caption quality. VideoText uses Whisper large-v3, which achieves lower Word Error Rates particularly for accented English, technical terminology, and non-native speaker content. For content where accuracy matters for SEO, accessibility compliance, or repurposing, Whisper-based transcription consistently outperforms YouTube's auto-caption output.",
         },
         {
-          q: "Why is VideoText better than YouTube's auto-captions for transcription?",
-          a: "YouTube auto-captions are designed for accessibility display, not reuse. They lack paragraph breaks, speaker labels, chapter markers, and structured formatting. VideoText produces a structured transcript with timestamps, summaries, and chapters that can be searched, edited, and repurposed into other content.",
+          q: 'How do I add chapters to a YouTube video that is already published?',
+          a: 'Edit the video description in YouTube Studio and add timestamps in HH:MM:SS or MM:SS format with chapter titles. The first timestamp must be 00:00. You need at least 3 chapters. Timestamps must be in ascending order. YouTube auto-links them to video navigation within a few minutes of saving. VideoText generates chapter markers formatted for direct paste into YouTube descriptions — copy them from the Chapters output tab.',
         },
         {
-          q: 'Can I export YouTube transcripts as subtitle files?',
-          a: "Yes. VideoText generates SRT and VTT files from YouTube video transcriptions. You can upload the SRT file back to YouTube as a custom caption track, share it with editors, or use it as a source for subtitle translation into other languages.",
+          q: 'Can I replace YouTube auto-captions with my own SRT file?',
+          a: 'Yes. In YouTube Studio, open the video, go to Subtitles, and click Add → Upload file. Select your SRT file (UTF-8 encoded, comma timestamp separators). YouTube syncs the uploaded captions to the audio automatically, correcting small timing offsets. The uploaded SRT replaces the auto-generated captions for that language. Age-restricted videos have the same process — the restriction does not affect caption uploads.',
+        },
+        {
+          q: 'Why is my SRT re-upload not showing in YouTube Studio?',
+          a: 'The most common causes: the SRT file is not UTF-8 encoded (some text editors save as Latin-1 by default), the timestamps use period separators instead of commas (VTT format instead of SRT), or the file exceeds 1,500 subtitle blocks. Open the file in a plain text editor and verify the first timestamp uses commas (00:00:00,000) and the file begins with "1" on the first line. If the file has more than 1,500 blocks, split it before uploading.',
+        },
+        {
+          q: 'How do I transcribe a YouTube Shorts video?',
+          a: 'Shorts URLs (youtube.com/shorts/VIDEO_ID) work exactly like regular YouTube URLs in VideoText — paste the URL and process normally. Transcription quality is the same as regular videos. Note that Shorts are 60 seconds maximum, so the transcript is short. For subtitle re-upload to a Shorts video, use shorter line lengths (30 characters or fewer) to fit the vertical 9:16 aspect ratio without clipping at the frame edges.',
+        },
+        {
+          q: 'Can I get a transcript from a YouTube video without downloading it?',
+          a: 'Yes. Paste any public YouTube URL (youtube.com/watch?v=, youtu.be/, youtube.com/shorts/, or youtube.com/embed/ format) into VideoText. We stream the audio directly without requiring a file download. The transcript is ready within minutes for videos up to 4 hours. Age-restricted videos work when you provide optional browser cookies from a logged-in YouTube session.',
         },
       ]
 
     case 'transcription':
       return [
         {
-          q: 'How accurate is AI transcription for long recordings?',
-          a: 'VideoText achieves high accuracy on clear multi-speaker audio. Accuracy is best when recordings have minimal background noise, clear speech, and distinct speaker turns. For technical vocabulary or heavy accents, expect some cleanup. Speaker labels, timestamps, and paragraph structure significantly reduce total editing time compared to starting from scratch.',
+          q: 'What happens when two speakers talk over each other?',
+          a: 'Overlapping speech longer than approximately 2 seconds typically causes speaker diarization errors — the model misattributes the overlapping content to the wrong speaker, or collapses both voices into a single speaker segment. Short overlaps under 1 second are often handled correctly. For recordings with frequent crosstalk (panel discussions, heated interviews, group meetings), plan for a manual speaker label review pass after transcription. The transcript text itself is usually accurate; the speaker attribution is where cross-talk creates errors.',
         },
         {
-          q: 'Can I export transcripts as DOCX, PDF, SRT, or VTT?',
-          a: 'Yes. VideoText exports transcripts as DOCX, PDF, and TXT for document workflows. SRT and VTT subtitle files are generated from the same transcription pass for captioning and publishing. JSON export is available for structured data integrations.',
+          q: 'Why does my long transcript have strange sentence breaks every 30 minutes?',
+          a: 'Transcription engines that process audio in 30-minute chunks for computational efficiency sometimes introduce artifacts at segment boundaries: the last sentence of one chunk and the first sentence of the next may share words, or a sentence may split at an unnatural point. Review the transitions at 30, 60, 90, and 120-minute marks in your transcript. These sections typically need a manual cleanup pass — reading the surrounding 2–3 minutes in both chunks to verify continuity.',
         },
         {
-          q: 'How does speaker labeling work?',
-          a: 'VideoText uses speaker diarization to detect and label distinct speakers in a recording. Each speaker turn is tagged with a consistent label (Speaker 1, Speaker 2, etc.) or a custom name you assign. Speaker labels are preserved across all export formats.',
+          q: 'How do I handle a recording where audio quality degrades partway through?',
+          a: 'Network dropouts in Zoom recordings and variable microphone distances in in-person recordings both create audio quality degradation that produces transcription errors. Sections with significant audio degradation produce either silent gaps in the transcript or runs of plausible-sounding incorrect words. Identify degraded sections by looking for unusually short speaker turns, repeated words, or text that does not match the topic context. These sections require playback-verified manual review — no AI transcription tool handles severe audio degradation reliably.',
+        },
+        {
+          q: 'What is the difference between clean verbatim and full verbatim for client delivery?',
+          a: 'Clean verbatim removes filler words (um, uh, you know, like), false starts, and word repetitions for readability while preserving the accurate meaning. Full verbatim preserves all spoken content exactly as delivered, including fillers, stutters, and restarts. Clean verbatim is the standard for corporate, academic, and journalistic transcription. Full verbatim is required for legal depositions, court transcription, and some research applications where the exact spoken form matters. Applying the wrong level means re-processing the source audio — it cannot be corrected through text editing.',
+        },
+        {
+          q: 'Can I rename speaker labels after transcription?',
+          a: 'Yes. Speaker labels generated by diarization (Speaker 1, Speaker 2, etc.) can be renamed inline in the VideoText transcript editor. Renaming a label propagates consistently to all instances of that speaker throughout the transcript. Speaker names are preserved across all export formats — DOCX, PDF, SRT, VTT, and JSON all carry the updated names rather than the generic numbered labels.',
         },
         {
           q: 'Can I transcribe YouTube videos, Zoom recordings, and podcast audio?',
-          a: 'Yes. VideoText accepts video file uploads and supports URL-based ingestion for YouTube and other public media sources. Audio files (MP3, M4A, WAV) are also supported for podcast and meeting recording transcription.',
+          a: 'Yes. VideoText accepts video file uploads (MP4, MOV, WebM, MKV) and audio files (MP3, M4A, WAV, AAC, FLAC). URL-based ingestion works for public YouTube videos and direct media URLs. Zoom cloud recordings can be downloaded and uploaded as MP4 files. Google Meet recordings export to Google Drive as MP4 and can be downloaded for upload. Audio-only podcast files process with the same accuracy as video files — VideoText uses only the audio track regardless of whether a video track is present.',
         },
       ]
 

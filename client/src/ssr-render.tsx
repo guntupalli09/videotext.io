@@ -305,7 +305,7 @@ function StaticSeoDocument({ content }: { content: StaticRouteContent }) {
         .vt-workflow-document h1{font-size:clamp(34px,6vw,60px);line-height:1.02;margin:0 0 18px;font-weight:900;letter-spacing:-.04em;color:#111827}
         .vt-workflow-intro{font-size:20px;line-height:1.75;color:#374151;margin:0 0 28px;max-width:860px}
         .vt-workflow-actions{display:flex;flex-wrap:wrap;gap:12px;margin:26px 0 14px}.vt-workflow-actions a{border-radius:999px;padding:12px 18px;text-decoration:none;font-weight:800}.vt-workflow-primary{background:#7c3aed;color:#fff}.vt-workflow-secondary{background:#f5f3ff;color:#5b21b6}.vt-workflow-contextual-ctas{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 40px}.vt-workflow-contextual-ctas a{display:inline-flex;border:1px solid #e5e7eb;border-radius:999px;padding:8px 12px;color:#374151;background:#fff;text-decoration:none;font-weight:700;font-size:13px}
-        .vt-workflow-section{border-top:1px solid #e5e7eb;padding-top:30px;margin-top:34px}.vt-workflow-section h2{font-size:28px;line-height:1.2;margin:0 0 16px;font-weight:850;color:#111827}.vt-workflow-section h3{font-size:18px;margin:0 0 8px;color:#111827}.vt-workflow-section p,.vt-workflow-section li{color:#374151;font-size:16px}.vt-workflow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.vt-workflow-card{border:1px solid #e5e7eb;border-radius:18px;padding:18px;background:#fafafa}.vt-workflow-card p{margin:0}.vt-workflow-proof li{margin:8px 0}.vt-workflow-table{width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden}.vt-workflow-table th,.vt-workflow-table td{border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top;padding:12px}.vt-workflow-table th{background:#f9fafb;color:#111827}.vt-workflow-faq details{border:1px solid #e5e7eb;border-radius:14px;padding:14px 16px;margin:10px 0;background:#fff}.vt-workflow-faq summary{cursor:pointer;font-weight:800;color:#111827}.vt-workflow-links{display:flex;flex-wrap:wrap;gap:10px}.vt-workflow-links a{display:inline-flex;border:1px solid #ddd6fe;border-radius:999px;padding:8px 12px;color:#5b21b6;background:#faf5ff;text-decoration:none;font-weight:700}
+        .vt-workflow-section{border-top:1px solid #e5e7eb;padding-top:30px;margin-top:34px}.vt-workflow-section h2{font-size:28px;line-height:1.2;margin:0 0 16px;font-weight:850;color:#111827}.vt-workflow-section h3{font-size:18px;margin:0 0 8px;color:#111827}.vt-workflow-section p,.vt-workflow-section li{color:#374151;font-size:16px}.vt-workflow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.vt-workflow-card{border:1px solid #e5e7eb;border-radius:18px;padding:18px;background:#fafafa}.vt-workflow-card p{margin:0}.vt-workflow-proof li{margin:8px 0}.vt-workflow-table{width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden}.vt-workflow-table th,.vt-workflow-table td{border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top;padding:12px}.vt-workflow-table th{background:#f9fafb;color:#111827}.vt-workflow-faq details{border:1px solid #e5e7eb;border-radius:14px;padding:14px 16px;margin:10px 0;background:#fff}.vt-workflow-faq summary{cursor:pointer;font-weight:800;color:#111827}.vt-workflow-links{display:flex;flex-wrap:wrap;gap:10px}.vt-workflow-links a{display:inline-flex;border:1px solid #ddd6fe;border-radius:999px;padding:8px 12px;color:#5b21b6;background:#faf5ff;text-decoration:none;font-weight:700}.vt-workflow-card--edge{background:#fef9f0;border-color:#fde68a}.vt-workflow-card--platform{background:#f0f9ff;border-color:#bae6fd}
       `}</style>
       <p className="vt-workflow-eyebrow">VideoText workflow guide</p>
       <h1>{content.h1 || titleToH1(content.title)}</h1>
@@ -356,6 +356,18 @@ function StaticSeoDocument({ content }: { content: StaticRouteContent }) {
       {deep?.useCases?.length ? (
         <Section title={titles.useCases}>
           <div className="vt-workflow-grid">{deep.useCases.map((item) => <article className="vt-workflow-card" key={item.title}><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
+        </Section>
+      ) : null}
+
+      {deep?.visualProof?.length ? (
+        <Section title={titles.edgeCases}>
+          <div className="vt-workflow-grid">{deep.visualProof.map((item) => <article className="vt-workflow-card vt-workflow-card--edge" key={item.title}><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
+        </Section>
+      ) : null}
+
+      {deep?.technicalExplanation?.length ? (
+        <Section title={titles.platformGuidance}>
+          <div className="vt-workflow-grid">{deep.technicalExplanation.map((item) => <article className="vt-workflow-card vt-workflow-card--platform" key={item.title}><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
         </Section>
       ) : null}
 
