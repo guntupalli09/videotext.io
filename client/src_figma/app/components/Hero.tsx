@@ -54,7 +54,7 @@ function WaveformBars({ count = 24 }: { count?: number }) {
       {bars.map((b, i) => (
         <motion.div
           key={i}
-          className="w-[2px] rounded-full bg-purple-500/60 dark:bg-purple-400/70"
+          className="w-[2px] rounded-full bg-blue-500/60 dark:bg-blue-400/70"
           animate={{ height: [`${b.h1}px`, `${b.h2}px`, `${b.h3}px`] }}
           transition={{ duration: b.dur, repeat: Infinity, ease: "easeInOut", delay: i * 0.025 }}
         />
@@ -100,9 +100,9 @@ function SocialProof() {
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1.5, duration: 0.4 }}
-          className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-950 bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center transition-colors duration-500"
+          className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-950 bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center transition-colors duration-500"
         >
-          <span className="text-[9px] font-semibold text-purple-600 dark:text-purple-400">2K+</span>
+          <span className="text-[9px] font-medium text-blue-600 dark:text-blue-400">2K+</span>
         </motion.div>
       </div>
       <p className="text-[12px] text-gray-400 dark:text-white/25 transition-colors duration-500">
@@ -193,23 +193,23 @@ function LiveTranscriptPanel() {
             {/* Waveform */}
             <div className="mt-3 flex items-center gap-2">
               <motion.div
-                className="w-6 h-6 rounded-md bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center transition-colors duration-500"
+                className="w-6 h-6 rounded-md bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center transition-colors duration-500"
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
-                <Mic className="w-3 h-3 text-purple-500 dark:text-purple-400" />
+                <Mic className="w-3 h-3 text-blue-500 dark:text-blue-400" />
               </motion.div>
               <div className="flex-1">
                 <WaveformBars count={32} />
               </div>
-              <span className="text-[9px] font-mono text-gray-400 dark:text-white/20">04:32</span>
+              <span className="text-[9px] font-mono text-gray-400 dark:text-white/20" style={{ fontFamily: "'Geist Mono', monospace" }}>04:32</span>
             </div>
           </div>
 
           {/* Right: Transcript */}
           <div className="p-4 sm:p-5">
             <div className="flex items-center gap-2 mb-3">
-              <FileText className="w-3.5 h-3.5 text-purple-500/70 dark:text-purple-400/70" />
+              <FileText className="w-3.5 h-3.5 text-blue-500/70 dark:text-blue-400/70" />
               <span className="text-[11px] font-medium text-gray-500 dark:text-white/50">Transcript</span>
               <motion.div
                 className="ml-auto flex items-center gap-1"
@@ -223,12 +223,12 @@ function LiveTranscriptPanel() {
 
             <div className="space-y-2.5 text-[12px] text-gray-700 dark:text-white/70 leading-relaxed min-h-[100px] transition-colors duration-500">
               <div className="flex gap-2">
-                <span className="text-[9px] font-mono text-purple-400/50 dark:text-purple-400/40 mt-0.5 shrink-0 w-8">00:00</span>
+                <span className="text-[9px] font-mono text-blue-400/50 dark:text-blue-400/40 mt-0.5 shrink-0 w-8">00:00</span>
                 <p>
                   {line1}
                   {line1.length < fullLine1.length && (
                     <motion.span
-                      className="inline-block w-[1.5px] h-3.5 bg-purple-500 dark:bg-purple-400 ml-0.5 align-middle"
+                      className="inline-block w-[1.5px] h-3.5 bg-blue-600 dark:bg-blue-400 ml-0.5 align-middle"
                       animate={{ opacity: [1, 0] }}
                       transition={{ duration: 0.5, repeat: Infinity }}
                     />
@@ -237,11 +237,11 @@ function LiveTranscriptPanel() {
               </div>
               {line1.length >= fullLine1.length && (
                 <motion.div className="flex gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-                  <span className="text-[9px] font-mono text-purple-400/50 dark:text-purple-400/40 mt-0.5 shrink-0 w-8">00:08</span>
+                  <span className="text-[9px] font-mono text-blue-400/50 dark:text-blue-400/40 mt-0.5 shrink-0 w-8">00:08</span>
                   <p>
                     {line2}
                     <motion.span
-                      className="inline-block w-[1.5px] h-3.5 bg-purple-500 dark:bg-purple-400 ml-0.5 align-middle"
+                      className="inline-block w-[1.5px] h-3.5 bg-blue-600 dark:bg-blue-400 ml-0.5 align-middle"
                       animate={{ opacity: [1, 0] }}
                       transition={{ duration: 0.5, repeat: Infinity }}
                     />
@@ -342,8 +342,8 @@ export function Hero() {
 
         {/* Ambient glows */}
         <div className="absolute inset-0 z-[1] pointer-events-none">
-          <div className="absolute top-[20%] left-[15%] w-[500px] h-[500px] bg-purple-400/[0.06] dark:bg-purple-600/[0.07] rounded-full blur-[120px]" />
-          <div className="absolute top-[30%] right-[10%] w-[400px] h-[400px] bg-indigo-400/[0.05] dark:bg-blue-600/[0.05] rounded-full blur-[100px]" />
+          <div className="absolute top-[20%] left-[15%] w-[500px] h-[500px] bg-blue-400/[0.06] dark:bg-blue-600/[0.07] rounded-full blur-[120px]" />
+          <div className="absolute top-[30%] right-[10%] w-[400px] h-[400px] bg-blue-400/[0.05] dark:bg-blue-600/[0.05] rounded-full blur-[100px]" />
         </div>
 
         {/* ── CONTENT ── */}
@@ -355,9 +355,9 @@ export function Hero() {
             transition={{ delay: 0.2, duration: 0.5 }}
             className="flex justify-center mb-6"
           >
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 dark:bg-white/[0.04] border border-purple-200/50 dark:border-white/[0.07] transition-colors duration-500">
-              <Play className="w-2.5 h-2.5 text-purple-500 dark:text-purple-400" />
-              <span className="text-[11px] text-purple-600/70 dark:text-white/40 font-medium tracking-wide transition-colors duration-500">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-white/[0.04] border border-blue-200/50 dark:border-white/[0.07] transition-colors duration-500">
+              <Play className="w-2.5 h-2.5 text-blue-500 dark:text-blue-400" />
+              <span className="text-[11px] text-blue-600/70 dark:text-white/40 font-medium tracking-wide transition-colors duration-500">
                 The creator's transcription tool
               </span>
             </div>
@@ -368,11 +368,11 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-semibold tracking-tight text-gray-900 dark:text-white leading-[1.1] mb-5 transition-colors duration-500"
+            className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-medium tracking-tight text-gray-900 dark:text-white leading-[1.1] mb-5 transition-colors duration-500"
           >
             You create the content.
             <br />
-            <span className="bg-gradient-to-r from-purple-600 via-violet-500 to-indigo-500 dark:from-purple-400 dark:via-violet-400 dark:to-indigo-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 dark:from-blue-400 dark:via-blue-300 dark:to-sky-400 bg-clip-text text-transparent">
               We handle the rest.
             </span>
           </motion.h1>
@@ -398,9 +398,9 @@ export function Hero() {
             <motion.button
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
-              className="group relative bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-3.5 rounded-xl font-medium shadow-lg shadow-purple-500/20 dark:shadow-purple-600/20 hover:shadow-purple-500/40 dark:hover:shadow-purple-600/40 transition-all overflow-hidden"
+              className="group relative bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3.5 rounded-xl font-medium shadow-lg shadow-blue-500/20 dark:shadow-blue-600/20 hover:shadow-blue-500/40 dark:hover:shadow-blue-600/40 transition-all overflow-hidden"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <span className="relative flex items-center gap-2 text-[15px]">
                 Start transcribing — it's free
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />

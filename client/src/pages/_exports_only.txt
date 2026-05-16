@@ -1,6 +1,6 @@
             <div id="vt-exports-root" className="mt-8 bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-card border border-gray-200 dark:border-gray-800 scroll-mt-24">
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 flex items-center gap-2">
-                      <FileCode className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
+                      <FileCode className="h-5 w-5 text-blue-600" strokeWidth={1.5} />
                       Exports
                     </h3>
                     <p className="text-sm text-gray-500 mb-4">Download transcript and derived data in your preferred format.</p>
@@ -98,7 +98,7 @@
                                     disabled={!canClick}
                                     className={`flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-lg transition-colors ${
                                       canClick
-                                        ? 'bg-white hover:bg-violet-50 text-violet-600 hover:text-violet-700 ring-1 ring-gray-200'
+                                        ? 'bg-white hover:bg-blue-50 text-blue-600 hover:text-blue-700 ring-1 ring-gray-200'
                                         : 'text-gray-300 cursor-not-allowed'
                                     }`}
                                   >
@@ -136,16 +136,16 @@
                                   toast.success('SRT downloaded')
                                 }
                                 return (
-                                  <div className="rounded-xl bg-violet-50 ring-1 ring-violet-100 p-4">
+                                  <div className="rounded-xl bg-blue-50 ring-1 ring-blue-100 p-4">
                                     <div className="flex items-center justify-between gap-2 mb-3">
                                       <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full shrink-0 bg-violet-400" aria-hidden />
+                                        <span className="w-2 h-2 rounded-full shrink-0 bg-blue-400" aria-hidden />
                                         <span className="text-sm font-semibold text-gray-800">SRT [{langCode}]</span>
                                         <span className="text-[10px] font-mono text-gray-400">.srt</span>
                                       </div>
                                       <button
                                         onClick={handleDownloadSrt}
-                                        className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-lg transition-colors bg-white hover:bg-violet-50 text-violet-600 hover:text-violet-700 ring-1 ring-gray-200"
+                                        className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-lg transition-colors bg-white hover:bg-blue-50 text-blue-600 hover:text-blue-700 ring-1 ring-gray-200"
                                       >
                                         <Download className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
                                         Download

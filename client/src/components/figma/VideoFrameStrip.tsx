@@ -166,7 +166,7 @@ export function VideoFrameStrip({
     return (
       <div className={`rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden ${className}`}>
         <div className="flex items-center justify-center gap-2 py-4 text-xs text-gray-500 dark:text-gray-400">
-          <div className="h-3 w-3 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+          <div className="h-3 w-3 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
           <span>Loading frame strip…</span>
         </div>
       </div>
@@ -197,7 +197,7 @@ export function VideoFrameStrip({
               onClick={() => onSeek?.(frame.time)}
               className={`flex-shrink-0 rounded overflow-hidden border-2 transition-all ${
                 isActive
-                  ? 'border-violet-500 ring-2 ring-violet-500/30'
+                  ? 'border-blue-500 ring-2 ring-blue-500/30'
                   : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600'
               } ${onSeek ? 'cursor-pointer' : 'cursor-default'}`}
               whileHover={onSeek ? { scale: 1.02 } : {}}

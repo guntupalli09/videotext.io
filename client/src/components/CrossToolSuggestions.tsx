@@ -40,8 +40,8 @@ export default function CrossToolSuggestions({ suggestions, workflowHint }: Cros
             <>
               <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                 <div className="flex items-center gap-3">
-                  <div className="bg-primary/10 dark:bg-violet-500/25 rounded-lg p-2 shrink-0" aria-hidden>
-                    <Icon className="h-5 w-5 text-primary dark:text-violet-300" strokeWidth={1.5} />
+                  <div className="bg-primary/10 dark:bg-blue-600/25 rounded-lg p-2 shrink-0" aria-hidden>
+                    <Icon className="h-5 w-5 text-primary dark:text-blue-300" strokeWidth={1.5} />
                   </div>
                   <span className="font-medium text-gray-800 dark:text-gray-100">{suggestion.title}</span>
                 </div>

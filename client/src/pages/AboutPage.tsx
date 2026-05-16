@@ -33,7 +33,7 @@ export default function AboutPage() {
 
       {/* Hero */}
       <div className="mb-16">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+        <h1 className="text-4xl font-medium text-gray-900 dark:text-white mb-6">
           About VideoText
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
@@ -46,11 +46,11 @@ export default function AboutPage() {
 
       {/* Stats */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">By the numbers</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-8">By the numbers</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
           {stats.map(({ value, label }) => (
-            <div key={label} className="bg-violet-50 dark:bg-violet-900/20 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold text-violet-600 dark:text-violet-400 mb-1">{value}</div>
+            <div key={label} className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 text-center">
+              <div className="text-3xl font-medium text-blue-600 dark:text-blue-400 mb-1">{value}</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">{label}</div>
             </div>
           ))}
@@ -59,7 +59,7 @@ export default function AboutPage() {
 
       {/* Mission */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Why we built this</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Why we built this</h2>
         <div className="prose prose-gray dark:prose-invert max-w-none">
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
             Most transcription tools were built for enterprises — they are slow, expensive, and retain your files indefinitely. We built VideoText to be the opposite: fast enough to use mid-workflow, priced for independent creators, and private enough that you never have to think about where your content goes.
@@ -68,40 +68,40 @@ export default function AboutPage() {
             The decision to delete files immediately after processing is not just a privacy policy — it is an architectural constraint that makes the system leaner and faster. When you are not storing 127,000 videos, you spend that infrastructure budget on compute instead.
           </p>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            We publish our real processing stats, accuracy benchmarks, and technology stack at <Link to="/open" className="text-violet-600 dark:text-violet-400 hover:underline">videotext.io/open</Link>. We think tools should be honest about what they can and cannot do.
+            We publish our real processing stats, accuracy benchmarks, and technology stack at <Link to="/open" className="text-blue-600 dark:text-blue-400 hover:underline">videotext.io/open</Link>. We think tools should be honest about what they can and cannot do.
           </p>
         </div>
       </div>
 
       {/* Technology */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Technology</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Technology</h2>
         <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 space-y-4">
           <div className="flex items-start gap-4">
-            <div className="w-2 h-2 rounded-full bg-violet-500 mt-2 shrink-0" />
+            <div className="w-2 h-2 rounded-full bg-blue-600 mt-2 shrink-0" />
             <div>
-              <div className="font-semibold text-gray-900 dark:text-white">AI Engine: OpenAI Whisper large-v3</div>
+              <div className="font-medium text-gray-900 dark:text-white">AI Engine: OpenAI Whisper large-v3</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">The most accurate open-source speech recognition model, fine-tuned for 99 languages and noisy real-world audio.</div>
             </div>
           </div>
           <div className="flex items-start gap-4">
-            <div className="w-2 h-2 rounded-full bg-violet-500 mt-2 shrink-0" />
+            <div className="w-2 h-2 rounded-full bg-blue-600 mt-2 shrink-0" />
             <div>
-              <div className="font-semibold text-gray-900 dark:text-white">Zero data retention architecture</div>
+              <div className="font-medium text-gray-900 dark:text-white">Zero data retention architecture</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Files are processed in a private cloud pipeline and deleted immediately. No content is logged, retained, or used for training.</div>
             </div>
           </div>
           <div className="flex items-start gap-4">
-            <div className="w-2 h-2 rounded-full bg-violet-500 mt-2 shrink-0" />
+            <div className="w-2 h-2 rounded-full bg-blue-600 mt-2 shrink-0" />
             <div>
-              <div className="font-semibold text-gray-900 dark:text-white">YouTube URL native support</div>
+              <div className="font-medium text-gray-900 dark:text-white">YouTube URL native support</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Paste any public YouTube URL and we stream the audio directly — no download, no third-party service.</div>
             </div>
           </div>
           <div className="flex items-start gap-4">
-            <div className="w-2 h-2 rounded-full bg-violet-500 mt-2 shrink-0" />
+            <div className="w-2 h-2 rounded-full bg-blue-600 mt-2 shrink-0" />
             <div>
-              <div className="font-semibold text-gray-900 dark:text-white">19 client-side free tools</div>
+              <div className="font-medium text-gray-900 dark:text-white">19 client-side free tools</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Format converters, subtitle validators, timing tools, and calculators that run entirely in your browser — nothing uploaded, no account required.</div>
             </div>
           </div>
@@ -110,15 +110,15 @@ export default function AboutPage() {
 
       {/* Core Tools */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">Core tools</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-8">Core tools</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {tools.map(({ name, path, desc }) => (
             <Link
               key={path}
               to={path}
-              className="block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-violet-400 dark:hover:border-violet-500 transition-colors"
+              className="block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
             >
-              <div className="font-semibold text-gray-900 dark:text-white mb-1">{name}</div>
+              <div className="font-medium text-gray-900 dark:text-white mb-1">{name}</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">{desc}</div>
             </Link>
           ))}
@@ -127,30 +127,30 @@ export default function AboutPage() {
 
       {/* Pricing */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Pricing</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Pricing</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { plan: 'Free', price: '$0/mo', features: '3 uploads/day, no credit card required' },
             { plan: 'Pro', price: '$40/mo', features: 'Unlimited processing, AI features, watermark-free exports, batch' },
           ].map(({ plan, price, features }) => (
             <div key={plan} className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5">
-              <div className="font-bold text-gray-900 dark:text-white text-lg">{plan}</div>
-              <div className="text-violet-600 dark:text-violet-400 font-semibold my-1">{price}</div>
+              <div className="font-medium text-gray-900 dark:text-white text-lg">{plan}</div>
+              <div className="text-blue-600 dark:text-blue-400 font-medium my-1">{price}</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">{features}</div>
             </div>
           ))}
         </div>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">All plans include a 7-day money-back guarantee.</p>
-        <Link to="/pricing" className="inline-block mt-4 text-sm font-medium text-violet-600 dark:text-violet-400 hover:underline">See full pricing →</Link>
+        <Link to="/pricing" className="inline-block mt-4 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">See full pricing →</Link>
       </div>
 
       {/* How VideoText compares */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">How VideoText compares</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">How VideoText compares</h2>
         <div className="space-y-3">
           {comparisons.map(({ competitor, difference }) => (
             <div key={competitor} className="flex gap-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl">
-              <div className="font-semibold text-gray-900 dark:text-white w-28 shrink-0">vs {competitor}</div>
+              <div className="font-medium text-gray-900 dark:text-white w-28 shrink-0">vs {competitor}</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">{difference}</div>
             </div>
           ))}
@@ -159,32 +159,32 @@ export default function AboutPage() {
 
       {/* Privacy */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Privacy commitment</h2>
-        <div className="bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 rounded-xl p-6">
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Privacy commitment</h2>
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
             <strong>We do not store your files.</strong> When you upload a video or subtitle file, it is processed in a private pipeline and deleted immediately after your output is generated. VideoText does not retain uploads, transcripts, generated subtitles, or any content you provide.
           </p>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
             Your content is never used to train AI models. It is never shared with third parties. There are no content logs. This is the full extent of our data policy.
           </p>
-          <Link to="/privacy" className="text-sm font-medium text-violet-600 dark:text-violet-400 hover:underline">Read the full privacy policy →</Link>
+          <Link to="/privacy" className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">Read the full privacy policy →</Link>
         </div>
       </div>
 
       {/* CTA */}
-      <div className="text-center bg-gray-900 dark:bg-gray-800 rounded-2xl p-10">
-        <h2 className="text-2xl font-bold text-white mb-3">Try VideoText free</h2>
+      <div className="text-center bg-gray-900 dark:bg-gray-800 rounded-xl p-10">
+        <h2 className="text-2xl font-medium text-white mb-3">Try VideoText free</h2>
         <p className="text-gray-400 mb-6">3 uploads per day. No credit card required. Files deleted after processing.</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             to="/signup"
-            className="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition-colors"
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
           >
             Start free — no credit card
           </Link>
           <Link
             to="/pricing"
-            className="px-6 py-3 border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white font-semibold rounded-xl transition-colors"
+            className="px-6 py-3 border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white font-medium rounded-xl transition-colors"
           >
             See pricing
           </Link>

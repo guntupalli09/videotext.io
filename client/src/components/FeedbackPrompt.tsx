@@ -118,9 +118,9 @@ export default function FeedbackPrompt() {
             transition={{ type: 'spring', stiffness: 380, damping: 28 }}
             className="fixed bottom-5 right-5 z-50 w-[340px] max-w-[calc(100vw-2rem)]"
           >
-            <div className="relative rounded-2xl bg-white dark:bg-gray-900 shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+            <div className="relative rounded-xl bg-white dark:bg-gray-900 shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
               {/* Accent bar */}
-              <div className="h-0.5 w-full bg-gradient-to-r from-violet-500 via-purple-500 to-violet-600" />
+              <div className="h-0.5 w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700" />
 
               <AnimatePresence mode="wait">
                 {bannerState === 'prompt' ? (
@@ -133,7 +133,7 @@ export default function FeedbackPrompt() {
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white font-display leading-tight">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white font-display leading-tight">
                           {bannerCopy}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -157,13 +157,13 @@ export default function FeedbackPrompt() {
                           key={opt.stars}
                           type="button"
                           onClick={() => handleQuickRate(opt.stars)}
-                          className="flex-1 flex flex-col items-center gap-0.5 py-2 px-1 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-violet-200 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/40 transition-all group"
+                          className="flex-1 flex flex-col items-center gap-0.5 py-2 px-1 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-blue-200 dark:hover:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-all group"
                           title={opt.sublabel}
                         >
                           <span className="text-xl transition-transform group-hover:scale-110 duration-150">
                             {opt.label}
                           </span>
-                          <span className="text-[10px] text-gray-400 dark:text-gray-600 group-hover:text-violet-600 dark:group-hover:text-violet-400 font-medium transition-colors">
+                          <span className="text-[10px] text-gray-400 dark:text-gray-600 group-hover:text-blue-600 dark:group-hover:text-blue-400 font-medium transition-colors">
                             {opt.sublabel}
                           </span>
                         </button>
@@ -173,7 +173,7 @@ export default function FeedbackPrompt() {
                     <button
                       type="button"
                       onClick={handleTellUsMore}
-                      className="mt-2.5 w-full py-1.5 rounded-xl text-xs font-medium text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-950/40 transition-colors"
+                      className="mt-2.5 w-full py-1.5 rounded-xl text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors"
                     >
                       Write detailed feedback →
                     </button>
@@ -190,13 +190,13 @@ export default function FeedbackPrompt() {
                       {quickStars != null && quickStars >= 4 ? '🙌' : quickStars === 3 ? '👌' : '🙏'}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white font-display">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white font-display">
                         {quickStars != null && quickStars >= 4 ? 'Awesome, thanks!' : 'Got it, thank you!'}
                       </p>
                       <button
                         type="button"
                         onClick={handleTellUsMore}
-                        className="text-xs text-violet-600 dark:text-violet-400 hover:underline font-medium mt-0.5"
+                        className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium mt-0.5"
                       >
                         Add a comment →
                       </button>

@@ -290,8 +290,8 @@ const TRANSCRIBEME_DATA: BrandData = {
     'Numbers: one–nine spelled out, 10+ as numerals',
   ],
   difficultyLevel: 'advanced',
-  accentColor: 'purple',
-  badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
+  accentColor: 'blue',
+  badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
 }
 
 const SCRIBIE_DATA: BrandData = {
@@ -512,8 +512,8 @@ const TRANSCRIBIO_DATA: BrandData = {
     'Timestamps optional — most orders omit them',
   ],
   difficultyLevel: 'intermediate',
-  accentColor: 'indigo',
-  badgeColor: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
+  accentColor: 'blue',
+  badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
 }
 
 const VERBIT_DATA: BrandData = {

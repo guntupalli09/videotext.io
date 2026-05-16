@@ -131,7 +131,7 @@ export default function AlternativesHub() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-16 px-4">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
+          <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">
             Transcription & Subtitle Tool Alternatives
           </h1>
           <p className="text-lg text-blue-100 max-w-2xl">
@@ -146,7 +146,7 @@ export default function AlternativesHub() {
           {ALTERNATIVE_CATEGORIES.map((category, idx) => (
             <div key={idx} className="space-y-4">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                   <FileText className="w-6 h-6 text-blue-600" />
                   {category.title}
                 </h2>
@@ -173,7 +173,7 @@ export default function AlternativesHub() {
 
         {/* CTA Section */}
         <div className="mt-16 bg-blue-50 dark:bg-gray-800 rounded-xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">
             Ready to switch to VideoText?
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
@@ -182,13 +182,13 @@ export default function AlternativesHub() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/video-to-transcript"
-              className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+              className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
             >
               Start Transcribing <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               to="/compare"
-              className="inline-flex items-center justify-center gap-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors"
+              className="inline-flex items-center justify-center gap-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium py-3 px-6 rounded-lg transition-colors"
             >
               Compare Tools <ArrowRight className="w-4 h-4" />
             </Link>

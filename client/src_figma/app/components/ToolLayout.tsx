@@ -38,7 +38,7 @@ export function ToolLayout({
         >
           <Link 
             to="/"
-            className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+            className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             <Home className="w-4 h-4" />
             <span>Home</span>
@@ -51,8 +51,8 @@ export function ToolLayout({
                 to={crumb.href}
                 className={`${
                   index === breadcrumbs.length - 1
-                    ? 'text-purple-600 dark:text-purple-400 font-medium'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400'
+                    ? 'text-blue-600 dark:text-blue-400 font-medium'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
                 } transition-colors`}
               >
                 {crumb.label}
@@ -73,18 +73,18 @@ export function ToolLayout({
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: 'spring', damping: 15, stiffness: 300, delay: 0.2 }}
+              transition={{ type: 'tween', duration: 0.25, ease: 'easeOut', delay: 0.2 }}
               className="relative"
             >
-              <div className="absolute inset-0 bg-purple-500/30 blur-xl rounded-2xl" />
-              <div className="relative w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center border border-purple-200 dark:border-purple-800">
+              <div className="absolute inset-0 bg-blue-600/30 blur-xl rounded-xl" />
+              <div className="relative w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center border border-blue-200 dark:border-blue-800">
                 {icon}
               </div>
             </motion.div>
 
             {/* Title */}
             <div className="flex-1">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3">
+              <h1 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-3">
                 {title}
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-400">
@@ -107,7 +107,7 @@ export function ToolLayout({
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.4 + (index * 0.05) }}
-                  className="px-3 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-purple-100 dark:hover:bg-purple-900/30 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors cursor-default"
+                  className="px-3 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors cursor-default"
                 >
                   {tag}
                 </motion.span>

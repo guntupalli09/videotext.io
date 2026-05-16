@@ -71,7 +71,7 @@ export default function AlertConfig() {
             value={config.alertEmail}
             onChange={(e) => setConfig((c) => ({ ...c, alertEmail: e.target.value }))}
             placeholder="you@example.com"
-            className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500"
+            className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500"
           />
           <button
             onClick={sendTest}
@@ -99,7 +99,7 @@ export default function AlertConfig() {
               max={100}
               value={config.thresholds.failureRatePct}
               onChange={(e) => setConfig((c) => ({ ...c, thresholds: { ...c.thresholds, failureRatePct: +e.target.value } }))}
-              className="w-16 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-violet-500"
+              className="w-16 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-blue-500"
             />
             <span className="text-xs text-zinc-500">%</span>
             <Toggle
@@ -121,7 +121,7 @@ export default function AlertConfig() {
               max={120}
               value={config.thresholds.workerStaleMinutes}
               onChange={(e) => setConfig((c) => ({ ...c, thresholds: { ...c.thresholds, workerStaleMinutes: +e.target.value } }))}
-              className="w-16 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-violet-500"
+              className="w-16 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-blue-500"
             />
             <span className="text-xs text-zinc-500">min</span>
             <Toggle
@@ -143,7 +143,7 @@ export default function AlertConfig() {
               max={100}
               value={config.thresholds.mrrDropPct}
               onChange={(e) => setConfig((c) => ({ ...c, thresholds: { ...c.thresholds, mrrDropPct: +e.target.value } }))}
-              className="w-16 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-violet-500"
+              className="w-16 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-blue-500"
             />
             <span className="text-xs text-zinc-500">%</span>
             <Toggle
@@ -159,7 +159,7 @@ export default function AlertConfig() {
         <button
           onClick={save}
           disabled={saving}
-          className="px-4 py-2 bg-violet-600 hover:bg-violet-500 rounded-lg text-sm text-white font-medium transition-colors disabled:opacity-40"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-600 rounded-lg text-sm text-white font-medium transition-colors disabled:opacity-40"
         >
           {saving ? 'Saving…' : 'Save config'}
         </button>
@@ -200,7 +200,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
-        checked ? 'bg-violet-600' : 'bg-zinc-700'
+        checked ? 'bg-blue-600' : 'bg-zinc-700'
       }`}
     >
       <span

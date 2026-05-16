@@ -328,7 +328,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     const totalFindings = issues.length + warnings.length
     if (totalFindings === 0) {
       return (
-        <div className="rounded-2xl border border-green-200 bg-green-50 p-5 text-green-900 dark:border-green-800 dark:bg-green-950/30 dark:text-green-100">
+        <div className="rounded-xl border border-green-200 bg-green-50 p-5 text-green-900 dark:border-green-800 dark:bg-green-950/30 dark:text-green-100">
           <p className="font-medium">No issues found after fixing.</p>
           <p className="mt-1 text-sm text-green-800 dark:text-green-200">Your downloadable subtitle file passed the available validation checks.</p>
         </div>
@@ -337,19 +337,19 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
     return (
       <section
-        className="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+        className="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
         aria-labelledby="fixed-subtitle-findings-heading"
       >
         <div className="flex flex-col gap-2 border-b border-gray-200 p-5 dark:border-gray-800 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h3 id="fixed-subtitle-findings-heading" className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 id="fixed-subtitle-findings-heading" className="text-lg font-medium text-gray-900 dark:text-white">
               Issues fixed and validation notes
             </h3>
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Showing about 5 findings at a time. Scroll inside this editor to review all {totalFindings}.
             </p>
           </div>
-          <span className="inline-flex w-fit rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-900/40 dark:text-violet-200">
+          <span className="inline-flex w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-200">
             {issues.length} issue{issues.length !== 1 ? 's' : ''}
             {warnings.length > 0 ? ` · ${warnings.length} warning${warnings.length !== 1 ? 's' : ''}` : ''}
           </span>
@@ -364,7 +364,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                   className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-800 dark:bg-gray-950/50"
                 >
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-                    <p className="font-semibold text-gray-900 dark:text-gray-100">
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
                       {index + 1}. {getIssueTypeLabel(String(issue.type ?? 'issue'))}
                     </p>
                     {issue.index != null && (
@@ -379,12 +379,12 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
           {warnings.length > 0 && (
             <div className={issues.length > 0 ? 'mt-5 border-t border-gray-200 pt-5 dark:border-gray-800' : ''}>
-              <p className="mb-3 text-sm font-semibold text-amber-800 dark:text-amber-200">Warnings (informational)</p>
+              <p className="mb-3 text-sm font-medium text-amber-800 dark:text-amber-200">Warnings (informational)</p>
               <ol className="space-y-3">
                 {warnings.map((warning, index) => (
                   <li key={`${warning.type}-${warning.line ?? index}-${index}`} className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-                      <p className="font-semibold">{warning.type || 'Warning'}</p>
+                      <p className="font-medium">{warning.type || 'Warning'}</p>
                       {warning.line != null && <span className="font-mono text-xs">Line {warning.line}</span>}
                     </div>
                     <p className="mt-2">{warning.message}</p>
@@ -443,7 +443,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
         )}
 
         {status === 'analyzing' && (
-          <div className="rounded-2xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
+          <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
               {selectedFile?.name} • {((selectedFile?.size ?? 0) / 1024).toFixed(2)} KB
             </div>
@@ -464,7 +464,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
         {status === 'idle' && showIssues && (
           <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
+            <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
               <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">Fix options (optional)</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Fixes timing drift, long durations, and overflow issues. Original subtitles are always preserved.</p>
               <div className="space-y-4 mb-6">
@@ -476,10 +476,10 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             </div>
 
             {((issues.length > 0 || warnings.length > 0) && (
-              <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
+              <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
             <div className="flex items-center space-x-2 mb-4">
               <CheckCircle className="h-6 w-6 text-green-600" strokeWidth={1.5} />
-              <h3 className="text-xl font-semibold text-gray-800">
+              <h3 className="text-xl font-medium text-gray-800">
                 {issues.length > 0
                   ? `Found ${issues.length} issue${issues.length !== 1 ? 's' : ''} in your subtitles`
                   : 'Validation results'}
@@ -514,7 +514,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
             <button
               onClick={handleAutoFix}
-              className="w-full bg-violet-600 hover:bg-violet-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
             >
               Auto-fix all issues →
             </button>
@@ -522,20 +522,20 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             ))}
 
             {issues.length === 0 && warnings.length === 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm text-center">
+          <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm text-center">
             <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" strokeWidth={1.5} />
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">No issues found!</h3>
+            <h3 className="text-xl font-medium text-gray-800 mb-2">No issues found!</h3>
             <p className="text-gray-600 mb-4">Your subtitles are already in good shape. You can still apply optional fixes (timing, grammar, line breaks) above.</p>
             <div className="flex flex-wrap justify-center gap-3">
               <button
                 onClick={handleAutoFix}
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
               >
                 Apply optional fixes
               </button>
               <button
                 onClick={handleProcessAnother}
-                className="text-violet-600 hover:text-violet-700 font-medium"
+                className="text-blue-600 hover:text-blue-700 font-medium"
               >
                 Process another file
               </button>
@@ -546,7 +546,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
         )}
 
         {status === 'processing' && (
-          <div className="rounded-2xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
+          <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
               {selectedFile?.name} • {((selectedFile?.size ?? 0) / 1024).toFixed(2)} KB
             </div>
@@ -583,7 +583,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             />
 
             {subtitleRows.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 shadow-card">
+              <div className="bg-white rounded-xl p-6 shadow-card">
                 <Suspense fallback={null}>
                   <SubtitleEditor
                     entries={subtitleRows}
@@ -604,7 +604,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                       a.click()
                       URL.revokeObjectURL(url)
                     }}
-                    className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
                   >
                     Download Edited Subtitles
                   </button>
@@ -636,7 +636,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
       {faq.length > 0 && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Frequently asked questions</h2>
+          <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently asked questions</h2>
           <dl className="space-y-4">
             {faq.map((item, i) => (
               <div key={i}>

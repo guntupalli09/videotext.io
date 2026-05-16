@@ -24,10 +24,10 @@ const TESTIMONIALS = [
     meta: 'The Growth Lab Network',
     avatar: 'https://i.pravatar.cc/80?img=47',
     platform: Mic,
-    platformColor: 'text-violet-400',
+    platformColor: 'text-blue-400',
     result: 'Replaced contractor + same-day delivery',
-    resultBg: 'bg-violet-500/10 text-violet-400 border border-violet-500/20',
-    accentColor: 'from-violet-500/20 to-transparent',
+    resultBg: 'bg-blue-600/10 text-blue-400 border border-blue-500/20',
+    accentColor: 'from-blue-600/20 to-transparent',
   },
   {
     quote:
@@ -68,10 +68,10 @@ export function Testimonials() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-sm font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest mb-3 transition-colors duration-500">
+          <p className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 transition-colors duration-500">
             Real results
           </p>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
+          <h2 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
             Real results from
             <span className="block text-gray-300 dark:text-white/20">professional workflows.</span>
           </h2>
@@ -92,9 +92,9 @@ export function Testimonials() {
                 transition={{ delay: i * 0.12, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
               >
                 <motion.div
-                  whileHover={{ y: -4 }}
+                  whileHover={{ y: -2 }}
                   transition={{ duration: 0.2 }}
-                  className="h-full rounded-2xl border border-gray-200 dark:border-white/[0.07] bg-gray-50 dark:bg-white/[0.02] p-6 flex flex-col relative overflow-hidden hover:border-gray-300 dark:hover:border-white/[0.12] hover:shadow-xl hover:shadow-gray-100/60 dark:hover:shadow-black/30 transition-all duration-300"
+                  className="h-full rounded-xl border border-gray-200 dark:border-white/[0.07] bg-gray-50 dark:bg-white/[0.02] p-6 flex flex-col relative overflow-hidden hover:border-gray-300 dark:hover:border-white/[0.12] hover:shadow-xl hover:shadow-gray-100/60 dark:hover:shadow-black/30 transition-all duration-300"
                 >
                   {/* Subtle accent top bar */}
                   <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${t.accentColor}`} />
@@ -112,7 +112,7 @@ export function Testimonials() {
 
                   {/* Result badge */}
                   <div className="mb-4">
-                    <span className={`inline-flex items-center text-[11px] font-bold px-2.5 py-1 rounded-full ${t.resultBg}`}>
+                    <span className={`inline-flex items-center text-[11px] font-medium px-2.5 py-1 rounded-full ${t.resultBg}`}>
                       {t.result}
                     </span>
                   </div>
@@ -127,7 +127,7 @@ export function Testimonials() {
                       className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                     />
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white transition-colors duration-500">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-500">
                         {t.name}
                       </p>
                       <p className="text-[12px] text-gray-500 dark:text-white/35 truncate transition-colors duration-500">

@@ -34,7 +34,7 @@ export function ToolIcon({
 }: ToolIconProps) {
   const content = (
     <div
-      className={`${sizeClasses[size]} rounded-2xl bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center shadow-lg ${className}`}
+      className={`${sizeClasses[size]} rounded-xl bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center shadow-lg ${className}`}
     >
       <Icon className={`${iconSizeClasses[size]} text-white`} />
     </div>
@@ -42,7 +42,7 @@ export function ToolIcon({
 
   if (animate) {
     return (
-      <motion.div whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }} transition={{ duration: 0.3 }}>
+      <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
         {content}
       </motion.div>
     );

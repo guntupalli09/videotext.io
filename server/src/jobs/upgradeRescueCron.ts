@@ -28,7 +28,7 @@ function upgradeRescueHtml(ctaUrl: string): string {
         </tr>
         <tr>
           <td style="padding:0 36px 30px">
-            <a href="${ctaUrl}" style="display:block;background:#7c3aed;color:#fff;text-decoration:none;text-align:center;padding:14px 24px;border-radius:10px;font-size:15px;font-weight:700">Go to pricing</a>
+            <a href="${ctaUrl}" style="display:block;background:#2563EB;color:#fff;text-decoration:none;text-align:center;padding:14px 24px;border-radius:10px;font-size:15px;font-weight:700">Go to pricing</a>
           </td>
         </tr>
       </table>

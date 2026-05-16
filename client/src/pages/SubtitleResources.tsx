@@ -6,8 +6,8 @@ export default function SubtitleResources() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-16 px-4">
         <div className="max-w-3xl mx-auto">
-          <p className="text-gray-400 text-sm font-semibold uppercase tracking-widest mb-3">Reference Guide</p>
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">Subtitle Resources & Standards</h1>
+          <p className="text-gray-400 text-sm font-medium uppercase tracking-widest mb-3">Reference Guide</p>
+          <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">Subtitle Resources & Standards</h1>
           <p className="text-lg text-gray-300 max-w-2xl">
             Subtitle format specs, timing standards, Netflix delivery rules, character limits, and reading speed benchmarks — everything in one place.
           </p>
@@ -18,7 +18,7 @@ export default function SubtitleResources() {
 
         {/* Formats */}
         <section id="formats">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Subtitle Format Reference</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Subtitle Format Reference</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">The most widely used subtitle formats and their key characteristics.</p>
 
           <div className="space-y-6">
@@ -68,7 +68,7 @@ Today we'll cover subtitle formats.`,
               {
                 name: 'ASS / SSA — Advanced SubStation Alpha (.ass / .ssa)',
                 badge: 'Advanced styling',
-                badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400',
+                badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400',
                 desc: 'A format commonly used for anime fansubs and karaoke subtitles. ASS supports advanced per-character styling, positioning, animations, and multi-line karaoke effects. It is not supported by most streaming platforms but is widely used by media players like MPC-HC and mpv.',
                 points: [
                   'Supports rich per-character styling (color, size, font, outline)',
@@ -92,8 +92,8 @@ Today we'll cover subtitle formats.`,
             ].map((fmt) => (
               <div key={fmt.name} className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <div className="flex items-center gap-3 px-5 py-4 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm">{fmt.name}</h3>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${fmt.badgeColor}`}>{fmt.badge}</span>
+                  <h3 className="font-medium text-gray-900 dark:text-white text-sm">{fmt.name}</h3>
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${fmt.badgeColor}`}>{fmt.badge}</span>
                 </div>
                 <div className="p-5 space-y-4">
                   <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{fmt.desc}</p>
@@ -103,7 +103,7 @@ Today we'll cover subtitle formats.`,
                   <ul className="space-y-1.5">
                     {fmt.points.map((p) => (
                       <li key={p} className="text-xs text-gray-500 dark:text-gray-400 flex gap-2">
-                        <span className="text-violet-500 shrink-0">•</span>
+                        <span className="text-blue-600 shrink-0">•</span>
                         <span>{p}</span>
                       </li>
                     ))}
@@ -116,7 +116,7 @@ Today we'll cover subtitle formats.`,
 
         {/* Netflix Rules */}
         <section id="netflix-rules">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Netflix Subtitle Delivery Requirements</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Netflix Subtitle Delivery Requirements</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Netflix publishes detailed timed text style guides for each language. These are the core technical requirements that apply across most languages.</p>
 
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -124,7 +124,7 @@ Today we'll cover subtitle formats.`,
               <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   {['Requirement', 'Spec', 'Notes'].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-200 dark:border-gray-700">{h}</th>
+                    <th key={h} className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-gray-200 dark:border-gray-700">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -145,7 +145,7 @@ Today we'll cover subtitle formats.`,
                 ].map((row) => (
                   <tr key={row.req}>
                     <td className="px-4 py-3 font-medium text-gray-900 dark:text-white text-xs">{row.req}</td>
-                    <td className="px-4 py-3 font-mono text-violet-700 dark:text-violet-400 text-xs">{row.spec}</td>
+                    <td className="px-4 py-3 font-mono text-blue-700 dark:text-blue-400 text-xs">{row.spec}</td>
                     <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">{row.notes}</td>
                   </tr>
                 ))}
@@ -157,7 +157,7 @@ Today we'll cover subtitle formats.`,
 
         {/* Platform comparison */}
         <section id="platform-standards">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Subtitle Standards by Platform</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Subtitle Standards by Platform</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Key technical limits for the major streaming and video platforms.</p>
 
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -165,7 +165,7 @@ Today we'll cover subtitle formats.`,
               <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   {['Platform', 'Format', 'Max CPS', 'Max chars/line', 'Max lines', 'Min gap'].map((h) => (
-                    <th key={h} className="text-left px-3 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-200 dark:border-gray-700">{h}</th>
+                    <th key={h} className="text-left px-3 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-gray-200 dark:border-gray-700">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -181,9 +181,9 @@ Today we'll cover subtitle formats.`,
                   { platform: 'LinkedIn', fmt: 'SRT', cps: 'None', chars: 'None', lines: '2', gap: 'None' },
                 ].map((row) => (
                   <tr key={row.platform}>
-                    <td className="px-3 py-2.5 font-semibold text-gray-900 dark:text-white text-xs">{row.platform}</td>
+                    <td className="px-3 py-2.5 font-medium text-gray-900 dark:text-white text-xs">{row.platform}</td>
                     <td className="px-3 py-2.5 font-mono text-gray-600 dark:text-gray-400 text-xs">{row.fmt}</td>
-                    <td className="px-3 py-2.5 font-mono text-violet-700 dark:text-violet-400 text-xs">{row.cps}</td>
+                    <td className="px-3 py-2.5 font-mono text-blue-700 dark:text-blue-400 text-xs">{row.cps}</td>
                     <td className="px-3 py-2.5 text-gray-700 dark:text-gray-300 text-xs">{row.chars}</td>
                     <td className="px-3 py-2.5 text-gray-600 dark:text-gray-400 text-xs">{row.lines}</td>
                     <td className="px-3 py-2.5 text-gray-600 dark:text-gray-400 text-xs">{row.gap}</td>
@@ -196,25 +196,25 @@ Today we'll cover subtitle formats.`,
 
         {/* Reading speed */}
         <section id="reading-speed">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Subtitle Reading Speed Reference</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Subtitle Reading Speed Reference</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">Reading speed is measured in CPS (characters per second). Research shows that average adult viewers can comfortably read at 15–17 CPS. Professional subtitle editors target 17 CPS as a safe maximum for most audiences. Netflix uses 20 CPS for English because English has shorter average word lengths, resulting in a naturally faster reading pace per character.</p>
 
           <div className="grid sm:grid-cols-3 gap-4 mb-6">
             {[
               { label: 'Comfortable reading', cps: '≤ 15 CPS', desc: 'Easy for all viewers including children and non-native speakers', color: 'border-green-200 dark:border-green-800' },
               { label: 'Professional target', cps: '15–17 CPS', desc: 'EBU R37 and BBC guidelines. Safe for broadcast delivery', color: 'border-blue-200 dark:border-blue-800' },
-              { label: 'Netflix English limit', cps: '≤ 20 CPS', desc: 'Maximum for Netflix EN. Exceeding this fails QC', color: 'border-violet-200 dark:border-violet-800' },
+              { label: 'Netflix English limit', cps: '≤ 20 CPS', desc: 'Maximum for Netflix EN. Exceeding this fails QC', color: 'border-blue-200 dark:border-blue-800' },
             ].map((item) => (
               <div key={item.label} className={`rounded-xl border-2 ${item.color} p-4`}>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{item.label}</p>
-                <p className="text-xl font-bold font-mono text-gray-900 dark:text-white mb-1">{item.cps}</p>
+                <p className="text-xl font-medium font-mono text-gray-900 dark:text-white mb-1">{item.cps}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-            <p className="font-semibold text-gray-800 dark:text-gray-200 mb-2">How to calculate CPS manually</p>
+            <p className="font-medium text-gray-800 dark:text-gray-200 mb-2">How to calculate CPS manually</p>
             <p>CPS = (number of characters in the cue, including spaces) ÷ (duration of the cue in seconds)</p>
             <p className="mt-2">Example: A cue with the text "Welcome to the documentary." (28 characters including space) displayed for 2.0 seconds = 14.0 CPS. That is within safe reading speed for all platforms.</p>
           </div>
@@ -222,7 +222,7 @@ Today we'll cover subtitle formats.`,
 
         {/* Timing standards */}
         <section id="timing-standards">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Subtitle Timing Standards</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Subtitle Timing Standards</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Good subtitle timing follows consistent rules developed by broadcast standards bodies and refined through audience research.</p>
 
           <div className="space-y-4">
@@ -236,8 +236,8 @@ Today we'll cover subtitle formats.`,
               <div key={item.title} className="rounded-xl border border-gray-200 dark:border-gray-700 p-5">
                 <div className="flex items-start gap-3">
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{item.title}</p>
-                    <p className="font-mono text-xs text-violet-600 dark:text-violet-400 mt-0.5 mb-2">{item.detail}</p>
+                    <p className="font-medium text-gray-900 dark:text-white text-sm">{item.title}</p>
+                    <p className="font-mono text-xs text-blue-600 dark:text-blue-400 mt-0.5 mb-2">{item.detail}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item.body}</p>
                   </div>
                 </div>
@@ -248,7 +248,7 @@ Today we'll cover subtitle formats.`,
 
         {/* Character limits */}
         <section id="character-limits">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Subtitle Character Limits Explained</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Subtitle Character Limits Explained</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
             Character limits exist because subtitle rendering on a fixed-width screen has physical constraints. Television subtitles were historically limited to 37–40 characters per line because that's what fit safely within the "safe area" of a standard-definition TV screen without hitting the edges. Modern streaming platforms carry these limits forward because they ensure readability on all screen sizes — from a 75-inch QLED TV to a 5-inch smartphone.
           </p>
@@ -275,7 +275,7 @@ Today we'll cover subtitle formats.`,
 
         {/* Tools */}
         <section>
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-4">Free tools to check your subtitles</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-4">Free tools to check your subtitles</h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {[
               { label: 'Subtitle Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Check CPS against Netflix, BBC, and EBU standards' },
@@ -288,9 +288,9 @@ Today we'll cover subtitle formats.`,
               <Link
                 key={tool.path}
                 to={tool.path}
-                className="block rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:border-violet-400 hover:shadow-sm transition-all group"
+                className="block rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:border-blue-400 hover:shadow-sm transition-all group"
               >
-                <p className="font-semibold text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-400 text-sm">{tool.label}</p>
+                <p className="font-medium text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-400 text-sm">{tool.label}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{tool.desc}</p>
               </Link>
             ))}
@@ -298,19 +298,19 @@ Today we'll cover subtitle formats.`,
         </section>
 
         {/* AI CTA */}
-        <section className="rounded-2xl bg-gradient-to-br from-violet-600 to-violet-700 p-8 text-center text-white">
-          <h2 className="text-2xl font-display font-bold mb-2">Generate subtitles automatically with AI</h2>
-          <p className="text-violet-100 mb-6 text-sm max-w-md mx-auto">Upload your video and get accurate, timestamped SRT or VTT subtitles in minutes — no manual transcription needed.</p>
+        <section className="rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 p-8 text-center text-white">
+          <h2 className="text-2xl font-display font-medium mb-2">Generate subtitles automatically with AI</h2>
+          <p className="text-blue-100 mb-6 text-sm max-w-md mx-auto">Upload your video and get accurate, timestamped SRT or VTT subtitles in minutes — no manual transcription needed.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/video-to-subtitles" className="inline-block bg-white text-violet-700 font-semibold px-6 py-3 rounded-xl hover:bg-violet-50 transition-colors text-sm">Generate subtitles with AI →</Link>
-            <Link to="/video-to-transcript" className="inline-block border border-white/40 text-white font-semibold px-6 py-3 rounded-xl hover:bg-white/10 transition-colors text-sm">Transcribe video instantly</Link>
+            <Link to="/video-to-subtitles" className="inline-block bg-white text-blue-700 font-medium px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm">Generate subtitles with AI →</Link>
+            <Link to="/video-to-transcript" className="inline-block border border-white/40 text-white font-medium px-6 py-3 rounded-xl hover:bg-white/10 transition-colors text-sm">Transcribe video instantly</Link>
           </div>
         </section>
 
         {/* Nav links */}
         <div className="flex flex-wrap gap-4 justify-center pt-4 border-t border-gray-100 dark:border-gray-800">
-          <Link to="/subtitle-tools" className="text-sm text-violet-600 hover:text-violet-700 font-medium">Free Subtitle Tools →</Link>
-          <Link to="/tools" className="text-sm text-violet-600 hover:text-violet-700 font-medium">All Free Tools →</Link>
+          <Link to="/subtitle-tools" className="text-sm text-blue-600 hover:text-blue-700 font-medium">Free Subtitle Tools →</Link>
+          <Link to="/tools" className="text-sm text-blue-600 hover:text-blue-700 font-medium">All Free Tools →</Link>
         </div>
 
       </div>

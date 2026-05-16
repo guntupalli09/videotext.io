@@ -7,7 +7,7 @@ const Blog = lazy(() => import('../pages/Blog'))
 function RouteFallback() {
   return (
     <div className="flex min-h-[40vh] items-center justify-center" role="status" aria-live="polite">
-      <p className="text-violet-600 font-medium">Loading…</p>
+      <p className="text-blue-600 font-medium">Loading…</p>
     </div>
   )
 }

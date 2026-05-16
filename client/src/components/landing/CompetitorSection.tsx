@@ -75,7 +75,7 @@ const FEATURE_COMPARISON = [
 function BoolCell({ val }: { val: boolean | string }) {
   if (typeof val === 'string') {
     return (
-      <span className="text-[12px] font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10 px-2 py-0.5 rounded-full">
+      <span className="text-[12px] font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-600/10 px-2 py-0.5 rounded-full">
         {val}
       </span>
     );
@@ -104,19 +104,19 @@ export function CompetitorSection() {
         >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 dark:bg-red-500/10 border border-red-200/60 dark:border-red-500/20 mb-6">
             <TrendingDown className="w-3.5 h-3.5 text-red-500" />
-            <span className="text-[12px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wide">
+            <span className="text-[12px] font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">
               Speed comparison
             </span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
-            <span className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
+            <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
               {speedMultiple}× faster
             </span>
             {' '}than Descript.
           </h2>
           <p className="text-lg text-gray-500 dark:text-white/45 max-w-xl mx-auto transition-colors duration-500">
-            VideoText processes a 2-hour video in <span className="font-bold text-violet-600 dark:text-violet-400">3 minutes</span> — while competitors take 15–25 minutes for the same job.
+            VideoText processes a 2-hour video in <span className="font-medium text-blue-600 dark:text-blue-400">3 minutes</span> — while competitors take 15–25 minutes for the same job.
           </p>
         </motion.div>
 
@@ -126,11 +126,11 @@ export function CompetitorSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 sm:p-8 mb-6 transition-colors duration-500"
+          className="bg-white dark:bg-gray-950 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6 sm:p-8 mb-6 transition-colors duration-500"
         >
           <div className="flex items-center gap-2 mb-6">
             <Clock className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            <span className="text-sm font-semibold text-gray-700 dark:text-white/70">
+            <span className="text-sm font-medium text-gray-700 dark:text-white/70">
               Processing time for a 2-hour video (minutes)
             </span>
           </div>
@@ -149,8 +149,8 @@ export function CompetitorSection() {
                 >
                   <div className="w-20 text-right">
                     <span
-                      className={`text-sm font-bold ${
-                        bar.isUs ? 'text-violet-600 dark:text-violet-400' : 'text-gray-500 dark:text-gray-400'
+                      className={`text-sm font-medium ${
+                        bar.isUs ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'
                       }`}
                     >
                       {bar.label}
@@ -160,7 +160,7 @@ export function CompetitorSection() {
                     <motion.div
                       className={`absolute inset-y-0 left-0 rounded-xl flex items-center ${
                         bar.isUs
-                          ? 'bg-gradient-to-r from-violet-600 to-indigo-600'
+                          ? 'bg-gradient-to-r from-blue-600 to-blue-700'
                           : 'bg-gray-300 dark:bg-gray-600'
                       }`}
                       initial={{ width: 0 }}
@@ -171,14 +171,14 @@ export function CompetitorSection() {
                   </div>
                   <div className="w-20 text-left flex items-center gap-1.5">
                     <span
-                      className={`text-sm font-bold ${
-                        bar.isUs ? 'text-violet-600 dark:text-violet-400' : 'text-gray-500 dark:text-gray-400'
+                      className={`text-sm font-medium ${
+                        bar.isUs ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'
                       }`}
                     >
                       {bar.minutes} min
                     </span>
                     {bar.isUs && (
-                      <span className="text-[9px] font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                      <span className="text-[9px] font-medium bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded-full whitespace-nowrap">
                         {speedMultiple}× faster
                       </span>
                     )}
@@ -201,7 +201,7 @@ export function CompetitorSection() {
                 <Zap className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <p className="text-sm font-bold text-gray-800 dark:text-white/80">
+                <p className="text-sm font-medium text-gray-800 dark:text-white/80">
                   Save {COMPETITORS[0].slowMinutes - VIDEOTEXT_MINUTES}+ minutes per video
                 </p>
                 <p className="text-[12px] text-gray-500 dark:text-white/40">
@@ -212,7 +212,7 @@ export function CompetitorSection() {
             <Link to="/video-to-transcript">
               <motion.span
                 whileHover={{ scale: 1.03, y: -1 }}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-violet-500/20 hover:shadow-xl hover:shadow-violet-500/30 transition-all"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all"
               >
                 Try VideoText free
                 <ChevronRight className="w-4 h-4" />
@@ -226,7 +226,7 @@ export function CompetitorSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.2, duration: 0.6 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
           className="overflow-x-auto"
         >
           <div className="min-w-[640px]">
@@ -234,7 +234,7 @@ export function CompetitorSection() {
             <div className="grid grid-cols-5 gap-2 mb-3 px-4">
               <div />
               <div className="text-center">
-                <span className="text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide bg-violet-50 dark:bg-violet-500/10 px-2.5 py-1 rounded-full">
+                <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide bg-blue-50 dark:bg-blue-600/10 px-2.5 py-1 rounded-full">
                   VideoText ✓
                 </span>
               </div>
@@ -248,7 +248,7 @@ export function CompetitorSection() {
             </div>
 
             {/* Table rows */}
-            <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden divide-y divide-gray-100 dark:divide-white/[0.04] transition-colors duration-500">
+            <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden divide-y divide-gray-100 dark:divide-white/[0.04] transition-colors duration-500">
               {FEATURE_COMPARISON.map((row, i) => (
                 <motion.div
                   key={row.feature}
@@ -258,7 +258,7 @@ export function CompetitorSection() {
                   transition={{ delay: 0.04 * i }}
                   className={`grid grid-cols-5 gap-2 px-4 py-3.5 items-center ${
                     row.highlight
-                      ? 'bg-violet-50/70 dark:bg-violet-500/[0.05]'
+                      ? 'bg-blue-50/70 dark:bg-blue-600/[0.05]'
                       : i % 2 === 0
                       ? 'bg-white dark:bg-gray-950'
                       : 'bg-gray-50/60 dark:bg-gray-900/60'
@@ -267,7 +267,7 @@ export function CompetitorSection() {
                   <div className="text-sm text-gray-700 dark:text-white/60 font-medium">
                     {row.feature}
                     {row.highlight && (
-                      <span className="ml-2 text-[9px] bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full font-bold">
+                      <span className="ml-2 text-[9px] bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full font-medium">
                         KEY
                       </span>
                     )}
@@ -305,7 +305,7 @@ export function CompetitorSection() {
             <Link to="/video-to-transcript">
               <motion.span
                 whileHover={{ scale: 1.03, y: -1 }}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-7 py-3 rounded-xl font-bold text-sm shadow-lg shadow-violet-500/20 hover:shadow-xl hover:shadow-violet-500/30 transition-all"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-7 py-3 rounded-xl font-medium text-sm shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all"
               >
                 Start Transcribing Free
                 <ChevronRight className="w-4 h-4" />
@@ -313,7 +313,7 @@ export function CompetitorSection() {
             </Link>
             <Link
               to="/compare"
-              className="text-sm text-gray-500 dark:text-white/35 hover:text-violet-600 dark:hover:text-violet-400 transition-colors font-medium"
+              className="text-sm text-gray-500 dark:text-white/35 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
             >
               See full comparison →
             </Link>

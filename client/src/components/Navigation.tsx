@@ -1,63 +1,94 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
-import UserMenu from './UserMenu'
-import { prefetchRoute } from '../lib/prefetch'
-import { isLoggedIn } from '../lib/auth'
-import { useFounderStatus } from '../hooks/useFounderStatus'
-import { trackEvent } from '../lib/analytics'
-import { CORE_AI_TOOLS_NAV } from '../config/coreAiToolsNav'
-import { getBlogOutboundUrl } from '../lib/blogOutbound'
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import UserMenu from "./UserMenu";
+import { prefetchRoute } from "../lib/prefetch";
+import { isLoggedIn } from "../lib/auth";
+import { useFounderStatus } from "../hooks/useFounderStatus";
+import { trackEvent } from "../lib/analytics";
+import { CORE_AI_TOOLS_NAV } from "../config/coreAiToolsNav";
+import { getBlogOutboundUrl } from "../lib/blogOutbound";
 
-const AI_TOOLS = [...CORE_AI_TOOLS_NAV]
+const AI_TOOLS = [...CORE_AI_TOOLS_NAV];
 
 const FREE_TOOLS = [
-  { name: 'SRT → VTT Converter', path: '/tools/srt-to-vtt' },
-  { name: 'VTT → SRT Converter', path: '/tools/vtt-to-srt' },
-  { name: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing' },
-  { name: 'Merge SRT Files', path: '/tools/merge-srt-files' },
-  { name: 'Subtitle Validator', path: '/tools/subtitle-validator' },
-  { name: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed' },
-  { name: '→ All free tools', path: '/tools' },
-]
+  { name: "SRT → VTT Converter", path: "/tools/srt-to-vtt" },
+  { name: "VTT → SRT Converter", path: "/tools/vtt-to-srt" },
+  { name: "Shift Subtitle Timing", path: "/tools/shift-subtitle-timing" },
+  { name: "Merge SRT Files", path: "/tools/merge-srt-files" },
+  { name: "Subtitle Validator", path: "/tools/subtitle-validator" },
+  { name: "Reading Speed Checker", path: "/tools/subtitle-reading-speed" },
+  { name: "→ All free tools", path: "/tools" },
+];
 
 export default function Navigation() {
-  const { isFounder, loading } = useFounderStatus()
-  const [toolsOpen, setToolsOpen] = useState(false)
-  const [showAuthLinks, setShowAuthLinks] = useState(() => !isLoggedIn())
+  const { isFounder, loading } = useFounderStatus();
+  const location = useLocation();
+  const isToolMode = location.pathname !== "/";
+  const toolLabel = (() => {
+    if (location.pathname === "/guideline-format") return "Format tool";
+    if (location.pathname === "/video-to-transcript")
+      return "Video to Transcript";
+    return "Tool";
+  })();
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const [showAuthLinks, setShowAuthLinks] = useState(() => !isLoggedIn());
 
   useEffect(() => {
-    setShowAuthLinks(!isLoggedIn())
-  }, [])
+    setShowAuthLinks(!isLoggedIn());
+  }, []);
 
   useEffect(() => {
-    const sync = () => setShowAuthLinks(!isLoggedIn())
-    window.addEventListener('videotext:plan-updated', sync)
-    window.addEventListener('videotext:logout', sync)
+    const sync = () => setShowAuthLinks(!isLoggedIn());
+    window.addEventListener("videotext:plan-updated", sync);
+    window.addEventListener("videotext:logout", sync);
     return () => {
-      window.removeEventListener('videotext:plan-updated', sync)
-      window.removeEventListener('videotext:logout', sync)
-    }
-  }, [])
+      window.removeEventListener("videotext:plan-updated", sync);
+      window.removeEventListener("videotext:logout", sync);
+    };
+  }, []);
 
   return (
     <nav className="sticky top-0 z-[60] bg-gray-950 border-b border-white/[0.08] shadow-[0_1px_0_rgba(255,255,255,0.03)]">
       <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 w-full">
-
+        <div
+          className={`flex items-center justify-between ${isToolMode ? "h-11" : "h-14"} w-full`}
+        >
           {/* Logo */}
           <Link
             to="/"
             className="flex items-center gap-2 shrink-0"
-            onMouseEnter={() => prefetchRoute('/')}
+            onMouseEnter={() => prefetchRoute("/")}
           >
-            <img src="/logo.svg" alt="VideoText" width={28} height={28} className="h-7 w-7" />
-            <span className="text-[17px] font-display font-semibold text-white">VideoText</span>
+            <img
+              src="/logo.svg"
+              alt="VideoText"
+              width={28}
+              height={28}
+              className={isToolMode ? "h-3.5 w-3.5" : "h-7 w-7"}
+            />
+            {!isToolMode && (
+              <span className="text-[17px] font-display font-semibold text-white">
+                VideoText
+              </span>
+            )}
           </Link>
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-6 shrink-0">
+          {isToolMode && (
+            <div
+              className="absolute left-1/2 -translate-x-1/2 text-[13px] text-white/45"
+              aria-label="Tool breadcrumb"
+            >
+              <span className="font-medium text-white/80">{toolLabel}</span>
+              <span className="mx-2 text-white/25">/</span>
+              <span>current step</span>
+            </div>
+          )}
 
+          {/* Desktop nav */}
+          <div
+            className={`${isToolMode ? "hidden" : "hidden md:flex"} items-center gap-6 shrink-0`}
+          >
             {/* Tools dropdown — covers AI + Free */}
             <div
               className="relative"
@@ -66,8 +97,18 @@ export default function Navigation() {
             >
               <button className="flex items-center gap-1 text-sm font-medium text-white/70 hover:text-white transition-colors">
                 Tools
-                <svg className="w-3.5 h-3.5 mt-px" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <svg
+                  className="w-3.5 h-3.5 mt-px"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </button>
 
@@ -78,18 +119,30 @@ export default function Navigation() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-full right-0 mt-2 w-[480px] bg-gray-900 border border-white/[0.08] rounded-2xl shadow-2xl py-4 grid grid-cols-2 gap-0"
+                    className="absolute top-full right-0 mt-2 w-[480px] bg-gray-900 border border-white/[0.08] rounded-lg shadow-2xl py-4 grid grid-cols-2 gap-0"
                   >
                     {/* AI Tools column */}
                     <div className="px-4 border-r border-white/[0.06]">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400 mb-2 px-1">Core AI tools</p>
+                      <p className="text-[10px] font-medium uppercase tracking-widest text-blue-400 mb-2 px-1">
+                        Core AI tools
+                      </p>
                       {AI_TOOLS.map((t) => (
                         <Link
                           key={t.path}
                           to={t.path}
                           className="block px-2 py-1.5 text-sm text-white/65 hover:text-white hover:bg-white/[0.05] rounded-lg transition-colors"
                           onMouseEnter={() => prefetchRoute(t.path)}
-                          onClick={() => { try { trackEvent('tool_nav_clicked', { tool: t.name, path: t.path, category: 'ai' }) } catch { /* non-blocking */ } }}
+                          onClick={() => {
+                            try {
+                              trackEvent("tool_nav_clicked", {
+                                tool: t.name,
+                                path: t.path,
+                                category: "ai",
+                              });
+                            } catch {
+                              /* non-blocking */
+                            }
+                          }}
                         >
                           {t.name}
                         </Link>
@@ -98,18 +151,30 @@ export default function Navigation() {
 
                     {/* Free Tools column */}
                     <div className="px-4">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-2 px-1">Free Tools</p>
+                      <p className="text-[10px] font-medium uppercase tracking-widest text-emerald-400 mb-2 px-1">
+                        Free Tools
+                      </p>
                       {FREE_TOOLS.map((t) => (
                         <Link
                           key={t.path}
                           to={t.path}
                           className={`block px-2 py-1.5 text-sm rounded-lg transition-colors ${
-                            t.path === '/tools'
-                              ? 'text-violet-400 hover:text-violet-300 font-semibold mt-1 border-t border-white/[0.06] pt-2'
-                              : 'text-white/65 hover:text-white hover:bg-white/[0.05]'
+                            t.path === "/tools"
+                              ? "text-blue-400 hover:text-blue-300 font-medium mt-1 border-t border-white/[0.06] pt-2"
+                              : "text-white/65 hover:text-white hover:bg-white/[0.05]"
                           }`}
                           onMouseEnter={() => prefetchRoute(t.path)}
-                          onClick={() => { try { trackEvent('tool_nav_clicked', { tool: t.name, path: t.path, category: 'free' }) } catch { /* non-blocking */ } }}
+                          onClick={() => {
+                            try {
+                              trackEvent("tool_nav_clicked", {
+                                tool: t.name,
+                                path: t.path,
+                                category: "free",
+                              });
+                            } catch {
+                              /* non-blocking */
+                            }
+                          }}
                         >
                           {t.name}
                         </Link>
@@ -123,13 +188,13 @@ export default function Navigation() {
             <Link
               to="/pricing"
               className="text-sm font-medium text-white/70 hover:text-white transition-colors"
-              onMouseEnter={() => prefetchRoute('/pricing')}
+              onMouseEnter={() => prefetchRoute("/pricing")}
             >
               Pricing
             </Link>
 
             <a
-              href={getBlogOutboundUrl('/blog')}
+              href={getBlogOutboundUrl("/blog")}
               className="text-sm font-medium text-white/70 hover:text-white transition-colors"
             >
               Blog
@@ -139,7 +204,7 @@ export default function Navigation() {
               <Link
                 to="/founder"
                 className="text-sm font-medium text-white/70 hover:text-white transition-colors"
-                onMouseEnter={() => prefetchRoute('/founder')}
+                onMouseEnter={() => prefetchRoute("/founder")}
               >
                 Founder
               </Link>
@@ -150,17 +215,35 @@ export default function Navigation() {
               <div className="flex items-center gap-3 ml-2">
                 <Link
                   to="/login"
-                  className="text-sm font-semibold text-white/80 hover:text-white border border-white/20 hover:border-white/40 rounded-lg px-4 py-1.5 transition-all"
-                  onMouseEnter={() => prefetchRoute('/login')}
-                  onClick={() => { try { trackEvent('nav_cta_clicked', { label: 'Login', destination: '/login' }) } catch { /* non-blocking */ } }}
+                  className="text-sm font-medium text-white/80 hover:text-white border border-white/20 hover:border-white/40 rounded-lg px-4 py-1.5 transition-all"
+                  onMouseEnter={() => prefetchRoute("/login")}
+                  onClick={() => {
+                    try {
+                      trackEvent("nav_cta_clicked", {
+                        label: "Login",
+                        destination: "/login",
+                      });
+                    } catch {
+                      /* non-blocking */
+                    }
+                  }}
                 >
                   Login
                 </Link>
                 <Link
                   to="/signup"
-                  className="text-sm font-bold text-white bg-violet-600 hover:bg-violet-500 rounded-lg px-4 py-1.5 transition-colors flex items-center gap-1"
-                  onMouseEnter={() => prefetchRoute('/signup')}
-                  onClick={() => { try { trackEvent('nav_cta_clicked', { label: 'Start free', destination: '/signup' }) } catch { /* non-blocking */ } }}
+                  className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-600 rounded-lg px-4 py-1.5 transition-colors flex items-center gap-1"
+                  onMouseEnter={() => prefetchRoute("/signup")}
+                  onClick={() => {
+                    try {
+                      trackEvent("nav_cta_clicked", {
+                        label: "Start free",
+                        destination: "/signup",
+                      });
+                    } catch {
+                      /* non-blocking */
+                    }
+                  }}
                 >
                   Start free <span aria-hidden>→</span>
                 </Link>
@@ -170,22 +253,46 @@ export default function Navigation() {
             )}
           </div>
 
+          {isToolMode && (
+            <div className="ml-auto flex items-center gap-2">
+              <Link
+                to="/signup"
+                className="inline-flex h-8 items-center justify-center rounded-lg bg-blue-600 px-3 text-[12px] font-medium text-white hover:bg-blue-700 transition-colors"
+                onMouseEnter={() => prefetchRoute("/signup")}
+              >
+                Start free
+              </Link>
+              {!showAuthLinks && <UserMenu />}
+            </div>
+          )}
+
           {/* Mobile */}
-          <div className="md:hidden flex items-center gap-2">
+          <div
+            className={`${isToolMode ? "hidden" : "md:hidden"} flex items-center gap-2`}
+          >
             {showAuthLinks && (
               <Link
                 to="/signup"
-                className="text-xs font-bold text-white bg-violet-600 hover:bg-violet-500 rounded-lg px-3 py-1.5 transition-colors"
-                onClick={() => { try { trackEvent('nav_cta_clicked', { label: 'Start free', destination: '/signup', mobile: true }) } catch { /* non-blocking */ } }}
+                className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-600 rounded-lg px-3 py-1.5 transition-colors"
+                onClick={() => {
+                  try {
+                    trackEvent("nav_cta_clicked", {
+                      label: "Start free",
+                      destination: "/signup",
+                      mobile: true,
+                    });
+                  } catch {
+                    /* non-blocking */
+                  }
+                }}
               >
                 Start free →
               </Link>
             )}
             <UserMenu />
           </div>
-
         </div>
       </div>
     </nav>
-  )
+  );
 }
