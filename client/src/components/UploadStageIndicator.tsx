@@ -59,14 +59,14 @@ export default function UploadStageIndicator({
             <span
               className={`
                 badge inline-flex items-center justify-center min-w-[28px] h-7 px-2
-                ${isActive ? 'bg-violet-600 text-white ring-2 ring-violet-200' : ''}
-                ${isPast ? 'bg-violet-100 text-violet-700' : ''}
+                ${isActive ? 'bg-blue-600 text-white ring-2 ring-blue-200' : ''}
+                ${isPast ? 'bg-blue-100 text-blue-700' : ''}
                 ${isFuture ? 'bg-gray-100 text-gray-400' : ''}
               `}
             >
               {isPast ? '✓' : i + 1}
             </span>
-            <span className={`text-xs font-medium ${isActive ? 'text-violet-700' : isPast ? 'text-gray-600' : 'text-gray-400'}`}>
+            <span className={`text-xs font-medium ${isActive ? 'text-blue-700' : isPast ? 'text-gray-600' : 'text-gray-400'}`}>
               {label}
             </span>
             {i < STAGES.length - 1 && (

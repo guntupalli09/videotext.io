@@ -122,7 +122,7 @@ const TtmlToSrt = lazy(() => import('./pages/tools/TtmlToSrt'))
 function RouteFallback() {
   return (
     <div className="flex min-h-[40vh] items-center justify-center" role="status" aria-live="polite" aria-label="Loading">
-      <p className="text-violet-600 font-medium">Loading…</p>
+      <p className="text-blue-600 font-medium">Loading…</p>
     </div>
   )
 }
@@ -371,9 +371,9 @@ function PostCheckoutHandler() {
   if (activating) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="status" aria-live="polite">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated max-w-sm w-full p-8 text-center">
-          <div className="mx-auto w-10 h-10 rounded-full border-4 border-violet-200 border-t-violet-600 animate-spin mb-4" />
-          <p className="text-base font-semibold text-gray-900 dark:text-white">Payment received — activating your plan…</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-card-elevated max-w-sm w-full p-8 text-center">
+          <div className="mx-auto w-10 h-10 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin mb-4" />
+          <p className="text-base font-medium text-gray-900 dark:text-white">Payment received — activating your plan…</p>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">This takes just a moment.</p>
         </div>
       </div>
@@ -383,8 +383,8 @@ function PostCheckoutHandler() {
   if (setPasswordPending) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="set-password-title">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated max-w-sm w-full p-6">
-          <h2 id="set-password-title" className="text-lg font-semibold text-gray-900 dark:text-white">Set your password</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-card-elevated max-w-sm w-full p-6">
+          <h2 id="set-password-title" className="text-lg font-medium text-gray-900 dark:text-white">Set your password</h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
             So you can log in later and access your plan from any device.
           </p>
@@ -395,7 +395,7 @@ function PostCheckoutHandler() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               autoComplete="new-password"
               minLength={8}
             />
@@ -405,7 +405,7 @@ function PostCheckoutHandler() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               autoComplete="new-password"
             />
             {passwordError && <p className="text-sm text-red-600">{passwordError}</p>}
@@ -413,7 +413,7 @@ function PostCheckoutHandler() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-2.5 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-60"
+                className="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium disabled:opacity-60"
               >
                 {submitting ? 'Setting…' : 'Set password'}
               </button>
@@ -484,7 +484,7 @@ function App() {
       <SessionTracker />
       <PostCheckoutHandler />
       <ImpersonationHandler />
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-violet-600 focus:text-white focus:rounded-lg">
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg">
         Skip to main content
       </a>
       <div className="min-h-screen flex flex-col overflow-x-hidden">

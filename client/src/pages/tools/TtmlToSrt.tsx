@@ -87,7 +87,7 @@ export default function TtmlToSrt() {
     >
       <div className="space-y-4">
         <div
-          className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-violet-300 dark:hover:border-violet-500 transition-colors cursor-pointer"
+          className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer"
           onClick={() => fileRef.current?.click()}
         >
           <input ref={fileRef} type="file" accept=".ttml,.dfxp,.xml,.tt" className="hidden" onChange={handleFile} />
@@ -98,7 +98,7 @@ export default function TtmlToSrt() {
         </div>
 
         <textarea
-          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-40 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-40 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder={`<?xml version="1.0"?>\n<tt xmlns="http://www.w3.org/ns/ttml">\n  <body><div>\n    <p begin="00:00:01.000" end="00:00:03.000">Hello world</p>\n    <p begin="00:00:04.000" end="00:00:06.000">Second subtitle</p>\n  </div></body>\n</tt>`}
           value={text}
           onChange={(e) => { setText(e.target.value); setOutput('') }}
@@ -106,7 +106,7 @@ export default function TtmlToSrt() {
 
         <button
           onClick={() => convert()}
-          className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors"
+          className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors"
         >
           Convert TTML → SRT
         </button>
@@ -117,14 +117,14 @@ export default function TtmlToSrt() {
           <div className="space-y-3">
             <div className="rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden">
               <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600">
-                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">SRT Output</span>
-                <button onClick={() => navigator.clipboard.writeText(output)} className="text-xs text-violet-600 hover:text-violet-700 font-medium">Copy</button>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">SRT Output</span>
+                <button onClick={() => navigator.clipboard.writeText(output)} className="text-xs text-blue-600 hover:text-blue-700 font-medium">Copy</button>
               </div>
               <pre className="text-xs text-gray-800 dark:text-gray-200 p-4 font-mono overflow-auto max-h-48 whitespace-pre-wrap">{output.slice(0, 600)}{output.length > 600 ? '\n…' : ''}</pre>
             </div>
             <button
               onClick={handleDownload}
-              className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors"
+              className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium text-sm transition-colors"
             >
               Download .srt file
             </button>

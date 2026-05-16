@@ -293,7 +293,7 @@ function IncidentCard({ incident }: { incident: Incident }) {
     <div className="py-5 px-5 sm:px-6">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-white leading-snug">
             {incident.title}
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{incident.date}</p>
@@ -354,7 +354,7 @@ export default function StatusPage() {
         {/* ── Header ── */}
         <div className="mb-10">
           <div className="flex items-center justify-between gap-4 mb-2">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <h1 className="text-3xl sm:text-4xl font-medium tracking-tight text-gray-900 dark:text-white">
               VideoText Status
             </h1>
             <span className="inline-flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 shrink-0">
@@ -372,15 +372,15 @@ export default function StatusPage() {
           className={`flex items-center gap-3 px-5 py-4 rounded-xl border mb-8 ${banner.bg} ${banner.border}`}
         >
           <BannerIcon size={22} className={`shrink-0 ${banner.iconColor}`} strokeWidth={2} />
-          <span className={`text-base font-semibold ${banner.textColor}`}>{banner.headline}</span>
+          <span className={`text-base font-medium ${banner.textColor}`}>{banner.headline}</span>
         </div>
 
         {/* ── Services ── */}
         <section className="mb-10">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
             Services
           </h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
             {SERVICES.map((service) => (
               <ServiceRow key={service.name} service={service} />
             ))}
@@ -392,10 +392,10 @@ export default function StatusPage() {
 
         {/* ── 90-day uptime summary ── */}
         <section className="mb-10">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
             90-Day Uptime
           </h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
             {SERVICES.map((service, i) => (
               <div
                 key={service.name}
@@ -407,7 +407,7 @@ export default function StatusPage() {
               >
                 <span className="text-sm text-gray-700 dark:text-gray-300">{service.name}</span>
                 <span
-                  className={`text-sm font-mono font-semibold ${
+                  className={`text-sm font-mono font-medium ${
                     parseFloat(service.uptime90d) >= 99.9
                       ? 'text-emerald-600 dark:text-emerald-400'
                       : parseFloat(service.uptime90d) >= 99.0
@@ -424,10 +424,10 @@ export default function StatusPage() {
 
         {/* ── Incident history ── */}
         <section className="mb-10">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
             Incident History
           </h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
             {INCIDENTS.map((incident) => (
               <IncidentCard key={incident.id} incident={incident} />
             ))}
@@ -439,10 +439,10 @@ export default function StatusPage() {
 
         {/* ── Subscribe ── */}
         <section>
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 px-5 sm:px-6 py-6">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 px-5 sm:px-6 py-6">
             <div className="flex items-center gap-2.5 mb-1">
-              <Bell size={16} className="text-violet-500" />
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+              <Bell size={16} className="text-blue-600" />
+              <h2 className="text-sm font-medium text-gray-900 dark:text-white">
                 Get incident notifications
               </h2>
             </div>
@@ -464,12 +464,12 @@ export default function StatusPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
-                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-shadow"
+                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
                 />
                 <button
                   type="submit"
                   disabled={subscribing}
-                  className="shrink-0 px-5 py-2.5 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="shrink-0 px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {subscribing ? 'Subscribing…' : 'Subscribe'}
                 </button>

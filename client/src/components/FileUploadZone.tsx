@@ -110,7 +110,7 @@ export default function FileUploadZone({
             type="button"
             onClick={handleRemove}
             disabled={disabled}
-            className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-1"
+            className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
           >
             Remove
           </button>
@@ -135,7 +135,7 @@ export default function FileUploadZone({
     <div
       {...getRootProps()}
         className={`
-        border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center cursor-pointer transition-motion
+        border-2 border-dashed rounded-xl p-8 sm:p-12 text-center cursor-pointer transition-motion
         ${
           isDragActive || isDragging
             ? 'border-primary bg-primary/5'
@@ -146,7 +146,7 @@ export default function FileUploadZone({
     >
       <input {...getInputProps()} />
       <Upload className="h-11 w-11 text-gray-400 mx-auto mb-3" strokeWidth={1.5} />
-      <h3 className="font-display text-lg font-semibold text-gray-800 dark:text-white mb-2">
+      <h3 className="font-display text-lg font-medium text-gray-800 dark:text-white mb-2">
         {isDragActive
           ? multiple
             ? 'Drop your files here'

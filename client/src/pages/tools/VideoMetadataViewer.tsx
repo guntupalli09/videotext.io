@@ -114,17 +114,17 @@ export default function VideoMetadataViewer() {
       <div className="space-y-4">
         <div
           onClick={() => fileRef.current?.click()}
-          className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-10 text-center hover:border-violet-300 dark:hover:border-violet-500 transition-colors cursor-pointer"
+          className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-10 text-center hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer"
         >
           <input ref={fileRef} type="file" accept="video/*" className="hidden" onChange={handleFile} />
           <div className="text-4xl mb-3">🎬</div>
-          <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Click to select a video file</p>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Click to select a video file</p>
           <p className="text-xs text-gray-400 mt-1">MP4, MOV, WebM, MKV, AVI — nothing is uploaded</p>
         </div>
 
         {loading && (
           <div className="text-center py-4">
-            <div className="inline-block w-6 h-6 border-2 border-violet-600 border-t-transparent rounded-full animate-spin" />
+            <div className="inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-gray-500 mt-2">Reading metadata…</p>
           </div>
         )}
@@ -134,7 +134,7 @@ export default function VideoMetadataViewer() {
         {rows.length > 0 && (
           <div className="rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden">
             <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600">
-              <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Video information</p>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Video information</p>
             </div>
             <div className="divide-y divide-gray-100 dark:divide-gray-700">
               {rows.map((row) => (
