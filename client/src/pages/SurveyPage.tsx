@@ -37,7 +37,7 @@ function StarPicker({ value, onChange }: { value: number | null; onChange: (n: n
           onMouseEnter={() => setHovered(n)}
           onMouseLeave={() => setHovered(null)}
           onClick={() => onChange(n)}
-          className="text-3xl transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded"
+          className="text-3xl transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
         >
           {active != null && n <= active ? '⭐' : '☆'}
         </button>
@@ -94,10 +94,10 @@ export default function SurveyPage() {
 
   if (sent) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
           <div className="text-6xl mb-6">🎉</div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          <h1 className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
             Thank you so much!
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
@@ -106,7 +106,7 @@ export default function SurveyPage() {
           </p>
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-medium transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
           >
             Try VideoText
           </Link>
@@ -116,14 +116,14 @@ export default function SurveyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 py-12 px-4">
       <div className="max-w-xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
-            <span className="text-xl font-bold text-violet-600">VideoText</span>
+            <span className="text-xl font-medium text-blue-600">VideoText</span>
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+          <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-3">
             Help us build the tool you love
           </h1>
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -133,8 +133,8 @@ export default function SurveyPage() {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Q1: Rating */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-            <label className="block text-base font-semibold text-gray-900 dark:text-white mb-1">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+            <label className="block text-base font-medium text-gray-900 dark:text-white mb-1">
               Overall, how would you rate VideoText?
             </label>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
@@ -142,17 +142,17 @@ export default function SurveyPage() {
             </p>
             <StarPicker value={stars} onChange={setStars} />
             {stars && (
-              <p className="mt-2 text-sm font-medium text-violet-600 dark:text-violet-400">
+              <p className="mt-2 text-sm font-medium text-blue-600 dark:text-blue-400">
                 {STAR_LABELS[stars]}
               </p>
             )}
           </div>
 
           {/* Q2: How can we improve */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <label
               htmlFor="survey-improve"
-              className="block text-base font-semibold text-gray-900 dark:text-white mb-1"
+              className="block text-base font-medium text-gray-900 dark:text-white mb-1"
             >
               How can we improve?
             </label>
@@ -165,16 +165,16 @@ export default function SurveyPage() {
               onChange={(e) => setImprove(e.target.value.slice(0, 2000))}
               placeholder="e.g. The export took too long, I wish there was a…"
               rows={4}
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-white dark:focus:bg-gray-600 resize-none transition"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-600 resize-none transition"
             />
             <p className="text-xs text-gray-400 text-right mt-1">{improve.length}/2000</p>
           </div>
 
           {/* Q3: Top tool */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <label
               htmlFor="survey-top-tool"
-              className="block text-base font-semibold text-gray-900 dark:text-white mb-1"
+              className="block text-base font-medium text-gray-900 dark:text-white mb-1"
             >
               What tool impressed you the most?
             </label>
@@ -185,7 +185,7 @@ export default function SurveyPage() {
               id="survey-top-tool"
               value={topTool}
               onChange={(e) => setTopTool(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-white dark:focus:bg-gray-600 transition"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-600 transition"
             >
               <option value="">— Select a tool —</option>
               {TOOLS.map((t) => (
@@ -209,17 +209,17 @@ export default function SurveyPage() {
                   onChange={(e) => setTopToolReason(e.target.value.slice(0, 2000))}
                   placeholder="e.g. It handled my 40-minute video perfectly, the accuracy was great…"
                   rows={3}
-                  className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-white dark:focus:bg-gray-600 resize-none transition"
+                  className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-600 resize-none transition"
                 />
               </div>
             )}
           </div>
 
           {/* Q4: Feature request */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <label
               htmlFor="survey-feature"
-              className="block text-base font-semibold text-gray-900 dark:text-white mb-1"
+              className="block text-base font-medium text-gray-900 dark:text-white mb-1"
             >
               Any feature in your mind that would ease your workflow?
             </label>
@@ -232,16 +232,16 @@ export default function SurveyPage() {
               onChange={(e) => setFeatureRequest(e.target.value.slice(0, 2000))}
               placeholder="e.g. Auto-detect speaker names, direct YouTube upload, Notion integration…"
               rows={4}
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-white dark:focus:bg-gray-600 resize-none transition"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-600 resize-none transition"
             />
             <p className="text-xs text-gray-400 text-right mt-1">{featureRequest.length}/2000</p>
           </div>
 
           {/* Q5: Anything else */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <label
               htmlFor="survey-other"
-              className="block text-base font-semibold text-gray-900 dark:text-white mb-1"
+              className="block text-base font-medium text-gray-900 dark:text-white mb-1"
             >
               Anything else on your mind?
             </label>
@@ -254,16 +254,16 @@ export default function SurveyPage() {
               onChange={(e) => setOtherFeedback(e.target.value.slice(0, 2000))}
               placeholder="Anything goes here…"
               rows={3}
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-white dark:focus:bg-gray-600 resize-none transition"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-600 resize-none transition"
             />
           </div>
 
           {/* Contact info */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 space-y-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 space-y-4">
             <div>
               <label
                 htmlFor="survey-email"
-                className="block text-base font-semibold text-gray-900 dark:text-white mb-1"
+                className="block text-base font-medium text-gray-900 dark:text-white mb-1"
               >
                 Your email <span className="text-gray-400 font-normal text-sm">(optional)</span>
               </label>
@@ -276,7 +276,7 @@ export default function SurveyPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value.slice(0, 300))}
                 placeholder="you@example.com"
-                className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-white dark:focus:bg-gray-600 transition"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-600 transition"
               />
             </div>
 
@@ -291,7 +291,7 @@ export default function SurveyPage() {
                 id="survey-plan"
                 value={plan}
                 onChange={(e) => setPlan(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-white dark:focus:bg-gray-600 transition"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-600 transition"
               >
                 <option value="">— Select your plan —</option>
                 {PLANS.map((p) => (
@@ -310,7 +310,7 @@ export default function SurveyPage() {
           <button
             type="submit"
             disabled={sending}
-            className="w-full py-4 rounded-2xl bg-violet-600 hover:bg-violet-700 active:scale-[0.99] text-white font-semibold text-base shadow-lg shadow-violet-200 dark:shadow-violet-900/30 disabled:opacity-60 transition-all"
+            className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-medium text-base shadow-lg shadow-blue-200 dark:shadow-blue-900/30 disabled:opacity-60 transition-all"
           >
             {sending ? 'Sending…' : 'Submit feedback'}
           </button>

@@ -9,15 +9,15 @@ export default function PerformanceSection({ performance }: { performance: Dashb
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div className="bg-white dark:bg-zinc-900 rounded-xl shadow p-6">
         <p className="text-sm text-gray-500 dark:text-gray-400">Avg Processing</p>
-        <p className="mt-1 text-xl font-semibold text-gray-900 dark:text-white">{avgSec}s</p>
+        <p className="mt-1 text-xl font-medium text-gray-900 dark:text-white">{avgSec}s</p>
       </div>
       <div className="bg-white dark:bg-zinc-900 rounded-xl shadow p-6">
         <p className="text-sm text-gray-500 dark:text-gray-400">P95 Processing</p>
-        <p className="mt-1 text-xl font-semibold text-gray-900 dark:text-white">{p95Sec}s</p>
+        <p className="mt-1 text-xl font-medium text-gray-900 dark:text-white">{p95Sec}s</p>
       </div>
       <div className="bg-white dark:bg-zinc-900 rounded-xl shadow p-6">
         <p className="text-sm text-gray-500 dark:text-gray-400">Failure Rate</p>
-        <p className="mt-1 text-xl font-semibold text-gray-900 dark:text-white">{failurePct}%</p>
+        <p className="mt-1 text-xl font-medium text-gray-900 dark:text-white">{failurePct}%</p>
       </div>
     </div>
   )

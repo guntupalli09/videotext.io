@@ -89,7 +89,7 @@ Stop letting back pain kill your productivity every afternoon.`;
         ]}
         title="Video → Transcript"
         subtitle="Extract spoken text from any video in seconds"
-        icon={<FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />}
+        icon={<FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />}
         tags={[
           'Transcript',
           'Speakers',
@@ -104,14 +104,14 @@ Stop letting back pain kill your productivity every afternoon.`;
         ]}
         sidebar={<ToolSidebar />}
       >
-        <div className="bg-purple-50 dark:bg-purple-900/10 rounded-2xl p-8 border border-purple-100 dark:border-purple-900/30">
+        <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-8 border border-blue-100 dark:border-blue-900/30">
           {/* File Info */}
-          <div className="flex items-center gap-4 mb-8 pb-6 border-b border-purple-200 dark:border-purple-900/30">
-            <div className="w-16 h-16 bg-purple-200 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
-              <FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+          <div className="flex items-center gap-4 mb-8 pb-6 border-b border-blue-200 dark:border-blue-900/30">
+            <div className="w-16 h-16 bg-blue-200 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+              <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">
                 {uploadedFile?.name}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -148,7 +148,7 @@ Stop letting back pain kill your productivity every afternoon.`;
         ]}
         title="Video → Transcript"
         subtitle="Extract spoken text from any video in seconds"
-        icon={<FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />}
+        icon={<FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />}
         tags={[
           'Transcript',
           'Speakers',
@@ -185,7 +185,7 @@ Stop letting back pain kill your productivity every afternoon.`;
         ]}
         title="Video → Transcript"
         subtitle="Extract spoken text from any video in seconds"
-        icon={<FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />}
+        icon={<FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />}
         tags={[
           'Transcript',
           'Speakers',
@@ -214,7 +214,7 @@ Stop letting back pain kill your productivity every afternoon.`;
           onAction={handleAction}
         >
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
               Options
             </h3>
 
@@ -270,7 +270,7 @@ Stop letting back pain kill your productivity every afternoon.`;
       ]}
       title="Video → Transcript"
       subtitle="Extract spoken text from any video in seconds"
-      icon={<FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />}
+      icon={<FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />}
       tags={[
         'Transcript',
         'Speakers',

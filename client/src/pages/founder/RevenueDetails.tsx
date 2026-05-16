@@ -111,19 +111,19 @@ export default function RevenueDetails({ revenue, snapshot }: Props) {
       <div className="flex flex-col gap-3">
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
           <p className="text-xs text-zinc-500 uppercase tracking-wider">ARPU</p>
-          <p className="text-2xl font-bold text-white mt-0.5">{arpu}</p>
+          <p className="text-2xl font-medium text-white mt-0.5">{arpu}</p>
           <p className="text-xs text-zinc-600 mt-0.5">per paid user / month</p>
         </div>
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
           <p className="text-xs text-zinc-500 uppercase tracking-wider">Churn rate (latest)</p>
-          <p className={`text-2xl font-bold mt-0.5 ${latestChurnRate != null && latestChurnRate > 5 ? 'text-red-400' : 'text-white'}`}>
+          <p className={`text-2xl font-medium mt-0.5 ${latestChurnRate != null && latestChurnRate > 5 ? 'text-red-400' : 'text-white'}`}>
             {latestChurnRate != null ? `${latestChurnRate.toFixed(1)}%` : '—'}
           </p>
           <p className="text-xs text-zinc-600 mt-0.5">monthly</p>
         </div>
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
           <p className="text-xs text-zinc-500 uppercase tracking-wider">Net new MRR (12m)</p>
-          <p className={`text-2xl font-bold mt-0.5 ${netNewMrr >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+          <p className={`text-2xl font-medium mt-0.5 ${netNewMrr >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
             {netNewMrr >= 0 ? '+' : ''}${(netNewMrr / 100).toFixed(0)}
           </p>
           <p className="text-xs text-zinc-600 mt-0.5">new − churned</p>
@@ -132,25 +132,25 @@ export default function RevenueDetails({ revenue, snapshot }: Props) {
 
       {/* New vs Churned MRR bars */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-        <h3 className="text-sm font-semibold text-white mb-1">New vs Churned MRR</h3>
+        <h3 className="text-sm font-medium text-white mb-1">New vs Churned MRR</h3>
         <p className="text-xs text-zinc-500 mb-3">Last 12 months</p>
         <NewChurnBars newMrr={revenue.newMrrTrend ?? []} churnedMrr={revenue.churnedMrrTrend ?? []} />
       </div>
 
       {/* Churn rate trend */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-        <h3 className="text-sm font-semibold text-white mb-1">Churn rate trend</h3>
+        <h3 className="text-sm font-medium text-white mb-1">Churn rate trend</h3>
         <p className="text-xs text-zinc-500 mb-3">Monthly %</p>
         <ChurnRateChart trend={revenue.churnRateTrend ?? []} />
         {snapshot.newPaidUsers != null && (
           <div className="mt-4 grid grid-cols-2 gap-2">
             <div>
               <p className="text-xs text-zinc-500">New paid today</p>
-              <p className="text-lg font-bold text-emerald-400">{snapshot.newPaidUsers}</p>
+              <p className="text-lg font-medium text-emerald-400">{snapshot.newPaidUsers}</p>
             </div>
             <div>
               <p className="text-xs text-zinc-500">Churned today</p>
-              <p className={`text-lg font-bold ${(snapshot.churnedUsers ?? 0) > 0 ? 'text-red-400' : 'text-zinc-400'}`}>
+              <p className={`text-lg font-medium ${(snapshot.churnedUsers ?? 0) > 0 ? 'text-red-400' : 'text-zinc-400'}`}>
                 {snapshot.churnedUsers ?? 0}
               </p>
             </div>
