@@ -26,7 +26,7 @@ export default function SnapshotCards({ snapshot }: { snapshot: DashboardSnapsho
           className="bg-white dark:bg-zinc-900 rounded-xl shadow p-6"
         >
           <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-          <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">{value}</p>
+          <p className="mt-1 text-2xl font-medium text-gray-900 dark:text-white">{value}</p>
         </div>
       ))}
     </div>

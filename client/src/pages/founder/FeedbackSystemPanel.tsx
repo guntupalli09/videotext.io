@@ -99,7 +99,7 @@ const TRIGGER_LABELS: Record<string, string> = {
 const SEGMENT_COLORS: Record<string, string> = {
   explorer: 'bg-zinc-700/60 text-zinc-300 border-zinc-600/40',
   activated: 'bg-blue-900/40 text-blue-300 border-blue-800/40',
-  power_user: 'bg-violet-900/40 text-violet-300 border-violet-800/40',
+  power_user: 'bg-blue-900/40 text-blue-300 border-blue-800/40',
   paying: 'bg-emerald-900/40 text-emerald-300 border-emerald-800/40',
 }
 
@@ -119,7 +119,7 @@ function RateBar({ rate, label, count, worst }: { rate: number; label: string; c
     <div className="space-y-1">
       <div className="flex items-center justify-between text-xs">
         <span className="text-zinc-400 font-medium">{label}</span>
-        <span className="text-zinc-200 tabular-nums font-semibold">{pct}%</span>
+        <span className="text-zinc-200 tabular-nums font-medium">{pct}%</span>
       </div>
       <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
         <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
@@ -135,20 +135,20 @@ function RateBar({ rate, label, count, worst }: { rate: number; label: string; c
 function TrendBadge({ trend, delta }: { trend: 'rising' | 'stable' | 'falling'; delta: number }) {
   if (trend === 'rising') {
     return (
-      <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-red-400">
+      <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-red-400">
         <TrendingUp className="w-3 h-3" />+{delta}
       </span>
     )
   }
   if (trend === 'falling') {
     return (
-      <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-emerald-400">
+      <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-400">
         <TrendingDown className="w-3 h-3" />{delta}
       </span>
     )
   }
   return (
-    <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-zinc-600">
+    <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-zinc-600">
       <Minus className="w-3 h-3" />stable
     </span>
   )
@@ -156,7 +156,7 @@ function TrendBadge({ trend, delta }: { trend: 'rising' | 'stable' | 'falling'; 
 
 function SegmentChip({ segment }: { segment: string }) {
   return (
-    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${SEGMENT_COLORS[segment] ?? 'bg-zinc-700/60 text-zinc-400 border-zinc-600/40'}`}>
+    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${SEGMENT_COLORS[segment] ?? 'bg-zinc-700/60 text-zinc-400 border-zinc-600/40'}`}>
       {SEGMENT_LABELS[segment] ?? segment}
     </span>
   )
@@ -172,7 +172,7 @@ function CollapsibleSection({
         onClick={() => setOpen(v => !v)}
         className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-zinc-800/30 transition-colors"
       >
-        <span className="text-sm font-semibold text-zinc-300">{title}</span>
+        <span className="text-sm font-medium text-zinc-300">{title}</span>
         {open ? <ChevronUp className="w-4 h-4 text-zinc-600" /> : <ChevronDown className="w-4 h-4 text-zinc-600" />}
       </button>
       {open && <div className="px-5 pb-5">{children}</div>}
@@ -224,7 +224,7 @@ export default function FeedbackSystemPanel() {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
         <p className="text-sm text-zinc-500">{error ?? 'No data yet'}</p>
-        <button onClick={() => load()} className="mt-2 text-xs text-violet-400 hover:underline">Retry</button>
+        <button onClick={() => load()} className="mt-2 text-xs text-blue-400 hover:underline">Retry</button>
       </div>
     )
   }
@@ -240,9 +240,9 @@ export default function FeedbackSystemPanel() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <BarChart3 className="w-4 h-4 text-violet-400" />
-          <h2 className="text-sm font-semibold text-white">Feedback Analytics</h2>
-          <span className="text-xs bg-violet-900/40 text-violet-300 px-2 py-0.5 rounded-full">v2</span>
+          <BarChart3 className="w-4 h-4 text-blue-400" />
+          <h2 className="text-sm font-medium text-white">Feedback Analytics</h2>
+          <span className="text-xs bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded-full">v2</span>
         </div>
         <button
           onClick={() => load(true)}
@@ -255,28 +255,28 @@ export default function FeedbackSystemPanel() {
       </div>
 
       {/* ① Decision Engine */}
-      <div className="rounded-xl border border-violet-800/50 bg-gradient-to-br from-violet-950/60 to-zinc-900 p-5">
+      <div className="rounded-xl border border-blue-800/50 bg-gradient-to-br from-blue-950/60 to-zinc-900 p-5">
         <div className="flex items-center gap-2 mb-4">
-          <AlertTriangle className="w-4 h-4 text-violet-400" />
-          <h3 className="text-sm font-semibold text-white">Decision Engine</h3>
+          <AlertTriangle className="w-4 h-4 text-blue-400" />
+          <h3 className="text-sm font-medium text-white">Decision Engine</h3>
           <span className="text-xs text-zinc-600">— what to fix next</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           {/* Bottleneck */}
           <div className="rounded-lg bg-zinc-900/80 border border-zinc-800 p-3">
-            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Biggest Bottleneck</p>
-            <p className="text-sm font-bold text-white">{decisionEngine.bottleneck}</p>
+            <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mb-1">Biggest Bottleneck</p>
+            <p className="text-sm font-medium text-white">{decisionEngine.bottleneck}</p>
             <p className="text-xs text-red-400 mt-0.5 tabular-nums">{decisionEngine.bottleneckRate}% conversion rate</p>
           </div>
 
           {/* Top Issue */}
           <div className="rounded-lg bg-zinc-900/80 border border-zinc-800 p-3">
-            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Top Correlated Complaint</p>
+            <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mb-1">Top Correlated Complaint</p>
             {decisionEngine.topCorrelatedIssue ? (
               <>
-                <p className="text-sm font-bold text-white">{decisionEngine.topCorrelatedIssue}</p>
-                <p className="text-xs text-violet-400 mt-0.5">{decisionEngine.topIssueWeightedCount} weighted mentions</p>
+                <p className="text-sm font-medium text-white">{decisionEngine.topCorrelatedIssue}</p>
+                <p className="text-xs text-blue-400 mt-0.5">{decisionEngine.topIssueWeightedCount} weighted mentions</p>
               </>
             ) : (
               <p className="text-sm text-zinc-600">No data yet</p>
@@ -285,7 +285,7 @@ export default function FeedbackSystemPanel() {
 
           {/* Affected Segment */}
           <div className="rounded-lg bg-zinc-900/80 border border-zinc-800 p-3">
-            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Most Affected Segment</p>
+            <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Most Affected Segment</p>
             {decisionEngine.mostAffectedSegment ? (
               <SegmentChip segment={decisionEngine.mostAffectedSegment} />
             ) : (
@@ -294,9 +294,9 @@ export default function FeedbackSystemPanel() {
           </div>
 
           {/* Recommended Action */}
-          <div className="rounded-lg bg-violet-900/20 border border-violet-800/40 p-3">
-            <p className="text-[10px] font-semibold text-violet-500 uppercase tracking-wider mb-1">Recommended Action</p>
-            <p className="text-xs text-violet-200 leading-relaxed">{decisionEngine.recommendedAction}</p>
+          <div className="rounded-lg bg-blue-900/20 border border-blue-800/40 p-3">
+            <p className="text-[10px] font-medium text-blue-600 uppercase tracking-wider mb-1">Recommended Action</p>
+            <p className="text-xs text-blue-200 leading-relaxed">{decisionEngine.recommendedAction}</p>
           </div>
         </div>
       </div>
@@ -305,7 +305,7 @@ export default function FeedbackSystemPanel() {
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
         <div className="flex items-center gap-2 mb-4">
           <TrendingDown className="w-4 h-4 text-zinc-500" />
-          <h3 className="text-sm font-semibold text-white">
+          <h3 className="text-sm font-medium text-white">
             Conversion Funnel <span className="text-zinc-600 font-normal">(30d)</span>
           </h3>
         </div>
@@ -340,7 +340,7 @@ export default function FeedbackSystemPanel() {
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
         <div className="flex items-center gap-2 mb-4">
           <MessageSquare className="w-4 h-4 text-zinc-500" />
-          <h3 className="text-sm font-semibold text-white">
+          <h3 className="text-sm font-medium text-white">
             Top Issue Clusters{' '}
             <span className="text-zinc-600 font-normal">({features.totalFeedbackEvents} events, 30d)</span>
           </h3>
@@ -354,15 +354,15 @@ export default function FeedbackSystemPanel() {
               <div key={cluster.issue} className="rounded-lg bg-zinc-800/60 border border-zinc-700/50 p-3.5">
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs font-bold text-zinc-600 shrink-0">#{i + 1}</span>
-                    <span className="text-sm font-semibold text-white truncate">{cluster.issue}</span>
+                    <span className="text-xs font-medium text-zinc-600 shrink-0">#{i + 1}</span>
+                    <span className="text-sm font-medium text-white truncate">{cluster.issue}</span>
                   </div>
                   <TrendBadge trend={cluster.trend} delta={cluster.trendDelta} />
                 </div>
 
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mb-2">
                   <span className="text-xs text-zinc-400">
-                    <span className="text-violet-400 font-semibold">{cluster.weightedMentions}</span> weighted
+                    <span className="text-blue-400 font-medium">{cluster.weightedMentions}</span> weighted
                     · <span className="text-zinc-500">{cluster.frequency} raw</span>
                   </span>
                   {cluster.topSegment && <SegmentChip segment={cluster.topSegment} />}
@@ -392,7 +392,7 @@ export default function FeedbackSystemPanel() {
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
           <div className="flex items-center gap-2 mb-4">
             <Zap className="w-4 h-4 text-zinc-500" />
-            <h3 className="text-sm font-semibold text-white">PMF Score</h3>
+            <h3 className="text-sm font-medium text-white">PMF Score</h3>
             <span className="text-xs text-zinc-600">(target: &gt;40%)</span>
           </div>
 
@@ -401,7 +401,7 @@ export default function FeedbackSystemPanel() {
           ) : (
             <>
               <div className="flex items-end gap-2 mb-4">
-                <span className={`text-4xl font-bold tabular-nums ${(segments.pmfScore ?? 0) >= 40 ? 'text-emerald-400' : (segments.pmfScore ?? 0) >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
+                <span className={`text-4xl font-medium tabular-nums ${(segments.pmfScore ?? 0) >= 40 ? 'text-emerald-400' : (segments.pmfScore ?? 0) >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
                   {segments.pmfScore ?? 0}%
                 </span>
                 <p className="text-xs text-zinc-500 pb-1">
@@ -415,7 +415,7 @@ export default function FeedbackSystemPanel() {
                     <div key={row.rating ?? 'null'} className="flex items-center gap-2 text-xs">
                       <span className="text-zinc-400 flex-1 truncate">{row.rating ?? 'dismissed'}</span>
                       <div className="w-20 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full bg-violet-500/70" style={{ width: `${row.pct}%` }} />
+                        <div className="h-full rounded-full bg-blue-600/70" style={{ width: `${row.pct}%` }} />
                       </div>
                       <span className="text-zinc-500 tabular-nums w-7 text-right">{row.pct}%</span>
                     </div>
@@ -429,7 +429,7 @@ export default function FeedbackSystemPanel() {
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-4 h-4 text-zinc-500" />
-            <h3 className="text-sm font-semibold text-white">Segment Snapshot</h3>
+            <h3 className="text-sm font-medium text-white">Segment Snapshot</h3>
           </div>
           {segments.segments.length === 0 ? (
             <p className="text-zinc-600 text-sm">No data yet.</p>
@@ -458,7 +458,7 @@ export default function FeedbackSystemPanel() {
               onClick={() => setActiveSegmentTab(seg)}
               className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors ${
                 activeSegmentTab === seg
-                  ? 'bg-violet-900/50 border-violet-700/60 text-violet-200'
+                  ? 'bg-blue-900/50 border-blue-700/60 text-blue-200'
                   : 'bg-zinc-800/50 border-zinc-700/40 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600/60'
               }`}
             >
@@ -478,7 +478,7 @@ export default function FeedbackSystemPanel() {
                 <div key={item.issue} className="flex items-center gap-3 text-sm">
                   <span className="text-xs text-zinc-600 w-4 text-right">{i + 1}</span>
                   <span className="text-zinc-300 flex-1">{item.issue}</span>
-                  <span className="text-violet-400 tabular-nums text-xs font-semibold">{item.weighted} wt</span>
+                  <span className="text-blue-400 tabular-nums text-xs font-medium">{item.weighted} wt</span>
                   <span className="text-zinc-600 tabular-nums text-xs">{item.count} raw</span>
                 </div>
               ))}
@@ -492,7 +492,7 @@ export default function FeedbackSystemPanel() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-1">
           {/* Trigger breakdown */}
           <div>
-            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">
+            <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-3">
               Trigger Counts <span className="font-normal normal-case">(30d)</span>
             </p>
             {triggerBreakdown.length === 0 ? (
@@ -504,7 +504,7 @@ export default function FeedbackSystemPanel() {
                   .map((t) => (
                     <div key={t.triggerType} className="flex items-center gap-2 text-xs">
                       <span className="text-zinc-400 flex-1">{TRIGGER_LABELS[t.triggerType] ?? t.triggerType}</span>
-                      <span className="text-zinc-200 tabular-nums font-semibold">{t.count}</span>
+                      <span className="text-zinc-200 tabular-nums font-medium">{t.count}</span>
                     </div>
                   ))}
               </div>
@@ -513,7 +513,7 @@ export default function FeedbackSystemPanel() {
 
           {/* Recent events */}
           <div className="lg:col-span-2">
-            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">Recent Responses</p>
+            <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-3">Recent Responses</p>
             {recentEvents.length === 0 ? (
               <p className="text-zinc-600 text-sm">No responses yet.</p>
             ) : (
@@ -521,7 +521,7 @@ export default function FeedbackSystemPanel() {
                 {recentEvents.slice(0, 15).map((ev) => (
                   <div key={ev.id} className="rounded-lg bg-zinc-800/50 px-3 py-2 text-xs">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-violet-400 font-medium">{TRIGGER_LABELS[ev.triggerType] ?? ev.triggerType}</span>
+                      <span className="text-blue-400 font-medium">{TRIGGER_LABELS[ev.triggerType] ?? ev.triggerType}</span>
                       {ev.rating && <span className="text-zinc-300">{ev.rating}</span>}
                       {ev.category && <span className="text-zinc-500">· {ev.category}</span>}
                       {ev.userScore != null && <span className="ml-auto text-zinc-600">score: {ev.userScore}</span>}

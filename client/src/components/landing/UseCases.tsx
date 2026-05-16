@@ -22,7 +22,7 @@ const USE_CASES = [
   },
   {
     icon: Mic,
-    iconBg: 'bg-purple-600',
+    iconBg: 'bg-blue-600',
     label: 'For Podcast Teams',
     headline: 'One upload. Full episode deliverables.',
     description: 'Drop an episode and get a timestamped transcript, AI chapter markers, and formatted show notes — all from a single upload. Built for teams handling multiple shows.',
@@ -33,9 +33,9 @@ const USE_CASES = [
     ],
     cta: 'Try podcast transcription',
     href: '/podcast-transcription',
-    gradient: 'from-purple-600 to-indigo-600',
-    bgGlow: 'from-purple-500/10 via-transparent to-transparent dark:from-purple-500/5',
-    borderHover: 'hover:border-purple-200 dark:hover:border-purple-500/20',
+    gradient: 'from-blue-600 to-blue-700',
+    bgGlow: 'from-blue-600/10 via-transparent to-transparent dark:from-blue-600/5',
+    borderHover: 'hover:border-blue-200 dark:hover:border-blue-500/20',
   },
   {
     icon: Building2,
@@ -65,13 +65,13 @@ export function UseCases() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.4 }}
           className="text-center mb-16"
         >
-          <p className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-3 transition-colors duration-500">
+          <p className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 transition-colors duration-500">
             Built for your workflow
           </p>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-500">
+          <h2 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-4 transition-colors duration-500">
             Built for every professional
             <span className="block text-gray-400 dark:text-white/30 transition-colors duration-500">transcript workflow.</span>
           </h2>
@@ -91,7 +91,7 @@ export function UseCases() {
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ delay: i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className={`group h-full rounded-2xl border border-gray-200 dark:border-white/[0.07] bg-white dark:bg-gray-950 overflow-hidden ${uc.borderHover} hover:shadow-xl hover:shadow-gray-100 dark:hover:shadow-black/30 transition-all duration-300`}>
+                <div className={`group h-full rounded-xl border border-gray-200 dark:border-white/[0.07] bg-white dark:bg-gray-950 overflow-hidden ${uc.borderHover} hover:shadow-xl hover:shadow-gray-100 dark:hover:shadow-black/30 transition-all duration-300`}>
                   {/* Top gradient strip */}
                   <div className={`h-1.5 bg-gradient-to-r ${uc.gradient}`} />
 
@@ -99,7 +99,7 @@ export function UseCases() {
                   <div className="p-6 flex flex-col h-full">
                     {/* Label + icon */}
                     <div className="flex items-center justify-between mb-5">
-                      <span className="text-[11px] font-bold text-gray-500 dark:text-white/35 uppercase tracking-widest transition-colors duration-500">
+                      <span className="text-[11px] font-medium text-gray-500 dark:text-white/35 uppercase tracking-widest transition-colors duration-500">
                         {uc.label}
                       </span>
                       <div className={`w-9 h-9 rounded-xl ${uc.iconBg} flex items-center justify-center shadow-md`}>
@@ -107,7 +107,7 @@ export function UseCases() {
                       </div>
                     </div>
 
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 transition-colors duration-500">
+                    <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-3 transition-colors duration-500">
                       {uc.headline}
                     </h3>
 
@@ -128,7 +128,7 @@ export function UseCases() {
                     {/* CTA */}
                     <Link
                       to={uc.href}
-                      className={`inline-flex items-center gap-1.5 text-sm font-semibold bg-gradient-to-r ${uc.gradient} bg-clip-text text-transparent group-hover:gap-2.5 transition-all`}
+                      className={`inline-flex items-center gap-1.5 text-sm font-medium bg-gradient-to-r ${uc.gradient} bg-clip-text text-transparent group-hover:gap-2.5 transition-all`}
                     >
                       {uc.cta}
                       <ChevronRight className={`w-3.5 h-3.5 bg-gradient-to-r ${uc.gradient} bg-clip-text text-transparent`} />

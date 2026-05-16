@@ -49,11 +49,11 @@ export default function MagicLogin() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-8">
         <div className="max-w-sm w-full text-center">
           <p className="text-2xl mb-3">🔗</p>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Link expired</h1>
+          <h1 className="text-xl font-medium text-gray-900 dark:text-white mb-2">Link expired</h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">{error}</p>
           <a
             href="/login"
-            className="inline-block px-6 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-medium text-sm transition-colors"
+            className="inline-block px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors"
           >
             Go to login
           </a>
@@ -65,7 +65,7 @@ export default function MagicLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
       <div className="text-center">
-        <div className="w-10 h-10 border-2 border-violet-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <div className="w-10 h-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-sm text-gray-500 dark:text-gray-400">Logging you in…</p>
       </div>
     </div>

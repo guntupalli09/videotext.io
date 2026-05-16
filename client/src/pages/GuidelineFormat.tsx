@@ -942,7 +942,7 @@ export default function GuidelineFormat() {
         breadcrumbs={[{ label: 'Transcript Style Guide Formatter', href: '/guideline-format' }]}
         title="Client Ready Transcripts in Minutes - Save Time on QA, Formatting and QA"
         subtitle="Paste your raw transcript, select a platform preset, and apply style guide rules automatically — verbatim handling, speaker labels, filler words, QA validation — then export client-ready."
-        icon={<FileText className="text-violet-600 dark:text-violet-400" strokeWidth={1.75} />}
+        icon={<FileText className="text-blue-600 dark:text-blue-400" strokeWidth={1.75} />}
         sidebar={null}
       >
         <div className="max-w-6xl mx-auto space-y-8">
@@ -976,10 +976,10 @@ export default function GuidelineFormat() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
             {/* Left — transcript */}
-            <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm space-y-4">
+            <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm space-y-4">
               <div className="space-y-1">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Step 1</p>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Paste your transcript</h2>
+                <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Step 1</p>
+                <h2 className="text-lg font-medium text-gray-900 dark:text-white">Paste your transcript</h2>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Keep speaker labels exactly as-is. We'll format punctuation, casing, tags, and spacing based on the rules.
                 </p>
@@ -1042,19 +1042,19 @@ export default function GuidelineFormat() {
                   onChange={(e) => setTranscript(e.target.value)}
                   placeholder="Paste, type, or upload a file — the full text appears here…"
                   spellCheck={false}
-                  className="w-full min-h-[min(24rem,50vh)] max-h-[min(32rem,60vh)] rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 font-mono leading-relaxed overflow-y-auto"
+                  className="w-full min-h-[min(24rem,50vh)] max-h-[min(32rem,60vh)] rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono leading-relaxed overflow-y-auto"
                 />
               </div>
               {wordCount > 0 && (
-                <p className="text-sm text-gray-600 dark:text-gray-300">{wordCount.toLocaleString()} words</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 font-mono-data">{wordCount.toLocaleString()} words</p>
               )}
             </section>
 
             {/* Right — guidelines */}
-            <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm space-y-6">
+            <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm space-y-6">
               <div className="space-y-1">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Step 2</p>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Choose a style guide</h2>
+                <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Step 2</p>
+                <h2 className="text-xl font-medium text-gray-900 dark:text-white tracking-tight">Choose a style guide</h2>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Start from a preset, then tweak any rule cards below to match your assignment.
                 </p>
@@ -1087,7 +1087,7 @@ export default function GuidelineFormat() {
 
               {selectedPreset === 'custom' && rules.length > 0 && (
                 <div className="rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/70 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-100">
-                  <p className="font-semibold">Rules extracted from your guide — please review before formatting.</p>
+                  <p className="font-medium">Rules extracted from your guide — please review before formatting.</p>
                   <p className="text-xs text-amber-800/90 dark:text-amber-200/90 mt-1">
                     We'll mark ambiguous rules as “Needs review” and warn on conflicts.
                   </p>
@@ -1096,11 +1096,11 @@ export default function GuidelineFormat() {
 
               {selectedPreset === 'custom' && customGuideConflicts.length > 0 && (
                 <div className="rounded-xl border border-red-200 dark:border-red-900/40 bg-red-50/70 dark:bg-red-950/20 px-4 py-3 space-y-2">
-                  <p className="text-sm font-semibold text-red-800 dark:text-red-200">Potential rule conflicts detected</p>
+                  <p className="text-sm font-medium text-red-800 dark:text-red-200">Potential rule conflicts detected</p>
                   <ul className="space-y-1 text-xs text-red-700 dark:text-red-200">
                     {customGuideConflicts.slice(0, 6).map((c, idx) => (
                       <li key={idx}>
-                        <span className="font-semibold">{c.confidence === 'high' ? 'High' : 'Medium'} confidence:</span> {c.summary}
+                        <span className="font-medium">{c.confidence === 'high' ? 'High' : 'Medium'} confidence:</span> {c.summary}
                       </li>
                     ))}
                     {customGuideConflicts.length > 6 && (
@@ -1129,15 +1129,15 @@ export default function GuidelineFormat() {
                             aria-expanded={isOpen}
                           >
                             <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center justify-center text-violet-700 dark:text-violet-300">
+                              <span className="inline-flex items-center justify-center text-blue-700 dark:text-blue-300">
                                 {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                               </span>
-                              <span className="text-sm font-semibold text-violet-700 dark:text-violet-300">
+                              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
                                 {cat}{' '}
                                 <span className="text-xs font-medium text-gray-400 dark:text-gray-500">({list.length} rules)</span>
                               </span>
                             </div>
-                            <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                            <span className="text-[10px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
                               {isOpen ? 'Hide' : 'Show'}
                             </span>
                           </button>
@@ -1160,7 +1160,7 @@ export default function GuidelineFormat() {
                                         <button
                                           type="button"
                                           onClick={() => resetOneRule(rule.id)}
-                                          className="text-xs text-violet-600 dark:text-violet-400 hover:underline font-medium"
+                                          className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
                                         >
                                           Reset
                                         </button>
@@ -1168,7 +1168,7 @@ export default function GuidelineFormat() {
                                     )}
                                     {selectedPreset === 'custom' && rule.extractionConfidence && (
                                       <span
-                                        className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${
+                                        className={`text-[10px] font-medium uppercase tracking-wide px-2 py-0.5 rounded-full ${
                                           rule.extractionConfidence === 'high'
                                             ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200'
                                             : rule.extractionConfidence === 'medium'
@@ -1201,7 +1201,7 @@ export default function GuidelineFormat() {
                                     aria-label={rule.label}
                                     value={rule.currentValue}
                                     onChange={(v) => updateRuleValue(rule.id, v)}
-                                    className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 leading-relaxed focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+                                    className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                                   />
                                 </div>
                               ))}
@@ -1215,7 +1215,7 @@ export default function GuidelineFormat() {
                     <button
                       type="button"
                       onClick={resetAllRules}
-                      className="text-sm font-medium text-violet-600 dark:text-violet-400 hover:underline"
+                      className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       Reset all to defaults
                     </button>
@@ -1223,7 +1223,7 @@ export default function GuidelineFormat() {
                 </div>
               )}
 
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight pt-2 border-t border-gray-100 dark:border-gray-800">
+              <h2 className="text-xl font-medium text-gray-900 dark:text-gray-100 tracking-tight pt-2 border-t border-gray-100 dark:border-gray-800">
                 Or upload your own client style guide — PDF, DOCX, or TXT
               </h2>
 
@@ -1239,7 +1239,7 @@ export default function GuidelineFormat() {
                   <button
                     type="button"
                     onClick={() => customGuideRef.current?.click()}
-                    className="w-full rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 px-4 py-8 text-sm text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:bg-violet-50/50 dark:hover:bg-violet-950/20 transition-colors"
+                    className="w-full rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 px-4 py-8 text-sm text-gray-600 dark:text-gray-300 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition-colors"
                   >
                     Drop your client style guide here
                   </button>
@@ -1273,11 +1273,11 @@ export default function GuidelineFormat() {
             </section>
           </div>
 
-          <div className="rounded-2xl border border-violet-200/60 dark:border-violet-900/40 bg-white/70 dark:bg-gray-900/30 p-5 shadow-sm">
+          <div className="rounded-xl border border-blue-200/60 dark:border-blue-900/40 bg-white/70 dark:bg-gray-900/30 p-5 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-1">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Step 3</p>
-                <p className="text-sm font-semibold text-gray-900 dark:text-white">Run formatting</p>
+                <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Step 3</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Run formatting</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   We'll apply your rules and return a review-ready diff and flagged sections.
                 </p>
@@ -1286,7 +1286,7 @@ export default function GuidelineFormat() {
                 type="button"
                 disabled={!canSubmit}
                 onClick={() => void submitFormat()}
-                className="rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold px-5 py-3 text-sm shadow-md transition-colors"
+                className="rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium px-5 py-3 text-sm shadow-md transition-colors"
               >
                 {isSubmitting ? 'Generating…' : 'Generate Client-Ready Transcript →'}
               </button>
@@ -1294,7 +1294,7 @@ export default function GuidelineFormat() {
           </div>
 
           {(showLoadingMessage || showProcessingMessage || submitError || jobStatus) && (
-            <div className="rounded-2xl border border-violet-200 dark:border-violet-900/50 bg-violet-50/60 dark:bg-violet-950/25 p-6 space-y-4">
+            <div className="rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/60 dark:bg-blue-950/25 p-6 space-y-4">
               {showLoadingMessage && (
                 <p className="text-sm text-gray-800 dark:text-gray-100 leading-relaxed">
                   Applying style guide rules to your transcript… This takes 30–60 seconds for a 1-hour transcript.
@@ -1307,7 +1307,7 @@ export default function GuidelineFormat() {
                       {stageLabel ?? 'Formatting in progress…'}
                     </p>
                     {jobStatus?.stage && (
-                      <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                      <span className="text-[10px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
                         Stage: {jobStatus.stage}
                       </span>
                     )}
@@ -1332,21 +1332,21 @@ export default function GuidelineFormat() {
                           key={s.key}
                           className={`rounded-xl border px-3 py-2 text-xs ${
                             active
-                              ? 'border-violet-300 dark:border-violet-800 bg-white/70 dark:bg-gray-900/40 text-gray-900 dark:text-gray-100'
+                              ? 'border-blue-300 dark:border-blue-800 bg-white/70 dark:bg-gray-900/40 text-gray-900 dark:text-gray-100'
                               : 'border-gray-200/60 dark:border-gray-800 bg-white/40 dark:bg-gray-950/20 text-gray-600 dark:text-gray-300'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-semibold">{s.label}</span>
-                            <span className="text-[10px] font-semibold uppercase tracking-wide opacity-80">{done ? '✓' : active ? '…' : ''}</span>
+                            <span className="font-medium">{s.label}</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wide opacity-80">{done ? '✓' : active ? '…' : ''}</span>
                           </div>
                         </div>
                       )
                     })}
                   </div>
-                  <div className="h-2 w-full rounded-full bg-violet-200/50 dark:bg-violet-900/30 overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-blue-200/50 dark:bg-blue-900/30 overflow-hidden">
                     <div
-                      className="h-full bg-violet-600 transition-all"
+                      className="h-full bg-blue-600 transition-all"
                       style={{
                         width:
                           jobStatus?.stage === 'formatting'
@@ -1390,13 +1390,13 @@ export default function GuidelineFormat() {
               )}
               {jobStatus?.status === 'completed' && !submitError && (
                 showAuthGate && !isLoggedIn() ? (
-                  <div className="rounded-2xl border border-violet-200/80 dark:border-violet-900/50 bg-white/85 dark:bg-gray-900/60 p-6 shadow-sm space-y-4">
+                  <div className="rounded-xl border border-blue-200/80 dark:border-blue-900/50 bg-white/85 dark:bg-gray-900/60 p-6 shadow-sm space-y-4">
                     <div className="flex items-start gap-3">
-                      <span className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300">
+                      <span className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
                         <Lock className="h-4 w-4" aria-hidden />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Your formatted transcript is ready</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">Your formatted transcript is ready</p>
                         <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                           We finished processing your style guide. Create a free account or log in to unlock the formatted transcript, validation report, review queue, and exports.
                         </p>
@@ -1406,14 +1406,14 @@ export default function GuidelineFormat() {
                       <button
                         type="button"
                         onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
-                        className="rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold px-5 py-3 text-sm shadow-md transition-colors"
+                        className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-3 text-sm shadow-md transition-colors"
                       >
                         Create free account
                       </button>
                       <button
                         type="button"
                         onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
-                        className="rounded-xl border border-gray-300 dark:border-gray-600 px-5 py-3 text-sm font-semibold text-gray-800 dark:text-gray-100 hover:bg-white/80 dark:hover:bg-gray-900/60"
+                        className="rounded-xl border border-gray-300 dark:border-gray-600 px-5 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-white/80 dark:hover:bg-gray-900/60"
                       >
                         Log in
                       </button>
@@ -1422,18 +1422,18 @@ export default function GuidelineFormat() {
                 ) : (
                 <div className="space-y-6">
                   {jobStatus.validationReport?.summary && (
-                    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 p-5 shadow-sm">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 p-5 shadow-sm">
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="space-y-1">
-                          <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">System health</p>
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white">Validation Summary</p>
+                          <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">System health</p>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">Validation Summary</p>
                           <p className="text-xs text-gray-600 dark:text-gray-300">
                             Calm checks that answer: “Can I trust this deliverable?”
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Validation confidence</p>
-                          <p className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                          <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Validation confidence</p>
+                          <p className="text-3xl font-mono-data tracking-tight text-gray-900 dark:text-white">
                             {validationHealth.confidencePct ?? jobStatus.validationReport.summary.confidencePct}%
                           </p>
                         </div>
@@ -1479,7 +1479,7 @@ export default function GuidelineFormat() {
                                 {row.details ? <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">{row.details}</p> : null}
                               </div>
                               <span
-                                className={`shrink-0 text-xs font-semibold ${
+                                className={`shrink-0 text-xs font-medium ${
                                   row.passed ? 'text-emerald-700 dark:text-emerald-300' : 'text-red-700 dark:text-red-300'
                                 }`}
                               >
@@ -1495,16 +1495,16 @@ export default function GuidelineFormat() {
                                 Flagged sections that may need a human pass.
                               </p>
                             </div>
-                            <span className="text-xs font-semibold text-amber-800 dark:text-amber-200">
+                            <span className="text-xs font-medium text-amber-800 dark:text-amber-200">
                               {validationHealth.reviewSuggestions ? `⚠ ${validationHealth.reviewSuggestions}` : '✓ 0'}
                             </span>
                           </div>
                         </div>
 
-                        <div className="rounded-xl border border-violet-200/60 dark:border-violet-900/40 bg-violet-50/60 dark:bg-violet-950/20 px-4 py-3">
+                        <div className="rounded-xl border border-blue-200/60 dark:border-blue-900/40 bg-blue-50/60 dark:bg-blue-950/20 px-4 py-3">
                           <p className="text-sm text-gray-800 dark:text-gray-100">
                             Estimated formatting cleanup reduced by{' '}
-                            <span className="font-semibold text-violet-700 dark:text-violet-300">
+                            <span className="font-mono-data text-blue-700 dark:text-blue-300">
                               ~{jobStatus.validationReport.summary.qaReductionPct}%
                             </span>
                           </p>
@@ -1512,10 +1512,10 @@ export default function GuidelineFormat() {
                             Based on automated cleanup signals + verification coverage — an estimate, not a guarantee.
                           </p>
                           <div className="mt-3 flex flex-wrap gap-3 text-xs text-gray-700 dark:text-gray-300">
-                            <span className="rounded-full border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 px-3 py-1">
+                            <span className="rounded-full border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 px-3 py-1 font-mono-data">
                               ✓ {jobStatus.validationReport.summary.verified?.passed ?? 0}/{jobStatus.validationReport.summary.verified?.total ?? 0} verified
                             </span>
-                            <span className="rounded-full border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 px-3 py-1">
+                            <span className="rounded-full border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 px-3 py-1 font-mono-data">
                               ⚠ {jobStatus.validationReport.summary.likelyCompliant?.passed ?? 0}/{jobStatus.validationReport.summary.likelyCompliant?.total ?? 0} likely compliant
                             </span>
                           </div>
@@ -1523,7 +1523,7 @@ export default function GuidelineFormat() {
                       </div>
                       {Array.isArray(jobStatus.validationReport.checks) && jobStatus.validationReport.checks.length > 0 && (
                         <details className="pt-1">
-                          <summary className="cursor-pointer text-xs font-medium text-violet-700 dark:text-violet-300">
+                          <summary className="cursor-pointer text-xs font-medium text-blue-700 dark:text-blue-300">
                             Show details
                           </summary>
                           <ul className="mt-3 space-y-2 text-xs text-gray-700 dark:text-gray-300">
@@ -1554,13 +1554,13 @@ export default function GuidelineFormat() {
                                         const el = document.getElementById(`seg-${idx}`)
                                         el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                                       }}
-                                      className={`text-left font-semibold ${canJump ? 'hover:underline' : ''}`}
+                                      className={`text-left font-medium ${canJump ? 'hover:underline' : ''}`}
                                       title={canJump ? `Jump to segment ${c.segmentIndex}` : undefined}
                                     >
                                       {prefix} {c.label}
-                                      {canJump ? <span className="ml-2 text-[10px] font-semibold opacity-80">(Segment {c.segmentIndex})</span> : null}
+                                      {canJump ? <span className="ml-2 text-[10px] font-medium opacity-80">(Segment {c.segmentIndex})</span> : null}
                                     </button>
-                                    <span className="text-[10px] font-semibold uppercase tracking-wide opacity-80">
+                                    <span className="text-[10px] font-medium uppercase tracking-wide opacity-80">
                                       {c.bucket === 'verified' ? 'Verified' : c.bucket === 'likely_compliant' ? 'Likely compliant' : 'Needs review'}
                                     </span>
                                   </div>
@@ -1591,7 +1591,7 @@ export default function GuidelineFormat() {
                   <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Ready for review</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">Ready for review</p>
                         <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
                           Start with flagged sections (lowest cognitive load), then review the full transcript.
                         </p>
@@ -1605,14 +1605,14 @@ export default function GuidelineFormat() {
                             setReviewIssueCursor(0)
                             setReviewWarnings([])
                           }}
-                          className="rounded-lg bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2"
+                          className="rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2"
                         >
                           Review Issues ({flaggedList.length})
                         </button>
                         <button
                           type="button"
                           onClick={() => setResultMode('full')}
-                          className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                          className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                         >
                           Open full transcript
                         </button>
@@ -1630,7 +1630,7 @@ export default function GuidelineFormat() {
                         <>
                           <div className="flex flex-wrap items-center justify-between gap-3">
                             <div>
-                              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                              <p className="text-sm font-medium text-gray-900 dark:text-white">
                                 Issue {reviewIssueCursor + 1} of {flaggedList.length}
                               </p>
                               <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">Resolve issues one at a time, then export.</p>
@@ -1639,14 +1639,14 @@ export default function GuidelineFormat() {
                               <button
                                 type="button"
                                 onClick={() => setResultMode('full')}
-                                className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                               >
                                 Full transcript
                               </button>
                               <button
                                 type="button"
                                 onClick={() => setResultMode('summary')}
-                                className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                               >
                                 Back to summary
                               </button>
@@ -1677,14 +1677,14 @@ export default function GuidelineFormat() {
                               setReviewIssueCursor((v) => Math.min(flaggedList.length - 1, v + 1))
                             }
                             return (
-                              <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-5 space-y-4">
+                              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-5 space-y-4">
                                 <div className="flex flex-wrap items-start justify-between gap-3">
                                   <div className="space-y-1">
                                     <div className="flex flex-wrap items-center gap-2">
-                                      <span className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${badgeClass}`}>
+                                      <span className={`text-[10px] font-medium uppercase tracking-wide px-2 py-0.5 rounded-full ${badgeClass}`}>
                                         {seg?.confidence || 'medium'}
                                       </span>
-                                      <span className="text-xs font-semibold text-violet-700 dark:text-violet-300">{seg?.ruleApplied}</span>
+                                      <span className="text-xs font-medium text-blue-700 dark:text-blue-300">{seg?.ruleApplied}</span>
                                     </div>
                                     <p className="text-sm text-gray-800 dark:text-gray-100">{seg?.reason}</p>
                                   </div>
@@ -1700,8 +1700,8 @@ export default function GuidelineFormat() {
                                         el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                                       }, 50)
                                     }}
-                                    className={`text-xs font-semibold ${
-                                      canJump ? 'text-violet-700 dark:text-violet-300 hover:underline' : 'text-gray-400 dark:text-gray-500'
+                                    className={`text-xs font-medium ${
+                                      canJump ? 'text-blue-700 dark:text-blue-300 hover:underline' : 'text-gray-400 dark:text-gray-500'
                                     }`}
                                     title={canJump ? `Open full transcript at segment ${segIndex}` : 'Could not locate this text in the original transcript'}
                                   >
@@ -1711,15 +1711,15 @@ export default function GuidelineFormat() {
 
                                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
                                   <div className="lg:col-span-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/40 dark:bg-gray-950/20 p-4">
-                                    <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</p>
+                                    <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</p>
                                     <div className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed opacity-75">
                                       {seg?.originalText || ''}
                                     </div>
                                   </div>
                                   <div className="lg:col-span-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950/10 p-4">
                                     <div className="flex items-center justify-between gap-3 mb-2">
-                                      <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Formatted</p>
-                                      <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                      <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Formatted</p>
+                                      <span className="text-[10px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
                                         {issueIdx in reviewEdits ? 'Edited' : 'Suggested'}
                                       </span>
                                     </div>
@@ -1727,7 +1727,7 @@ export default function GuidelineFormat() {
                                       aria-label="Formatted suggestion"
                                       value={editValue}
                                       onChange={(v) => setReviewEdits((p) => ({ ...p, [issueIdx]: v }))}
-                                      className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950/20 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 leading-relaxed focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+                                      className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950/20 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                                     />
                                   </div>
                                 </div>
@@ -1740,7 +1740,7 @@ export default function GuidelineFormat() {
                                         if (seg?.suggestedText) setReviewEdits((p) => ({ ...p, [issueIdx]: seg.suggestedText }))
                                         goNext()
                                       }}
-                                      className="rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2"
+                                      className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2"
                                     >
                                       Accept & Next
                                     </button>
@@ -1754,21 +1754,21 @@ export default function GuidelineFormat() {
                                         })
                                         goNext()
                                       }}
-                                      className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                      className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                                     >
                                       Skip
                                     </button>
                                     <button
                                       type="button"
                                       onClick={() => setReviewIssueCursor((v) => Math.max(0, v - 1))}
-                                      className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                      className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                                     >
                                       Previous
                                     </button>
                                     <button
                                       type="button"
                                       onClick={goNext}
-                                      className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                      className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                                     >
                                       Next
                                     </button>
@@ -1776,7 +1776,7 @@ export default function GuidelineFormat() {
                                   <button
                                     type="button"
                                     onClick={() => setResultMode('full')}
-                                    className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                    className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                                   >
                                     Review full transcript
                                   </button>
@@ -1793,7 +1793,7 @@ export default function GuidelineFormat() {
                     <div className="space-y-3">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white">Transcript view</p>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">Transcript view</p>
                           <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
                             Original is dimmed (40%). Formatted is primary (60%). Scrolling stays synced — or switch to Focus Mode.
                           </p>
@@ -1803,7 +1803,7 @@ export default function GuidelineFormat() {
                             <button
                               type="button"
                               onClick={() => setFullTranscriptMode('all')}
-                              className={`px-3 py-2 text-sm font-semibold ${
+                              className={`px-3 py-2 text-sm font-medium ${
                                 fullTranscriptMode === 'all'
                                   ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
                                   : 'text-gray-900 dark:text-gray-100 hover:bg-white dark:hover:bg-gray-900/40'
@@ -1815,7 +1815,7 @@ export default function GuidelineFormat() {
                               type="button"
                               disabled={flaggedList.length === 0}
                               onClick={() => setFullTranscriptMode('focus')}
-                              className={`px-3 py-2 text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed ${
+                              className={`px-3 py-2 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed ${
                                 fullTranscriptMode === 'focus'
                                   ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
                                   : 'text-gray-900 dark:text-gray-100 hover:bg-white dark:hover:bg-gray-900/40'
@@ -1829,7 +1829,7 @@ export default function GuidelineFormat() {
                             <button
                               type="button"
                               onClick={() => setResultMode('review')}
-                              className="rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2"
+                              className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2"
                             >
                               Review Issues ({flaggedList.length})
                             </button>
@@ -1837,7 +1837,7 @@ export default function GuidelineFormat() {
                           <button
                             type="button"
                             onClick={() => setResultMode('summary')}
-                            className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                            className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                           >
                             Back to summary
                           </button>
@@ -1870,15 +1870,15 @@ export default function GuidelineFormat() {
                                     ? 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200'
                                     : 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100'
                               return (
-                                <div key={i} className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-5 space-y-4">
+                                <div key={i} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-5 space-y-4">
                                   <div className="flex flex-wrap items-start justify-between gap-3">
                                     <div className="space-y-1">
                                       <div className="flex flex-wrap items-center gap-2">
-                                        <span className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${badgeClass}`}>
+                                        <span className={`text-[10px] font-medium uppercase tracking-wide px-2 py-0.5 rounded-full ${badgeClass}`}>
                                           {seg.confidence || 'medium'}
                                         </span>
-                                        <span className="text-xs font-semibold text-violet-700 dark:text-violet-300">{seg.ruleApplied}</span>
-                                        <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                        <span className="text-xs font-medium text-blue-700 dark:text-blue-300">{seg.ruleApplied}</span>
+                                        <span className="text-[10px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
                                           Issue {i + 1} of {flaggedList.length}
                                         </span>
                                       </div>
@@ -1888,7 +1888,7 @@ export default function GuidelineFormat() {
                                       <button
                                         type="button"
                                         onClick={() => setFocusContextExpanded((p) => ({ ...p, [i]: !Boolean(p[i]) }))}
-                                        className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-semibold px-4 py-2"
+                                        className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 hover:bg-white dark:hover:bg-gray-900/40 text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                                       >
                                         {expanded ? 'Collapse context' : 'Expand surrounding context'}
                                       </button>
@@ -1904,7 +1904,7 @@ export default function GuidelineFormat() {
                                             el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                                           }, 50)
                                         }}
-                                        className={`rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 text-sm font-semibold px-4 py-2 ${
+                                        className={`rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-950/20 text-sm font-medium px-4 py-2 ${
                                           typeof segIndex === 'number' && segIndex > 0
                                             ? 'text-gray-900 dark:text-gray-100 hover:bg-white dark:hover:bg-gray-900/40'
                                             : 'text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
@@ -1917,12 +1917,12 @@ export default function GuidelineFormat() {
 
                                   <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
                                     <div className="lg:col-span-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/40 dark:bg-gray-950/20 p-4">
-                                      <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</p>
+                                      <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</p>
                                       {context.length ? (
                                         <div className="space-y-2">
                                           {context.map((idx) => (
                                             <div key={idx} className="rounded-lg border border-gray-200/60 dark:border-gray-700/60 bg-white/60 dark:bg-gray-950/20 px-3 py-2">
-                                              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Segment {idx + 1}</p>
+                                              <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Segment {idx + 1}</p>
                                               <div className="mt-1 text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed opacity-75">
                                                 {originalSegments[idx]}
                                               </div>
@@ -1937,8 +1937,8 @@ export default function GuidelineFormat() {
                                     </div>
                                     <div className="lg:col-span-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950/10 p-4">
                                       <div className="flex items-center justify-between gap-3 mb-2">
-                                        <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Formatted</p>
-                                        <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                        <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Formatted</p>
+                                        <span className="text-[10px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
                                           {i in reviewEdits ? 'Edited' : 'Suggested'}
                                         </span>
                                       </div>
@@ -1946,7 +1946,7 @@ export default function GuidelineFormat() {
                                         aria-label="Formatted suggestion"
                                         value={formatted}
                                         onChange={(v) => setReviewEdits((p) => ({ ...p, [i]: v }))}
-                                        className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950/20 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 leading-relaxed focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+                                        className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950/20 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                                       />
                                     </div>
                                   </div>
@@ -1957,8 +1957,8 @@ export default function GuidelineFormat() {
                         </div>
                       ) : (
                         <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-                          <div className="lg:col-span-2 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/30 p-4">
-                            <h3 className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</h3>
+                          <div className="lg:col-span-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/30 p-4">
+                            <h3 className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Original</h3>
                             <div
                               ref={originalScrollRef}
                               onScroll={() => onScrollSynced('original')}
@@ -1975,12 +1975,12 @@ export default function GuidelineFormat() {
                                         id={`seg-${n}`}
                                         className={`rounded-xl border px-3 py-2 text-xs whitespace-pre-wrap font-sans leading-relaxed transition-colors opacity-70 ${
                                           isFocused
-                                            ? 'border-violet-400 bg-violet-50 dark:border-violet-700 dark:bg-violet-950/30 opacity-100'
+                                            ? 'border-blue-400 bg-blue-50 dark:border-blue-700 dark:bg-blue-950/30 opacity-100'
                                             : 'border-gray-200/70 dark:border-gray-700/70 bg-white/60 dark:bg-gray-950/20'
                                         }`}
                                       >
                                         <div className="flex items-center justify-between mb-1">
-                                          <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Segment {n}</span>
+                                          <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Segment {n}</span>
                                         </div>
                                         <div className="text-gray-800 dark:text-gray-200">{seg}</div>
                                       </div>
@@ -1995,8 +1995,8 @@ export default function GuidelineFormat() {
                             </div>
                           </div>
 
-                          <div className="lg:col-span-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-4 shadow-sm">
-                            <h3 className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Formatted</h3>
+                          <div className="lg:col-span-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-4 shadow-sm">
+                            <h3 className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Formatted</h3>
                             <div
                               ref={formattedScrollRef}
                               onScroll={() => onScrollSynced('formatted')}
@@ -2033,7 +2033,7 @@ export default function GuidelineFormat() {
 
                       {reviewWarnings.length > 0 && (
                         <div className="rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/70 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-100">
-                          <p className="font-semibold">Some edits could not be applied to the full output:</p>
+                          <p className="font-medium">Some edits could not be applied to the full output:</p>
                           <ul className="mt-2 space-y-1 text-xs">
                             {reviewWarnings.slice(0, 5).map((w, i) => (
                               <li key={i}>{w}</li>
@@ -2045,12 +2045,12 @@ export default function GuidelineFormat() {
                     </div>
                   )}
 
-                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-violet-200/60 dark:border-violet-900/40">
+                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-blue-200/60 dark:border-blue-900/40">
                     <button
                       type="button"
                       onClick={downloadFormattedTxt}
                       disabled={!jobStatus.outputText}
-                      className="rounded-lg bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2"
+                      className="rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2"
                     >
                       Download TXT
                     </button>
@@ -2058,7 +2058,7 @@ export default function GuidelineFormat() {
                       type="button"
                       onClick={() => void downloadFormattedDocx()}
                       disabled={!jobStatus.outputText}
-                      className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                      className="rounded-lg border border-blue-300/70 dark:border-blue-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                     >
                       DOCX
                     </button>
@@ -2066,7 +2066,7 @@ export default function GuidelineFormat() {
                       type="button"
                       onClick={() => void downloadFormattedPdf()}
                       disabled={!jobStatus.outputText}
-                      className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                      className="rounded-lg border border-blue-300/70 dark:border-blue-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                     >
                       PDF
                     </button>
@@ -2074,7 +2074,7 @@ export default function GuidelineFormat() {
                       type="button"
                       onClick={downloadFormattedRtf}
                       disabled={!jobStatus.outputText}
-                      className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                      className="rounded-lg border border-blue-300/70 dark:border-blue-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                     >
                       RTF
                     </button>
@@ -2082,7 +2082,7 @@ export default function GuidelineFormat() {
                       type="button"
                       onClick={downloadFormattedJson}
                       disabled={!jobStatus}
-                      className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                      className="rounded-lg border border-blue-300/70 dark:border-blue-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                     >
                       JSON
                     </button>
@@ -2090,7 +2090,7 @@ export default function GuidelineFormat() {
                       type="button"
                       onClick={downloadFlaggedCsv}
                       disabled={flaggedList.length === 0}
-                      className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                      className="rounded-lg border border-blue-300/70 dark:border-blue-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                     >
                       CSV (flags)
                     </button>
@@ -2101,7 +2101,7 @@ export default function GuidelineFormat() {
                           type="button"
                           onClick={downloadFormattedSrt}
                           disabled={!jobStatus.outputText}
-                          className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                          className="rounded-lg border border-blue-300/70 dark:border-blue-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                         >
                           SRT
                         </button>
@@ -2109,7 +2109,7 @@ export default function GuidelineFormat() {
                           type="button"
                           onClick={downloadFormattedVtt}
                           disabled={!jobStatus.outputText}
-                          className="rounded-lg border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
+                          className="rounded-lg border border-blue-300/70 dark:border-blue-800/60 bg-white/70 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed text-gray-900 dark:text-gray-100 text-sm font-medium px-4 py-2"
                         >
                           VTT
                         </button>
@@ -2144,7 +2144,7 @@ export default function GuidelineFormat() {
 
       {/* SEO FAQ section — crawlable content for Google and LLM citations */}
       <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16" aria-label="Frequently asked questions">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-6">
           Transcript Style Guide FAQ
         </h2>
         <dl className="space-y-6">
@@ -2179,7 +2179,7 @@ export default function GuidelineFormat() {
             },
           ].map(({ q, a }) => (
             <div key={q} className="border-b border-gray-200 dark:border-gray-800 pb-6">
-              <dt className="font-semibold text-gray-900 dark:text-white text-base mb-2">{q}</dt>
+              <dt className="font-medium text-gray-900 dark:text-white text-base mb-2">{q}</dt>
               <dd className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{a}</dd>
             </div>
           ))}
@@ -2188,7 +2188,7 @@ export default function GuidelineFormat() {
 
       {/* ── QA Workflow Section ── */}
       <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="Transcription QA workflow">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-3">
           The 7-Stage Transcription QA Workflow
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">
@@ -2201,62 +2201,62 @@ export default function GuidelineFormat() {
               title: 'Draft transcript generation',
               detail: 'Raw transcript produced from audio — either AI-generated (Whisper, Otter, etc.) or a rough human first pass. At this stage the text is accurate but unformatted: speaker labels are inconsistent, filler words are present, punctuation is uneven.',
               label: 'Manual / AI',
-              violet: false,
+              blue: false,
             },
             {
               stage: '2',
               title: 'Formatting pass',
               detail: 'Apply the client style guide: normalize speaker labels to the required format ([Speaker Name]: vs SPEAKER 1: vs Speaker 1:), correct number formatting (spell out one–nine, numerals for 10+), apply capitalization rules, normalize ellipsis and dash usage. VideoText automates this pass entirely based on the selected preset.',
               label: 'Automated here',
-              violet: true,
+              blue: true,
             },
             {
               stage: '3',
               title: 'Filler word and verbatim cleanup',
               detail: 'Remove or retain filler words (um, uh, like, you know) based on the platform spec. Non-verbatim platforms (Rev, GoTranscript, Scribie) require removal unless fillers are meaningful. Full verbatim platforms retain every word. False starts and stutters are cleaned in this stage. VideoText applies the correct ruleset automatically per preset.',
               label: 'Automated here',
-              violet: true,
+              blue: true,
             },
             {
               stage: '4',
               title: 'Speaker label consistency check',
               detail: 'Every speaker transition must be labeled. No speaker label should appear inconsistently — mixing "Speaker 1" and "SPK 1" for the same person is a common rejection reason on Rev and GoTranscript. VideoText flags all speaker label inconsistencies in the QA compliance report before export.',
               label: 'Automated here',
-              violet: true,
+              blue: true,
             },
             {
               stage: '5',
               title: 'Timestamp validation',
               detail: 'GoTranscript requires timestamps every 2 minutes; TranscribeMe requires them every paragraph. VideoText validates that required timestamps are present, correctly formatted ([00:02:00] not 00:02:00), and fall on speaker turns rather than mid-sentence. Missing or malformed timestamps are flagged before export.',
               label: 'Automated here',
-              violet: true,
+              blue: true,
             },
             {
               stage: '6',
               title: 'Human reviewer QA pass',
               detail: 'A human reviewer reads through the formatted transcript against the original audio. Focus areas: proper nouns the AI may have misheard, inaudible sections that need [inaudible] tags, and any segments flagged as below the QA confidence threshold. VideoText surfaces exactly which segments need manual review — no need to scan the whole document.',
               label: 'Manual',
-              violet: false,
+              blue: false,
             },
             {
               stage: '7',
               title: 'Final submission',
               detail: 'Export in the required format: plain TXT for most marketplaces, DOCX for agency clients, SRT for caption deliverables. The QA compliance score documents that style guide rules were applied systematically — useful for agencies that need to demonstrate process to clients.',
               label: 'Manual',
-              violet: false,
+              blue: false,
             },
-          ] as Array<{ stage: string; title: string; detail: string; label: string; violet: boolean }>).map(({ stage, title, detail, label, violet }, i, arr) => (
+          ] as Array<{ stage: string; title: string; detail: string; label: string; blue: boolean }>).map(({ stage, title, detail, label, blue }, i, arr) => (
             <li key={stage} className="flex gap-4">
               <div className="flex flex-col items-center">
-                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${violet ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-medium ${blue ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
                   {stage}
                 </span>
                 {i < arr.length - 1 && <div className="mt-1 w-px flex-1 bg-gray-200 dark:bg-gray-700 mb-1" />}
               </div>
               <div className="pb-7 pt-0.5 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm">{title}</h3>
-                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${violet ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
+                  <h3 className="font-medium text-gray-900 dark:text-white text-sm">{title}</h3>
+                  <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full ${blue ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
                     {label}
                   </span>
                 </div>
@@ -2269,7 +2269,7 @@ export default function GuidelineFormat() {
 
       {/* ── Before / After Format Examples ── */}
       <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="Transcript formatting examples">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-3">
           Raw → Formatted → Client-Ready: What the Formatter Actually Does
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
@@ -2278,22 +2278,22 @@ export default function GuidelineFormat() {
         <div className="space-y-10">
           {/* Example 1 — Rev non-verbatim */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Example: Rev non-verbatim format</h3>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white">Example: Rev non-verbatim format</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Raw AI output</p>
+                <p className="text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Raw AI output</p>
                 <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`spk_0: um so like the the thing that we uh found was that you know the results were uh really quite significant i mean we we ran it three times
 
 spk_1: yeah yeah and and the second run was i think more more compelling right`}</pre>
               </div>
               <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-500 dark:text-amber-400 mb-2">After formatting pass</p>
+                <p className="text-[10px] font-medium uppercase tracking-wider text-amber-500 dark:text-amber-400 mb-2">After formatting pass</p>
                 <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`[Speaker 1]: The thing that we found was that the results were really quite significant. We ran it three times.
 
 [Speaker 2]: Yeah, and the second run was more compelling, right?`}</pre>
               </div>
               <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-500 dark:text-emerald-400 mb-2">Client-ready (Rev spec)</p>
+                <p className="text-[10px] font-medium uppercase tracking-wider text-emerald-500 dark:text-emerald-400 mb-2">Client-ready (Rev spec)</p>
                 <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`[Speaker 1]: The thing we found was that the results were really quite significant. We ran it three times.
 
 [Speaker 2]: Yeah, and the second run was more compelling, right?`}</pre>
@@ -2304,10 +2304,10 @@ spk_1: yeah yeah and and the second run was i think more more compelling right`}
 
           {/* Example 2 — GoTranscript with timestamps */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Example: GoTranscript format with 2-minute timestamps</h3>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white">Example: GoTranscript format with 2-minute timestamps</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Raw AI output</p>
+                <p className="text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Raw AI output</p>
                 <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`Speaker 1: so we launched in Q3 and uh the response was better than we thought
 
 [00:02:14]
@@ -2315,7 +2315,7 @@ spk_1: yeah yeah and and the second run was i think more more compelling right`}
 Speaker 1: the first 30 days we had 4,000 signups which is uh which is above projections`}</pre>
               </div>
               <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-500 dark:text-amber-400 mb-2">After formatting pass</p>
+                <p className="text-[10px] font-medium uppercase tracking-wider text-amber-500 dark:text-amber-400 mb-2">After formatting pass</p>
                 <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`Speaker 1: We launched in Q3 and the response was better than we thought.
 
 [00:02:14]
@@ -2323,7 +2323,7 @@ Speaker 1: the first 30 days we had 4,000 signups which is uh which is above pro
 Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}</pre>
               </div>
               <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-500 dark:text-emerald-400 mb-2">Client-ready (GoTranscript spec)</p>
+                <p className="text-[10px] font-medium uppercase tracking-wider text-emerald-500 dark:text-emerald-400 mb-2">Client-ready (GoTranscript spec)</p>
                 <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`Speaker 1: We launched in Q3 and the response was better than we thought.
 
 [00:02:14]
@@ -2336,14 +2336,14 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
 
           {/* Example 3 — Full verbatim */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Example: Full verbatim (legal / research format)</h3>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white">Example: Full verbatim (legal / research format)</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Raw AI output</p>
+                <p className="text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Raw AI output</p>
                 <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`spk_0: I- I wasn't at the location on that date. I mean, uh, I was definitely not there.`}</pre>
               </div>
               <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-500 dark:text-emerald-400 mb-2">Full verbatim output</p>
+                <p className="text-[10px] font-medium uppercase tracking-wider text-emerald-500 dark:text-emerald-400 mb-2">Full verbatim output</p>
                 <pre className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">{`WITNESS: I-- I wasn't at the location on that date. I mean, uh, I was definitely not there.`}</pre>
                 <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-2">✓ Fillers retained ✓ False starts formatted ✓ Label normalized</p>
               </div>
@@ -2354,21 +2354,21 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
 
       {/* ── Style Guide Comparison Table ── */}
       <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="Transcription platform style guide comparison">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-3">
           Style Guide Comparison: Rev, GoTranscript, TranscribeMe, Scribie
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
           Every platform has a distinct style guide. Submitting to the wrong format is the leading cause of transcript rejection and reduced QA scores. This table documents the key formatting rules for each platform as of 2026.
         </p>
-        <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700">
+        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
           <table className="min-w-full text-xs">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                <th className="py-3 px-4 text-left font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">Rule</th>
-                <th className="py-3 px-4 text-left font-semibold text-violet-700 dark:text-violet-300 whitespace-nowrap">Rev</th>
-                <th className="py-3 px-4 text-left font-semibold text-blue-700 dark:text-blue-300 whitespace-nowrap">GoTranscript</th>
-                <th className="py-3 px-4 text-left font-semibold text-emerald-700 dark:text-emerald-300 whitespace-nowrap">TranscribeMe</th>
-                <th className="py-3 px-4 text-left font-semibold text-amber-700 dark:text-amber-300 whitespace-nowrap">Scribie</th>
+                <th className="py-3 px-4 text-left font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Rule</th>
+                <th className="py-3 px-4 text-left font-medium text-blue-700 dark:text-blue-300 whitespace-nowrap">Rev</th>
+                <th className="py-3 px-4 text-left font-medium text-blue-700 dark:text-blue-300 whitespace-nowrap">GoTranscript</th>
+                <th className="py-3 px-4 text-left font-medium text-emerald-700 dark:text-emerald-300 whitespace-nowrap">TranscribeMe</th>
+                <th className="py-3 px-4 text-left font-medium text-amber-700 dark:text-amber-300 whitespace-nowrap">Scribie</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -2405,7 +2405,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
 
       {/* ── Technical Validation Section ── */}
       <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="How transcript format validation works">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-3">
           How the Format Validation Engine Works
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
@@ -2438,8 +2438,8 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
               body: 'The confidence score represents the percentage of verifiable checklist items that passed. Scores above 90% indicate the transcript is likely compliant for submission. Scores between 70–90% mean flagged issues remain — review the flagged segments before submitting. Scores below 70% indicate systematic formatting issues that likely require re-running the formatter with corrected rule settings.',
             },
           ].map(({ title, body }) => (
-            <article key={title} className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-5 shadow-sm">
-              <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-2">{title}</h3>
+            <article key={title} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-5 shadow-sm">
+              <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2">{title}</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{body}</p>
             </article>
           ))}
@@ -2448,7 +2448,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
 
       {/* ── Professional Transcriptionist Section ── */}
       <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="For professional transcriptionists">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-3">
           Built for Professional Transcriptionists, Not Just Beginners
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
@@ -2477,8 +2477,8 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
               body: 'If you deliver SRT or VTT files alongside or instead of plain transcripts — for captioning clients, media companies, or platforms — this tool handles the subtitle formatting pass as well. Paste your SRT or VTT content directly: the formatter preserves timestamp structure, applies verbatim rules to caption text, validates line length against broadcast standards, and exports in caption-ready format. The QA report includes subtitle-specific checks for overlapping timestamps and character limits.',
             },
           ].map(({ heading, body }) => (
-            <div key={heading} className="border-l-2 border-violet-200 dark:border-violet-800 pl-5">
-              <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-2">{heading}</h3>
+            <div key={heading} className="border-l-2 border-blue-200 dark:border-blue-800 pl-5">
+              <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2">{heading}</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{body}</p>
             </div>
           ))}
@@ -2488,8 +2488,8 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
       {/* Brand-specific guideline pages hub */}
       <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800" aria-label="Transcription service style guides">
         <div className="flex items-center gap-3 mb-2">
-          <BookOpen className="w-5 h-5 text-violet-500" />
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Platform-Specific Transcription Style Guides</h2>
+          <BookOpen className="w-5 h-5 text-blue-600" />
+          <h2 className="text-xl font-medium text-gray-900 dark:text-white">Platform-Specific Transcription Style Guides</h2>
         </div>
         <p className="text-gray-500 dark:text-gray-400 text-sm mb-7 max-w-2xl">
           Each transcription platform has its own formatting rules. Browse detailed style guides for the services below — verbatim levels, speaker labels, timestamps, and every rule you need to pass QA.
@@ -2520,7 +2520,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
           },
           {
             brand: 'TranscribeMe',
-            color: 'purple',
+            color: 'blue',
             links: [
               { label: 'TranscribeMe Guidelines', path: '/transcribeme-guidelines' },
               { label: 'TranscribeMe Style', path: '/transcribeme-transcription-style' },
@@ -2550,7 +2550,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
           },
           {
             brand: 'Transcribio',
-            color: 'indigo',
+            color: 'blue',
             links: [
               { label: 'Transcribio Guidelines', path: '/transcribio-guidelines' },
               { label: 'Transcribio Format Guide', path: '/transcribio-format-guide' },
@@ -2599,8 +2599,8 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
           },
         ].map(({ brand, links }) => (
           <div key={brand} className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-              <FileText className="w-3.5 h-3.5 text-violet-400" />
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+              <FileText className="w-3.5 h-3.5 text-blue-400" />
               {brand}
             </h3>
             <div className="flex flex-wrap gap-2">
@@ -2608,7 +2608,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
                 <Link
                   key={path}
                   to={path}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs font-medium text-gray-600 dark:text-gray-300 hover:border-violet-300 dark:hover:border-violet-700 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-950/20 transition-all"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs font-medium text-gray-600 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all"
                 >
                   {label}
                   <ChevronRight className="w-3 h-3 opacity-50" />

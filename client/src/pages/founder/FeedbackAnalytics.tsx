@@ -69,19 +69,19 @@ export default function FeedbackAnalytics({ feedback, feedbackByTool, starDistri
         <div className="grid grid-cols-3 gap-3">
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3">
             <p className="text-xs text-zinc-500 mb-1">Satisfied (4–5★)</p>
-            <p className="text-2xl font-bold text-emerald-400 tabular-nums">{promoterPct}%</p>
+            <p className="text-2xl font-medium text-emerald-400 tabular-nums">{promoterPct}%</p>
             <p className="text-xs text-zinc-600 mt-0.5">{promoters} users</p>
           </div>
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3">
             <p className="text-xs text-zinc-500 mb-1">Neutral (3★)</p>
-            <p className="text-2xl font-bold text-amber-400 tabular-nums">
+            <p className="text-2xl font-medium text-amber-400 tabular-nums">
               {totalRatings > 0 ? Math.round((passives / totalRatings) * 100) : 0}%
             </p>
             <p className="text-xs text-zinc-600 mt-0.5">{passives} users</p>
           </div>
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3">
             <p className="text-xs text-zinc-500 mb-1">Dissatisfied (1–2★)</p>
-            <p className="text-2xl font-bold text-red-400 tabular-nums">{detractorPct}%</p>
+            <p className="text-2xl font-medium text-red-400 tabular-nums">{detractorPct}%</p>
             <p className="text-xs text-zinc-600 mt-0.5">{detractors} users</p>
           </div>
         </div>
@@ -90,9 +90,9 @@ export default function FeedbackAnalytics({ feedback, feedbackByTool, starDistri
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Overall rating */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-          <h3 className="text-sm font-semibold text-white mb-4">Overall rating</h3>
+          <h3 className="text-sm font-medium text-white mb-4">Overall rating</h3>
           <div className="flex items-end gap-3 mb-4">
-            <span className="text-4xl font-bold text-white tabular-nums">
+            <span className="text-4xl font-medium text-white tabular-nums">
               {overallAvg != null ? overallAvg.toFixed(1) : '—'}
             </span>
             <div className="pb-1">
@@ -109,7 +109,7 @@ export default function FeedbackAnalytics({ feedback, feedbackByTool, starDistri
 
         {/* Per-tool ratings */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-          <h3 className="text-sm font-semibold text-white mb-4">Rating by tool</h3>
+          <h3 className="text-sm font-medium text-white mb-4">Rating by tool</h3>
           {feedbackByTool.length === 0 ? (
             <p className="text-zinc-600 text-sm">No data.</p>
           ) : (
@@ -141,7 +141,7 @@ export default function FeedbackAnalytics({ feedback, feedbackByTool, starDistri
 
         {/* Latest comments */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 overflow-hidden">
-          <h3 className="text-sm font-semibold text-white mb-4">Latest comments</h3>
+          <h3 className="text-sm font-medium text-white mb-4">Latest comments</h3>
           {feedback.filter((f) => f.comment && f.comment.trim()).length === 0 ? (
             <p className="text-zinc-600 text-sm">No comments yet.</p>
           ) : (
@@ -166,7 +166,7 @@ export default function FeedbackAnalytics({ feedback, feedbackByTool, starDistri
       {/* Feature requests */}
       {featureRequests.length > 0 && (
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-          <h3 className="text-sm font-semibold text-white mb-4">
+          <h3 className="text-sm font-medium text-white mb-4">
             Feature requests{' '}
             <span className="ml-1 text-xs font-normal text-zinc-500">({featureRequests.length} recent)</span>
           </h3>

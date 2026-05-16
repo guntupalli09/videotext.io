@@ -50,18 +50,18 @@ export default function ShareTranscript() {
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {loading && (
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-10 text-center text-gray-500 dark:text-gray-400 text-sm">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-10 text-center text-gray-500 dark:text-gray-400 text-sm">
             Loading…
           </div>
         )}
 
         {!loading && error && (
-          <div className="rounded-2xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/90 dark:bg-amber-950/25 p-6 flex gap-4">
+          <div className="rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/90 dark:bg-amber-950/25 p-6 flex gap-4">
             <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400 shrink-0" />
             <div>
-              <p className="font-semibold text-amber-900 dark:text-amber-200">Unable to open this page</p>
+              <p className="font-medium text-amber-900 dark:text-amber-200">Unable to open this page</p>
               <p className="text-sm text-amber-800/90 dark:text-amber-300/90 mt-1">{error}</p>
-              <Link to="/" className="inline-block mt-4 text-sm font-medium text-violet-600 dark:text-violet-400 hover:underline">
+              <Link to="/" className="inline-block mt-4 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
                 Go to VideoText home →
               </Link>
             </div>
@@ -71,7 +71,7 @@ export default function ShareTranscript() {
         {!loading && data && (
           <article className="space-y-6">
             <header className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+              <div className="flex flex-wrap items-center gap-2 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-gray-800 px-2.5 py-1 text-gray-600 dark:text-gray-300">
                   <ToolIcon className="w-3.5 h-3.5" />
                   {toolLabel}
@@ -88,7 +88,7 @@ export default function ShareTranscript() {
                   </span>
                 )}
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
                 {data.title}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -105,8 +105,8 @@ export default function ShareTranscript() {
               (data.payload.summary.summary ||
                 data.payload.summary.bullets?.length ||
                 data.payload.summary.actionItems?.length) && (
-                <section className="rounded-2xl border border-violet-200/70 dark:border-violet-900/40 bg-violet-50/50 dark:bg-violet-950/20 p-5 space-y-3">
-                  <h2 className="text-sm font-semibold text-violet-900 dark:text-violet-200">Summary</h2>
+                <section className="rounded-xl border border-blue-200/70 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20 p-5 space-y-3">
+                  <h2 className="text-sm font-medium text-blue-900 dark:text-blue-200">Summary</h2>
                   {data.payload.summary.summary && (
                     <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                       {data.payload.summary.summary}
@@ -121,7 +121,7 @@ export default function ShareTranscript() {
                   )}
                   {!!data.payload.summary.actionItems?.length && (
                     <div>
-                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Action items</p>
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Action items</p>
                       <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
                         {data.payload.summary.actionItems.map((b, i) => (
                           <li key={i}>{b}</li>
@@ -132,9 +132,9 @@ export default function ShareTranscript() {
                 </section>
               )}
 
-            <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/80 shadow-sm overflow-hidden">
+            <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/80 shadow-sm overflow-hidden">
               <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900">
-                <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Transcript</h2>
+                <h2 className="text-sm font-medium text-gray-800 dark:text-gray-200">Transcript</h2>
               </div>
               <div className="p-5 max-h-[70vh] overflow-y-auto">
                 {data.payload.segments?.length ? (
@@ -163,7 +163,7 @@ export default function ShareTranscript() {
             <footer className="text-center text-xs text-gray-400 dark:text-gray-500 pt-4">
               <p>
                 Transcribed with{' '}
-                <Link to="/" className="text-violet-600 dark:text-violet-400 font-medium hover:underline">
+                <Link to="/" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
                   VideoText
                 </Link>
               </p>

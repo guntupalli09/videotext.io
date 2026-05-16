@@ -71,7 +71,7 @@ function ChartCard({ title, value, sub, data, color }: ChartCardProps) {
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs text-zinc-500 uppercase tracking-wider">{title}</p>
-          <p className="text-2xl font-bold text-white mt-0.5">{value}</p>
+          <p className="text-2xl font-medium text-white mt-0.5">{value}</p>
           {sub && <p className="text-xs text-zinc-500 mt-0.5">{sub}</p>}
         </div>
         {last7.length >= 2 && (
@@ -118,7 +118,7 @@ export default function DailyTrendCharts({ daily }: { daily: DashboardDailyPoint
         value={totalNewUsers}
         sub="total new users"
         data={newUsersData}
-        color="#7c3aed"
+        color="#2563EB"
       />
       <ChartCard
         title="Total users (growth)"

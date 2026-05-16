@@ -66,14 +66,14 @@ export default function IcpResultsStudio() {
   const output = useMemo(() => CONTEXT_OUTPUTS[mode], [mode])
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-violet-50/30 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    <main className="min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12 space-y-6">
-        <header className="rounded-2xl border border-violet-200/60 dark:border-violet-800/50 bg-white/90 dark:bg-gray-900/70 backdrop-blur p-6 shadow-sm">
-          <p className="inline-flex items-center gap-2 rounded-full bg-violet-100 dark:bg-violet-900/40 px-3 py-1 text-xs font-semibold text-violet-700 dark:text-violet-300">
+        <header className="rounded-xl border border-blue-200/60 dark:border-blue-800/50 bg-white/90 dark:bg-gray-900/70 backdrop-blur p-6 shadow-sm">
+          <p className="inline-flex items-center gap-2 rounded-full bg-blue-100 dark:bg-blue-900/40 px-3 py-1 text-xs font-medium text-blue-700 dark:text-blue-300">
             <BadgeCheck className="h-3.5 w-3.5" />
             ICP Results Studio — UX concept
           </p>
-          <h1 className="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="mt-3 text-2xl sm:text-3xl font-medium tracking-tight text-gray-900 dark:text-white">
             One transcript. Context-aware outputs. Publish-ready assets.
           </h1>
           <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-3xl">
@@ -82,9 +82,9 @@ export default function IcpResultsStudio() {
           </p>
         </header>
 
-        <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
+        <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">1) Context-aware output mode</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white">1) Context-aware output mode</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">Select the goal first, then shape summary and downstream assets automatically.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
@@ -94,17 +94,17 @@ export default function IcpResultsStudio() {
                 type="button"
                 onClick={() => setMode(option.key)}
                 className={`rounded-xl border px-3 py-3 text-left transition ${mode === option.key
-                  ? 'border-violet-400 bg-violet-50 dark:bg-violet-950/40'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-violet-300'}`}
+                  ? 'border-blue-400 bg-blue-50 dark:bg-blue-950/40'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-blue-300'}`}
               >
-                <p className="text-sm font-semibold text-gray-900 dark:text-white">{option.label}</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{option.label}</p>
                 <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">{option.hint}</p>
               </button>
             ))}
           </div>
           <article className="rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/70 dark:bg-emerald-950/20 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">Generated output</p>
-            <h3 className="mt-1 text-base font-bold text-emerald-900 dark:text-emerald-200">{output.headline}</h3>
+            <p className="text-xs font-medium uppercase tracking-wide text-emerald-700 dark:text-emerald-400">Generated output</p>
+            <h3 className="mt-1 text-base font-medium text-emerald-900 dark:text-emerald-200">{output.headline}</h3>
             <p className="mt-2 text-sm text-emerald-800/90 dark:text-emerald-200/90">{output.summary}</p>
             <ul className="mt-3 grid sm:grid-cols-2 gap-1.5">
               {output.focus.map((item) => (
@@ -118,9 +118,9 @@ export default function IcpResultsStudio() {
         </section>
 
         <section className="grid lg:grid-cols-2 gap-6">
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">2) Repurposing asset pack</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">2) Repurposing asset pack</h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">After transcript completion, generate a full distribution pack in one click.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -128,8 +128,8 @@ export default function IcpResultsStudio() {
                 const Icon = asset.icon
                 return (
                   <div key={asset.label} className="rounded-xl border border-gray-200 dark:border-gray-700 p-3">
-                    <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                      <Icon className="h-4 w-4 text-violet-500" />
+                    <p className="inline-flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white">
+                      <Icon className="h-4 w-4 text-blue-600" />
                       {asset.label}
                     </p>
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{asset.value}</p>
@@ -137,21 +137,21 @@ export default function IcpResultsStudio() {
                 )
               })}
             </div>
-            <button type="button" className="w-full rounded-xl bg-violet-600 hover:bg-violet-700 text-white px-4 py-3 text-sm font-semibold">
+            <button type="button" className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 text-sm font-medium">
               Generate 10 publish-ready assets
             </button>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">3) Collaboration layer</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">3) Collaboration layer</h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">Inline transcript comments + resolve workflow for editor/team handoff.</p>
             </div>
             <div className="space-y-2.5">
               {COMMENTS.map((comment) => (
                 <div key={`${comment.user}-${comment.time}`} className="rounded-xl border border-gray-200 dark:border-gray-700 p-3">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{comment.user}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{comment.user}</p>
                     <span className={`text-[11px] px-2 py-0.5 rounded-full ${comment.status === 'Resolved'
                       ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
                       : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'}`}>
@@ -163,15 +163,15 @@ export default function IcpResultsStudio() {
                 </div>
               ))}
             </div>
-            <button type="button" className="w-full rounded-xl border border-gray-300 dark:border-gray-700 px-4 py-3 text-sm font-semibold text-gray-800 dark:text-gray-200">
+            <button type="button" className="w-full rounded-xl border border-gray-300 dark:border-gray-700 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-200">
               Open review mode
             </button>
           </div>
         </section>
 
-        <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
+        <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">4) Drop-anything ingestion</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white">4) Drop-anything ingestion</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">Paste links from anywhere and queue them without format friction.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -179,8 +179,8 @@ export default function IcpResultsStudio() {
               const Icon = item.icon
               return (
                 <article key={item.source} className="rounded-xl border border-gray-200 dark:border-gray-700 p-3">
-                  <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                    <Icon className="h-4 w-4 text-violet-500" />
+                  <p className="inline-flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <Icon className="h-4 w-4 text-blue-600" />
                     {item.source}
                   </p>
                   <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Status: {item.state}</p>

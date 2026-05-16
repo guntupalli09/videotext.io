@@ -13,14 +13,14 @@ const TOOL_LABELS: Record<string, string> = {
 }
 
 const TOOL_COLORS: Record<string, string> = {
-  'video-to-transcript': 'text-violet-400',
+  'video-to-transcript': 'text-blue-400',
   'voice-to-transcript': 'text-rose-400',
   'video-to-subtitles': 'text-blue-400',
   'translate-subtitles': 'text-pink-400',
   'fix-subtitles': 'text-emerald-400',
   'burn-subtitles': 'text-orange-400',
   'compress-video': 'text-cyan-400',
-  'batch-process': 'text-indigo-400',
+  'batch-process': 'text-blue-400',
 }
 
 function statusDot(status: string) {
@@ -72,13 +72,13 @@ export default function RecentJobsFeed({ jobs }: { jobs: DashboardJob[] }) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
       <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Recent jobs</h3>
+        <h3 className="text-sm font-medium text-white">Recent jobs</h3>
         <div className="flex items-center gap-3">
           <span className="text-xs text-zinc-500">{jobs.length} latest</span>
           {jobs.length > 0 && (
             <button
               onClick={handleExport}
-              className="bg-violet-700 hover:bg-violet-600 text-white text-xs px-2.5 py-1 rounded transition-colors"
+              className="bg-blue-700 hover:bg-blue-600 text-white text-xs px-2.5 py-1 rounded transition-colors"
             >
               Export
             </button>
