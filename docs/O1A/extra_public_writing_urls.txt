@@ -1,0 +1,8 @@
+# Syndicated or off-site articles (Medium, DEV.to, LinkedIn articles, etc.)
+# One entry per line. Format:
+#   Title | URL | Platform
+# Platform is optional (e.g. Medium, DEV Community).
+# Lines starting with # are ignored. Blank lines ignored.
+#
+# Example:
+#   Building a transcription pipeline at scale | https://medium.com/@yourhandle/your-post | Medium
