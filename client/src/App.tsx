@@ -83,6 +83,7 @@ const AiTranscriptionTools = lazy(() => import('./pages/AiTranscriptionTools'))
 const VideoTextVsTurboScribe = lazy(() => import('./pages/VideoTextVsTurboScribe'))
 const TurboScribeAlternative = lazy(() => import('./pages/TurboScribeAlternative'))
 const VideoTextVsRev = lazy(() => import('./pages/VideoTextVsRev'))
+const TemiVsVideoText = lazy(() => import('./pages/TemiVsVideoText'))
 const BestOtterAlternatives = lazy(() => import('./pages/BestOtterAlternatives'))
 const BestDescriptAlternatives = lazy(() => import('./pages/BestDescriptAlternatives'))
 const AiTranscriptionWorkflow = lazy(() => import('./pages/AiTranscriptionWorkflow'))
@@ -121,7 +122,7 @@ const TtmlToSrt = lazy(() => import('./pages/tools/TtmlToSrt'))
 function RouteFallback() {
   return (
     <div className="flex min-h-[40vh] items-center justify-center" role="status" aria-live="polite" aria-label="Loading">
-      <p className="text-violet-600 font-medium">Loading…</p>
+      <p className="text-blue-600 font-medium">Loading…</p>
     </div>
   )
 }
@@ -135,6 +136,17 @@ function RouteTransitionLayout() {
       <Outlet />
     </div>
   )
+}
+
+function LowercaseRedirect() {
+  const { pathname, search, hash } = useLocation()
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (pathname !== pathname.toLowerCase()) {
+      navigate(pathname.toLowerCase() + search + hash, { replace: true })
+    }
+  }, [pathname, search, hash, navigate])
+  return null
 }
 
 function AppSeo() {
@@ -360,7 +372,7 @@ function PostCheckoutHandler() {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="status" aria-live="polite">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated max-w-sm w-full p-8 text-center">
-          <div className="mx-auto w-10 h-10 rounded-full border-4 border-violet-200 border-t-violet-600 animate-spin mb-4" />
+          <div className="mx-auto w-10 h-10 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin mb-4" />
           <p className="text-base font-semibold text-gray-900 dark:text-white">Payment received — activating your plan…</p>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">This takes just a moment.</p>
         </div>
@@ -383,7 +395,7 @@ function PostCheckoutHandler() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               autoComplete="new-password"
               minLength={8}
             />
@@ -393,7 +405,7 @@ function PostCheckoutHandler() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               autoComplete="new-password"
             />
             {passwordError && <p className="text-sm text-red-600">{passwordError}</p>}
@@ -401,7 +413,7 @@ function PostCheckoutHandler() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-2.5 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-60"
+                className="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium disabled:opacity-60"
               >
                 {submitting ? 'Setting…' : 'Set password'}
               </button>
@@ -467,11 +479,12 @@ function App() {
   return (
     <BrowserRouter>
       {/* <WorkflowProvider> */}
+      <LowercaseRedirect />
       <AppSeo />
       <SessionTracker />
       <PostCheckoutHandler />
       <ImpersonationHandler />
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-violet-600 focus:text-white focus:rounded-lg">
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg">
         Skip to main content
       </a>
       <div className="min-h-screen flex flex-col overflow-x-hidden">
@@ -539,6 +552,8 @@ function App() {
             <Route path="/videotext-vs-turboscribe" element={<VideoTextVsTurboScribe />} />
             <Route path="/turboscribe-alternative" element={<TurboScribeAlternative />} />
             <Route path="/videotext-vs-rev" element={<VideoTextVsRev />} />
+            <Route path="/temi-vs-videotext" element={<TemiVsVideoText />} />
+            <Route path="/rev-vs-videotext" element={<Navigate to="/temi-vs-videotext" replace />} />
             <Route path="/best-otter-alternatives" element={<BestOtterAlternatives />} />
             <Route path="/best-descript-alternatives" element={<BestDescriptAlternatives />} />
             <Route path="/ai-transcription-workflow" element={<AiTranscriptionWorkflow />} />
@@ -572,7 +587,7 @@ function App() {
                 },
                 {
                   q: 'Can I transcribe video online for free?',
-                  a: 'Yes. The free tier includes 3 imports per month with no credit card required. Free transcripts include full timestamped text, AI summary, auto-generated chapters, and SRT/VTT subtitle files. Paid plans start at $19/month for 450 minutes.',
+                  a: 'Yes. The free tier includes 3 uploads per day with no credit card required. Free transcripts include full timestamped text, AI summary, auto-generated chapters, and SRT/VTT subtitle files. Pro plan is $40/month with no usage limits.',
                 },
                 {
                   q: 'How long does it take to transcribe a video?',
@@ -600,7 +615,7 @@ function App() {
                 },
                 {
                   q: 'Can I transcribe multiple videos at once?',
-                  a: 'Yes. Pro and Agency plans include batch upload. Drag in multiple video files simultaneously and VideoText processes all of them in parallel. Download one ZIP containing all transcripts, subtitle files, and summaries when processing finishes.',
+                  a: 'Yes. The Pro plan includes batch upload. Drag in multiple video files simultaneously and VideoText processes all of them in parallel. Download one ZIP containing all transcripts, subtitle files, and summaries when processing finishes.',
                 },
                 {
                   q: 'How does VideoText compare to Otter.ai, Descript, and Rev?',
@@ -638,7 +653,7 @@ function App() {
                 workflowSteps: [
                   {
                     title: 'Upload once (drag, drop, or paste a URL)',
-                    detail: 'Drag any MP4, MOV, MKV, WebM, MP3, WAV, or M4A file into the upload zone. Or paste a YouTube, Vimeo, or direct media URL — VideoText fetches the audio directly without requiring a download. Files up to 5 hours are supported. Pro and Agency plans include parallel batch upload.',
+                    detail: 'Drag any MP4, MOV, MKV, WebM, MP3, WAV, or M4A file into the upload zone. Or paste a YouTube, Vimeo, or direct media URL — VideoText fetches the audio directly without requiring a download. Files up to 5 hours are supported. Pro plan includes parallel batch upload.',
                   },
                   {
                     title: 'Set language and speaker count (optional)',
@@ -739,7 +754,7 @@ function App() {
                   { feature: 'Subtitle file formats', videotext: 'SRT + VTT both generated, broadcast-safe line breaks', alternatives: 'Otter: SRT only | Descript: SRT only | Rev: SRT | TurboScribe: SRT | none auto-format line breaks' },
                   { feature: 'Batch processing', videotext: 'Pro/Agency: parallel batch, one ZIP output', alternatives: 'Otter: sequential only | Descript: one file at a time | Rev: batch portal (slow, expensive)' },
                   { feature: 'Export formats', videotext: 'TXT, PDF, DOCX, JSON, CSV, SRT, VTT, Notion, 3-column', alternatives: 'Otter: TXT, DOCX, PDF | Descript: TXT, DOCX | Rev: TXT, DOCX, SRT' },
-                  { feature: 'Cost for 450 min/month', videotext: 'Pro: $19/month flat', alternatives: 'Otter: $20/month (limited AI features) | Descript: $24/month | Rev AI: ~$56/month ($0.125/min)' },
+                  { feature: 'Cost per month', videotext: 'Pro: $40/month flat, unlimited', alternatives: 'Otter: $20/month (limited AI features) | Descript: $24/month | Rev AI: ~$56/month ($0.125/min)' },
                 ],
                 useCases: [
                   {
@@ -792,7 +807,7 @@ function App() {
                   },
                   {
                     title: 'Non-profits and community organizations',
-                    body: 'Make recorded board meetings, community events, and program documentation accessible and searchable. Transcription makes oral history archives searchable. Captions make video content accessible to deaf and hard-of-hearing community members. Free tier covers 3 imports per month with no credit card required.',
+                    body: 'Make recorded board meetings, community events, and program documentation accessible and searchable. Transcription makes oral history archives searchable. Captions make video content accessible to deaf and hard-of-hearing community members. Free tier: 3 uploads per day, no credit card required.',
                   },
                   {
                     title: 'Accessibility and captioning specialists',
@@ -809,6 +824,7 @@ function App() {
             <Route path="/transcribe-meeting-recording" element={<Navigate to="/meeting-recording-to-transcript" replace />} />
             <Route path="/translate-subtitles" element={<TranslateSubtitles />} />
             <Route path="/translation" element={<TranslateSubtitles />} />
+            <Route path="/free-captions-and-subtitles" element={<VideoToSubtitles />} />
             <Route path="/fix-subtitles" element={<FixSubtitles />} />
             <Route path="/burn-subtitles" element={<BurnSubtitles />} />
             <Route path="/compress-video" element={<CompressVideo />} />
@@ -827,6 +843,10 @@ function App() {
             <Route path="/tools/subtitle-reading-speed" element={<SubtitleReadingSpeed />} />
             <Route path="/tools/subtitle-character-checker" element={<SubtitleCharacterChecker />} />
             <Route path="/tools/subtitle-word-counter" element={<SubtitleWordCounter />} />
+            <Route path="/subtitle-validator" element={<SubtitleValidator />} />
+            <Route path="/subtitle-reading-speed" element={<SubtitleReadingSpeed />} />
+            <Route path="/subtitle-character-checker" element={<SubtitleCharacterChecker />} />
+            <Route path="/subtitle-word-counter" element={<SubtitleWordCounter />} />
             <Route path="/tools/video-script-timer" element={<VideoScriptTimer />} />
             <Route path="/tools/words-per-minute-calculator" element={<WordsPerMinute />} />
             <Route path="/tools/video-bitrate-calculator" element={<VideoBitrateCalculator />} />

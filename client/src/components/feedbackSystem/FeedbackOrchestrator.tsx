@@ -11,6 +11,7 @@
  *  4. D never same session as B or E
  *  5. E requires export in a PREVIOUS session
  *  6. D requires at least one prior export
+ *  7. Prompts only show after authentication; post-result feedback waits 15s after signup/result view.
  *
  * RACE CONDITION (item 1):
  *  A timer checks hasExportedThisSession() AT EXECUTION TIME (not just at
@@ -39,17 +40,20 @@ import {
   hasExportedThisSession, markExportedThisSession,
 } from '../../hooks/useFeedbackFrequency'
 import { getLifetimeSessionCount } from '../../lib/sessionTracking'
+import { isLoggedIn } from '../../lib/auth'
 
 type ActiveTrigger = 'A' | 'B' | 'C' | 'D' | 'E' | null
 
 export default function FeedbackOrchestrator() {
   const [active, setActive]   = useState<ActiveTrigger>(null)
   const [toolName, setToolName] = useState<string | undefined>()
+  const [toolId, setToolId] = useState<string | undefined>()
   const [dropoffReason]       = useState<'idle' | 'leaving'>('idle')
   const [onResultsPage, setOnResultsPage] = useState(false)
 
   const hasExportedRef   = useRef(false)   // exported this tab session
   const triggerAFiredRef = useRef(false)   // A fired — C must not fire
+  const onResultsPageRef = useRef(false)   // latest result-view state for delayed auth timers
 
   // ── Centralised timer management (item 7) ───────────────────────────────────
   const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
@@ -81,27 +85,37 @@ export default function FeedbackOrchestrator() {
   // ── App event listeners ────────────────────────────────────────────────────
 
   useEffect(() => {
-    // ── result ready (transcription_completed or result_viewed) ─────────────
-    const onResultReady = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { metadata?: { toolId?: string } }
-      setToolName(detail?.metadata?.toolId ?? undefined)
-      setOnResultsPage(true)
-
+    const scheduleAuthenticatedResultPrompt = () => {
+      if (!isLoggedIn()) return
       if (!canShowTriggerA()) return
 
       scheduleTimer('trigger-a', () => {
-        // Item 1: Re-check AT EXECUTION TIME — export may have happened in <5s
+        // Re-check AT EXECUTION TIME — signup/export/navigation may have changed state.
+        if (!isLoggedIn()) return
+        if (!onResultsPageRef.current) return
         if (!canShowTriggerA()) return
         if (hasExportedThisSession()) return   // belt & suspenders over the ref
         if (hasExportedRef.current) return
         markTriggerAShown()
         triggerAFiredRef.current = true
         setActive('A')
-      }, 5_000)
+      }, 15_000)
+    }
+
+    // ── result ready (transcription_completed or result_viewed) ─────────────
+    const onResultReady = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { metadata?: { toolId?: string } }
+      const resultToolId = detail?.metadata?.toolId ?? undefined
+      setToolName(resultToolId)
+      setToolId(resultToolId)
+      onResultsPageRef.current = true
+      setOnResultsPage(true)
+      scheduleAuthenticatedResultPrompt()
     }
 
     // ── export clicked — highest priority ────────────────────────────────────
     const onExportClicked = () => {
+      if (!isLoggedIn()) return
       // Item 2: Guard against duplicate events (e.g. double-click on export btn)
       if (hasExportedRef.current) return
 
@@ -109,6 +123,7 @@ export default function FeedbackOrchestrator() {
       cancelTimer('trigger-a')
       cancelTimer('trigger-d')
 
+      onResultsPageRef.current = false
       setOnResultsPage(false)
 
       // Capture "exported before THIS click" BEFORE marking
@@ -133,12 +148,13 @@ export default function FeedbackOrchestrator() {
 
     // ── session returned ─────────────────────────────────────────────────────
     const onSessionReturned = () => {
+      if (!isLoggedIn()) return
       const sessionCount = getLifetimeSessionCount()
       // D: 2+ sessions, exported before, not same session as B/E
       if (sessionCount >= 2 && hasEverExported() && canShowTriggerD()) {
         scheduleTimer('trigger-d', () => {
-          // Re-check: user might have exported (B/E) during the delay
-          if (canShowTriggerD()) {
+          // Re-check: user might have exported (B/E) or logged out during the delay
+          if (isLoggedIn() && canShowTriggerD()) {
             markTriggerDShown()
             setActive('D')
           }
@@ -150,18 +166,21 @@ export default function FeedbackOrchestrator() {
     window.addEventListener('vt:evt:result_viewed',           onResultReady)
     window.addEventListener('vt:evt:export_clicked',          onExportClicked)
     window.addEventListener('vt:evt:session_returned',        onSessionReturned)
+    window.addEventListener('videotext:plan-updated',          scheduleAuthenticatedResultPrompt)
 
     return () => {
       window.removeEventListener('vt:evt:transcription_completed', onResultReady)
       window.removeEventListener('vt:evt:result_viewed',           onResultReady)
       window.removeEventListener('vt:evt:export_clicked',          onExportClicked)
       window.removeEventListener('vt:evt:session_returned',        onSessionReturned)
+      window.removeEventListener('videotext:plan-updated',          scheduleAuthenticatedResultPrompt)
     }
-  }, [scheduleTimer, cancelTimer])
+  }, [scheduleTimer, cancelTimer, onResultsPage])
 
   // ── Trigger C — idle fallback (item 3) ────────────────────────────────────
 
   const handleIdle = useCallback(() => {
+    if (!isLoggedIn()) return
     if (!onResultsPage) return
     if (triggerAFiredRef.current) return    // C is fallback — A already handled this
     if (hasExportedRef.current) return
@@ -177,11 +196,11 @@ export default function FeedbackOrchestrator() {
 
   return (
     <>
-      <TriggerA_Result    isOpen={active === 'A'} toolName={toolName}  onClose={close} />
-      <TriggerB_Export    isOpen={active === 'B'}                      onClose={close} />
-      <TriggerC_Dropoff   isOpen={active === 'C'} reason={dropoffReason} onClose={close} />
+      <TriggerA_Result    isOpen={active === 'A'} toolName={toolName} toolId={toolId} onClose={close} />
+      <TriggerB_Export    isOpen={active === 'B'} toolId={toolId} onClose={close} />
+      <TriggerC_Dropoff   isOpen={active === 'C'} toolId={toolId} reason={dropoffReason} onClose={close} />
       <TriggerD_PMF       isOpen={active === 'D'}                      onClose={close} />
-      <TriggerE_Competitor isOpen={active === 'E'}                     onClose={close} />
+      <TriggerE_Competitor isOpen={active === 'E'} toolId={toolId} onClose={close} />
     </>
   )
 }

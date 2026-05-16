@@ -46,7 +46,7 @@ export default function SubtitleEditor({
               value={row.text}
               onChange={(e) => handleTextChange(idx, e.target.value)}
               readOnly={!editable}
-              className="h-16 w-full resize-none rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800 outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400 disabled:bg-gray-100"
+              className="h-16 w-full resize-none rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 disabled:bg-gray-100"
             />
           </div>
         ))}

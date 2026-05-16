@@ -94,7 +94,7 @@ export default function PinnedAudioPlayerBar(props: PinnedAudioPlayerBarProps) {
             if (!audioRef.current) return
             audioIsPlaying ? audioRef.current.pause() : audioRef.current.play().catch(() => {})
           }}
-          className="shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-violet-600 text-white shadow-md transition-transform hover:bg-violet-500 active:scale-95 sm:h-11 sm:w-11"
+          className="shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white shadow-md transition-transform hover:bg-blue-600 active:scale-95 sm:h-11 sm:w-11"
           aria-label={audioIsPlaying ? 'Pause' : 'Play'}
         >
           {audioIsPlaying ? <Pause className="h-5 w-5" strokeWidth={2} /> : <Play className="h-5 w-5 ml-0.5" strokeWidth={2} />}
@@ -168,7 +168,7 @@ export default function PinnedAudioPlayerBar(props: PinnedAudioPlayerBarProps) {
                 setAudioSpeed(s)
                 if (audioRef.current) audioRef.current.playbackRate = s
               }}
-              className="w-full rounded-lg border border-[#2a2840] bg-[#0a0a1a] px-2.5 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full rounded-lg border border-[#2a2840] bg-[#0a0a1a] px-2.5 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {[0.25, 0.5, 0.75, 1, 1.5, 2].map((s) => (
                 <option key={s} value={s}>

@@ -88,11 +88,11 @@ export default function TriggerD_PMF({ isOpen, onClose }: Props) {
                 className={`
                   w-full text-left px-3.5 py-3 rounded-xl border text-sm transition-all
                   ${rating === opt.value
-                    ? 'border-violet-500 bg-violet-50 dark:bg-violet-950/40'
-                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-violet-300 dark:hover:border-violet-700 hover:bg-violet-50/50 dark:hover:bg-violet-950/20'}
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/40'
+                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-blue-950/20'}
                 `}
               >
-                <span className={`font-medium ${rating === opt.value ? 'text-violet-700 dark:text-violet-300' : 'text-gray-800 dark:text-gray-200'}`}>
+                <span className={`font-medium ${rating === opt.value ? 'text-blue-700 dark:text-blue-300' : 'text-gray-800 dark:text-gray-200'}`}>
                   {opt.label}
                 </span>
                 <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">{opt.desc}</p>
@@ -111,7 +111,7 @@ export default function TriggerD_PMF({ isOpen, onClose }: Props) {
                 onChange={(e) => setFreeText(e.target.value.slice(0, 500))}
                 placeholder="What matters most to you about VideoText?"
                 rows={2}
-                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 resize-none transition"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 resize-none transition"
               />
             </div>
           )}

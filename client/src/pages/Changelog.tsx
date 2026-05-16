@@ -10,7 +10,7 @@ interface ChangelogEntry {
 
 const TAG_STYLES: Record<ChangelogEntry['tag'], string> = {
   new: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
-  improvement: 'bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-300',
+  improvement: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
   fix: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
   infra: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
 }
@@ -174,8 +174,8 @@ const ENTRIES: ChangelogEntry[] = [
     items: [
       'VideoText launches publicly.',
       '7 core tools: Video → Transcript, Video → Subtitles, Translate Subtitles, Fix Subtitles, Burn Subtitles, Compress Video, Batch Processing.',
-      'Free plan with 3 imports per month, no credit card required.',
-      'Stripe-backed subscriptions: Basic, Pro, Agency, and Creator Pro (early access).',
+      'Free plan with 3 uploads per day, no credit card required.',
+      'Stripe-backed subscriptions: Pro and Founding Pro.',
       'We process your files and delete them — no data stored on our servers.',
     ],
   },
@@ -185,7 +185,7 @@ export default function Changelog() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 sm:py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="text-sm text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-medium mb-6 inline-block">
+        <Link to="/" className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium mb-6 inline-block">
           ← Back to home
         </Link>
 
@@ -193,11 +193,11 @@ export default function Changelog() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Changelog</h1>
           <p className="text-gray-600 dark:text-gray-400">
             What’s been shipped. Updated every time something meaningful changes.{' '}
-            <a href={getBlogOutboundUrl('/blog')} className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-medium">
+            <a href={getBlogOutboundUrl('/blog')} className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium">
               Read the blog →
             </a>
             {' · '}
-            <Link to="/guideline-format" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-semibold">
+            <Link to="/guideline-format" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-semibold">
               Format your transcript to a client style guide →
             </Link>
           </p>
@@ -206,7 +206,7 @@ export default function Changelog() {
         <div className="space-y-10">
           {ENTRIES.map((entry) => (
             <div key={entry.version} className="relative pl-6 border-l-2 border-gray-200 dark:border-gray-700">
-              <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-violet-500 border-2 border-white dark:border-gray-900" />
+              <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-600 border-2 border-white dark:border-gray-900" />
 
               <div className="flex flex-wrap items-center gap-3 mb-3">
                 <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">{entry.date}</span>
@@ -236,7 +236,7 @@ export default function Changelog() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent('videotext:open-feedback'))}
-              className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-medium"
+              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium"
             >
               Tell us what to build next.
             </button>

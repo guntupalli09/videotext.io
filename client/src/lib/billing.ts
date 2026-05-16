@@ -9,7 +9,7 @@ export interface CheckoutParams {
   returnToPath?: string
   email?: string
   frontendOrigin?: string
-  /** Promo code for early testers (e.g. EARLY30, EARLY50, EARLY70, EARLY100). Applied for Basic and Pro. */
+  /** Promo code for early testers (e.g. EARLY30, EARLY50, EARLY70, EARLY100). Applied for Pro and Founding Pro. */
   promotionCode?: string
   /** From POST /api/auth/verify-otp; required for subscription checkout. */
   emailVerificationToken?: string

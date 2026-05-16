@@ -50,6 +50,7 @@ export interface StructuredFeedbackPayload {
   triggerType: TriggerType
   rating?: string
   category?: string
+  toolId?: string
   freeText?: string
   dismissed?: boolean
 }

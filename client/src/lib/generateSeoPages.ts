@@ -13,6 +13,7 @@
  */
 import type { SeoRegistryEntry, FaqItem } from './seoRegistry'
 import { transcriptionTargets, targetToSlug, slugToTitle } from '../data/seoPages'
+import { getContextualCta, getRouteFamily } from './routeFamilyTemplates'
 
 // Only these targets should generate intent pages (not money pages)
 const INTENT_PAGE_TARGETS = new Set([
@@ -40,7 +41,7 @@ const INTENT_PATTERNS: Array<{
 
 const DEFAULT_FAQ: FaqItem[] = [
   { q: 'How do I transcribe this?', a: 'Upload or paste a URL. Click Transcribe and get a full transcript in seconds. Export as SRT, TXT.' },
-  { q: 'Is it free?', a: 'Yes. Free tier includes 3 imports/month. Sign up free to try.' },
+  { q: 'How do I test the workflow?', a: 'Use a short real recording first, then compare transcript structure, speaker labels, subtitles, and cleanup time before moving longer files through the same workflow.' },
   { q: 'What formats can I export?', a: 'TXT, SRT, VTT. Paid plans add JSON, CSV, Markdown.' },
 ]
 
@@ -263,6 +264,39 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
     return 'platform'
   }
 
+  function personalizeDeepContent(
+    categoryContent: (typeof deepContentByCategory)[keyof typeof deepContentByCategory],
+    slug: string,
+    titleCase: string,
+  ) {
+    const topic = titleCase.toLowerCase()
+    const workflowContext = slug.includes('korean') || slug.includes('japanese') || slug.includes('chinese') || slug.includes('spanish') || slug.includes('french') || slug.includes('german') || slug.includes('arabic') || slug.includes('portuguese') || slug.includes('hindi')
+      ? `${titleCase} speech, subtitles, and translated transcript handoffs`
+      : `${topic} recordings, captions, summaries, and searchable transcript exports`
+
+    return {
+      proofPoints: categoryContent.proofPoints.map((point, index) => {
+        if (index === 0) return `${titleCase} workflow: ${point}`
+        if (index === 2) return `${point} for ${topic} files and team review`
+        return point
+      }),
+      workflowSteps: categoryContent.workflowSteps.map((step, index) => ({
+        ...step,
+        title: step.title.replace(':', ` for ${titleCase}:`),
+        detail: index === 2
+          ? `${step.detail} The result stays organized for ${workflowContext}.`
+          : step.detail.replace(/your (audio\/video file|meeting recording|interview|YouTube URL|file from your platform)/i, `your ${topic} source`),
+      })),
+      useCases: categoryContent.useCases.map((useCase, index) => ({
+        ...useCase,
+        title: useCase.title.includes(':') ? useCase.title.replace(':', ` — ${titleCase}:`) : `${useCase.title} for ${titleCase}`,
+        body: index === 0
+          ? `${useCase.body} Use the ${topic} transcript as the source of truth for editing, publishing, and handoff.`
+          : useCase.body.replace(/Transcript/g, `${titleCase} transcript`),
+      })),
+    }
+  }
+
   // Helper to generate keywords for SEO entries
   function generateKeywords(slug: string, titleCase: string): string[] {
     const baseKeywords = [
@@ -326,12 +360,14 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
         ...(slug.includes('language') || slug.includes('korean') ? ['/video-to-subtitles', '/translate-subtitles'] : ['/video-to-subtitles']),
       ].filter((v, i, a) => a.indexOf(v) === i) // dedupe
 
+      const cta = getContextualCta(getRouteFamily(path), path, 'footer')
+
       entries.push({
         path,
         title: titleTmpl(titleCase),
         description: descTmpl(titleCase),
         h1: h1Tmpl(titleCase),
-        intro: `Transcribe ${titleCase.toLowerCase()} to text in seconds. Upload your file or paste a URL. Our AI extracts speech and produces a clean transcript. Sign up free to try.`,
+        intro: `Convert ${titleCase.toLowerCase()} into searchable transcript output with speaker labels, timestamps, and export-ready subtitle files from the same workflow.`,
         faq: DEFAULT_FAQ,
         breadcrumbLabel: h1Tmpl(titleCase),
         toolKey,
@@ -340,11 +376,9 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
         intentKey,
         keywords: generateKeywords(slug, titleCase),
         deepContent: {
-          proofPoints: categoryContent.proofPoints,
-          workflowSteps: categoryContent.workflowSteps,
-          useCases: categoryContent.useCases,
-          ctaText: `Transcribe Your ${titleCase} Free`,
-          ctaPath: cluster.hub,
+          ...personalizeDeepContent(categoryContent, slug, titleCase),
+          ctaText: cta.text,
+          ctaPath: cta.path || cluster.hub,
         },
       })
     }

@@ -20,9 +20,9 @@ export const TOOL_CONFIGS: Record<string, ToolConfig> = {
     title: 'Video → Transcript',
     description: 'Extract spoken text from any video in seconds',
     icon: FileText,
-    iconColor: 'text-purple-600 dark:text-purple-400',
-    gradientFrom: 'from-purple-600',
-    gradientTo: 'to-purple-600',
+    iconColor: 'text-blue-600 dark:text-blue-400',
+    gradientFrom: 'from-blue-600',
+    gradientTo: 'to-blue-700',
     href: '/tools/video-to-transcript',
     emoji: '📝'
   },
@@ -46,7 +46,7 @@ export const TOOL_CONFIGS: Record<string, ToolConfig> = {
     icon: Languages,
     iconColor: 'text-pink-600 dark:text-pink-400',
     gradientFrom: 'from-pink-600',
-    gradientTo: 'to-purple-600',
+    gradientTo: 'to-blue-600',
     href: '/tools/translate-subtitles',
     emoji: '🌍'
   },
@@ -92,9 +92,9 @@ export const TOOL_CONFIGS: Record<string, ToolConfig> = {
     title: 'Batch Processing',
     description: 'Upload multiple videos and process them together',
     icon: FolderSync,
-    iconColor: 'text-indigo-600 dark:text-indigo-400',
-    gradientFrom: 'from-indigo-600',
-    gradientTo: 'to-purple-600',
+    iconColor: 'text-blue-700 dark:text-blue-400',
+    gradientFrom: 'from-blue-700',
+    gradientTo: 'to-blue-700',
     href: '/tools/batch-processing',
     emoji: '📂'
   }

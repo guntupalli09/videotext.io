@@ -61,7 +61,7 @@ export default function ShareTranscript() {
             <div>
               <p className="font-semibold text-amber-900 dark:text-amber-200">Unable to open this page</p>
               <p className="text-sm text-amber-800/90 dark:text-amber-300/90 mt-1">{error}</p>
-              <Link to="/" className="inline-block mt-4 text-sm font-medium text-violet-600 dark:text-violet-400 hover:underline">
+              <Link to="/" className="inline-block mt-4 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
                 Go to VideoText home →
               </Link>
             </div>
@@ -105,8 +105,8 @@ export default function ShareTranscript() {
               (data.payload.summary.summary ||
                 data.payload.summary.bullets?.length ||
                 data.payload.summary.actionItems?.length) && (
-                <section className="rounded-2xl border border-violet-200/70 dark:border-violet-900/40 bg-violet-50/50 dark:bg-violet-950/20 p-5 space-y-3">
-                  <h2 className="text-sm font-semibold text-violet-900 dark:text-violet-200">Summary</h2>
+                <section className="rounded-2xl border border-blue-200/70 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20 p-5 space-y-3">
+                  <h2 className="text-sm font-semibold text-blue-900 dark:text-blue-200">Summary</h2>
                   {data.payload.summary.summary && (
                     <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                       {data.payload.summary.summary}
@@ -163,7 +163,7 @@ export default function ShareTranscript() {
             <footer className="text-center text-xs text-gray-400 dark:text-gray-500 pt-4">
               <p>
                 Transcribed with{' '}
-                <Link to="/" className="text-violet-600 dark:text-violet-400 font-medium hover:underline">
+                <Link to="/" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
                   VideoText
                 </Link>
               </p>

@@ -97,7 +97,7 @@ export default function MergeSrtFiles() {
       <div className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[{ ref: refA, file: fileA, slot: 'a' as const, label: 'File A' }, { ref: refB, file: fileB, slot: 'b' as const, label: 'File B' }].map(({ ref, file, slot, label }) => (
-            <div key={slot} onClick={() => ref.current?.click()} className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-colors ${file.content ? 'border-violet-400 dark:border-violet-500 bg-violet-50 dark:bg-violet-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-violet-300'}`}>
+            <div key={slot} onClick={() => ref.current?.click()} className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-colors ${file.content ? 'border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-blue-300'}`}>
               <input ref={ref} type="file" accept=".srt,.vtt,.txt" className="hidden" onChange={(e) => readFile(e, slot)} />
               <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">{label}</p>
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">{file.name || 'Click to upload SRT or VTT'}</p>
@@ -105,7 +105,7 @@ export default function MergeSrtFiles() {
           ))}
         </div>
 
-        <button onClick={handleMerge} disabled={!fileA.content || !fileB.content} className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white font-semibold text-sm transition-colors">
+        <button onClick={handleMerge} disabled={!fileA.content || !fileB.content} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-semibold text-sm transition-colors">
           Merge Files
         </button>
 
@@ -115,8 +115,8 @@ export default function MergeSrtFiles() {
           <div className="space-y-3">
             <div className="grid grid-cols-3 gap-2 text-center">
               {[{ label: 'File A cues', val: stats.a }, { label: 'File B cues', val: stats.b }, { label: 'Merged total', val: stats.total }].map((s) => (
-                <div key={s.label} className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-3">
-                  <p className="text-xl font-bold text-violet-700 dark:text-violet-300">{s.val}</p>
+                <div key={s.label} className="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-3">
+                  <p className="text-xl font-bold text-blue-700 dark:text-blue-300">{s.val}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{s.label}</p>
                 </div>
               ))}

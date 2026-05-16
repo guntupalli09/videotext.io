@@ -44,6 +44,7 @@ import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
 import guidelinesRoutes from './routes/guidelines'
 import { guidelineQueue, startGuidelineWorker } from './workers/guidelineProcessor'
+import publicStatsRoutes from './routes/publicStats'
 
 const log = getLogger('api')
 
@@ -102,6 +103,43 @@ const corsHeaders = [
   'X-Chunk-Index',
 ]
 
+function headerValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value.join(', ') : value
+}
+
+function getClientIp(req: express.Request): string | undefined {
+  return (
+    headerValue(req.headers['cf-connecting-ip']) ||
+    headerValue(req.headers['x-forwarded-for']) ||
+    req.socket.remoteAddress ||
+    req.ip
+  )
+}
+
+// Log the full request context for rejected CORS origins before the cors package
+// short-circuits the request. This is intentionally noisy for rejects so we can
+// identify who is calling the API from a disallowed origin in production logs.
+app.use((req, _res, next) => {
+  const rawOrigin = headerValue(req.headers.origin)
+  const normalizedOrigin = rawOrigin ? normalizeOrigin(rawOrigin) : undefined
+
+  if (normalizedOrigin && !isAllowedOrigin(normalizedOrigin)) {
+    log.error({
+      msg: '[cors] rejected origin',
+      origin: normalizedOrigin,
+      rawOrigin,
+      method: req.method,
+      path: req.originalUrl || req.path,
+      referer: headerValue(req.headers.referer),
+      host: headerValue(req.headers.host),
+      userAgent: headerValue(req.headers['user-agent']),
+      ip: getClientIp(req),
+    })
+  }
+
+  next()
+})
+
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
     const normalized = typeof origin === 'string' ? normalizeOrigin(origin) : origin
@@ -112,7 +150,6 @@ const corsOptions: cors.CorsOptions = {
       return
     }
 
-    log.warn({ msg: '[cors] rejected origin', origin: normalized })
     callback(new Error('Not allowed by CORS'))
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
@@ -211,6 +248,7 @@ app.use('/api/feedback', feedbackSystemRoutes)
 app.use('/api/admin/feedback', feedbackSystemRoutes)
 app.use('/api/admin', adminDashboardRoutes)
 app.use('/api/admin', adminSupportRoutes)
+app.use('/api/stats', publicStatsRoutes)
 
 // Health and ops (no /api prefix)
 app.use(healthRoutes)
@@ -373,7 +411,7 @@ const server = app.listen(PORT, () => {
       <table width="480" cellpadding="0" cellspacing="0" style="background:#1a1a2e;border-radius:16px;overflow:hidden;border:1px solid #2d2d4e">
         <tr>
           <td style="padding:40px 40px 24px;text-align:center">
-            <div style="width:56px;height:56px;background:#7c3aed;border-radius:50%;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;line-height:56px;font-size:28px">🎬</div>
+            <div style="width:56px;height:56px;background:#2563EB;border-radius:50%;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;line-height:56px;font-size:28px">🎬</div>
             <h1 style="margin:0 0 8px;color:#ffffff;font-size:28px;font-weight:700;line-height:1.2">3 New Transcriptions<br>Available</h1>
           </td>
         </tr>
@@ -382,13 +420,13 @@ const server = app.listen(PORT, () => {
             <p style="margin:0 0 16px;color:#a0a0c0;font-size:15px;line-height:1.6">Hey!</p>
             <p style="margin:0 0 16px;color:#a0a0c0;font-size:15px;line-height:1.6">Your 3 free daily transcriptions have reset. Upload a video and get your transcript, subtitles, or captions in minutes.</p>
             <p style="margin:0 0 32px;color:#a0a0c0;font-size:15px;line-height:1.6">Click below — you'll be logged in instantly, no password needed.</p>
-            <a href="${openLink}" style="display:block;background:#7c3aed;color:#ffffff;text-decoration:none;text-align:center;padding:16px 32px;border-radius:10px;font-size:15px;font-weight:700;letter-spacing:0.5px">OPEN NOW</a>
+            <a href="${openLink}" style="display:block;background:#2563EB;color:#ffffff;text-decoration:none;text-align:center;padding:16px 32px;border-radius:10px;font-size:15px;font-weight:700;letter-spacing:0.5px">OPEN NOW</a>
           </td>
         </tr>
         <tr>
           <td style="padding:24px 40px;border-top:1px solid #2d2d4e;text-align:center">
             <p style="margin:0 0 8px;color:#606080;font-size:12px">Want unlimited transcriptions with no watermark?</p>
-            <a href="${baseUrl}/pricing" style="color:#7c3aed;font-size:12px;text-decoration:none;font-weight:600">Upgrade to Pro → $10/mo annual</a>
+            <a href="${baseUrl}/pricing" style="color:#2563EB;font-size:12px;text-decoration:none;font-weight:600">Upgrade to Pro → $40/mo</a>
             <p style="margin:16px 0 0;color:#404060;font-size:11px">VideoText.io · <a href="${baseUrl}/unsubscribe?email=${encodeURIComponent(u.email)}" style="color:#404060">unsubscribe</a></p>
           </td>
         </tr>
@@ -411,7 +449,7 @@ const server = app.listen(PORT, () => {
 
   // Activation sequence (Day 0/1/3/7) for free users who signed up but never started.
   startOnboardingEmailCron().catch((e) => {
-    console.error('Failed to start onboarding cron:', e)
+    log.error({ msg: 'Failed to start onboarding cron', error: (e as Error)?.message })
   })
 
   // Upgrade rescue sequence for users who clicked upgrade but did not complete payment in 24h.

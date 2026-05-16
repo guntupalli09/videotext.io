@@ -148,7 +148,7 @@ export default function TranscriptResultWorkspaceMock() {
       breadcrumbs={[{ label: 'Video → Transcript', href: '/video-to-transcript' }]}
       title="Transcript results (preview)"
       subtitle="Mock layout — toggles, translation, and exports are interactive; downloads are inert."
-      icon={<FileText className="w-5 h-5 text-violet-600" />}
+      icon={<FileText className="w-5 h-5 text-blue-600" />}
       tags={['Preview', 'Mock data']}
     >
       <div className="max-w-6xl mx-auto space-y-4 pb-28">
@@ -247,7 +247,7 @@ export default function TranscriptResultWorkspaceMock() {
                         </span>
                       )}
                       {showSpeakers && (
-                        <span className="font-semibold text-violet-600 dark:text-violet-400 mr-2">{seg.speaker}:</span>
+                        <span className="font-semibold text-blue-600 dark:text-blue-400 mr-2">{seg.speaker}:</span>
                       )}
                       {lang === 'translated' ? seg.translated : seg.original}
                     </p>
@@ -268,7 +268,7 @@ export default function TranscriptResultWorkspaceMock() {
                 <button
                   type="button"
                   onClick={() => setExportOpen((o) => !o)}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/30 text-sm font-medium text-violet-800 dark:text-violet-200"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 text-sm font-medium text-blue-800 dark:text-blue-200"
                 >
                   Export
                   <ChevronDown className="w-4 h-4" />
@@ -314,7 +314,7 @@ export default function TranscriptResultWorkspaceMock() {
               </div>
               <button
                 type="button"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-violet-600 text-white text-sm font-semibold ml-auto"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold ml-auto"
               >
                 <Download className="w-4 h-4" />
                 Download {lang === 'original' ? 'original' : 'translated'}
@@ -349,7 +349,7 @@ export default function TranscriptResultWorkspaceMock() {
             </div>
             <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
               <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">More tools</p>
-              <ul className="text-xs text-violet-600 dark:text-violet-400 space-y-1">
+              <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
                 <li>Speakers</li>
                 <li>Chapters</li>
                 <li>Highlights</li>
@@ -359,9 +359,9 @@ export default function TranscriptResultWorkspaceMock() {
           </aside>
         </div>
 
-        <section className="space-y-6 rounded-2xl border border-violet-200/70 dark:border-violet-900/50 bg-gradient-to-b from-violet-50/70 to-white dark:from-violet-950/20 dark:to-gray-900 p-4 sm:p-6">
+        <section className="space-y-6 rounded-2xl border border-blue-200/70 dark:border-blue-900/50 bg-gradient-to-b from-blue-50/70 to-white dark:from-blue-950/20 dark:to-gray-900 p-4 sm:p-6">
           <header>
-            <p className="inline-flex items-center gap-2 rounded-full bg-violet-100 dark:bg-violet-900/40 px-3 py-1 text-xs font-semibold text-violet-700 dark:text-violet-300">
+            <p className="inline-flex items-center gap-2 rounded-full bg-blue-100 dark:bg-blue-900/40 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300">
               <BadgeCheck className="h-3.5 w-3.5" />
               Final results UX layer (all 4 ideas)
             </p>
@@ -383,8 +383,8 @@ export default function TranscriptResultWorkspaceMock() {
                   type="button"
                   onClick={() => setContextMode(option.key)}
                   className={`rounded-xl border px-3 py-3 text-left transition ${contextMode === option.key
-                    ? 'border-violet-400 bg-violet-50 dark:bg-violet-950/40'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-violet-300'}`}
+                    ? 'border-blue-400 bg-blue-50 dark:bg-blue-950/40'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-blue-300'}`}
                 >
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">{option.label}</p>
                   <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">{option.hint}</p>
@@ -418,7 +418,7 @@ export default function TranscriptResultWorkspaceMock() {
                   return (
                     <div key={asset.label} className="rounded-lg border border-gray-200 dark:border-gray-700 p-3">
                       <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                        <Icon className="h-4 w-4 text-violet-500" />
+                        <Icon className="h-4 w-4 text-blue-600" />
                         {asset.label}
                       </p>
                       <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{asset.value}</p>
@@ -463,7 +463,7 @@ export default function TranscriptResultWorkspaceMock() {
                 return (
                   <article key={source.source} className="rounded-lg border border-gray-200 dark:border-gray-700 p-3">
                     <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                      <Icon className="h-4 w-4 text-violet-500" />
+                      <Icon className="h-4 w-4 text-blue-600" />
                       {source.source}
                     </p>
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Status: {source.state}</p>
@@ -486,17 +486,17 @@ export default function TranscriptResultWorkspaceMock() {
         aria-hidden
       >
         <div className="pointer-events-none flex w-full max-w-5xl items-center gap-2 sm:gap-4 rounded-2xl border border-[#2a2840] bg-[#0a0a1a] px-3 py-3 sm:px-5 shadow-[0_-8px_40px_rgba(0,0,0,0.4)] opacity-90">
-          <button type="button" className="shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-violet-600 text-white" tabIndex={-1}>
+          <button type="button" className="shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white" tabIndex={-1}>
             <Play className="h-5 w-5 ml-0.5" />
           </button>
           <span className="text-xs tabular-nums text-white min-w-[2.75rem]">0:08</span>
-          <div className="flex-1 h-1.5 rounded-full bg-[#3d3555] min-w-0">
-            <div className="h-full w-[25%] rounded-full bg-violet-600" />
+          <div className="flex-1 h-1.5 rounded-full bg-[#1e3a5f] min-w-0">
+            <div className="h-full w-[25%] rounded-full bg-blue-600" />
           </div>
           <span className="text-xs tabular-nums text-white min-w-[2.75rem] text-right">0:32</span>
           <Volume2 className="w-5 h-5 text-white shrink-0" />
-          <div className="hidden sm:block w-24 h-1.5 rounded-full bg-[#3d3555]">
-            <div className="h-full w-[70%] rounded-full bg-violet-600" />
+          <div className="hidden sm:block w-24 h-1.5 rounded-full bg-[#1e3a5f]">
+            <div className="h-full w-[70%] rounded-full bg-blue-600" />
           </div>
           <Settings className="w-5 h-5 text-white shrink-0" />
         </div>

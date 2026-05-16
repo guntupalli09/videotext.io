@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import express, { Request, Response } from 'express'
 import type { Prisma } from '@prisma/client'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
@@ -126,10 +127,9 @@ function validateCaptionPayload(body: unknown): { format: CaptionFormat; cues: C
 
 router.post('/format', async (req: Request, res: Response) => {
   try {
-    const userId = getEffectiveUserId(req)
-    if (!userId) {
-      return res.status(401).json({ error: 'Authentication required' })
-    }
+    const authedUserId = getEffectiveUserId(req)
+    const userId = authedUserId ?? `guest_${crypto.randomUUID()}`
+    const jobToken = crypto.randomUUID()
 
     const plan = getPlanFromRequest(req)
 
@@ -142,7 +142,8 @@ router.post('/format', async (req: Request, res: Response) => {
 
     // Plan gating: free users get limited daily runs + transcript size cap.
     if (plan === 'free') {
-      const allowed = await checkAndRecordGuidelineDaily(userId, 3)
+      const dailyLimitKey = authedUserId ?? `ip_${String(req.ip || req.headers['x-forwarded-for'] || 'unknown')}`
+      const allowed = await checkAndRecordGuidelineDaily(dailyLimitKey, 3)
       if (!allowed) {
         return res.status(429).json({ error: 'Free plan limit reached: 3 guideline formats per day. Upgrade to Pro for unlimited.' })
       }
@@ -165,6 +166,7 @@ router.post('/format', async (req: Request, res: Response) => {
     const job = await prisma.formattingJob.create({
       data: {
         userId,
+        jobToken,
         inputText: trimmed,
         status: 'queued',
         stage: 'queued',
@@ -215,7 +217,7 @@ router.post('/format', async (req: Request, res: Response) => {
       module: 'guidelines',
     })
 
-    return res.status(200).json({ jobId: job.id })
+    return res.status(200).json({ jobId: job.id, jobToken })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Internal error'
     return res.status(500).json({ error: msg })
@@ -224,11 +226,6 @@ router.post('/format', async (req: Request, res: Response) => {
 
 router.post('/parse-guide', guideUpload.single('file'), async (req: Request, res: Response) => {
   try {
-    const userId = getEffectiveUserId(req)
-    if (!userId) {
-      return res.status(401).json({ error: 'Authentication required' })
-    }
-
     const file = req.file
     if (!file) {
       return res.status(400).json({ error: 'Missing file' })
@@ -281,9 +278,12 @@ router.post('/parse-guide', guideUpload.single('file'), async (req: Request, res
 router.get('/jobs/:jobId', async (req: Request, res: Response) => {
   try {
     const userId = getEffectiveUserId(req)
-    if (!userId) {
-      return res.status(401).json({ error: 'Authentication required' })
-    }
+    const clientJobToken =
+      typeof req.query.jobToken === 'string'
+        ? req.query.jobToken.trim()
+        : typeof req.headers['x-job-token'] === 'string'
+          ? req.headers['x-job-token'].trim()
+          : ''
 
     const jobId = typeof req.params.jobId === 'string' ? req.params.jobId.trim() : ''
     if (!jobId) {
@@ -291,23 +291,73 @@ router.get('/jobs/:jobId', async (req: Request, res: Response) => {
     }
 
     const row = await prisma.formattingJob.findFirst({
-      where: { id: jobId, userId },
+      where: { id: jobId },
     })
 
     if (!row) {
       return res.status(404).json({ error: 'Job not found' })
     }
 
+    const allowedByUser = Boolean(userId && row.userId === userId)
+    const allowedByToken = Boolean(clientJobToken && row.jobToken && clientJobToken === row.jobToken)
+    if (!allowedByUser && !allowedByToken) {
+      return res.status(403).json({ error: 'Access denied. Provide Authorization or jobToken.' })
+    }
+
+    const canRevealResult = allowedByUser && !row.userId.startsWith('guest_')
+
     return res.status(200).json({
       status: row.status,
       stage: row.stage,
-      outputText: row.outputText,
-      diffData: row.diffData,
-      flaggedSegments: row.flaggedSegments,
-      appliedRules: row.appliedRules,
-      validationReport: row.validationReport,
+      outputText: canRevealResult ? row.outputText : null,
+      diffData: canRevealResult ? row.diffData : null,
+      flaggedSegments: canRevealResult ? row.flaggedSegments : null,
+      appliedRules: canRevealResult ? row.appliedRules : null,
+      validationReport: canRevealResult ? row.validationReport : null,
       createdAt: row.createdAt.toISOString(),
     })
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Internal error'
+    return res.status(500).json({ error: msg })
+  }
+})
+
+
+router.post('/jobs/:jobId/claim', async (req: Request, res: Response) => {
+  try {
+    const userId = getEffectiveUserId(req)
+    if (!userId || userId.startsWith('guest_')) {
+      return res.status(401).json({ error: 'Authentication required' })
+    }
+
+    const jobId = typeof req.params.jobId === 'string' ? req.params.jobId.trim() : ''
+    const clientJobToken =
+      typeof req.body?.jobToken === 'string'
+        ? req.body.jobToken.trim()
+        : typeof req.headers['x-job-token'] === 'string'
+          ? req.headers['x-job-token'].trim()
+          : ''
+
+    if (!jobId || !clientJobToken) {
+      return res.status(400).json({ error: 'jobId and jobToken are required' })
+    }
+
+    const row = await prisma.formattingJob.findFirst({ where: { id: jobId } })
+    if (!row) {
+      return res.status(404).json({ error: 'Job not found' })
+    }
+    if (!row.jobToken || row.jobToken !== clientJobToken) {
+      return res.status(403).json({ error: 'Invalid job token' })
+    }
+    if (!row.userId.startsWith('guest_') && row.userId !== userId) {
+      return res.status(409).json({ error: 'Job already claimed' })
+    }
+
+    if (row.userId !== userId) {
+      await prisma.formattingJob.update({ where: { id: jobId }, data: { userId } })
+    }
+
+    return res.status(200).json({ ok: true })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Internal error'
     return res.status(500).json({ error: msg })

@@ -62,14 +62,14 @@ export default class SessionErrorBoundary extends Component<Props, State> {
                 <button
                   type="button"
                   onClick={() => window.location.reload()}
-                  className="inline-flex items-center justify-center rounded-lg bg-violet-600 px-6 py-3 text-white font-medium hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2"
+                  className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                   Retry
                 </button>
               )}
               <Link
                 to="/"
-                className="inline-flex items-center justify-center rounded-lg bg-violet-600 px-6 py-3 text-white font-medium hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 sm:bg-gray-100 sm:text-gray-800 sm:hover:bg-gray-200"
+                className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:bg-gray-100 sm:text-gray-800 sm:hover:bg-gray-200"
               >
                 Go to home
               </Link>

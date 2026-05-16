@@ -12,6 +12,7 @@
 const PRODUCTION_ORIGINS = new Set<string>([
   'https://videotext.io',
   'https://www.videotext.io',
+  'https://us.posthog.com',
 ])
 
 // Operator-supplied additional origins (comma-separated).

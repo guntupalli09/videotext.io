@@ -10,7 +10,7 @@ function ProgressBar({ pct }: { pct: number }) {
   const empty = 20 - filled
   return (
     <div className="font-mono text-sm tracking-tight">
-      <span className="text-violet-400">{'█'.repeat(filled)}</span>
+      <span className="text-blue-400">{'█'.repeat(filled)}</span>
       <span className="text-zinc-700">{'░'.repeat(empty)}</span>
     </div>
   )

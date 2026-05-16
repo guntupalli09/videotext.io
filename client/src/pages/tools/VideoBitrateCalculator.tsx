@@ -84,7 +84,7 @@ export default function VideoBitrateCalculator() {
             { key: 'size-to-bitrate', label: 'Target size → bitrate' },
             { key: 'bitrate-to-size', label: 'Bitrate → file size' },
           ].map((m) => (
-            <button key={m.key} onClick={() => setMode(m.key as typeof mode)} className={`flex-1 py-2.5 text-sm font-medium transition-colors ${mode === m.key ? 'bg-violet-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>
+            <button key={m.key} onClick={() => setMode(m.key as typeof mode)} className={`flex-1 py-2.5 text-sm font-medium transition-colors ${mode === m.key ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>
               {m.label}
             </button>
           ))}
@@ -95,11 +95,11 @@ export default function VideoBitrateCalculator() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1.5">Target file size (MB)</label>
-                <input type="number" min={1} value={fileSizeMb} onChange={(e) => setFileSizeMb(e.target.value)} placeholder="500" className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                <input type="number" min={1} value={fileSizeMb} onChange={(e) => setFileSizeMb(e.target.value)} placeholder="500" className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
                 <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1.5">Audio bitrate (kbps)</label>
-                <select value={audioBitrate} onChange={(e) => setAudioBitrate(e.target.value)} className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500">
+                <select value={audioBitrate} onChange={(e) => setAudioBitrate(e.target.value)} className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                   {['96', '128', '192', '256', '320'].map((v) => <option key={v} value={v}>{v} kbps</option>)}
                 </select>
               </div>
@@ -107,15 +107,15 @@ export default function VideoBitrateCalculator() {
             <div>
               <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Video duration</p>
               <div className="flex gap-3">
-                <div className="flex-1"><label className="text-xs text-gray-500">Minutes</label><input type="number" min={0} value={durationMin} onChange={(e) => setDurationMin(e.target.value)} placeholder="10" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
-                <div className="flex-1"><label className="text-xs text-gray-500">Seconds</label><input type="number" min={0} max={59} value={durationSec} onChange={(e) => setDurationSec(e.target.value)} placeholder="0" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+                <div className="flex-1"><label className="text-xs text-gray-500">Minutes</label><input type="number" min={0} value={durationMin} onChange={(e) => setDurationMin(e.target.value)} placeholder="10" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                <div className="flex-1"><label className="text-xs text-gray-500">Seconds</label><input type="number" min={0} max={59} value={durationSec} onChange={(e) => setDurationSec(e.target.value)} placeholder="0" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
               </div>
             </div>
             {videoBitrate > 0 && (
               <div className="grid grid-cols-2 gap-3 mt-2">
                 {[{ label: 'Video bitrate', val: formatBitrate(videoBitrate), note: 'Set this in your encoder' }, { label: 'Total bitrate', val: formatBitrate(totalBitrate), note: `incl. ${audioBitrate} kbps audio` }].map((s) => (
-                  <div key={s.label} className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-4 text-center">
-                    <p className="text-2xl font-bold text-violet-700 dark:text-violet-300">{s.val}</p>
+                  <div key={s.label} className="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-4 text-center">
+                    <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{s.val}</p>
                     <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mt-0.5">{s.label}</p>
                     <p className="text-xs text-gray-400 mt-0.5">{s.note}</p>
                   </div>
@@ -128,11 +128,11 @@ export default function VideoBitrateCalculator() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1.5">Video bitrate (kbps)</label>
-                <input type="number" min={100} value={targetBitrate} onChange={(e) => setTargetBitrate(e.target.value)} placeholder="8000" className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                <input type="number" min={100} value={targetBitrate} onChange={(e) => setTargetBitrate(e.target.value)} placeholder="8000" className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
                 <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1.5">Audio bitrate (kbps)</label>
-                <select value={audioBitrate} onChange={(e) => setAudioBitrate(e.target.value)} className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500">
+                <select value={audioBitrate} onChange={(e) => setAudioBitrate(e.target.value)} className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                   {['96', '128', '192', '256', '320'].map((v) => <option key={v} value={v}>{v} kbps</option>)}
                 </select>
               </div>
@@ -140,13 +140,13 @@ export default function VideoBitrateCalculator() {
             <div>
               <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Video duration</p>
               <div className="flex gap-3">
-                <div className="flex-1"><label className="text-xs text-gray-500">Minutes</label><input type="number" min={0} value={duration2Min} onChange={(e) => setDuration2Min(e.target.value)} placeholder="10" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
-                <div className="flex-1"><label className="text-xs text-gray-500">Seconds</label><input type="number" min={0} max={59} value={duration2Sec} onChange={(e) => setDuration2Sec(e.target.value)} placeholder="0" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+                <div className="flex-1"><label className="text-xs text-gray-500">Minutes</label><input type="number" min={0} value={duration2Min} onChange={(e) => setDuration2Min(e.target.value)} placeholder="10" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                <div className="flex-1"><label className="text-xs text-gray-500">Seconds</label><input type="number" min={0} max={59} value={duration2Sec} onChange={(e) => setDuration2Sec(e.target.value)} placeholder="0" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
               </div>
             </div>
             {fileSizeB > 0 && (
-              <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-4 text-center mt-2">
-                <p className="text-3xl font-bold text-violet-700 dark:text-violet-300">{formatSize(fileSizeB)}</p>
+              <div className="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-4 text-center mt-2">
+                <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">{formatSize(fileSizeB)}</p>
                 <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">Estimated file size</p>
                 <p className="text-xs text-gray-400 mt-0.5">at {formatBitrate(bKbps)} video + {audioBitrate} kbps audio</p>
               </div>
@@ -163,7 +163,7 @@ export default function VideoBitrateCalculator() {
               return (
                 <div key={p.label} className="flex justify-between items-center px-4 py-2 text-sm">
                   <span className="text-gray-700 dark:text-gray-300">{p.label}</span>
-                  <span className="font-semibold text-violet-700 dark:text-violet-400">{formatBitrate(recBitrate)}</span>
+                  <span className="font-semibold text-blue-700 dark:text-blue-400">{formatBitrate(recBitrate)}</span>
                 </div>
               )
             })}

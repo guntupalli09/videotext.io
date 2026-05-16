@@ -7,9 +7,9 @@ export function FinalCTA() {
     <section className="relative py-16 overflow-hidden bg-gray-950">
       {/* Background */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-950/80 via-gray-950 to-indigo-950/80" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-violet-600/[0.18] rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-indigo-600/[0.12] rounded-full blur-[120px]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-950/80 via-gray-950 to-blue-950/80" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-blue-600/[0.18] rounded-full blur-[150px]" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-blue-700/[0.12] rounded-full blur-[120px]" />
       </div>
 
       {/* Dot grid */}
@@ -32,7 +32,7 @@ export function FinalCTA() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.07] border border-white/[0.1] mb-8">
             <motion.span
-              className="w-1.5 h-1.5 rounded-full bg-violet-400"
+              className="w-1.5 h-1.5 rounded-full bg-blue-600"
               animate={{ opacity: [1, 0.3, 1] }}
               transition={{ duration: 1.4, repeat: Infinity }}
             />
@@ -44,7 +44,7 @@ export function FinalCTA() {
           {/* Headline */}
           <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-white leading-[1.05] mb-6 font-display">
             Start transcribing
-            <span className="block bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-blue-400 via-blue-400 to-blue-400 bg-clip-text text-transparent">
               right now.
             </span>
           </h2>
@@ -72,7 +72,7 @@ export function FinalCTA() {
           <p className="text-sm text-white/45 max-w-lg mx-auto mb-8">
             <Link
               to="/guideline-format"
-              className="font-semibold text-violet-300 hover:text-violet-200 underline-offset-4 hover:underline"
+              className="font-semibold text-blue-300 hover:text-blue-200 underline-offset-4 hover:underline"
             >
               Format your transcript to a client style guide →
             </Link>
@@ -86,7 +86,7 @@ export function FinalCTA() {
             </div>
             <div className="w-px h-4 bg-white/10 hidden sm:block" />
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-violet-400" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
               No credit card required
             </div>
             <div className="w-px h-4 bg-white/10 hidden sm:block" />

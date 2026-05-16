@@ -6,13 +6,13 @@ const USE_CASES = [
   {
     icon: Youtube,
     iconBg: 'bg-red-500',
-    label: 'For YouTubers',
-    headline: 'Upload your video. Get a transcript.',
-    description: 'Export your video and drop it in. Get a full transcript, AI chapters, and a summary — ready to repurpose into descriptions, shorts, and blog posts.',
+    label: 'For Video Professionals',
+    headline: 'Upload your video. Get a delivery-ready transcript.',
+    description: 'Drop any video file and get a clean, timestamped transcript — validated against client style guides and export-ready. No reformatting passes between draft and delivery.',
     points: [
-      'Chapter markers auto-detected',
-      'AI summary for descriptions & shorts',
-      'Translate into 70+ languages for global reach',
+      'Speaker labels & chapter markers auto-detected',
+      'Format against Rev, GoTranscript, and custom guidelines',
+      'Translate into 70+ languages for localization workflows',
     ],
     cta: 'Transcribe your video',
     href: '/video-to-transcript',
@@ -22,31 +22,31 @@ const USE_CASES = [
   },
   {
     icon: Mic,
-    iconBg: 'bg-purple-600',
-    label: 'For Podcasters',
-    headline: 'Upload once, get everything.',
-    description: 'Drop your episode and get a full transcript, AI chapter markers, a bullet-point summary, and clean show notes — all from one upload.',
+    iconBg: 'bg-blue-600',
+    label: 'For Podcast Teams',
+    headline: 'One upload. Full episode deliverables.',
+    description: 'Drop an episode and get a timestamped transcript, AI chapter markers, and formatted show notes — all from a single upload. Built for teams handling multiple shows.',
     points: [
-      'Timestamped transcript for show notes',
-      'AI-generated chapters and summary',
-      'Translate into 70+ languages in one click',
+      'Timestamped transcript ready for show notes',
+      'AI-generated chapters and episode summary',
+      'Batch entire seasons — download as ZIP',
     ],
     cta: 'Try podcast transcription',
     href: '/podcast-transcription',
-    gradient: 'from-purple-600 to-indigo-600',
-    bgGlow: 'from-purple-500/10 via-transparent to-transparent dark:from-purple-500/5',
-    borderHover: 'hover:border-purple-200 dark:hover:border-purple-500/20',
+    gradient: 'from-blue-600 to-blue-700',
+    bgGlow: 'from-blue-600/10 via-transparent to-transparent dark:from-blue-600/5',
+    borderHover: 'hover:border-blue-200 dark:hover:border-blue-500/20',
   },
   {
     icon: Building2,
     iconBg: 'bg-blue-600',
-    label: 'For Agencies',
-    headline: 'Batch 20 videos at once.',
-    description: 'Upload a full season or a client\'s entire backlog. Our batch processor queues and transcribes everything in parallel — delivers a ZIP when it\'s done.',
+    label: 'For Media Agencies',
+    headline: 'Batch 20 client videos at once.',
+    description: 'Upload a full client backlog. The batch processor queues and transcribes everything in parallel — validates against per-client style guides and delivers a ZIP when done.',
     points: [
       'Process up to 20 videos simultaneously',
-      'Bulk subtitle export in SRT or VTT',
-      'Translate into 70+ languages per batch',
+      'Per-client guideline profiles for QA',
+      'Bulk SRT · VTT · DOCX export per client',
     ],
     cta: 'Try batch processing',
     href: '/batch-process',
@@ -68,15 +68,15 @@ export function UseCases() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-3 transition-colors duration-500">
+          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 transition-colors duration-500">
             Built for your workflow
           </p>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-500">
-            Fits every creator's
-            <span className="block text-gray-400 dark:text-white/30 transition-colors duration-500">way of working.</span>
+            Built for every professional
+            <span className="block text-gray-400 dark:text-white/30 transition-colors duration-500">transcript workflow.</span>
           </h2>
           <p className="text-lg text-gray-500 dark:text-white/40 max-w-lg mx-auto transition-colors duration-500">
-            Whether you're a solo creator, a podcast network, or an agency — Videotext adapts to your volume and workflow.
+            Whether you're a freelance transcriptionist, a podcast team, or a media agency — Videotext adapts to your volume and delivery requirements.
           </p>
         </motion.div>
 

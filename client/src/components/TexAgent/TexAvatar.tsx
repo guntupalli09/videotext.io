@@ -1,5 +1,5 @@
 /**
- * Tex mascot avatar — gradient violet, soft glow, blink + breathing.
+ * Tex mascot avatar — gradient blue, soft glow, blink + breathing.
  * Scales via Tailwind (sm, md, lg). Responsive, no fixed pixel layout. Dark mode + a11y.
  */
 const sizeClasses = {
@@ -14,7 +14,7 @@ interface TexAvatarProps {
   size?: Size
   className?: string
   pose?: 'default' | 'wave' | 'think'
-  /** Use white fill (e.g. on violet FAB) */
+  /** Use white fill (e.g. on blue FAB) */
   onDark?: boolean
   ariaHidden?: boolean
 }
@@ -36,15 +36,15 @@ export default function TexAvatar({ size = 'md', className = '', pose = 'default
         style={isOnDark ? undefined : { filter: 'drop-shadow(0 0 8px rgba(139, 92, 246, 0.35))' }}
       >
         <defs>
-          <linearGradient id="tex-violet-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#a78bfa" />
-            <stop offset="100%" stopColor="#6d28d9" />
+          <linearGradient id="tex-blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#60a5fa" />
+            <stop offset="100%" stopColor="#1d4ed8" />
           </linearGradient>
         </defs>
 
         {/* Soft glow behind (when not on dark FAB) */}
         {!isOnDark && (
-          <ellipse cx="32" cy="32" rx="26" ry="26" fill="url(#tex-violet-grad)" fillOpacity="0.12" />
+          <ellipse cx="32" cy="32" rx="26" ry="26" fill="url(#tex-blue-grad)" fillOpacity="0.12" />
         )}
 
         {/* Body */}
@@ -53,7 +53,7 @@ export default function TexAvatar({ size = 'md', className = '', pose = 'default
           cy="38"
           rx="20"
           ry="18"
-          fill={isOnDark ? 'currentColor' : 'url(#tex-violet-grad)'}
+          fill={isOnDark ? 'currentColor' : 'url(#tex-blue-grad)'}
           className={isOnDark ? 'text-white' : ''}
         />
         {/* Head */}
@@ -61,7 +61,7 @@ export default function TexAvatar({ size = 'md', className = '', pose = 'default
           cx="32"
           cy="22"
           r="16"
-          fill={isOnDark ? 'currentColor' : 'url(#tex-violet-grad)'}
+          fill={isOnDark ? 'currentColor' : 'url(#tex-blue-grad)'}
           className={isOnDark ? 'text-white' : ''}
         />
 
@@ -69,8 +69,8 @@ export default function TexAvatar({ size = 'md', className = '', pose = 'default
         <g className="tex-avatar-blink">
           <ellipse cx="26" cy="20" rx="3" ry="4" fill="white" opacity={0.95} />
           <ellipse cx="38" cy="20" rx="3" ry="4" fill="white" opacity={0.95} />
-          <circle cx="26" cy="21" r="1.5" fill={isOnDark ? '#fff' : '#4c1d95'} />
-          <circle cx="38" cy="21" r="1.5" fill={isOnDark ? '#fff' : '#4c1d95'} />
+          <circle cx="26" cy="21" r="1.5" fill={isOnDark ? '#fff' : '#1e3a8a'} />
+          <circle cx="38" cy="21" r="1.5" fill={isOnDark ? '#fff' : '#1e3a8a'} />
         </g>
 
         {/* Smile */}
@@ -86,7 +86,7 @@ export default function TexAvatar({ size = 'md', className = '', pose = 'default
         {pose === 'wave' && (
           <path
             d="M 48 18 L 52 14 L 52 22 L 48 18"
-            stroke={isOnDark ? 'currentColor' : 'url(#tex-violet-grad)'}
+            stroke={isOnDark ? 'currentColor' : 'url(#tex-blue-grad)'}
             strokeWidth="1.5"
             fill="none"
             strokeLinecap="round"

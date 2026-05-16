@@ -397,7 +397,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
                     <button
                       type="button"
                       onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
-                      className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors"
+                      className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
                     >
                       Create free account
                     </button>
@@ -537,18 +537,18 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
 
           <div>
             <h2 className="text-2xl font-bold text-gray-800 mb-3">Compress Video Files Online Instantly</h2>
-            <p className="text-gray-600">Reduce the size of your video without compromising quality. If you need subtitles after compression, generate them automatically at <a className="text-violet-600 hover:underline" href="/video-to-subtitles">/video-to-subtitles</a>.</p>
+            <p className="text-gray-600">Reduce the size of your video without compromising quality. If you need subtitles after compression, generate them automatically at <a className="text-blue-600 hover:underline" href="/video-to-subtitles">/video-to-subtitles</a>.</p>
             <p className="mt-3 text-sm text-gray-500">compress video online · video compressor · reduce video size</p>
           </div>
 
           <div>
             <h2 className="text-2xl font-bold text-gray-800 mb-3">Reduce Video Size Without Losing Quality</h2>
-            <p className="text-gray-600">Most tools degrade quality. This compressor optimizes compression, maintains clarity, and reduces file size efficiently. Need text output too? Convert video to transcript at <a className="text-violet-600 hover:underline" href="/video-to-transcript">/video-to-transcript</a>.</p>
+            <p className="text-gray-600">Most tools degrade quality. This compressor optimizes compression, maintains clarity, and reduces file size efficiently. Need text output too? Convert video to transcript at <a className="text-blue-600 hover:underline" href="/video-to-transcript">/video-to-transcript</a>.</p>
           </div>
 
           <div>
             <h2 className="text-2xl font-bold text-gray-800 mb-3">Compress Large Video Files Fast</h2>
-            <p className="text-gray-600">Built for large files and long videos with support for large uploads, sharing-ready outputs, and performance-optimized processing. Working with YouTube content? Use <a className="text-violet-600 hover:underline" href="/youtube-transcript-generator">/youtube-transcript-generator</a>.</p>
+            <p className="text-gray-600">Built for large files and long videos with support for large uploads, sharing-ready outputs, and performance-optimized processing. Working with YouTube content? Use <a className="text-blue-600 hover:underline" href="/youtube-transcript-generator">/youtube-transcript-generator</a>.</p>
           </div>
 
           <div>
@@ -570,16 +570,16 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
               <li>No installation required</li>
               <li>Browser-based processing</li>
             </ul>
-            <p className="mt-3 text-gray-600">Need translation too? Translate subtitles and transcripts with <a className="text-violet-600 hover:underline" href="/translate-subtitles">/translate-subtitles</a>.</p>
+            <p className="mt-3 text-gray-600">Need translation too? Translate subtitles and transcripts with <a className="text-blue-600 hover:underline" href="/translate-subtitles">/translate-subtitles</a>.</p>
           </div>
 
           <div>
             <h2 className="text-2xl font-bold text-gray-800 mb-3">Complete Video Processing Workflow</h2>
             <ul className="list-disc pl-6 text-gray-600 space-y-1">
-              <li><a className="text-violet-600 hover:underline" href="/video-to-transcript">Convert video to transcript</a></li>
-              <li><a className="text-violet-600 hover:underline" href="/video-to-subtitles">Generate subtitles</a></li>
-              <li><a className="text-violet-600 hover:underline" href="/burn-subtitles">Burn subtitles</a></li>
-              <li><a className="text-violet-600 hover:underline" href="/translate-subtitles">Translate subtitles</a></li>
+              <li><a className="text-blue-600 hover:underline" href="/video-to-transcript">Convert video to transcript</a></li>
+              <li><a className="text-blue-600 hover:underline" href="/video-to-subtitles">Generate subtitles</a></li>
+              <li><a className="text-blue-600 hover:underline" href="/burn-subtitles">Burn subtitles</a></li>
+              <li><a className="text-blue-600 hover:underline" href="/translate-subtitles">Translate subtitles</a></li>
             </ul>
           </div>
 

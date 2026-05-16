@@ -20,7 +20,7 @@ export default function AccuracyTest() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 py-12">
       <div className="mx-auto max-w-5xl px-6 space-y-8">
-        <Link to="/" className="text-sm text-violet-600 hover:text-violet-700">← Back to home</Link>
+        <Link to="/" className="text-sm text-blue-600 hover:text-blue-700">← Back to home</Link>
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Transcription accuracy test</h1>
         <p className="text-gray-600 dark:text-gray-300">Reference page for measurable accuracy outcomes by audio condition and practical workflow context.</p>
 
@@ -35,7 +35,7 @@ export default function AccuracyTest() {
           ]}
         />
 
-        <section className="rounded-xl border border-purple-300 bg-purple-50/80 p-5 text-sm">
+        <section className="rounded-xl border border-blue-300 bg-blue-50/80 p-5 text-sm">
           <h2 className="text-lg font-bold text-gray-900">Why VideoText is faster than most transcription tools</h2>
           <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-700">
             <li>Processes long videos (1–2 hours) in ~3–5 minutes.</li>

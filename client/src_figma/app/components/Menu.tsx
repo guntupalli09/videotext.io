@@ -53,7 +53,7 @@ export function Menu({ isOpen, onClose }: MenuProps) {
                   <p className="text-sm text-gray-900 dark:text-white font-medium mb-1">
                     santhosh.guntupalli09@outlook.com
                   </p>
-                  <p className="text-xs text-purple-600 dark:text-purple-400 font-medium">
+                  <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
                     Pro Plan
                   </p>
                 </div>
@@ -62,20 +62,20 @@ export function Menu({ isOpen, onClose }: MenuProps) {
               {/* Minutes Left */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-5 border border-purple-200 dark:border-purple-800"
+                className="bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 rounded-xl p-5 border border-blue-200 dark:border-blue-800"
               >
                 <div className="flex items-start gap-3">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
-                    <Clock className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+                    <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs text-purple-700 dark:text-purple-300 font-medium mb-1">
+                    <p className="text-xs text-blue-700 dark:text-blue-300 font-medium mb-1">
                       Minutes left
                     </p>
-                    <p className="text-3xl font-bold text-purple-900 dark:text-purple-100 mb-1">
+                    <p className="text-3xl font-bold text-blue-900 dark:text-blue-100 mb-1">
                       463
                     </p>
-                    <p className="text-xs text-purple-600 dark:text-purple-400">
+                    <p className="text-xs text-blue-600 dark:text-blue-400">
                       min remaining
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -144,7 +144,7 @@ export function Menu({ isOpen, onClose }: MenuProps) {
                   </span>
                   <div className="flex items-center gap-2">
                     {theme === 'dark' ? (
-                      <Moon className="w-4 h-4 text-purple-500" />
+                      <Moon className="w-4 h-4 text-blue-500" />
                     ) : (
                       <Sun className="w-4 h-4 text-amber-500" />
                     )}
@@ -177,16 +177,16 @@ function MenuItem({ icon: Icon, label, sublabel, onClick, highlight }: MenuItemP
       onClick={onClick}
       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
         highlight
-          ? 'bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30'
+          ? 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30'
           : 'hover:bg-gray-100 dark:hover:bg-gray-800'
       }`}
     >
       <Icon className={`w-5 h-5 ${
-        highlight ? 'text-purple-600 dark:text-purple-400' : 'text-gray-600 dark:text-gray-400'
+        highlight ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'
       }`} />
       <div className="flex-1 text-left">
         <p className={`text-sm font-medium ${
-          highlight ? 'text-purple-900 dark:text-purple-100' : 'text-gray-900 dark:text-white'
+          highlight ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-white'
         }`}>
           {label}
         </p>

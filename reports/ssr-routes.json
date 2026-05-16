@@ -1,0 +1,2772 @@
+{
+  "generatedAt": "2026-05-15T04:26:12.021Z",
+  "summary": {
+    "totalRoutes": 345,
+    "seoIndexable": 268,
+    "prerendered": 267,
+    "currentlySsr": 327,
+    "missingSsr": 0
+  },
+  "routes": [
+    {
+      "path": "/",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/3play-media-format-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/3play-media-transcription-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/aac-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/about",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/academic-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/accuracy-test",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/ada-video-captions",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/add-captions-to-video",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/add-subtitles-to-video",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/adobe-premiere-captions-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/ai-captioning",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/ai-transcription",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/ai-transcription-tools",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/ai-transcription-workflow",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/allscribe-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/alternatives",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/arabic-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/assembly-ai-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/audio-to-text",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/audio-to-text-converter",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/auto-captions",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/auto-subtitle-generator",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/automatic-subtitles",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/avi-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/batch-process",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/batch-video-processing",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/best-caption-generator",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/best-descript-alternatives",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "react-page",
+      "ssrCovered": true
+    },
+    {
+      "path": "/best-otter-alternatives",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "react-page",
+      "ssrCovered": true
+    },
+    {
+      "path": "/best-podcast-transcription-tool",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/best-transcription-tool",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/best-transcription-tool-for-journalists",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/best-transcription-tool-for-students",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/best-video-transcription-tool",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/best-youtube-transcription-tool",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/blog",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/blog/:slug",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/bulk-subtitle-export",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/bulk-transcript-export",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/bulk-video-transcription",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/burn-subtitles",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/burn-subtitles-into-video",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/buzz-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/capcut-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/capcut-captions",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/caption-generator",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/caption-maker",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/caption-video-online",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/castmagic-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/changelog",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/chinese-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/closed-caption-generator",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/compare",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/compress-video",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/daily-transcripts-format-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/daily-transcripts-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/daily-transcripts-style-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/deepgram-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/demo",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/descript-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/descript-vs-videotext",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "react-page",
+      "ssrCovered": true
+    },
+    {
+      "path": "/dictation-io-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/dictation-tool",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/ditto-transcripts-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/dragon-dictate-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/easyscribe-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/elevenlabs-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/faq",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/fastest-transcription-software",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/fastest-transcription-tool",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/feedback",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/fireflies-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/fix-subtitles",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/flac-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/fliki-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/forgot-password",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/founder",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/free-captions-and-subtitles",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/free-speech-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/free-subtitle-generator",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/free-transcription",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/free-video-transcription-tool",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/free-voice-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/french-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/generate-subtitles-from-video",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/genio-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/german-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/glean-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/gmr-transcript-format-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/gmr-transcription-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/google-docs-voice-typing-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/google-meet-transcript",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/google-meet-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/gotranscript-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/gotranscript-style-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/gotranscript-test-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/gotranscript-transcription-format",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/gotranscript-transcription-rules",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/granola-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/guide",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/guideline-format",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/happy-scribe-format-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/happy-scribe-transcription-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/happyscribe-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/hardcoded-captions",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/headliner-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/hedy-ai-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/hindi-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/how-to-add-subtitles-to-mp4",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/how-to-create-srt-file",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/how-to-transcript-youtube",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/icp-results-studio",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/instagram-reel-transcript",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/interview-transcription",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/interview-transcription-tool",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/invideo-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/italian-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/japanese-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/journalism-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/kapwing-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/keyword-indexed-transcript",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/korean-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/krisp-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/lecture-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/login",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/loom-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/m4a-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/macwhisper-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/maestra-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/magic-login",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/meetgeek-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/meeting-recording-to-transcript",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/meeting-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/meeting-transcription-tool",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/mem-ai-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/microphone-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/microsoft-teams-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/microsoft-word-transcription-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/mkv-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/mov-to-text",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/movavi-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/mp3-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/mp4-to-srt",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/mp4-to-text",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/multilingual-subtitles",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/notability-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/notta-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/ogg-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/online-subtitle-editor",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/online-transcription",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/online-voice-recorder",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/open",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/open-captions-vs-closed-captions",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/otter-ai-alternative",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/otter-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/otter-vs-videotext",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "react-page",
+      "ssrCovered": true
+    },
+    {
+      "path": "/panopto-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/panopto-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/podcast-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/podcast-transcription-tool",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/portuguese-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/press-conference-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/preview/icp-results-studio",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/preview/transcript-results",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/pricing",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/privacy",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/pro-access",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/qualitative-research-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/reduce-video-size",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/reels-captions",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/refer",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/research-interview-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/reset-password",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/rev-ai-transcription-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/rev-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/rev-captioning-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/rev-style-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/rev-transcript-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/rev-transcription-format",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/rev-transcription-requirements",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/rev-vs-videotext",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/riverside-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/riverside-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/s/:slug",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/samples",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/screen-recording-transcript",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/scribe-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/scribie-format-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/scribie-style-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/scribie-transcription-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/scribie-transcription-rules",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/sdh-subtitles",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/shorts-captions",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/signup",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/site-index",
+      "source": "sitemap-indexable",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/skribo-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/sonix-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/spanish-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/speak-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/speaker-diarization",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/speech-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/speechify-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/speechmatics-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/speechnotes-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/speechpad-format-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/speechpad-transcription-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/speechtexter-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/spreaker-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/srt-generator",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/srt-to-vtt",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/srt-to-word",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/srt-translator",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/status",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subly-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/submagic-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-character-checker",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-converter",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-edit-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-editor",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-generator",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-grammar-fixer",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-language-checker",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-line-break-fixer",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-maker",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-reading-speed",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-resources",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-timing-fixer",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-tools",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-translator",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-validation",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-validator",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitle-word-counter",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/subtitles-vs-closed-captions",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/superwhisper-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/survey",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/tactiq-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/teams-meeting-transcript",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/teams-meeting-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/temi-vs-videotext",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "react-page",
+      "ssrCovered": true
+    },
+    {
+      "path": "/terms",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tiktok-captions",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tiktok-to-transcript",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/aspect-ratio-calculator",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/ass-to-srt",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/merge-srt-files",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/sbv-to-srt",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/shift-subtitle-timing",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/srt-to-sbv",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/srt-to-text",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/srt-to-vtt",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/subtitle-character-checker",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/subtitle-reading-speed",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/subtitle-validator",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/subtitle-word-counter",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/timestamp-converter",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/ttml-to-srt",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/video-bitrate-calculator",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/video-metadata-viewer",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/video-script-timer",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/vtt-to-srt",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/tools/words-per-minute-calculator",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribe-meeting-recording",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribe-video",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribe-video-online",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribe-youtube-video",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribeme-exam-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribeme-format-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribeme-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribeme-style-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribeme-transcription-style",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribio-format-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribio-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcribio-style-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcription-benchmark",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcription-for-journalists",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcription-for-students",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcription-service",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcription-software",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/transcription-tools",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/translate-subtitles",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/translate-video",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/translation",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/trint-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/turboscribe-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/verbit-format-guide",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/verbit-transcription-guidelines",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-accessibility",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-caption-generator",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-captions",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-chapters-generator",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-compressor",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-interview-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-summary-generator",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-to-srt",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-to-subtitles",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-to-text",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-to-text-converter",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-to-transcript",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-to-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-transcription",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-translation",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/video-with-subtitles",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/videoProc-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/videotext-vs-rev",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "react-page",
+      "ssrCovered": true
+    },
+    {
+      "path": "/videotext-vs-turboscribe",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "react-page",
+      "ssrCovered": true
+    },
+    {
+      "path": "/vimeo-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/vizard-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/vocallab-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/voice-memo-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/voice-notes-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/voice-recorder",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/voice-recorder-online",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/voice-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/voice-to-text-converter",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/voice-to-text-online",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/vomo-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/wav-to-text",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/webex-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/webex-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/webinar-transcription",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/webm-to-text",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/whisper-notes-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/whisper-online",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/whisper-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/whispertype-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/whisperx-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/youtube-auto-captions-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/youtube-captions",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/youtube-subtitle-generator",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/youtube-to-text",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/youtube-to-transcript",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/youtube-transcript",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/youtube-transcript-editor",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": null,
+      "ssrCovered": false
+    },
+    {
+      "path": "/youtube-transcript-generator",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/youtube-url-to-transcription",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/youtube-video-to-transcript",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/youtube-video-transcript",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/youtube-video-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/zoom-alternative",
+      "source": "react-router",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/zoom-meeting-transcript",
+      "source": "seo-registry",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/zoom-recording-transcript",
+      "source": "react-router",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/zoom-recording-transcription",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    },
+    {
+      "path": "/zubtitle-alternative",
+      "source": "seo-registry",
+      "indexable": true,
+      "prerendered": true,
+      "ssrMode": "seo-document",
+      "ssrCovered": true
+    }
+  ]
+}

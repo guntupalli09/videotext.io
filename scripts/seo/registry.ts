@@ -31,6 +31,20 @@ export const STATIC_ROUTES = [
   '/fastest-transcription-tool',
   '/podcast-transcription-tool',
   '/interview-transcription-tool',
+  '/transcription-benchmark',
+  '/accuracy-test',
+  '/fastest-transcription-software',
+  '/ai-transcription-tools',
+  '/ai-transcription-workflow',
+  '/google-meet-transcription',
+  '/teams-meeting-transcription',
+  '/free-captions-and-subtitles',
+  '/translation',
+  '/voice-recorder',
+  '/subtitle-validator',
+  '/subtitle-reading-speed',
+  '/subtitle-character-checker',
+  '/subtitle-word-counter',
 ]
 
 export function loadRoutesInventory(): string[] {
@@ -83,6 +97,20 @@ export const CORE_PATHS: string[] = [
   '/fastest-transcription-tool',
   '/podcast-transcription-tool',
   '/interview-transcription-tool',
+  '/transcription-benchmark',
+  '/accuracy-test',
+  '/fastest-transcription-software',
+  '/ai-transcription-tools',
+  '/ai-transcription-workflow',
+  '/google-meet-transcription',
+  '/teams-meeting-transcription',
+  '/free-captions-and-subtitles',
+  '/translation',
+  '/voice-recorder',
+  '/subtitle-validator',
+  '/subtitle-reading-speed',
+  '/subtitle-character-checker',
+  '/subtitle-word-counter',
   // Cluster A — Platform-specific (high-intent) - moved to Sitemap 2 via seoRegistry.ts
   // Cluster B — Language-specific - moved to Sitemap 2 via seoRegistry.ts
   // Cluster C — Competitor alternatives
@@ -125,6 +153,14 @@ export const CORE_PATHS: string[] = [
   '/compare',
   '/open',
   '/changelog',
+  // Cluster I — Comparison / vs pages (fully SSR-prerendered)
+  '/temi-vs-videotext',
+  '/videotext-vs-rev',
+  '/otter-vs-videotext',
+  '/descript-vs-videotext',
+  '/videotext-vs-turboscribe',
+  '/best-otter-alternatives',
+  '/best-descript-alternatives',
   // Cluster F — Journalist & Student pages - moved to Sitemap 2 via seoRegistry.ts
   // Cluster G — High-volume meeting platform alternatives - moved to Sitemap 2 via seoRegistry.ts
   // Cluster H — Voice-to-Text

@@ -5,40 +5,40 @@ import { ImageWithFallback } from '../figma/ImageWithFallback';
 const TESTIMONIALS = [
   {
     quote:
-      'I used to spend 3 hours per video on captions. Now I drop the file, grab a coffee, and the transcript is waiting when I\'m back. The accuracy with accented speech is genuinely better than anything else I\'ve tried.',
+      'I used to spend 3 hours per video cleaning up captions and reformatting them against Rev\'s style guide. Now I upload, run the QA formatter, and the transcript is delivery-ready in minutes. The accuracy on accented speech is genuinely better than anything else I\'ve tried.',
     name: 'Marcus Chen',
-    role: 'YouTube Creator',
-    meta: '480K subscribers',
+    role: 'Media Producer',
+    meta: 'Rev-certified transcriptionist',
     avatar: 'https://i.pravatar.cc/80?img=11',
     platform: Youtube,
     platformColor: 'text-red-500',
-    result: 'Saves 3 hrs/video',
+    result: 'Cut QA time by 3 hrs/video',
     resultBg: 'bg-red-500/10 text-red-400 border border-red-500/20',
     accentColor: 'from-red-500/20 to-transparent',
   },
   {
     quote:
-      'We produce 24 episodes a month across three shows. Batch processing handles the entire queue at once — transcripts, show notes, chapters, everything automated. It replaced a part-time contractor.',
+      'We produce 24 episodes a month across three shows. Batch processing handles the entire queue at once — transcripts, show notes, chapters, everything. It replaced a part-time contractor and our turnaround went from 3 days to same-day.',
     name: 'Sarah Okonkwo',
     role: 'Podcast Producer',
     meta: 'The Growth Lab Network',
     avatar: 'https://i.pravatar.cc/80?img=47',
     platform: Mic,
-    platformColor: 'text-violet-400',
-    result: 'Replaced a contractor',
-    resultBg: 'bg-violet-500/10 text-violet-400 border border-violet-500/20',
-    accentColor: 'from-violet-500/20 to-transparent',
+    platformColor: 'text-blue-400',
+    result: 'Replaced contractor + same-day delivery',
+    resultBg: 'bg-blue-600/10 text-blue-400 border border-blue-500/20',
+    accentColor: 'from-blue-600/20 to-transparent',
   },
   {
     quote:
-      'We caption video ads for 12 clients every week. The speed is an absolute game-changer — drop the file, captions done, sent to client. No downloads, no drama, no back-and-forth.',
+      'We deliver captions for 12 clients every week. The guideline formatter cut our QA passes in half — upload, validate against each client\'s rules, fix, export. No more reformatting back-and-forth between draft and delivery.',
     name: 'James Rivera',
     role: 'Founder',
     meta: 'Apex Media Agency',
     avatar: 'https://i.pravatar.cc/80?img=33',
     platform: Building2,
     platformColor: 'text-blue-400',
-    result: '12 clients served',
+    result: '50% fewer QA passes per client',
     resultBg: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
     accentColor: 'from-blue-500/20 to-transparent',
   },
@@ -68,15 +68,15 @@ export function Testimonials() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-sm font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest mb-3 transition-colors duration-500">
+          <p className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 transition-colors duration-500">
             Real results
           </p>
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
-            Loved by creators,
-            <span className="block text-gray-300 dark:text-white/20">podcasters, and agencies.</span>
+            Real results from
+            <span className="block text-gray-300 dark:text-white/20">professional workflows.</span>
           </h2>
           <p className="text-lg text-gray-500 dark:text-white/40 max-w-lg mx-auto transition-colors duration-500">
-            Don't take our word for it — here's what teams who've switched have to say.
+            Here's what transcription teams, podcast studios, and media agencies say after switching.
           </p>
         </motion.div>
 
@@ -150,7 +150,7 @@ export function Testimonials() {
           className="mt-14 flex flex-wrap items-center justify-center gap-3 text-sm text-gray-400 dark:text-white/25 transition-colors duration-500"
         >
           <span>Trusted by teams at</span>
-          {['YouTube channels', 'Podcasting studios', 'Media agencies', 'SaaS companies'].map((brand) => (
+          {['Transcription teams', 'Podcast studios', 'Media agencies', 'Localization teams'].map((brand) => (
             <span
               key={brand}
               className="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/40 font-medium text-xs transition-colors duration-500"

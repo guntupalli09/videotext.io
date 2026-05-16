@@ -8,11 +8,21 @@ import { getCurrentUsage } from '../lib/api'
 import { logout } from '../lib/auth'
 import { Link } from 'react-router-dom'
 
-
-function Check() {
+function Check({ gold = false }: { gold?: boolean }) {
   return (
-    <svg className="w-4 h-4 shrink-0 text-violet-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+    <svg
+      className={`w-4 h-4 shrink-0 mt-0.5 ${gold ? 'text-amber-500' : 'text-blue-600'}`}
+      fill="currentColor" viewBox="0 0 20 20" aria-hidden
+    >
       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+    </svg>
+  )
+}
+
+function X() {
+  return (
+    <svg className="w-4 h-4 shrink-0 mt-0.5 text-gray-300 dark:text-gray-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
     </svg>
   )
 }
@@ -22,8 +32,7 @@ export default function Pricing() {
   const [usageResetDate, setUsageResetDate] = useState<string | null>(null)
   const [subscriptionCancelingAt, setSubscriptionCancelingAt] = useState<string | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
-  const [directCheckoutLoading, setDirectCheckoutLoading] = useState(false)
-  const [annual, setAnnual] = useState(true) // default to annual (best value)
+  const [checkoutLoading, setCheckoutLoading] = useState<BillingPlan | null>(null)
 
   const refreshCurrentPlan = useCallback(() => {
     getCurrentUsage({ skipCache: true })
@@ -69,13 +78,10 @@ export default function Pricing() {
     }
   }
 
-  async function handleSubscribe(plan: BillingPlan, isAnnual = false) {
-    try { trackEvent('plan_clicked', { plan, annual: isAnnual }) } catch { /* non-blocking */ }
+  async function handleSubscribe(plan: BillingPlan) {
+    try { trackEvent('plan_clicked', { plan }) } catch { /* non-blocking */ }
 
-    // Both logged-in and anonymous users go straight to Stripe Checkout.
-    // For logged-in users the server reads their verified email from the JWT.
-    // For anonymous users the server omits customer_email so Stripe collects it.
-    setDirectCheckoutLoading(true)
+    setCheckoutLoading(plan)
     try {
       trackEvent('upgrade_clicked', {
         plan,
@@ -90,14 +96,13 @@ export default function Pricing() {
         ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
       })
       const { url } = await createCheckoutSession({
-        mode: 'subscription', plan, annual: isAnnual,
+        mode: 'subscription', plan,
         returnToPath: '/pricing', frontendOrigin: window.location.origin,
       })
       trackEvent('payment_completed', {
         type: 'subscription_checkout_started',
         plan,
         source: 'pricing_page',
-        annual: isAnnual,
         job_count: jobCount,
         ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
       })
@@ -109,47 +114,26 @@ export default function Pricing() {
       }
       alert(msg || 'Failed to start checkout. Please try again.')
     } finally {
-      setDirectCheckoutLoading(false)
+      setCheckoutLoading(null)
     }
   }
 
-  const row = 'flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300'
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 py-20 sm:py-28">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
         {/* Header */}
-        <div className="text-center mb-12">
-          <p className="text-sm font-medium text-violet-600 dark:text-violet-400 mb-3 tracking-wide uppercase">Pricing</p>
+        <div className="text-center mb-14">
+          <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-3 tracking-wide uppercase">Pricing</p>
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white tracking-tight">
-            Start processing in seconds
+            The complete transcription workflow
           </h1>
-          <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">
-            Transcript · Subtitles · AI Chapters · Keywords · Speaker Labels — one upload.
+          <p className="mt-4 text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+            Transcript · Formatting · QA · Subtitles · AI Chapters · Speaker Labels — one tool, start to delivery.
           </p>
 
-          {/* Annual / Monthly toggle */}
-          <div className="mt-8 inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-full p-1">
-            <button
-              type="button"
-              onClick={() => { setAnnual(false); try { trackEvent('billing_period_toggled', { annual: false }) } catch { /* non-blocking */ } }}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${!annual ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
-            >
-              Monthly
-            </button>
-            <button
-              type="button"
-              onClick={() => { setAnnual(true); try { trackEvent('billing_period_toggled', { annual: true }) } catch { /* non-blocking */ } }}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${annual ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
-            >
-              Annual
-              <span className="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 text-xs font-semibold px-2 py-0.5 rounded-full">–50%</span>
-            </button>
-          </div>
-
           {isPaidPlan && (
-            <div className="mt-6 flex flex-col items-center gap-2">
+            <div className="mt-8 flex flex-col items-center gap-2">
               {subscriptionCancelingAt && (
                 <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-4 py-3 text-sm text-amber-800 dark:text-amber-300 max-w-sm text-center">
                   Canceling on{' '}
@@ -174,124 +158,168 @@ export default function Pricing() {
           )}
         </div>
 
-        {/* 2-column grid: Free + Pro */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
+        {/* Pricing cards — 3 columns */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
 
           {/* FREE */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('free') ? 'border-violet-300 dark:border-violet-600 ring-2 ring-violet-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('free') ? 'border-blue-300 dark:border-blue-600 ring-2 ring-blue-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
             {isCurrentPlan('free') && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
                 Current Plan
               </span>
             )}
-            <div className="mb-5">
-              <h3 className="text-base font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Free</h3>
+
+            <div className="mb-6">
+              <h3 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Free</h3>
               <div className="mt-2 flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-gray-900 dark:text-white">$0</span>
               </div>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Try it today — no credit card</p>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-snug">
+                Try the full workflow — no card needed.
+              </p>
             </div>
 
-            <ul className="space-y-3 flex-1 mb-7">
-              <li className={row}><Check /><span>3 imports per day</span></li>
-              <li className={row}><Check /><span>Transcript &amp; subtitles (SRT)</span></li>
-              <li className={row}><Check /><span>Videos up to 30 minutes</span></li>
-              <li className={row}>
-                <svg className="w-4 h-4 shrink-0 text-gray-300 dark:text-gray-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-                <span className="text-gray-400 dark:text-gray-500">Watermark on exports</span>
-              </li>
+            <ul className="space-y-3 flex-1 mb-8">
+              {[
+                { label: '3 uploads per day', ok: true },
+                { label: 'Files up to 30 minutes', ok: true },
+                { label: 'Transcript & subtitle exports', ok: true },
+                { label: 'AI summaries & chapters', ok: true },
+                { label: 'Speaker labels', ok: true },
+                { label: 'Watermarked exports', ok: false },
+                { label: 'Formatting & QA workflows', ok: false },
+                { label: 'Client-ready delivery', ok: false },
+              ].map(({ label, ok }) => (
+                <li key={label} className="flex items-start gap-2.5 text-sm">
+                  {ok ? <Check /> : <X />}
+                  <span className={ok ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}>
+                    {label}
+                  </span>
+                </li>
+              ))}
             </ul>
 
             <button
               disabled
               className="w-full py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-medium text-sm cursor-not-allowed"
             >
-              {isCurrentPlan('free') ? 'Current plan' : 'Free — no signup'}
+              {isCurrentPlan('free') ? 'Current plan' : 'Free — no sign-up'}
             </button>
           </div>
 
           {/* PRO */}
-          <div className={`relative flex flex-col bg-gray-900 dark:bg-white rounded-2xl p-7 shadow-xl shadow-violet-500/10 ring-2 ${isCurrentPlan('pro') ? 'ring-violet-400' : 'ring-violet-500'}`}>
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
-              {isCurrentPlan('pro') ? 'Current Plan' : 'Most Popular'}
-            </span>
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('pro') ? 'border-blue-400 dark:border-blue-500 ring-2 ring-blue-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
+            {isCurrentPlan('pro') && (
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
+                Current Plan
+              </span>
+            )}
 
-            <div className="mb-5">
-              <h3 className="text-base font-semibold text-violet-400 dark:text-violet-600 uppercase tracking-wide">Pro</h3>
+            <div className="mb-6">
+              <h3 className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Pro</h3>
               <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-white dark:text-gray-900">{annual ? '$10' : '$20'}</span>
-                <span className="text-sm text-gray-400 dark:text-gray-500">/ mo{annual ? ', billed annually' : ''}</span>
+                <span className="text-4xl font-bold text-gray-900 dark:text-white">$40</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">/ mo</span>
               </div>
-              {annual && (
-                <p className="mt-1 text-xs text-emerald-400 dark:text-emerald-600 font-medium">Save $120/year vs monthly</p>
-              )}
-              <p className="mt-2 text-sm text-gray-300 dark:text-gray-600">Built for real workloads</p>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-snug">
+                For professionals handling full transcription and delivery workflows.
+              </p>
             </div>
 
-            <ul className="space-y-3 flex-1 mb-7">
+            <ul className="space-y-3 flex-1 mb-8">
               {[
-                'No watermark',
-                'Up to 2 hours per video',
-                'AI summary, chapters & speaker labels',
+                'Longer file uploads',
+                'Faster processing & priority queue',
+                'Advanced formatting workflows',
+                'Client-ready export delivery',
                 'Translation in 70+ languages',
-                'Share read-only transcript links (original & translated)',
-                'Batch process multiple videos at once',
-                'Faster processing & queue priority',
+                'Batch processing',
+                'Watermark-free exports',
+                'Full workflow automation tools',
               ].map((f) => (
-                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-100 dark:text-gray-800">
-                  <svg className="w-4 h-4 shrink-0 text-violet-400 dark:text-violet-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
+                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300">
+                  <Check />
                   <span>{f}</span>
                 </li>
               ))}
             </ul>
 
             <button
-              onClick={() => isCurrentPlan('pro') ? handleManageSubscription() : handleSubscribe('pro', annual)}
-              disabled={(isCurrentPlan('pro') && portalLoading) || directCheckoutLoading}
-              className="w-full py-3.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm shadow-lg shadow-violet-900/40 transition-colors disabled:opacity-60"
+              onClick={() => isCurrentPlan('pro') ? handleManageSubscription() : handleSubscribe('pro')}
+              disabled={(isCurrentPlan('pro') && portalLoading) || checkoutLoading !== null}
+              className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-600 text-white font-semibold text-sm shadow-lg shadow-blue-900/20 transition-colors disabled:opacity-60"
             >
               {isCurrentPlan('pro')
                 ? (portalLoading ? 'Opening…' : 'Manage subscription')
-                : directCheckoutLoading ? 'Redirecting…'
-                : annual ? 'Start Pro — $10/mo' : 'Start Pro — $20/mo'}
+                : checkoutLoading === 'pro' ? 'Redirecting…'
+                : 'Start Pro — $40/mo'}
             </button>
           </div>
 
-          {/*
-          BUSINESS — commented out until we have traction
+          {/* FOUNDING PRO */}
+          <div className="relative flex flex-col bg-gray-950 dark:bg-gray-900 rounded-2xl p-7 shadow-2xl shadow-amber-500/10 ring-2 ring-amber-400/60">
+            {/* Badges */}
+            <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-amber-500 text-gray-950 text-[11px] font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
+              {isCurrentPlan('founding_workflow') ? 'Current Plan' : '⚡ 20 Spots Only'}
+            </span>
 
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border shadow-sm p-7 ${isCurrentPlan('business') ? 'border-violet-400 ring-2 ring-violet-500/30' : 'border-gray-200 dark:border-gray-700'}`}>
-            {isCurrentPlan('business') && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">Current Plan</span>
-            )}
-            <div className="mb-5">
-              <h3 className="text-base font-semibold text-gray-500 uppercase tracking-wide">Business</h3>
+            <div className="mb-6">
+              <h3 className="text-xs font-semibold text-amber-400 uppercase tracking-widest">Founding Pro</h3>
               <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-gray-900 dark:text-white">$49</span>
-                <span className="text-sm text-gray-500">/ mo</span>
+                <span className="text-4xl font-bold text-white">$24.99</span>
+                <span className="text-sm text-gray-400">/ mo</span>
               </div>
-              <p className="mt-2 text-sm text-gray-500">Teams &amp; agencies. Zero throttling.</p>
+              <p className="mt-1 text-xs text-amber-400/80 font-medium">
+                vs $40/mo after founding closes — locked forever
+              </p>
+              <p className="mt-2 text-sm text-gray-300 leading-snug">
+                Everything in Pro. Your feedback shapes what gets built next.
+              </p>
             </div>
-            <ul className="space-y-3 flex-1 mb-7 text-sm text-gray-700 dark:text-gray-300">
-              <li>Everything in Pro</li>
-              <li>Up to 4 hours per video</li>
-              <li>100-video batches · 10 languages</li>
-              <li>8 concurrent jobs · Dedicated queue</li>
-            </ul>
-            <button
-              onClick={() => isCurrentPlan('business') ? handleManageSubscription() : handleSubscribe('business', false)}
-              disabled={(isCurrentPlan('business') && portalLoading) || directCheckoutLoading}
-              className="w-full py-3 rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm transition-colors disabled:opacity-60"
-            >
-              {isCurrentPlan('business') ? (portalLoading ? 'Opening…' : 'Manage subscription') : 'Start Business — $49/mo'}
-            </button>
-          </div>
-          */}
 
+            <ul className="space-y-3 flex-1 mb-8">
+              {[
+                'Everything in Pro',
+                'Lifetime founding price — never increases',
+                'Early access to new workflow features',
+                'Direct roadmap influence',
+                'Priority founder support',
+                'Personalized workflow onboarding',
+                'Private founding-member community',
+              ].map((f, i) => (
+                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-100">
+                  <Check gold={i > 0} />
+                  <span className={i === 0 ? 'font-semibold' : ''}>{f}</span>
+                </li>
+              ))}
+            </ul>
+
+            <button
+              onClick={() => isCurrentPlan('founding_workflow') ? handleManageSubscription() : handleSubscribe('founding_workflow')}
+              disabled={(isCurrentPlan('founding_workflow') && portalLoading) || checkoutLoading !== null}
+              className="w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-sm shadow-lg shadow-amber-900/40 transition-colors disabled:opacity-60"
+            >
+              {isCurrentPlan('founding_workflow')
+                ? (portalLoading ? 'Opening…' : 'Manage subscription')
+                : checkoutLoading === 'founding_workflow' ? 'Redirecting…'
+                : 'Claim Founding Pro — $24.99/mo'}
+            </button>
+
+            <p className="mt-3 text-center text-xs text-gray-500">
+              Limited to 20 founding members · cancel any time
+            </p>
+          </div>
+
+        </div>
+
+        {/* Value callout below cards */}
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Founding Pro is{' '}
+            <span className="font-semibold text-amber-600 dark:text-amber-400">38% less than Pro</span>
+            {' '}— and that price locks in for life.{' '}
+            <span className="text-gray-400 dark:text-gray-500">No price hikes. Ever.</span>
+          </p>
         </div>
 
         {/* Testimonials */}
@@ -312,8 +340,8 @@ export default function Pricing() {
                 quote: 'We produce 24 episodes a month across three shows. Batch processing handles the entire queue at once — transcripts, show notes, chapters, everything automated. It replaced a part-time contractor.',
                 name: 'Sarah Okonkwo', role: 'Podcast Producer', meta: 'The Growth Lab Network',
                 avatar: 'https://i.pravatar.cc/80?img=47',
-                Platform: Mic, platformColor: 'text-violet-500',
-                result: 'Replaced a contractor', resultBg: 'bg-violet-500/10 text-violet-500 border border-violet-500/20',
+                Platform: Mic, platformColor: 'text-blue-600',
+                result: 'Replaced a contractor', resultBg: 'bg-blue-600/10 text-blue-600 border border-blue-500/20',
               },
               {
                 quote: 'We caption video ads for 12 clients every week. Drop the file, captions done, sent to client. No downloads, no drama, no back-and-forth.',
@@ -361,7 +389,7 @@ export default function Pricing() {
 
         <p className="mt-10 text-center text-sm text-gray-600 dark:text-gray-300 max-w-xl mx-auto leading-relaxed">
           Transcriptionists matching Rev-, GoTranscript-, or similar PDFs can{' '}
-          <Link to="/guideline-format" className="font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300">
+          <Link to="/guideline-format" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
             format your transcript to a client style guide →
           </Link>
         </p>
@@ -378,7 +406,7 @@ export default function Pricing() {
           ))}
         </div>
 
-        {(isCurrentPlan('basic') || isCurrentPlan('agency') || isCurrentPlan('founding_workflow')) && (
+        {(isCurrentPlan('basic') || isCurrentPlan('agency')) && (
           <p className="mt-6 text-center text-xs text-gray-400 dark:text-gray-500">
             On a legacy plan?{' '}
             <button type="button" onClick={handleManageSubscription} className="underline hover:text-gray-600 dark:hover:text-gray-300">
@@ -387,7 +415,6 @@ export default function Pricing() {
           </p>
         )}
       </div>
-
     </div>
   )
 }

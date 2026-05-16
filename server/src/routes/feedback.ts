@@ -50,15 +50,25 @@ router.post('/', feedbackPostLimit, async (req: Request, res: Response) => {
     const otherFeedback = sanitize(body.otherFeedback)
     const source = body.source === 'survey' ? 'survey' : 'in-app'
 
+    // Auto-populate email from user record for logged-in users when not already provided
+    let resolvedEmail = email
+    let resolvedUserNameOrEmail = userNameOrEmail
+    if (userId && !userId.startsWith('guest_') && !resolvedEmail && !resolvedUserNameOrEmail) {
+      try {
+        const dbUser = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } })
+        if (dbUser?.email) resolvedUserNameOrEmail = dbUser.email
+      } catch { /* non-blocking */ }
+    }
+
     await prisma.feedback.create({
       data: {
         toolId,
         stars,
         comment,
         userId,
-        userNameOrEmail,
+        userNameOrEmail: resolvedUserNameOrEmail,
         planAtSubmit,
-        email,
+        email: resolvedEmail,
         topTool,
         topToolReason,
         featureRequest,

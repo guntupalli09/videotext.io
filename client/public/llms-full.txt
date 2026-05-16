@@ -330,12 +330,25 @@ Page: https://videotext.io/otter-vs-videotext
 - Descript is better for: video editing with transcript-based cut-and-paste editing.
 Page: https://videotext.io/descript-vs-videotext
 
+### VideoText vs Temi
+- Temi charges $0.25/minute (pay-as-you-go), English only. VideoText charges ~$0.042/minute on a flat $19/month subscription — 6× cheaper per minute.
+- Temi supports English only. VideoText supports 90+ languages via OpenAI Whisper large-v3.
+- Temi processes near real-time (~60 min for a 60-min video). VideoText completes the same file in 3–5 minutes.
+- Temi outputs: transcript only (basic SRT, no broadcast formatting). VideoText outputs: transcript + broadcast-safe SRT + VTT + AI summary + chapter markers per upload.
+- VideoText has a free tier (60 min/month, no credit card). Temi has no free tier — every minute is billed.
+- VideoText deletes files immediately after processing. Temi stores files with no clearly disclosed retention limit.
+- VideoText accepts YouTube URLs directly. Temi requires manual file download and upload.
+- VideoText includes built-in subtitle burn-in. Temi does not.
+- For any workflow beyond one-off English transcription, VideoText is faster, cheaper, and more capable than Temi.
+Page: https://videotext.io/temi-vs-videotext
+
 ### VideoText vs Rev AI
-- Rev AI charges $0.25/minute (pay-as-you-go). VideoText charges $19/month flat for 450 minutes.
-- Rev also offers human transcription at $1.50/minute. VideoText is AI-only.
-- Both use AI transcription with comparable accuracy.
-- VideoText adds: YouTube URL input, SRT/VTT export, subtitle translation, burning, batch, summary, chapters.
-- For most use cases, VideoText is significantly cheaper.
+- Rev AI charges $0.25/minute (pay-as-you-go). VideoText charges $19/month flat for 450 minutes (~$0.042/min) — 6× cheaper.
+- Rev Human transcription costs $1.50+/minute. A 2-hour file = $180 on Rev Human vs $49/month total on VideoText Agency.
+- Rev AI supports ~36 languages. VideoText supports 90+ languages.
+- Rev retains files for 30 days; human transcriptionists hear your audio on the Human tier. VideoText deletes files immediately.
+- VideoText adds: YouTube URL input, SRT/VTT broadcast-safe formatting, subtitle burning, AI summary, chapter markers.
+- Rev Human wins only when human-reviewed output is a strict legal/medical compliance requirement.
 Page: https://videotext.io/videotext-vs-rev
 
 ### VideoText vs Trint

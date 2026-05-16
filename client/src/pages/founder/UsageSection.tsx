@@ -48,7 +48,7 @@ export default function UsageSection({ usage }: { usage: DashboardUsage }) {
                 </div>
                 <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-violet-500 rounded-full"
+                    className="h-full bg-blue-600 rounded-full"
                     style={{ width: `${(j.count / maxCount) * 100}%` }}
                   />
                 </div>

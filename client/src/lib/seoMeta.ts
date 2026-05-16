@@ -12,12 +12,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/': {
     title: 'Video to Text Transcription Software | Fast AI Transcript & Subtitles',
     description:
-      'VideoText is AI transcription software for turning video to text, transcript, subtitles, summary, and chapters in one workflow. Start free and export TXT, DOCX, PDF, SRT, and VTT.',
+      'VideoText turns long video into structured transcripts, subtitles, summaries, and chapters in one workflow, with export support for TXT, DOCX, PDF, SRT, and VTT.',
   },
   '/pricing': {
-    title: 'Pricing — Free, Basic, Pro & Agency Plans',
+    title: 'Pricing — Free & Pro Plans | VideoText',
     description:
-      "VideoText pricing: Free 3 imports/month, Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Multi-language, batch on Pro+. 7-day money-back guarantee. We don't store your data.",
+      "VideoText pricing: Free 3 uploads/day (no card needed), Pro $40/mo (AI features, watermark-free exports, batch processing). 7-day money-back guarantee. We don't store your data.",
   },
   '/privacy': {
     title: 'Privacy Policy — We Don\'t Store Your Data | VideoText',
@@ -82,7 +82,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/batch-process': {
     title: 'Batch Video to Subtitles — Multiple Videos at Once',
     description:
-      'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans. Multi-language optional.',
+      'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro plan. Multi-language optional.',
   },
   '/blog': {
     title: 'VideoText blog — transcription, subtitles, and workflow guides',
@@ -192,12 +192,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/trint-alternative': {
     title: 'Cheaper Trint Alternative That Starts Free | VideoText',
     description:
-      'Trint starts at $80/month. VideoText starts free and scales to $10/month — same Whisper AI accuracy, plus subtitle burning, batch processing, and translation.',
+      'Trint starts at $80/month. VideoText starts free — same Whisper AI accuracy, plus subtitle burning, batch processing, and translation. Pro at $40/month.',
   },
   '/rev-alternative': {
     title: 'Best Rev Alternative with Flat-Rate Pricing | VideoText',
     description:
-      'Rev AI charges $0.25/minute. VideoText starts free and costs $10/month for 450 minutes. Same AI accuracy, plus subtitle export, translation, and YouTube support.',
+      'Rev AI charges $0.25/minute. VideoText starts free — same AI accuracy, plus subtitle export, translation, and YouTube support. Pro at $40/month with no per-minute fees.',
   },
   '/happyscribe-alternative': {
     title: 'Best Free HappyScribe Alternative – Transcription & Subtitles | VideoText',
@@ -207,7 +207,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/sonix-alternative': {
     title: 'Best Free Sonix Alternative – No Per-Minute Fees | VideoText',
     description:
-      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free and is $10/month flat — Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing.',
+      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free — Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing. Pro at $40/month flat.',
   },
   '/easyscribe-alternative': {
     title: 'Best EasyScribe Alternative for Video & Subtitles | VideoText',
@@ -286,8 +286,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Switch from transcript-only workflows. VideoText generates transcript, SRT/VTT subtitles, speaker labels, summary, and chapters in one upload.',
   },
   '/videotext-vs-rev': {
-    title: 'VideoText vs Rev — AI Workflow vs Service Comparison',
-    description: 'Compare VideoText and Rev across speed, workflow depth, output structure, and use-case fit.',
+    title: 'VideoText vs Rev (2025) — Pricing, Accuracy & Features Compared',
+    description: 'Rev AI charges $0.25/min. Rev Human charges $1.50+/min. VideoText is 6× cheaper, supports 90+ languages, produces transcript + subtitles + summary + chapters, and deletes files immediately. Full comparison.',
+  },
+  '/temi-vs-videotext': {
+    title: 'Temi vs VideoText (2025) — Pricing, Accuracy, Speed & Features Compared',
+    description: 'Temi charges $0.25/min and supports English only. VideoText is 6× cheaper, supports 90+ languages, and produces transcript + SRT + VTT + summary + chapters per upload. Full 360° comparison also covering Rev vs VideoText.',
   },
   '/best-otter-alternatives': {
     title: 'Best Otter Alternatives — Fast Transcription Tools',
@@ -344,6 +348,32 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: 'VTT to SRT Converter — Free Online | VideoText',
     description: 'Convert WebVTT (.vtt) subtitle files to SubRip (.srt) format. Free, browser-based, nothing uploaded to any server.',
   },
+
+  '/free-captions-and-subtitles': {
+    title: 'Free Captions and Subtitles — Create SRT & VTT Online | VideoText',
+    description: 'Create free captions and subtitles for videos. Generate SRT and VTT files, validate timing, check reading speed, and prepare accessible caption files for YouTube, Vimeo, and social video.',
+  },
+  '/translation': {
+    title: 'Translation — Translate Subtitles and Caption Files | VideoText',
+    description: 'Translate subtitle files while preserving timestamps. Use VideoText for SRT and VTT translation workflows, multilingual caption delivery, and accessible translated video publishing.',
+  },
+  '/subtitle-validator': {
+    title: 'Subtitle Validator — Check SRT & VTT Files Free | VideoText',
+    description: 'Validate SRT and VTT subtitles for timestamp overlaps, empty cues, long lines, malformed numbering, and reading speed issues before publishing captions.',
+  },
+  '/subtitle-reading-speed': {
+    title: 'Subtitle Reading Speed Checker — CPS Analyzer | VideoText',
+    description: 'Check subtitle reading speed with characters-per-second and words-per-minute guidance for Netflix, BBC, EBU, YouTube, and social captions.',
+  },
+  '/subtitle-character-checker': {
+    title: 'Subtitle Character Limit Checker — Netflix, YouTube & BBC | VideoText',
+    description: 'Check subtitle line lengths against common caption character limits so SRT and VTT files stay readable on Netflix, YouTube, BBC-style, and social video layouts.',
+  },
+  '/subtitle-word-counter': {
+    title: 'Subtitle Word Counter — Count Words in SRT & VTT Files | VideoText',
+    description: 'Count words, characters, cues, WPM, and CPS in subtitle files. Use the report to estimate subtitle density, reading speed, and caption editing workload.',
+  },
+
   '/tools/shift-subtitle-timing': {
     title: 'Shift Subtitle Timing — Delay or Advance Subtitles Free | VideoText',
     description: 'Fix out-of-sync subtitles by shifting all timestamps forward or backward by any number of seconds. Works with SRT and VTT. Free, browser-based.',
@@ -492,6 +522,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
 
   '/videotext-vs-turboscribe': [{ name: 'Home', path: '/' }, { name: 'VideoText vs TurboScribe', path: '/videotext-vs-turboscribe' }],
   '/videotext-vs-rev': [{ name: 'Home', path: '/' }, { name: 'VideoText vs Rev', path: '/videotext-vs-rev' }],
+  '/temi-vs-videotext': [{ name: 'Home', path: '/' }, { name: 'Compare', path: '/compare' }, { name: 'Temi vs VideoText', path: '/temi-vs-videotext' }],
   '/best-otter-alternatives': [{ name: 'Home', path: '/' }, { name: 'Best Otter Alternatives', path: '/best-otter-alternatives' }],
   '/best-descript-alternatives': [{ name: 'Home', path: '/' }, { name: 'Best Descript Alternatives', path: '/best-descript-alternatives' }],
   '/ai-transcription-workflow': [{ name: 'Home', path: '/' }, { name: 'AI Transcription Workflow', path: '/ai-transcription-workflow' }],
@@ -512,6 +543,13 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/tools/shift-subtitle-timing': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing' }],
   '/tools/merge-srt-files': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Merge SRT Files', path: '/tools/merge-srt-files' }],
   '/tools/srt-to-text': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'SRT to Text', path: '/tools/srt-to-text' }],
+
+  '/free-captions-and-subtitles': [{ name: 'Home', path: '/' }, { name: 'Free Captions and Subtitles', path: '/free-captions-and-subtitles' }],
+  '/translation': [{ name: 'Home', path: '/' }, { name: 'Translation', path: '/translation' }],
+  '/subtitle-validator': [{ name: 'Home', path: '/' }, { name: 'Subtitle Validator', path: '/subtitle-validator' }],
+  '/subtitle-reading-speed': [{ name: 'Home', path: '/' }, { name: 'Reading Speed Checker', path: '/subtitle-reading-speed' }],
+  '/subtitle-character-checker': [{ name: 'Home', path: '/' }, { name: 'Character Limit Checker', path: '/subtitle-character-checker' }],
+  '/subtitle-word-counter': [{ name: 'Home', path: '/' }, { name: 'Subtitle Word Counter', path: '/subtitle-word-counter' }],
   '/tools/subtitle-validator': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Subtitle Validator', path: '/tools/subtitle-validator' }],
   '/tools/subtitle-reading-speed': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed' }],
   '/tools/subtitle-character-checker': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Character Limit Checker', path: '/tools/subtitle-character-checker' }],
@@ -580,9 +618,9 @@ const FAQ_SCHEMA_ITEMS = [
   { q: 'Can I transcribe a YouTube video without downloading it?', a: "YouTube URL support is coming soon. Currently, download the video first (MP4) and upload it to the Video to Transcript tool." },
   { q: 'What file formats are supported?', a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. YouTube URL support is coming soon." },
   { q: 'How accurate is VideoText transcription?', a: "VideoText uses OpenAI Whisper large-v3. On clear speech with minimal background noise, accuracy is approximately 98.5% word accuracy. Setting the spoken language manually improves results for non-English content." },
-  { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 imports per month, resetting on the 1st. Single language, watermark on subtitle exports. Upgrade any time for more imports, AI features, and batch processing." },
+  { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 uploads per day. Single language, watermark on subtitle exports. Upgrade any time for more features and batch processing." },
   { q: 'Can I translate subtitles or transcripts?', a: "Yes. Use the Translate Subtitles tool for SRT/VTT files. For transcripts, use the \"Also translate to\" option before starting to get a full translation in 70+ languages." },
-  { q: 'What is the maximum video duration?', a: "Free: 30 minutes per video. Basic: 45 minutes. Pro: 2 hours. Agency: 4 hours. To transcribe a longer video, trim or split it into segments before uploading." },
+  { q: 'What is the maximum video duration?', a: "Free: 30 minutes per video. Pro: 2 hours. To transcribe a longer video, trim or split it into segments before uploading." },
   { q: 'How do I format a transcript for a client\'s style guide or Rev-type rules?', a: 'Use Format → Client guidelines (/guideline-format). Paste your raw transcript or jump from Video → Transcript with "Make this client-ready →". Pick presets such as Rev, GoTranscript, TranscribeMe, or Scribie, tweak the editable rule cards, or upload PDF/DOCX guidance.' },
   { q: 'What does "clean verbatim vs full verbatim" mean for freelancers?', a: 'Clean verbatim removes filler words and disfluencies for readability; full verbatim keeps them. Marketplace briefs spell out which variant you owe—see /blog/clean-verbatim-vs-full-verbatim.' },
   { q: 'What is transcript QA and how does VideoText help before I invoice?', a: 'Transcript QA is the checklist pass against names, glossary, punctuation, timestamps, and style compliance. Produce the text in Video → Transcript, then map platform rules inside /guideline-format so reviewers know what you matched before payout.' },
@@ -760,7 +798,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Can I transcribe multiple videos at once?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Pro and Agency plans include batch upload. Upload multiple files simultaneously — VideoText processes all in parallel and delivers one ZIP with all transcripts, subtitle files, and summaries.',
+            text: 'Yes. The Pro plan includes batch upload. Upload multiple files simultaneously — VideoText processes all in parallel and delivers one ZIP with all transcripts, subtitle files, and summaries.',
           },
         },
         {
@@ -784,7 +822,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Is video transcription free?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. The free tier includes 3 imports per month with no credit card required. All outputs (transcript, subtitles, summary, chapters) are included in the free tier. Paid plans start at $19/month for 450 minutes.',
+            text: 'Yes. The free tier includes 3 uploads per day with no credit card required. All outputs (transcript, subtitles, summary, chapters) are included in the free tier. Pro plan is $40/month with no usage limits.',
           },
         },
         {
@@ -821,7 +859,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Web Browser',
       url: `${SITE_URL}/guideline-format`,
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier available. Paid plans from $19/month.' },
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier available. Pro plan $40/month.' },
       provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
     },
     {
@@ -998,10 +1036,142 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
   '/videotext-vs-rev': [
     {
       '@context': 'https://schema.org',
-      '@type': 'Review',
-      itemReviewed: { '@type': 'SoftwareApplication', name: 'VideoText and Rev' },
-      reviewBody: 'Comparison between AI workflow throughput and service-based transcription models.',
-      author: { '@type': 'Organization', name: SITE_NAME },
+      '@type': 'Article',
+      headline: 'VideoText vs Rev — Full 2025 Comparison',
+      description: 'A complete comparison of VideoText and Rev covering pricing, AI vs human transcription, accuracy, speed, output formats, language support, and data privacy.',
+      author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      url: `${SITE_URL}/videotext-vs-rev`,
+      dateModified: '2025-05-01',
+      about: [
+        { '@type': 'SoftwareApplication', name: 'Rev' },
+        { '@type': 'SoftwareApplication', name: 'VideoText', url: SITE_URL },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Is VideoText cheaper than Rev?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Rev AI charges $0.25/minute per file. Rev Human charges $1.50+/minute. VideoText Pro is $40/month flat with no per-minute charges — dramatically cheaper than Rev for any regular workload.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the best Rev alternative?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText is the best Rev AI alternative for most workflows: 6× cheaper per minute, 90+ language support, zero data retention, and produces transcript + SRT + VTT subtitles + AI summary + chapters in one upload. For human-reviewed transcription required by compliance policy, Rev Human remains the option — but for AI transcription, VideoText wins on every dimension.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How fast is VideoText compared to Rev AI?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText processes a 1-hour video in 3–5 minutes using parallel async processing. Rev AI takes approximately 5–10 minutes. Rev Human takes 12–24 hours. VideoText is the fastest option.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Does Rev store my audio files?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Rev retains uploaded files for up to 30 days. Rev Human transcriptionists actively listen to your audio content. VideoText processes files in a transient environment and deletes them immediately — zero retention, no humans access your content.',
+          },
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['[data-speakable]', 'h1', '.seo-intro'],
+    },
+  ],
+  '/temi-vs-videotext': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: 'Temi vs VideoText — Full 2025 Comparison',
+      description: 'A 360-degree comparison of Temi and VideoText covering pricing, accuracy, speed, output formats, language support, and data privacy. Also covers Rev vs VideoText.',
+      author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      url: `${SITE_URL}/temi-vs-videotext`,
+      dateModified: '2025-05-01',
+      about: [
+        { '@type': 'SoftwareApplication', name: 'Temi' },
+        { '@type': 'SoftwareApplication', name: 'Rev' },
+        { '@type': 'SoftwareApplication', name: 'VideoText', url: SITE_URL },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Is VideoText cheaper than Temi?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Temi charges $0.25/minute for every file. VideoText Pro is $40/month flat with no per-minute charges — dramatically cheaper for any regular workload. VideoText also offers a free tier with 3 uploads per day, no credit card required.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the best alternative to Temi?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText is the best Temi alternative for most workflows. It is 6× cheaper per minute on a flat subscription, supports 90+ languages via OpenAI Whisper large-v3, produces transcript + SRT subtitles + VTT subtitles + AI summary + chapter markers in one upload, and deletes your files immediately after processing with zero data retention.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Does Temi support languages other than English?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'No. Temi supports English only. This is not a configuration option — the platform was built for English and never expanded. VideoText supports 90+ languages using the full OpenAI Whisper large-v3 model at the same speed and quality for all major languages.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How does Rev compare to VideoText?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Rev AI costs $0.25/minute — the same as Temi. Rev Human costs $1.50+/minute. VideoText Pro is $40/month flat with no per-minute charges. VideoText also generates more outputs per file and has zero data retention versus Rev\'s 30-day retention policy.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How fast is VideoText compared to Temi for transcription?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Temi processes audio near real-time — a 60-minute video takes approximately 60 minutes. VideoText uses parallel async processing and completes the same file in 3–5 minutes. A 2-hour video: approximately 8–12 minutes on VideoText versus 120 minutes on Temi.',
+          },
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Temi vs VideoText — Key Differences',
+      description: 'The 6 most important differences between Temi and VideoText transcription tools.',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Price: VideoText ~$0.042/min vs Temi $0.25/min — 6× cheaper on Pro subscription' },
+        { '@type': 'ListItem', position: 2, name: 'Languages: VideoText 90+ vs Temi English only' },
+        { '@type': 'ListItem', position: 3, name: 'Speed: VideoText 3–5 min/hr vs Temi ~60 min/hr (near real-time)' },
+        { '@type': 'ListItem', position: 4, name: 'Outputs: VideoText transcript + SRT + VTT + summary + chapters vs Temi transcript only' },
+        { '@type': 'ListItem', position: 5, name: 'Privacy: VideoText zero data retention vs Temi stores files on servers' },
+        { '@type': 'ListItem', position: 6, name: 'YouTube: VideoText accepts direct URLs vs Temi requires manual file download' },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['[data-speakable]', 'h1', '.seo-intro'],
     },
   ],
   '/best-otter-alternatives': [
@@ -1110,7 +1280,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       applicationCategory: 'MultimediaApplication',
       operatingSystem: 'Web Browser',
       url: 'https://videotext.io/youtube-transcript-generator',
-      featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 2 hours/month (no credit card), Pro tier: unlimited transcription ($9.99/month), Zero data retention (files deleted after processing), Batch processing (Pro/Agency)',
+      featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 uploads/day (no credit card), Pro tier: unlimited transcription ($40/month), Zero data retention (files deleted after processing), Batch processing (Pro/Agency)',
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: '4.9',
@@ -1124,7 +1294,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
             '@type': 'Offer',
             price: '0',
             priceCurrency: 'USD',
-            description: 'Free: 2 hours/month (no credit card required)',
+            description: 'Free: 3 uploads/day (no credit card required)',
             url: 'https://videotext.io/youtube-transcript-generator',
           },
           {
@@ -1166,7 +1336,7 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   '/youtube-transcript-generator': {
     name: 'Free YouTube Transcript Generator — No Download, Instant Results',
     description: 'Free YouTube transcript generator. Paste any video URL — get complete transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in 2-3 minutes. No downloading required. 98.5% accurate. 50,000+ creators use VideoText.',
-    featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 2 hours/month (no credit card), Pro tier: unlimited transcription ($9.99/month), Zero data retention (files deleted after processing)',
+    featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 uploads/day (no credit card), Pro tier: unlimited transcription ($40/month), Zero data retention (files deleted after processing)',
   },
   '/video-to-subtitles': {
     name: 'Video to Subtitles — SRT & VTT Generator',
@@ -1195,8 +1365,8 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   },
   '/batch-process': {
     name: 'Batch Video to Subtitles — Multiple Videos at Once',
-    description: 'Transcribe or subtitle many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans.',
-    featureList: 'Batch transcription, Batch subtitle generation, ZIP download, Multi-language batch, Pro and Agency plans',
+    description: 'Transcribe or subtitle many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro plan.',
+    featureList: 'Batch transcription, Batch subtitle generation, ZIP download, Multi-language batch, Pro plan',
   },
 }
 
@@ -1212,7 +1382,7 @@ export function getSoftwareApplicationJsonLd(pathname: string): object | null {
     applicationCategory: 'MultimediaApplication',
     operatingSystem: 'Web Browser',
     url: `${SITE_URL}${pathname}`,
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier: 3 imports/month. Paid plans from $19/month.' },
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier: 3 uploads/day. Pro plan $40/month.' },
     provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
   }
 }

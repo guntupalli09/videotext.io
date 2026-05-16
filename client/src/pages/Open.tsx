@@ -83,9 +83,9 @@ export default function Open() {
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-500">
       {/* Hero */}
       <section className="relative py-16 sm:py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-purple-950/20 dark:via-gray-950 dark:to-indigo-950/20 transition-colors duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-950/20 dark:via-gray-950 dark:to-blue-950/20 transition-colors duration-500" />
         <div className="relative z-10 max-w-4xl mx-auto px-6">
-          <Link to="/" className="text-sm text-violet-600 hover:text-violet-700 dark:text-violet-400 font-medium mb-8 inline-block">
+          <Link to="/" className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium mb-8 inline-block">
             ← Back to home
           </Link>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20 mb-5">
@@ -109,8 +109,8 @@ export default function Open() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {STATS.map(({ icon: Icon, label, value, note }) => (
               <div key={label} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 transition-colors duration-500">
-                <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center mb-4">
-                  <Icon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-4">
+                  <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{value}</div>
                 <div className="text-sm font-semibold text-gray-700 dark:text-white/70 mb-1">{label}</div>
@@ -135,7 +135,7 @@ export default function Open() {
               {ACCURACY_DATA.map(({ condition, accuracy }) => (
                 <div key={condition} className="grid grid-cols-3 px-5 py-3.5 items-center">
                   <span className="col-span-2 text-sm text-gray-700 dark:text-white/60">{condition}</span>
-                  <span className="text-sm font-bold text-purple-600 dark:text-purple-400 text-right">{accuracy}</span>
+                  <span className="text-sm font-bold text-blue-600 dark:text-blue-400 text-right">{accuracy}</span>
                 </div>
               ))}
             </div>
@@ -222,13 +222,13 @@ export default function Open() {
             Most transcription tools don't publish accuracy benchmarks or processing speeds publicly. We do, because we think you should know what you're buying before you commit.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link to="/compare" className="text-sm font-medium text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">
+            <Link to="/compare" className="text-sm font-medium text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">
               VideoText vs Descript, Otter, Trint →
             </Link>
-            <Link to="/descript-alternative" className="text-sm font-medium text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">
+            <Link to="/descript-alternative" className="text-sm font-medium text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">
               Descript alternative →
             </Link>
-            <Link to="/otter-ai-alternative" className="text-sm font-medium text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">
+            <Link to="/otter-ai-alternative" className="text-sm font-medium text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">
               Otter.ai alternative →
             </Link>
           </div>
@@ -237,17 +237,17 @@ export default function Open() {
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Benchmark hub links</h2>
           <div className="flex flex-wrap gap-3 text-sm">
-            <Link to="/transcription-benchmark" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Transcription benchmark →</Link>
-            <Link to="/accuracy-test" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Accuracy test →</Link>
-            <Link to="/fastest-transcription-software" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Fastest transcription software →</Link>
-            <Link to="/fastest-transcription-tool" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Fastest transcription tool →</Link>
-            <Link to="/best-transcription-tool" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Best transcription tool →</Link>
-            <Link to="/ai-transcription-tools" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">AI transcription tools →</Link>
-            <Link to="/ai-transcription-workflow" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">AI transcription workflow →</Link>
-            <Link to="/videotext-vs-turboscribe" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">VideoText vs TurboScribe →</Link>
-            <Link to="/videotext-vs-rev" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">VideoText vs Rev →</Link>
-            <Link to="/best-transcription-tool" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">Best transcription tool →</Link>
-            <Link to="/ai-transcription-tools" className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-700">AI transcription tools →</Link>
+            <Link to="/transcription-benchmark" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">Transcription benchmark →</Link>
+            <Link to="/accuracy-test" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">Accuracy test →</Link>
+            <Link to="/fastest-transcription-software" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">Fastest transcription software →</Link>
+            <Link to="/fastest-transcription-tool" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">Fastest transcription tool →</Link>
+            <Link to="/best-transcription-tool" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">Best transcription tool →</Link>
+            <Link to="/ai-transcription-tools" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">AI transcription tools →</Link>
+            <Link to="/ai-transcription-workflow" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">AI transcription workflow →</Link>
+            <Link to="/videotext-vs-turboscribe" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">VideoText vs TurboScribe →</Link>
+            <Link to="/videotext-vs-rev" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">VideoText vs Rev →</Link>
+            <Link to="/best-transcription-tool" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">Best transcription tool →</Link>
+            <Link to="/ai-transcription-tools" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">AI transcription tools →</Link>
           </div>
         </section>
 

@@ -47,7 +47,7 @@ function StarRating({ value, onChange }: { value: number | null; onChange: (n: n
           onMouseEnter={() => setHovered(n)}
           onMouseLeave={() => setHovered(null)}
           onClick={() => onChange(n)}
-          className="p-1 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 transition-transform duration-100 hover:scale-110 active:scale-95"
+          className="p-1 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-transform duration-100 hover:scale-110 active:scale-95"
         >
           <svg
             className={`w-8 h-8 transition-colors duration-100 ${active != null && n <= active ? 'text-amber-400 drop-shadow-sm' : 'text-gray-200 dark:text-gray-700'}`}
@@ -155,7 +155,7 @@ export default function FeedbackModal({ isOpen, onClose, toolId, initialStars }:
           aria-modal="true"
         >
           {/* Top accent bar */}
-          <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-purple-500 to-violet-600" />
+          <div className="h-1 w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700" />
 
           <div className="p-6">
             <button
@@ -209,7 +209,7 @@ export default function FeedbackModal({ isOpen, onClose, toolId, initialStars }:
                           key={stars}
                           initial={{ opacity: 0, y: -4 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="mt-2 text-xs font-medium text-violet-600 dark:text-violet-400"
+                          className="mt-2 text-xs font-medium text-blue-600 dark:text-blue-400"
                         >
                           {['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent!'][stars]}
                         </motion.p>
@@ -231,7 +231,7 @@ export default function FeedbackModal({ isOpen, onClose, toolId, initialStars }:
                         onChange={(e) => setComment(e.target.value.slice(0, 500))}
                         placeholder={placeholder}
                         rows={3}
-                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-white dark:focus:bg-gray-750 resize-none transition"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-750 resize-none transition"
                       />
                     </div>
 
@@ -250,7 +250,7 @@ export default function FeedbackModal({ isOpen, onClose, toolId, initialStars }:
                         onChange={(e) => setFeatureRequest(e.target.value.slice(0, 300))}
                         placeholder="e.g. Auto-detect speaker names, batch export to Notion…"
                         rows={2}
-                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-white dark:focus:bg-gray-750 resize-none transition"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-750 resize-none transition"
                       />
                     </div>
 
@@ -270,7 +270,7 @@ export default function FeedbackModal({ isOpen, onClose, toolId, initialStars }:
                           value={email}
                           onChange={(e) => setEmail(e.target.value.slice(0, 200))}
                           placeholder="you@example.com"
-                          className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-white dark:focus:bg-gray-750 transition"
+                          className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-750 transition"
                         />
                       </div>
                     )}
@@ -279,7 +279,7 @@ export default function FeedbackModal({ isOpen, onClose, toolId, initialStars }:
                       <button
                         type="submit"
                         disabled={sending || (!stars && !comment.trim())}
-                        className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 active:scale-[0.98] text-white text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-violet-200 dark:shadow-violet-900/30"
+                        className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-blue-200 dark:shadow-blue-900/30"
                       >
                         {sending ? 'Sending…' : 'Send feedback'}
                       </button>

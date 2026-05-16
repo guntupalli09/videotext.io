@@ -190,8 +190,8 @@ export default function JobAuthGateModal({
               </p>
 
               {/* What you get */}
-              <div className="rounded-xl bg-violet-50 dark:bg-violet-500/10 border border-violet-100 dark:border-violet-500/20 p-4 mb-5">
-                <p className="text-xs font-bold text-violet-700 dark:text-violet-400 uppercase tracking-widest mb-3">
+              <div className="rounded-xl bg-blue-50 dark:bg-blue-600/10 border border-blue-100 dark:border-blue-500/20 p-4 mb-5">
+                <p className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-3">
                   Free account includes
                 </p>
                 <ul className="space-y-2">
@@ -200,8 +200,8 @@ export default function JobAuthGateModal({
                     { icon: Zap, text: '2 more free jobs this month' },
                     { icon: Lock, text: 'Files deleted after processing — always' },
                   ].map(({ icon: Icon, text }) => (
-                    <li key={text} className="flex items-center gap-2.5 text-sm text-violet-800 dark:text-violet-300">
-                      <Icon className="w-3.5 h-3.5 flex-shrink-0 text-violet-500 dark:text-violet-400" />
+                    <li key={text} className="flex items-center gap-2.5 text-sm text-blue-800 dark:text-blue-300">
+                      <Icon className="w-3.5 h-3.5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
                       {text}
                     </li>
                   ))}
@@ -231,7 +231,7 @@ export default function JobAuthGateModal({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => { setMode('signup-combo'); setError(null) }}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-violet-500/25 hover:shadow-xl hover:shadow-violet-500/35 transition-all mb-3"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 transition-all mb-3"
               >
                 Sign up with email — it's free
                 <ChevronRight className="w-4 h-4" />
@@ -239,7 +239,7 @@ export default function JobAuthGateModal({
 
               <button
                 onClick={() => { setMode('login'); setError(null) }}
-                className="w-full py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:border-violet-400 dark:hover:border-violet-500 transition-colors"
+                className="w-full py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
               >
                 Already have an account? Log in
               </button>
@@ -300,7 +300,7 @@ export default function JobAuthGateModal({
                   required
                   autoFocus
                   autoComplete="email"
-                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-colors"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   placeholder="you@example.com"
                 />
               </div>
@@ -316,7 +316,7 @@ export default function JobAuthGateModal({
                   required
                   minLength={8}
                   autoComplete="new-password"
-                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-colors"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   placeholder="At least 8 characters"
                 />
               </div>
@@ -332,7 +332,7 @@ export default function JobAuthGateModal({
                   type="submit"
                   disabled={loading}
                   whileHover={{ scale: 1.01 }}
-                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
                 >
                   {loading
                     ? 'Sending code…'
@@ -373,7 +373,7 @@ export default function JobAuthGateModal({
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                 placeholder="000000"
                 autoFocus
-                className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-4 text-center text-2xl tracking-[0.5em] font-mono text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-violet-500 outline-none transition-colors"
+                className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-4 text-center text-2xl tracking-[0.5em] font-mono text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
               />
 
               {error && (
@@ -387,7 +387,7 @@ export default function JobAuthGateModal({
                   type="submit"
                   disabled={loading || otp.length !== 6}
                   whileHover={{ scale: 1.01 }}
-                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
                 >
                   {loading
                     ? 'Creating account…'
@@ -443,7 +443,7 @@ export default function JobAuthGateModal({
                   required
                   autoFocus
                   autoComplete="email"
-                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-colors"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   placeholder="you@example.com"
                 />
               </div>
@@ -456,7 +456,7 @@ export default function JobAuthGateModal({
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete="current-password"
-                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-colors"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   placeholder="••••••••"
                 />
               </div>
@@ -472,7 +472,7 @@ export default function JobAuthGateModal({
                   type="submit"
                   disabled={loading}
                   whileHover={{ scale: 1.01 }}
-                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-md"
                 >
                   {loading
                     ? 'Logging in…'
@@ -492,7 +492,7 @@ export default function JobAuthGateModal({
                 <button
                   type="button"
                   onClick={() => { setMode('signup-combo'); setError(null) }}
-                  className="text-violet-600 dark:text-violet-400 font-semibold hover:underline"
+                  className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
                 >
                   Sign up free
                 </button>
