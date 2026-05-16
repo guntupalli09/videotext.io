@@ -55,7 +55,7 @@ function PricingSection() {
     <section id="pricing" className="relative py-12 bg-gray-950 transition-colors duration-500 overflow-hidden">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-violet-600/[0.08] rounded-full blur-[140px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-blue-600/[0.08] rounded-full blur-[140px]" />
       </div>
 
       <div className="relative max-w-5xl mx-auto px-6">
@@ -66,8 +66,8 @@ function PricingSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-6"
         >
-          <p className="text-sm font-bold text-violet-400 uppercase tracking-widest mb-3">Pricing</p>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-3 font-display">
+          <p className="text-sm font-medium text-blue-400 uppercase tracking-widest mb-3">Pricing</p>
+          <h2 className="text-4xl md:text-5xl font-medium text-white mb-3 font-display">
             Start free. Scale when ready.
           </h2>
           {!isLoggedIn() && (
@@ -86,7 +86,7 @@ function PricingSection() {
             <Link
               key={plan.name}
               to="/pricing"
-              className={`group relative rounded-2xl p-6 text-left transition-all duration-200 ${
+              className={`group relative rounded-xl p-6 text-left transition-all duration-200 ${
                 plan.highlight
                   ? 'bg-gray-900 text-white shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/60'
                   : 'bg-white/[0.04] text-white hover:bg-white/[0.07] border border-white/[0.08] hover:border-white/[0.15]'
@@ -94,14 +94,14 @@ function PricingSection() {
             >
               {plan.highlight && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="text-[10px] font-bold text-gray-950 bg-amber-500 px-3 py-1 rounded-full shadow-lg">
+                  <span className="text-[10px] font-medium text-gray-950 bg-amber-500 px-3 py-1 rounded-full shadow-lg">
                     ⚡ {plan.badge}
                   </span>
                 </div>
               )}
 
-              <p className="font-bold text-lg mb-1">{plan.name}</p>
-              <p className="text-3xl font-extrabold mb-1">
+              <p className="font-medium text-lg mb-1">{plan.name}</p>
+              <p className="text-3xl font-medium mb-1">
                 {plan.price}
                 {plan.period && (
                   <span className="text-sm font-normal opacity-60">{plan.period}</span>
@@ -113,8 +113,8 @@ function PricingSection() {
 
               {plan.cta ? (
                 <div
-                  className={`inline-flex items-center gap-1.5 text-sm font-bold group-hover:gap-2.5 transition-all ${
-                    plan.highlight ? 'text-amber-300' : 'text-violet-400 group-hover:text-violet-300'
+                  className={`inline-flex items-center gap-1.5 text-sm font-medium group-hover:gap-2.5 transition-all ${
+                    plan.highlight ? 'text-amber-300' : 'text-blue-400 group-hover:text-blue-300'
                   }`}
                 >
                   {plan.cta}
@@ -168,14 +168,14 @@ export default function Home() {
       <section className="bg-white dark:bg-gray-950 py-10 border-t border-gray-100 dark:border-gray-800 transition-colors duration-500">
         <div className="max-w-5xl mx-auto px-6">
           <div className="mb-5">
-            <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">
+            <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
               High-intent guides
             </p>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white font-display transition-colors duration-500">
+            <h2 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white font-display transition-colors duration-500">
               Choose your workflow path (without competing with the core tool page)
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-3xl transition-colors duration-500">
-              Core entry points are <span className="font-semibold text-gray-700 dark:text-gray-200">Video to Transcript</span>, <span className="font-semibold text-gray-700 dark:text-gray-200">Voice to Text</span>, and <span className="font-semibold text-gray-700 dark:text-gray-200">YouTube Transcript Generator</span>. These supporting pages handle specific contexts like comparisons and meeting workflows.
+              Core entry points are <span className="font-medium text-gray-700 dark:text-gray-200">Video to Transcript</span>, <span className="font-medium text-gray-700 dark:text-gray-200">Voice to Text</span>, and <span className="font-medium text-gray-700 dark:text-gray-200">YouTube Transcript Generator</span>. These supporting pages handle specific contexts like comparisons and meeting workflows.
             </p>
           </div>
 
@@ -195,9 +195,9 @@ export default function Home() {
               <Link
                 key={item.path}
                 to={item.path}
-                className="group rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4 hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-md transition-all duration-200"
+                className="group rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all duration-200"
               >
-                <p className="font-bold text-sm text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors">
+                <p className="font-medium text-sm text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
                   {item.label}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-snug">{item.desc}</p>
@@ -212,10 +212,10 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">
+              <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
                 Free — no account needed
               </p>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white font-display transition-colors duration-500">
+              <h2 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white font-display transition-colors duration-500">
                 Free subtitle &amp; video tools
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md transition-colors duration-500">
@@ -224,7 +224,7 @@ export default function Home() {
             </div>
             <Link
               to="/subtitle-tools"
-              className="text-sm font-bold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 whitespace-nowrap transition-colors hidden sm:flex items-center gap-1"
+              className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 whitespace-nowrap transition-colors hidden sm:flex items-center gap-1"
             >
               View all 19 tools <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -242,11 +242,11 @@ export default function Home() {
               <Link
                 key={tool.path}
                 to={tool.path}
-                className="group flex items-start gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-md transition-all duration-200"
+                className="group flex items-start gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all duration-200"
               >
                 <span className="text-xl leading-none mt-0.5 select-none">{tool.icon}</span>
                 <div>
-                  <p className="font-bold text-sm text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors">
+                  <p className="font-medium text-sm text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
                     {tool.label}
                   </p>
                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{tool.desc}</p>
@@ -258,13 +258,13 @@ export default function Home() {
           <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
             <Link
               to="/subtitle-tools"
-              className="sm:hidden text-sm font-bold text-violet-600 hover:text-violet-700 dark:text-violet-400 flex items-center gap-1"
+              className="sm:hidden text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 flex items-center gap-1"
             >
               View all 19 free tools <ArrowRight className="w-3.5 h-3.5" />
             </Link>
             <p className="text-xs text-gray-400 dark:text-gray-500 transition-colors duration-500">
               Need AI-powered subtitles?{' '}
-              <Link to="/video-to-subtitles" className="text-violet-600 dark:text-violet-400 hover:underline font-bold">
+              <Link to="/video-to-subtitles" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
                 Generate them automatically →
               </Link>
             </p>
@@ -275,8 +275,8 @@ export default function Home() {
 
       <section className="py-10 border-t border-gray-100 dark:border-gray-800">
         <div className="max-w-5xl mx-auto px-6">
-          <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">Answer hubs</p>
-          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">Comparison and benchmark pages (secondary to the core tool)</h2>
+          <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">Answer hubs</p>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Comparison and benchmark pages (secondary to the core tool)</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { label: 'Video to transcript (core tool)', path: '/video-to-transcript' },
@@ -296,7 +296,7 @@ export default function Home() {
               { label: 'YouTube video to transcript', path: '/youtube-video-to-transcript' },
               { label: 'Transcription benchmark', path: '/transcription-benchmark' },
             ].map((item) => (
-              <Link key={item.path} to={item.path} className="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 text-sm font-semibold text-gray-800 dark:text-gray-200 hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300">
+              <Link key={item.path} to={item.path} className="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-200 hover:text-blue-700 dark:hover:text-blue-400 hover:border-blue-300">
                 {item.label} →
               </Link>
             ))}
@@ -308,7 +308,7 @@ export default function Home() {
       <section className="bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 py-12 transition-colors duration-500">
         <div className="max-w-5xl mx-auto px-6">
           <div className="mb-8">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white mb-2">All VideoText features</h2>
+            <h2 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-2">All VideoText features</h2>
             <p className="text-gray-600 dark:text-gray-300">Master transcription, subtitles, translation, and more with integrated tools.</p>
           </div>
 
@@ -326,7 +326,7 @@ export default function Home() {
               <Link
                 key={item.path}
                 to={item.path}
-                className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-transparent to-purple-50/20 dark:to-purple-900/10 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300 dark:hover:border-violet-600 transition-all"
+                className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-transparent to-blue-50/20 dark:to-blue-900/10 px-4 py-3 text-sm font-medium text-gray-900 dark:text-white hover:text-blue-700 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-600 transition-all"
               >
                 {item.label} →
               </Link>

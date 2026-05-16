@@ -73,7 +73,7 @@ function getIntentClass(intentKey: string, toolKey: SeoToolKey): 'converter' | '
 function RouteFallback() {
   return (
     <div className="flex min-h-[40vh] items-center justify-center" role="status" aria-live="polite">
-      <p className="text-violet-600 font-medium">Loading…</p>
+      <p className="text-blue-600 font-medium">Loading…</p>
     </div>
   )
 }
@@ -125,15 +125,15 @@ export default function SeoToolPage() {
         <Tool {...toolProps} />
       </Suspense>
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="rounded-2xl border border-violet-100 bg-violet-50/60 p-4 sm:p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 sm:p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-semibold text-violet-900">Workflow-native next step</p>
-            <p className="text-xs text-violet-700">CTA selected from route family ({routeFamily}) and intent ({intentClass.replace('comparisonAlternative', 'comparison/alternative')}).</p>
+            <p className="text-sm font-medium text-blue-900">Workflow-native next step</p>
+            <p className="text-xs text-blue-700">CTA selected from route family ({routeFamily}) and intent ({intentClass.replace('comparisonAlternative', 'comparison/alternative')}).</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
             <Link
               to={primaryCtaPath}
-              className="inline-flex items-center justify-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700"
+              className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
             >
               {primaryCtaText}
             </Link>
@@ -141,7 +141,7 @@ export default function SeoToolPage() {
               <Link
                 key={`${cta.stage}-${cta.text}`}
                 to={resolveInternalLinkPath(cta.path)}
-                className="inline-flex items-center justify-center rounded-lg border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-700 hover:bg-violet-100"
+                className="inline-flex items-center justify-center rounded-lg border border-blue-200 bg-white px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100"
               >
                 {cta.text}
               </Link>
@@ -153,7 +153,7 @@ export default function SeoToolPage() {
             <MoneyPagesCta
               title="Best next step after this comparison"
               description="Jump straight into the core workflows used by customers to create transcript and subtitle outputs."
-              className="rounded-2xl border border-violet-100 bg-violet-50/60 p-4 sm:p-5 text-sm"
+              className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 sm:p-5 text-sm"
             />
           </div>
         )}

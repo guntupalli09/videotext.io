@@ -95,7 +95,7 @@ export default function ShiftSubtitleTiming() {
       ]}
     >
       <div className="space-y-4">
-        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-violet-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
+        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-blue-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
           <input ref={fileRef} type="file" accept=".srt,.vtt,.txt" className="hidden" onChange={handleFile} />
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {fileName ? `Loaded: ${fileName}.${format}` : 'Click to upload SRT or VTT file'}
@@ -104,7 +104,7 @@ export default function ShiftSubtitleTiming() {
         </div>
 
         <textarea
-          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Paste SRT or VTT content here…"
           value={text}
           onChange={(e) => { setText(e.target.value); setOutput('') }}
@@ -112,18 +112,18 @@ export default function ShiftSubtitleTiming() {
 
         <div className="flex gap-3 items-end">
           <div className="flex-1">
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Offset (seconds)</label>
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Offset (seconds)</label>
             <input
               type="number" min="0.1" step="0.1" value={offsetSec}
               onChange={(e) => setOffsetSec(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="flex-1">
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Direction</label>
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Direction</label>
             <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600">
               {(['forward', 'backward'] as const).map((d) => (
-                <button key={d} onClick={() => setDirection(d)} className={`flex-1 py-2 text-sm font-medium capitalize transition-colors ${direction === d ? 'bg-violet-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
+                <button key={d} onClick={() => setDirection(d)} className={`flex-1 py-2 text-sm font-medium capitalize transition-colors ${direction === d ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
                   {d === 'forward' ? '▶ Forward' : '◀ Backward'}
                 </button>
               ))}
@@ -131,7 +131,7 @@ export default function ShiftSubtitleTiming() {
           </div>
         </div>
 
-        <button onClick={handleConvert} className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors">
+        <button onClick={handleConvert} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors">
           Shift Timing
         </button>
 
@@ -140,9 +140,9 @@ export default function ShiftSubtitleTiming() {
         {output && (
           <div className="space-y-3">
             <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-3 text-center">
-              <p className="text-sm font-semibold text-green-700 dark:text-green-400">Timing shifted successfully!</p>
+              <p className="text-sm font-medium text-green-700 dark:text-green-400">Timing shifted successfully!</p>
             </div>
-            <button onClick={handleDownload} className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors">
+            <button onClick={handleDownload} className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium text-sm transition-colors">
               Download shifted file
             </button>
           </div>

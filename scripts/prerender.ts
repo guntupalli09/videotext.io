@@ -1413,7 +1413,7 @@ function buildH1Html(meta: RouteMeta): string {
     <section id="vt-prerender-h1" style="max-width:960px;margin:24px auto 8px auto;padding:0 16px;font-family:system-ui,-apple-system,sans-serif;color:#111827">
       <h1 style="margin:0 0 10px 0;font-size:32px;line-height:1.2;font-weight:800;color:#111827">${h1Text}</h1>
       <p style="margin:0 0 14px 0;font-size:16px;line-height:1.7;color:#4b5563">${description}</p>
-      <a href="${primaryCta}" style="display:inline-block;background:#6d28d9;color:#ffffff;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none">${primaryLabel}</a>
+      <a href="${primaryCta}" style="display:inline-block;background:#1d4ed8;color:#ffffff;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none">${primaryLabel}</a>
       <section style="margin:28px 0 0 0">
         <h2 style="font-size:22px;font-weight:800;margin:0 0 10px 0;color:#111827">What this page helps you do</h2>
         <p style="margin:0;color:#374151;line-height:1.7">Use ${label} to choose the right VideoText workflow for transcript, subtitle, caption, translation, validation, or publishing tasks. The page is designed for practical production work: upload or prepare media, review timing and text quality, and export files that are ready for editors, platforms, clients, or accessibility review.</p>

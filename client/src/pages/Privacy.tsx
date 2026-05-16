@@ -5,21 +5,21 @@ export default function Privacy() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 sm:py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="text-sm text-violet-600 hover:text-violet-700 font-medium mb-6 inline-block">
+        <Link to="/" className="text-sm text-blue-600 hover:text-blue-700 font-medium mb-6 inline-block">
           ← Back to home
         </Link>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Privacy Policy</h1>
+        <h1 className="text-3xl font-medium text-gray-900 mb-2">Privacy Policy</h1>
         <p className="text-gray-500 text-sm mb-10">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
         {/* Key selling point: we don't store your data */}
-        <section className="mb-10 p-6 rounded-2xl bg-violet-50 border border-violet-100">
+        <section className="mb-10 p-6 rounded-xl bg-blue-50 border border-blue-100">
           <div className="flex items-start gap-3">
-            <div className="shrink-0 w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center">
-              <Shield className="w-5 h-5 text-violet-600" aria-hidden />
+            <div className="shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <Shield className="w-5 h-5 text-blue-600" aria-hidden />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-1">We don’t store your data</h2>
+              <h2 className="text-lg font-medium text-gray-900 mb-1">We don’t store your data</h2>
               <p className="text-gray-700 text-sm leading-relaxed">
                 Your videos and files are processed and then deleted. We do not keep copies of your uploads, transcripts, or outputs on our servers after your session. What you create stays with you. We’re not in the business of holding your content.
               </p>
@@ -29,8 +29,8 @@ export default function Privacy() {
 
         <div className="prose prose-gray max-w-none space-y-8 text-sm text-gray-700">
           <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
-              <Server className="w-5 h-5 text-violet-600" />
+            <h2 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
+              <Server className="w-5 h-5 text-blue-600" />
               Processing and retention
             </h2>
             <p>
@@ -39,8 +39,8 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
-              <Lock className="w-5 h-5 text-violet-600" />
+            <h2 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
+              <Lock className="w-5 h-5 text-blue-600" />
               Account and usage data
             </h2>
             <p>
@@ -49,8 +49,8 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
-              <Trash2 className="w-5 h-5 text-violet-600" />
+            <h2 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-blue-600" />
               Your control
             </h2>
             <p>
@@ -59,15 +59,15 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Cookies and analytics</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-2">Cookies and analytics</h2>
             <p>
               We may use essential cookies and analytics to operate the site and improve the product. We do not use your uploaded content for advertising or profiling.
             </p>
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
-              <Mail className="w-5 h-5 text-violet-600" />
+            <h2 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
+              <Mail className="w-5 h-5 text-blue-600" />
               Contact
             </h2>
             <p>

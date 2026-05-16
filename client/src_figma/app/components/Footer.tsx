@@ -6,7 +6,7 @@ export function Footer() {
           {/* Brand */}
           <div className="flex items-center gap-2">
             <img src="/logo.svg" alt="" className="w-5 h-5" />
-            <span className="font-semibold text-gray-900 dark:text-white">VideoText</span>
+            <span className="font-medium text-gray-900 dark:text-white">VideoText</span>
           </div>
 
           {/* Links */}

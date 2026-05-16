@@ -18,7 +18,7 @@ function MetricRow({ label, value, sub, accent }: { label: string; value: string
         <p className="text-xs text-zinc-400">{label}</p>
         {sub && <p className="text-xs text-zinc-600 mt-0.5">{sub}</p>}
       </div>
-      <p className={`text-sm font-bold tabular-nums ${accent ? 'text-emerald-400' : 'text-white'}`}>{value}</p>
+      <p className={`text-sm font-medium tabular-nums ${accent ? 'text-emerald-400' : 'text-white'}`}>{value}</p>
     </div>
   )
 }
@@ -27,7 +27,7 @@ export default function CostMetrics({ costMetrics, snapshot }: Props) {
   if (!costMetrics || costMetrics.jobsWithCost === 0) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-        <h3 className="text-sm font-semibold text-white mb-2">Cost per Job (30d)</h3>
+        <h3 className="text-sm font-medium text-white mb-2">Cost per Job (30d)</h3>
         <p className="text-xs text-zinc-500">
           No cost data yet. Costs will appear here after the next transcription job completes.
         </p>
@@ -59,7 +59,7 @@ export default function CostMetrics({ costMetrics, snapshot }: Props) {
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-white">Cost per Job (30d)</h3>
+          <h3 className="text-sm font-medium text-white">Cost per Job (30d)</h3>
           <p className="text-xs text-zinc-600 mt-0.5">{costMetrics.jobsWithCost.toLocaleString()} jobs tracked</p>
         </div>
       </div>

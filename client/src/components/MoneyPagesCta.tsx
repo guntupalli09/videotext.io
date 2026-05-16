@@ -21,15 +21,15 @@ const MONEY_PAGE_LINKS = [
 export default function MoneyPagesCta({
   title = 'Start with a conversion workflow',
   description = 'Use these direct workflow pages to move from comparison research to production output.',
-  className = 'rounded-xl border border-violet-200 bg-violet-50/60 p-5 text-sm',
+  className = 'rounded-xl border border-blue-200 bg-blue-50/60 p-5 text-sm',
 }: MoneyPagesCtaProps) {
   return (
     <section className={className}>
-      <h2 className="text-lg font-bold text-gray-900">{title}</h2>
+      <h2 className="text-lg font-medium text-gray-900">{title}</h2>
       <p className="mt-2 text-gray-700">{description}</p>
       <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {MONEY_PAGE_LINKS.map((item) => (
-          <Link key={item.to} to={item.to} className="rounded-lg border border-violet-200 bg-white px-3 py-2 text-violet-700 hover:bg-violet-100">
+          <Link key={item.to} to={item.to} className="rounded-lg border border-blue-200 bg-white px-3 py-2 text-blue-700 hover:bg-blue-100">
             {item.label} →
           </Link>
         ))}

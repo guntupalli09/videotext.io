@@ -50,7 +50,7 @@ export function WorkflowTracker() {
             <button
               type="button"
               onClick={() => userChoseYes()}
-              className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-600 transition-colors"
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-600 transition-colors"
             >
               Yes
             </button>

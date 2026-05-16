@@ -17,14 +17,14 @@ function getColor(source: string): string {
   for (const [key, color] of Object.entries(SOURCE_COLORS)) {
     if (lower.includes(key)) return color
   }
-  return '#7c3aed'
+  return '#2563EB'
 }
 
 export default function AcquisitionBreakdown({ utmBreakdown }: { utmBreakdown: DashboardUtmEntry[] }) {
   if (utmBreakdown.length === 0) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-        <h3 className="text-sm font-semibold text-white mb-2">User acquisition</h3>
+        <h3 className="text-sm font-medium text-white mb-2">User acquisition</h3>
         <p className="text-zinc-600 text-sm">No UTM data yet. Add UTM params to links.</p>
       </div>
     )
@@ -36,7 +36,7 @@ export default function AcquisitionBreakdown({ utmBreakdown }: { utmBreakdown: D
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white">User acquisition by source</h3>
+        <h3 className="text-sm font-medium text-white">User acquisition by source</h3>
         <span className="text-xs text-zinc-500">{total} total users</span>
       </div>
 

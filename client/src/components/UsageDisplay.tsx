@@ -67,13 +67,13 @@ export default function UsageDisplay({ refreshTrigger }: { refreshTrigger?: stri
 
   return (
     <div className="mt-4 flex flex-col space-y-1 text-xs text-gray-700 dark:text-gray-300">
-      <div className="inline-flex items-center space-x-3 rounded-lg bg-violet-50 dark:bg-violet-900/30 px-3 py-2">
-        <span className="font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">
+      <div className="inline-flex items-center space-x-3 rounded-lg bg-blue-50 dark:bg-blue-900/30 px-3 py-2">
+        <span className="font-medium uppercase tracking-wide text-blue-700 dark:text-blue-300">
           Plan: {data.plan.toUpperCase()}
         </span>
-        <div className="h-1 w-24 overflow-hidden rounded-full bg-violet-100 dark:bg-violet-800">
+        <div className="h-1 w-24 overflow-hidden rounded-full bg-blue-100 dark:bg-blue-800">
           <div
-            className="h-1 rounded-full bg-violet-600 transition-all"
+            className="h-1 rounded-full bg-blue-600 transition-all"
             style={{ width: `${usedPercent}%` }}
           />
         </div>

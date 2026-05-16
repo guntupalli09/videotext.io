@@ -100,25 +100,25 @@ export default function SrtToText() {
       ]}
     >
       <div className="space-y-4">
-        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-violet-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
+        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-blue-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
           <input ref={fileRef} type="file" accept=".srt,.vtt,.txt" className="hidden" onChange={handleFile} />
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{fileName ? `Loaded: ${fileName}` : 'Click to upload SRT or VTT file'}</p>
           <p className="text-xs text-gray-400 mt-1">or paste content below</p>
         </div>
 
         <textarea
-          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Paste SRT or VTT content here…"
           value={text}
           onChange={(e) => { setText(e.target.value); setOutput('') }}
         />
 
         <label className="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" checked={includeTimestamps} onChange={(e) => setIncludeTimestamps(e.target.checked)} className="rounded text-violet-600" />
+          <input type="checkbox" checked={includeTimestamps} onChange={(e) => setIncludeTimestamps(e.target.checked)} className="rounded text-blue-600" />
           <span className="text-sm text-gray-700 dark:text-gray-300">Include timestamps in output</span>
         </label>
 
-        <button onClick={handleConvert} className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors">
+        <button onClick={handleConvert} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors">
           Extract Text
         </button>
 
@@ -128,21 +128,21 @@ export default function SrtToText() {
           <div className="space-y-3">
             <div className="grid grid-cols-3 gap-2 text-center">
               {[{ label: 'Cues', val: stats.cues }, { label: 'Words', val: stats.words.toLocaleString() }, { label: 'Characters', val: stats.chars.toLocaleString() }].map((s) => (
-                <div key={s.label} className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-3">
-                  <p className="text-xl font-bold text-violet-700 dark:text-violet-300">{s.val}</p>
+                <div key={s.label} className="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-3">
+                  <p className="text-xl font-medium text-blue-700 dark:text-blue-300">{s.val}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
             <div className="rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden">
               <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600">
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Plain Text</span>
-                <button onClick={() => navigator.clipboard.writeText(output)} className="text-xs text-violet-600 font-medium">Copy</button>
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Plain Text</span>
+                <button onClick={() => navigator.clipboard.writeText(output)} className="text-xs text-blue-600 font-medium">Copy</button>
               </div>
               <pre className="text-sm text-gray-800 dark:text-gray-200 p-4 overflow-auto max-h-48 whitespace-pre-wrap leading-relaxed">{output.slice(0, 800)}{output.length > 800 ? '\n…' : ''}</pre>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => navigator.clipboard.writeText(output)} className="flex-1 py-2.5 rounded-xl border border-violet-300 dark:border-violet-600 text-violet-700 dark:text-violet-300 font-semibold text-sm hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors">Copy all</button>
+              <button onClick={() => navigator.clipboard.writeText(output)} className="flex-1 py-2.5 rounded-xl border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 font-medium text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">Copy all</button>
               <button
                 onClick={() =>
                   downloadText(
@@ -150,7 +150,7 @@ export default function SrtToText() {
                     joinExportFilename(exportFileStem(fileName, 'subtitles'), 'plain_text_from_subtitles', '.txt')
                   )
                 }
-                className="flex-1 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium text-sm transition-colors"
               >
                 Download .txt
               </button>
