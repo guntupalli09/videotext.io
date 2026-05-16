@@ -22,8 +22,8 @@ export function Checkbox({ label, description, checked, onChange }: CheckboxProp
           whileTap={{ scale: 0.95 }}
           className={`w-5 h-5 rounded border-2 transition-all ${
             checked
-              ? 'bg-purple-600 border-purple-600'
-              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 group-hover:border-purple-400'
+              ? 'bg-blue-600 border-blue-600'
+              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 group-hover:border-blue-400'
           }`}
         >
           {checked && (
@@ -61,7 +61,7 @@ interface RadioGroupProps {
 export function RadioGroup({ label, options, value, onChange }: RadioGroupProps) {
   return (
     <div className="space-y-3">
-      <label className="text-sm font-semibold text-gray-900 dark:text-white block">
+      <label className="text-sm font-medium text-gray-900 dark:text-white block">
         {label}
       </label>
       <div className="space-y-2">
@@ -71,8 +71,8 @@ export function RadioGroup({ label, options, value, onChange }: RadioGroupProps)
             whileHover={{ x: 2 }}
             className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
               value === option.value
-                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
-                : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700'
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'
             }`}
           >
             <input
@@ -87,7 +87,7 @@ export function RadioGroup({ label, options, value, onChange }: RadioGroupProps)
               <div
                 className={`w-5 h-5 rounded-full border-2 transition-all ${
                   value === option.value
-                    ? 'border-purple-600'
+                    ? 'border-blue-600'
                     : 'border-gray-300 dark:border-gray-600'
                 }`}
               >
@@ -96,7 +96,7 @@ export function RadioGroup({ label, options, value, onChange }: RadioGroupProps)
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                    className="absolute inset-1 bg-purple-600 rounded-full"
+                    className="absolute inset-1 bg-blue-600 rounded-full"
                   />
                 )}
               </div>
@@ -128,13 +128,13 @@ interface SelectProps {
 export function Select({ label, options, value, onChange }: SelectProps) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-semibold text-gray-900 dark:text-white block">
+      <label className="text-sm font-medium text-gray-900 dark:text-white block">
         {label}
       </label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -157,7 +157,7 @@ interface InputProps {
 export function Input({ label, placeholder, value, onChange, multiline = false }: InputProps) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-semibold text-gray-900 dark:text-white block">
+      <label className="text-sm font-medium text-gray-900 dark:text-white block">
         {label}
       </label>
       {multiline ? (
@@ -166,7 +166,7 @@ export function Input({ label, placeholder, value, onChange, multiline = false }
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           rows={3}
-          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all resize-none"
         />
       ) : (
         <input
@@ -174,7 +174,7 @@ export function Input({ label, placeholder, value, onChange, multiline = false }
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
         />
       )}
     </div>
@@ -198,7 +198,7 @@ export function ExportFormat({ formats, selected, onChange }: ExportFormatProps)
 
   return (
     <div className="space-y-3">
-      <label className="text-sm font-semibold text-gray-900 dark:text-white block">
+      <label className="text-sm font-medium text-gray-900 dark:text-white block">
         Export Format
       </label>
       <div className="flex flex-wrap gap-2">
@@ -210,8 +210,8 @@ export function ExportFormat({ formats, selected, onChange }: ExportFormatProps)
             onClick={() => toggleFormat(format.value)}
             className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
               selected.includes(format.value)
-                ? 'border-purple-500 bg-purple-500 text-white'
-                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-purple-300'
+                ? 'border-blue-500 bg-blue-600 text-white'
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-blue-300'
             }`}
           >
             {format.icon && <span className="mr-1">{format.icon}</span>}

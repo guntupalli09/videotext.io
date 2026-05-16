@@ -7,7 +7,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
             <img src="/logo.svg" alt="" width={20} height={20} className="w-5 h-5" />
-            <span className="font-semibold text-gray-900 dark:text-white">VideoText</span>
+            <span className="font-medium text-gray-900 dark:text-white">VideoText</span>
           </Link>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600 dark:text-gray-400">

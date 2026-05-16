@@ -4,18 +4,18 @@ import AnswerBlock from '../components/AnswerBlock'
 void React
 
 const CHECK = (
-  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm">✓</span>
+  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-medium text-sm">✓</span>
 )
 const CROSS = (
-  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 font-bold text-sm">✗</span>
+  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 font-medium text-sm">✗</span>
 )
 const PARTIAL = (
-  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 font-bold text-sm">~</span>
+  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 font-medium text-sm">~</span>
 )
 
 function SectionHeading({ id, children }: { id?: string; children: ReactNode }) {
   return (
-    <h2 id={id} className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2 scroll-mt-20">
+    <h2 id={id} className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-2 scroll-mt-20">
       {children}
     </h2>
   )
@@ -23,7 +23,7 @@ function SectionHeading({ id, children }: { id?: string; children: ReactNode }) 
 
 function SubHeading({ children }: { children: ReactNode }) {
   return (
-    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">{children}</h3>
+    <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-1">{children}</h3>
   )
 }
 
@@ -32,10 +32,10 @@ export default function TemiVsVideoText() {
     <div className="min-h-screen bg-white dark:bg-gray-950">
 
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
-        <div className="bg-gradient-to-br from-violet-950 via-violet-900 to-violet-800 text-white py-16 px-6">
+        <div className="bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white py-16 px-6">
           <div className="mx-auto max-w-5xl">
             {/* Breadcrumb — GEO: establishes topic hierarchy for crawlers */}
-            <nav aria-label="Breadcrumb" className="text-sm text-violet-300 mb-6">
+            <nav aria-label="Breadcrumb" className="text-sm text-blue-300 mb-6">
               <Link to="/" className="hover:text-white">Home</Link>
               <span className="mx-2" aria-hidden>›</span>
               <Link to="/compare" className="hover:text-white">Compare</Link>
@@ -43,18 +43,18 @@ export default function TemiVsVideoText() {
               <span className="text-white" aria-current="page">Temi vs VideoText</span>
             </nav>
 
-            <div className="inline-block bg-red-500/20 border border-red-400/40 text-red-200 text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wider">
+            <div className="inline-block bg-red-500/20 border border-red-400/40 text-red-200 text-xs font-medium px-3 py-1 rounded-full mb-4 uppercase tracking-wider">
               Temi Charges $0.25/min · VideoText Charges ~$0.042/min
             </div>
 
             {/* H1 — primary keyword target */}
-            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4">
+            <h1 className="text-4xl md:text-5xl font-medium leading-tight mb-4">
               Temi vs VideoText (2025):<br />
-              <span className="text-violet-300">The Full 360° Comparison</span>
+              <span className="text-blue-300">The Full 360° Comparison</span>
             </h1>
 
             {/* .seo-intro — targeted by SpeakableSpecification */}
-            <p className="seo-intro text-lg text-violet-200 max-w-3xl mb-4" data-speakable>
+            <p className="seo-intro text-lg text-blue-200 max-w-3xl mb-4" data-speakable>
               Temi and Rev both charge <strong className="text-white">$0.25/minute</strong> forever, support limited languages, and output only a basic transcript.
               VideoText costs <strong className="text-white">~$0.042/minute</strong> on a flat subscription, handles <strong className="text-white">90+ languages</strong>,
               and produces <strong className="text-white">transcript + SRT subtitles + VTT subtitles + AI summary + chapter markers</strong> from a single upload.
@@ -62,7 +62,7 @@ export default function TemiVsVideoText() {
             </p>
 
             {/* Table of contents — GEO: helps LLMs index sections */}
-            <nav aria-label="Page sections" className="text-sm text-violet-300 mb-8 flex flex-wrap gap-x-4 gap-y-1">
+            <nav aria-label="Page sections" className="text-sm text-blue-300 mb-8 flex flex-wrap gap-x-4 gap-y-1">
               <a href="#pricing" className="hover:text-white">Pricing →</a>
               <a href="#features" className="hover:text-white">Features →</a>
               <a href="#accuracy" className="hover:text-white">Accuracy & Speed →</a>
@@ -77,13 +77,13 @@ export default function TemiVsVideoText() {
             <div className="flex flex-wrap gap-4">
               <Link
                 to="/video-to-transcript"
-                className="inline-flex items-center gap-2 bg-white text-violet-900 font-bold px-6 py-3 rounded-lg hover:bg-violet-50 transition-colors"
+                className="inline-flex items-center gap-2 bg-white text-blue-900 font-medium px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors"
               >
                 Try VideoText Free — No Credit Card
               </Link>
               <Link
                 to="/pricing"
-                className="inline-flex items-center gap-2 border border-violet-400 text-white font-semibold px-6 py-3 rounded-lg hover:bg-violet-800 transition-colors"
+                className="inline-flex items-center gap-2 border border-blue-400 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-800 transition-colors"
               >
                 See Pricing →
               </Link>
@@ -98,8 +98,8 @@ export default function TemiVsVideoText() {
                 { stat: '0', label: 'bytes of your data retained' },
               ].map(({ stat, label }) => (
                 <div key={label} className="bg-white/10 rounded-xl p-4 text-center" data-speakable>
-                  <div className="text-3xl font-extrabold text-white">{stat}</div>
-                  <div className="text-xs text-violet-200 mt-1">{label}</div>
+                  <div className="text-3xl font-medium text-white">{stat}</div>
+                  <div className="text-xs text-blue-200 mt-1">{label}</div>
                 </div>
               ))}
             </div>
@@ -124,10 +124,10 @@ export default function TemiVsVideoText() {
           />
 
           {/* ── QUICK VERDICT ── */}
-          <section aria-labelledby="verdict-heading" className="rounded-2xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-800 p-6 md:p-8">
+          <section aria-labelledby="verdict-heading" className="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-800 p-6 md:p-8">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl" aria-hidden>⚡</span>
-              <h2 id="verdict-heading" className="text-xl font-bold text-gray-900 dark:text-white">Quick Verdict</h2>
+              <h2 id="verdict-heading" className="text-xl font-medium text-gray-900 dark:text-white">Quick Verdict</h2>
             </div>
             <p className="text-gray-800 dark:text-gray-200 text-base leading-relaxed mb-4" data-speakable>
               <strong>VideoText wins for nearly every workflow.</strong> If you're paying Temi or Rev $0.25/minute for transcription and getting back a single document,
@@ -135,18 +135,18 @@ export default function TemiVsVideoText() {
             </p>
             <div className="grid md:grid-cols-2 gap-4 text-sm">
               <div className="bg-white dark:bg-gray-900 rounded-xl border border-emerald-200 dark:border-emerald-800 p-4">
-                <div className="font-bold text-emerald-700 dark:text-emerald-400 mb-2">Choose VideoText when:</div>
+                <div className="font-medium text-emerald-700 dark:text-emerald-400 mb-2">Choose VideoText when:</div>
                 <ul className="space-y-1 text-gray-700 dark:text-gray-300">
                   <li>✓ You process video or audio more than once per month</li>
-                  <li>✓ You need <Link to="/video-to-subtitles" className="text-violet-600 hover:underline">SRT/VTT subtitles</Link> for YouTube, social, or broadcast</li>
+                  <li>✓ You need <Link to="/video-to-subtitles" className="text-blue-600 hover:underline">SRT/VTT subtitles</Link> for YouTube, social, or broadcast</li>
                   <li>✓ You want summaries and chapters automatically</li>
                   <li>✓ Your content is not English-only</li>
                   <li>✓ You care about data privacy and compliance</li>
-                  <li>✓ You want to process <Link to="/youtube-transcript-generator" className="text-violet-600 hover:underline">YouTube URLs directly</Link></li>
+                  <li>✓ You want to process <Link to="/youtube-transcript-generator" className="text-blue-600 hover:underline">YouTube URLs directly</Link></li>
                 </ul>
               </div>
               <div className="bg-white dark:bg-gray-900 rounded-xl border border-amber-200 dark:border-amber-800 p-4">
-                <div className="font-bold text-amber-700 dark:text-amber-400 mb-2">Temi might work if:</div>
+                <div className="font-medium text-amber-700 dark:text-amber-400 mb-2">Temi might work if:</div>
                 <ul className="space-y-1 text-gray-700 dark:text-gray-300">
                   <li>~ You transcribe a handful of files per year (truly one-off)</li>
                   <li>~ You only ever need English transcription</li>
@@ -164,18 +164,18 @@ export default function TemiVsVideoText() {
               Temi and Rev both charge $0.25/minute — that sounds negligible until you run the real numbers at any meaningful usage level.
             </p>
             <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
-              See <Link to="/pricing" className="text-violet-600 hover:underline">VideoText pricing plans</Link> for full details.
+              See <Link to="/pricing" className="text-blue-600 hover:underline">VideoText pricing plans</Link> for full details.
             </p>
 
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800 mb-6">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800 mb-6">
               <table className="min-w-full text-sm">
                 <caption className="sr-only">Pricing comparison between Temi, Rev AI, and VideoText at different usage levels</caption>
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-                    <th scope="col" className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Usage Scenario</th>
-                    <th scope="col" className="px-5 py-3 text-left font-semibold text-red-600">Temi / Rev AI ($0.25/min)</th>
-                    <th scope="col" className="px-5 py-3 text-left font-semibold text-violet-700 dark:text-violet-400">VideoText Pro ($40/mo)</th>
-                    <th scope="col" className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">You Save</th>
+                    <th scope="col" className="px-5 py-3 text-left font-medium text-gray-700 dark:text-gray-300">Usage Scenario</th>
+                    <th scope="col" className="px-5 py-3 text-left font-medium text-red-600">Temi / Rev AI ($0.25/min)</th>
+                    <th scope="col" className="px-5 py-3 text-left font-medium text-blue-700 dark:text-blue-400">VideoText Pro ($40/mo)</th>
+                    <th scope="col" className="px-5 py-3 text-left font-medium text-gray-700 dark:text-gray-300">You Save</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -188,9 +188,9 @@ export default function TemiVsVideoText() {
                   ].map(([scenario, temi, vt, save]) => (
                     <tr key={scenario} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
                       <td className="px-5 py-3 text-gray-700 dark:text-gray-300">{scenario}</td>
-                      <td className="px-5 py-3 text-red-600 font-semibold">{temi}</td>
-                      <td className="px-5 py-3 text-violet-700 dark:text-violet-400 font-semibold">{vt}</td>
-                      <td className="px-5 py-3 text-emerald-600 font-bold">{save}</td>
+                      <td className="px-5 py-3 text-red-600 font-medium">{temi}</td>
+                      <td className="px-5 py-3 text-blue-700 dark:text-blue-400 font-medium">{vt}</td>
+                      <td className="px-5 py-3 text-emerald-600 font-medium">{save}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -222,9 +222,9 @@ export default function TemiVsVideoText() {
                 },
               ].map(({ tool, model, rate, monthly, badge }) => (
                 <div key={tool} className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-                  <div className={`inline-block px-2 py-0.5 rounded text-xs font-bold mb-2 ${badge}`}>{tool}</div>
+                  <div className={`inline-block px-2 py-0.5 rounded text-xs font-medium mb-2 ${badge}`}>{tool}</div>
                   <div className="text-gray-500 text-xs mb-1">{model}</div>
-                  <div className="font-semibold text-gray-900 dark:text-white">{rate}</div>
+                  <div className="font-medium text-gray-900 dark:text-white">{rate}</div>
                   <div className="text-gray-600 dark:text-gray-400 text-xs mt-1">{monthly}</div>
                 </div>
               ))}
@@ -237,15 +237,15 @@ export default function TemiVsVideoText() {
             <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
               Every major capability side by side — no cherry-picking. Sourced from each tool's official documentation and feature pages.
             </p>
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
               <table className="min-w-full text-sm">
                 <caption className="sr-only">Full feature comparison: Temi, Rev AI, and VideoText</caption>
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-                    <th scope="col" className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 w-64">Feature</th>
-                    <th scope="col" className="px-5 py-3 text-center font-semibold text-red-600 w-36">Temi</th>
-                    <th scope="col" className="px-5 py-3 text-center font-semibold text-orange-600 w-36">Rev AI</th>
-                    <th scope="col" className="px-5 py-3 text-center font-semibold text-violet-700 dark:text-violet-400 w-36">VideoText</th>
+                    <th scope="col" className="px-5 py-3 text-left font-medium text-gray-700 dark:text-gray-300 w-64">Feature</th>
+                    <th scope="col" className="px-5 py-3 text-center font-medium text-red-600 w-36">Temi</th>
+                    <th scope="col" className="px-5 py-3 text-center font-medium text-orange-600 w-36">Rev AI</th>
+                    <th scope="col" className="px-5 py-3 text-center font-medium text-blue-700 dark:text-blue-400 w-36">VideoText</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -260,12 +260,12 @@ export default function TemiVsVideoText() {
                     ['Chapter markers with timestamps', CROSS, CROSS, CHECK],
                     ['YouTube URL direct processing', CROSS, CROSS, CHECK],
                     ['Batch processing (multiple files)', CROSS, PARTIAL, CHECK],
-                    ['Language support', <span key="t-lang" className="text-red-600 font-semibold text-xs">English only</span>, <span key="r-lang" className="text-orange-600 font-semibold text-xs">36 languages</span>, <span key="v-lang" className="text-emerald-700 dark:text-emerald-400 font-bold text-xs">90+ languages</span>],
+                    ['Language support', <span key="t-lang" className="text-red-600 font-medium text-xs">English only</span>, <span key="r-lang" className="text-orange-600 font-medium text-xs">36 languages</span>, <span key="v-lang" className="text-emerald-700 dark:text-emerald-400 font-medium text-xs">90+ languages</span>],
                     ['Zero data retention (files deleted instantly)', CROSS, CROSS, CHECK],
                     ['Free tier (no credit card required)', CROSS, CROSS, CHECK],
-                    ['Pricing model', <span key="t-price" className="text-red-600 text-xs">$0.25/min always</span>, <span key="r-price" className="text-orange-600 text-xs">$0.25/min AI</span>, <span key="v-price" className="text-emerald-700 dark:text-emerald-400 font-bold text-xs">~$0.042/min flat</span>],
-                    ['Export formats', <span key="t-exp" className="text-gray-500 text-xs">TXT, DOCX, PDF, SRT</span>, <span key="r-exp" className="text-gray-500 text-xs">TXT, DOCX, SRT, VTT</span>, <span key="v-exp" className="text-violet-700 dark:text-violet-400 font-semibold text-xs">TXT, PDF, DOCX, JSON, CSV, SRT, VTT, Notion</span>],
-                    ['Processing speed (1-hr video)', <span key="t-spd" className="text-orange-600 text-xs">~60 min (near real-time)</span>, <span key="r-spd" className="text-orange-500 text-xs">~5–10 min</span>, <span key="v-spd" className="text-emerald-700 dark:text-emerald-400 font-bold text-xs">3–5 min</span>],
+                    ['Pricing model', <span key="t-price" className="text-red-600 text-xs">$0.25/min always</span>, <span key="r-price" className="text-orange-600 text-xs">$0.25/min AI</span>, <span key="v-price" className="text-emerald-700 dark:text-emerald-400 font-medium text-xs">~$0.042/min flat</span>],
+                    ['Export formats', <span key="t-exp" className="text-gray-500 text-xs">TXT, DOCX, PDF, SRT</span>, <span key="r-exp" className="text-gray-500 text-xs">TXT, DOCX, SRT, VTT</span>, <span key="v-exp" className="text-blue-700 dark:text-blue-400 font-medium text-xs">TXT, PDF, DOCX, JSON, CSV, SRT, VTT, Notion</span>],
+                    ['Processing speed (1-hr video)', <span key="t-spd" className="text-orange-600 text-xs">~60 min (near real-time)</span>, <span key="r-spd" className="text-orange-500 text-xs">~5–10 min</span>, <span key="v-spd" className="text-emerald-700 dark:text-emerald-400 font-medium text-xs">3–5 min</span>],
                     ['Long video support (2+ hours)', PARTIAL, CHECK, CHECK],
                     ['Burn subtitles into video', CROSS, CROSS, CHECK],
                     ['Transcript style guide formatter', CROSS, CROSS, CHECK],
@@ -275,7 +275,7 @@ export default function TemiVsVideoText() {
                       <td className="px-5 py-3 text-gray-700 dark:text-gray-300 font-medium">{feature}</td>
                       <td className="px-5 py-3 text-center">{temi}</td>
                       <td className="px-5 py-3 text-center">{rev}</td>
-                      <td className="px-5 py-3 text-center bg-violet-50/40 dark:bg-violet-950/20">{vt}</td>
+                      <td className="px-5 py-3 text-center bg-blue-50/40 dark:bg-blue-950/20">{vt}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -290,8 +290,8 @@ export default function TemiVsVideoText() {
             <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
               Accuracy is meaningless without context. Here's what matters: accuracy under real conditions, and how fast you get results.
               VideoText uses <strong>OpenAI Whisper large-v3</strong> — the full model, not a distilled variant. See the{' '}
-              <Link to="/transcription-benchmark" className="text-violet-600 hover:underline">transcription benchmark</Link> and{' '}
-              <Link to="/accuracy-test" className="text-violet-600 hover:underline">accuracy test</Link> for verifiable data.
+              <Link to="/transcription-benchmark" className="text-blue-600 hover:underline">transcription benchmark</Link> and{' '}
+              <Link to="/accuracy-test" className="text-blue-600 hover:underline">accuracy test</Link> for verifiable data.
             </p>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="rounded-xl border border-gray-200 dark:border-gray-800 p-5">
@@ -304,7 +304,7 @@ export default function TemiVsVideoText() {
                   ].map(({ tool, model, accuracy }) => (
                     <div key={tool} className="flex justify-between items-start py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
                       <div>
-                        <span className={`font-semibold ${tool === 'VideoText' ? 'text-violet-700 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300'}`}>{tool}</span>
+                        <span className={`font-medium ${tool === 'VideoText' ? 'text-blue-700 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'}`}>{tool}</span>
                         <div className="text-xs text-gray-400">{model}</div>
                       </div>
                       <span className={`text-right text-xs font-medium max-w-32 ${tool === 'VideoText' ? 'text-emerald-600' : 'text-gray-600 dark:text-gray-400'}`}>{accuracy}</span>
@@ -320,7 +320,7 @@ export default function TemiVsVideoText() {
                   {[
                     { tool: 'Temi', time: '~60 min (near real-time)', pct: 15, color: 'bg-red-400' },
                     { tool: 'Rev AI', time: '~5–10 min', pct: 55, color: 'bg-orange-400' },
-                    { tool: 'VideoText', time: '3–5 min (parallel async)', pct: 100, color: 'bg-violet-500' },
+                    { tool: 'VideoText', time: '3–5 min (parallel async)', pct: 100, color: 'bg-blue-600' },
                   ].map(({ tool, time, pct, color }) => (
                     <div key={tool}>
                       <div className="flex justify-between mb-1">
@@ -337,8 +337,8 @@ export default function TemiVsVideoText() {
               </div>
             </div>
 
-            <div className="mt-6 rounded-xl border border-violet-200 dark:border-violet-900 bg-violet-50 dark:bg-violet-950/30 p-5 text-sm">
-              <strong className="text-violet-900 dark:text-violet-300" data-speakable>Accuracy by language — where Temi completely fails:</strong>
+            <div className="mt-6 rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/30 p-5 text-sm">
+              <strong className="text-blue-900 dark:text-blue-300" data-speakable>Accuracy by language — where Temi completely fails:</strong>
               <div className="mt-3 grid md:grid-cols-3 gap-3">
                 {[
                   { lang: 'English', temi: '~90–94%', vt: '96–99%' },
@@ -348,8 +348,8 @@ export default function TemiVsVideoText() {
                   { lang: 'Japanese', temi: '❌ Not supported', vt: '91–95%' },
                   { lang: 'Hindi', temi: '❌ Not supported', vt: '88–93%' },
                 ].map(({ lang, temi, vt }) => (
-                  <div key={lang} className="bg-white dark:bg-gray-900 rounded-lg border border-violet-100 dark:border-violet-900 p-3">
-                    <div className="font-semibold text-gray-900 dark:text-white mb-1">{lang}</div>
+                  <div key={lang} className="bg-white dark:bg-gray-900 rounded-lg border border-blue-100 dark:border-blue-900 p-3">
+                    <div className="font-medium text-gray-900 dark:text-white mb-1">{lang}</div>
                     <div className="text-red-600 text-xs">Temi: {temi}</div>
                     <div className="text-emerald-600 text-xs font-medium">VideoText: {vt}</div>
                   </div>
@@ -364,9 +364,9 @@ export default function TemiVsVideoText() {
             <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
               The most under-discussed dimension. Temi and Rev give you a transcript.
               VideoText gives you a full content production pipeline — all from one upload.
-              Learn more about each output: <Link to="/video-to-subtitles" className="text-violet-600 hover:underline">SRT/VTT subtitles</Link>,{' '}
-              <Link to="/burn-subtitles" className="text-violet-600 hover:underline">burn subtitles into video</Link>,{' '}
-              <Link to="/video-to-transcript" className="text-violet-600 hover:underline">transcript generation</Link>.
+              Learn more about each output: <Link to="/video-to-subtitles" className="text-blue-600 hover:underline">SRT/VTT subtitles</Link>,{' '}
+              <Link to="/burn-subtitles" className="text-blue-600 hover:underline">burn subtitles into video</Link>,{' '}
+              <Link to="/video-to-transcript" className="text-blue-600 hover:underline">transcript generation</Link>.
             </p>
             <div className="grid md:grid-cols-3 gap-5">
               {[
@@ -406,8 +406,8 @@ export default function TemiVsVideoText() {
                 },
                 {
                   name: 'VideoText',
-                  color: 'border-violet-300 dark:border-violet-700',
-                  headerColor: 'bg-violet-50 dark:bg-violet-950/40 text-violet-900 dark:text-violet-300',
+                  color: 'border-blue-300 dark:border-blue-700',
+                  headerColor: 'bg-blue-50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-300',
                   outputs: [
                     { label: 'Timestamped transcript', has: true },
                     { label: 'Speaker labels (up to 6, auto)', has: true },
@@ -423,7 +423,7 @@ export default function TemiVsVideoText() {
                 },
               ].map(({ name, color, headerColor, outputs }) => (
                 <div key={name} className={`rounded-xl border-2 ${color} overflow-hidden`}>
-                  <div className={`px-4 py-3 font-bold text-sm ${headerColor}`}>{name}</div>
+                  <div className={`px-4 py-3 font-medium text-sm ${headerColor}`}>{name}</div>
                   <ul className="divide-y divide-gray-100 dark:divide-gray-800">
                     {outputs.map(({ label, has }) => (
                       <li key={label} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300">
@@ -441,7 +441,7 @@ export default function TemiVsVideoText() {
           <section
             id="privacy"
             aria-labelledby="privacy-heading"
-            className="rounded-2xl border-2 border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/20 p-6 md:p-8"
+            className="rounded-xl border-2 border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/20 p-6 md:p-8"
           >
             <SectionHeading id="privacy">🔒 Data Privacy: Why This Matters More Than You Think</SectionHeading>
             <p className="text-gray-700 dark:text-gray-300 text-sm mb-5" data-speakable>
@@ -485,7 +485,7 @@ export default function TemiVsVideoText() {
                 },
               ].map(({ name, icon, color, points }) => (
                 <div key={name} className={`bg-white dark:bg-gray-900 rounded-xl border ${color} p-4`}>
-                  <div className="font-bold text-gray-900 dark:text-white mb-2">{icon} {name}</div>
+                  <div className="font-medium text-gray-900 dark:text-white mb-2">{icon} {name}</div>
                   <ul className="space-y-1">
                     {points.map((pt) => (
                       <li key={pt} className="text-gray-600 dark:text-gray-400 text-xs">{pt}</li>
@@ -494,7 +494,7 @@ export default function TemiVsVideoText() {
                 </div>
               ))}
             </div>
-            <p className="text-sm font-semibold text-red-800 dark:text-red-300" data-speakable>
+            <p className="text-sm font-medium text-red-800 dark:text-red-300" data-speakable>
               Using Temi or Rev for confidential content means trusting a third party to store — and potentially review — that content.
               VideoText processes your file in a transient compute environment and immediately discards everything.
             </p>
@@ -507,7 +507,7 @@ export default function TemiVsVideoText() {
               <strong>Temi supports English only.</strong> This is not configurable.
               If you work with Spanish, French, German, Japanese, Hindi, Arabic, or any of the 85+ other languages supported by VideoText —
               Temi is simply not an option. VideoText supports{' '}
-              <Link to="/video-to-transcript" className="text-violet-600 hover:underline">90+ languages</Link> using OpenAI Whisper large-v3
+              <Link to="/video-to-transcript" className="text-blue-600 hover:underline">90+ languages</Link> using OpenAI Whisper large-v3
               at the same speed and quality for all major languages.
             </p>
             <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800 mb-6">
@@ -515,10 +515,10 @@ export default function TemiVsVideoText() {
                 <caption className="sr-only">Language support comparison: Temi vs Rev AI vs VideoText</caption>
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-                    <th scope="col" className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Language</th>
-                    <th scope="col" className="px-5 py-3 text-center font-semibold text-red-600">Temi</th>
-                    <th scope="col" className="px-5 py-3 text-center font-semibold text-orange-600">Rev AI</th>
-                    <th scope="col" className="px-5 py-3 text-center font-semibold text-violet-700 dark:text-violet-400">VideoText</th>
+                    <th scope="col" className="px-5 py-3 text-left font-medium text-gray-700 dark:text-gray-300">Language</th>
+                    <th scope="col" className="px-5 py-3 text-center font-medium text-red-600">Temi</th>
+                    <th scope="col" className="px-5 py-3 text-center font-medium text-orange-600">Rev AI</th>
+                    <th scope="col" className="px-5 py-3 text-center font-medium text-blue-700 dark:text-blue-400">VideoText</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -540,9 +540,9 @@ export default function TemiVsVideoText() {
                   ].map(([lang, temi, rev, vt]) => (
                     <tr key={lang} className="hover:bg-gray-50 dark:hover:bg-gray-900/40">
                       <td className="px-5 py-3 text-gray-700 dark:text-gray-300">{lang}</td>
-                      <td className={`px-5 py-3 text-center font-semibold ${temi === '✓' ? 'text-emerald-600' : 'text-red-500'}`}>{temi}</td>
-                      <td className={`px-5 py-3 text-center font-semibold ${rev === '✓' ? 'text-emerald-600' : 'text-red-500'}`}>{rev}</td>
-                      <td className={`px-5 py-3 text-center font-bold bg-violet-50/40 dark:bg-violet-950/20 ${vt === '✓' ? 'text-violet-600' : 'text-red-500'}`}>{vt}</td>
+                      <td className={`px-5 py-3 text-center font-medium ${temi === '✓' ? 'text-emerald-600' : 'text-red-500'}`}>{temi}</td>
+                      <td className={`px-5 py-3 text-center font-medium ${rev === '✓' ? 'text-emerald-600' : 'text-red-500'}`}>{rev}</td>
+                      <td className={`px-5 py-3 text-center font-medium bg-blue-50/40 dark:bg-blue-950/20 ${vt === '✓' ? 'text-blue-600' : 'text-red-500'}`}>{vt}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -558,7 +558,7 @@ export default function TemiVsVideoText() {
             </p>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <div className="text-sm font-bold text-red-700 dark:text-red-400 mb-3">
+                <div className="text-sm font-medium text-red-700 dark:text-red-400 mb-3">
                   Temi / Rev workflow — multiple tools required
                 </div>
                 <ol className="space-y-2 text-sm">
@@ -575,14 +575,14 @@ export default function TemiVsVideoText() {
                     '→ Total: 4–6 tools, 45–90+ minutes of manual work',
                   ].map((step, i) => (
                     <li key={step} className="flex gap-3">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-red-100 text-red-700 text-xs flex items-center justify-center font-bold">{i + 1}</span>
-                      <span className={`text-gray-600 dark:text-gray-400 ${step.startsWith('→') ? 'font-semibold text-red-600 dark:text-red-400' : ''}`}>{step}</span>
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-red-100 text-red-700 text-xs flex items-center justify-center font-medium">{i + 1}</span>
+                      <span className={`text-gray-600 dark:text-gray-400 ${step.startsWith('→') ? 'font-medium text-red-600 dark:text-red-400' : ''}`}>{step}</span>
                     </li>
                   ))}
                 </ol>
               </div>
               <div>
-                <div className="text-sm font-bold text-violet-700 dark:text-violet-400 mb-3">
+                <div className="text-sm font-medium text-blue-700 dark:text-blue-400 mb-3">
                   VideoText workflow — one tool, one upload
                 </div>
                 <ol className="space-y-2 text-sm">
@@ -595,9 +595,9 @@ export default function TemiVsVideoText() {
                     { text: '→ Total: 1 tool, <2 min of your time', link: null },
                   ].map(({ text, link }, i) => (
                     <li key={text} className="flex gap-3">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-violet-100 text-violet-700 text-xs flex items-center justify-center font-bold">{i + 1}</span>
-                      <span className={`${text.startsWith('→') ? 'font-semibold text-violet-700 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300'}`}>
-                        {link ? <Link to={link} className="text-violet-600 hover:underline">{text}</Link> : text}
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs flex items-center justify-center font-medium">{i + 1}</span>
+                      <span className={`${text.startsWith('→') ? 'font-medium text-blue-700 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                        {link ? <Link to={link} className="text-blue-600 hover:underline">{text}</Link> : text}
                       </span>
                     </li>
                   ))}
@@ -609,14 +609,14 @@ export default function TemiVsVideoText() {
           {/* ── USE CASES ── */}
           <section id="use-cases" aria-labelledby="use-cases-heading">
             <SectionHeading id="use-cases">🏆 Who Wins by Use Case</SectionHeading>
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
               <table className="min-w-full text-sm">
                 <caption className="sr-only">Best tool recommendation by use case</caption>
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-                    <th scope="col" className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Use Case</th>
-                    <th scope="col" className="px-5 py-3 text-center font-semibold text-gray-700 dark:text-gray-300">Best Tool</th>
-                    <th scope="col" className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Why</th>
+                    <th scope="col" className="px-5 py-3 text-left font-medium text-gray-700 dark:text-gray-300">Use Case</th>
+                    <th scope="col" className="px-5 py-3 text-center font-medium text-gray-700 dark:text-gray-300">Best Tool</th>
+                    <th scope="col" className="px-5 py-3 text-left font-medium text-gray-700 dark:text-gray-300">Why</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -635,8 +635,8 @@ export default function TemiVsVideoText() {
                     ['News captioning / broadcast', 'VideoText', 'VTT + broadcast-safe breaks — only VideoText auto-formats these', '/video-to-subtitles'],
                   ].map(([useCase, winner, why, link]) => (
                     <tr key={useCase} className="hover:bg-gray-50 dark:hover:bg-gray-900/40">
-                      <td className="px-5 py-3 text-gray-700 dark:text-gray-300 font-medium">{link ? <Link to={link} className="text-violet-600 hover:underline">{useCase}</Link> : useCase}</td>
-                      <td className={`px-5 py-3 text-center font-bold ${winner === 'VideoText' ? 'text-violet-600 dark:text-violet-400' : winner === 'Rev Human' ? 'text-orange-600' : 'text-gray-500'}`}>
+                      <td className="px-5 py-3 text-gray-700 dark:text-gray-300 font-medium">{link ? <Link to={link} className="text-blue-600 hover:underline">{useCase}</Link> : useCase}</td>
+                      <td className={`px-5 py-3 text-center font-medium ${winner === 'VideoText' ? 'text-blue-600 dark:text-blue-400' : winner === 'Rev Human' ? 'text-orange-600' : 'text-gray-500'}`}>
                         {winner}
                       </td>
                       <td className="px-5 py-3 text-gray-500 dark:text-gray-400 text-xs">{why}</td>
@@ -648,7 +648,7 @@ export default function TemiVsVideoText() {
           </section>
 
           {/* ── SWITCHING GUIDE ── */}
-          <section aria-labelledby="switching-heading" className="rounded-2xl border border-violet-200 dark:border-violet-800 bg-gradient-to-br from-violet-50 to-white dark:from-violet-950/40 dark:to-gray-900 p-6 md:p-8">
+          <section aria-labelledby="switching-heading" className="rounded-xl border border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/40 dark:to-gray-900 p-6 md:p-8">
             <SectionHeading id="switching-heading">🔁 Switching from Temi or Rev to VideoText</SectionHeading>
             <p className="text-gray-700 dark:text-gray-300 text-sm mb-5">
               Switching takes under 5 minutes. No migration, no contracts, no setup.
@@ -662,8 +662,8 @@ export default function TemiVsVideoText() {
                 { q: 'Will accuracy match or beat Temi?', a: 'On English clean audio: equal or better (Whisper large-v3 vs Temi\'s proprietary model). On anything non-English: VideoText is the only option.' },
                 { q: 'Can my team use VideoText?', a: 'Yes. Multiple users can process files simultaneously on the Pro plan. See the pricing page for details.' },
               ].map(({ q, a }) => (
-                <div key={q} className="bg-white dark:bg-gray-900 rounded-xl border border-violet-100 dark:border-violet-900 p-4">
-                  <div className="font-semibold text-gray-900 dark:text-white text-sm mb-1">{q}</div>
+                <div key={q} className="bg-white dark:bg-gray-900 rounded-xl border border-blue-100 dark:border-blue-900 p-4">
+                  <div className="font-medium text-gray-900 dark:text-white text-sm mb-1">{q}</div>
                   <div className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{a}</div>
                 </div>
               ))}
@@ -671,13 +671,13 @@ export default function TemiVsVideoText() {
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
                 to="/video-to-transcript"
-                className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white font-bold px-6 py-3 rounded-lg transition-colors text-sm"
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors text-sm"
               >
                 Start Free — No Credit Card Required
               </Link>
               <Link
                 to="/pricing"
-                className="inline-flex items-center gap-2 border border-violet-300 text-violet-700 dark:text-violet-400 font-semibold px-5 py-3 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-950/50 transition-colors text-sm"
+                className="inline-flex items-center gap-2 border border-blue-300 text-blue-700 dark:text-blue-400 font-medium px-5 py-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors text-sm"
               >
                 Compare Plans →
               </Link>
@@ -689,7 +689,7 @@ export default function TemiVsVideoText() {
             <SectionHeading id="issues-heading">⚠️ Documented Limitations of Temi & Rev</SectionHeading>
             <div className="grid md:grid-cols-2 gap-5 text-sm">
               <div>
-                <div className="font-bold text-red-700 dark:text-red-400 mb-3">Temi — 6 critical limitations</div>
+                <div className="font-medium text-red-700 dark:text-red-400 mb-3">Temi — 6 critical limitations</div>
                 <ul className="space-y-3">
                   {[
                     { issue: 'English only', detail: 'Temi only supports English. Non-English audio produces unreliable output or fails silently. There is no language selection.' },
@@ -702,7 +702,7 @@ export default function TemiVsVideoText() {
                     <li key={issue} className="flex gap-3">
                       <span className="text-red-500 mt-0.5 flex-shrink-0">⚠</span>
                       <div>
-                        <span className="font-semibold text-gray-800 dark:text-gray-200">{issue}: </span>
+                        <span className="font-medium text-gray-800 dark:text-gray-200">{issue}: </span>
                         <span className="text-gray-600 dark:text-gray-400">{detail}</span>
                       </div>
                     </li>
@@ -710,7 +710,7 @@ export default function TemiVsVideoText() {
                 </ul>
               </div>
               <div>
-                <div className="font-bold text-orange-700 dark:text-orange-400 mb-3">Rev — 6 critical limitations</div>
+                <div className="font-medium text-orange-700 dark:text-orange-400 mb-3">Rev — 6 critical limitations</div>
                 <ul className="space-y-3">
                   {[
                     { issue: 'Same $0.25/min AI pricing as Temi', detail: 'Rev AI is priced identically to Temi. No flat subscription at competitive rates.' },
@@ -723,7 +723,7 @@ export default function TemiVsVideoText() {
                     <li key={issue} className="flex gap-3">
                       <span className="text-orange-500 mt-0.5 flex-shrink-0">⚠</span>
                       <div>
-                        <span className="font-semibold text-gray-800 dark:text-gray-200">{issue}: </span>
+                        <span className="font-medium text-gray-800 dark:text-gray-200">{issue}: </span>
                         <span className="text-gray-600 dark:text-gray-400">{detail}</span>
                       </div>
                     </li>
@@ -734,12 +734,12 @@ export default function TemiVsVideoText() {
           </section>
 
           {/* ── BENCHMARK ── */}
-          <section aria-labelledby="benchmark-heading" className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/60 p-6 md:p-8">
+          <section aria-labelledby="benchmark-heading" className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/60 p-6 md:p-8">
             <SectionHeading id="benchmark-heading">📈 VideoText Benchmark Reference</SectionHeading>
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-5">
               VideoText publishes benchmarks publicly. Temi and Rev do not. Verify the claims below on the{' '}
-              <Link to="/transcription-benchmark" className="text-violet-600 hover:underline">benchmark page</Link> and{' '}
-              <Link to="/accuracy-test" className="text-violet-600 hover:underline">accuracy test</Link>.
+              <Link to="/transcription-benchmark" className="text-blue-600 hover:underline">benchmark page</Link> and{' '}
+              <Link to="/accuracy-test" className="text-blue-600 hover:underline">accuracy test</Link>.
             </p>
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               {[
@@ -752,7 +752,7 @@ export default function TemiVsVideoText() {
               ].map(({ metric, value, note }) => (
                 <div key={metric} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4" data-speakable>
                   <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">{metric}</div>
-                  <div className="font-bold text-gray-900 dark:text-white text-base">{value}</div>
+                  <div className="font-medium text-gray-900 dark:text-white text-base">{value}</div>
                   <div className="text-xs text-gray-500 mt-0.5">{note}</div>
                 </div>
               ))}
@@ -827,7 +827,7 @@ export default function TemiVsVideoText() {
                 },
               ].map(({ q, a }) => (
                 <div key={q} className="border-b border-gray-100 dark:border-gray-800 pb-5 last:border-0 last:pb-0">
-                  <dt className="font-semibold text-gray-900 dark:text-white text-base mb-2">{q}</dt>
+                  <dt className="font-medium text-gray-900 dark:text-white text-base mb-2">{q}</dt>
                   <dd className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{a}</dd>
                 </div>
               ))}
@@ -835,35 +835,35 @@ export default function TemiVsVideoText() {
           </section>
 
           {/* ── FINAL CTA ── */}
-          <section aria-labelledby="cta-heading" className="rounded-2xl bg-gradient-to-br from-violet-700 to-violet-900 text-white p-8 md:p-10 text-center">
+          <section aria-labelledby="cta-heading" className="rounded-xl bg-gradient-to-br from-blue-700 to-blue-900 text-white p-8 md:p-10 text-center">
             <div className="text-4xl mb-4" aria-hidden>🚀</div>
-            <h2 id="cta-heading" className="text-2xl md:text-3xl font-bold mb-3">
+            <h2 id="cta-heading" className="text-2xl md:text-3xl font-medium mb-3">
               Stop Paying Per Minute. Start Getting More Per File.
             </h2>
-            <p className="text-violet-200 text-sm max-w-xl mx-auto mb-6">
+            <p className="text-blue-200 text-sm max-w-xl mx-auto mb-6">
               Upload a file or paste a YouTube URL. Get transcript, broadcast-safe SRT/VTT subtitles, an AI summary, and chapter markers — in under 5 minutes.
               3 uploads/day free, no credit card needed.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 to="/video-to-transcript"
-                className="inline-flex items-center gap-2 bg-white text-violet-900 font-bold px-7 py-3.5 rounded-xl hover:bg-violet-50 transition-colors"
+                className="inline-flex items-center gap-2 bg-white text-blue-900 font-medium px-7 py-3.5 rounded-xl hover:bg-blue-50 transition-colors"
               >
                 Try VideoText Free →
               </Link>
               <Link
                 to="/pricing"
-                className="inline-flex items-center gap-2 border border-violet-400 text-white font-semibold px-6 py-3.5 rounded-xl hover:bg-violet-700 transition-colors"
+                className="inline-flex items-center gap-2 border border-blue-400 text-white font-medium px-6 py-3.5 rounded-xl hover:bg-blue-700 transition-colors"
               >
                 View Pricing Plans
               </Link>
             </div>
-            <p className="mt-4 text-xs text-violet-300">3 uploads/day free · No credit card · Cancel anytime · Instant results</p>
+            <p className="mt-4 text-xs text-blue-300">3 uploads/day free · No credit card · Cancel anytime · Instant results</p>
           </section>
 
           {/* ── INTERNAL LINKING HUB ── */}
-          <section aria-label="Related pages" className="rounded-xl border border-violet-200 dark:border-violet-900 bg-violet-50/60 dark:bg-violet-950/20 p-5 text-sm">
-            <div className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Related comparisons, tools & resources:</div>
+          <section aria-label="Related pages" className="rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50/60 dark:bg-blue-950/20 p-5 text-sm">
+            <div className="font-medium text-gray-800 dark:text-gray-200 mb-3">Related comparisons, tools & resources:</div>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-y-1.5 gap-x-4 text-sm">
               {[
                 { label: 'VideoText vs Rev — Full Comparison', to: '/videotext-vs-rev' },
@@ -887,7 +887,7 @@ export default function TemiVsVideoText() {
                 { label: 'Alternatives Hub', to: '/alternatives' },
                 { label: 'Pricing', to: '/pricing' },
               ].map(({ label, to }) => (
-                <Link key={to} to={to} className="text-violet-700 dark:text-violet-400 hover:underline hover:text-violet-900 dark:hover:text-violet-300 truncate">
+                <Link key={to} to={to} className="text-blue-700 dark:text-blue-400 hover:underline hover:text-blue-900 dark:hover:text-blue-300 truncate">
                   {label}
                 </Link>
               ))}

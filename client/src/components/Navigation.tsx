@@ -78,11 +78,11 @@ export default function Navigation() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-full right-0 mt-2 w-[480px] bg-gray-900 border border-white/[0.08] rounded-2xl shadow-2xl py-4 grid grid-cols-2 gap-0"
+                    className="absolute top-full right-0 mt-2 w-[480px] bg-gray-900 border border-white/[0.08] rounded-lg shadow-2xl py-4 grid grid-cols-2 gap-0"
                   >
                     {/* AI Tools column */}
                     <div className="px-4 border-r border-white/[0.06]">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400 mb-2 px-1">Core AI tools</p>
+                      <p className="text-[10px] font-medium uppercase tracking-widest text-blue-400 mb-2 px-1">Core AI tools</p>
                       {AI_TOOLS.map((t) => (
                         <Link
                           key={t.path}
@@ -98,14 +98,14 @@ export default function Navigation() {
 
                     {/* Free Tools column */}
                     <div className="px-4">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-2 px-1">Free Tools</p>
+                      <p className="text-[10px] font-medium uppercase tracking-widest text-emerald-400 mb-2 px-1">Free Tools</p>
                       {FREE_TOOLS.map((t) => (
                         <Link
                           key={t.path}
                           to={t.path}
                           className={`block px-2 py-1.5 text-sm rounded-lg transition-colors ${
                             t.path === '/tools'
-                              ? 'text-violet-400 hover:text-violet-300 font-semibold mt-1 border-t border-white/[0.06] pt-2'
+                              ? 'text-blue-400 hover:text-blue-300 font-medium mt-1 border-t border-white/[0.06] pt-2'
                               : 'text-white/65 hover:text-white hover:bg-white/[0.05]'
                           }`}
                           onMouseEnter={() => prefetchRoute(t.path)}
@@ -150,7 +150,7 @@ export default function Navigation() {
               <div className="flex items-center gap-3 ml-2">
                 <Link
                   to="/login"
-                  className="text-sm font-semibold text-white/80 hover:text-white border border-white/20 hover:border-white/40 rounded-lg px-4 py-1.5 transition-all"
+                  className="text-sm font-medium text-white/80 hover:text-white border border-white/20 hover:border-white/40 rounded-lg px-4 py-1.5 transition-all"
                   onMouseEnter={() => prefetchRoute('/login')}
                   onClick={() => { try { trackEvent('nav_cta_clicked', { label: 'Login', destination: '/login' }) } catch { /* non-blocking */ } }}
                 >
@@ -158,7 +158,7 @@ export default function Navigation() {
                 </Link>
                 <Link
                   to="/signup"
-                  className="text-sm font-bold text-white bg-violet-600 hover:bg-violet-500 rounded-lg px-4 py-1.5 transition-colors flex items-center gap-1"
+                  className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-600 rounded-lg px-4 py-1.5 transition-colors flex items-center gap-1"
                   onMouseEnter={() => prefetchRoute('/signup')}
                   onClick={() => { try { trackEvent('nav_cta_clicked', { label: 'Start free', destination: '/signup' }) } catch { /* non-blocking */ } }}
                 >
@@ -175,7 +175,7 @@ export default function Navigation() {
             {showAuthLinks && (
               <Link
                 to="/signup"
-                className="text-xs font-bold text-white bg-violet-600 hover:bg-violet-500 rounded-lg px-3 py-1.5 transition-colors"
+                className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-600 rounded-lg px-3 py-1.5 transition-colors"
                 onClick={() => { try { trackEvent('nav_cta_clicked', { label: 'Start free', destination: '/signup', mobile: true }) } catch { /* non-blocking */ } }}
               >
                 Start free →

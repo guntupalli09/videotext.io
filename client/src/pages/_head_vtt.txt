@@ -1535,7 +1535,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     breadcrumbs,
     title: seoH1 ?? 'Video ΓåÆ Transcript',
     subtitle: seoIntro ?? 'Extract spoken text from any video in seconds',
-    icon: <FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />,
+    icon: <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     sidebar: null,
   }
 
@@ -1552,13 +1552,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               <div className="space-y-3 sm:space-y-4">
                 {batchUploadEligible() && (
                   <div
-                    className="rounded-xl sm:rounded-2xl border-2 border-purple-400/55 dark:border-purple-500/45 bg-gradient-to-br from-purple-500/[0.12] via-violet-600/[0.08] to-fuchsia-600/[0.06] dark:from-purple-950/60 dark:via-violet-950/40 dark:to-fuchsia-950/25 px-4 py-3.5 sm:px-5 sm:py-4 shadow-sm shadow-purple-500/10"
+                    className="rounded-xl sm:rounded-2xl border-2 border-blue-400/55 dark:border-blue-500/45 bg-gradient-to-br from-blue-500/[0.12] via-blue-600/[0.08] to-fuchsia-600/[0.06] dark:from-blue-950/60 dark:via-blue-950/40 dark:to-fuchsia-950/25 px-4 py-3.5 sm:px-5 sm:py-4 shadow-sm shadow-blue-500/10"
                     role="status"
                     aria-live="polite"
                   >
                     <div className="flex gap-3 sm:gap-4">
-                      <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-purple-600/25 dark:bg-purple-400/20 ring-2 ring-purple-500/35">
-                        <Layers className="h-5 w-5 sm:h-6 sm:w-6 text-purple-700 dark:text-purple-200" aria-hidden />
+                      <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-blue-600/25 dark:bg-blue-400/20 ring-2 ring-blue-500/35">
+                        <Layers className="h-5 w-5 sm:h-6 sm:w-6 text-blue-700 dark:text-blue-200" aria-hidden />
                       </div>
                       <div className="min-w-0 text-left flex-1">
                         <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white leading-snug">
@@ -1591,14 +1591,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         Batch processing (multiple files) is on{' '}
                         <span className="font-medium text-gray-700 dark:text-gray-200">Pro &amp; Business</span>
                         .{' '}
-                        <Link to="/pricing" className="text-violet-600 dark:text-violet-400 font-semibold hover:underline">
+                        <Link to="/pricing" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
                           View plans
                         </Link>
                       </>
                     ) : (
                       <>
                         Batch upload ΓÇö process many videos in one go ΓÇö is on{' '}
-                        <Link to="/pricing" className="text-violet-600 dark:text-violet-400 font-semibold hover:underline">
+                        <Link to="/pricing" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
                           Pro &amp; Business
                         </Link>
                         .
@@ -1676,14 +1676,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           type="checkbox"
                           checked={includeSummary}
                           onChange={(e) => setIncludeSummary(e.target.checked)}
-                          className="rounded border-gray-300 text-purple-600"
+                          className="rounded border-gray-300 text-blue-600"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">Include AI summary &amp; bullets</span>
                       </label>
                     ) : (
                       <div className="flex items-center justify-between opacity-60">
                         <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">Include AI summary &amp; bullets <Lock className="w-3 h-3 text-gray-400" /></span>
-                        <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                        <Link to="/pricing" className="text-xs text-blue-500 font-medium hover:underline">Pro</Link>
                       </div>
                     )}
                     {/* Chapters ΓÇö Pro only */}
@@ -1693,14 +1693,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           type="checkbox"
                           checked={includeChapters}
                           onChange={(e) => setIncludeChapters(e.target.checked)}
-                          className="rounded border-gray-300 text-purple-600"
+                          className="rounded border-gray-300 text-blue-600"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">Auto-generate chapters</span>
                       </label>
                     ) : (
                       <div className="flex items-center justify-between opacity-60">
                         <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">Auto-generate chapters <Lock className="w-3 h-3 text-gray-400" /></span>
-                        <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                        <Link to="/pricing" className="text-xs text-blue-500 font-medium hover:underline">Pro</Link>
                       </div>
                     )}
                     {/* Speaker labels ΓÇö Pro only */}
@@ -1710,14 +1710,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           type="checkbox"
                           checked={speakerDiarization}
                           onChange={(e) => setSpeakerDiarization(e.target.checked)}
-                          className="rounded border-gray-300 text-purple-600"
+                          className="rounded border-gray-300 text-blue-600"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">Speaker labels (who said what)</span>
                       </label>
                     ) : (
                       <div className="flex items-center justify-between opacity-60">
                         <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">Speaker labels (who said what) <Lock className="w-3 h-3 text-gray-400" /></span>
-                        <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                        <Link to="/pricing" className="text-xs text-blue-500 font-medium hover:underline">Pro</Link>
                       </div>
                     )}
                     {isPaidPlan && speakerDiarization && (
@@ -1735,7 +1735,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                               value={numSpeakers}
                               onChange={(e) => setNumSpeakers(e.target.value)}
                               placeholder="Auto-detect"
-                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                           </div>
                           <div className="flex-1">
@@ -1745,7 +1745,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                               value={diarizationLanguage}
                               onChange={(e) => setDiarizationLanguage(e.target.value)}
                               placeholder="Auto-detect (e.g. en)"
-                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                           </div>
                         </div>
@@ -1780,7 +1780,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                     {batchFiles.length} video{batchFiles.length !== 1 ? 's' : ''} selected
                   </h3>
-                  <span className="text-xs text-violet-500 font-medium bg-violet-50 dark:bg-violet-900/20 px-2 py-0.5 rounded-full">Pro ┬╖ up to 20</span>
+                  <span className="text-xs text-blue-500 font-medium bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full">Pro ┬╖ up to 20</span>
                 </div>
                 <button
                   type="button"
@@ -1814,7 +1814,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               </div>
               <label className="block">
                 <span className="sr-only">Add more files</span>
-                <span className="inline-flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 font-medium cursor-pointer hover:underline">
+                <span className="inline-flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-medium cursor-pointer hover:underline">
                   + Add more
                   <input
                     type="file"
@@ -1860,7 +1860,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       type="checkbox"
                       checked={batchSpeakerDiarization}
                       onChange={(e) => setBatchSpeakerDiarization(e.target.checked)}
-                      className="rounded border-gray-300 text-violet-600 focus:ring-violet-500"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <span className="text-gray-700 dark:text-gray-300">Speaker labels (who said what)</span>
                   </label>
@@ -1886,7 +1886,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               type="button"
               onClick={handleProcessBatch}
               disabled={batchFiles.length === 0 || isBatchStarting}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-semibold text-sm bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-semibold text-sm bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
             >
               {isBatchStarting ? (
                 <>
@@ -1937,7 +1937,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       Include AI summary &amp; bullets
                       <Lock className="w-3 h-3 text-gray-400" />
                     </span>
-                    <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                    <Link to="/pricing" className="text-xs text-blue-500 font-medium hover:underline">Pro</Link>
                   </div>
                 )}
                 {/* Chapters ΓÇö Pro only */}
@@ -1953,7 +1953,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       Auto-generate chapters
                       <Lock className="w-3 h-3 text-gray-400" />
                     </span>
-                    <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                    <Link to="/pricing" className="text-xs text-blue-500 font-medium hover:underline">Pro</Link>
                   </div>
                 )}
                 {/* Speaker labels ΓÇö Pro only */}
@@ -1970,7 +1970,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       Speaker labels (who said what)
                       <Lock className="w-3 h-3 text-gray-400" />
                     </span>
-                    <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                    <Link to="/pricing" className="text-xs text-blue-500 font-medium hover:underline">Pro</Link>
                   </div>
                 )}
                 {isPaidPlan && speakerDiarization && (
@@ -1988,7 +1988,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           value={numSpeakers}
                           onChange={(e) => setNumSpeakers(e.target.value)}
                           placeholder="Auto-detect"
-                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                       <div className="flex-1">
@@ -1998,7 +1998,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           value={diarizationLanguage}
                           onChange={(e) => setDiarizationLanguage(e.target.value)}
                           placeholder="Auto-detect (e.g. en)"
-                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                     </div>
@@ -2027,7 +2027,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       {!isPaidPlan && <Lock className="w-3 h-3 text-gray-400" />}
                     </span>
                     {!isPaidPlan && (
-                      <Link to="/pricing" className="ml-auto text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                      <Link to="/pricing" className="ml-auto text-xs text-blue-500 font-medium hover:underline">Pro</Link>
                     )}
                   </div>
                   {translateEnabled && isPaidPlan && (
@@ -2054,10 +2054,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
         {/* Batch processing progress */}
         {isBatchMode && status === 'processing' && batchInfo && (
-          <div className="rounded-2xl border border-violet-200/80 dark:border-violet-800/50 bg-gradient-to-br from-violet-50/90 via-white to-fuchsia-50/50 dark:from-violet-950/40 dark:via-gray-900/80 dark:to-fuchsia-950/20 p-6 sm:p-8 space-y-6 shadow-lg shadow-violet-500/10">
+          <div className="rounded-2xl border border-blue-200/80 dark:border-blue-800/50 bg-gradient-to-br from-blue-50/90 via-white to-fuchsia-50/50 dark:from-blue-950/40 dark:via-gray-900/80 dark:to-fuchsia-950/20 p-6 sm:p-8 space-y-6 shadow-lg shadow-blue-500/10">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
               <div className="flex gap-4">
-                <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-md">
+                <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-fuchsia-600 text-white shadow-md">
                   <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden />
                 </div>
                 <div>
@@ -2070,7 +2070,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 </div>
               </div>
               <div className="text-right sm:pt-1">
-                <p className="text-2xl font-bold tabular-nums text-violet-600 dark:text-violet-300">
+                <p className="text-2xl font-bold tabular-nums text-blue-600 dark:text-blue-300">
                   {batchInfo.progress.completed + batchInfo.progress.failed}/{batchInfo.progress.total}
                 </p>
                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">videos finished</p>
@@ -2083,14 +2083,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               </div>
               <div className="w-full bg-gray-200/90 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
                 <div
-                  className="bg-gradient-to-r from-violet-500 to-fuchsia-500 h-2.5 rounded-full transition-all duration-200 ease-out"
+                  className="bg-gradient-to-r from-blue-500 to-fuchsia-500 h-2.5 rounded-full transition-all duration-200 ease-out"
                   style={{ width: `${Math.min(100, batchInfo.progress.percentage)}%` }}
                 />
               </div>
             </div>
             <div className="flex flex-wrap gap-2 text-xs">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 dark:bg-gray-800/80 px-3 py-1.5 border border-violet-100 dark:border-violet-900/40 text-gray-700 dark:text-gray-300">
-                <FolderArchive className="w-3.5 h-3.5 text-violet-500" />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 dark:bg-gray-800/80 px-3 py-1.5 border border-blue-100 dark:border-blue-900/40 text-gray-700 dark:text-gray-300">
+                <FolderArchive className="w-3.5 h-3.5 text-blue-500" />
                 ZIP: Batch/&lt;folder&gt;/ per video
               </span>
               {batchInfo.progress.failed > 0 && (
@@ -2100,7 +2100,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 </span>
               )}
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 border-t border-violet-100/80 dark:border-violet-900/30 pt-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400 border-t border-blue-100/80 dark:border-blue-900/30 pt-4">
               Download unlocks when every video finishes. You can leave this page ΓÇö the job runs on our servers.
             </p>
           </div>
@@ -2162,8 +2162,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         )}
 
         {!isBatchMode && status === 'processing' && (
-          <div className="bg-purple-50 dark:bg-purple-900/10 rounded-2xl p-8 border border-purple-100 dark:border-purple-900/30">
-            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-purple-200 dark:border-purple-900/30">
+          <div className="bg-blue-50 dark:bg-blue-900/10 rounded-2xl p-8 border border-blue-100 dark:border-blue-900/30">
+            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-blue-200 dark:border-blue-900/30">
               {/* YouTube thumbnail or file icon */}
               {youtubeThumbnailUrl ? (
                 <div className="w-20 h-14 sm:w-24 sm:h-16 rounded-lg overflow-hidden shrink-0 bg-gray-200 dark:bg-gray-800">
@@ -2175,8 +2175,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   />
                 </div>
               ) : (
-                <div className="w-16 h-16 bg-purple-200 dark:bg-purple-900/50 rounded-lg flex items-center justify-center shrink-0">
-                  <FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                <div className="w-16 h-16 bg-blue-200 dark:bg-blue-900/50 rounded-lg flex items-center justify-center shrink-0">
+                  <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
@@ -2319,7 +2319,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       <button
                         type="button"
                         onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
-                        className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors"
+                        className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
                       >
                         Create free account
                       </button>
@@ -2462,7 +2462,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           onClick={() => setActiveBranch(id)}
                           className={`shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-motion ${
                             isActive
-                              ? 'bg-violet-600 text-white shadow-card ring-2 ring-violet-200 ring-offset-2 ring-offset-gray-50'
+                              ? 'bg-blue-600 text-white shadow-card ring-2 ring-blue-200 ring-offset-2 ring-offset-gray-50'
                               : 'bg-white/90 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-card ring-1 ring-gray-100'
                           }`}
                         >
@@ -2470,7 +2470,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           {BRANCH_LABELS[id]}
                           {count != null && count > 0 && (
                             <span className={`inline-flex items-center justify-center min-w-[1.125rem] h-[1.125rem] px-1 rounded-full text-[10px] font-semibold leading-none ${
-                              isActive ? 'bg-white/25 text-white' : 'bg-violet-100 text-violet-700'
+                              isActive ? 'bg-white/25 text-white' : 'bg-blue-100 text-blue-700'
                             }`}>
                               {count}
                             </span>
@@ -2495,7 +2495,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               {activeBranch === 'speakers' && (
                   <div className="bg-white rounded-2xl p-6 shadow-card">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                      <Users className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
+                      <Users className="h-5 w-5 text-blue-600" strokeWidth={1.5} />
                       Who said what
                       {audioObjectUrl && <span className="ml-auto text-[11px] font-normal text-gray-400">Click any segment to seek</span>}
                     </h3>
@@ -2512,7 +2512,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       }
                       // Assign a stable color per unique speaker label
                       const speakerColors: string[] = [
-                        'border-violet-400 bg-violet-50',
+                        'border-blue-400 bg-blue-50',
                         'border-sky-400 bg-sky-50',
                         'border-emerald-400 bg-emerald-50',
                         'border-rose-400 bg-rose-50',
@@ -2520,7 +2520,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         'border-fuchsia-400 bg-fuchsia-50',
                       ]
                       const speakerTextColors: string[] = [
-                        'text-violet-600',
+                        'text-blue-600',
                         'text-sky-600',
                         'text-emerald-600',
                         'text-rose-600',
@@ -2576,7 +2576,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   </div>
                                   <p className={`flex-1 text-sm leading-relaxed ${isActive ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
                                     {isActive && (
-                                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 mr-1.5 mb-0.5 animate-pulse" aria-hidden />
+                                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5 mb-0.5 animate-pulse" aria-hidden />
                                     )}
                                     {transcriptView === 'translated' && translatedSegments?.[i]?.text
                                       ? translatedSegments[i].text
@@ -2595,7 +2595,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               {activeBranch === 'summary' && (
                   <div className="bg-white rounded-2xl p-6 shadow-card">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <ListOrdered className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
+                      <ListOrdered className="h-5 w-5 text-blue-600" strokeWidth={1.5} />
                       Summary
                     </h3>
                     {(() => {
@@ -2659,7 +2659,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               {activeBranch === 'chapters' && (
                   <div className="bg-white rounded-2xl p-6 shadow-card">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
+                      <BookOpen className="h-5 w-5 text-blue-600" strokeWidth={1.5} />
                       Chapters
                     </h3>
                     {(() => {
@@ -2678,7 +2678,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             <button
                               key={i}
                               onClick={() => scrollToSegment(ch.segmentIndex)}
-                              className="block w-full text-left px-3 py-2 rounded-xl bg-gray-50/80 hover:bg-violet-50/80 text-sm text-gray-800 ring-1 ring-gray-100"
+                              className="block w-full text-left px-3 py-2 rounded-xl bg-gray-50/80 hover:bg-blue-50/80 text-sm text-gray-800 ring-1 ring-gray-100"
                             >
                               {ch.label}
                             </button>
@@ -2692,7 +2692,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               {activeBranch === 'exports' && (
                   <div className="bg-white rounded-2xl p-6 shadow-card">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                      <FileCode className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
+                      <FileCode className="h-5 w-5 text-blue-600" strokeWidth={1.5} />
                       Exports
                     </h3>
                     <p className="text-sm text-gray-500 mb-4">Download transcript and derived data in your preferred format.</p>
@@ -2790,7 +2790,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                     disabled={!canClick}
                                     className={`flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-lg transition-colors ${
                                       canClick
-                                        ? 'bg-white hover:bg-violet-50 text-violet-600 hover:text-violet-700 ring-1 ring-gray-200'
+                                        ? 'bg-white hover:bg-blue-50 text-blue-600 hover:text-blue-700 ring-1 ring-gray-200'
                                         : 'text-gray-300 cursor-not-allowed'
                                     }`}
                                   >
@@ -2828,16 +2828,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   toast.success('SRT downloaded')
                                 }
                                 return (
-                                  <div className="rounded-xl bg-violet-50 ring-1 ring-violet-100 p-4">
+                                  <div className="rounded-xl bg-blue-50 ring-1 ring-blue-100 p-4">
                                     <div className="flex items-center justify-between gap-2 mb-3">
                                       <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full shrink-0 bg-violet-400" aria-hidden />
+                                        <span className="w-2 h-2 rounded-full shrink-0 bg-blue-400" aria-hidden />
                                         <span className="text-sm font-semibold text-gray-800">SRT [{langCode}]</span>
                                         <span className="text-[10px] font-mono text-gray-400">.srt</span>
                                       </div>
                                       <button
                                         onClick={handleDownloadSrt}
-                                        className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-lg transition-colors bg-white hover:bg-violet-50 text-violet-600 hover:text-violet-700 ring-1 ring-gray-200"
+                                        className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-lg transition-colors bg-white hover:bg-blue-50 text-blue-600 hover:text-blue-700 ring-1 ring-gray-200"
                                       >
                                         <Download className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
                                         Download
@@ -2992,7 +2992,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       placeholder="Search in transcript"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                   {isPaidPlan && (
@@ -3033,7 +3033,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         <div key={i} className="flex gap-3 items-start">
                           <span className="shrink-0 text-[11px] text-gray-400 dark:text-gray-500 font-mono mt-2 w-10">{formatTimestamp(seg.start)}</span>
                           <textarea
-                            className="flex-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded p-1.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                            className="flex-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded p-1.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
                             value={seg.text}
                             rows={2}
                             onChange={(e) => setEditableSegments((prev) => prev ? prev.map((s, j) => j === i ? { ...s, text: e.target.value } : s) : prev)}
@@ -3070,7 +3070,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                   }}
                                   className={audioObjectUrl ? 'cursor-pointer' : ''}
                                 >
-                                  <span className={`text-[11px] font-mono mr-1 ${isActive ? 'text-violet-500 dark:text-violet-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                                  <span className={`text-[11px] font-mono mr-1 ${isActive ? 'text-blue-500 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}`}>
                                     ({formatTimestamp(origSeg?.start ?? seg.start)})
                                   </span>
                                   <span className={isActive ? 'bg-yellow-200 dark:bg-yellow-900/60 rounded px-0.5 transition-colors' : ''}>
@@ -3128,7 +3128,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       <button
                         type="button"
                         onClick={() => { if (!audioRef.current) return; audioIsPlaying ? audioRef.current.pause() : audioRef.current.play().catch(() => {}) }}
-                        className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 hover:bg-violet-700 active:scale-95 text-white transition-all"
+                        className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white transition-all"
                       >
                         {audioIsPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
                       </button>
@@ -3145,7 +3145,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           if (audioRef.current) audioRef.current.currentTime = t
                           if (timeDisplayRef.current) timeDisplayRef.current.textContent = formatTimestamp(t)
                         }}
-                        className="flex-1 h-1.5 accent-violet-600 cursor-pointer"
+                        className="flex-1 h-1.5 accent-blue-600 cursor-pointer"
                       />
                       <span ref={timeDisplayRef} className="shrink-0 text-xs font-mono text-gray-500 dark:text-gray-400 w-10 text-right">
                         0:00
@@ -3161,7 +3161,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           setAudioMuted(muted)
                           if (audioRef.current) audioRef.current.muted = muted
                         }}
-                        className="shrink-0 text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                        className="shrink-0 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                       >
                         {audioMuted || audioVolume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
                       </button>
@@ -3180,7 +3180,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           }
                           if (v > 0 && audioMuted) setAudioMuted(false)
                         }}
-                        className="w-20 h-1.5 accent-violet-600 cursor-pointer"
+                        className="w-20 h-1.5 accent-blue-600 cursor-pointer"
                       />
                       <div className="ml-auto flex items-center gap-2">
                         <span className="text-xs text-gray-400 dark:text-gray-500 select-none">Speed</span>
@@ -3191,7 +3191,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             setAudioSpeed(s)
                             if (audioRef.current) audioRef.current.playbackRate = s
                           }}
-                          className="text-xs bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1 cursor-pointer focus:outline-none focus:ring-1 focus:ring-violet-500"
+                          className="text-xs bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1 cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
                           {[0.25, 0.5, 0.75, 1, 1.5, 2].map(s => (
                             <option key={s} value={s}>{s}x</option>

@@ -84,7 +84,7 @@ export default function UserMenu() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="p-2 rounded-lg text-gray-600 hover:text-violet-600 hover:bg-violet-50 dark:text-gray-300 dark:hover:text-violet-400 dark:hover:bg-violet-900/30 transition-colors"
+        className="p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-blue-900/30 transition-colors"
         aria-label="Open menu"
       >
         <Menu className="w-6 h-6" />
@@ -114,7 +114,7 @@ export default function UserMenu() {
                 className="w-full h-full min-h-screen flex flex-col shadow-2xl border-l border-gray-200 dark:border-slate-700 isolate bg-white dark:bg-slate-900"
               >
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700 shrink-0 bg-white dark:bg-slate-900">
-                  <span className="font-semibold text-gray-900 dark:text-white">Menu</span>
+                  <span className="font-medium text-gray-900 dark:text-white">Menu</span>
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
@@ -154,7 +154,7 @@ export default function UserMenu() {
                       onClick={() => setOpen(false)}
                       onMouseEnter={() => prefetchRoute('/pricing')}
                       onFocus={() => prefetchRoute('/pricing')}
-                      className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left font-medium text-violet-700 dark:text-violet-300 bg-violet-50/90 dark:bg-violet-900/30 hover:bg-violet-100 dark:hover:bg-violet-900/45 transition-colors border border-violet-200/80 dark:border-violet-700/70"
+                      className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left font-medium text-blue-700 dark:text-blue-300 bg-blue-50/90 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/45 transition-colors border border-blue-200/80 dark:border-blue-700/70"
                     >
                       <CreditCard className="w-5 h-5 shrink-0" />
                       <span>Upgrade plan</span>
@@ -252,7 +252,7 @@ export default function UserMenu() {
 
                 {/* Nav links (for mobile: Tools + Pricing + CTA) */}
                 <div className="pt-4 border-t border-gray-200 dark:border-gray-600 md:hidden">
-                  <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider mb-2">Tools</p>
+                  <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider mb-2">Tools</p>
                   <div className="space-y-1">
                     {tools.map((t) => (
                       <Link
@@ -269,7 +269,7 @@ export default function UserMenu() {
                   </div>
                   <Link
                     to="/pricing"
-                    className="mt-3 block rounded-xl px-4 py-3 text-center font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30 border border-violet-300 dark:border-violet-700"
+                    className="mt-3 block rounded-xl px-4 py-3 text-center font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-blue-300 dark:border-blue-700"
                     onClick={() => setOpen(false)}
                     onMouseEnter={() => prefetchRoute('/pricing')}
                     onFocus={() => prefetchRoute('/pricing')}
@@ -280,7 +280,7 @@ export default function UserMenu() {
                     <>
                       <Link
                         to="/login"
-                        className="mt-2 block rounded-xl px-4 py-3 text-center font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30 border border-violet-300 dark:border-violet-700"
+                        className="mt-2 block rounded-xl px-4 py-3 text-center font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-blue-300 dark:border-blue-700"
                         onClick={() => setOpen(false)}
                         onMouseEnter={() => prefetchRoute('/login')}
                         onFocus={() => prefetchRoute('/login')}

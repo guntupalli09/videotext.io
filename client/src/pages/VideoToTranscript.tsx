@@ -2304,7 +2304,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
     breadcrumbs,
     title: seoH1 ?? 'Video → Transcript',
     subtitle: seoIntro ?? 'Extract spoken text from any video in seconds',
-    icon: <FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />,
+    icon: <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     sidebar: null,
   }
 
@@ -2314,13 +2314,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         <UpgradeBanner variant="video-length" />
         {freeImportsRemaining != null && freeImportsRemaining <= 1 && (
           <div className="mb-4 rounded-xl border border-amber-300/70 bg-amber-50/80 dark:border-amber-700/60 dark:bg-amber-950/25 px-4 py-3">
-            <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">
+            <p className="text-sm font-medium text-amber-900 dark:text-amber-300">
               {freeImportsRemaining === 0 ? 'No free imports left today.' : '1 free import left today.'}
             </p>
             <p className="mt-1 text-xs text-amber-800 dark:text-amber-200/90">
               Upgrade to Pro to keep processing without daily stops and remove export watermarks.
               {' '}
-              <Link to="/pricing" className="font-semibold underline underline-offset-2 hover:opacity-90">
+              <Link to="/pricing" className="font-medium underline underline-offset-2 hover:opacity-90">
                 View Pro
               </Link>
             </p>
@@ -2335,16 +2335,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               <div className="space-y-3 sm:space-y-4">
                 {batchUploadEligible() && (
                   <div
-                    className="rounded-xl sm:rounded-2xl border-2 border-purple-400/55 dark:border-purple-500/45 bg-gradient-to-br from-purple-500/[0.12] via-violet-600/[0.08] to-fuchsia-600/[0.06] dark:from-purple-950/60 dark:via-violet-950/40 dark:to-fuchsia-950/25 px-4 py-3.5 sm:px-5 sm:py-4 shadow-sm shadow-purple-500/10"
+                    className="rounded-xl sm:rounded-xl border-2 border-blue-400/55 dark:border-blue-500/45 bg-gradient-to-br from-blue-600/[0.12] via-blue-600/[0.08] to-fuchsia-600/[0.06] dark:from-blue-950/60 dark:via-blue-950/40 dark:to-fuchsia-950/25 px-4 py-3.5 sm:px-5 sm:py-4 shadow-sm shadow-blue-500/10"
                     role="status"
                     aria-live="polite"
                   >
                     <div className="flex gap-3 sm:gap-4">
-                      <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-purple-600/25 dark:bg-purple-400/20 ring-2 ring-purple-500/35">
-                        <Layers className="h-5 w-5 sm:h-6 sm:w-6 text-purple-700 dark:text-purple-200" aria-hidden />
+                      <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-blue-600/25 dark:bg-blue-400/20 ring-2 ring-blue-600/35">
+                        <Layers className="h-5 w-5 sm:h-6 sm:w-6 text-blue-700 dark:text-blue-200" aria-hidden />
                       </div>
                       <div className="min-w-0 text-left flex-1">
-                        <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white leading-snug">
+                        <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-white leading-snug">
                           Batch upload included — add several videos at once
                         </p>
                         <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 leading-relaxed">
@@ -2356,7 +2356,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 )}
                 {sourceMessage && (
                   <div className="rounded-xl border border-emerald-200/70 bg-emerald-50/80 dark:border-emerald-800/60 dark:bg-emerald-950/25 px-4 py-3">
-                    <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                    <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
                       {sourceMessage.title}
                     </p>
                     <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-200/90">
@@ -2368,7 +2368,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   <div className="rounded-xl border border-emerald-300/70 dark:border-emerald-700/70 bg-emerald-50/80 dark:bg-emerald-950/25 px-4 py-4 sm:px-5 sm:py-5">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">Get your first transcript in under a minute</p>
+                        <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">Get your first transcript in under a minute</p>
                         <ol className="mt-2 space-y-1.5 text-xs sm:text-sm text-emerald-800 dark:text-emerald-100/90">
                           <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden />Step 1: Upload a video or paste URL</li>
                           <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden />Step 2: Wait ~40s</li>
@@ -2378,7 +2378,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       <button
                         type="button"
                         onClick={handleActivationWizardCta}
-                        className="shrink-0 rounded-lg bg-emerald-600 px-3 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-emerald-700 transition"
+                        className="shrink-0 rounded-lg bg-emerald-600 px-3 py-2 text-xs sm:text-sm font-medium text-white hover:bg-emerald-700 transition"
                       >
                         Start now
                       </button>
@@ -2387,10 +2387,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 )}
 
                 <div className="rounded-lg border border-sky-200/70 dark:border-sky-800/50 bg-sky-50/70 dark:bg-sky-950/20 px-3 py-2">
-                  <p className="text-xs font-semibold text-sky-900 dark:text-sky-200">Need transcript-only translation?</p>
+                  <p className="text-xs font-medium text-sky-900 dark:text-sky-200">Need transcript-only translation?</p>
                   <p className="text-[11px] text-sky-800 dark:text-sky-300 mt-0.5">
                     Upload TXT, DOCX, SRT, or VTT directly — no audio/video required.
-                    <Link to="/translate-subtitles" className="ml-1 underline font-semibold">Open transcript translation</Link>
+                    <Link to="/translate-subtitles" className="ml-1 underline font-medium">Open transcript translation</Link>
                   </p>
                 </div>
                 <div ref={uploadZoneRef}>
@@ -2465,7 +2465,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           type="button"
                           onClick={() => void handleTextTranslate()}
                           disabled={textTranslating || !textTranslateInput.trim()}
-                          className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center gap-2 shrink-0"
+                          className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors flex items-center gap-2 shrink-0"
                         >
                           {textTranslating ? (
                             <><Loader2 className="w-4 h-4 animate-spin" />Translating…</>
@@ -2477,7 +2477,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       {textTranslateResult && (
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Translation ({textTranslateLang})</p>
+                            <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Translation ({textTranslateLang})</p>
                             <div className="flex items-center gap-2">
                               <button
                                 type="button"
@@ -2567,14 +2567,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         Batch processing (multiple files) is on{' '}
                         <span className="font-medium text-gray-700 dark:text-gray-200">Pro &amp; Business</span>
                         .{' '}
-                        <Link to="/pricing" className="text-violet-600 dark:text-violet-400 font-semibold hover:underline">
+                        <Link to="/pricing" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
                           View plans
                         </Link>
                       </>
                     ) : (
                       <>
                         Batch upload — process many videos in one go — is on{' '}
-                        <Link to="/pricing" className="text-violet-600 dark:text-violet-400 font-semibold hover:underline">
+                        <Link to="/pricing" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
                           Pro &amp; Business
                         </Link>
                         .
@@ -2589,13 +2589,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             {inputMode === 'youtube' && (
               <div className="space-y-4">
                 {/* Highlighted input card */}
-                <div className="rounded-xl sm:rounded-2xl border-2 border-red-400/60 dark:border-red-500/50 bg-red-50/60 dark:bg-red-950/20 p-4 sm:p-6 space-y-4">
+                <div className="rounded-xl sm:rounded-xl border-2 border-red-400/60 dark:border-red-500/50 bg-red-50/60 dark:bg-red-950/20 p-4 sm:p-6 space-y-4">
                   <div className="flex items-center gap-2">
                     {/* YouTube icon (SVG — no lucide dependency) */}
                     <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 text-red-600" fill="currentColor" aria-hidden>
                       <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                     </svg>
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white">
                       Paste a YouTube URL
                     </h3>
                   </div>
@@ -2643,7 +2643,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
                 {/* Options (same as file mode) */}
                 <div className="rounded-xl bg-gray-50/90 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700/50 p-4 space-y-3">
-                  <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Options</h4>
+                  <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">Options</h4>
                   <div className="space-y-2">
                     {/* AI Summary — Pro only */}
                     {isPaidPlan ? (
@@ -2652,14 +2652,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           type="checkbox"
                           checked={includeSummary}
                           onChange={(e) => setIncludeSummary(e.target.checked)}
-                          className="rounded border-gray-300 text-purple-600"
+                          className="rounded border-gray-300 text-blue-600"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">Include AI summary &amp; bullets</span>
                       </label>
                     ) : (
                       <div className="flex items-center justify-between opacity-60">
                         <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">Include AI summary &amp; bullets <Lock className="w-3 h-3 text-gray-400" /></span>
-                        <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                        <Link to="/pricing" className="text-xs text-blue-600 font-medium hover:underline">Pro</Link>
                       </div>
                     )}
                     {/* Chapters — Pro only */}
@@ -2669,14 +2669,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           type="checkbox"
                           checked={includeChapters}
                           onChange={(e) => setIncludeChapters(e.target.checked)}
-                          className="rounded border-gray-300 text-purple-600"
+                          className="rounded border-gray-300 text-blue-600"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">Auto-generate chapters</span>
                       </label>
                     ) : (
                       <div className="flex items-center justify-between opacity-60">
                         <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">Auto-generate chapters <Lock className="w-3 h-3 text-gray-400" /></span>
-                        <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                        <Link to="/pricing" className="text-xs text-blue-600 font-medium hover:underline">Pro</Link>
                       </div>
                     )}
                     {/* Audio language — always visible */}
@@ -2702,14 +2702,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           type="checkbox"
                           checked={speakerDiarization}
                           onChange={(e) => setSpeakerDiarization(e.target.checked)}
-                          className="rounded border-gray-300 text-purple-600"
+                          className="rounded border-gray-300 text-blue-600"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">Speaker labels (who said what)</span>
                       </label>
                     ) : (
                       <div className="flex items-center justify-between opacity-60">
                         <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">Speaker labels (who said what) <Lock className="w-3 h-3 text-gray-400" /></span>
-                        <Link to="/pricing" className="text-xs text-violet-500 font-medium hover:underline">Pro</Link>
+                        <Link to="/pricing" className="text-xs text-blue-600 font-medium hover:underline">Pro</Link>
                       </div>
                     )}
                     {isPaidPlan && speakerDiarization && (
@@ -2726,7 +2726,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             value={numSpeakers}
                             onChange={(e) => setNumSpeakers(e.target.value)}
                             placeholder="Auto-detect"
-                            className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
                           />
                         </div>
                       </>
@@ -2739,7 +2739,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   type="button"
                   onClick={() => void handleProcessYoutube()}
                   disabled={!youtubeUrlInput || !isYoutubeUrl(youtubeUrlInput)}
-                  className="w-full py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 bg-red-500 hover:bg-red-600 text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
+                  className="w-full py-3 px-6 rounded-xl font-medium text-sm transition-all duration-200 bg-red-500 hover:bg-red-600 text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
                 >
                   <svg viewBox="0 0 24 24" className="w-4 h-4 shrink-0" fill="currentColor" aria-hidden>
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
@@ -2757,10 +2757,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
                     {batchFiles.length} video{batchFiles.length !== 1 ? 's' : ''} selected
                   </h3>
-                  <span className="text-xs text-violet-500 font-medium bg-violet-50 dark:bg-violet-900/20 px-2 py-0.5 rounded-full">Pro · up to 20</span>
+                  <span className="text-xs text-blue-600 font-medium bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full">Pro · up to 20</span>
                 </div>
                 <button
                   type="button"
@@ -2780,7 +2780,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 {batchFiles.map((f, i) => (
                   <div key={i} className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                     <span className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1">{f.name}</span>
-                    <span className="text-xs text-gray-400 shrink-0">{(f.size / (1024 * 1024)).toFixed(1)} MB</span>
+                    <span className="text-xs text-gray-400 shrink-0 font-mono-data">{(f.size / (1024 * 1024)).toFixed(1)} MB</span>
                     <button
                       type="button"
                       onClick={() => setBatchFiles(prev => prev.filter((_, j) => j !== i))}
@@ -2794,7 +2794,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               </div>
               <label className="block">
                 <span className="sr-only">Add more files</span>
-                <span className="inline-flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 font-medium cursor-pointer hover:underline">
+                <span className="inline-flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-medium cursor-pointer hover:underline">
                   + Add more
                   <input
                     type="file"
@@ -2840,7 +2840,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       type="checkbox"
                       checked={batchSpeakerDiarization}
                       onChange={(e) => setBatchSpeakerDiarization(e.target.checked)}
-                      className="rounded border-gray-300 text-violet-600 focus:ring-violet-500"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <span className="text-gray-700 dark:text-gray-300">Speaker labels (who said what)</span>
                   </label>
@@ -2866,7 +2866,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               type="button"
               onClick={handleProcessBatch}
               disabled={batchFiles.length === 0 || isBatchStarting}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-semibold text-sm bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-medium text-sm bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
             >
               {isBatchStarting ? (
                 <>
@@ -2901,7 +2901,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             videoSrc={videoPreviewUrl ?? undefined}
           >
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Options</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Options</h3>
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
@@ -2944,14 +2944,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
         {/* Batch processing progress */}
         {isBatchMode && status === 'processing' && batchInfo && (
-          <div className="rounded-2xl border border-violet-200/80 dark:border-violet-800/50 bg-gradient-to-br from-violet-50/90 via-white to-fuchsia-50/50 dark:from-violet-950/40 dark:via-gray-900/80 dark:to-fuchsia-950/20 p-6 sm:p-8 space-y-6 shadow-lg shadow-violet-500/10">
+          <div className="rounded-xl border border-blue-200/80 dark:border-blue-800/50 bg-gradient-to-br from-blue-50/90 via-white to-fuchsia-50/50 dark:from-blue-950/40 dark:via-gray-900/80 dark:to-fuchsia-950/20 p-6 sm:p-8 space-y-6 shadow-lg shadow-blue-500/10">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
               <div className="flex gap-4">
-                <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-md">
+                <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-fuchsia-600 text-white shadow-md">
                   <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white tracking-tight">
                     Batch processing
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
@@ -2960,7 +2960,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 </div>
               </div>
               <div className="text-right sm:pt-1">
-                <p className="text-2xl font-bold tabular-nums text-violet-600 dark:text-violet-300">
+                <p className="text-2xl font-mono-data tabular-nums text-blue-600 dark:text-blue-300">
                   {batchInfo.progress.completed + batchInfo.progress.failed}/{batchInfo.progress.total}
                 </p>
                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">videos finished</p>
@@ -2969,18 +2969,18 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                 <span>Overall progress</span>
-                <span>{batchInfo.progress.percentage}%</span>
+                <span className="font-mono-data">{batchInfo.progress.percentage}%</span>
               </div>
               <div className="w-full bg-gray-200/90 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
                 <div
-                  className="bg-gradient-to-r from-violet-500 to-fuchsia-500 h-2.5 rounded-full transition-all duration-200 ease-out"
+                  className="bg-gradient-to-r from-blue-600 to-fuchsia-500 h-2.5 rounded-full transition-all duration-200 ease-out"
                   style={{ width: `${Math.min(100, batchInfo.progress.percentage)}%` }}
                 />
               </div>
             </div>
             <div className="flex flex-wrap gap-2 text-xs">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 dark:bg-gray-800/80 px-3 py-1.5 border border-violet-100 dark:border-violet-900/40 text-gray-700 dark:text-gray-300">
-                <FolderArchive className="w-3.5 h-3.5 text-violet-500" />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 dark:bg-gray-800/80 px-3 py-1.5 border border-blue-100 dark:border-blue-900/40 text-gray-700 dark:text-gray-300">
+                <FolderArchive className="w-3.5 h-3.5 text-blue-600" />
                 ZIP: Batch/&lt;folder&gt;/ per video
               </span>
               {batchInfo.progress.failed > 0 && (
@@ -2990,7 +2990,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 </span>
               )}
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 border-t border-violet-100/80 dark:border-violet-900/30 pt-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400 border-t border-blue-100/80 dark:border-blue-900/30 pt-4">
               Download unlocks when every video finishes. You can leave this page — the job runs on our servers.
             </p>
           </div>
@@ -2998,13 +2998,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
         {/* Batch completed results */}
         {isBatchMode && status === 'completed' && batchInfo && (
-          <div className="rounded-2xl border border-emerald-200/80 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50/95 via-white to-teal-50/60 dark:from-emerald-950/35 dark:via-gray-900/90 dark:to-teal-950/25 p-6 sm:p-8 space-y-6 shadow-lg shadow-emerald-500/10">
+          <div className="rounded-xl border border-emerald-200/80 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50/95 via-white to-teal-50/60 dark:from-emerald-950/35 dark:via-gray-900/90 dark:to-teal-950/25 p-6 sm:p-8 space-y-6 shadow-lg shadow-emerald-500/10">
             <div className="flex flex-col sm:flex-row sm:items-start gap-4">
               <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md">
                 <Download className="w-6 h-6" aria-hidden />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Your batch is ready</h3>
+                <h3 className="text-xl font-medium text-gray-900 dark:text-white">Your batch is ready</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   {batchInfo.progress.completed} of {batchInfo.progress.total} transcribed successfully
                   {batchInfo.progress.failed > 0 && (
@@ -3036,7 +3036,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             <a
               href={getBatchDownloadUrl(batchInfo.batchId)}
               download
-              className="flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white transition-colors shadow-md"
+              className="flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl font-medium text-sm bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white transition-colors shadow-md"
             >
               <Download className="w-4 h-4" />
               Download all as ZIP
@@ -3052,8 +3052,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         )}
 
         {!isBatchMode && status === 'processing' && (
-          <div className="bg-purple-50 dark:bg-purple-900/10 rounded-2xl p-8 border border-purple-100 dark:border-purple-900/30">
-            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-purple-200 dark:border-purple-900/30">
+          <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-8 border border-blue-100 dark:border-blue-900/30">
+            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-blue-200 dark:border-blue-900/30">
               {/* YouTube thumbnail or file icon */}
               {youtubeThumbnailUrl ? (
                 <div className="w-20 h-14 sm:w-24 sm:h-16 rounded-lg overflow-hidden shrink-0 bg-gray-200 dark:bg-gray-800">
@@ -3065,12 +3065,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   />
                 </div>
               ) : (
-                <div className="w-16 h-16 bg-purple-200 dark:bg-purple-900/50 rounded-lg flex items-center justify-center shrink-0">
-                  <FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                <div className="w-16 h-16 bg-blue-200 dark:bg-blue-900/50 rounded-lg flex items-center justify-center shrink-0">
+                  <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-1 truncate">
+                <h3 className="font-medium text-gray-900 dark:text-white mb-1 truncate">
                   {youtubeDisplayTitle ?? selectedFile?.name ?? 'Processing…'}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -3141,16 +3141,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
         {!isBatchMode && status === 'completed' && result && (
           <>
             {showPostSuccessUpgrade && !isPaidPlan && (
-              <div className="mb-4 rounded-xl border border-violet-300/70 bg-violet-50/80 dark:border-violet-700/60 dark:bg-violet-950/25 px-4 py-3">
-                <p className="text-sm font-semibold text-violet-900 dark:text-violet-300">
+              <div className="mb-4 rounded-xl border border-blue-300/70 bg-blue-50/80 dark:border-blue-700/60 dark:bg-blue-950/25 px-4 py-3">
+                <p className="text-sm font-medium text-blue-900 dark:text-blue-300">
                   First output complete 🎉 Next step: unlock faster repeats.
                 </p>
-                <p className="mt-1 text-xs text-violet-800 dark:text-violet-200/90">
+                <p className="mt-1 text-xs text-blue-800 dark:text-blue-200/90">
                   Upgrade CTR target for activated users is at least 20%.
                   {' '}
                   <Link
                     to="/pricing"
-                    className="font-semibold underline underline-offset-2 hover:opacity-90"
+                    className="font-medium underline underline-offset-2 hover:opacity-90"
                     onClick={() => {
                       trackAppEvent('upgrade_clicked', { source: 'post_success_upgrade_panel', plan: 'pro' })
                       trackEvent('upgrade_clicked', { source: 'post_success_upgrade_panel', plan: 'pro' })
@@ -3160,7 +3160,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   </Link>
                   <button
                     type="button"
-                    className="ml-2 text-xs text-violet-700 dark:text-violet-300 underline"
+                    className="ml-2 text-xs text-blue-700 dark:text-blue-300 underline"
                     onClick={() => setShowPostSuccessUpgrade(false)}
                   >
                     Dismiss
@@ -3176,12 +3176,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 : null
               const previewText = fullText.slice(0, Math.max(400, Math.ceil(fullText.length * 0.25)))
               return (
-                <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none mb-2">
+                <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none mb-2">
                   {/* preview banner */}
                   <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-emerald-50/80 via-cyan-50/70 to-blue-50/70 dark:from-emerald-950/30 dark:via-cyan-950/20 dark:to-blue-950/20">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" aria-hidden />
-                      <span className="text-sm font-semibold text-gray-800 dark:text-white">Transcript preview</span>
+                      <span className="text-sm font-medium text-gray-800 dark:text-white">Transcript preview</span>
                       {lastProcessingMs != null && (
                         <span className="text-xs text-gray-400">· {(lastProcessingMs / 1000).toFixed(1)}s</span>
                       )}
@@ -3237,7 +3237,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       <button
                         type="button"
                         onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
-                        className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors"
+                        className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
                       >
                         Create free account
                       </button>
@@ -3259,8 +3259,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
             hidden={showAuthGate && !isLoggedIn()}
           >
             {showPostSuccessMonetizationPanel && (
-              <div className="rounded-2xl border border-violet-200/90 dark:border-violet-900/50 bg-violet-50/70 dark:bg-violet-950/20 px-5 py-4">
-                <p className="text-sm sm:text-[15px] font-semibold text-violet-900 dark:text-violet-100">
+              <div className="rounded-xl border border-blue-200/90 dark:border-blue-900/50 bg-blue-50/70 dark:bg-blue-950/20 px-5 py-4">
+                <p className="text-sm sm:text-[15px] font-medium text-blue-900 dark:text-blue-100">
                   You just generated transcript + subtitles + summary. Upgrade to keep this workflow uninterrupted.
                 </p>
                 <div className="mt-3 flex items-center gap-3">
@@ -3270,11 +3270,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       trackEvent('upgrade_clicked', { source: 'post_first_success_panel', tool: 'video-to-transcript' })
                       setShowPostSuccessMonetizationPanel(false)
                     }}
-                    className="inline-flex items-center rounded-lg bg-violet-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-violet-700 transition-colors"
+                    className="inline-flex items-center rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
                   >
                     Upgrade now
                   </Link>
-                  <p className="text-xs text-violet-700/90 dark:text-violet-300/90">
+                  <p className="text-xs text-blue-700/90 dark:text-blue-300/90">
                     Free plan includes watermark + daily cap.
                   </p>
                 </div>
@@ -3299,7 +3299,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               return (
                 <div className="flex flex-wrap items-center gap-2 px-1">
                   {pills.map((label) => (
-                    <span key={label} className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs font-medium text-gray-500 dark:text-gray-400">
+                    <span key={label} className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs font-mono-data text-gray-500 dark:text-gray-400">
                       {label}
                     </span>
                   ))}
@@ -3311,7 +3311,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
               <button
                 type="button"
                 onClick={handleProcessAnother}
-                className="inline-flex items-center gap-2 rounded-xl border border-violet-300 dark:border-violet-700 bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-violet-700 transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors shadow-sm"
               >
                 <Upload className="h-4 w-4" aria-hidden />
                 Upload new file
@@ -3320,7 +3320,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
 
             {/* Main workspace: transcript / speakers (left) + insight rail (right) */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(380px,500px)] xl:grid-cols-[minmax(0,1fr)_540px] items-start">
-              <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden flex flex-col min-h-[min(62vh,640px)]">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden flex flex-col min-h-[min(62vh,640px)]">
                 <div
                   className="flex shrink-0 border-b border-gray-100 dark:border-gray-800 bg-gray-50/90 dark:bg-gray-950/50 px-2 pt-2 gap-1"
                   role="tablist"
@@ -3331,9 +3331,9 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     role="tab"
                     aria-selected={leftWorkspaceTab === 'transcript'}
                     onClick={() => setLeftWorkspaceTab('transcript')}
-                    className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg border-b-2 -mb-px transition-colors ${
+                    className={`px-4 py-2.5 text-sm font-medium rounded-t-lg border-b-2 -mb-px transition-colors ${
                       leftWorkspaceTab === 'transcript'
-                        ? 'border-violet-600 text-gray-900 dark:text-white bg-white dark:bg-gray-900'
+                        ? 'border-blue-600 text-gray-900 dark:text-white bg-white dark:bg-gray-900'
                         : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     }`}
                   >
@@ -3344,14 +3344,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     role="tab"
                     aria-selected={leftWorkspaceTab === 'speakers'}
                     onClick={() => setLeftWorkspaceTab('speakers')}
-                    className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg border-b-2 -mb-px transition-colors inline-flex items-center gap-1.5 ${
+                    className={`px-4 py-2.5 text-sm font-medium rounded-t-lg border-b-2 -mb-px transition-colors inline-flex items-center gap-1.5 ${
                       leftWorkspaceTab === 'speakers'
-                        ? 'border-violet-600 text-gray-900 dark:text-white bg-white dark:bg-gray-900'
+                        ? 'border-blue-600 text-gray-900 dark:text-white bg-white dark:bg-gray-900'
                         : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     }`}
                   >
                     Speakers
-                    {!isPaidPlan && <Gem className="w-3.5 h-3.5 text-violet-500 shrink-0 opacity-80" aria-hidden />}
+                    {!isPaidPlan && <Gem className="w-3.5 h-3.5 text-blue-600 shrink-0 opacity-80" aria-hidden />}
                   </button>
                 </div>
                 {leftWorkspaceTab === 'speakers' ? (
@@ -3418,7 +3418,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       placeholder="Search in transcript"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                     />
                   </div>
                   {isPaidPlan && (
@@ -3463,7 +3463,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 </div>
                 <div className="mb-3 flex items-center gap-2">
                   <span className="text-[11px] text-gray-500 dark:text-gray-400">Timestamp mode:</span>
-                  <span className="inline-flex items-center rounded-full border border-indigo-200 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 text-[11px] font-medium text-indigo-700 dark:text-indigo-200">
+                  <span className="inline-flex items-center rounded-full border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:text-blue-200">
                     {timestampMode === 'per-speaker'
                       ? 'Per speaker'
                       : timestampMode === 'per-interval'
@@ -3473,13 +3473,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           : 'No timestamps'}
                   </span>
                   <span className="text-[11px] text-gray-500 dark:text-gray-400">Transcript mode:</span>
-                  <span className="inline-flex items-center rounded-full border border-violet-200 dark:border-violet-700 bg-violet-50 dark:bg-violet-900/30 px-2 py-0.5 text-[11px] font-medium text-violet-700 dark:text-violet-200">
+                  <span className="inline-flex items-center rounded-full border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:text-blue-200">
                     {verbatimMode === 'clean' ? 'Clean verbatim' : 'Full verbatim'}
                   </span>
                 </div>
                 <div
                   ref={transcriptScrollRef}
-                  className="flex-1 min-h-0 overflow-y-auto bg-white rounded-xl border border-gray-200/90 px-5 py-6 shadow-[inset_0_1px_0_0_rgba(15,23,42,0.04)] text-[17px] leading-[1.58] tracking-[-0.011em] text-[#1d1d1f] antialiased selection:bg-violet-100 selection:text-[#1d1d1f] font-[ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Helvetica,Arial,sans-serif]"
+                  className="flex-1 min-h-0 overflow-y-auto bg-white rounded-xl border border-gray-200/90 px-5 py-6 shadow-[inset_0_1px_0_0_rgba(15,23,42,0.04)] text-[17px] leading-[1.58] tracking-[-0.011em] text-[#1d1d1f] antialiased selection:bg-blue-100 selection:text-[#1d1d1f] font-[ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Helvetica,Arial,sans-serif]"
                 >
                   {transcriptEditMode && editableSegments?.length ? (
                     <div className="space-y-3">
@@ -3487,7 +3487,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         <div key={i} className="flex gap-3 items-start">
                           <span className="shrink-0 text-[12px] tabular-nums text-gray-500 font-mono mt-2.5 w-11">{formatTimestamp(seg.start)}</span>
                           <textarea
-                            className="flex-1 min-h-[3.25rem] rounded-lg border border-gray-200 bg-white px-3 py-2 text-[16px] leading-relaxed text-[#1d1d1f] shadow-sm resize-none placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/25 focus:border-violet-300"
+                            className="flex-1 min-h-[3.25rem] rounded-lg border border-gray-200 bg-white px-3 py-2 text-[16px] leading-relaxed text-[#1d1d1f] shadow-sm resize-none placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-300"
                             value={seg.text}
                             rows={2}
                             onChange={(e) => setEditableSegments((prev) => prev ? prev.map((s, j) => j === i ? { ...s, text: e.target.value } : s) : prev)}
@@ -3517,7 +3517,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           className={audioObjectUrl ? 'cursor-pointer' : ''}
                         >
                           {timestampMode === 'per-segment' && (
-                            <span className={`mr-1 inline-block shrink-0 align-baseline text-[12px] font-mono tabular-nums text-gray-500 ${isActive ? 'font-medium text-violet-700' : ''}`}>
+                            <span className={`mr-1 inline-block shrink-0 align-baseline text-[12px] font-mono tabular-nums text-gray-500 ${isActive ? 'font-medium text-blue-700' : ''}`}>
                               ({formatTimestamp(origSeg?.start ?? seg.start)})
                             </span>
                           )}
@@ -3568,7 +3568,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         if (item.markerTime != null) {
                           flushBuf(`para-${idx}`)
                           rendered.push(
-                            <div key={`marker-${item.markerTime}`} className="mt-5 first:mt-0 mb-1.5 text-[13px] font-bold text-violet-600 dark:text-violet-400">
+                            <div key={`marker-${item.markerTime}`} className="mt-5 first:mt-0 mb-1.5 text-[13px] font-medium text-blue-600 dark:text-blue-400">
                               [{formatTimestamp(item.markerTime)}]
                             </div>
                           )
@@ -3612,7 +3612,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           return (
                             <div key={gi}>
                               {hasSpeakers && vg.speaker && (
-                                <div className="text-[13px] font-semibold text-violet-700 dark:text-violet-300 mb-1.5 -mt-0.5">
+                                <div className="text-[13px] font-medium text-blue-700 dark:text-blue-300 mb-1.5 -mt-0.5">
                                   {vg.speaker}
                                   {showSpeakerHeaders && (
                                     <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500 text-[12px] tabular-nums">
@@ -3639,10 +3639,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                     </div>
                   )}
                 </div>
-                <div className="mt-6 rounded-xl border border-indigo-200/80 dark:border-indigo-800/70 bg-gradient-to-r from-indigo-50 via-violet-50 to-fuchsia-50 dark:from-indigo-950/30 dark:via-violet-950/20 dark:to-fuchsia-950/20 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="mt-6 rounded-xl border border-blue-200/80 dark:border-blue-800/70 bg-gradient-to-r from-blue-50 via-blue-50 to-fuchsia-50 dark:from-blue-950/30 dark:via-blue-950/20 dark:to-fuchsia-950/20 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">Need a download?</p>
-                    <p className="text-xs text-indigo-700/90 dark:text-indigo-300/90">Use the Exports panel on the right for TXT, SRT, DOCX, PDF, JSON, CSV and more.</p>
+                    <p className="text-sm font-medium text-blue-900 dark:text-blue-200">Need a download?</p>
+                    <p className="text-xs text-blue-700/90 dark:text-blue-300/90">Use the Exports panel on the right for TXT, SRT, DOCX, PDF, JSON, CSV and more.</p>
                   </div>
                   <button
                     type="button"
@@ -3650,7 +3650,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       const node = document.getElementById('exports-panel')
                       if (node) node.scrollIntoView({ behavior: 'smooth', block: 'start' })
                     }}
-                    className="inline-flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 transition-colors shrink-0"
+                    className="inline-flex items-center justify-center rounded-lg bg-blue-700 hover:bg-blue-700 text-white text-xs font-medium px-3 py-2 transition-colors shrink-0"
                   >
                     Go to Exports
                   </button>
@@ -3671,13 +3671,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                   const detailCls =
                     'group rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/60 dark:bg-gray-950/40 overflow-hidden'
                   const summaryCls =
-                    'flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100 [&::-webkit-details-marker]:hidden'
+                    'flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 [&::-webkit-details-marker]:hidden'
                   return (
                     <>
-                      <div id="exports-panel" className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
+                      <div id="exports-panel" className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
                         <div className="flex items-center justify-between gap-2 mb-3">
-                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                            <FileCode className="w-4 h-4 text-violet-600" strokeWidth={1.7} />
+                          <h3 className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                            <FileCode className="w-4 h-4 text-blue-600" strokeWidth={1.7} />
                             Exports
                           </h3>
                           <span className="text-[11px] text-gray-500">All formats</span>
@@ -3689,7 +3689,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             {/* ── Output settings (mirrored from pre-processing panel, always visible at export time) ── */}
                             <div className="rounded-lg border border-gray-100 dark:border-gray-800 px-3 pb-3 space-y-3">
                               <div className="flex items-center justify-between pt-2">
-                                <span className="text-[11px] font-semibold text-gray-700 dark:text-gray-300">Output settings</span>
+                                <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300">Output settings</span>
                                 <span className="text-[10px] text-gray-500">Default: Per interval</span>
                               </div>
                                 <div className="pt-2">
@@ -3702,7 +3702,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                       { value: 'per-segment',  label: 'Per segment' },
                                     ] as const).map(({ value, label }) => (
                                       <label key={value} className="flex items-center gap-1.5 cursor-pointer">
-                                        <input type="radio" name="ts-sidebar" value={value} checked={timestampMode === value} onChange={() => setTimestampMode(value)} className="accent-violet-600" />
+                                        <input type="radio" name="ts-sidebar" value={value} checked={timestampMode === value} onChange={() => setTimestampMode(value)} className="accent-blue-600" />
                                         <span className="text-xs text-gray-700 dark:text-gray-300">{label}</span>
                                       </label>
                                     ))}
@@ -3752,7 +3752,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                       { value: 'clean', label: 'Clean verbatim' },
                                     ] as const).map(({ value, label }) => (
                                       <label key={value} className="flex items-center gap-1.5 cursor-pointer">
-                                        <input type="radio" name="vb-sidebar" value={value} checked={verbatimMode === value} onChange={() => setVerbatimMode(value)} className="accent-violet-600" />
+                                        <input type="radio" name="vb-sidebar" value={value} checked={verbatimMode === value} onChange={() => setVerbatimMode(value)} className="accent-blue-600" />
                                         <span className="text-xs text-gray-700 dark:text-gray-300">{label}</span>
                                       </label>
                                     ))}
@@ -3801,7 +3801,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                       type="button"
                                       onClick={handleDownload}
                                       disabled={!canClick}
-                                      className="rounded-lg border border-violet-400/70 dark:border-violet-500/70 bg-violet-600 dark:bg-violet-700 px-2 py-2 text-[11px] font-semibold tracking-wide text-white hover:bg-violet-500 dark:hover:bg-violet-600 transition-colors"
+                                      className="rounded-lg border border-blue-400/70 dark:border-blue-500/70 bg-blue-600 dark:bg-blue-700 px-2 py-2 text-[11px] font-medium tracking-wide text-white hover:bg-blue-600 dark:hover:bg-blue-600 transition-colors"
                                       title="Click to download"
                                     >
                                       {format.toUpperCase()}
@@ -3874,10 +3874,10 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 })}
                               </div>
                               <div className="grid grid-cols-2 gap-2 mt-2">
-                                <button type="button" onClick={() => void handleExportPdfThreeColumn()} className="rounded-lg border border-violet-200 dark:border-violet-700/60 px-2 py-2 text-[11px] font-medium text-violet-700 dark:text-violet-300 bg-violet-50/60 dark:bg-violet-950/20 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors" title="3-column table: Speaker | Timecode | Dialogue">
+                                <button type="button" onClick={() => void handleExportPdfThreeColumn()} className="rounded-lg border border-blue-200 dark:border-blue-700/60 px-2 py-2 text-[11px] font-medium text-blue-700 dark:text-blue-300 bg-blue-50/60 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors" title="3-column table: Speaker | Timecode | Dialogue">
                                   PDF 3-col
                                 </button>
-                                <button type="button" onClick={handleExportDocxThreeColumn} className="rounded-lg border border-violet-200 dark:border-violet-700/60 px-2 py-2 text-[11px] font-medium text-violet-700 dark:text-violet-300 bg-violet-50/60 dark:bg-violet-950/20 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors" title="3-column table: Speaker | Timecode | Dialogue">
+                                <button type="button" onClick={handleExportDocxThreeColumn} className="rounded-lg border border-blue-200 dark:border-blue-700/60 px-2 py-2 text-[11px] font-medium text-blue-700 dark:text-blue-300 bg-blue-50/60 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors" title="3-column table: Speaker | Timecode | Dialogue">
                                   DOCX 3-col
                                 </button>
                               </div>
@@ -3973,7 +3973,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                               return (
                                 <div className="border-t border-dashed border-gray-200 dark:border-gray-700 pt-3 space-y-3">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="text-[10px] uppercase tracking-wide text-sky-600 dark:text-sky-400 font-semibold">
+                                    <span className="text-[10px] uppercase tracking-wide text-sky-600 dark:text-sky-400 font-medium">
                                       Translated · {langLabel}
                                     </span>
                                     {!isReady && (
@@ -4022,11 +4022,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                           </div>
                         )}
                       </div>
-                      <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
+                      <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
                         <div className="flex items-center justify-between gap-2 mb-2">
-                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Full summary</h3>
+                          <h3 className="text-sm font-medium text-gray-900 dark:text-white">Full summary</h3>
                           {result?.summary ? (
-                            <span className="text-[10px] font-medium uppercase tracking-wide text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/40 px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] font-medium uppercase tracking-wide text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-full">
                               AI-generated
                             </span>
                           ) : null}
@@ -4034,8 +4034,8 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                         {schema.summary ? (
                           <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{schema.summary}</p>
                         ) : isSummaryHydrating ? (
-                          <div className="flex items-center gap-2 text-xs text-violet-600 dark:text-violet-400">
-                            <span className="w-3 h-3 rounded-full border-2 border-violet-500 border-t-transparent animate-spin shrink-0" />
+                          <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
+                            <span className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin shrink-0" />
                             Generating summary…
                           </div>
                         ) : isPaidPlan ? (
@@ -4052,11 +4052,11 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                             </div>
                             {/* Overlay CTA */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-white/80 dark:bg-gray-900/80">
-                              <Lock className="w-3.5 h-3.5 text-violet-500" />
+                              <Lock className="w-3.5 h-3.5 text-blue-600" />
                               <button
                                 type="button"
                                 onClick={() => { setPaywallReason('AI_FEATURES'); setShowPaywall(true) }}
-                                className="text-xs font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+                                className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
                               >
                                 Unlock AI Summary →
                               </button>
@@ -4088,7 +4088,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 <button
                                   type="button"
                                   onClick={() => scrollToSegment(c.segmentIndex)}
-                                  className="text-left text-xs text-violet-600 dark:text-violet-400 hover:underline w-full"
+                                  className="text-left text-xs text-blue-600 dark:text-blue-400 hover:underline w-full"
                                 >
                                   {c.label}
                                 </button>
@@ -4128,7 +4128,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                                 <button
                                   type="button"
                                   onClick={() => scrollToSegment(k.segmentIndex)}
-                                  className="text-[11px] px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-violet-50 dark:hover:bg-violet-950/30"
+                                  className="text-[11px] px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-950/30"
                                 >
                                   {k.keyword} ({k.count})
                                 </button>
@@ -4237,7 +4237,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       {status === 'idle' && !selectedFile && !uploadZoneVisible && !isBatchMode && inputMode === 'file' && (
         <button
           onClick={() => uploadZoneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-          className="hidden lg:fixed lg:bottom-6 lg:right-6 lg:flex items-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all z-40"
+          className="hidden lg:fixed lg:bottom-6 lg:right-6 lg:flex items-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all z-40"
           aria-label="Scroll back to upload form"
         >
           <Upload className="w-5 h-5" />
@@ -4277,30 +4277,30 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           {location.pathname === '/video-to-transcript' && (
             <div className="space-y-10">
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Video to Transcript Online (Free &amp; Fast)</h2>
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">Video to Transcript Online (Free &amp; Fast)</h2>
                 <p className="mt-3 text-gray-600 dark:text-gray-300">VideoText lets you convert video to transcript online in minutes with one upload and one clean output package.</p>
               </div>
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Transcribe Video to Text in Minutes</h2>
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">Transcribe Video to Text in Minutes</h2>
                 <p className="mt-3 text-gray-600 dark:text-gray-300">Upload a file or paste a URL, then download transcript text, SRT/VTT subtitles, summary, and chapters without manual cleanup.</p>
               </div>
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Convert Video to Transcript Without Editing</h2>
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">Convert Video to Transcript Without Editing</h2>
                 <p className="mt-3 text-gray-600 dark:text-gray-300">No timeline editing, no manual cleanup, and no extra steps. VideoText is built for one-click output so you can publish faster.</p>
               </div>
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">The Fastest Video to Transcript Tool</h2>
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">The Fastest Video to Transcript Tool</h2>
                 <p className="mt-3 text-gray-600 dark:text-gray-300">Most tools process in longer, multi-step workflows. VideoText focuses on fast parallel processing for long videos, so you get structured outputs in minutes.</p>
               </div>
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Related transcription tools</h2>
-                <ul className="mt-4 space-y-2 text-violet-700 dark:text-violet-300 font-medium">
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">Related transcription tools</h2>
+                <ul className="mt-4 space-y-2 text-blue-700 dark:text-blue-300 font-medium">
                   <li><Link to="/youtube-transcript-generator" className="hover:underline">Transcribe YouTube videos</Link></li>
                   <li><Link to="/subtitle-generator" className="hover:underline">Generate subtitles automatically</Link></li>
                   <li><Link to="/transcribe-long-videos" className="hover:underline">Transcribe long videos</Link></li>
                 </ul>
-                <p className="mt-6 text-sm font-semibold text-gray-700 dark:text-gray-300">More workflow tools</p>
-                <ul className="mt-2 space-y-2 text-violet-700 dark:text-violet-300 font-medium">
+                <p className="mt-6 text-sm font-medium text-gray-700 dark:text-gray-300">More workflow tools</p>
+                <ul className="mt-2 space-y-2 text-blue-700 dark:text-blue-300 font-medium">
                   <li><Link to="/translate-subtitles" className="hover:underline">Translate your transcripts</Link></li>
                   <li><Link to="/burn-subtitles" className="hover:underline">Burn subtitles</Link></li>
                   <li><Link to="/compress-video" className="hover:underline">Compress your video</Link></li>
@@ -4314,14 +4314,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           {seoDeepContent?.proofPoints?.length ? (
             <div>
               <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">By the numbers</p>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Proof, not promises</h2>
+                <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">By the numbers</p>
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">Proof, not promises</h2>
               </div>
               <ul className="grid sm:grid-cols-2 gap-3" role="list">
                 {seoDeepContent.proofPoints.map((point, idx) => (
-                  <li key={`proof-${idx}`} className="flex items-start gap-3 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900/50 px-5 py-4 shadow-sm">
-                    <span className="mt-0.5 shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900/50" aria-hidden>
-                      <svg className="w-3 h-3 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <li key={`proof-${idx}`} className="flex items-start gap-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900/50 px-5 py-4 shadow-sm">
+                    <span className="mt-0.5 shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50" aria-hidden>
+                      <svg className="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     </span>
@@ -4333,7 +4333,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 <div className="mt-8">
                   <Link
                     to={seoDeepContent.ctaPath}
-                    className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-violet-700 transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors shadow-sm"
                   >
                     {seoDeepContent.ctaText}
                     <ChevronRight className="w-4 h-4" aria-hidden />
@@ -4347,12 +4347,12 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           {seoDeepContent?.visualProof?.length ? (
             <div>
               <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">See the actual output</p>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">This is generated automatically in minutes</h2>
+                <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">See the actual output</p>
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">This is generated automatically in minutes</h2>
               </div>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {seoDeepContent.visualProof.map((proof, idx) => (
-                  <article key={`proof-${idx}`} className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                  <article key={`proof-${idx}`} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                     {proof.image && (
                       <div className="relative bg-gray-100 dark:bg-gray-800 aspect-square overflow-hidden">
                         <img
@@ -4364,7 +4364,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                       </div>
                     )}
                     <div className="p-4">
-                      <h3 className="mb-2 font-semibold text-sm text-gray-900 dark:text-gray-100 leading-snug">{proof.title}</h3>
+                      <h3 className="mb-2 font-medium text-sm text-gray-900 dark:text-gray-100 leading-snug">{proof.title}</h3>
                       <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{proof.body}</p>
                     </div>
                   </article>
@@ -4376,16 +4376,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           {seoDeepContent?.workflowSteps?.length ? (
             <div>
               <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">How it works</p>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Three steps, no setup</h2>
+                <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">How it works</p>
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">Three steps, no setup</h2>
               </div>
               <div className="grid gap-4 md:grid-cols-3">
                 {seoDeepContent.workflowSteps.map((step, idx) => (
-                  <article key={`step-${idx}`} className="relative rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-6 shadow-sm">
-                    <span className="mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-white text-sm font-bold" aria-hidden>
+                  <article key={`step-${idx}`} className="relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-6 shadow-sm">
+                    <span className="mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-sm font-medium" aria-hidden>
                       {idx + 1}
                     </span>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{step.title}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">{step.title}</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{step.detail}</p>
                   </article>
                 ))}
@@ -4397,16 +4397,16 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           {seoDeepContent?.outputExamples?.length ? (
             <div>
               <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">What you get</p>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Not raw text — ready-to-use content</h2>
+                <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">What you get</p>
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">Not raw text — ready-to-use content</h2>
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Transcript, summary, chapters, and subtitles. All from one upload.</p>
               </div>
               <div className="grid gap-4 md:grid-cols-3">
                 {seoDeepContent.outputExamples.map((example, idx) => {
-                  const accentBorder = ['border-t-violet-500', 'border-t-blue-500', 'border-t-emerald-500'][idx % 3]
+                  const accentBorder = ['border-t-blue-500', 'border-t-blue-500', 'border-t-emerald-500'][idx % 3]
                   return (
-                    <article key={`example-${idx}`} className={`rounded-2xl border border-gray-200 dark:border-gray-700 border-t-2 ${accentBorder} bg-white dark:bg-gray-900/70 p-6 shadow-sm`}>
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{example.title}</h3>
+                    <article key={`example-${idx}`} className={`rounded-xl border border-gray-200 dark:border-gray-700 border-t-2 ${accentBorder} bg-white dark:bg-gray-900/70 p-6 shadow-sm`}>
+                      <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">{example.title}</h3>
                       <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{example.body}</p>
                     </article>
                   )
@@ -4419,22 +4419,22 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           {seoDeepContent?.comparisonRows?.length ? (
             <div>
               <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">Compare</p>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">VideoText vs alternatives</h2>
+                <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">Compare</p>
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">VideoText vs alternatives</h2>
               </div>
-              <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                 <table className="min-w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/80">
-                      <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 w-1/3">Feature</th>
-                      <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400 w-1/3">VideoText</th>
-                      <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 w-1/3">Typical alternatives</th>
+                      <th className="px-5 py-4 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 w-1/3">Feature</th>
+                      <th className="px-5 py-4 text-left text-xs font-medium uppercase tracking-wide text-blue-600 dark:text-blue-400 w-1/3">VideoText</th>
+                      <th className="px-5 py-4 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 w-1/3">Typical alternatives</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-950/20">
                     {seoDeepContent.comparisonRows.map((row, idx) => (
                       <tr key={`cmp-${idx}`} className={idx % 2 === 1 ? 'bg-gray-50/60 dark:bg-gray-900/20' : ''}>
-                        <td className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{row.feature}</td>
+                        <td className="px-5 py-4 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{row.feature}</td>
                         <td className="px-5 py-4 font-medium text-gray-900 dark:text-gray-100">{row.videotext}</td>
                         <td className="px-5 py-4 text-gray-500 dark:text-gray-400">{row.alternatives}</td>
                       </tr>
@@ -4449,13 +4449,13 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           {seoDeepContent?.technicalExplanation?.length ? (
             <div>
               <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">How it works</p>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Why VideoText is faster than everyone else</h2>
+                <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">How it works</p>
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">Why VideoText is faster than everyone else</h2>
               </div>
               <div className="space-y-4">
                 {seoDeepContent.technicalExplanation.map((tech, idx) => (
-                  <article key={`tech-${idx}`} className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-6 shadow-sm">
-                    <h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">{tech.title}</h3>
+                  <article key={`tech-${idx}`} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-6 shadow-sm">
+                    <h3 className="mb-2 font-medium text-gray-900 dark:text-gray-100">{tech.title}</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{tech.body}</p>
                   </article>
                 ))}
@@ -4467,17 +4467,17 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
           {seoDeepContent?.useCases?.length ? (
             <div>
               <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">Who it's for</p>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Built for people who need it done fast</h2>
+                <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">Who it's for</p>
+                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">Built for people who need it done fast</h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 {seoDeepContent.useCases.map((useCase, idx) => (
-                  <article key={`usecase-${idx}`} className="flex items-start gap-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-5 shadow-sm">
-                    <span className="shrink-0 flex h-8 w-8 items-center justify-center rounded-xl bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-sm font-bold" aria-hidden>
+                  <article key={`usecase-${idx}`} className="flex items-start gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-5 shadow-sm">
+                    <span className="shrink-0 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium" aria-hidden>
                       {idx + 1}
                     </span>
                     <div className="min-w-0">
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">{useCase.title}</h3>
+                      <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">{useCase.title}</h3>
                       <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{useCase.body}</p>
                     </div>
                   </article>
@@ -4487,7 +4487,7 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
                 <div className="mt-8">
                   <Link
                     to={seoDeepContent.ctaPath}
-                    className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-violet-700 transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors shadow-sm"
                   >
                     {seoDeepContent.ctaText}
                     <ChevronRight className="w-4 h-4" aria-hidden />
@@ -4502,14 +4502,14 @@ export default function VideoToTranscript(props: VideoToTranscriptSeoProps = {})
       {faq.length > 0 && (
         <section className="py-16 px-4 sm:px-6 max-w-5xl mx-auto" aria-label="Frequently asked questions">
           <div className="mb-10">
-            <p className="text-xs font-semibold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-2">Got questions?</p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Frequently asked questions</h2>
+            <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">Got questions?</p>
+            <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">Frequently asked questions</h2>
           </div>
           <dl className="space-y-2">
             {faq.map((item, i) => (
-              <details key={i} className="group rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/50 overflow-hidden shadow-sm">
+              <details key={i} className="group rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/50 overflow-hidden shadow-sm">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 [&::-webkit-details-marker]:hidden">
-                  <dt className="text-sm font-semibold text-gray-900 dark:text-gray-100">{item.q}</dt>
+                  <dt className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.q}</dt>
                   <ChevronRight className="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 group-open:rotate-90" aria-hidden />
                 </summary>
                 <dd className="px-6 pb-5 text-sm text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-gray-800 pt-4">{item.a}</dd>

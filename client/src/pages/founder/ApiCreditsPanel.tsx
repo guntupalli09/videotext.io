@@ -10,7 +10,7 @@ function ProgressBar({ pct }: { pct: number }) {
   const empty = 20 - filled
   return (
     <div className="font-mono text-sm tracking-tight">
-      <span className="text-violet-400">{'█'.repeat(filled)}</span>
+      <span className="text-blue-400">{'█'.repeat(filled)}</span>
       <span className="text-zinc-700">{'░'.repeat(empty)}</span>
     </div>
   )
@@ -23,7 +23,7 @@ export default function ApiCreditsPanel({ data, onRefresh }: Props) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-white">OpenAI Credits</h3>
+          <h3 className="text-sm font-medium text-white">OpenAI Credits</h3>
           <button onClick={onRefresh} className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Refresh</button>
         </div>
         <p className="text-xs text-zinc-500">Loading…</p>
@@ -35,7 +35,7 @@ export default function ApiCreditsPanel({ data, onRefresh }: Props) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-white">OpenAI Credits</h3>
+          <h3 className="text-sm font-medium text-white">OpenAI Credits</h3>
           <button onClick={onRefresh} className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Refresh</button>
         </div>
         <p className="text-xs text-zinc-500">
@@ -64,13 +64,13 @@ export default function ApiCreditsPanel({ data, onRefresh }: Props) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white">OpenAI Credits</h3>
+        <h3 className="text-sm font-medium text-white">OpenAI Credits</h3>
         <button onClick={onRefresh} className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Refresh</button>
       </div>
       <ProgressBar pct={pctUsed} />
       <div className="mt-3 space-y-1">
-        <p className="text-sm font-semibold text-zinc-300">{pctUsed.toFixed(0)}% Used</p>
-        <p className="text-lg font-bold text-white">${available.toFixed(2)} Remaining</p>
+        <p className="text-sm font-medium text-zinc-300">{pctUsed.toFixed(0)}% Used</p>
+        <p className="text-lg font-medium text-white">${available.toFixed(2)} Remaining</p>
         <div className="flex gap-4 text-xs text-zinc-500 pt-1">
           <span>Used: <span className="text-zinc-400">${used.toFixed(2)}</span></span>
           <span>Total: <span className="text-zinc-400">${total.toFixed(2)}</span></span>

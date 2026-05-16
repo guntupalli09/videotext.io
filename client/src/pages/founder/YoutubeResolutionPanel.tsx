@@ -4,7 +4,7 @@ export default function YoutubeResolutionPanel({ data }: { data?: DashboardYoutu
   if (!data || data.total <= 0) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-        <h3 className="text-sm font-semibold text-white mb-2">YouTube resolution metrics (30d)</h3>
+        <h3 className="text-sm font-medium text-white mb-2">YouTube resolution metrics (30d)</h3>
         <p className="text-xs text-zinc-500">No YouTube resolution events yet.</p>
       </div>
     )
@@ -13,7 +13,7 @@ export default function YoutubeResolutionPanel({ data }: { data?: DashboardYoutu
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">YouTube resolution metrics (30d)</h3>
+        <h3 className="text-sm font-medium text-white">YouTube resolution metrics (30d)</h3>
         <span className="text-xs text-zinc-500">{data.total} jobs</span>
       </div>
 
@@ -56,7 +56,7 @@ function Metric({ label, value, danger = false }: { label: string; value: string
   return (
     <div className={`rounded-lg border px-3 py-2 ${danger ? 'border-red-900/40 bg-red-950/20' : 'border-zinc-800 bg-zinc-950/40'}`}>
       <p className="text-[10px] uppercase tracking-wider text-zinc-500">{label}</p>
-      <p className={`text-sm font-semibold ${danger ? 'text-red-400' : 'text-white'}`}>{value}</p>
+      <p className={`text-sm font-medium ${danger ? 'text-red-400' : 'text-white'}`}>{value}</p>
     </div>
   )
 }

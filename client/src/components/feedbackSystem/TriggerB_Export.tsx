@@ -91,7 +91,7 @@ export default function TriggerB_Export({ isOpen, toolId, onClose }: Props) {
                 onChange={(e) => setFreeText(e.target.value.slice(0, 500))}
                 placeholder="What was the issue?"
                 rows={2}
-                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:ring-2 focus:ring-violet-500 resize-none transition"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:ring-2 focus:ring-blue-500 resize-none transition"
                 autoFocus
               />
             </div>

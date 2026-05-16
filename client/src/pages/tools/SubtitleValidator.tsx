@@ -89,20 +89,20 @@ export default function SubtitleValidator() {
       ]}
     >
       <div className="space-y-4">
-        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-violet-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
+        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-blue-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
           <input ref={fileRef} type="file" accept=".srt,.vtt,.txt" className="hidden" onChange={handleFile} />
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{fileName || 'Click to upload SRT or VTT file'}</p>
           <p className="text-xs text-gray-400 mt-1">or paste content below</p>
         </div>
 
         <textarea
-          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Paste SRT or VTT content here…"
           value={text}
           onChange={(e) => { setText(e.target.value); setIssues(null) }}
         />
 
-        <button onClick={handleValidate} className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors">
+        <button onClick={handleValidate} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors">
           Validate File
         </button>
 
@@ -111,7 +111,7 @@ export default function SubtitleValidator() {
         {issues !== null && (
           <div className="space-y-3">
             <div className={`rounded-xl p-4 text-center ${isValid ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'}`}>
-              <p className={`text-lg font-bold ${isValid ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+              <p className={`text-lg font-medium ${isValid ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
                 {isValid ? '✓ No errors found' : `${errors.length} error${errors.length !== 1 ? 's' : ''}, ${warnings.length} warning${warnings.length !== 1 ? 's' : ''}`}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{cueCount} cues validated</p>
@@ -121,7 +121,7 @@ export default function SubtitleValidator() {
               <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
                 {issues.map((issue, i) => (
                   <div key={i} className={`flex gap-3 rounded-lg p-3 text-sm ${issue.severity === 'error' ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800' : 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800'}`}>
-                    <span className={`text-xs font-bold uppercase tracking-wide mt-0.5 ${issue.severity === 'error' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>{issue.severity === 'error' ? 'ERR' : 'WARN'}</span>
+                    <span className={`text-xs font-medium uppercase tracking-wide mt-0.5 ${issue.severity === 'error' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>{issue.severity === 'error' ? 'ERR' : 'WARN'}</span>
                     <span className="text-gray-700 dark:text-gray-300">{issue.message}</span>
                   </div>
                 ))}
@@ -129,7 +129,7 @@ export default function SubtitleValidator() {
             )}
 
             {!isValid && (
-              <a href="/fix-subtitles" className="block w-full py-2.5 rounded-xl border border-violet-300 dark:border-violet-600 text-violet-700 dark:text-violet-300 font-semibold text-sm text-center hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors">
+              <a href="/fix-subtitles" className="block w-full py-2.5 rounded-xl border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 font-medium text-sm text-center hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
                 Fix issues automatically with AI →
               </a>
             )}

@@ -26,7 +26,7 @@ export default function SubtitleEditor({
   return (
     <div className="mt-6 rounded-xl border border-gray-200 bg-white p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-800">Subtitle Editor</h3>
+        <h3 className="text-sm font-medium text-gray-800">Subtitle Editor</h3>
         {!editable && (
           <span className="rounded-full bg-gray-100 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-gray-500">
             Read-only on free plan
@@ -46,7 +46,7 @@ export default function SubtitleEditor({
               value={row.text}
               onChange={(e) => handleTextChange(idx, e.target.value)}
               readOnly={!editable}
-              className="h-16 w-full resize-none rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800 outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400 disabled:bg-gray-100"
+              className="h-16 w-full resize-none rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 disabled:bg-gray-100"
             />
           </div>
         ))}
