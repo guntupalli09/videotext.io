@@ -47,7 +47,7 @@ export default function LanguageSelector({
   return (
     <div className="mt-6 rounded-xl border border-gray-200 bg-white p-4">
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-800">
+        <h3 className="text-sm font-medium text-gray-800">
           Additional languages
         </h3>
         <span className="text-xs text-gray-500">
@@ -75,7 +75,7 @@ export default function LanguageSelector({
                 isPrimary
                   ? 'border-gray-300 bg-gray-50 text-gray-500'
                   : isSelected
-                  ? 'border-violet-500 bg-violet-50 text-violet-900'
+                  ? 'border-blue-500 bg-blue-50 text-blue-900'
                   : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
               } ${isDisabled ? 'cursor-not-allowed opacity-60' : ''}`}
             >

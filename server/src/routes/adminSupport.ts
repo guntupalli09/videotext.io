@@ -208,7 +208,7 @@ function alertHtml(emoji: string, title: string, body: string, fixHtml: string):
       <p style="margin:0 0 12px;color:#555;font-size:14px">${body}</p>
       <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#111">How to fix it:</p>
       ${fixHtml}
-      <p style="margin:20px 0 0;font-size:12px"><a href="https://videotext.io/founder" style="color:#7c3aed;text-decoration:none">Open Command Centre →</a></p>
+      <p style="margin:20px 0 0;font-size:12px"><a href="https://videotext.io/founder" style="color:#2563EB;text-decoration:none">Open Command Centre →</a></p>
     </div>
   `
 }
@@ -411,10 +411,10 @@ async function sendDigestEmail(to: string): Promise<void> {
         ${row('New signups', String(signups), signups > 0 ? '#059669' : undefined)}
         ${row('Jobs completed', String(jobs))}
         ${row('Jobs failed', `${failed} (${failRate}%)`, failed > 0 ? '#dc2626' : undefined)}
-        ${row('Live MRR', `$${(mrr / 100).toFixed(0)}`, '#7c3aed')}
+        ${row('Live MRR', `$${(mrr / 100).toFixed(0)}`, '#2563EB')}
         ${row('Paid users', String(paid))}
       </table>
-      <p style="margin:24px 0 0 0;font-size:12px"><a href="https://videotext.io/founder" style="color:#7c3aed;text-decoration:none">Open Command Centre →</a></p>
+      <p style="margin:24px 0 0 0;font-size:12px"><a href="https://videotext.io/founder" style="color:#2563EB;text-decoration:none">Open Command Centre →</a></p>
     </div>
   `
   await sendEmail(to, `VideoText Digest — ${dateLabel}`, html)

@@ -2,7 +2,7 @@ export default function Samples() {
   return (
     <main className="min-h-screen bg-white text-zinc-900">
       <section className="mx-auto max-w-5xl px-6 py-14">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Transcript & Subtitle Output Samples</h1>
+        <h1 className="text-3xl md:text-4xl font-medium tracking-tight">Transcript & Subtitle Output Samples</h1>
         <p className="mt-4 text-zinc-600 max-w-3xl">
           Real examples of what VideoText produces so buyers, teams, and auditors can evaluate output quality before starting.
           This page is designed for EEAT-style proof: transcript sample, subtitle preview, and workflow output bundle.
@@ -10,7 +10,7 @@ export default function Samples() {
       </section>
 
       <section className="mx-auto max-w-5xl px-6 pb-10">
-        <h2 className="text-2xl font-semibold">1) Transcript sample (speaker labels + timestamps)</h2>
+        <h2 className="text-2xl font-medium">1) Transcript sample (speaker labels + timestamps)</h2>
         <div className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50 p-5 overflow-x-auto">
           <pre className="text-sm leading-6 whitespace-pre-wrap">
 {`[00:00:02] Speaker 1: Welcome to the product walkthrough. In this video, we’ll cover setup, exports, and automation.
@@ -22,7 +22,7 @@ export default function Samples() {
       </section>
 
       <section className="mx-auto max-w-5xl px-6 pb-10">
-        <h2 className="text-2xl font-semibold">2) Subtitle preview (SRT format)</h2>
+        <h2 className="text-2xl font-medium">2) Subtitle preview (SRT format)</h2>
         <div className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50 p-5 overflow-x-auto">
           <pre className="text-sm leading-6 whitespace-pre-wrap">
 {`1
@@ -43,7 +43,7 @@ a YouTube URL to begin.`}
       </section>
 
       <section className="mx-auto max-w-5xl px-6 pb-16">
-        <h2 className="text-2xl font-semibold">3) Real workflow outputs (what you receive)</h2>
+        <h2 className="text-2xl font-medium">3) Real workflow outputs (what you receive)</h2>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           <li className="rounded-lg border border-zinc-200 p-4"><strong>Transcript:</strong> full text with timestamps and optional speaker labels.</li>
           <li className="rounded-lg border border-zinc-200 p-4"><strong>Subtitles:</strong> SRT and VTT files ready for YouTube, Vimeo, and social platforms.</li>

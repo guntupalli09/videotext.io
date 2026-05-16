@@ -39,7 +39,7 @@ function QueueStat({ label, value, warn = false, danger = false }: {
   const color = danger && value > 0 ? 'text-red-400' : warn && value > 0 ? 'text-amber-400' : 'text-white'
   return (
     <div className="flex flex-col items-center p-3 rounded-lg bg-zinc-800/60">
-      <span className={`text-xl font-bold tabular-nums ${color}`}>{value}</span>
+      <span className={`text-xl font-medium tabular-nums ${color}`}>{value}</span>
       <span className="text-xs text-zinc-500 mt-0.5">{label}</span>
     </div>
   )
@@ -73,7 +73,7 @@ export default function ServerHealth() {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white">Server health</h3>
+        <h3 className="text-sm font-medium text-white">Server health</h3>
         <div className="flex items-center gap-2">
           {lastChecked && (
             <span className="text-xs text-zinc-600">{lastChecked.toLocaleTimeString()}</span>

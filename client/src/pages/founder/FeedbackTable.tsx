@@ -62,10 +62,10 @@ export default function FeedbackTable({ feedback }: { feedback: DashboardFeedbac
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
       <div className="px-5 py-3 border-b border-zinc-800 flex items-center justify-between flex-wrap gap-2">
-        <h3 className="text-sm font-semibold text-white">All recent feedback</h3>
+        <h3 className="text-sm font-medium text-white">All recent feedback</h3>
         <div className="flex items-center gap-3">
           {surveyCount > 0 && (
-            <span className="text-xs bg-violet-900/40 text-violet-300 px-2 py-0.5 rounded-full">
+            <span className="text-xs bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded-full">
               {surveyCount} from survey
             </span>
           )}
@@ -73,7 +73,7 @@ export default function FeedbackTable({ feedback }: { feedback: DashboardFeedbac
           {feedback.length > 0 && (
             <button
               onClick={handleExport}
-              className="bg-violet-700 hover:bg-violet-600 text-white text-xs px-2.5 py-1 rounded transition-colors"
+              className="bg-blue-700 hover:bg-blue-600 text-white text-xs px-2.5 py-1 rounded transition-colors"
             >
               Export
             </button>
@@ -115,7 +115,7 @@ export default function FeedbackTable({ feedback }: { feedback: DashboardFeedbac
                       </td>
                       <td className="py-2.5 px-4">
                         {isSurvey ? (
-                          <span className="bg-violet-900/40 text-violet-300 px-1.5 py-0.5 rounded text-[10px] font-medium">survey</span>
+                          <span className="bg-blue-900/40 text-blue-300 px-1.5 py-0.5 rounded text-[10px] font-medium">survey</span>
                         ) : (
                           <span className="text-zinc-600">in-app</span>
                         )}
@@ -128,7 +128,7 @@ export default function FeedbackTable({ feedback }: { feedback: DashboardFeedbac
                       <td className="py-2.5 px-4 text-zinc-300 max-w-[260px] truncate" title={f.comment || undefined}>
                         {f.comment || '—'}
                         {hasMore && (
-                          <span className="ml-1 text-violet-400">{isExpanded ? '▲' : '▼'}</span>
+                          <span className="ml-1 text-blue-400">{isExpanded ? '▲' : '▼'}</span>
                         )}
                       </td>
                       <td className="py-2.5 px-4 text-zinc-600 whitespace-nowrap">

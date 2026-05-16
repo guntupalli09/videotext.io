@@ -91,20 +91,20 @@ export default function SubtitleWordCounter() {
       ]}
     >
       <div className="space-y-4">
-        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-violet-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
+        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-blue-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
           <input ref={fileRef} type="file" accept=".srt,.vtt,.txt" className="hidden" onChange={handleFile} />
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{fileName || 'Click to upload SRT or VTT file'}</p>
           <p className="text-xs text-gray-400 mt-1">or paste content below</p>
         </div>
-        <textarea className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Paste SRT or VTT content here…" value={text} onChange={(e) => { setText(e.target.value); setStats(null) }} />
-        <button onClick={handleCount} className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors">Count Words & Stats</button>
+        <textarea className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Paste SRT or VTT content here…" value={text} onChange={(e) => { setText(e.target.value); setStats(null) }} />
+        <button onClick={handleCount} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors">Count Words & Stats</button>
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}
         {stats && (
           <div className="space-y-3">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
               {[{ label: 'Words', val: stats.words.toLocaleString() }, { label: 'Characters', val: stats.chars.toLocaleString() }, { label: 'Cues', val: stats.cues }, { label: 'Duration', val: `${stats.durationMin.toFixed(1)} min` }].map((s) => (
-                <div key={s.label} className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-3">
-                  <p className="text-2xl font-bold text-violet-700 dark:text-violet-300">{s.val}</p>
+                <div key={s.label} className="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-3">
+                  <p className="text-2xl font-medium text-blue-700 dark:text-blue-300">{s.val}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{s.label}</p>
                 </div>
               ))}
@@ -112,14 +112,14 @@ export default function SubtitleWordCounter() {
             <div className="grid grid-cols-2 gap-2 text-center">
               {[{ label: 'Avg speaking rate', val: `${Math.round(stats.avgWpm)} WPM` }, { label: 'Avg reading speed', val: `${stats.avgCps.toFixed(1)} CPS` }].map((s) => (
                 <div key={s.label} className="rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-3">
-                  <p className="text-xl font-bold text-gray-800 dark:text-white">{s.val}</p>
+                  <p className="text-xl font-medium text-gray-800 dark:text-white">{s.val}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
             {stats.longestCue && (
               <div className="rounded-xl border border-gray-200 dark:border-gray-600 p-3">
-                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Longest cue ({stats.longestChars} chars)</p>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Longest cue ({stats.longestChars} chars)</p>
                 <p className="text-sm text-gray-700 dark:text-gray-300 italic">"{stats.longestCue.slice(0, 120)}{stats.longestCue.length > 120 ? '…' : ''}"</p>
               </div>
             )}

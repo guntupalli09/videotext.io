@@ -3,18 +3,18 @@ import { Link } from 'react-router-dom'
 import AnswerBlock from '../components/AnswerBlock'
 void React
 
-const CHECK = <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm">✓</span>
-const CROSS = <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 font-bold text-sm">✗</span>
-const PARTIAL = <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 font-bold text-sm">~</span>
+const CHECK = <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-medium text-sm">✓</span>
+const CROSS = <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 font-medium text-sm">✗</span>
+const PARTIAL = <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 font-medium text-sm">~</span>
 
 export default function VideoTextVsRev() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
 
         {/* Hero */}
-        <div className="bg-gradient-to-br from-slate-900 via-violet-950 to-violet-900 text-white py-16 px-6">
+        <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-blue-900 text-white py-16 px-6">
           <div className="mx-auto max-w-5xl">
-            <nav aria-label="Breadcrumb" className="text-sm text-violet-300 mb-6">
+            <nav aria-label="Breadcrumb" className="text-sm text-blue-300 mb-6">
               <Link to="/" className="hover:text-white">Home</Link>
               <span className="mx-2">›</span>
               <Link to="/compare" className="hover:text-white">Compare</Link>
@@ -22,16 +22,16 @@ export default function VideoTextVsRev() {
               <span className="text-white">VideoText vs Rev</span>
             </nav>
 
-            <div className="inline-block bg-orange-500/20 border border-orange-400/40 text-orange-200 text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wider">
+            <div className="inline-block bg-orange-500/20 border border-orange-400/40 text-orange-200 text-xs font-medium px-3 py-1 rounded-full mb-4 uppercase tracking-wider">
               Rev AI: $0.25/min · Rev Human: $1.50+/min · VideoText: ~$0.042/min
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4">
+            <h1 className="text-4xl md:text-5xl font-medium leading-tight mb-4">
               VideoText vs Rev (2025):<br />
-              <span className="text-violet-300">AI Workflow Speed vs Service-Based Transcription</span>
+              <span className="text-blue-300">AI Workflow Speed vs Service-Based Transcription</span>
             </h1>
 
-            <p className="seo-intro text-lg text-violet-200 max-w-3xl mb-8" data-speakable>
+            <p className="seo-intro text-lg text-blue-200 max-w-3xl mb-8" data-speakable>
               Rev charges <strong className="text-white">$0.25/minute (AI)</strong> or <strong className="text-white">$1.50+/minute (human)</strong> and retains your files for 30 days.
               VideoText costs <strong className="text-white">~$0.042/minute</strong> on a flat subscription, produces{' '}
               <strong className="text-white">transcript + SRT + VTT + summary + chapters</strong> per upload, and deletes your files immediately.
@@ -39,10 +39,10 @@ export default function VideoTextVsRev() {
             </p>
 
             <div className="flex flex-wrap gap-4 mb-10">
-              <Link to="/video-to-transcript" className="inline-flex items-center gap-2 bg-white text-violet-900 font-bold px-6 py-3 rounded-lg hover:bg-violet-50 transition-colors">
+              <Link to="/video-to-transcript" className="inline-flex items-center gap-2 bg-white text-blue-900 font-medium px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors">
                 Try VideoText Free
               </Link>
-              <Link to="/pricing" className="inline-flex items-center gap-2 border border-violet-400 text-white font-semibold px-6 py-3 rounded-lg hover:bg-violet-800 transition-colors">
+              <Link to="/pricing" className="inline-flex items-center gap-2 border border-blue-400 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-800 transition-colors">
                 See Pricing →
               </Link>
             </div>
@@ -55,8 +55,8 @@ export default function VideoTextVsRev() {
                 { stat: '4×', label: 'more outputs per upload vs Rev' },
               ].map(({ stat, label }) => (
                 <div key={label} className="bg-white/10 rounded-xl p-4 text-center" data-speakable>
-                  <div className="text-3xl font-extrabold text-white">{stat}</div>
-                  <div className="text-xs text-violet-200 mt-1">{label}</div>
+                  <div className="text-3xl font-medium text-white">{stat}</div>
+                  <div className="text-xs text-blue-200 mt-1">{label}</div>
                 </div>
               ))}
             </div>
@@ -81,19 +81,19 @@ export default function VideoTextVsRev() {
 
           {/* Pricing */}
           <section id="pricing">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">💰 Pricing: Rev vs VideoText</h2>
+            <h2 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-2">💰 Pricing: Rev vs VideoText</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
               Rev's per-minute model means your costs scale unboundedly. VideoText is a flat monthly subscription with a free tier.
-              See <Link to="/pricing" className="text-violet-600 hover:underline">VideoText pricing</Link> for details.
+              See <Link to="/pricing" className="text-blue-600 hover:underline">VideoText pricing</Link> for details.
             </p>
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800 mb-6">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800 mb-6">
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-                    <th className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Usage</th>
-                    <th className="px-5 py-3 text-left font-semibold text-orange-600">Rev AI ($0.25/min)</th>
-                    <th className="px-5 py-3 text-left font-semibold text-red-600">Rev Human ($1.50/min)</th>
-                    <th className="px-5 py-3 text-left font-semibold text-violet-700 dark:text-violet-400">VideoText Pro ($40/mo)</th>
+                    <th className="px-5 py-3 text-left font-medium text-gray-700 dark:text-gray-300">Usage</th>
+                    <th className="px-5 py-3 text-left font-medium text-orange-600">Rev AI ($0.25/min)</th>
+                    <th className="px-5 py-3 text-left font-medium text-red-600">Rev Human ($1.50/min)</th>
+                    <th className="px-5 py-3 text-left font-medium text-blue-700 dark:text-blue-400">VideoText Pro ($40/mo)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -105,9 +105,9 @@ export default function VideoTextVsRev() {
                   ].map(([usage, revai, revhuman, vt]) => (
                     <tr key={usage} className="hover:bg-gray-50 dark:hover:bg-gray-900/40">
                       <td className="px-5 py-3 text-gray-700 dark:text-gray-300">{usage}</td>
-                      <td className="px-5 py-3 text-orange-600 font-semibold">{revai}</td>
-                      <td className="px-5 py-3 text-red-600 font-semibold">{revhuman}</td>
-                      <td className="px-5 py-3 text-violet-700 dark:text-violet-400 font-bold">{vt}</td>
+                      <td className="px-5 py-3 text-orange-600 font-medium">{revai}</td>
+                      <td className="px-5 py-3 text-red-600 font-medium">{revhuman}</td>
+                      <td className="px-5 py-3 text-blue-700 dark:text-blue-400 font-medium">{vt}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -117,15 +117,15 @@ export default function VideoTextVsRev() {
 
           {/* Feature matrix */}
           <section id="features">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4 scroll-mt-20">📊 Feature Comparison</h2>
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800">
+            <h2 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4 scroll-mt-20">📊 Feature Comparison</h2>
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-                    <th className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 w-60">Feature</th>
-                    <th className="px-5 py-3 text-center font-semibold text-orange-600">Rev AI</th>
-                    <th className="px-5 py-3 text-center font-semibold text-red-600">Rev Human</th>
-                    <th className="px-5 py-3 text-center font-semibold text-violet-700 dark:text-violet-400">VideoText</th>
+                    <th className="px-5 py-3 text-left font-medium text-gray-700 dark:text-gray-300 w-60">Feature</th>
+                    <th className="px-5 py-3 text-center font-medium text-orange-600">Rev AI</th>
+                    <th className="px-5 py-3 text-center font-medium text-red-600">Rev Human</th>
+                    <th className="px-5 py-3 text-center font-medium text-blue-700 dark:text-blue-400">VideoText</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -140,11 +140,11 @@ export default function VideoTextVsRev() {
                     ['Chapter markers', CROSS, CROSS, CHECK],
                     ['YouTube URL direct input', CROSS, CROSS, CHECK],
                     ['Batch processing', PARTIAL, PARTIAL, CHECK],
-                    ['Language support', <span key="r-lang" className="text-orange-600 text-xs font-semibold">~36 languages</span>, <span key="rh-lang" className="text-red-600 text-xs">English primary</span>, <span key="v-lang" className="text-emerald-700 dark:text-emerald-400 text-xs font-bold">90+ languages</span>],
+                    ['Language support', <span key="r-lang" className="text-orange-600 text-xs font-medium">~36 languages</span>, <span key="rh-lang" className="text-red-600 text-xs">English primary</span>, <span key="v-lang" className="text-emerald-700 dark:text-emerald-400 text-xs font-medium">90+ languages</span>],
                     ['Zero data retention', CROSS, CROSS, CHECK],
                     ['Free tier', CROSS, CROSS, CHECK],
-                    ['Pricing', <span key="rai-p" className="text-orange-600 text-xs">$0.25/min</span>, <span key="rh-p" className="text-red-600 text-xs">$1.50+/min</span>, <span key="v-p" className="text-emerald-700 dark:text-emerald-400 text-xs font-bold">~$0.042/min flat</span>],
-                    ['Processing speed (1-hr video)', <span key="rai-s" className="text-orange-500 text-xs">5–10 min</span>, <span key="rh-s" className="text-red-500 text-xs">12–24 hrs</span>, <span key="v-s" className="text-emerald-700 dark:text-emerald-400 text-xs font-bold">3–5 min</span>],
+                    ['Pricing', <span key="rai-p" className="text-orange-600 text-xs">$0.25/min</span>, <span key="rh-p" className="text-red-600 text-xs">$1.50+/min</span>, <span key="v-p" className="text-emerald-700 dark:text-emerald-400 text-xs font-medium">~$0.042/min flat</span>],
+                    ['Processing speed (1-hr video)', <span key="rai-s" className="text-orange-500 text-xs">5–10 min</span>, <span key="rh-s" className="text-red-500 text-xs">12–24 hrs</span>, <span key="v-s" className="text-emerald-700 dark:text-emerald-400 text-xs font-medium">3–5 min</span>],
                     ['Burn subtitles into video', CROSS, CROSS, CHECK],
                     ['JSON / CSV export', CROSS, CROSS, CHECK],
                     ['Notion export', CROSS, CROSS, CHECK],
@@ -153,7 +153,7 @@ export default function VideoTextVsRev() {
                       <td className="px-5 py-3 text-gray-700 dark:text-gray-300 font-medium">{feature}</td>
                       <td className="px-5 py-3 text-center">{revai}</td>
                       <td className="px-5 py-3 text-center">{revhuman}</td>
-                      <td className="px-5 py-3 text-center bg-violet-50/40 dark:bg-violet-950/20">{vt}</td>
+                      <td className="px-5 py-3 text-center bg-blue-50/40 dark:bg-blue-950/20">{vt}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -162,11 +162,11 @@ export default function VideoTextVsRev() {
           </section>
 
           {/* Privacy */}
-          <section className="rounded-2xl border-2 border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/20 p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">🔒 Data Privacy: Rev Stores Your Content</h2>
+          <section className="rounded-xl border-2 border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/20 p-6">
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-3">🔒 Data Privacy: Rev Stores Your Content</h2>
             <div className="grid md:grid-cols-2 gap-4 text-sm mb-4">
               <div className="bg-white dark:bg-gray-900 rounded-xl border border-red-200 dark:border-red-900 p-4">
-                <div className="font-bold text-red-700 dark:text-red-400 mb-2">⚠️ Rev</div>
+                <div className="font-medium text-red-700 dark:text-red-400 mb-2">⚠️ Rev</div>
                 <ul className="space-y-1 text-gray-600 dark:text-gray-400 text-xs">
                   <li>Files retained for up to 30 days after processing</li>
                   <li>Human transcriptionists actively listen to your audio</li>
@@ -175,7 +175,7 @@ export default function VideoTextVsRev() {
                 </ul>
               </div>
               <div className="bg-white dark:bg-gray-900 rounded-xl border border-emerald-200 dark:border-emerald-900 p-4">
-                <div className="font-bold text-emerald-700 dark:text-emerald-400 mb-2">✅ VideoText</div>
+                <div className="font-medium text-emerald-700 dark:text-emerald-400 mb-2">✅ VideoText</div>
                 <ul className="space-y-1 text-gray-600 dark:text-gray-400 text-xs">
                   <li>Files deleted immediately after processing completes</li>
                   <li>Zero retention — nothing persists on servers</li>
@@ -184,14 +184,14 @@ export default function VideoTextVsRev() {
                 </ul>
               </div>
             </div>
-            <p className="text-sm font-semibold text-red-800 dark:text-red-300" data-speakable>
+            <p className="text-sm font-medium text-red-800 dark:text-red-300" data-speakable>
               If you process confidential conversations, client calls, HR recordings, or legally sensitive audio — Rev's 30-day retention and human reviewer access is a significant risk. VideoText's zero-retention model removes this exposure entirely.
             </p>
           </section>
 
           {/* When Rev still wins */}
-          <section className="rounded-2xl border border-amber-200 dark:border-amber-900 bg-amber-50/50 dark:bg-amber-950/20 p-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">When Rev Human is still the right choice</h2>
+          <section className="rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50/50 dark:bg-amber-950/20 p-6">
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-3">When Rev Human is still the right choice</h2>
             <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
               We're transparent: Rev Human wins in one specific case. When your workflow has a <em>legal or compliance requirement</em> for human-verified transcription — court proceedings, certain deposition transcripts, specific regulated healthcare workflows — Rev Human's certified human reviewers provide documentation that AI tools cannot.
             </p>
@@ -202,7 +202,7 @@ export default function VideoTextVsRev() {
 
           {/* FAQ */}
           <section id="faq">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">❓ FAQ — VideoText vs Rev</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">❓ FAQ — VideoText vs Rev</h2>
             <dl className="space-y-5">
               {[
                 {
@@ -239,7 +239,7 @@ export default function VideoTextVsRev() {
                 },
               ].map(({ q, a }) => (
                 <div key={q} className="border-b border-gray-100 dark:border-gray-800 pb-5 last:border-0 last:pb-0">
-                  <dt className="font-semibold text-gray-900 dark:text-white text-base mb-2">{q}</dt>
+                  <dt className="font-medium text-gray-900 dark:text-white text-base mb-2">{q}</dt>
                   <dd className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{a}</dd>
                 </div>
               ))}
@@ -247,25 +247,25 @@ export default function VideoTextVsRev() {
           </section>
 
           {/* CTA */}
-          <section className="rounded-2xl bg-gradient-to-br from-violet-700 to-violet-900 text-white p-8 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">Stop Paying Rev's Per-Minute Rate</h2>
-            <p className="text-violet-200 text-sm max-w-lg mx-auto mb-6">
+          <section className="rounded-xl bg-gradient-to-br from-blue-700 to-blue-900 text-white p-8 text-center">
+            <h2 className="text-2xl md:text-3xl font-medium mb-3">Stop Paying Rev's Per-Minute Rate</h2>
+            <p className="text-blue-200 text-sm max-w-lg mx-auto mb-6">
               Flat subscription. 90+ languages. Transcript + subtitles + summary + chapters per upload. Files deleted immediately. Free tier included.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/video-to-transcript" className="inline-flex items-center gap-2 bg-white text-violet-900 font-bold px-7 py-3.5 rounded-xl hover:bg-violet-50 transition-colors">
+              <Link to="/video-to-transcript" className="inline-flex items-center gap-2 bg-white text-blue-900 font-medium px-7 py-3.5 rounded-xl hover:bg-blue-50 transition-colors">
                 Try VideoText Free →
               </Link>
-              <Link to="/pricing" className="inline-flex items-center gap-2 border border-violet-400 text-white font-semibold px-6 py-3.5 rounded-xl hover:bg-violet-700 transition-colors">
+              <Link to="/pricing" className="inline-flex items-center gap-2 border border-blue-400 text-white font-medium px-6 py-3.5 rounded-xl hover:bg-blue-700 transition-colors">
                 View Plans
               </Link>
             </div>
-            <p className="mt-4 text-xs text-violet-300">3 uploads/day free · No credit card · Cancel anytime</p>
+            <p className="mt-4 text-xs text-blue-300">3 uploads/day free · No credit card · Cancel anytime</p>
           </section>
 
           {/* Internal links */}
-          <section aria-label="Related pages" className="rounded-xl border border-violet-200 dark:border-violet-900 bg-violet-50/60 dark:bg-violet-950/20 p-5 text-sm">
-            <div className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Related comparisons & tools:</div>
+          <section aria-label="Related pages" className="rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50/60 dark:bg-blue-950/20 p-5 text-sm">
+            <div className="font-medium text-gray-800 dark:text-gray-200 mb-3">Related comparisons & tools:</div>
             <div className="flex flex-wrap gap-x-4 gap-y-1.5">
               {[
                 { label: 'Temi vs VideoText', to: '/temi-vs-videotext' },
@@ -283,7 +283,7 @@ export default function VideoTextVsRev() {
                 { label: 'Best Transcription Tool', to: '/best-transcription-tool' },
                 { label: 'Pricing', to: '/pricing' },
               ].map(({ label, to }) => (
-                <Link key={to} to={to} className="text-violet-700 dark:text-violet-400 hover:underline">
+                <Link key={to} to={to} className="text-blue-700 dark:text-blue-400 hover:underline">
                   {label}
                 </Link>
               ))}

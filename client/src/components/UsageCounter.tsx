@@ -110,7 +110,7 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
         </span>
         <Link
           to="/pricing"
-          className="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap"
+          className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap"
         >
           Learn more →
         </Link>
@@ -140,14 +140,14 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
         </span>
         <div className="w-20 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 flex-shrink-0">
           <div
-            className={`rounded-full h-1.5 transition-all duration-500 ${isLow ? 'bg-amber-500' : 'bg-violet-600'}`}
+            className={`rounded-full h-1.5 transition-all duration-500 ${isLow ? 'bg-amber-500' : 'bg-blue-600'}`}
             style={{ width: `${usedPercent}%` }}
           />
         </div>
         {isLow && (
           <Link
             to="/pricing"
-            className="ml-auto text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap"
+            className="ml-auto text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap"
           >
             Upgrade →
           </Link>
@@ -171,7 +171,7 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
     }`}>
       <div className="px-4 pt-3.5 pb-2">
         <div className="flex items-center justify-between mb-2.5">
-          <p className={`text-sm font-semibold ${
+          <p className={`text-sm font-medium ${
             isExhausted ? 'text-red-700 dark:text-red-400' : 'text-gray-300'
           }`}>
             {isExhausted
@@ -184,7 +184,7 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
                 key={i}
                 className={`w-2.5 h-2.5 rounded-full transition-colors ${
                   i < filledDots
-                    ? isExhausted ? 'bg-red-400' : 'bg-violet-500'
+                    ? isExhausted ? 'bg-red-400' : 'bg-blue-600'
                     : 'bg-gray-600'
                 }`}
               />
@@ -195,7 +195,7 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
         <div className="w-full h-1.5 rounded-full bg-gray-700 overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-500 ${
-              isExhausted ? 'bg-red-500' : 'bg-gradient-to-r from-violet-500 to-indigo-500'
+              isExhausted ? 'bg-red-500' : 'bg-gradient-to-r from-blue-600 to-blue-400'
             }`}
             style={{ width: `${usedPercent}%` }}
           />
@@ -204,10 +204,10 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
 
       <Link
         to="/pricing"
-        className="flex items-center justify-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-500 transition-colors group"
+        className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-600 transition-colors group"
       >
         <Zap className="w-3.5 h-3.5 text-white" />
-        <span className="text-sm font-bold text-white tracking-wide uppercase">
+        <span className="text-sm font-medium text-white tracking-wide uppercase">
           Go Unlimited
         </span>
       </Link>
