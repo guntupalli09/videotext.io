@@ -20,14 +20,14 @@ const SPOTLIGHT_TOOLS = [
   {
     id: 'video-to-transcript',
     badge: 'Most popular',
-    badgeColor: 'bg-violet-500/15 text-violet-300 border border-violet-500/20',
+    badgeColor: 'bg-blue-600/15 text-blue-300 border border-blue-500/20',
     icon: FileText,
     name: 'Video → Transcript',
     tagline: 'From video to words at machine speed.',
     description:
       'Upload any video and get a clean, timestamped transcript. AI-powered with 98.5% accuracy. Export as TXT, PDF, DOCX, or JSON.',
     bullets: ['Speaker detection & labels', 'Auto chapters & summary', 'Pro: share read-only transcript links', '99 languages · Translation to 70+'],
-    gradient: 'from-violet-500 to-indigo-600',
+    gradient: 'from-blue-600 to-blue-700',
     glowColor: 'rgba(139,92,246,0.08)',
     href: '/video-to-transcript',
     cta: 'Upload a video, get transcript',
@@ -47,7 +47,7 @@ const SPOTLIGHT_TOOLS = [
     description:
       'Drop in transcript text and get a clear pass/fail summary, suggested fixes, and rule-by-rule checks — tuned for Rev, GoTranscript, TranscribeMe, Scribie, and custom client style guides.',
     bullets: ['Validation summary (what failed + why)', 'Rule cards you can edit per client', 'Consistency checks (labels, numbers, punctuation)', 'Export cleaned text for delivery'],
-    gradient: 'from-violet-500 to-fuchsia-600',
+    gradient: 'from-blue-600 to-fuchsia-600',
     glowColor: 'rgba(217,70,239,0.07)',
     href: '/guideline-format',
     cta: 'Format transcript →',
@@ -67,7 +67,7 @@ const SPOTLIGHT_TOOLS = [
     description:
       'Translate subtitles, documents, DOCX, TXT, and JSON into 70+ languages with formatting preserved.',
     bullets: ['Subtitles + documents', 'Formatting preserved', 'Fast turnaround', 'Export in common formats'],
-    gradient: 'from-pink-500 to-purple-600',
+    gradient: 'from-pink-500 to-blue-700',
     glowColor: 'rgba(236,72,153,0.07)',
     href: '/translate-subtitles',
     cta: 'Translate your file',
@@ -105,8 +105,8 @@ const SECONDARY_TOOLS = [
     icon: Mic,
     name: 'Voice → Text',
     description: 'Record in your browser — no file, no upload. Transcript in seconds.',
-    gradient: 'from-purple-500 to-violet-600',
-    accent: 'text-violet-400',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'text-blue-400',
     href: '/voice-recorder',
   },
   {
@@ -121,8 +121,8 @@ const SECONDARY_TOOLS = [
     icon: FolderSync,
     name: 'Batch Processing',
     description: 'Upload a whole season at once. Process 50+ videos in parallel and download as a ZIP.',
-    gradient: 'from-indigo-500 to-purple-600',
-    accent: 'text-indigo-400',
+    gradient: 'from-blue-500 to-blue-700',
+    accent: 'text-blue-400',
     href: '/batch-process',
   },
   {
@@ -169,7 +169,7 @@ function SpotlightCard({ tool, index }: { tool: (typeof SPOTLIGHT_TOOLS)[0]; ind
         <motion.div
           whileHover={{ y: -5 }}
           transition={{ duration: 0.22 }}
-          className="group relative h-full rounded-2xl border border-gray-200 dark:border-white/[0.07] bg-white dark:bg-gray-900 overflow-hidden hover:border-violet-300/60 dark:hover:border-violet-500/30 hover:shadow-2xl hover:shadow-violet-500/8 transition-all duration-300"
+          className="group relative h-full rounded-2xl border border-gray-200 dark:border-white/[0.07] bg-white dark:bg-gray-900 overflow-hidden hover:border-blue-300/60 dark:hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/8 transition-all duration-300"
           style={{ boxShadow: `0 0 0 0 ${tool.glowColor}` }}
         >
           {/* Subtle top gradient line */}
@@ -223,7 +223,7 @@ function SpotlightCard({ tool, index }: { tool: (typeof SPOTLIGHT_TOOLS)[0]; ind
               <div className="space-y-1.5">
                 {tool.outputPreview.map((line) => (
                   <div key={line.time} className="flex gap-2.5 items-start">
-                    <span className="text-[9px] font-mono text-violet-400/50 shrink-0 w-8 pt-0.5">
+                    <span className="text-[9px] font-mono text-blue-400/50 shrink-0 w-8 pt-0.5">
                       {line.time}
                     </span>
                     <p className="text-[11px] text-gray-600 dark:text-white/50 leading-snug transition-colors duration-500">
@@ -235,7 +235,7 @@ function SpotlightCard({ tool, index }: { tool: (typeof SPOTLIGHT_TOOLS)[0]; ind
             </div>
 
             {/* CTA */}
-            <div className="flex items-center gap-1.5 text-sm font-bold text-violet-600 dark:text-violet-400 group-hover:gap-3 transition-all">
+            <div className="flex items-center gap-1.5 text-sm font-bold text-blue-600 dark:text-blue-400 group-hover:gap-3 transition-all">
               {tool.cta}
               <ArrowRight className="w-4 h-4" />
             </div>
@@ -259,14 +259,14 @@ function SecondaryCard({ tool, index }: { tool: (typeof SECONDARY_TOOLS)[0]; ind
         <motion.div
           whileHover={{ y: -4 }}
           transition={{ duration: 0.2 }}
-          className="group h-full rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900 p-5 hover:border-violet-300/60 dark:hover:border-violet-500/25 hover:shadow-lg transition-all duration-300"
+          className="group h-full rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900 p-5 hover:border-blue-300/60 dark:hover:border-blue-500/25 hover:shadow-lg transition-all duration-300"
         >
           <div
             className={`w-9 h-9 rounded-lg bg-gradient-to-br ${tool.gradient} flex items-center justify-center mb-4 shadow-md`}
           >
             <Icon className="w-4.5 h-4.5 text-white" />
           </div>
-          <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1.5 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors font-display">
+          <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1.5 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors font-display">
             {tool.name}
           </h3>
           <p className="text-[13px] text-gray-500 dark:text-white/40 leading-relaxed mb-3 transition-colors duration-500">
@@ -294,7 +294,7 @@ export function Features() {
           transition={{ duration: 0.6 }}
           className="text-center mb-6"
         >
-          <p className="text-sm font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest mb-3 transition-colors duration-500">
+          <p className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 transition-colors duration-500">
             The full toolkit
           </p>
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
@@ -331,7 +331,7 @@ export function Features() {
           <Link to="/video-to-transcript">
             <motion.span
               whileHover={{ scale: 1.03, y: -1 }}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-7 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-violet-500/20 hover:shadow-xl hover:shadow-violet-500/30 transition-all"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-7 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all"
             >
               Start transcribing free
               <ArrowRight className="w-4 h-4" />

@@ -19,7 +19,7 @@ export default function TranscriptionBenchmark() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 py-12">
       <div className="mx-auto max-w-5xl px-6 space-y-8">
-        <Link to="/" className="text-sm text-violet-600 hover:text-violet-700">← Back to home</Link>
+        <Link to="/" className="text-sm text-blue-600 hover:text-blue-700">← Back to home</Link>
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Transcription benchmark</h1>
         <p className="text-gray-600 dark:text-gray-300">Evidence layer for broad transcription software buyers: speed-to-output, workflow depth, and where the trade-offs appear in real file-based jobs.</p>
 
@@ -34,7 +34,7 @@ export default function TranscriptionBenchmark() {
           ]}
         />
 
-        <section className="rounded-xl border border-purple-300 bg-purple-50/80 p-5 text-sm">
+        <section className="rounded-xl border border-blue-300 bg-blue-50/80 p-5 text-sm">
           <h2 className="text-lg font-bold text-gray-900">Why VideoText is faster than most transcription tools</h2>
           <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-700">
             <li>Processes long videos (1–2 hours) in ~3–5 minutes.</li>
@@ -93,25 +93,25 @@ export default function TranscriptionBenchmark() {
         <section className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-5 text-sm">
           <h2 className="text-lg font-bold text-gray-900">Use this benchmark in your buying decision</h2>
           <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-700">
-            <li>Need the working tool right now? Start at <Link to="/video-to-transcript" className="text-violet-700 hover:underline">video-to-transcript</Link>.</li>
-            <li>Need buyer guidance by workflow and trade-off? Read <Link to="/best-transcription-tool" className="text-violet-700 hover:underline">best-transcription-tool</Link>.</li>
-            <li>Need broad software context for stakeholders? Use <a href="https://blog.videotext.io/best-transcription-software-2026" className="text-violet-700 hover:underline">best transcription software 2026</a>.</li>
+            <li>Need the working tool right now? Start at <Link to="/video-to-transcript" className="text-blue-700 hover:underline">video-to-transcript</Link>.</li>
+            <li>Need buyer guidance by workflow and trade-off? Read <Link to="/best-transcription-tool" className="text-blue-700 hover:underline">best-transcription-tool</Link>.</li>
+            <li>Need broad software context for stakeholders? Use <a href="https://blog.videotext.io/best-transcription-software-2026" className="text-blue-700 hover:underline">best transcription software 2026</a>.</li>
           </ul>
         </section>
 
-        <section className="rounded-xl border border-violet-200 bg-violet-50/60 p-4 text-sm">
+        <section className="rounded-xl border border-blue-200 bg-blue-50/60 p-4 text-sm">
           <p className="font-semibold text-gray-900 mb-2">Related comparison pages</p>
           <div className="flex flex-wrap gap-3">
-            <Link to="/best-transcription-tool" className="text-violet-700 hover:underline">Best transcription tool</Link>
-            <Link to="/fastest-transcription-software" className="text-violet-700 hover:underline">Fastest transcription software</Link>
-            <Link to="/otter-vs-videotext" className="text-violet-700 hover:underline">Otter vs VideoText</Link>
-            <Link to="/descript-vs-videotext" className="text-violet-700 hover:underline">Descript vs VideoText</Link>
-            <Link to="/notta-alternative" className="text-violet-700 hover:underline">Notta alternative</Link>
-            <Link to="/otter-alternative" className="text-violet-700 hover:underline">Otter alternative</Link>
-            <Link to="/fireflies-alternative" className="text-violet-700 hover:underline">Fireflies alternative</Link>
-            <Link to="/trint-alternative" className="text-violet-700 hover:underline">Trint alternative</Link>
-            <Link to="/rev-alternative" className="text-violet-700 hover:underline">Rev alternative</Link>
-            <Link to="/ai-transcription-tools" className="text-violet-700 hover:underline">AI transcription tools</Link>
+            <Link to="/best-transcription-tool" className="text-blue-700 hover:underline">Best transcription tool</Link>
+            <Link to="/fastest-transcription-software" className="text-blue-700 hover:underline">Fastest transcription software</Link>
+            <Link to="/otter-vs-videotext" className="text-blue-700 hover:underline">Otter vs VideoText</Link>
+            <Link to="/descript-vs-videotext" className="text-blue-700 hover:underline">Descript vs VideoText</Link>
+            <Link to="/notta-alternative" className="text-blue-700 hover:underline">Notta alternative</Link>
+            <Link to="/otter-alternative" className="text-blue-700 hover:underline">Otter alternative</Link>
+            <Link to="/fireflies-alternative" className="text-blue-700 hover:underline">Fireflies alternative</Link>
+            <Link to="/trint-alternative" className="text-blue-700 hover:underline">Trint alternative</Link>
+            <Link to="/rev-alternative" className="text-blue-700 hover:underline">Rev alternative</Link>
+            <Link to="/ai-transcription-tools" className="text-blue-700 hover:underline">AI transcription tools</Link>
           </div>
         </section>
 

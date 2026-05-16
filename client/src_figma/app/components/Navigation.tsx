@@ -36,7 +36,7 @@ export function Navigation() {
             >
               <div className="relative">
                 <motion.div
-                  className="absolute inset-0 bg-purple-500/25 blur-lg rounded-full"
+                  className="absolute inset-0 bg-blue-600/25 blur-lg rounded-full"
                   animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.3, 1] }}
                   transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                 />
@@ -45,7 +45,7 @@ export function Navigation() {
               <span className="font-bold text-gray-900 dark:text-white text-lg tracking-tight relative">
                 VideoText
                 <motion.div
-                  className="absolute -bottom-0.5 left-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full"
+                  className="absolute -bottom-0.5 left-0 h-0.5 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full"
                   initial={{ width: 0 }}
                   whileHover={{ width: '100%' }}
                   transition={{ duration: 0.3 }}
@@ -86,7 +86,7 @@ export function Navigation() {
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 dark:hover:text-purple-400 transition-colors cursor-pointer"
+                          className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
                         >
                           {tool.name}
                         </motion.div>
@@ -106,7 +106,7 @@ export function Navigation() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="hidden sm:block bg-gradient-to-r from-purple-600 to-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:shadow-lg hover:shadow-purple-500/30 dark:hover:shadow-purple-500/50 transition-all text-sm"
+              className="hidden sm:block bg-gradient-to-r from-blue-600 to-blue-700 text-white px-5 py-2 rounded-lg font-medium hover:shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-500/50 transition-all text-sm"
             >
               Try Free
             </motion.button>

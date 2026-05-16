@@ -6,7 +6,7 @@ const steps = [
     icon: Upload,
     title: 'Upload file',
     description: 'Drop your video or paste a URL',
-    color: 'from-purple-500 to-purple-600'
+    color: 'from-blue-600 to-blue-700'
   },
   {
     icon: Zap,
@@ -27,7 +27,7 @@ export function HowItWorks() {
     <section className="relative py-24 px-6 bg-gradient-to-b from-gray-100 to-white dark:from-gray-950 dark:to-gray-900 transition-colors duration-500">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden opacity-30">
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-purple-600/30 dark:bg-purple-600/30 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-600/30 dark:bg-blue-600/30 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-blue-600/30 dark:bg-blue-600/30 rounded-full blur-3xl" />
       </div>
 
@@ -58,7 +58,7 @@ export function HowItWorks() {
               >
                 {/* Connector line */}
                 {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-20 left-1/2 w-full h-0.5 bg-gradient-to-r from-purple-500/50 to-transparent" />
+                  <div className="hidden md:block absolute top-20 left-1/2 w-full h-0.5 bg-gradient-to-r from-blue-600/50 to-transparent" />
                 )}
 
                 {/* Icon circle */}

@@ -114,7 +114,7 @@ export default function SuccessState({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.15, duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-            className="badge text-base font-semibold text-violet-600 dark:text-violet-400 px-3 py-1 bg-violet-50 dark:bg-violet-900/30 success-speed-badge rounded-full"
+            className="badge text-base font-semibold text-blue-600 dark:text-blue-400 px-3 py-1 bg-blue-50 dark:bg-blue-900/30 success-speed-badge rounded-full"
             aria-label={`Processed in ${processedInSeconds.toFixed(1)} seconds`}
           >
             Processed in {processedInSeconds.toFixed(1)}s ⚡

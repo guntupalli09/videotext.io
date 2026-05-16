@@ -144,7 +144,7 @@ export default function BurnSubtitles() {
               title: 'Video → Transcript',
               description: 'Extract text',
               icon: '📝',
-              color: 'from-purple-500 to-blue-500'
+              color: 'from-blue-600 to-blue-700'
             },
             {
               title: 'Translate Subtitles',
@@ -197,7 +197,7 @@ export default function BurnSubtitles() {
                 Caption style (preset)
               </label>
               <div className="grid grid-cols-2 gap-3">
-                <button className="p-4 rounded-xl border-2 border-gray-300 dark:border-gray-700 hover:border-purple-400 transition-all text-left">
+                <button className="p-4 rounded-xl border-2 border-gray-300 dark:border-gray-700 hover:border-blue-400 transition-all text-left">
                   <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">
                     Font size
                   </div>
@@ -205,7 +205,7 @@ export default function BurnSubtitles() {
                     Medium
                   </div>
                 </button>
-                <button className="p-4 rounded-xl border-2 border-gray-300 dark:border-gray-700 hover:border-purple-400 transition-all text-left">
+                <button className="p-4 rounded-xl border-2 border-gray-300 dark:border-gray-700 hover:border-blue-400 transition-all text-left">
                   <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">
                     Position
                   </div>
@@ -269,7 +269,7 @@ export default function BurnSubtitles() {
                   className="cursor-pointer"
                 >
                   {uploadedSubtitles ? (
-                    <div className="flex items-center justify-center gap-2 text-sm text-purple-600 dark:text-purple-400">
+                    <div className="flex items-center justify-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                       <span>{uploadedSubtitles.name}</span>
                       <button
                         onClick={(e) => {

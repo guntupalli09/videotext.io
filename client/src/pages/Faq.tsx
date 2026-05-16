@@ -224,43 +224,43 @@ export default function Faq() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 sm:py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="text-sm text-violet-600 hover:text-violet-700 font-medium mb-6 inline-block">
+        <Link to="/" className="text-sm text-blue-600 hover:text-blue-700 font-medium mb-6 inline-block">
           ← Back to home
         </Link>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">VideoText FAQ — privacy, billing, transcription, and client style guides</h1>
         <p className="text-gray-600 mb-6">
           Quick answers about privacy, accuracy, tools, billing, and client guideline prep. For step-by-step tool flows, see the{" "}
-          <Link to="/guide" className="text-violet-600 hover:text-violet-700 font-medium">how-to guide</Link>
+          <Link to="/guide" className="text-blue-600 hover:text-blue-700 font-medium">how-to guide</Link>
           {" "}(includes Format → Client guidelines). For competitor context, see{" "}
-          <Link to="/compare" className="text-violet-600 hover:text-violet-700 font-medium">VideoText vs Descript, Otter.ai, Trint</Link>.
+          <Link to="/compare" className="text-blue-600 hover:text-blue-700 font-medium">VideoText vs Descript, Otter.ai, Trint</Link>.
         </p>
 
-        <div className="mb-8 rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 to-white p-5 sm:p-6 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 mb-2">Freelancers & QA teams</p>
+        <div className="mb-8 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-5 sm:p-6 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-blue-600 mb-2">Freelancers & QA teams</p>
           <h2 className="text-lg font-bold text-gray-900 mb-2">Rev-style presets, client guideline upload, transcription QA prep</h2>
           <p className="text-sm text-gray-600 mb-4 leading-relaxed">
             Low-friction transcription style guide checklist inside VideoText: align clean vs full verbatim, tags, speaker labels, and payout-ready exports before you send work back.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link to="/guideline-format" className="inline-flex items-center justify-center rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition-colors">
+            <Link to="/guideline-format" className="inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition-colors">
               Format your transcript to a client style guide →
             </Link>
-            <Link to="/video-to-transcript" className="inline-flex items-center justify-center rounded-xl border border-violet-300 bg-white text-violet-700 text-sm font-semibold px-4 py-2.5 hover:bg-violet-50 transition-colors">
+            <Link to="/video-to-transcript" className="inline-flex items-center justify-center rounded-xl border border-blue-300 bg-white text-blue-700 text-sm font-semibold px-4 py-2.5 hover:bg-blue-50 transition-colors">
               Transcribe first →
             </Link>
-            <a href={`${BLOG_URL}/rev-style-guide-transcript-formatter`} className="inline-flex items-center text-sm font-medium text-violet-600 hover:text-violet-800 underline-offset-2 hover:underline">
+            <a href={`${BLOG_URL}/rev-style-guide-transcript-formatter`} className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 underline-offset-2 hover:underline">
               Read: Rev style guide transcript tips
             </a>
           </div>
         </div>
 
         {/* Trust highlight */}
-        <div className="mb-8 p-4 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-between gap-4 flex-wrap">
+        <div className="mb-8 p-4 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-between gap-4 flex-wrap">
           <p className="text-sm font-medium text-gray-800">
             Your files are processed and deleted. We don’t store your data.
           </p>
-          <Link to="/privacy" className="text-xs text-violet-600 hover:text-violet-700 font-medium whitespace-nowrap">
+          <Link to="/privacy" className="text-xs text-blue-600 hover:text-blue-700 font-medium whitespace-nowrap">
             Read our privacy policy →
           </Link>
         </div>
@@ -269,8 +269,8 @@ export default function Faq() {
         <div className="space-y-8">
           {grouped.map(({ category, items }) => (
             <section key={category}>
-              <h2 className="text-xs font-bold text-violet-600 uppercase tracking-widest mb-3 flex items-center gap-2">
-                <span className="w-5 h-px bg-violet-300" />
+              <h2 className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+                <span className="w-5 h-px bg-blue-600" />
                 {category}
               </h2>
               <div className="space-y-2">
@@ -285,7 +285,7 @@ export default function Faq() {
                         className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-gray-50 transition-colors"
                         aria-expanded={isOpen}
                       >
-                        <Icon className="w-5 h-5 shrink-0 text-violet-600" aria-hidden />
+                        <Icon className="w-5 h-5 shrink-0 text-blue-600" aria-hidden />
                         <span className="font-medium text-gray-900 flex-1 text-sm">{item.q}</span>
                         <ChevronDown
                           className={`w-5 h-5 shrink-0 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -313,8 +313,8 @@ export default function Faq() {
             { to: "/guideline-format", label: "Format your transcript to a client style guide →", desc: "Rev-, GoTranscript-, TranscribeMe-, Scribie-style cards + optional client file slot." },
             { to: "/blog", label: "Blog & how-tos →", desc: "QA, verbatim, freelance rates." },
           ].map(({ to, label, desc }) => (
-            <Link key={to} to={to} className="block bg-white border border-gray-200 rounded-xl p-4 hover:border-violet-300 hover:shadow-sm transition-all">
-              <span className="text-sm font-semibold text-violet-600">{label}</span>
+            <Link key={to} to={to} className="block bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-sm transition-all">
+              <span className="text-sm font-semibold text-blue-600">{label}</span>
               <p className="text-xs text-gray-500 mt-1">{desc}</p>
             </Link>
           ))}

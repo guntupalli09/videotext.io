@@ -57,8 +57,8 @@ export function ProcessingInterface({
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className="p-2 sm:p-2.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg shrink-0">
-              <FileVideo className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 dark:text-purple-400" />
+            <div className="p-2 sm:p-2.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg shrink-0">
+              <FileVideo className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-0.5 truncate">{file.name}</h3>
@@ -132,7 +132,7 @@ export function ProcessingInterface({
         whileTap={{ scale: 0.99 }}
         onClick={handleAction}
         disabled={actionLoading}
-        className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {actionLoading ? (
           <>

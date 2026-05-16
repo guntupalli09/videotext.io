@@ -67,13 +67,13 @@ export default function TrustBadge({ className = '' }: { className?: string }) {
 
   return (
     <div className={`flex justify-center ${className}`}>
-      <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/25 backdrop-blur-sm">
-        <TrendingUp className="w-3 h-3 text-violet-400 flex-shrink-0" />
-        <span className="text-[11px] font-semibold text-violet-300 tracking-wide tabular-nums">
+      <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-blue-600/10 border border-blue-500/25 backdrop-blur-sm">
+        <TrendingUp className="w-3 h-3 text-blue-400 flex-shrink-0" />
+        <span className="text-[11px] font-semibold text-blue-300 tracking-wide tabular-nums">
           {formatMinutes(minutesDisplay)} min processed
         </span>
-        <span className="w-px h-3 bg-violet-500/30" />
-        <span className="text-[11px] font-semibold text-violet-300 tracking-wide tabular-nums">
+        <span className="w-px h-3 bg-blue-600/30" />
+        <span className="text-[11px] font-semibold text-blue-300 tracking-wide tabular-nums">
           ~{formatMinutes(savedDisplay)} min saved on formatting &amp; QA
         </span>
       </div>

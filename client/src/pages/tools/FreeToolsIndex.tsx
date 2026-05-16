@@ -68,9 +68,9 @@ export default function FreeToolsIndex() {
         canonicalPath="/tools"
       />
       {/* Hero */}
-      <div className="bg-gradient-to-b from-violet-50 to-white dark:from-gray-800 dark:to-gray-900 border-b border-gray-100 dark:border-gray-700">
+      <div className="bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-4xl mx-auto px-4 py-12 sm:py-16 text-center">
-          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400 mb-3">
+          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-3">
             Free — No account, no upload limit
           </span>
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 dark:text-white leading-tight">
@@ -86,15 +86,15 @@ export default function FreeToolsIndex() {
         <OpenStatsStrip />
         {TOOLS.map((group) => (
           <section key={group.category}>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400 mb-4">{group.category}</h2>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-4">{group.category}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {group.items.map((tool) => (
                 <Link
                   key={tool.path}
                   to={tool.path}
-                  className="block rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:border-violet-300 dark:hover:border-violet-600 hover:bg-violet-50/50 dark:hover:bg-violet-900/10 transition-colors group"
+                  className="block rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors group"
                 >
-                  <p className="font-semibold text-sm text-violet-700 dark:text-violet-400 group-hover:underline">{tool.label}</p>
+                  <p className="font-semibold text-sm text-blue-700 dark:text-blue-400 group-hover:underline">{tool.label}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{tool.desc}</p>
                 </Link>
               ))}
@@ -103,19 +103,19 @@ export default function FreeToolsIndex() {
         ))}
 
         {/* CTA section */}
-        <section className="rounded-2xl bg-violet-600 px-6 py-10 text-center text-white">
-          <p className="text-xs font-semibold uppercase tracking-widest text-violet-200 mb-2">Ready for AI-powered subtitles?</p>
+        <section className="rounded-2xl bg-blue-600 px-6 py-10 text-center text-white">
+          <p className="text-xs font-semibold uppercase tracking-widest text-blue-200 mb-2">Ready for AI-powered subtitles?</p>
           <h2 className="text-xl sm:text-2xl font-display font-bold mb-2">
             Generate subtitles from any video — automatically
           </h2>
-          <p className="text-sm text-violet-200 mb-6 max-w-lg mx-auto">
+          <p className="text-sm text-blue-200 mb-6 max-w-lg mx-auto">
             Upload a video or paste a YouTube URL. VideoText generates accurate SRT and VTT files in seconds using AI. Free tier included.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link to="/video-to-subtitles" className="inline-block rounded-lg bg-white text-violet-700 font-semibold px-6 py-3 text-sm hover:bg-violet-50 transition-colors">
+            <Link to="/video-to-subtitles" className="inline-block rounded-lg bg-white text-blue-700 font-semibold px-6 py-3 text-sm hover:bg-blue-50 transition-colors">
               Generate subtitles free
             </Link>
-            <Link to="/video-to-transcript" className="inline-block rounded-lg border border-white/50 text-white font-semibold px-6 py-3 text-sm hover:bg-violet-700 transition-colors">
+            <Link to="/video-to-transcript" className="inline-block rounded-lg border border-white/50 text-white font-semibold px-6 py-3 text-sm hover:bg-blue-700 transition-colors">
               Transcribe video instantly
             </Link>
           </div>
@@ -128,7 +128,7 @@ export default function FreeToolsIndex() {
             These tools are completely free and run in your browser. They require no account, no subscription, and no data is sent to our servers. They're designed for video creators, subtitle editors, accessibility specialists, and content teams who need quick utilities without signing up for another tool.
           </p>
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed mt-3">
-            When you need more — like AI-generated subtitles from video, translation to 70+ languages, or batch processing hundreds of videos — <Link to="/video-to-subtitles" className="text-violet-600 hover:underline">VideoText's paid tools</Link> are right here.
+            When you need more — like AI-generated subtitles from video, translation to 70+ languages, or batch processing hundreds of videos — <Link to="/video-to-subtitles" className="text-blue-600 hover:underline">VideoText's paid tools</Link> are right here.
           </p>
         </section>
       </div>

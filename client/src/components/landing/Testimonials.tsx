@@ -24,10 +24,10 @@ const TESTIMONIALS = [
     meta: 'The Growth Lab Network',
     avatar: 'https://i.pravatar.cc/80?img=47',
     platform: Mic,
-    platformColor: 'text-violet-400',
+    platformColor: 'text-blue-400',
     result: 'Replaced contractor + same-day delivery',
-    resultBg: 'bg-violet-500/10 text-violet-400 border border-violet-500/20',
-    accentColor: 'from-violet-500/20 to-transparent',
+    resultBg: 'bg-blue-600/10 text-blue-400 border border-blue-500/20',
+    accentColor: 'from-blue-600/20 to-transparent',
   },
   {
     quote:
@@ -68,7 +68,7 @@ export function Testimonials() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-sm font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest mb-3 transition-colors duration-500">
+          <p className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 transition-colors duration-500">
             Real results
           </p>
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">

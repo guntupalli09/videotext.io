@@ -78,7 +78,7 @@ export default function AspectRatioCalculator() {
         {/* Mode toggle */}
         <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600">
           {[{ key: 'detect', label: 'Detect ratio from dimensions' }, { key: 'calculate', label: 'Calculate dimension from ratio' }].map((m) => (
-            <button key={m.key} onClick={() => setMode(m.key as typeof mode)} className={`flex-1 py-2.5 text-sm font-medium transition-colors ${mode === m.key ? 'bg-violet-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>
+            <button key={m.key} onClick={() => setMode(m.key as typeof mode)} className={`flex-1 py-2.5 text-sm font-medium transition-colors ${mode === m.key ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>
               {m.label}
             </button>
           ))}
@@ -89,18 +89,18 @@ export default function AspectRatioCalculator() {
             <div className="flex gap-4 items-center">
               <div className="flex-1">
                 <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1.5">Width (px)</label>
-                <input type="number" min={1} value={widthIn} onChange={(e) => setWidthIn(e.target.value)} placeholder="1920" className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                <input type="number" min={1} value={widthIn} onChange={(e) => setWidthIn(e.target.value)} placeholder="1920" className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <span className="text-gray-400 font-bold mt-5">×</span>
               <div className="flex-1">
                 <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1.5">Height (px)</label>
-                <input type="number" min={1} value={heightIn} onChange={(e) => setHeightIn(e.target.value)} placeholder="1080" className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                <input type="number" min={1} value={heightIn} onChange={(e) => setHeightIn(e.target.value)} placeholder="1080" className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
 
             {detectedRatio && (
-              <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-5 text-center">
-                <p className="text-4xl font-display font-bold text-violet-700 dark:text-violet-300">{detectedRatio}</p>
+              <div className="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-5 text-center">
+                <p className="text-4xl font-display font-bold text-blue-700 dark:text-blue-300">{detectedRatio}</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">decimal: {decimalRatio}</p>
                 <p className="text-xs text-gray-400 mt-2">{widthIn}×{heightIn} pixels</p>
               </div>
@@ -112,16 +112,16 @@ export default function AspectRatioCalculator() {
               <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">Select ratio</p>
               <div className="grid grid-cols-3 gap-2">
                 {COMMON_RATIOS.map((r) => (
-                  <button key={r.ratio} onClick={() => { setRatioW(String(r.w)); setRatioH(String(r.h)) }} className={`p-2 rounded-lg text-xs font-semibold border transition-colors ${ratioW === String(r.w) && ratioH === String(r.h) ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300' : 'border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-violet-300'}`}>
+                  <button key={r.ratio} onClick={() => { setRatioW(String(r.w)); setRatioH(String(r.h)) }} className={`p-2 rounded-lg text-xs font-semibold border transition-colors ${ratioW === String(r.w) && ratioH === String(r.h) ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-300'}`}>
                     {r.ratio}
                     <span className="block font-normal text-gray-400 text-xs">{r.desc}</span>
                   </button>
                 ))}
               </div>
               <div className="flex gap-3 mt-3 items-end">
-                <div className="flex-1"><label className="text-xs text-gray-500">Custom W</label><input type="number" min={1} value={ratioW} onChange={(e) => setRatioW(e.target.value)} className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+                <div className="flex-1"><label className="text-xs text-gray-500">Custom W</label><input type="number" min={1} value={ratioW} onChange={(e) => setRatioW(e.target.value)} className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
                 <span className="text-gray-400 font-bold pb-2">:</span>
-                <div className="flex-1"><label className="text-xs text-gray-500">Custom H</label><input type="number" min={1} value={ratioH} onChange={(e) => setRatioH(e.target.value)} className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+                <div className="flex-1"><label className="text-xs text-gray-500">Custom H</label><input type="number" min={1} value={ratioH} onChange={(e) => setRatioH(e.target.value)} className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
               </div>
             </div>
 
@@ -129,18 +129,18 @@ export default function AspectRatioCalculator() {
               <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">I know the…</p>
               <div className="flex gap-2 mb-3">
                 {(['width', 'height'] as const).map((d) => (
-                  <button key={d} onClick={() => setKnownDim(d)} className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors border ${knownDim === d ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>
+                  <button key={d} onClick={() => setKnownDim(d)} className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors border ${knownDim === d ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>
                     {d.charAt(0).toUpperCase() + d.slice(1)}
                   </button>
                 ))}
               </div>
-              <input type="number" min={1} value={knownVal} onChange={(e) => setKnownVal(e.target.value)} placeholder={knownDim === 'width' ? '1920' : '1080'} className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+              <input type="number" min={1} value={knownVal} onChange={(e) => setKnownVal(e.target.value)} placeholder={knownDim === 'width' ? '1920' : '1080'} className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
             {calcResult && (
-              <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-5 text-center">
+              <div className="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-5 text-center">
                 <p className="text-sm text-gray-500 dark:text-gray-400">{knownDim === 'width' ? 'Height' : 'Width'}</p>
-                <p className="text-4xl font-display font-bold text-violet-700 dark:text-violet-300 mt-1">{calcResult}px</p>
+                <p className="text-4xl font-display font-bold text-blue-700 dark:text-blue-300 mt-1">{calcResult}px</p>
                 <p className="text-xs text-gray-400 mt-2">
                   {knownDim === 'width' ? `${knownVal} × ${calcResult}` : `${calcResult} × ${knownVal}`} at {ratioW}:{ratioH}
                 </p>
@@ -155,7 +155,7 @@ export default function AspectRatioCalculator() {
           <div className="divide-y divide-gray-100 dark:divide-gray-700">
             {COMMON_RATIOS.map((r) => (
               <div key={r.ratio} className="flex justify-between items-center px-4 py-2 text-sm">
-                <span className="font-mono font-semibold text-violet-700 dark:text-violet-400">{r.ratio}</span>
+                <span className="font-mono font-semibold text-blue-700 dark:text-blue-400">{r.ratio}</span>
                 <span className="text-gray-600 dark:text-gray-300">{r.desc}</span>
               </div>
             ))}

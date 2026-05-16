@@ -50,7 +50,7 @@ export default function ResetPassword() {
             This link is invalid or has expired. Request a new password reset from the login page.
           </p>
           <p className="mt-6">
-            <Link to="/forgot-password" className="text-violet-600 dark:text-violet-400 hover:underline">
+            <Link to="/forgot-password" className="text-blue-600 dark:text-blue-400 hover:underline">
               Forgot password
             </Link>
           </p>
@@ -94,7 +94,7 @@ export default function ResetPassword() {
               required
               minLength={8}
               autoComplete="new-password"
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="••••••••"
             />
           </label>
@@ -107,7 +107,7 @@ export default function ResetPassword() {
               required
               minLength={8}
               autoComplete="new-password"
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="••••••••"
             />
           </label>
@@ -119,13 +119,13 @@ export default function ResetPassword() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white font-medium transition-colors"
+            className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-medium transition-colors"
           >
             {loading ? 'Updating…' : 'Update password'}
           </button>
         </form>
         <p className="mt-6 text-center">
-          <Link to="/login" className="text-sm text-violet-600 dark:text-violet-400 hover:underline">
+          <Link to="/login" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
             ← Back to log in
           </Link>
         </p>

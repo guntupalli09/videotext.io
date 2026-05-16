@@ -30,7 +30,7 @@ interface BrandGuidelinePageProps {
 function VerbatimBadge({ style }: { style: BrandData['verbatimStyle'] }) {
   const labels = {
     clean: { label: 'Clean Verbatim', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
-    intelligent: { label: 'Intelligent Verbatim', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' },
+    intelligent: { label: 'Intelligent Verbatim', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
     strict: { label: 'Strict / Full Verbatim', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' },
   }
   const { label, color } = labels[style]
@@ -141,13 +141,13 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
       <nav className="max-w-5xl mx-auto px-6 pt-6 pb-2" aria-label="Breadcrumb">
         <ol className="flex items-center gap-1.5 text-sm text-gray-400 dark:text-gray-500">
           <li>
-            <Link to="/" className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+            <Link to="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               Home
             </Link>
           </li>
           <li><ChevronRight className="w-3.5 h-3.5" /></li>
           <li>
-            <Link to="/guideline-format" className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+            <Link to="/guideline-format" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               Guideline Format
             </Link>
           </li>
@@ -158,10 +158,10 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
 
       {/* Hero */}
       <section className="relative pt-10 pb-16 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-white to-indigo-50 dark:from-violet-950/20 dark:via-gray-950 dark:to-indigo-950/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-950/20 dark:via-gray-950 dark:to-blue-950/20" />
         <div className="relative z-10 max-w-5xl mx-auto px-6">
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 uppercase tracking-wide">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 uppercase tracking-wide">
               {brand.brandName} Style Guide
             </span>
             <VerbatimBadge style={brand.verbatimStyle} />
@@ -176,7 +176,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <Link
               to="/guideline-format"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-violet-500/20 hover:shadow-xl transition-all"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-blue-500/20 hover:shadow-xl transition-all"
             >
               <Zap className="w-4 h-4" />
               Format Your Transcript to {brand.shortName} Standards
@@ -184,7 +184,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
             </Link>
             <a
               href="#quick-rules"
-              className="inline-flex items-center gap-2 text-violet-600 dark:text-violet-400 font-semibold text-sm hover:underline"
+              className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold text-sm hover:underline"
             >
               <ClipboardList className="w-4 h-4" />
               Jump to Quick Reference
@@ -199,7 +199,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
         <section aria-labelledby="overview-heading">
           <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8 border border-gray-100 dark:border-gray-800">
             <div className="flex items-start gap-4 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -308,8 +308,8 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
           </p>
           <ul className="space-y-3">
             {brand.keyDifferences.map((diff, i) => (
-              <li key={i} className="flex items-start gap-3 bg-violet-50 dark:bg-violet-950/20 rounded-xl px-5 py-4 border border-violet-100 dark:border-violet-900/30">
-                <Star className="w-4 h-4 text-violet-500 flex-shrink-0 mt-0.5" />
+              <li key={i} className="flex items-start gap-3 bg-blue-50 dark:bg-blue-950/20 rounded-xl px-5 py-4 border border-blue-100 dark:border-blue-900/30">
+                <Star className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
                 <span className="text-gray-800 dark:text-gray-200 text-[15px]">{diff}</span>
               </li>
             ))}
@@ -393,7 +393,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
             ].map((item) => (
               <div key={item.label} className="bg-white dark:bg-gray-900 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
                 <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">{item.label}</p>
-                <code className="text-sm font-mono text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/20 px-2 py-1 rounded block mb-2">
+                <code className="text-sm font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20 px-2 py-1 rounded block mb-2">
                   {item.notation}
                 </code>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{item.desc}</p>
@@ -403,7 +403,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
         </section>
 
         {/* Workflow: How to use the GuidelineFormat tool */}
-        <section aria-labelledby="workflow-heading" className="bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-950/20 dark:to-indigo-950/20 rounded-2xl p-8 border border-violet-100 dark:border-violet-900/30">
+        <section aria-labelledby="workflow-heading" className="bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-950/20 dark:to-blue-950/20 rounded-2xl p-8 border border-blue-100 dark:border-blue-900/30">
           <h2 id="workflow-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
             Format Your Transcript to {brand.brandName} Standards Automatically
           </h2>
@@ -419,7 +419,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
               { step: '5', title: 'Export the corrected transcript', detail: 'Copy the QA-validated output ready to submit to ' + brand.brandName + '.' },
             ].map(({ step, title, detail }) => (
               <li key={step} className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
                   {step}
                 </div>
                 <div>
@@ -431,7 +431,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
           </ol>
           <Link
             to="/guideline-format"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-violet-500/20 hover:shadow-xl transition-all"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-blue-500/20 hover:shadow-xl transition-all"
           >
             <FileText className="w-4 h-4" />
             Open {brand.brandName} Guideline Formatter
@@ -470,10 +470,10 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
                 ].map((row, i) => (
                   <tr
                     key={row.platform}
-                    className={`border-b border-gray-100 dark:border-gray-800 last:border-0 ${row.platform === brand.brandName ? 'bg-violet-50 dark:bg-violet-950/20 font-semibold' : i % 2 === 0 ? 'bg-white dark:bg-gray-950' : 'bg-gray-50/50 dark:bg-gray-900/50'}`}
+                    className={`border-b border-gray-100 dark:border-gray-800 last:border-0 ${row.platform === brand.brandName ? 'bg-blue-50 dark:bg-blue-950/20 font-semibold' : i % 2 === 0 ? 'bg-white dark:bg-gray-950' : 'bg-gray-50/50 dark:bg-gray-900/50'}`}
                   >
                     <td className="px-5 py-4 text-gray-900 dark:text-white align-top flex items-center gap-2">
-                      {row.platform === brand.brandName && <CheckCircle2 className="w-4 h-4 text-violet-500 flex-shrink-0" />}
+                      {row.platform === brand.brandName && <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />}
                       {row.platform}
                     </td>
                     <td className="px-5 py-4 text-gray-600 dark:text-gray-300 align-top">{row.verbatim}</td>
@@ -513,9 +513,9 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
               <Link
                 key={link.path}
                 to={link.path}
-                className="flex items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-violet-300 dark:hover:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-950/20 transition-all text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="flex items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                <FileText className="w-3.5 h-3.5 text-violet-500 flex-shrink-0" />
+                <FileText className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
                 <span className="truncate">{link.label}</span>
               </Link>
             ))}
@@ -523,7 +523,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
           <div className="mt-4 text-center">
             <Link
               to="/guideline-format"
-              className="inline-flex items-center gap-2 text-violet-600 dark:text-violet-400 font-semibold text-sm hover:underline"
+              className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold text-sm hover:underline"
             >
               View all transcription style guides
               <ChevronRight className="w-4 h-4" />

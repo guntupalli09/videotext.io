@@ -8,10 +8,10 @@ interface UploadZoneProps {
   onFileSelect?: (file: File) => void;
 }
 
-export function UploadZone({ 
-  maxSize = '2 GB', 
+export function UploadZone({
+  maxSize = '2 GB',
   acceptedFormats = ['MP4', 'MOV', 'AVI', 'MKV'],
-  onFileSelect 
+  onFileSelect
 }: UploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success'>('idle');
@@ -31,7 +31,7 @@ export function UploadZone({
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const file = e.dataTransfer.files[0];
     if (file) {
       handleFile(file);
@@ -55,7 +55,7 @@ export function UploadZone({
     const interval = setInterval(() => {
       currentProgress += 10;
       setProgress(currentProgress);
-      
+
       if (currentProgress >= 100) {
         clearInterval(interval);
         setUploadStatus('success');
@@ -74,14 +74,14 @@ export function UploadZone({
           borderColor: isDragging ? 'rgb(168, 85, 247)' : undefined
         }}
         className={`relative overflow-hidden rounded-3xl border-2 border-dashed transition-all duration-300 ${
-          isDragging 
-            ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' 
+          isDragging
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
             : 'border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50'
         }`}
       >
         {/* Animated background gradient */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-blue-500/5 to-pink-500/5"
+          className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-blue-400/5 to-blue-300/5"
           animate={{
             opacity: isDragging ? 1 : 0,
           }}
@@ -93,10 +93,10 @@ export function UploadZone({
             <>
               {/* Upload icon with animation */}
               <motion.div
-                animate={{ 
+                animate={{
                   y: isDragging ? -10 : [0, -10, 0],
                 }}
-                transition={{ 
+                transition={{
                   duration: isDragging ? 0.3 : 2,
                   repeat: isDragging ? 0 : Infinity,
                   ease: "easeInOut"
@@ -106,15 +106,15 @@ export function UploadZone({
                 <div className="relative">
                   {/* Glow effect */}
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full blur-2xl opacity-30"
+                    className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full blur-2xl opacity-30"
                     animate={{
                       scale: [1, 1.2, 1],
                       opacity: [0.3, 0.5, 0.3]
                     }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
-                  
-                  <div className="relative w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-xl">
+
+                  <div className="relative w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-xl">
                     <Upload className="w-10 h-10 text-white" />
                   </div>
                 </div>
@@ -123,10 +123,10 @@ export function UploadZone({
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                 Drag and drop your file
               </h3>
-              
+
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 or{' '}
-                <label className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold cursor-pointer transition-colors">
+                <label className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold cursor-pointer transition-colors">
                   click to browse
                   <input
                     type="file"
@@ -165,7 +165,7 @@ export function UploadZone({
                 animate={{ scale: 1, rotate: 0 }}
                 className="flex justify-center"
               >
-                <div className="relative w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-xl">
+                <div className="relative w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-xl">
                   <Loader2 className="w-10 h-10 text-white animate-spin" />
                 </div>
               </motion.div>
@@ -174,11 +174,11 @@ export function UploadZone({
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                   Uploading {fileName}
                 </h3>
-                
+
                 <div className="max-w-md mx-auto">
                   <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-purple-600 to-blue-600"
+                      className="h-full bg-gradient-to-r from-blue-600 to-blue-700"
                       initial={{ width: 0 }}
                       animate={{ width: `${progress}%` }}
                       transition={{ duration: 0.3 }}

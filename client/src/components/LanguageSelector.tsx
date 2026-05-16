@@ -75,7 +75,7 @@ export default function LanguageSelector({
                 isPrimary
                   ? 'border-gray-300 bg-gray-50 text-gray-500'
                   : isSelected
-                  ? 'border-violet-500 bg-violet-50 text-violet-900'
+                  ? 'border-blue-500 bg-blue-50 text-blue-900'
                   : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
               } ${isDisabled ? 'cursor-not-allowed opacity-60' : ''}`}
             >

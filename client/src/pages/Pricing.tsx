@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom'
 function Check({ gold = false }: { gold?: boolean }) {
   return (
     <svg
-      className={`w-4 h-4 shrink-0 mt-0.5 ${gold ? 'text-amber-500' : 'text-violet-500'}`}
+      className={`w-4 h-4 shrink-0 mt-0.5 ${gold ? 'text-amber-500' : 'text-blue-600'}`}
       fill="currentColor" viewBox="0 0 20 20" aria-hidden
     >
       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -124,7 +124,7 @@ export default function Pricing() {
 
         {/* Header */}
         <div className="text-center mb-14">
-          <p className="text-sm font-medium text-violet-600 dark:text-violet-400 mb-3 tracking-wide uppercase">Pricing</p>
+          <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-3 tracking-wide uppercase">Pricing</p>
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white tracking-tight">
             The complete transcription workflow
           </h1>
@@ -162,9 +162,9 @@ export default function Pricing() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
 
           {/* FREE */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('free') ? 'border-violet-300 dark:border-violet-600 ring-2 ring-violet-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('free') ? 'border-blue-300 dark:border-blue-600 ring-2 ring-blue-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
             {isCurrentPlan('free') && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
                 Current Plan
               </span>
             )}
@@ -208,15 +208,15 @@ export default function Pricing() {
           </div>
 
           {/* PRO */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('pro') ? 'border-violet-400 dark:border-violet-500 ring-2 ring-violet-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('pro') ? 'border-blue-400 dark:border-blue-500 ring-2 ring-blue-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
             {isCurrentPlan('pro') && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
                 Current Plan
               </span>
             )}
 
             <div className="mb-6">
-              <h3 className="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-widest">Pro</h3>
+              <h3 className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Pro</h3>
               <div className="mt-2 flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-gray-900 dark:text-white">$40</span>
                 <span className="text-sm text-gray-500 dark:text-gray-400">/ mo</span>
@@ -247,7 +247,7 @@ export default function Pricing() {
             <button
               onClick={() => isCurrentPlan('pro') ? handleManageSubscription() : handleSubscribe('pro')}
               disabled={(isCurrentPlan('pro') && portalLoading) || checkoutLoading !== null}
-              className="w-full py-3.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm shadow-lg shadow-violet-900/20 transition-colors disabled:opacity-60"
+              className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-600 text-white font-semibold text-sm shadow-lg shadow-blue-900/20 transition-colors disabled:opacity-60"
             >
               {isCurrentPlan('pro')
                 ? (portalLoading ? 'Opening…' : 'Manage subscription')
@@ -340,8 +340,8 @@ export default function Pricing() {
                 quote: 'We produce 24 episodes a month across three shows. Batch processing handles the entire queue at once — transcripts, show notes, chapters, everything automated. It replaced a part-time contractor.',
                 name: 'Sarah Okonkwo', role: 'Podcast Producer', meta: 'The Growth Lab Network',
                 avatar: 'https://i.pravatar.cc/80?img=47',
-                Platform: Mic, platformColor: 'text-violet-500',
-                result: 'Replaced a contractor', resultBg: 'bg-violet-500/10 text-violet-500 border border-violet-500/20',
+                Platform: Mic, platformColor: 'text-blue-600',
+                result: 'Replaced a contractor', resultBg: 'bg-blue-600/10 text-blue-600 border border-blue-500/20',
               },
               {
                 quote: 'We caption video ads for 12 clients every week. Drop the file, captions done, sent to client. No downloads, no drama, no back-and-forth.',
@@ -389,7 +389,7 @@ export default function Pricing() {
 
         <p className="mt-10 text-center text-sm text-gray-600 dark:text-gray-300 max-w-xl mx-auto leading-relaxed">
           Transcriptionists matching Rev-, GoTranscript-, or similar PDFs can{' '}
-          <Link to="/guideline-format" className="font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300">
+          <Link to="/guideline-format" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
             format your transcript to a client style guide →
           </Link>
         </p>

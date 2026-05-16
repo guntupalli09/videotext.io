@@ -68,7 +68,7 @@ Today we'll cover subtitle formats.`,
               {
                 name: 'ASS / SSA — Advanced SubStation Alpha (.ass / .ssa)',
                 badge: 'Advanced styling',
-                badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400',
+                badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400',
                 desc: 'A format commonly used for anime fansubs and karaoke subtitles. ASS supports advanced per-character styling, positioning, animations, and multi-line karaoke effects. It is not supported by most streaming platforms but is widely used by media players like MPC-HC and mpv.',
                 points: [
                   'Supports rich per-character styling (color, size, font, outline)',
@@ -103,7 +103,7 @@ Today we'll cover subtitle formats.`,
                   <ul className="space-y-1.5">
                     {fmt.points.map((p) => (
                       <li key={p} className="text-xs text-gray-500 dark:text-gray-400 flex gap-2">
-                        <span className="text-violet-500 shrink-0">•</span>
+                        <span className="text-blue-600 shrink-0">•</span>
                         <span>{p}</span>
                       </li>
                     ))}
@@ -145,7 +145,7 @@ Today we'll cover subtitle formats.`,
                 ].map((row) => (
                   <tr key={row.req}>
                     <td className="px-4 py-3 font-medium text-gray-900 dark:text-white text-xs">{row.req}</td>
-                    <td className="px-4 py-3 font-mono text-violet-700 dark:text-violet-400 text-xs">{row.spec}</td>
+                    <td className="px-4 py-3 font-mono text-blue-700 dark:text-blue-400 text-xs">{row.spec}</td>
                     <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">{row.notes}</td>
                   </tr>
                 ))}
@@ -183,7 +183,7 @@ Today we'll cover subtitle formats.`,
                   <tr key={row.platform}>
                     <td className="px-3 py-2.5 font-semibold text-gray-900 dark:text-white text-xs">{row.platform}</td>
                     <td className="px-3 py-2.5 font-mono text-gray-600 dark:text-gray-400 text-xs">{row.fmt}</td>
-                    <td className="px-3 py-2.5 font-mono text-violet-700 dark:text-violet-400 text-xs">{row.cps}</td>
+                    <td className="px-3 py-2.5 font-mono text-blue-700 dark:text-blue-400 text-xs">{row.cps}</td>
                     <td className="px-3 py-2.5 text-gray-700 dark:text-gray-300 text-xs">{row.chars}</td>
                     <td className="px-3 py-2.5 text-gray-600 dark:text-gray-400 text-xs">{row.lines}</td>
                     <td className="px-3 py-2.5 text-gray-600 dark:text-gray-400 text-xs">{row.gap}</td>
@@ -203,7 +203,7 @@ Today we'll cover subtitle formats.`,
             {[
               { label: 'Comfortable reading', cps: '≤ 15 CPS', desc: 'Easy for all viewers including children and non-native speakers', color: 'border-green-200 dark:border-green-800' },
               { label: 'Professional target', cps: '15–17 CPS', desc: 'EBU R37 and BBC guidelines. Safe for broadcast delivery', color: 'border-blue-200 dark:border-blue-800' },
-              { label: 'Netflix English limit', cps: '≤ 20 CPS', desc: 'Maximum for Netflix EN. Exceeding this fails QC', color: 'border-violet-200 dark:border-violet-800' },
+              { label: 'Netflix English limit', cps: '≤ 20 CPS', desc: 'Maximum for Netflix EN. Exceeding this fails QC', color: 'border-blue-200 dark:border-blue-800' },
             ].map((item) => (
               <div key={item.label} className={`rounded-xl border-2 ${item.color} p-4`}>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{item.label}</p>
@@ -237,7 +237,7 @@ Today we'll cover subtitle formats.`,
                 <div className="flex items-start gap-3">
                   <div className="flex-1">
                     <p className="font-semibold text-gray-900 dark:text-white text-sm">{item.title}</p>
-                    <p className="font-mono text-xs text-violet-600 dark:text-violet-400 mt-0.5 mb-2">{item.detail}</p>
+                    <p className="font-mono text-xs text-blue-600 dark:text-blue-400 mt-0.5 mb-2">{item.detail}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item.body}</p>
                   </div>
                 </div>
@@ -288,9 +288,9 @@ Today we'll cover subtitle formats.`,
               <Link
                 key={tool.path}
                 to={tool.path}
-                className="block rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:border-violet-400 hover:shadow-sm transition-all group"
+                className="block rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:border-blue-400 hover:shadow-sm transition-all group"
               >
-                <p className="font-semibold text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-400 text-sm">{tool.label}</p>
+                <p className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-400 text-sm">{tool.label}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{tool.desc}</p>
               </Link>
             ))}
@@ -298,19 +298,19 @@ Today we'll cover subtitle formats.`,
         </section>
 
         {/* AI CTA */}
-        <section className="rounded-2xl bg-gradient-to-br from-violet-600 to-violet-700 p-8 text-center text-white">
+        <section className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-8 text-center text-white">
           <h2 className="text-2xl font-display font-bold mb-2">Generate subtitles automatically with AI</h2>
-          <p className="text-violet-100 mb-6 text-sm max-w-md mx-auto">Upload your video and get accurate, timestamped SRT or VTT subtitles in minutes — no manual transcription needed.</p>
+          <p className="text-blue-100 mb-6 text-sm max-w-md mx-auto">Upload your video and get accurate, timestamped SRT or VTT subtitles in minutes — no manual transcription needed.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/video-to-subtitles" className="inline-block bg-white text-violet-700 font-semibold px-6 py-3 rounded-xl hover:bg-violet-50 transition-colors text-sm">Generate subtitles with AI →</Link>
+            <Link to="/video-to-subtitles" className="inline-block bg-white text-blue-700 font-semibold px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm">Generate subtitles with AI →</Link>
             <Link to="/video-to-transcript" className="inline-block border border-white/40 text-white font-semibold px-6 py-3 rounded-xl hover:bg-white/10 transition-colors text-sm">Transcribe video instantly</Link>
           </div>
         </section>
 
         {/* Nav links */}
         <div className="flex flex-wrap gap-4 justify-center pt-4 border-t border-gray-100 dark:border-gray-800">
-          <Link to="/subtitle-tools" className="text-sm text-violet-600 hover:text-violet-700 font-medium">Free Subtitle Tools →</Link>
-          <Link to="/tools" className="text-sm text-violet-600 hover:text-violet-700 font-medium">All Free Tools →</Link>
+          <Link to="/subtitle-tools" className="text-sm text-blue-600 hover:text-blue-700 font-medium">Free Subtitle Tools →</Link>
+          <Link to="/tools" className="text-sm text-blue-600 hover:text-blue-700 font-medium">All Free Tools →</Link>
         </div>
 
       </div>

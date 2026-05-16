@@ -66,10 +66,10 @@ export default function IcpResultsStudio() {
   const output = useMemo(() => CONTEXT_OUTPUTS[mode], [mode])
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-violet-50/30 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    <main className="min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12 space-y-6">
-        <header className="rounded-2xl border border-violet-200/60 dark:border-violet-800/50 bg-white/90 dark:bg-gray-900/70 backdrop-blur p-6 shadow-sm">
-          <p className="inline-flex items-center gap-2 rounded-full bg-violet-100 dark:bg-violet-900/40 px-3 py-1 text-xs font-semibold text-violet-700 dark:text-violet-300">
+        <header className="rounded-2xl border border-blue-200/60 dark:border-blue-800/50 bg-white/90 dark:bg-gray-900/70 backdrop-blur p-6 shadow-sm">
+          <p className="inline-flex items-center gap-2 rounded-full bg-blue-100 dark:bg-blue-900/40 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300">
             <BadgeCheck className="h-3.5 w-3.5" />
             ICP Results Studio — UX concept
           </p>
@@ -94,8 +94,8 @@ export default function IcpResultsStudio() {
                 type="button"
                 onClick={() => setMode(option.key)}
                 className={`rounded-xl border px-3 py-3 text-left transition ${mode === option.key
-                  ? 'border-violet-400 bg-violet-50 dark:bg-violet-950/40'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-violet-300'}`}
+                  ? 'border-blue-400 bg-blue-50 dark:bg-blue-950/40'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-blue-300'}`}
               >
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">{option.label}</p>
                 <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">{option.hint}</p>
@@ -129,7 +129,7 @@ export default function IcpResultsStudio() {
                 return (
                   <div key={asset.label} className="rounded-xl border border-gray-200 dark:border-gray-700 p-3">
                     <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                      <Icon className="h-4 w-4 text-violet-500" />
+                      <Icon className="h-4 w-4 text-blue-600" />
                       {asset.label}
                     </p>
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{asset.value}</p>
@@ -137,7 +137,7 @@ export default function IcpResultsStudio() {
                 )
               })}
             </div>
-            <button type="button" className="w-full rounded-xl bg-violet-600 hover:bg-violet-700 text-white px-4 py-3 text-sm font-semibold">
+            <button type="button" className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 text-sm font-semibold">
               Generate 10 publish-ready assets
             </button>
           </div>
@@ -180,7 +180,7 @@ export default function IcpResultsStudio() {
               return (
                 <article key={item.source} className="rounded-xl border border-gray-200 dark:border-gray-700 p-3">
                   <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                    <Icon className="h-4 w-4 text-violet-500" />
+                    <Icon className="h-4 w-4 text-blue-600" />
                     {item.source}
                   </p>
                   <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Status: {item.state}</p>

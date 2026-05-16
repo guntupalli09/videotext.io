@@ -102,7 +102,7 @@ export default function WordsPerMinute() {
       <div className="space-y-5">
         <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600">
           {[{ key: 'text-time', label: 'Paste text + time' }, { key: 'word-count', label: 'Word count + time' }].map((m) => (
-            <button key={m.key} onClick={() => setMode(m.key as typeof mode)} className={`flex-1 py-2.5 text-sm font-medium transition-colors ${mode === m.key ? 'bg-violet-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>{m.label}</button>
+            <button key={m.key} onClick={() => setMode(m.key as typeof mode)} className={`flex-1 py-2.5 text-sm font-medium transition-colors ${mode === m.key ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>{m.label}</button>
           ))}
         </div>
         {mode === 'text-time' ? (
@@ -110,35 +110,35 @@ export default function WordsPerMinute() {
             <div>
               <div className="flex justify-between mb-1.5">
                 <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Paste the text you spoke</label>
-                {words > 0 && <span className="text-xs text-violet-600 font-medium">{words} words</span>}
+                {words > 0 && <span className="text-xs text-blue-600 font-medium">{words} words</span>}
               </div>
-              <textarea className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-sm p-4 h-36 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-900 dark:text-white" placeholder="Paste the text you read or spoke…" value={text} onChange={(e) => setText(e.target.value)} />
+              <textarea className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-sm p-4 h-36 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white" placeholder="Paste the text you read or spoke…" value={text} onChange={(e) => setText(e.target.value)} />
             </div>
             <div>
               <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">How long did it take?</p>
               <div className="flex gap-3">
-                <div className="flex-1"><label className="text-xs text-gray-500 dark:text-gray-400">Minutes</label><input type="number" min={0} value={minutes} onChange={(e) => setMinutes(e.target.value)} placeholder="2" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
-                <div className="flex-1"><label className="text-xs text-gray-500 dark:text-gray-400">Seconds</label><input type="number" min={0} max={59} value={seconds} onChange={(e) => setSeconds(e.target.value)} placeholder="30" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+                <div className="flex-1"><label className="text-xs text-gray-500 dark:text-gray-400">Minutes</label><input type="number" min={0} value={minutes} onChange={(e) => setMinutes(e.target.value)} placeholder="2" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                <div className="flex-1"><label className="text-xs text-gray-500 dark:text-gray-400">Seconds</label><input type="number" min={0} max={59} value={seconds} onChange={(e) => setSeconds(e.target.value)} placeholder="30" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
               </div>
             </div>
           </div>
         ) : (
           <div className="space-y-3">
-            <div><label className="text-sm font-semibold text-gray-700 dark:text-gray-300 block mb-1.5">Word count</label><input type="number" min={1} value={wordCount} onChange={(e) => setWordCount(e.target.value)} placeholder="650" className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="text-sm font-semibold text-gray-700 dark:text-gray-300 block mb-1.5">Word count</label><input type="number" min={1} value={wordCount} onChange={(e) => setWordCount(e.target.value)} placeholder="650" className="w-full rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
             <div>
               <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Duration</p>
               <div className="flex gap-3">
-                <div className="flex-1"><label className="text-xs text-gray-500 dark:text-gray-400">Minutes</label><input type="number" min={0} value={wc2Min} onChange={(e) => setWc2Min(e.target.value)} placeholder="5" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
-                <div className="flex-1"><label className="text-xs text-gray-500 dark:text-gray-400">Seconds</label><input type="number" min={0} max={59} value={wc2Sec} onChange={(e) => setWc2Sec(e.target.value)} placeholder="0" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+                <div className="flex-1"><label className="text-xs text-gray-500 dark:text-gray-400">Minutes</label><input type="number" min={0} value={wc2Min} onChange={(e) => setWc2Min(e.target.value)} placeholder="5" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                <div className="flex-1"><label className="text-xs text-gray-500 dark:text-gray-400">Seconds</label><input type="number" min={0} max={59} value={wc2Sec} onChange={(e) => setWc2Sec(e.target.value)} placeholder="0" className="w-full mt-1 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
               </div>
             </div>
           </div>
         )}
         {result && info && (
-          <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-violet-700 p-6 text-center text-white">
-            <p className="text-xs font-semibold uppercase tracking-widest text-violet-200 mb-1">Your speaking rate</p>
+          <div className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-6 text-center text-white">
+            <p className="text-xs font-semibold uppercase tracking-widest text-blue-200 mb-1">Your speaking rate</p>
             <p className="text-6xl font-display font-bold">{result}</p>
-            <p className="text-lg text-violet-200 mt-1">words per minute</p>
+            <p className="text-lg text-blue-200 mt-1">words per minute</p>
             <p className="mt-3 text-sm bg-white/20 inline-block rounded-full px-4 py-1">{info.label}</p>
           </div>
         )}

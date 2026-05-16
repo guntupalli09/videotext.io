@@ -223,7 +223,7 @@ export default function TranslateSubtitles() {
               onChange={setTargetLanguage}
             />
 
-            <div className="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 rounded-xl p-6 border border-pink-200 dark:border-pink-800">
+            <div className="bg-gradient-to-br from-pink-50 to-blue-50 dark:from-pink-900/20 dark:to-blue-900/20 rounded-xl p-6 border border-pink-200 dark:border-pink-800">
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-pink-100 dark:bg-pink-900/50 rounded-lg">
                   <Languages className="w-5 h-5 text-pink-600 dark:text-pink-400" />

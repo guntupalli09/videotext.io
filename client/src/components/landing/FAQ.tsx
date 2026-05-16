@@ -66,13 +66,13 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
         aria-expanded={open}
       >
         <div className="flex items-center justify-between gap-4 py-5 border-b border-gray-100 dark:border-white/[0.06] transition-colors duration-500">
-          <span className="text-[15px] font-semibold text-gray-800 dark:text-white/85 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-snug">
+          <span className="text-[15px] font-semibold text-gray-800 dark:text-white/85 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
             {q}
           </span>
-          <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 dark:bg-white/[0.05] flex items-center justify-center group-hover:bg-purple-100 dark:group-hover:bg-purple-500/15 transition-colors duration-200">
+          <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 dark:bg-white/[0.05] flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-600/15 transition-colors duration-200">
             {open
-              ? <Minus className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-              : <Plus className="w-3.5 h-3.5 text-gray-500 dark:text-white/40 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors" />
+              ? <Minus className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+              : <Plus className="w-3.5 h-3.5 text-gray-500 dark:text-white/40 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
             }
           </div>
         </div>
@@ -109,7 +109,7 @@ export function FAQ() {
           transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
-          <p className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-3 transition-colors duration-500">
+          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 transition-colors duration-500">
             Questions
           </p>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-500">
@@ -117,7 +117,7 @@ export function FAQ() {
           </h2>
           <p className="text-lg text-gray-500 dark:text-white/40 transition-colors duration-500">
             Still have questions?{' '}
-            <Link to="/feedback" className="text-purple-600 dark:text-purple-400 hover:underline underline-offset-2 transition-colors">
+            <Link to="/feedback" className="text-blue-600 dark:text-blue-400 hover:underline underline-offset-2 transition-colors">
               Ask us anything →
             </Link>
           </p>

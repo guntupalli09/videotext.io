@@ -126,34 +126,34 @@ export default function SubtitleCharacterChecker() {
       ]}
     >
       <div className="space-y-4">
-        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-violet-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
+        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-blue-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
           <input ref={fileRef} type="file" accept=".srt,.vtt,.txt" className="hidden" onChange={handleFile} />
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{fileName || 'Click to upload SRT or VTT file'}</p>
           <p className="text-xs text-gray-400 mt-1">or paste content below</p>
         </div>
-        <textarea className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-28 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Paste SRT or VTT content…" value={text} onChange={(e) => { setText(e.target.value); setResults(null) }} />
+        <textarea className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-28 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Paste SRT or VTT content…" value={text} onChange={(e) => { setText(e.target.value); setResults(null) }} />
         <div>
           <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">Platform standard</p>
           <div className="grid grid-cols-4 gap-2">
             {(Object.keys(STANDARDS) as (keyof typeof STANDARDS)[]).map((s) => (
-              <button key={s} onClick={() => setStandard(s)} className={`py-2 rounded-lg text-xs font-semibold uppercase tracking-wide transition-colors ${standard === s ? 'bg-violet-600 text-white' : 'border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>{STANDARDS[s].name}</button>
+              <button key={s} onClick={() => setStandard(s)} className={`py-2 rounded-lg text-xs font-semibold uppercase tracking-wide transition-colors ${standard === s ? 'bg-blue-600 text-white' : 'border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>{STANDARDS[s].name}</button>
             ))}
           </div>
           {standard === 'custom' && (
             <div className="mt-3 flex items-center gap-3">
               <label className="text-xs text-gray-600 dark:text-gray-400">Max chars per line:</label>
-              <input type="number" min={10} max={200} value={customMax} onChange={(e) => setCustomMax(parseInt(e.target.value) || 42)} className="w-20 rounded-lg border border-gray-200 dark:border-gray-600 px-2 py-1.5 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-violet-500" />
+              <input type="number" min={10} max={200} value={customMax} onChange={(e) => setCustomMax(parseInt(e.target.value) || 42)} className="w-20 rounded-lg border border-gray-200 dark:border-gray-600 px-2 py-1.5 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
           )}
         </div>
-        <button onClick={handleCheck} className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors">Check Character Limits</button>
+        <button onClick={handleCheck} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors">Check Character Limits</button>
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}
         {results !== null && (
           <div className="space-y-3">
             <div className="grid grid-cols-3 gap-2 text-center">
               {[{ label: 'Total cues', val: results.length }, { label: 'Pass', val: passCount }, { label: 'Fail', val: results.length - passCount, bad: results.length - passCount > 0 }].map((s) => (
-                <div key={s.label} className={`rounded-xl p-3 ${(s as {bad?: boolean}).bad ? 'bg-red-50 dark:bg-red-900/20' : 'bg-violet-50 dark:bg-violet-900/20'}`}>
-                  <p className={`text-xl font-bold ${(s as {bad?: boolean}).bad ? 'text-red-700 dark:text-red-400' : 'text-violet-700 dark:text-violet-300'}`}>{s.val}</p>
+                <div key={s.label} className={`rounded-xl p-3 ${(s as {bad?: boolean}).bad ? 'bg-red-50 dark:bg-red-900/20' : 'bg-blue-50 dark:bg-blue-900/20'}`}>
+                  <p className={`text-xl font-bold ${(s as {bad?: boolean}).bad ? 'text-red-700 dark:text-red-400' : 'text-blue-700 dark:text-blue-300'}`}>{s.val}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{s.label}</p>
                 </div>
               ))}
