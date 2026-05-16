@@ -744,7 +744,7 @@ export default function VoiceRecorder() {
       breadcrumbs={[{ label: 'Voice Recorder', href: '/voice-recorder' }]}
       title="Live Voice to Text (Real-Time Speech to Text — No Upload Needed)"
       subtitle="Speak and see words appear instantly as you talk. Real-time transcription with no delay or file upload."
-      icon={<Mic className="w-5 h-5 text-violet-600" />}
+      icon={<Mic className="w-5 h-5 text-blue-600" />}
       tags={['Free', '99 Languages', 'Live Transcription', 'Translation']}
     >
       <div className={`max-w-2xl mx-auto space-y-5 ${audioObjectUrl ? 'pb-24 sm:pb-28' : 'pb-16'}`}>
@@ -781,19 +781,19 @@ export default function VoiceRecorder() {
                 {/* Mic button with breathing ring */}
                 <div className="relative flex items-center justify-center" style={{ width: 120, height: 120 }}>
                   <motion.div
-                    className="absolute inset-0 rounded-full bg-violet-100 dark:bg-violet-900/30"
+                    className="absolute inset-0 rounded-full bg-blue-100 dark:bg-blue-900/30"
                     animate={{ scale: [1, 1.18, 1], opacity: [0.7, 0.25, 0.7] }}
                     transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
                   />
                   <motion.div
-                    className="absolute inset-3 rounded-full bg-violet-50 dark:bg-violet-900/20"
+                    className="absolute inset-3 rounded-full bg-blue-50 dark:bg-blue-900/20"
                     animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.15, 0.5] }}
                     transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
                   />
                   <button
                     onClick={phase === 'idle' ? startRecording : undefined}
                     disabled={phase === 'requesting'}
-                    className="relative z-10 w-[84px] h-[84px] rounded-full bg-gradient-to-br from-violet-500 to-violet-700 hover:from-violet-600 hover:to-violet-800 shadow-xl shadow-violet-200/70 dark:shadow-violet-900/50 transition-all duration-200 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800"
+                    className="relative z-10 w-[84px] h-[84px] rounded-full bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-600 hover:to-blue-800 shadow-xl shadow-blue-200/70 dark:shadow-blue-900/50 transition-all duration-200 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800"
                     aria-label="Start voice recording"
                   >
                     {phase === 'requesting' ? (
@@ -828,7 +828,7 @@ export default function VoiceRecorder() {
                       key={label}
                       className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400"
                     >
-                      <Icon className="w-3.5 h-3.5 text-violet-500" />
+                      <Icon className="w-3.5 h-3.5 text-blue-600" />
                       {label}
                     </span>
                   ))}
@@ -939,12 +939,12 @@ export default function VoiceRecorder() {
                 className="p-8 sm:p-10 flex flex-col items-center gap-6"
               >
                 {/* Animated icon */}
-                <div className="w-[76px] h-[76px] rounded-full bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
+                <div className="w-[76px] h-[76px] rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
                   >
-                    <Sparkles className="w-9 h-9 text-violet-600 dark:text-violet-400" />
+                    <Sparkles className="w-9 h-9 text-blue-600 dark:text-blue-400" />
                   </motion.div>
                 </div>
 
@@ -963,7 +963,7 @@ export default function VoiceRecorder() {
                 {phase === 'uploading' && (
                   <div className="w-full max-w-xs bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full"
+                      className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full"
                       initial={{ width: '0%' }}
                       animate={{ width: `${uploadPct}%` }}
                       transition={{ duration: 0.25 }}
@@ -977,7 +977,7 @@ export default function VoiceRecorder() {
                     {[0, 1, 2].map((i) => (
                       <motion.div
                         key={i}
-                        className="w-2.5 h-2.5 rounded-full bg-violet-400"
+                        className="w-2.5 h-2.5 rounded-full bg-blue-600"
                         animate={{ opacity: [0.25, 1, 0.25], scale: [0.8, 1.15, 0.8] }}
                         transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.18 }}
                       />
@@ -990,9 +990,9 @@ export default function VoiceRecorder() {
                   <motion.div
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="w-full bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-900/40 rounded-xl p-4 max-h-32 overflow-y-auto"
+                    className="w-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/40 rounded-xl p-4 max-h-32 overflow-y-auto"
                   >
-                    <p className="text-sm text-violet-800 dark:text-violet-200 italic leading-relaxed">
+                    <p className="text-sm text-blue-800 dark:text-blue-200 italic leading-relaxed">
                       "{partial}"
                     </p>
                   </motion.div>
@@ -1042,7 +1042,7 @@ export default function VoiceRecorder() {
                         <button
                           type="button"
                           onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
-                          className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors"
+                          className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
                         >
                           Create free account
                         </button>
@@ -1115,7 +1115,7 @@ export default function VoiceRecorder() {
                       onClick={() => setTranscriptView('original')}
                       className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
                         transcriptView === 'original'
-                          ? 'text-gray-900 dark:text-white border-b-2 border-violet-500'
+                          ? 'text-gray-900 dark:text-white border-b-2 border-blue-500'
                           : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
                       }`}
                     >
@@ -1126,7 +1126,7 @@ export default function VoiceRecorder() {
                       onClick={() => setTranscriptView('translated')}
                       className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
                         transcriptView === 'translated'
-                          ? 'text-gray-900 dark:text-white border-b-2 border-violet-500'
+                          ? 'text-gray-900 dark:text-white border-b-2 border-blue-500'
                           : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
                       }`}
                     >
@@ -1193,7 +1193,7 @@ export default function VoiceRecorder() {
                     <div className="flex items-center gap-2">
                       <Languages className="w-4 h-4 text-blue-500 shrink-0" />
                       <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Translate</span>
-                      <span className="ml-auto text-[10px] font-semibold text-violet-500 bg-violet-50 dark:bg-violet-900/20 px-2 py-0.5 rounded-full">Pro</span>
+                      <span className="ml-auto text-[10px] font-semibold text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full">Pro</span>
                     </div>
                     <div className="flex gap-2">
                       <select
@@ -1250,8 +1250,8 @@ export default function VoiceRecorder() {
 
                 {/* Pro-locked feature teasers — free users only */}
                 {!isPaidPlan && transcript.trim().length > 0 && (
-                  <div className="rounded-xl border border-violet-200 dark:border-violet-800/40 bg-violet-50/50 dark:bg-violet-950/20 p-4 space-y-3">
-                    <p className="text-xs font-semibold text-violet-500 dark:text-violet-400 uppercase tracking-wide">
+                  <div className="rounded-xl border border-blue-200 dark:border-blue-800/40 bg-blue-50/50 dark:bg-blue-950/20 p-4 space-y-3">
+                    <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
                       Unlock with Pro
                     </p>
                     <div className="grid grid-cols-2 gap-3">
@@ -1264,11 +1264,11 @@ export default function VoiceRecorder() {
                         <Link
                           to="/pricing"
                           key={label}
-                          className="flex flex-col items-center gap-1.5 rounded-lg bg-white dark:bg-gray-800 border border-violet-200 dark:border-violet-700/60 p-3 text-center hover:border-violet-400 dark:hover:border-violet-500 transition-colors"
+                          className="flex flex-col items-center gap-1.5 rounded-lg bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700/60 p-3 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
                         >
                           <div className="relative">
                             <Icon className="w-5 h-5 text-gray-300 dark:text-gray-600" />
-                            <Lock className="w-3 h-3 text-violet-500 absolute -top-1 -right-1" />
+                            <Lock className="w-3 h-3 text-blue-600 absolute -top-1 -right-1" />
                           </div>
                           <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-tight">
                             {label}
@@ -1281,7 +1281,7 @@ export default function VoiceRecorder() {
                     </div>
                     <Link
                       to="/pricing"
-                      className="block text-center text-xs font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+                      className="block text-center text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       Upgrade to Pro — remove watermark &amp; unlock all features →
                     </Link>
@@ -1397,7 +1397,7 @@ export default function VoiceRecorder() {
               Use your microphone to convert speech into text in real time. No uploads, no processing — just instant results.
               This is built for <strong>voice to text online</strong>, <strong>speech to text instantly</strong>, and
               <strong> real-time voice transcription</strong>.
-              Need file workflows? Try <Link className="text-violet-600 dark:text-violet-400 hover:underline" to="/video-to-transcript">video to transcript</Link>.
+              Need file workflows? Try <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/video-to-transcript">video to transcript</Link>.
             </p>
           </section>
 
@@ -1405,7 +1405,7 @@ export default function VoiceRecorder() {
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Live Voice to Text (See Words as You Speak)</h2>
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
               This is not traditional transcription. Words appear in real time with continuous live updates and no waiting for
-              processing. If you are working from links, use our <Link className="text-violet-600 dark:text-violet-400 hover:underline" to="/youtube-transcript-generator">YouTube transcript generator</Link>.
+              processing. If you are working from links, use our <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/youtube-transcript-generator">YouTube transcript generator</Link>.
             </p>
           </section>
 
@@ -1413,7 +1413,7 @@ export default function VoiceRecorder() {
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Voice to Text Without Uploading Files</h2>
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
               Most tools require uploading audio and waiting. This tool uses your microphone directly, converts speech instantly,
-              and avoids file uploads completely. Need captions after transcript? Open the <Link className="text-violet-600 dark:text-violet-400 hover:underline" to="/subtitle-generator">subtitle generator</Link>.
+              and avoids file uploads completely. Need captions after transcript? Open the <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/subtitle-generator">subtitle generator</Link>.
             </p>
           </section>
 
@@ -1427,7 +1427,7 @@ export default function VoiceRecorder() {
               <li>Multi-language support — 70+ languages</li>
             </ul>
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              Need multilingual output? Use <Link className="text-violet-600 dark:text-violet-400 hover:underline" to="/translate-subtitles">translate subtitles</Link>.
+              Need multilingual output? Use <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/translate-subtitles">translate subtitles</Link>.
             </p>
           </section>
 
@@ -1444,10 +1444,10 @@ export default function VoiceRecorder() {
           <section className="space-y-3">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">More Transcription &amp; Subtitle Tools</h2>
             <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-              <li><Link className="text-violet-600 dark:text-violet-400 hover:underline" to="/video-to-transcript">Video to transcript tool</Link></li>
-              <li><Link className="text-violet-600 dark:text-violet-400 hover:underline" to="/youtube-transcript-generator">YouTube transcript generator</Link></li>
-              <li><Link className="text-violet-600 dark:text-violet-400 hover:underline" to="/subtitle-generator">Subtitle generator</Link></li>
-              <li><Link className="text-violet-600 dark:text-violet-400 hover:underline" to="/translate-subtitles">Translate subtitles</Link></li>
+              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/video-to-transcript">Video to transcript tool</Link></li>
+              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/youtube-transcript-generator">YouTube transcript generator</Link></li>
+              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/subtitle-generator">Subtitle generator</Link></li>
+              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/translate-subtitles">Translate subtitles</Link></li>
             </ul>
           </section>
 

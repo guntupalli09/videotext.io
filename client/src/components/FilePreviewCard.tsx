@@ -22,8 +22,8 @@ export default function FilePreviewCard({ preview, compact = false }: FilePrevie
         {thumbnailDataUrl ? (
           <img src={thumbnailDataUrl} alt="" width={80} height={48} className="h-12 w-20 rounded object-cover shrink-0" />
         ) : (
-          <div className="h-12 w-20 rounded bg-violet-100 flex items-center justify-center shrink-0">
-            {isVideo ? <File className="h-6 w-6 text-violet-600" strokeWidth={1.5} /> : <Music className="h-6 w-6 text-violet-600" strokeWidth={1.5} />}
+          <div className="h-12 w-20 rounded bg-blue-100 flex items-center justify-center shrink-0">
+            {isVideo ? <File className="h-6 w-6 text-blue-600" strokeWidth={1.5} /> : <Music className="h-6 w-6 text-blue-600" strokeWidth={1.5} />}
           </div>
         )}
         <div className="min-w-0">
@@ -49,8 +49,8 @@ export default function FilePreviewCard({ preview, compact = false }: FilePrevie
             className="w-32 h-[72px] rounded-lg object-cover shrink-0"
           />
         ) : (
-          <div className="w-32 h-[72px] rounded-lg bg-violet-100 flex items-center justify-center shrink-0">
-            {isVideo ? <File className="h-8 w-8 text-violet-600" strokeWidth={1.5} /> : <Music className="h-8 w-8 text-violet-600" strokeWidth={1.5} />}
+          <div className="w-32 h-[72px] rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+            {isVideo ? <File className="h-8 w-8 text-blue-600" strokeWidth={1.5} /> : <Music className="h-8 w-8 text-blue-600" strokeWidth={1.5} />}
           </div>
         )}
         <div className="min-w-0 flex-1">

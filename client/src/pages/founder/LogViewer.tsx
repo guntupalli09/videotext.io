@@ -127,7 +127,7 @@ export default function LogViewer() {
             <div className="flex items-start gap-2 min-w-0">
               <span className={`mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full ${LEVEL_DOT[e.level]}`} />
               <span className="shrink-0 text-zinc-600 tabular-nums w-[62px]">{timeAgo(e.ts)}</span>
-              <span className={`shrink-0 w-12 ${e.service === 'worker' ? 'text-blue-500' : 'text-violet-500'}`}>{e.service}</span>
+              <span className={`shrink-0 w-12 ${e.service === 'worker' ? 'text-blue-500' : 'text-blue-600'}`}>{e.service}</span>
               <span className="break-all leading-relaxed">{e.msg}</span>
               {e.jobId && <span className="shrink-0 text-zinc-600 hidden sm:inline">· job:{e.jobId.slice(0, 8)}</span>}
               {e.extra && <span className="shrink-0 text-zinc-700 ml-auto">▼</span>}

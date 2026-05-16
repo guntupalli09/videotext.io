@@ -50,7 +50,7 @@ export default function BatchProcessing() {
       ]}
       title="Batch Processing"
       subtitle="Upload multiple videos and process them together"
-      icon={<FolderOpen className="w-8 h-8 text-purple-600 dark:text-purple-400" />}
+      icon={<FolderOpen className="w-8 h-8 text-blue-600 dark:text-blue-400" />}
       tags={[
         'Bulk',
         'Multiple files',
@@ -65,7 +65,7 @@ export default function BatchProcessing() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-12 text-center bg-gray-50 dark:bg-gray-900/50 hover:border-purple-400 transition-all"
+          className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-12 text-center bg-gray-50 dark:bg-gray-900/50 hover:border-blue-400 transition-all"
         >
           <input
             type="file"
@@ -80,8 +80,8 @@ export default function BatchProcessing() {
             className="cursor-pointer"
           >
             <div className="flex flex-col items-center gap-4">
-              <div className="p-4 bg-purple-100 dark:bg-purple-900/30 rounded-2xl">
-                <Plus className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+              <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-2xl">
+                <Plus className="w-8 h-8 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -150,7 +150,7 @@ export default function BatchProcessing() {
                     {batchFile.status === 'processing' && (
                       <div className="mt-2 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                         <motion.div
-                          className="h-full bg-gradient-to-r from-purple-600 to-blue-600"
+                          className="h-full bg-gradient-to-r from-blue-600 to-blue-700"
                           initial={{ width: 0 }}
                           animate={{ width: `${batchFile.progress}%` }}
                           transition={{ duration: 0.3 }}
@@ -178,7 +178,7 @@ export default function BatchProcessing() {
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             onClick={startBatch}
-            className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+            className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
           >
             Start Batch
           </motion.button>

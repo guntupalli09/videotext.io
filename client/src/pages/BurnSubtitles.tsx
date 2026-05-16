@@ -496,7 +496,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
               <li>hardcode subtitles</li>
               <li>add subtitles to video permanently</li>
             </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need subtitles first? <a href="/video-to-subtitles" className="text-violet-600 hover:underline">Generate subtitles automatically</a>.</p>
+            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need subtitles first? <a href="/video-to-subtitles" className="text-blue-600 hover:underline">Generate subtitles automatically</a>.</p>
           </section>
 
           <section>
@@ -507,7 +507,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
               <li>works across all platforms</li>
               <li>subtitles always visible</li>
             </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need subtitle files? <a href="/video-to-subtitles" className="text-violet-600 hover:underline">Create SRT &amp; VTT subtitles</a>.</p>
+            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need subtitle files? <a href="/video-to-subtitles" className="text-blue-600 hover:underline">Create SRT &amp; VTT subtitles</a>.</p>
           </section>
 
           <section>
@@ -518,7 +518,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
               <li>upload subtitle file</li>
               <li>export video with captions</li>
             </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need full transcript first? <a href="/video-to-transcript" className="text-violet-600 hover:underline">Convert video to transcript</a>.</p>
+            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need full transcript first? <a href="/video-to-transcript" className="text-blue-600 hover:underline">Convert video to transcript</a>.</p>
           </section>
 
           <section>
@@ -539,16 +539,16 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
               <li>Agencies → deliver ready-to-publish videos</li>
               <li>Educators → clearer learning content</li>
             </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need translation? <a href="/translate-subtitles" className="text-violet-600 hover:underline">Translate subtitles instantly</a>.</p>
+            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need translation? <a href="/translate-subtitles" className="text-blue-600 hover:underline">Translate subtitles instantly</a>.</p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Complete Subtitle &amp; Transcription Workflow</h2>
             <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li><a href="/video-to-subtitles" className="text-violet-600 hover:underline">Generate subtitles</a></li>
-              <li><a href="/translate-subtitles" className="text-violet-600 hover:underline">Translate subtitles</a></li>
-              <li><a href="/video-to-transcript" className="text-violet-600 hover:underline">Convert video to transcript</a></li>
-              <li><a href="/youtube-transcript-generator" className="text-violet-600 hover:underline">YouTube transcript generator</a></li>
+              <li><a href="/video-to-subtitles" className="text-blue-600 hover:underline">Generate subtitles</a></li>
+              <li><a href="/translate-subtitles" className="text-blue-600 hover:underline">Translate subtitles</a></li>
+              <li><a href="/video-to-transcript" className="text-blue-600 hover:underline">Convert video to transcript</a></li>
+              <li><a href="/youtube-transcript-generator" className="text-blue-600 hover:underline">YouTube transcript generator</a></li>
             </ul>
           </section>
         </section>

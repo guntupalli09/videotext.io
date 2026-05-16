@@ -148,7 +148,7 @@ export default function CompressVideo() {
                 title: 'Video → Transcript',
                 description: 'Extract text',
                 icon: '📝',
-                color: 'from-purple-500 to-blue-500'
+                color: 'from-blue-600 to-blue-700'
               },
               {
                 title: 'Batch Processing',
@@ -258,7 +258,7 @@ export default function CompressVideo() {
               onChange={setCompressionLevel}
             />
 
-            <div className="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 rounded-xl p-6 border border-pink-200 dark:border-pink-800">
+            <div className="bg-gradient-to-br from-pink-50 to-blue-50 dark:from-pink-900/20 dark:to-blue-900/20 rounded-xl p-6 border border-pink-200 dark:border-pink-800">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h4 className="text-sm font-semibold text-pink-900 dark:text-pink-100">

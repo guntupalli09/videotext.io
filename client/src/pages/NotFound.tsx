@@ -10,7 +10,7 @@ export default function NotFound() {
         </p>
         <Link
           to="/"
-          className="text-violet-600 hover:text-violet-700 font-medium"
+          className="text-blue-600 hover:text-blue-700 font-medium"
         >
           ← Back to home
         </Link>

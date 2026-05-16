@@ -349,7 +349,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               Showing about 5 findings at a time. Scroll inside this editor to review all {totalFindings}.
             </p>
           </div>
-          <span className="inline-flex w-fit rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-900/40 dark:text-violet-200">
+          <span className="inline-flex w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-200">
             {issues.length} issue{issues.length !== 1 ? 's' : ''}
             {warnings.length > 0 ? ` · ${warnings.length} warning${warnings.length !== 1 ? 's' : ''}` : ''}
           </span>
@@ -514,7 +514,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
             <button
               onClick={handleAutoFix}
-              className="w-full bg-violet-600 hover:bg-violet-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
             >
               Auto-fix all issues →
             </button>
@@ -529,13 +529,13 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             <div className="flex flex-wrap justify-center gap-3">
               <button
                 onClick={handleAutoFix}
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
               >
                 Apply optional fixes
               </button>
               <button
                 onClick={handleProcessAnother}
-                className="text-violet-600 hover:text-violet-700 font-medium"
+                className="text-blue-600 hover:text-blue-700 font-medium"
               >
                 Process another file
               </button>
@@ -604,7 +604,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                       a.click()
                       URL.revokeObjectURL(url)
                     }}
-                    className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
                   >
                     Download Edited Subtitles
                   </button>

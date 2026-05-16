@@ -51,8 +51,8 @@ export function ProcessingInterface({
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-4 flex-1">
             {/* File Icon */}
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
-              <FileVideo className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+              <FileVideo className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
 
             {/* File Details */}
@@ -121,7 +121,7 @@ export function ProcessingInterface({
             {/* Dual Range Slider */}
             <div className="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
               <motion.div
-                className="absolute h-full bg-gradient-to-r from-purple-600 to-blue-600 rounded-full"
+                className="absolute h-full bg-gradient-to-r from-blue-600 to-blue-700 rounded-full"
                 style={{
                   left: `${trimStart}%`,
                   right: `${100 - trimEnd}%`
@@ -173,7 +173,7 @@ export function ProcessingInterface({
         whileTap={{ scale: 0.99 }}
         onClick={handleAction}
         disabled={isProcessing}
-        className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isProcessing ? (
           <>

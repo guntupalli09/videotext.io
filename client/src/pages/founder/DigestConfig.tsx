@@ -83,7 +83,7 @@ export default function DigestConfig() {
             max={23}
             value={digestHourUtc}
             onChange={(e) => setDigestHourUtc(+e.target.value)}
-            className="w-20 bg-zinc-800 border border-zinc-700 rounded px-2 py-1.5 text-sm text-white text-center focus:outline-none focus:border-violet-500"
+            className="w-20 bg-zinc-800 border border-zinc-700 rounded px-2 py-1.5 text-sm text-white text-center focus:outline-none focus:border-blue-500"
           />
           <span className="text-xs text-zinc-500">:00 UTC</span>
         </div>
@@ -91,7 +91,7 @@ export default function DigestConfig() {
           <button
             onClick={saveDigestConfig}
             disabled={saving}
-            className="px-4 py-2 bg-violet-600 hover:bg-violet-500 rounded-lg text-sm text-white font-medium transition-colors disabled:opacity-40"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-600 rounded-lg text-sm text-white font-medium transition-colors disabled:opacity-40"
           >
             {saving ? 'Saving…' : 'Save'}
           </button>
@@ -152,7 +152,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
-        checked ? 'bg-violet-600' : 'bg-zinc-700'
+        checked ? 'bg-blue-600' : 'bg-zinc-700'
       }`}
     >
       <span

@@ -5,7 +5,7 @@ import { generateCSV, downloadCSV } from '../../lib/csvExport'
 const PLAN_COLORS: Record<string, string> = {
   free: 'bg-zinc-700 text-zinc-300',
   basic: 'bg-blue-900 text-blue-300',
-  pro: 'bg-violet-900 text-violet-300',
+  pro: 'bg-blue-900 text-blue-300',
   agency: 'bg-amber-900 text-amber-300',
   founding_workflow: 'bg-emerald-900 text-emerald-300',
 }
@@ -70,7 +70,7 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
 
   function SortIcon({ k }: { k: SortKey }) {
     if (sortKey !== k) return <span className="text-zinc-600 ml-1">↕</span>
-    return <span className="text-violet-400 ml-1">{sortDir === 'desc' ? '↓' : '↑'}</span>
+    return <span className="text-blue-400 ml-1">{sortDir === 'desc' ? '↓' : '↑'}</span>
   }
 
   function handleExport() {
@@ -98,12 +98,12 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search email or UTM source…"
-          className="flex-1 min-w-48 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500"
+          className="flex-1 min-w-48 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500"
         />
         <select
           value={planFilter}
           onChange={(e) => setPlanFilter(e.target.value)}
-          className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-violet-500"
+          className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500"
         >
           <option value="all">All plans</option>
           {plans.map((p) => (
@@ -113,7 +113,7 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
         <span className="text-sm text-zinc-500 self-center">{filtered.length} users</span>
         <button
           onClick={handleExport}
-          className="ml-auto bg-violet-700 hover:bg-violet-600 text-white text-sm px-3 py-1.5 rounded-lg transition-colors"
+          className="ml-auto bg-blue-700 hover:bg-blue-600 text-white text-sm px-3 py-1.5 rounded-lg transition-colors"
         >
           Export to CSV
         </button>
@@ -162,7 +162,7 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
                   </span>
                 </td>
                 <td className="py-2.5 px-4 text-right tabular-nums">
-                  <span className={u.jobCount30d > 0 ? 'text-violet-300 font-medium' : 'text-zinc-600'}>
+                  <span className={u.jobCount30d > 0 ? 'text-blue-300 font-medium' : 'text-zinc-600'}>
                     {u.jobCount30d}
                   </span>
                 </td>

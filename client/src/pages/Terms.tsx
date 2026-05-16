@@ -4,7 +4,7 @@ export default function Terms() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 sm:py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="text-sm text-violet-600 hover:text-violet-700 font-medium mb-6 inline-block">
+        <Link to="/" className="text-sm text-blue-600 hover:text-blue-700 font-medium mb-6 inline-block">
           ← Back to home
         </Link>
 
@@ -26,7 +26,7 @@ export default function Terms() {
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-2">Privacy and data</h2>
             <p>
-              We do not store your uploaded files or generated outputs beyond what is needed to deliver the service. For details, see our <Link to="/privacy" className="text-violet-600 hover:text-violet-700 font-medium">Privacy Policy</Link>.
+              We do not store your uploaded files or generated outputs beyond what is needed to deliver the service. For details, see our <Link to="/privacy" className="text-blue-600 hover:text-blue-700 font-medium">Privacy Policy</Link>.
             </p>
           </section>
 

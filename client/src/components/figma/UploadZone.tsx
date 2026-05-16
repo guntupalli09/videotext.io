@@ -109,12 +109,12 @@ export function UploadZone({
       >
         <div className="flex items-center justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-            <div className="relative w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shrink-0">
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shrink-0">
               <Check className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </div>
               <div className="min-w-0">
                 {fromWorkflowLabel && (
-                  <span className="text-xs font-medium text-purple-600 dark:text-purple-400 block mb-1">{fromWorkflowLabel}</span>
+                  <span className="text-xs font-medium text-blue-600 dark:text-blue-400 block mb-1">{fromWorkflowLabel}</span>
                 )}
                 <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white truncate">{selectedFile.name}</h3>
                 <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
@@ -149,7 +149,7 @@ export function UploadZone({
         }}
         className={`relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-dashed transition-all duration-300 ${
           isDragging
-            ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20'
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
             : 'border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50'
         }`}
       >
@@ -161,7 +161,7 @@ export function UploadZone({
                 transition={{ duration: isDragging ? 0.3 : 2, repeat: isDragging ? 0 : Infinity, ease: 'easeInOut' }}
                 className="mb-2 sm:mb-4 flex justify-center"
               >
-                <div className="relative w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
                   <Upload className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                 </div>
               </motion.div>
@@ -170,7 +170,7 @@ export function UploadZone({
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-2 sm:mb-3 text-xs sm:text-sm">
                 or{' '}
-                <label className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold cursor-pointer">
+                <label className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold cursor-pointer">
                   click to browse
                   <input type="file" className="hidden" onChange={handleFileInput} accept={acceptAttribute} {...(multiple ? { multiple: true } : {})} />
                 </label>
@@ -193,7 +193,7 @@ export function UploadZone({
           {uploadStatus === 'uploading' && (
             <div className="space-y-3">
               <div className="flex justify-center">
-                <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
                   <Loader2 className="w-7 h-7 sm:w-8 sm:h-8 text-white animate-spin" />
                 </div>
               </div>
@@ -202,7 +202,7 @@ export function UploadZone({
                 <div className="max-w-xs mx-auto">
                   <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-purple-600 to-blue-600"
+                      className="h-full bg-gradient-to-r from-blue-600 to-blue-700"
                       initial={{ width: 0 }}
                       animate={{ width: `${progress}%` }}
                       transition={{ duration: 0.3 }}

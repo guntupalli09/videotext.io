@@ -61,7 +61,7 @@ const POSTS: BlogPost[] = [
         </p>
         <p>
           Try it now — no signup needed:{' '}
-          <a href="/voice-recorder" className="text-purple-600 dark:text-purple-400 hover:underline font-medium">Voice to Text →</a>
+          <a href="/voice-recorder" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Voice to Text →</a>
         </p>
       </div>
     ),
@@ -89,7 +89,7 @@ const POSTS: BlogPost[] = [
           <li><strong>Consistency:</strong> The process must work for every new video, not one-off hacks.</li>
         </ul>
         <p>
-          Try the dedicated workflow here: <a className="text-purple-600 dark:text-purple-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
+          Try the dedicated workflow here: <a className="text-blue-600 dark:text-blue-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
         </p>
       </div>
     ),
@@ -119,7 +119,7 @@ const POSTS: BlogPost[] = [
           <li><strong>Cross-tool workflow:</strong> cleaner handoff into CMS, docs, and content ops.</li>
         </ul>
         <p>
-          If your goal is to publish text derivatives quickly, use a dedicated URL-first workflow: <a className="text-purple-600 dark:text-purple-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
+          If your goal is to publish text derivatives quickly, use a dedicated URL-first workflow: <a className="text-blue-600 dark:text-blue-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
         </p>
       </div>
     ),
@@ -147,7 +147,7 @@ const POSTS: BlogPost[] = [
           This keeps subtitle generation tied to transcript generation so your content and timing stay consistent across channels.
         </p>
         <p>
-          Start from here: <a className="text-purple-600 dark:text-purple-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
+          Start from here: <a className="text-blue-600 dark:text-blue-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
         </p>
       </div>
     ),
@@ -569,11 +569,11 @@ Today we are covering subtitle formats.`}
           We benchmarked common tools on the same recorded file and scored them against five buying criteria: <strong>speed to usable output</strong>, <strong>transcript quality</strong>, <strong>output depth</strong>, <strong>privacy/retention model</strong>, and <strong>real monthly cost</strong>. If you want the short version, jump to the table below, then read the workflow-specific picks.
         </p>
         <p>
-          If your immediate goal is to convert a file now, use the product page at <a href="/video-to-transcript" className="text-violet-600 dark:text-violet-400 hover:underline">/video-to-transcript</a>. This article is the buying-decision layer for teams comparing broad transcription software options, not a replacement for the core tool route.
+          If your immediate goal is to convert a file now, use the product page at <a href="/video-to-transcript" className="text-blue-600 dark:text-blue-400 hover:underline">/video-to-transcript</a>. This article is the buying-decision layer for teams comparing broad transcription software options, not a replacement for the core tool route.
         </p>
         <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Methodology (why this comparison is different)</h3>
         <p>
-          We did not rank tools by feature count. We ranked by delivery quality for real jobs: recorded meetings, podcasts, interviews, and long-form video repurposing. Scores combine quantitative checks (processing time and output completeness) with workflow checks (handoff quality, subtitle/export coverage, and where friction appears). For a deeper speed breakdown, see the <a href="/transcription-benchmark" className="text-violet-600 dark:text-violet-400 hover:underline">transcription benchmark</a>.
+          We did not rank tools by feature count. We ranked by delivery quality for real jobs: recorded meetings, podcasts, interviews, and long-form video repurposing. Scores combine quantitative checks (processing time and output completeness) with workflow checks (handoff quality, subtitle/export coverage, and where friction appears). For a deeper speed breakdown, see the <a href="/transcription-benchmark" className="text-blue-600 dark:text-blue-400 hover:underline">transcription benchmark</a>.
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-xs border-collapse">
@@ -616,7 +616,7 @@ Today we are covering subtitle formats.`}
           <strong>Limitations:</strong> not a live meeting bot and not positioned as a permanent transcript vault.
         </p>
         <p>
-          Related reads: <a href="/best-transcription-tool" className="text-violet-600 dark:text-violet-400 hover:underline">best transcription tool comparison</a>, <a href="/otter-ai-alternative" className="text-violet-600 dark:text-violet-400 hover:underline">Otter alternative breakdown</a>.
+          Related reads: <a href="/best-transcription-tool" className="text-blue-600 dark:text-blue-400 hover:underline">best transcription tool comparison</a>, <a href="/otter-ai-alternative" className="text-blue-600 dark:text-blue-400 hover:underline">Otter alternative breakdown</a>.
         </p>
         <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">2) Otter.ai — best for live meeting capture</h3>
         <p>
@@ -665,7 +665,7 @@ Today we are covering subtitle formats.`}
               ].map(([uc, tool]) => (
                 <tr key={uc}>
                   <td className="py-2 pr-4 text-gray-700 dark:text-gray-300">{uc}</td>
-                  <td className="py-2 font-semibold text-violet-600 dark:text-violet-400">{tool}</td>
+                  <td className="py-2 font-semibold text-blue-600 dark:text-blue-400">{tool}</td>
                 </tr>
               ))}
             </tbody>
@@ -673,16 +673,16 @@ Today we are covering subtitle formats.`}
         </div>
         <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">Decision rule (30-second version)</h3>
         <ul className="list-disc pl-5 space-y-2">
-          <li>If you process <strong>recorded files</strong> and need transcripts + subtitle/export outputs quickly: choose a file-first workflow (<a href="/video-to-transcript" className="text-violet-600 dark:text-violet-400 hover:underline">start here</a>).</li>
+          <li>If you process <strong>recorded files</strong> and need transcripts + subtitle/export outputs quickly: choose a file-first workflow (<a href="/video-to-transcript" className="text-blue-600 dark:text-blue-400 hover:underline">start here</a>).</li>
           <li>If you need <strong>live meeting capture</strong> with a bot: choose a meeting-bot-first product.</li>
           <li>If you need <strong>editing-first</strong> transcript workflows: choose an editor-led platform.</li>
           <li>If you need <strong>human-reviewed output</strong> for compliance-grade scenarios: choose a human service tier.</li>
         </ul>
         <p>
-          Also compare: <a href="/best-transcription-tool" className="text-violet-600 dark:text-violet-400 hover:underline">best transcription tool page</a>, <a href="/fastest-transcription-software" className="text-violet-600 dark:text-violet-400 hover:underline">fastest transcription software</a>, <a href="/ai-transcription-tools" className="text-violet-600 dark:text-violet-400 hover:underline">AI transcription tools hub</a>.
+          Also compare: <a href="/best-transcription-tool" className="text-blue-600 dark:text-blue-400 hover:underline">best transcription tool page</a>, <a href="/fastest-transcription-software" className="text-blue-600 dark:text-blue-400 hover:underline">fastest transcription software</a>, <a href="/ai-transcription-tools" className="text-blue-600 dark:text-blue-400 hover:underline">AI transcription tools hub</a>.
         </p>
         <p>
-          Ready to test on your own file instead of reading comparisons? Start here: <a href="/video-to-transcript" className="text-violet-600 dark:text-violet-400 hover:underline">video to transcript tool</a>.
+          Ready to test on your own file instead of reading comparisons? Start here: <a href="/video-to-transcript" className="text-blue-600 dark:text-blue-400 hover:underline">video to transcript tool</a>.
         </p>
       </div>
     ),
@@ -1295,10 +1295,10 @@ Today we are covering subtitle formats.`}
         </ul>
         <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">How to Use Whisper Without Installing Anything</h3>
         <p>
-          The easiest option is to use a hosted service that runs Whisper on your behalf. <a href="/whisper-online" className="text-violet-600 dark:text-violet-400 hover:underline">VideoText's Whisper online tool</a> runs large-v3 on cloud GPUs. Paste a YouTube URL or upload a file, and you get a transcript in seconds — no Python, no GPU, no setup.
+          The easiest option is to use a hosted service that runs Whisper on your behalf. <a href="/whisper-online" className="text-blue-600 dark:text-blue-400 hover:underline">VideoText's Whisper online tool</a> runs large-v3 on cloud GPUs. Paste a YouTube URL or upload a file, and you get a transcript in seconds — no Python, no GPU, no setup.
         </p>
         <p>
-          The <a href="/video-to-transcript" className="text-violet-600 dark:text-violet-400 hover:underline">video-to-transcript tool</a> accepts MP4, MOV, AVI, WebM, MKV, MP3, WAV, M4A, and most common formats. Free tier includes 3 uploads per day. Pro plan ($40/month) unlocks longer files, batch, and multi-language output.
+          The <a href="/video-to-transcript" className="text-blue-600 dark:text-blue-400 hover:underline">video-to-transcript tool</a> accepts MP4, MOV, AVI, WebM, MKV, MP3, WAV, M4A, and most common formats. Free tier includes 3 uploads per day. Pro plan ($40/month) unlocks longer files, batch, and multi-language output.
         </p>
         <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">How to Run Whisper Locally (If You Prefer)</h3>
         <p>
@@ -1367,7 +1367,7 @@ Today we are covering subtitle formats.`}
           For most use cases, Whisper large-v3 is competitive with or superior to commercial APIs at a fraction of the cost. The main advantages of paid APIs are real-time streaming, managed infrastructure, and specialized models fine-tuned for phone audio or medical terminology. If you need live captions or are transcribing call-center audio at scale, commercial APIs may be a better fit. For everything else — YouTube, podcasts, interviews, lectures, meetings — Whisper is the better default.
         </p>
         <p>
-          If you want to try it without any setup, upload a video or paste a YouTube URL into <a href="/whisper-online" className="text-violet-600 dark:text-violet-400 hover:underline">VideoText's Whisper tool</a>. Three imports are free, no account required on first visit.
+          If you want to try it without any setup, upload a video or paste a YouTube URL into <a href="/whisper-online" className="text-blue-600 dark:text-blue-400 hover:underline">VideoText's Whisper tool</a>. Three imports are free, no account required on first visit.
         </p>
       </div>
     ),
@@ -1467,7 +1467,7 @@ Today we are covering subtitle formats.`}
         <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">How to Improve Accuracy for Your Specific Use Case</h3>
         <ol className="list-decimal pl-5 space-y-3">
           <li>
-            <strong>Set the language explicitly.</strong> Whisper auto-detects language, but explicit setting reduces errors on audio where the first 30 seconds contain music, intro graphics, or silence. Language selection is available in <a href="/video-to-transcript" className="text-violet-600 dark:text-violet-400 hover:underline">VideoText's tool</a> before you start processing.
+            <strong>Set the language explicitly.</strong> Whisper auto-detects language, but explicit setting reduces errors on audio where the first 30 seconds contain music, intro graphics, or silence. Language selection is available in <a href="/video-to-transcript" className="text-blue-600 dark:text-blue-400 hover:underline">VideoText's tool</a> before you start processing.
           </li>
           <li>
             <strong>Improve audio quality before transcribing.</strong> This is the highest-leverage change you can make. Remove background noise with Audacity (Effect → Noise Reduction), trim silence at the start and end, and normalize volume. A 10-minute audio cleanup task can cut WER by 30–50% on noisy recordings.
@@ -1497,7 +1497,7 @@ Today we are covering subtitle formats.`}
           The practical implication: for most use cases, AI transcription produces a usable draft that needs light editing, not a perfect transcript that needs no editing. If your workflow requires legally verbatim transcripts, plan for human review. If you need a searchable, readable record of meetings, interviews, or content — AI transcription at Whisper quality is accurate enough to use directly for most purposes.
         </p>
         <p>
-          Try it on your own audio at <a href="/video-to-transcript" className="text-violet-600 dark:text-violet-400 hover:underline">VideoText's transcription tool</a>. Upload a file or paste a URL — three imports are free.
+          Try it on your own audio at <a href="/video-to-transcript" className="text-blue-600 dark:text-blue-400 hover:underline">VideoText's transcription tool</a>. Upload a file or paste a URL — three imports are free.
         </p>
       </div>
     ),
@@ -1528,10 +1528,10 @@ function PostCard({ post }: { post: BlogPost }) {
   return (
     <Link
       to={`/blog/${post.slug}`}
-      className="block text-left w-full bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-md transition-all"
+      className="block text-left w-full bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all"
     >
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-xs font-semibold bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 px-2.5 py-1 rounded-full">
+        <span className="text-xs font-semibold bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded-full">
           {post.tag}
         </span>
         <span className="text-xs text-gray-400 dark:text-gray-500">{post.date}</span>
@@ -1539,7 +1539,7 @@ function PostCard({ post }: { post: BlogPost }) {
       </div>
       <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-2 leading-snug">{post.title}</h2>
       <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{post.summary}</p>
-      <span className="mt-4 inline-block text-sm text-violet-600 dark:text-violet-400 font-medium">Read more →</span>
+      <span className="mt-4 inline-block text-sm text-blue-600 dark:text-blue-400 font-medium">Read more →</span>
     </Link>
   )
 }
@@ -1549,13 +1549,13 @@ function PostView({ post }: { post: BlogPost }) {
     <div>
       <Link
         to="/blog"
-        className="text-sm text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-medium mb-8 inline-block"
+        className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium mb-8 inline-block"
       >
         ← All posts
       </Link>
 
       <div className="flex items-center gap-3 mb-4">
-        <span className="text-xs font-semibold bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 px-2.5 py-1 rounded-full">
+        <span className="text-xs font-semibold bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded-full">
           {post.tag}
         </span>
         <span className="text-xs text-gray-400 dark:text-gray-500">{post.date}</span>
@@ -1573,13 +1573,13 @@ function PostView({ post }: { post: BlogPost }) {
         <div className="flex flex-col sm:flex-row flex-wrap gap-3">
           <Link
             to="/video-to-transcript"
-            className="inline-flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
+            className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
           >
             Open Video → Transcript
           </Link>
           <Link
             to="/guideline-format"
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-300 dark:border-violet-600 bg-white dark:bg-gray-900 text-violet-700 dark:text-violet-300 text-sm font-semibold px-5 py-2.5 hover:bg-violet-50 dark:hover:bg-violet-950/40 transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-900 text-blue-700 dark:text-blue-300 text-sm font-semibold px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors"
           >
             Format your transcript to a client style guide →
           </Link>
@@ -1611,11 +1611,11 @@ export default function Blog() {
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">VideoText blog — transcription, subtitles, and workflow guides</h1>
               <p className="text-gray-600 dark:text-gray-400">
                 Engineering and product notes plus practical guides. Need client-style prep?{' '}
-                <Link to="/guideline-format" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-semibold">
+                <Link to="/guideline-format" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-semibold">
                   Format your transcript to a client style guide →
                 </Link>
                 {' · '}
-                <Link to="/changelog" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 font-medium">
+                <Link to="/changelog" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium">
                   Changelog →
                 </Link>
               </p>

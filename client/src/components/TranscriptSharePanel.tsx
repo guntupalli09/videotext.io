@@ -97,8 +97,8 @@ export default function TranscriptSharePanel({
     return (
       <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 p-5">
         <div className="flex items-start gap-3">
-          <div className="shrink-0 w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center">
-            <Link2 className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+          <div className="shrink-0 w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+            <Link2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="min-w-0 space-y-1">
             <p className="text-sm font-semibold text-gray-900 dark:text-white">Share with a link</p>
@@ -107,7 +107,7 @@ export default function TranscriptSharePanel({
             </p>
             <Link
               to="/login"
-              className="inline-flex mt-2 text-sm font-medium text-violet-600 dark:text-violet-400 hover:underline"
+              className="inline-flex mt-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
             >
               Log in →
             </Link>
@@ -119,15 +119,15 @@ export default function TranscriptSharePanel({
 
   if (!planIncludesTranscriptShare()) {
     return (
-      <div className="rounded-2xl border border-violet-200/80 dark:border-violet-800/50 bg-gradient-to-br from-violet-50/90 to-white dark:from-violet-950/30 dark:to-gray-900/60 p-5">
+      <div className="rounded-2xl border border-blue-200/80 dark:border-blue-800/50 bg-gradient-to-br from-blue-50/90 to-white dark:from-blue-950/30 dark:to-gray-900/60 p-5">
         <div className="flex items-start gap-3">
-          <div className="shrink-0 w-10 h-10 rounded-xl bg-violet-600/15 flex items-center justify-center">
-            <Crown className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+          <div className="shrink-0 w-10 h-10 rounded-xl bg-blue-600/15 flex items-center justify-center">
+            <Crown className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="min-w-0 space-y-1">
             <p className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               Share read-only transcript pages
-              <span className="text-[10px] font-bold uppercase tracking-wide text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/50 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50 px-2 py-0.5 rounded-full">
                 Pro
               </span>
             </p>
@@ -136,7 +136,7 @@ export default function TranscriptSharePanel({
             </p>
             <Link
               to="/pricing"
-              className="inline-flex mt-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+              className="inline-flex mt-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
             >
               Upgrade to Pro →
             </Link>

@@ -27,13 +27,13 @@ import YoutubeResolutionPanel from './YoutubeResolutionPanel'
 const PLAN_COLORS: Record<string, string> = {
   free: 'text-zinc-400',
   basic: 'text-blue-400',
-  pro: 'text-violet-400',
+  pro: 'text-blue-400',
   agency: 'text-amber-400',
   founding_workflow: 'text-emerald-400',
 }
 
 const TOOL_COLORS_BAR: Record<string, string> = {
-  'video-to-transcript': '#7c3aed',
+  'video-to-transcript': '#2563EB',
   'voice-to-transcript': '#f43f5e',
   'video-to-subtitles': '#2563eb',
   'translate-subtitles': '#db2777',
@@ -49,11 +49,11 @@ function KpiCard({ label, value, sub, accent = false, danger = false }: {
   return (
     <div className={`rounded-xl border p-4 flex flex-col gap-1 ${
       danger ? 'border-red-900/50 bg-red-950/20' :
-      accent ? 'border-violet-700/50 bg-violet-950/30' :
+      accent ? 'border-blue-700/50 bg-blue-950/30' :
       'border-zinc-800 bg-zinc-900'
     }`}>
       <p className="text-xs text-zinc-500 uppercase tracking-wider">{label}</p>
-      <p className={`text-2xl font-bold ${danger ? 'text-red-400' : accent ? 'text-violet-300' : 'text-white'}`}>{value}</p>
+      <p className={`text-2xl font-bold ${danger ? 'text-red-400' : accent ? 'text-blue-300' : 'text-white'}`}>{value}</p>
       {sub && <p className="text-xs text-zinc-600">{sub}</p>}
     </div>
   )
@@ -353,7 +353,7 @@ export default function FounderDashboard() {
 function Spinner() {
   return (
     <div className="flex min-h-[40vh] items-center justify-center">
-      <p className="text-violet-500 font-medium text-sm animate-pulse">Loading…</p>
+      <p className="text-blue-600 font-medium text-sm animate-pulse">Loading…</p>
     </div>
   )
 }
@@ -384,8 +384,8 @@ function MrrLineChart({ data }: { data: { monthStart: string; mrrCents: number }
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }} preserveAspectRatio="none">
       <defs>
         <linearGradient id="mrr-grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.02" />
+          <stop offset="0%" stopColor="#2563EB" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#2563EB" stopOpacity="0.02" />
         </linearGradient>
       </defs>
       {yTicks.map((v, i) => (
@@ -395,10 +395,10 @@ function MrrLineChart({ data }: { data: { monthStart: string; mrrCents: number }
         </g>
       ))}
       <path d={areaD} fill="url(#mrr-grad)" />
-      <path d={pathD} fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={pathD} fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       {sorted.map((d, i) => (
         <g key={d.monthStart}>
-          <circle cx={toX(i)} cy={toY(d.mrrCents)} r="3" fill="#7c3aed" />
+          <circle cx={toX(i)} cy={toY(d.mrrCents)} r="3" fill="#2563EB" />
           {(i === 0 || i === sorted.length - 1 || i === Math.floor(sorted.length / 2)) && (
             <text x={toX(i)} y={H - 8} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.35)">
               {new Date(d.monthStart).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}
@@ -422,7 +422,7 @@ function JobsByTool({ data }: { data: { toolType: string; count: number }[] }) {
             <span className="text-zinc-500 tabular-nums">{j.count}</span>
           </div>
           <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-            <div className="h-full rounded-full" style={{ width: `${(j.count / max) * 100}%`, backgroundColor: TOOL_COLORS_BAR[j.toolType] ?? '#7c3aed' }} />
+            <div className="h-full rounded-full" style={{ width: `${(j.count / max) * 100}%`, backgroundColor: TOOL_COLORS_BAR[j.toolType] ?? '#2563EB' }} />
           </div>
         </div>
       ))}

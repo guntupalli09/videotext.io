@@ -168,7 +168,7 @@ export default function SubtitleToolsHub() {
                 {STANDARDS.map((row) => (
                   <tr key={row.platform}>
                     <td className="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">{row.platform}</td>
-                    <td className="px-4 py-2.5 font-mono text-violet-700 dark:text-violet-400">{row.cps}</td>
+                    <td className="px-4 py-2.5 font-mono text-blue-700 dark:text-blue-400">{row.cps}</td>
                     <td className="px-4 py-2.5 font-mono text-gray-700 dark:text-gray-300">{row.chars}</td>
                     <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400">{row.lines}</td>
                     <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400 text-xs">{row.notes}</td>
@@ -208,11 +208,11 @@ export default function SubtitleToolsHub() {
         </section>
 
         {/* CTA */}
-        <section className="rounded-2xl bg-gradient-to-br from-violet-600 to-violet-700 p-8 text-center text-white">
+        <section className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-8 text-center text-white">
           <h2 className="text-2xl font-display font-bold mb-2">Need subtitles generated automatically?</h2>
-          <p className="text-violet-100 mb-6 text-sm max-w-md mx-auto">Upload your video and get accurate, timestamped subtitles in SRT or VTT format — powered by AI, ready in minutes.</p>
+          <p className="text-blue-100 mb-6 text-sm max-w-md mx-auto">Upload your video and get accurate, timestamped subtitles in SRT or VTT format — powered by AI, ready in minutes.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/video-to-subtitles" className="inline-block bg-white text-violet-700 font-semibold px-6 py-3 rounded-xl hover:bg-violet-50 transition-colors text-sm">Generate subtitles with AI →</Link>
+            <Link to="/video-to-subtitles" className="inline-block bg-white text-blue-700 font-semibold px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm">Generate subtitles with AI →</Link>
             <Link to="/video-to-transcript" className="inline-block border border-white/40 text-white font-semibold px-6 py-3 rounded-xl hover:bg-white/10 transition-colors text-sm">Transcribe video instantly</Link>
           </div>
         </section>
@@ -239,7 +239,7 @@ export default function SubtitleToolsHub() {
 
         {/* Back to all tools */}
         <div className="text-center pt-4 border-t border-gray-100 dark:border-gray-800">
-          <Link to="/tools" className="text-sm text-violet-600 hover:text-violet-700 font-medium">← All free video tools</Link>
+          <Link to="/tools" className="text-sm text-blue-600 hover:text-blue-700 font-medium">← All free video tools</Link>
         </div>
 
       </div>

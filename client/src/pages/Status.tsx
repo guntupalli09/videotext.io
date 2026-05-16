@@ -441,7 +441,7 @@ export default function StatusPage() {
         <section>
           <div className="rounded-2xl border border-gray-200 dark:border-gray-800 px-5 sm:px-6 py-6">
             <div className="flex items-center gap-2.5 mb-1">
-              <Bell size={16} className="text-violet-500" />
+              <Bell size={16} className="text-blue-600" />
               <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
                 Get incident notifications
               </h2>
@@ -464,12 +464,12 @@ export default function StatusPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
-                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-shadow"
+                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
                 />
                 <button
                   type="submit"
                   disabled={subscribing}
-                  className="shrink-0 px-5 py-2.5 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="shrink-0 px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {subscribing ? 'Subscribing…' : 'Subscribe'}
                 </button>

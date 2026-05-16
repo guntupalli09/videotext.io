@@ -55,7 +55,7 @@ export function SubtitleResult({
           Your subtitles are ready!
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-1">{fileName}</p>
-        <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
+        <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
           Processed in {processingTime} ⚡
         </p>
       </motion.div>
@@ -88,7 +88,7 @@ export function SubtitleResult({
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
         onClick={onDownload}
-        className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+        className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
       >
         <Download className="w-5 h-5" />
         Download {format}
@@ -99,7 +99,7 @@ export function SubtitleResult({
         <div className="text-center">
           <button
             onClick={onProcessAnother}
-            className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm font-medium transition-colors"
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium transition-colors"
           >
             Process another file
           </button>
@@ -123,7 +123,7 @@ export function SubtitleResult({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -4 }}
-                className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-purple-300 dark:hover:border-purple-700 shadow-sm hover:shadow-md transition-all text-left group"
+                className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 shadow-sm hover:shadow-md transition-all text-left group"
               >
                 <ToolIcon 
                   icon={toolConfig.icon}
@@ -132,13 +132,13 @@ export function SubtitleResult({
                   size="md"
                   className="mb-3"
                 />
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {toolConfig.name}
                 </h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {relatedTool.description}
                 </p>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 mt-2 transition-colors" />
+                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 mt-2 transition-colors" />
               </motion.button>
             );
           })}

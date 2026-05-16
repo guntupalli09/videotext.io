@@ -190,7 +190,7 @@ export default function Signup() {
   return (
     <div className="min-h-screen flex bg-gray-50 dark:bg-gray-950 transition-colors duration-500">
       {/* Left panel */}
-      <div className="hidden lg:flex lg:w-[44%] xl:w-[42%] bg-gradient-to-br from-purple-700 via-violet-700 to-indigo-800 flex-col justify-between p-10 xl:p-14 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[44%] xl:w-[42%] bg-gradient-to-br from-blue-700 via-blue-700 to-blue-800 flex-col justify-between p-10 xl:p-14 relative overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-white/10 rounded-full blur-[80px] pointer-events-none" />
 
         {/* Logo */}
@@ -259,7 +259,7 @@ export default function Signup() {
               <div
                 key={s}
                 className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-                  s === step ? 'bg-violet-600' : i < ['email', 'otp', 'password'].indexOf(step) ? 'bg-violet-300 dark:bg-violet-700' : 'bg-gray-200 dark:bg-gray-700'
+                  s === step ? 'bg-blue-600' : i < ['email', 'otp', 'password'].indexOf(step) ? 'bg-blue-600 dark:bg-blue-700' : 'bg-gray-200 dark:bg-gray-700'
                 }`}
               />
             ))}
@@ -302,7 +302,7 @@ export default function Signup() {
                   required
                   autoComplete="email"
                   autoFocus
-                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors text-[15px]"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-[15px]"
                   placeholder="you@example.com"
                 />
               </div>
@@ -316,7 +316,7 @@ export default function Signup() {
                 disabled={loading}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 disabled:opacity-60 text-white font-semibold transition-all text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-700 disabled:opacity-60 text-white font-semibold transition-all text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
               >
                 {loading ? 'Sending…' : (
                   <>Send verification code <ChevronRight className="w-4 h-4" /></>
@@ -340,7 +340,7 @@ export default function Signup() {
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                   placeholder="000000"
                   autoFocus
-                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-4 text-center text-2xl tracking-[0.5em] text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors font-mono"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-4 text-center text-2xl tracking-[0.5em] text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors font-mono"
                   aria-label="6-digit code"
                 />
               </div>
@@ -354,7 +354,7 @@ export default function Signup() {
                 disabled={loading || otpCode.length !== 6}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 disabled:opacity-60 text-white font-semibold transition-all text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-700 disabled:opacity-60 text-white font-semibold transition-all text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
               >
                 {loading ? 'Verifying…' : (
                   <>Verify email <ChevronRight className="w-4 h-4" /></>
@@ -363,7 +363,7 @@ export default function Signup() {
               <button
                 type="button"
                 onClick={() => { setStep('email'); setOtpCode(''); setError(null); }}
-                className="w-full py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                className="w-full py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               >
                 Use a different email
               </button>
@@ -402,7 +402,7 @@ export default function Signup() {
                   minLength={8}
                   autoFocus
                   autoComplete="new-password"
-                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors text-[15px]"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-[15px]"
                   placeholder="At least 8 characters"
                 />
               </div>
@@ -416,7 +416,7 @@ export default function Signup() {
                 disabled={loading}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 disabled:opacity-60 text-white font-semibold transition-all text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-700 disabled:opacity-60 text-white font-semibold transition-all text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
               >
                 {loading ? 'Creating account…' : (
                   <>
@@ -433,7 +433,7 @@ export default function Signup() {
               Already have an account?{' '}
               <Link
                 to={`/login${returnTo !== '/' || fromGuestJob ? `?returnTo=${encodeURIComponent(returnTo)}${fromGuestJob ? '&guestJob=1' : ''}` : ''}`}
-                className="text-violet-600 dark:text-violet-400 font-medium hover:underline"
+                className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
               >
                 Log in
               </Link>

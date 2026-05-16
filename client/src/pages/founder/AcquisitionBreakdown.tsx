@@ -17,7 +17,7 @@ function getColor(source: string): string {
   for (const [key, color] of Object.entries(SOURCE_COLORS)) {
     if (lower.includes(key)) return color
   }
-  return '#7c3aed'
+  return '#2563EB'
 }
 
 export default function AcquisitionBreakdown({ utmBreakdown }: { utmBreakdown: DashboardUtmEntry[] }) {

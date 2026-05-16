@@ -8,7 +8,7 @@
 
 - [ ] Record 60s demo video (follow demo-video-script.md)
 - [ ] Export 3 GIFs from video (upload→transcript, SRT download, batch→ZIP)
-- [ ] Design PH thumbnail (1270×760px — dark bg, purple gradient, product name + tagline)
+- [ ] Design PH thumbnail (1270×760px — dark bg, blue gradient, product name + tagline)
 - [ ] Create/verify producthunt.com maker account
 - [ ] Draft PH listing in a doc (copy from product-hunt-listing.md) — do NOT submit yet
 - [ ] DM 10–20 people who might genuinely find it useful — ask them to try the free tier this week (not to upvote — that comes launch day)

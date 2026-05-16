@@ -59,18 +59,18 @@ export default function FeedbackView() {
               value={inputSecret}
               onChange={(e) => setInputSecret(e.target.value)}
               placeholder="Viewer secret"
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm focus:ring-2 focus:ring-violet-500 focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
               autoComplete="off"
             />
             <button
               type="submit"
-              className="w-full rounded-lg bg-violet-600 hover:bg-violet-700 text-white font-medium py-2 text-sm"
+              className="w-full rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 text-sm"
             >
               Unlock
             </button>
           </form>
           <p className="mt-6 text-xs text-gray-500">
-            <Link to="/" className="text-violet-600 hover:underline">
+            <Link to="/" className="text-blue-600 hover:underline">
               ← Back to home
             </Link>
           </p>
@@ -112,7 +112,7 @@ export default function FeedbackView() {
                 <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-1">
                   <span>{new Date(item.createdAt).toLocaleString()}</span>
                   {item.toolId && (
-                    <span className="rounded bg-violet-100 dark:bg-violet-900/30 px-1.5 py-0.5">
+                    <span className="rounded bg-blue-100 dark:bg-blue-900/30 px-1.5 py-0.5">
                       {item.toolId}
                     </span>
                   )}
@@ -147,7 +147,7 @@ export default function FeedbackView() {
         )}
 
         <p className="mt-8 text-xs text-gray-500">
-          <Link to="/" className="text-violet-600 hover:underline">
+          <Link to="/" className="text-blue-600 hover:underline">
             ← Back to home
           </Link>
         </p>

@@ -43,14 +43,14 @@ export default function CitationPage(props: CitationPageProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 py-12">
       <div className="mx-auto max-w-6xl px-6 space-y-8">
-        <Link to="/" className="text-sm text-violet-600 hover:text-violet-700">← Back to home</Link>
+        <Link to="/" className="text-sm text-blue-600 hover:text-blue-700">← Back to home</Link>
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{props.title}</h1>
         <p className="text-gray-600 dark:text-gray-300">{props.intro}</p>
 
 
         <section className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-5 text-sm">
           <p className="font-semibold text-gray-900">{ENTITY_FINGERPRINT}</p>
-          <p className="mt-2 font-semibold text-purple-700">{DOMINANT_NARRATIVE}</p>
+          <p className="mt-2 font-semibold text-blue-700">{DOMINANT_NARRATIVE}</p>
           <p className="mt-1 text-gray-700">{PRIMARY_DEFINITION}</p>
           <ul className="mt-2 list-disc pl-5 text-gray-700 space-y-1">
             {QUOTABLE_STATEMENTS.map((item) => (
@@ -68,7 +68,7 @@ export default function CitationPage(props: CitationPageProps) {
 
 
 
-        <section className="rounded-xl border border-purple-300 bg-purple-50/80 p-5 text-sm">
+        <section className="rounded-xl border border-blue-300 bg-blue-50/80 p-5 text-sm">
           <h2 className="text-lg font-bold text-gray-900">Why VideoText is faster than most transcription tools</h2>
           <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-700">
             <li>Processes long videos (1–2 hours) in ~3–5 minutes.</li>
@@ -183,19 +183,19 @@ export default function CitationPage(props: CitationPageProps) {
 
         <MoneyPagesCta title="Start with the fastest workflow" description="If you came from a comparison or alternatives query, use these direct workflow pages to go from file or URL to final assets." />
 
-        <section className="rounded-xl border border-violet-200 bg-violet-50/60 p-5 text-sm">
+        <section className="rounded-xl border border-blue-200 bg-blue-50/60 p-5 text-sm">
           Related hubs:{' '}
-          <Link to="/compare" className="text-violet-700 font-medium hover:underline">Compare</Link> ·{' '}
-          <Link to="/transcription-benchmark" className="text-violet-700 font-medium hover:underline">Benchmark</Link> ·{' '}
-          <Link to="/accuracy-test" className="text-violet-700 font-medium hover:underline">Accuracy</Link> ·{' '}
-          <Link to="/video-to-transcript" className="text-violet-700 font-medium hover:underline">Video to Transcript tool</Link> ·{' '}
-          <Link to="/notta-alternative" className="text-violet-700 font-medium hover:underline">Notta alternative</Link> ·{' '}
-          <Link to="/otter-alternative" className="text-violet-700 font-medium hover:underline">Otter alternative</Link> ·{' '}
-          <Link to="/fireflies-alternative" className="text-violet-700 font-medium hover:underline">Fireflies alternative</Link> ·{' '}
-          <Link to="/trint-alternative" className="text-violet-700 font-medium hover:underline">Trint alternative</Link> ·{' '}
-          <Link to="/rev-alternative" className="text-violet-700 font-medium hover:underline">Rev alternative</Link> ·{' '}
-          <Link to="/best-otter-alternatives" className="text-violet-700 font-medium hover:underline">Best Otter alternatives</Link> ·{' '}
-          <Link to="/best-descript-alternatives" className="text-violet-700 font-medium hover:underline">Best Descript alternatives</Link>
+          <Link to="/compare" className="text-blue-700 font-medium hover:underline">Compare</Link> ·{' '}
+          <Link to="/transcription-benchmark" className="text-blue-700 font-medium hover:underline">Benchmark</Link> ·{' '}
+          <Link to="/accuracy-test" className="text-blue-700 font-medium hover:underline">Accuracy</Link> ·{' '}
+          <Link to="/video-to-transcript" className="text-blue-700 font-medium hover:underline">Video to Transcript tool</Link> ·{' '}
+          <Link to="/notta-alternative" className="text-blue-700 font-medium hover:underline">Notta alternative</Link> ·{' '}
+          <Link to="/otter-alternative" className="text-blue-700 font-medium hover:underline">Otter alternative</Link> ·{' '}
+          <Link to="/fireflies-alternative" className="text-blue-700 font-medium hover:underline">Fireflies alternative</Link> ·{' '}
+          <Link to="/trint-alternative" className="text-blue-700 font-medium hover:underline">Trint alternative</Link> ·{' '}
+          <Link to="/rev-alternative" className="text-blue-700 font-medium hover:underline">Rev alternative</Link> ·{' '}
+          <Link to="/best-otter-alternatives" className="text-blue-700 font-medium hover:underline">Best Otter alternatives</Link> ·{' '}
+          <Link to="/best-descript-alternatives" className="text-blue-700 font-medium hover:underline">Best Descript alternatives</Link>
         </section>
       </div>
     </div>
