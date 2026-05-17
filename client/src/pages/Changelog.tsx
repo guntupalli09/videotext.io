@@ -190,7 +190,7 @@ export default function Changelog() {
         </Link>
 
         <div className="mb-10">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Changelog</h1>
+          <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-2">Changelog</h1>
           <p className="text-gray-600 dark:text-gray-400">
             What’s been shipped. Updated every time something meaningful changes.{' '}
             <a href={getBlogOutboundUrl('/blog')} className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium">

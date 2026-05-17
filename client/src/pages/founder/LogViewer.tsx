@@ -80,7 +80,7 @@ export default function LogViewer() {
       {/* Header */}
       <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3">
-          <h3 className="text-sm font-semibold text-white">Server logs</h3>
+          <h3 className="text-sm font-medium text-white">Server logs</h3>
           <span className="text-xs text-zinc-500">(last 300 entries, newest first)</span>
           {errorCount > 0 && (
             <span className="text-xs text-red-400 bg-red-950/40 px-2 py-0.5 rounded-full">{errorCount} error{errorCount !== 1 ? 's' : ''}</span>

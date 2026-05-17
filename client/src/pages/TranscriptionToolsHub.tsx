@@ -88,7 +88,7 @@ export default function TranscriptionToolsHub() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-16 px-4">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
+          <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">
             Transcription Tools & Resources
           </h1>
           <p className="text-lg text-blue-100 max-w-2xl">
@@ -105,7 +105,7 @@ export default function TranscriptionToolsHub() {
             return (
               <div key={idx} className="space-y-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                  <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                     <Icon className="w-6 h-6 text-blue-600" />
                     {category.title}
                   </h2>
@@ -134,7 +134,7 @@ export default function TranscriptionToolsHub() {
         {/* Featured Section */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <Mic className="w-5 h-5 text-blue-600" />
               Quick Start
             </h3>
@@ -150,7 +150,7 @@ export default function TranscriptionToolsHub() {
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-blue-600" />
               Compare & Choose
             </h3>
@@ -166,7 +166,7 @@ export default function TranscriptionToolsHub() {
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <Zap className="w-5 h-5 text-blue-600" />
               Start Transcribing
             </h3>

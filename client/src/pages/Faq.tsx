@@ -228,7 +228,7 @@ export default function Faq() {
           ← Back to home
         </Link>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">VideoText FAQ — privacy, billing, transcription, and client style guides</h1>
+        <h1 className="text-3xl font-medium text-gray-900 mb-2">VideoText FAQ — privacy, billing, transcription, and client style guides</h1>
         <p className="text-gray-600 mb-6">
           Quick answers about privacy, accuracy, tools, billing, and client guideline prep. For step-by-step tool flows, see the{" "}
           <Link to="/guide" className="text-blue-600 hover:text-blue-700 font-medium">how-to guide</Link>
@@ -236,9 +236,9 @@ export default function Faq() {
           <Link to="/compare" className="text-blue-600 hover:text-blue-700 font-medium">VideoText vs Descript, Otter.ai, Trint</Link>.
         </p>
 
-        <div className="mb-8 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-5 sm:p-6 shadow-sm">
+        <div className="mb-8 rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-5 sm:p-6 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-blue-600 mb-2">Freelancers & QA teams</p>
-          <h2 className="text-lg font-bold text-gray-900 mb-2">Rev-style presets, client guideline upload, transcription QA prep</h2>
+          <h2 className="text-lg font-medium text-gray-900 mb-2">Rev-style presets, client guideline upload, transcription QA prep</h2>
           <p className="text-sm text-gray-600 mb-4 leading-relaxed">
             Low-friction transcription style guide checklist inside VideoText: align clean vs full verbatim, tags, speaker labels, and payout-ready exports before you send work back.
           </p>
@@ -269,7 +269,7 @@ export default function Faq() {
         <div className="space-y-8">
           {grouped.map(({ category, items }) => (
             <section key={category}>
-              <h2 className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+              <h2 className="text-xs font-medium text-blue-600 uppercase tracking-widest mb-3 flex items-center gap-2">
                 <span className="w-5 h-px bg-blue-600" />
                 {category}
               </h2>

@@ -72,7 +72,7 @@ export default function RecentJobsFeed({ jobs }: { jobs: DashboardJob[] }) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
       <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Recent jobs</h3>
+        <h3 className="text-sm font-medium text-white">Recent jobs</h3>
         <div className="flex items-center gap-3">
           <span className="text-xs text-zinc-500">{jobs.length} latest</span>
           {jobs.length > 0 && (

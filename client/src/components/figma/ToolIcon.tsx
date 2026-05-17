@@ -34,7 +34,7 @@ export function ToolIcon({
 }: ToolIconProps) {
   const content = (
     <div
-      className={`${sizeClasses[size]} rounded-2xl bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center shadow-lg ${className}`}
+      className={`${sizeClasses[size]} rounded-xl bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center shadow-lg ${className}`}
     >
       <Icon className={`${iconSizeClasses[size]} text-white`} />
     </div>

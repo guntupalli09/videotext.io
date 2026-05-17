@@ -106,19 +106,19 @@ export function ToolLayout({
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{
-                    type: "spring",
-                    damping: 15,
-                    stiffness: 300,
+                    type: "tween",
+                    duration: 0.25,
+                    ease: "easeOut",
                     delay: 0.2,
                   }}
                   className="relative shrink-0"
                 >
-                  <div className="absolute inset-0 bg-blue-600/20 blur-2xl rounded-2xl" />
-                  <div className="relative w-11 h-11 sm:w-12 sm:h-12 bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl flex items-center justify-center border border-blue-200 dark:border-blue-800 shadow-sm [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6">
+                  <div className="absolute inset-0 bg-blue-600/20 blur-2xl rounded-xl" />
+                  <div className="relative w-11 h-11 sm:w-12 sm:h-12 bg-white dark:bg-gray-900 rounded-xl sm:rounded-xl flex items-center justify-center border border-blue-200 dark:border-blue-800 shadow-sm [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6">
                     {icon}
                   </div>
                 </motion.div>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium text-gray-900 dark:text-white leading-tight tracking-tight">
                   {title}
                 </h1>
               </div>

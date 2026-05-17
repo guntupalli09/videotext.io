@@ -290,7 +290,7 @@ function StatsBar() {
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.8, duration: 0.7 }}
+      transition={{ delay: 1.8, duration: 0.4 }}
       className="flex items-center justify-center gap-6 sm:gap-10 mt-10"
     >
       {stats.map((s, i) => (
@@ -367,8 +367,8 @@ export function Hero() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-semibold tracking-tight text-gray-900 dark:text-white leading-[1.1] mb-5 transition-colors duration-500"
+            transition={{ delay: 0.35, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-medium tracking-tight text-gray-900 dark:text-white leading-[1.1] mb-5 transition-colors duration-500"
           >
             You create the content.
             <br />
@@ -396,7 +396,7 @@ export function Hero() {
             className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-3"
           >
             <motion.button
-              whileHover={{ y: -2 }}
+              whileHover={{ y: -4 }}
               whileTap={{ scale: 0.97 }}
               className="group relative bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3.5 rounded-xl font-medium shadow-lg shadow-blue-500/20 dark:shadow-blue-600/20 hover:shadow-blue-500/40 dark:hover:shadow-blue-600/40 transition-all overflow-hidden"
             >

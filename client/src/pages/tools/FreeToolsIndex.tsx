@@ -73,7 +73,7 @@ export default function FreeToolsIndex() {
           <span className="inline-block text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-3">
             Free — No account, no upload limit
           </span>
-          <h1 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 dark:text-white leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-display font-medium text-gray-900 dark:text-white leading-tight">
             Free Video & Subtitle Tools
           </h1>
           <p className="mt-3 text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -86,7 +86,7 @@ export default function FreeToolsIndex() {
         <OpenStatsStrip />
         {TOOLS.map((group) => (
           <section key={group.category}>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-4">{group.category}</h2>
+            <h2 className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-4">{group.category}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {group.items.map((tool) => (
                 <Link
@@ -103,9 +103,9 @@ export default function FreeToolsIndex() {
         ))}
 
         {/* CTA section */}
-        <section className="rounded-2xl bg-blue-600 px-6 py-10 text-center text-white">
+        <section className="rounded-xl bg-blue-600 px-6 py-10 text-center text-white">
           <p className="text-xs font-semibold uppercase tracking-widest text-blue-200 mb-2">Ready for AI-powered subtitles?</p>
-          <h2 className="text-xl sm:text-2xl font-display font-bold mb-2">
+          <h2 className="text-xl sm:text-2xl font-display font-medium mb-2">
             Generate subtitles from any video — automatically
           </h2>
           <p className="text-sm text-blue-200 mb-6 max-w-lg mx-auto">
@@ -123,7 +123,7 @@ export default function FreeToolsIndex() {
 
         {/* Why these tools */}
         <section className="prose prose-sm dark:prose-invert max-w-none">
-          <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white mb-4">Why free tools?</h2>
+          <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-4">Why free tools?</h2>
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
             These tools are completely free and run in your browser. They require no account, no subscription, and no data is sent to our servers. They're designed for video creators, subtitle editors, accessibility specialists, and content teams who need quick utilities without signing up for another tool.
           </p>

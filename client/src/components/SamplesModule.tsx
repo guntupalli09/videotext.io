@@ -19,7 +19,7 @@ export default function SamplesModule({ sourcePath, samplesHref = '/samples' }: 
   }
 
   return (
-    <div className="rounded-2xl border border-blue-200/70 dark:border-blue-800/50 bg-blue-50/70 dark:bg-blue-950/20 px-4 py-4 sm:px-6 sm:py-5">
+    <div className="rounded-xl border border-blue-200/70 dark:border-blue-800/50 bg-blue-50/70 dark:bg-blue-950/20 px-4 py-4 sm:px-6 sm:py-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-start gap-3">
           <FlaskConical className="h-5 w-5 mt-0.5 text-blue-600 dark:text-blue-300" />

@@ -90,7 +90,7 @@ export default function FeedbackAnalytics({ feedback, feedbackByTool, starDistri
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Overall rating */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-          <h3 className="text-sm font-semibold text-white mb-4">Overall rating</h3>
+          <h3 className="text-sm font-medium text-white mb-4">Overall rating</h3>
           <div className="flex items-end gap-3 mb-4">
             <span className="text-4xl font-bold text-white tabular-nums">
               {overallAvg != null ? overallAvg.toFixed(1) : '—'}
@@ -109,7 +109,7 @@ export default function FeedbackAnalytics({ feedback, feedbackByTool, starDistri
 
         {/* Per-tool ratings */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-          <h3 className="text-sm font-semibold text-white mb-4">Rating by tool</h3>
+          <h3 className="text-sm font-medium text-white mb-4">Rating by tool</h3>
           {feedbackByTool.length === 0 ? (
             <p className="text-zinc-600 text-sm">No data.</p>
           ) : (
@@ -141,7 +141,7 @@ export default function FeedbackAnalytics({ feedback, feedbackByTool, starDistri
 
         {/* Latest comments */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 overflow-hidden">
-          <h3 className="text-sm font-semibold text-white mb-4">Latest comments</h3>
+          <h3 className="text-sm font-medium text-white mb-4">Latest comments</h3>
           {feedback.filter((f) => f.comment && f.comment.trim()).length === 0 ? (
             <p className="text-zinc-600 text-sm">No comments yet.</p>
           ) : (
@@ -166,7 +166,7 @@ export default function FeedbackAnalytics({ feedback, feedbackByTool, starDistri
       {/* Feature requests */}
       {featureRequests.length > 0 && (
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-          <h3 className="text-sm font-semibold text-white mb-4">
+          <h3 className="text-sm font-medium text-white mb-4">
             Feature requests{' '}
             <span className="ml-1 text-xs font-normal text-zinc-500">({featureRequests.length} recent)</span>
           </h3>

@@ -168,7 +168,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
             <DifficultyBadge level={brand.difficultyLevel} />
           </div>
 
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-4 leading-tight">
             {h1}
           </h1>
           <p className="text-lg text-gray-500 dark:text-white/50 max-w-3xl mb-6">{intro}</p>
@@ -197,13 +197,13 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
 
         {/* Brand Overview */}
         <section aria-labelledby="overview-heading">
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8 border border-gray-100 dark:border-gray-800">
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-8 border border-gray-100 dark:border-gray-800">
             <div className="flex items-start gap-4 mb-5">
               <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 id="overview-heading" className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                <h2 id="overview-heading" className="text-xl font-medium text-gray-900 dark:text-white mb-1">
                   About {brand.brandName} Transcription
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{brand.description}</p>
@@ -245,7 +245,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
 
         {/* Speaker Label Example */}
         <section aria-labelledby="speaker-label-heading">
-          <h2 id="speaker-label-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          <h2 id="speaker-label-heading" className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
             {brand.brandName} Speaker Label Format
           </h2>
           <p className="text-gray-500 dark:text-gray-400 mb-4">
@@ -264,14 +264,14 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
 
         {/* Quick Rules Table */}
         <section id="quick-rules" aria-labelledby="quick-rules-heading">
-          <h2 id="quick-rules-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          <h2 id="quick-rules-heading" className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
             {brand.brandName} Formatting Quick Reference
           </h2>
           <p className="text-gray-500 dark:text-gray-400 mb-5">
             Use this table as a desktop reference while transcribing for {brand.brandName}. Bookmark it for instant lookups.
           </p>
 
-          <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700">
+          <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
@@ -300,7 +300,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
 
         {/* Key Differences */}
         <section aria-labelledby="key-diff-heading">
-          <h2 id="key-diff-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          <h2 id="key-diff-heading" className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
             What Makes {brand.brandName} Guidelines Unique
           </h2>
           <p className="text-gray-500 dark:text-gray-400 mb-5">
@@ -318,7 +318,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
 
         {/* Filler Words Deep Dive */}
         <section aria-labelledby="filler-heading">
-          <h2 id="filler-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          <h2 id="filler-heading" className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
             {brand.brandName} Filler Words Policy
           </h2>
           <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-xl p-6">
@@ -381,7 +381,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
 
         {/* Inaudible and Special Notations */}
         <section aria-labelledby="notations-heading">
-          <h2 id="notations-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-5">
+          <h2 id="notations-heading" className="text-2xl font-medium text-gray-900 dark:text-white mb-5">
             {brand.brandName} Special Notation Reference
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
@@ -403,8 +403,8 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
         </section>
 
         {/* Workflow: How to use the GuidelineFormat tool */}
-        <section aria-labelledby="workflow-heading" className="bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-950/20 dark:to-blue-950/20 rounded-2xl p-8 border border-blue-100 dark:border-blue-900/30">
-          <h2 id="workflow-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <section aria-labelledby="workflow-heading" className="bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-950/20 dark:to-blue-950/20 rounded-xl p-8 border border-blue-100 dark:border-blue-900/30">
+          <h2 id="workflow-heading" className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
             Format Your Transcript to {brand.brandName} Standards Automatically
           </h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
@@ -441,13 +441,13 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
 
         {/* Comparison to other services */}
         <section aria-labelledby="compare-heading">
-          <h2 id="compare-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          <h2 id="compare-heading" className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
             {brand.brandName} vs. Other Transcription Service Guidelines
           </h2>
           <p className="text-gray-500 dark:text-gray-400 mb-5">
             Each platform has unique formatting requirements. Here's how {brand.brandName}'s style guide compares on the most critical formatting decisions:
           </p>
-          <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700">
+          <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
@@ -489,7 +489,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
         {/* FAQ Section */}
         {faqs.length > 0 && (
           <section aria-labelledby="faq-heading">
-            <h2 id="faq-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-5">
+            <h2 id="faq-heading" className="text-2xl font-medium text-gray-900 dark:text-white mb-5">
               Frequently Asked Questions: {brand.brandName} Transcription Guidelines
             </h2>
             <div className="space-y-3">
@@ -502,7 +502,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
 
         {/* Other Brand Guideline Pages */}
         <section aria-labelledby="other-brands-heading">
-          <h2 id="other-brands-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          <h2 id="other-brands-heading" className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
             Transcription Style Guides for Other Services
           </h2>
           <p className="text-gray-500 dark:text-gray-400 mb-5">

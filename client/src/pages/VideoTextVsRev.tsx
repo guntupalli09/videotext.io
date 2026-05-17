@@ -26,7 +26,7 @@ export default function VideoTextVsRev() {
               Rev AI: $0.25/min · Rev Human: $1.50+/min · VideoText: ~$0.042/min
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4">
+            <h1 className="text-4xl md:text-5xl font-medium leading-tight mb-4">
               VideoText vs Rev (2025):<br />
               <span className="text-blue-300">AI Workflow Speed vs Service-Based Transcription</span>
             </h1>
@@ -81,12 +81,12 @@ export default function VideoTextVsRev() {
 
           {/* Pricing */}
           <section id="pricing">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">💰 Pricing: Rev vs VideoText</h2>
+            <h2 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-2">💰 Pricing: Rev vs VideoText</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
               Rev's per-minute model means your costs scale unboundedly. VideoText is a flat monthly subscription with a free tier.
               See <Link to="/pricing" className="text-blue-600 hover:underline">VideoText pricing</Link> for details.
             </p>
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800 mb-6">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800 mb-6">
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
@@ -117,8 +117,8 @@ export default function VideoTextVsRev() {
 
           {/* Feature matrix */}
           <section id="features">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4 scroll-mt-20">📊 Feature Comparison</h2>
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800">
+            <h2 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4 scroll-mt-20">📊 Feature Comparison</h2>
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
@@ -162,8 +162,8 @@ export default function VideoTextVsRev() {
           </section>
 
           {/* Privacy */}
-          <section className="rounded-2xl border-2 border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/20 p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">🔒 Data Privacy: Rev Stores Your Content</h2>
+          <section className="rounded-xl border-2 border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/20 p-6">
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-3">🔒 Data Privacy: Rev Stores Your Content</h2>
             <div className="grid md:grid-cols-2 gap-4 text-sm mb-4">
               <div className="bg-white dark:bg-gray-900 rounded-xl border border-red-200 dark:border-red-900 p-4">
                 <div className="font-bold text-red-700 dark:text-red-400 mb-2">⚠️ Rev</div>
@@ -190,8 +190,8 @@ export default function VideoTextVsRev() {
           </section>
 
           {/* When Rev still wins */}
-          <section className="rounded-2xl border border-amber-200 dark:border-amber-900 bg-amber-50/50 dark:bg-amber-950/20 p-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">When Rev Human is still the right choice</h2>
+          <section className="rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50/50 dark:bg-amber-950/20 p-6">
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-3">When Rev Human is still the right choice</h2>
             <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
               We're transparent: Rev Human wins in one specific case. When your workflow has a <em>legal or compliance requirement</em> for human-verified transcription — court proceedings, certain deposition transcripts, specific regulated healthcare workflows — Rev Human's certified human reviewers provide documentation that AI tools cannot.
             </p>
@@ -202,7 +202,7 @@ export default function VideoTextVsRev() {
 
           {/* FAQ */}
           <section id="faq">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">❓ FAQ — VideoText vs Rev</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">❓ FAQ — VideoText vs Rev</h2>
             <dl className="space-y-5">
               {[
                 {
@@ -247,8 +247,8 @@ export default function VideoTextVsRev() {
           </section>
 
           {/* CTA */}
-          <section className="rounded-2xl bg-gradient-to-br from-blue-700 to-blue-900 text-white p-8 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">Stop Paying Rev's Per-Minute Rate</h2>
+          <section className="rounded-xl bg-gradient-to-br from-blue-700 to-blue-900 text-white p-8 text-center">
+            <h2 className="text-2xl md:text-3xl font-medium mb-3">Stop Paying Rev's Per-Minute Rate</h2>
             <p className="text-blue-200 text-sm max-w-lg mx-auto mb-6">
               Flat subscription. 90+ languages. Transcript + subtitles + summary + chapters per upload. Files deleted immediately. Free tier included.
             </p>

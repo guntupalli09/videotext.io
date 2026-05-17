@@ -36,7 +36,7 @@ export const FORMATTING_GUIDE_BLOG_POSTS: FormattingGuideBlogPost[] = [
           </Link>{' '}
           where the editable Rev-aligned cards track what changed from defaults.
         </p>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mt-6">Preset workflow most freelancers run</h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mt-6">Preset workflow most freelancers run</h2>
         <ol className="list-decimal pl-5 space-y-2">
           <li>Export the transcript with whichever timestamps you need for the job.</li>
           <li>Use <strong>Make this client-ready →</strong> on the result page so the text loads in the guideline workspace.</li>
@@ -44,7 +44,7 @@ export const FORMATTING_GUIDE_BLOG_POSTS: FormattingGuideBlogPost[] = [
           <li>Edit card text only where your client brief diverges; keep the “Edited” badges — they show reviewers what you overrode.</li>
           <li>Run your listen pass with the cards side by side, then log disputes with the same wording you saved.</li>
         </ol>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mt-6">Related reads</h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mt-6">Related reads</h2>
         <p>
           Compare verbatim modes in{' '}
           <a className="text-blue-600 dark:text-blue-400 hover:underline font-medium" href={getBlogOutboundUrl('/blog/clean-verbatim-vs-full-verbatim')}>
@@ -80,13 +80,13 @@ export const FORMATTING_GUIDE_BLOG_POSTS: FormattingGuideBlogPost[] = [
         <p>
           Searching <strong>how to earn more per hour as a transcriptionist</strong> usually surfaces “practice typing” or “take faster jobs.” Pricing power actually comes from compressing rework: predictable exports, repeatable QA, and aligning to client rubrics faster than reviewers can kick work back.
         </p>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mt-6">Where the unpaid time usually hides</h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mt-6">Where the unpaid time usually hides</h2>
         <ul className="list-disc pl-5 space-y-2">
           <li>Clients kick work back when tags, numbers, or speaker labels disagree with PDF briefs—you re-listen sections you thought were done.</li>
           <li>You keep multiple mental models (Rev tonight, GoTranscript tomorrow) and mix up contractions or fillers.</li>
           <li>Exports land as plain walls of text—hard to show auditors which rule you honoured.</li>
         </ul>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mt-6">Operational stack VideoText fits into</h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mt-6">Operational stack VideoText fits into</h2>
         <ul className="list-disc pl-5 space-y-2">
           <li>
             Let{' '}
@@ -129,14 +129,14 @@ export const FORMATTING_GUIDE_BLOG_POSTS: FormattingGuideBlogPost[] = [
           <strong>Clean verbatim vs full verbatim</strong> is the divider most reviewers cite when rejecting work. Clean keeps meaning-first readability: fillers and obvious stumbles go away unless they matter legally or narratively.
           Full verbatim traps every audible disfluency—common on legal transcripts, tightly scoped corpora, or client PDFs that spell out “no omission.”
         </p>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mt-6">Signals to resolve before QC</h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mt-6">Signals to resolve before QC</h2>
         <ul className="list-disc pl-5 space-y-2">
           <li>Filler ladders (“like,” “you know”) — remove or retain?</li>
           <li>False starts that finish later— mirror both or tighten?</li>
           <li>Laughter and environmental tags— newline, brackets, timestamps?</li>
           <li>Digits spelled out vs normalized numerals.</li>
         </ul>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mt-6">Preset cards in VideoText</h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mt-6">Preset cards in VideoText</h2>
         <p>
           The marketplace presets inside{' '}
           <Link className="text-blue-600 dark:text-blue-400 hover:underline font-medium" to="/guideline-format">
@@ -180,7 +180,7 @@ export const FORMATTING_GUIDE_BLOG_POSTS: FormattingGuideBlogPost[] = [
           Queries for <strong>what is transcript QA</strong> often come mid-dispute — someone rejected a deliverable citing “failure to meet customer notes.” Formal QA merges objective checks (timing drift, tagging schema) with subjective readability expectations.
           Agencies layer SLAs atop marketplace rubrics.
         </p>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mt-6">Minimum checklist before delivery</h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mt-6">Minimum checklist before delivery</h2>
         <ol className="list-decimal pl-5 space-y-2">
           <li>Proper nouns cross-checked against order form glossaries.</li>
           <li>Speaker-change formatting matches screenshot samples.</li>
@@ -233,7 +233,7 @@ export const FORMATTING_GUIDE_BLOG_POSTS: FormattingGuideBlogPost[] = [
         <p>
           Every marketplace ships a PDF; your job is to remember which client wants contractions kept, which demands bracketed laughter, and which normalises numbers. A cheatsheet is just those rows in one place so you are not re-opening page 27 at 2 a.m.
         </p>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mt-6">Map PDF rows to VideoText presets</h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mt-6">Map PDF rows to VideoText presets</h2>
         <p>
           Start from the GoTranscript, Scribie, Rev, or TranscribeMe preset inside{' '}
           <Link className="text-blue-600 dark:text-blue-400 hover:underline font-medium" to="/guideline-format">

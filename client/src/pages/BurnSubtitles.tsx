@@ -295,7 +295,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
 
         {status === 'idle' && videoFile && !subtitleFile && (
           <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
+            <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
               <div className="flex items-center justify-between gap-4 mb-4">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Video</p>
@@ -403,7 +403,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
         )}
 
         {status === 'processing' && (
-          <div className="rounded-2xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
+          <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
               {videoFile?.name} • {subtitleFile?.name}
             </div>
@@ -489,7 +489,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
       {location.pathname === '/burn-subtitles' && (
         <section className="mt-12 max-w-4xl mx-auto px-4 space-y-8" aria-label="Burn subtitles guide">
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Burn Subtitles into Video Instantly</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Burn Subtitles into Video Instantly</h2>
             <p className="mt-3 text-gray-600 dark:text-gray-300">Add subtitles directly into your video so they are permanently visible.</p>
             <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
               <li>burn subtitles</li>
@@ -500,7 +500,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Hardcode Subtitles (No External Files Needed)</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Hardcode Subtitles (No External Files Needed)</h2>
             <p className="mt-3 text-gray-600 dark:text-gray-300">Burned subtitles are embedded into the video itself.</p>
             <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
               <li>no SRT required for playback</li>
@@ -511,7 +511,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Add Subtitles to Video Without Editing Software</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Add Subtitles to Video Without Editing Software</h2>
             <p className="mt-3 text-gray-600 dark:text-gray-300">No need for complex tools like Premiere or Final Cut.</p>
             <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
               <li>upload video</li>
@@ -522,7 +522,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Customize Subtitle Styling and Position</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Customize Subtitle Styling and Position</h2>
             <p className="mt-3 text-gray-600 dark:text-gray-300">Control how subtitles appear in your video:</p>
             <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
               <li>font size and style</li>
@@ -532,7 +532,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Who Needs Burned Subtitles?</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Who Needs Burned Subtitles?</h2>
             <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
               <li>Social media creators → captions always visible</li>
               <li>YouTubers → accessibility and engagement</li>
@@ -543,7 +543,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Complete Subtitle &amp; Transcription Workflow</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Complete Subtitle &amp; Transcription Workflow</h2>
             <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
               <li><a href="/video-to-subtitles" className="text-blue-600 hover:underline">Generate subtitles</a></li>
               <li><a href="/translate-subtitles" className="text-blue-600 hover:underline">Translate subtitles</a></li>
@@ -564,7 +564,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
 
       {(faq.length > 0 || location.pathname === '/burn-subtitles') && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently Asked Questions</h2>
           <dl className="space-y-4">
             {(faq.length > 0 ? faq : defaultFaq).map((item, i) => (
               <div key={i}>

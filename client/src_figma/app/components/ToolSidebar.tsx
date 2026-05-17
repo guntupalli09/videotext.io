@@ -55,7 +55,7 @@ export function ToolSidebar({ planInfo }: ToolSidebarProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800"
+        className="bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800"
       >
         <div className="flex items-start gap-3 mb-4">
           <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
@@ -92,12 +92,12 @@ export function ToolSidebar({ planInfo }: ToolSidebarProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm"
+        className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm"
       >
         <div className="space-y-4">
           {/* Plan Header */}
           <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-800">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wider">
               Plan
             </h3>
             <div className="px-3 py-1 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full text-white text-xs font-bold uppercase">
@@ -107,7 +107,7 @@ export function ToolSidebar({ planInfo }: ToolSidebarProps) {
 
           {/* Features List */}
           <div>
-            <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+            <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
               What you get
             </h4>
             <div className="space-y-2">

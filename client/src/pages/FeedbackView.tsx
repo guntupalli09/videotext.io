@@ -49,7 +49,7 @@ export default function FeedbackView() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <div className="max-w-md mx-auto px-4 py-16">
-          <h1 className="text-xl font-semibold mb-4">View feedback</h1>
+          <h1 className="text-xl font-medium mb-4">View feedback</h1>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Enter your viewer secret to see feedback submitted from the Tex panel.
           </p>
@@ -83,7 +83,7 @@ export default function FeedbackView() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between gap-4 mb-6">
-          <h1 className="text-xl font-semibold">Feedback</h1>
+          <h1 className="text-xl font-medium">Feedback</h1>
           <button
             type="button"
             onClick={handleLock}

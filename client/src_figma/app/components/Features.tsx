@@ -13,7 +13,7 @@ export function Features() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-4">
             Powerful tools for your videos
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -32,11 +32,11 @@ export function Features() {
             >
               <Link to={tool.href}>
                 <motion.div
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  className="relative group h-full bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all shadow-sm hover:shadow-xl"
+                  whileHover={{ y: -2 }}
+                  className="relative group h-full bg-white dark:bg-gray-800 rounded-xl p-8 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all shadow-sm hover:shadow-xl"
                 >
                   {/* Gradient background on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${tool.gradientFrom} ${tool.gradientTo} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${tool.gradientFrom} ${tool.gradientTo} opacity-0 group-hover:opacity-5 rounded-xl transition-opacity`} />
                   
                   <div className="relative z-10">
                     <ToolIcon 
@@ -48,7 +48,7 @@ export function Features() {
                       className="mb-6"
                     />
                     
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {tool.name}
                     </h3>
                     

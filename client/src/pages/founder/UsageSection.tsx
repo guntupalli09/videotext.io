@@ -8,7 +8,7 @@ export default function UsageSection({ usage }: { usage: DashboardUsage }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="bg-white dark:bg-zinc-900 rounded-xl shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Users (30d)</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Top Users (30d)</h3>
         {topUsers.length === 0 ? (
           <p className="text-gray-500 dark:text-gray-400 text-sm">No data.</p>
         ) : (
@@ -35,7 +35,7 @@ export default function UsageSection({ usage }: { usage: DashboardUsage }) {
         )}
       </div>
       <div className="bg-white dark:bg-zinc-900 rounded-xl shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Jobs by Tool (30d)</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Jobs by Tool (30d)</h3>
         {jobsByTool.length === 0 ? (
           <p className="text-gray-500 dark:text-gray-400 text-sm">No data.</p>
         ) : (

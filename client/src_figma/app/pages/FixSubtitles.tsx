@@ -69,13 +69,13 @@ export default function FixSubtitles() {
         ]}
         sidebar={<ToolSidebar />}
       >
-        <div className="bg-blue-50 dark:bg-blue-900/10 rounded-2xl p-8 border border-blue-100 dark:border-blue-900/30">
+        <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-8 border border-blue-100 dark:border-blue-900/30">
           <div className="flex items-center gap-4 mb-8 pb-6 border-b border-blue-200 dark:border-blue-900/30">
             <div className="w-16 h-16 bg-blue-200 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
               <Clock className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">
                 {uploadedFile?.name}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -191,7 +191,7 @@ export default function FixSubtitles() {
           showVideoPlayer={false}
         >
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
               What to fix
             </h3>
 
@@ -226,7 +226,7 @@ export default function FixSubtitles() {
             </div>
 
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
-              <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">
+              <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
                 AI-powered subtitle repair
               </h4>
               <p className="text-xs text-blue-700 dark:text-blue-300">

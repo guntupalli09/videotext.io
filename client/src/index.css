@@ -34,12 +34,12 @@
 
   /* Shared card surface: depth via shadow only; no border (inputs/separators keep borders) */
   .surface-card {
-    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-card;
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-card;
     transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   /* Elevated container: stronger shadow, no border */
   .surface-card-elevated {
-    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated;
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-card-elevated;
     transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   /* Primary cards: hover lift -1px, no bounce */
@@ -52,9 +52,9 @@
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.04);
   }
 
-  /* Buttons: same height (h-11), radius (rounded-xl), active press +1px */
+  /* Buttons: same height (h-11), radius (rounded-lg), active press +1px */
   .btn-primary {
-    @apply inline-flex items-center justify-center font-medium h-11 rounded-xl px-5 bg-blue-600 hover:bg-blue-700 text-white shadow-sm focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2;
+    @apply inline-flex items-center justify-center font-medium h-11 rounded-lg px-5 bg-blue-600 hover:bg-blue-700 text-white shadow-sm focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2;
     transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   .btn-primary:hover {
@@ -64,7 +64,7 @@
     transform: translateY(1px);
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center font-medium h-11 rounded-xl px-5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2;
+    @apply inline-flex items-center justify-center font-medium h-11 rounded-lg px-5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2;
     transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   .btn-secondary:active {
@@ -73,7 +73,7 @@
 
   /* Page section heading for tool pages: stronger hierarchy */
   .page-heading {
-    @apply font-display font-semibold text-gray-900 dark:text-white tracking-tight text-2xl sm:text-3xl;
+    @apply font-display font-medium text-gray-900 dark:text-white tracking-tight text-2xl sm:text-3xl;
   }
 
   /* Badges: rounded-full + small padding only */

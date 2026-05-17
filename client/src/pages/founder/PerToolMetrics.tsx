@@ -46,7 +46,7 @@ export default function PerToolMetrics({ toolPerf }: { toolPerf: ToolPerfRow[] }
   if (!toolPerf || toolPerf.length === 0) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-        <h3 className="text-sm font-semibold text-white mb-1">Per-tool breakdown <span className="text-zinc-500 font-normal">(all time)</span></h3>
+        <h3 className="text-sm font-medium text-white mb-1">Per-tool breakdown <span className="text-zinc-500 font-normal">(all time)</span></h3>
         <p className="text-zinc-600 text-sm mt-4">No completed jobs yet.</p>
       </div>
     )
@@ -55,7 +55,7 @@ export default function PerToolMetrics({ toolPerf }: { toolPerf: ToolPerfRow[] }
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
       <div className="px-5 pt-5 pb-3">
-        <h3 className="text-sm font-semibold text-white">Per-tool breakdown <span className="text-zinc-500 font-normal">(all-time completed)</span></h3>
+        <h3 className="text-sm font-medium text-white">Per-tool breakdown <span className="text-zinc-500 font-normal">(all-time completed)</span></h3>
         <p className="text-xs text-zinc-600 mt-0.5">Processing time · upload size · video duration · total minutes processed</p>
       </div>
       <div className="overflow-x-auto">

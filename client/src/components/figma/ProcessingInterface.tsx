@@ -88,9 +88,9 @@ export function ProcessingInterface({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-gray-200 dark:border-gray-800 shadow-sm"
+          className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-xl p-4 sm:p-5 border border-gray-200 dark:border-gray-800 shadow-sm"
         >
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 sm:mb-3">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2 sm:mb-3">
             Video preview
           </h3>
           {videoSrc && (

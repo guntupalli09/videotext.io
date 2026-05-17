@@ -68,12 +68,12 @@ export default function IcpResultsStudio() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12 space-y-6">
-        <header className="rounded-2xl border border-blue-200/60 dark:border-blue-800/50 bg-white/90 dark:bg-gray-900/70 backdrop-blur p-6 shadow-sm">
+        <header className="rounded-xl border border-blue-200/60 dark:border-blue-800/50 bg-white/90 dark:bg-gray-900/70 backdrop-blur p-6 shadow-sm">
           <p className="inline-flex items-center gap-2 rounded-full bg-blue-100 dark:bg-blue-900/40 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300">
             <BadgeCheck className="h-3.5 w-3.5" />
             ICP Results Studio — UX concept
           </p>
-          <h1 className="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="mt-3 text-2xl sm:text-3xl font-medium tracking-tight text-gray-900 dark:text-white">
             One transcript. Context-aware outputs. Publish-ready assets.
           </h1>
           <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-3xl">
@@ -82,9 +82,9 @@ export default function IcpResultsStudio() {
           </p>
         </header>
 
-        <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
+        <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">1) Context-aware output mode</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white">1) Context-aware output mode</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">Select the goal first, then shape summary and downstream assets automatically.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
@@ -104,7 +104,7 @@ export default function IcpResultsStudio() {
           </div>
           <article className="rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/70 dark:bg-emerald-950/20 p-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">Generated output</p>
-            <h3 className="mt-1 text-base font-bold text-emerald-900 dark:text-emerald-200">{output.headline}</h3>
+            <h3 className="mt-1 text-base font-medium text-emerald-900 dark:text-emerald-200">{output.headline}</h3>
             <p className="mt-2 text-sm text-emerald-800/90 dark:text-emerald-200/90">{output.summary}</p>
             <ul className="mt-3 grid sm:grid-cols-2 gap-1.5">
               {output.focus.map((item) => (
@@ -118,9 +118,9 @@ export default function IcpResultsStudio() {
         </section>
 
         <section className="grid lg:grid-cols-2 gap-6">
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">2) Repurposing asset pack</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">2) Repurposing asset pack</h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">After transcript completion, generate a full distribution pack in one click.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -142,9 +142,9 @@ export default function IcpResultsStudio() {
             </button>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">3) Collaboration layer</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">3) Collaboration layer</h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">Inline transcript comments + resolve workflow for editor/team handoff.</p>
             </div>
             <div className="space-y-2.5">
@@ -169,9 +169,9 @@ export default function IcpResultsStudio() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
+        <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-5 sm:p-6 space-y-4">
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">4) Drop-anything ingestion</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white">4) Drop-anything ingestion</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">Paste links from anywhere and queue them without format friction.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">

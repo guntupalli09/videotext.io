@@ -68,7 +68,7 @@ export default function MicrosoftTeamsAlternativePage() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-600/10 border border-blue-200/60 dark:border-blue-500/20 mb-6">
             <span className="text-[12px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Microsoft Teams Alternative</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
             Transcribe{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
               Teams meetings
@@ -94,7 +94,7 @@ export default function MicrosoftTeamsAlternativePage() {
 
         {/* Why people look for an alternative */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Why users search for a Microsoft Teams transcription alternative</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Why users search for a Microsoft Teams transcription alternative</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
             Teams added AI meeting notes and transcription in 2023, but the features are gated behind Microsoft 365 Copilot — an expensive add-on that most organisations have not deployed:
           </p>
@@ -118,8 +118,8 @@ export default function MicrosoftTeamsAlternativePage() {
 
         {/* Comparison table */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">VideoText vs Microsoft Teams Copilot — feature comparison</h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">VideoText vs Microsoft Teams Copilot — feature comparison</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
             <div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-white/[0.05]">
               <div />
               <div className="text-center text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">VideoText</div>
@@ -139,7 +139,7 @@ export default function MicrosoftTeamsAlternativePage() {
 
         {/* When Teams Copilot is better */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">When Microsoft Teams Copilot is the right choice</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">When Microsoft Teams Copilot is the right choice</h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
             Microsoft 365 Copilot is the right tool if your organisation has already deployed it and you need <strong>live AI meeting notes during the call</strong>, deep integration with Microsoft 365 apps (Word, Outlook, Loop), and a company-wide searchable meeting archive. It is also better for <strong>regulated industries</strong> where data must stay within Microsoft's compliance boundary. VideoText is better when you just need to transcribe a downloaded recording quickly — without enterprise IT setup or per-seat licensing.
           </p>
@@ -152,11 +152,11 @@ export default function MicrosoftTeamsAlternativePage() {
             { icon: Shield, title: 'Files deleted immediately', body: 'Teams keeps meeting transcripts in OneDrive under IT-controlled policies. VideoText deletes your file immediately after transcription — zero retention.' },
             { icon: Zap, title: 'SRT export + 70+ language translation', body: 'Export SRT or VTT subtitle files and translate to 70+ languages. Teams Copilot outputs DOCX files inside Teams only — no subtitle export, no translation.' },
           ].map(({ icon: Icon, title, body }) => (
-            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
+            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-3">
                 <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-1">{title}</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">{title}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">{body}</p>
             </div>
           ))}
@@ -164,11 +164,11 @@ export default function MicrosoftTeamsAlternativePage() {
 
         {/* FAQ */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
           <div className="space-y-4">
             {FAQ.map(({ q, a }) => (
               <div key={q} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{a}</p>
               </div>
             ))}
@@ -176,8 +176,8 @@ export default function MicrosoftTeamsAlternativePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Transcribe your Teams recording now</h2>
+        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-xl p-8 sm:p-12 text-white text-center">
+          <h2 className="text-2xl sm:text-3xl font-medium mb-3">Transcribe your Teams recording now</h2>
           <p className="text-white/70 mb-8 max-w-xl mx-auto">Download the MP4 from OneDrive or Teams, upload it here. Full speaker-labelled transcript in minutes — no Copilot licence needed.</p>
           <Link to="/video-to-transcript">
             <span className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">

@@ -293,7 +293,7 @@ function IncidentCard({ incident }: { incident: Incident }) {
     <div className="py-5 px-5 sm:px-6">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-white leading-snug">
             {incident.title}
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{incident.date}</p>
@@ -354,7 +354,7 @@ export default function StatusPage() {
         {/* ── Header ── */}
         <div className="mb-10">
           <div className="flex items-center justify-between gap-4 mb-2">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <h1 className="text-3xl sm:text-4xl font-medium tracking-tight text-gray-900 dark:text-white">
               VideoText Status
             </h1>
             <span className="inline-flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 shrink-0">
@@ -377,10 +377,10 @@ export default function StatusPage() {
 
         {/* ── Services ── */}
         <section className="mb-10">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
             Services
           </h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
             {SERVICES.map((service) => (
               <ServiceRow key={service.name} service={service} />
             ))}
@@ -392,10 +392,10 @@ export default function StatusPage() {
 
         {/* ── 90-day uptime summary ── */}
         <section className="mb-10">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
             90-Day Uptime
           </h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
             {SERVICES.map((service, i) => (
               <div
                 key={service.name}
@@ -424,10 +424,10 @@ export default function StatusPage() {
 
         {/* ── Incident history ── */}
         <section className="mb-10">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 px-1">
             Incident History
           </h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
             {INCIDENTS.map((incident) => (
               <IncidentCard key={incident.id} incident={incident} />
             ))}
@@ -439,10 +439,10 @@ export default function StatusPage() {
 
         {/* ── Subscribe ── */}
         <section>
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 px-5 sm:px-6 py-6">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 px-5 sm:px-6 py-6">
             <div className="flex items-center gap-2.5 mb-1">
               <Bell size={16} className="text-blue-600" />
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-sm font-medium text-gray-900 dark:text-white">
                 Get incident notifications
               </h2>
             </div>
