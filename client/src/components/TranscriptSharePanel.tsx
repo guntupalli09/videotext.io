@@ -95,7 +95,7 @@ export default function TranscriptSharePanel({
 
   if (!isLoggedIn()) {
     return (
-      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 p-5">
+      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 p-5">
         <div className="flex items-start gap-3">
           <div className="shrink-0 w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
             <Link2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -119,7 +119,7 @@ export default function TranscriptSharePanel({
 
   if (!planIncludesTranscriptShare()) {
     return (
-      <div className="rounded-2xl border border-blue-200/80 dark:border-blue-800/50 bg-gradient-to-br from-blue-50/90 to-white dark:from-blue-950/30 dark:to-gray-900/60 p-5">
+      <div className="rounded-xl border border-blue-200/80 dark:border-blue-800/50 bg-gradient-to-br from-blue-50/90 to-white dark:from-blue-950/30 dark:to-gray-900/60 p-5">
         <div className="flex items-start gap-3">
           <div className="shrink-0 w-10 h-10 rounded-xl bg-blue-600/15 flex items-center justify-center">
             <Crown className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -147,7 +147,7 @@ export default function TranscriptSharePanel({
   }
 
   return (
-    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/60 shadow-sm p-5 space-y-4">
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/60 shadow-sm p-5 space-y-4">
       <div className="flex items-start gap-3">
         <div className="shrink-0 w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/35 flex items-center justify-center">
           <Link2 className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />

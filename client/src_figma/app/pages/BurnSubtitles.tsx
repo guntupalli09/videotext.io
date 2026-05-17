@@ -70,13 +70,13 @@ export default function BurnSubtitles() {
         ]}
         sidebar={<ToolSidebar />}
       >
-        <div className="bg-blue-50 dark:bg-blue-900/10 rounded-2xl p-8 border border-blue-100 dark:border-blue-900/30">
+        <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-8 border border-blue-100 dark:border-blue-900/30">
           <div className="flex items-center gap-4 mb-8 pb-6 border-b border-blue-200 dark:border-blue-900/30">
             <div className="w-16 h-16 bg-blue-200 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
               <Video className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">
                 {uploadedFile?.name}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">

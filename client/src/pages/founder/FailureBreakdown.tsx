@@ -4,7 +4,7 @@ export default function FailureBreakdown({ failureReasons }: { failureReasons: D
   if (failureReasons.length === 0) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 flex flex-col gap-2">
-        <h3 className="text-sm font-semibold text-white">Failure reasons (30d)</h3>
+        <h3 className="text-sm font-medium text-white">Failure reasons (30d)</h3>
         <p className="text-emerald-400 text-sm">No failures recorded.</p>
       </div>
     )
@@ -16,7 +16,7 @@ export default function FailureBreakdown({ failureReasons }: { failureReasons: D
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white">Failure reasons (30d)</h3>
+        <h3 className="text-sm font-medium text-white">Failure reasons (30d)</h3>
         <span className="text-xs text-red-400 font-medium">{total} failures</span>
       </div>
       <div className="space-y-2.5">

@@ -47,7 +47,7 @@ export default function LanguageSelector({
   return (
     <div className="mt-6 rounded-xl border border-gray-200 bg-white p-4">
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-800">
+        <h3 className="text-sm font-medium text-gray-800">
           Additional languages
         </h3>
         <span className="text-xs text-gray-500">

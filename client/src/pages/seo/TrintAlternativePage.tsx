@@ -62,7 +62,7 @@ export default function TrintAlternativePage() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-600/10 border border-blue-200/60 dark:border-blue-500/20 mb-6">
             <span className="text-[12px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Trint Alternative</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
             Switch from Trint if you need a faster, simpler{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
               file-first transcription workflow
@@ -86,11 +86,11 @@ export default function TrintAlternativePage() {
 
       <div className="max-w-4xl mx-auto px-6 pb-24 space-y-16">
 
-        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Should you switch from Trint?</h2>
+        <section className="rounded-xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Should you switch from Trint?</h2>
           <div className="grid sm:grid-cols-2 gap-5 text-sm">
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Switch to VideoText if you want:</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Switch to VideoText if you want:</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                 <li>• Faster self-serve transcription without enterprise-style overhead.</li>
                 <li>• One-pass output (transcript, summary, chapters, SRT/VTT exports).</li>
@@ -99,7 +99,7 @@ export default function TrintAlternativePage() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Stay with Trint if you need:</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Stay with Trint if you need:</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                 <li>• Multi-editor transcript collaboration inside one shared workspace.</li>
                 <li>• Newsroom-style review and publishing workflows at team scale.</li>
@@ -111,7 +111,7 @@ export default function TrintAlternativePage() {
 
         {/* Why people leave Trint */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Why teams look for a Trint alternative</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Why teams look for a Trint alternative</h2>
           <ul className="space-y-3">
             {[
               'Trint starts at $80/month — the highest entry price of any mainstream transcription tool.',
@@ -131,14 +131,14 @@ export default function TrintAlternativePage() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Workflow differences that matter in real projects</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Workflow differences that matter in real projects</h2>
           <div className="grid sm:grid-cols-2 gap-5">
             <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Trint-style workflow</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Trint-style workflow</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Best when teams need shared transcript editing and enterprise process controls. Tradeoff: higher starting price and more workflow steps for simple transcript-to-export jobs.</p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">VideoText workflow</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">VideoText workflow</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Best when one person or a small team needs fast, structured output from recorded files. Tradeoff: no multi-user transcript collaboration layer.</p>
             </div>
           </div>
@@ -146,8 +146,8 @@ export default function TrintAlternativePage() {
 
         {/* Comparison table */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">VideoText vs Trint — feature comparison</h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">VideoText vs Trint — feature comparison</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
             <div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-white/[0.05]">
               <div />
               <div className="text-center text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">VideoText</div>
@@ -172,18 +172,18 @@ export default function TrintAlternativePage() {
             { icon: Zap, title: 'No enterprise sales process', body: 'Trint requires contacting sales for team plans. VideoText is self-serve — sign up, upgrade instantly, no calls.' },
             { icon: Shield, title: 'Complete file deletion', body: 'VideoText deletes your files after processing. Trint stores everything in their cloud by default.' },
           ].map(({ icon: Icon, title, body }) => (
-            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
+            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-3">
                 <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-1">{title}</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">{title}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">{body}</p>
             </div>
           ))}
         </section>
 
-        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Compare your next-best options</h2>
+        <section className="rounded-xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-3">Compare your next-best options</h2>
           <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">If Trint feels heavy for your workflow, compare other file-first options before you switch.</p>
           <div className="flex flex-wrap gap-3 text-sm">
             <Link to="/rev-alternative" className="text-blue-600 dark:text-blue-400 hover:underline">Rev alternative</Link>
@@ -197,11 +197,11 @@ export default function TrintAlternativePage() {
 
         {/* FAQ */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
           <div className="space-y-4">
             {FAQ.map(({ q, a }) => (
               <div key={q} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{a}</p>
               </div>
             ))}
@@ -209,8 +209,8 @@ export default function TrintAlternativePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Test a real Trint job before you switch</h2>
+        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-xl p-8 sm:p-12 text-white text-center">
+          <h2 className="text-2xl sm:text-3xl font-medium mb-3">Test a real Trint job before you switch</h2>
           <p className="text-white/70 mb-8 max-w-xl mx-auto">Upload one of your normal recordings and compare speed, output structure, and export readiness directly in your own workflow.</p>
           <Link to="/video-to-transcript?source=trint-alternative">
             <span className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">

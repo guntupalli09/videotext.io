@@ -70,7 +70,7 @@ export default function MacWhisperAlternativePage() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-600/10 border border-blue-200/60 dark:border-blue-500/20 mb-6">
             <span className="text-[12px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">MacWhisper Alternative</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
             The best{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
               MacWhisper alternative
@@ -96,7 +96,7 @@ export default function MacWhisperAlternativePage() {
 
         {/* Why people look for a MacWhisper alternative */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Why users search for a MacWhisper alternative</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Why users search for a MacWhisper alternative</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
             MacWhisper is a high-quality app, but several practical constraints push users to look for browser-based alternatives:
           </p>
@@ -120,8 +120,8 @@ export default function MacWhisperAlternativePage() {
 
         {/* Comparison table */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">VideoText vs MacWhisper — feature comparison</h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">VideoText vs MacWhisper — feature comparison</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
             <div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-white/[0.05]">
               <div />
               <div className="text-center text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">VideoText</div>
@@ -141,7 +141,7 @@ export default function MacWhisperAlternativePage() {
 
         {/* When MacWhisper is better */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">When MacWhisper is the right choice</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">When MacWhisper is the right choice</h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
             MacWhisper is the right tool if <strong>100% local processing</strong> is your priority — your audio never leaves your Mac, which matters for legally sensitive transcription (attorney-client privilege, medical interviews, classified content). MacWhisper is also better if you have a modern Mac with Apple Silicon (M1/M2/M3) where local Whisper processing is very fast, and you want a native app experience with Finder integration. VideoText is better for cross-platform use, quick browser access, and when you need summary, chapters, and keyword features on top of the transcript.
           </p>
@@ -154,11 +154,11 @@ export default function MacWhisperAlternativePage() {
             { icon: DollarSign, title: 'Summary, chapters, keywords included', body: 'VideoText adds auto-summary, chapter navigation, and keyword indexing on top of the transcript. MacWhisper outputs raw transcript text only.' },
             { icon: Shield, title: 'No model download or setup', body: 'MacWhisper requires a ~3GB model download and optional diarization setup. VideoText is instant — open a tab and upload your file.' },
           ].map(({ icon: Icon, title, body }) => (
-            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
+            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-3">
                 <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-1">{title}</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">{title}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">{body}</p>
             </div>
           ))}
@@ -166,11 +166,11 @@ export default function MacWhisperAlternativePage() {
 
         {/* FAQ */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
           <div className="space-y-4">
             {FAQ.map(({ q, a }) => (
               <div key={q} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{a}</p>
               </div>
             ))}
@@ -178,8 +178,8 @@ export default function MacWhisperAlternativePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Whisper accuracy without the Mac setup</h2>
+        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-xl p-8 sm:p-12 text-white text-center">
+          <h2 className="text-2xl sm:text-3xl font-medium mb-3">Whisper accuracy without the Mac setup</h2>
           <p className="text-white/70 mb-8 max-w-xl mx-auto">Upload your file in the browser. Get Whisper large-v3 accuracy with speaker labels, summary, chapters, and SRT — on any OS. No installation needed.</p>
           <Link to="/video-to-transcript">
             <span className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">

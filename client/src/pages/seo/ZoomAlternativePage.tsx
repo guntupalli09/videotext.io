@@ -68,7 +68,7 @@ export default function ZoomAlternativePage() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-600/10 border border-blue-200/60 dark:border-blue-500/20 mb-6">
             <span className="text-[12px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Zoom Transcription Alternative</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
             The best{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
               Zoom transcription alternative
@@ -94,7 +94,7 @@ export default function ZoomAlternativePage() {
 
         {/* Why people look for a Zoom alternative */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Why users search for a Zoom transcription alternative</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Why users search for a Zoom transcription alternative</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
             Zoom added AI Companion transcription in 2023, but it comes with significant restrictions that push most users to look for alternatives:
           </p>
@@ -118,8 +118,8 @@ export default function ZoomAlternativePage() {
 
         {/* Comparison table */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">VideoText vs Zoom AI Companion — feature comparison</h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">VideoText vs Zoom AI Companion — feature comparison</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
             <div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-white/[0.05]">
               <div />
               <div className="text-center text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">VideoText</div>
@@ -139,7 +139,7 @@ export default function ZoomAlternativePage() {
 
         {/* When Zoom AI Companion is better */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">When Zoom AI Companion is the right choice</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">When Zoom AI Companion is the right choice</h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
             Zoom AI Companion is the right tool if you need <strong>real-time live transcription during the meeting itself</strong> — appearing as a live caption overlay for all participants, integrated with Zoom's smart chapters and meeting summaries inside the Zoom app. If your organisation already pays for Business/Enterprise and live meeting UX is the priority, AI Companion is convenient. VideoText is better for <strong>post-meeting processing of downloaded recordings</strong> — especially if you need subtitle files, translation, keyword search, or privacy-first file handling.
           </p>
@@ -152,11 +152,11 @@ export default function ZoomAlternativePage() {
             { icon: Shield, title: 'Privacy-first processing', body: 'Zoom stores your meeting transcripts in its cloud. VideoText deletes your file immediately after transcription. Nothing is retained.' },
             { icon: Zap, title: 'SRT + translation included', body: 'Export SRT or VTT subtitle files and translate to 70+ languages. Zoom AI Companion has no subtitle export and no translation feature.' },
           ].map(({ icon: Icon, title, body }) => (
-            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
+            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-3">
                 <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-1">{title}</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">{title}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">{body}</p>
             </div>
           ))}
@@ -164,11 +164,11 @@ export default function ZoomAlternativePage() {
 
         {/* FAQ */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
           <div className="space-y-4">
             {FAQ.map(({ q, a }) => (
               <div key={q} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{a}</p>
               </div>
             ))}
@@ -176,8 +176,8 @@ export default function ZoomAlternativePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Transcribe your Zoom recording now</h2>
+        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-xl p-8 sm:p-12 text-white text-center">
+          <h2 className="text-2xl sm:text-3xl font-medium mb-3">Transcribe your Zoom recording now</h2>
           <p className="text-white/70 mb-8 max-w-xl mx-auto">Download the MP4 from Zoom, upload it here. Get a full transcript with speaker labels in minutes — free, no Zoom plan upgrade needed.</p>
           <Link to="/video-to-transcript">
             <span className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">

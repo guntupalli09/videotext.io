@@ -1588,7 +1588,7 @@ export default function GuidelineFormat() {
             </section>
           </div>
 
-          <div className="rounded-2xl border border-blue-200/60 dark:border-blue-900/40 bg-white/70 dark:bg-gray-900/30 p-5 shadow-sm">
+          <div className="rounded-xl border border-blue-200/60 dark:border-blue-900/40 bg-white/70 dark:bg-gray-900/30 p-5 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-1">
                 <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-gray-500 dark:text-gray-400">
@@ -1619,7 +1619,7 @@ export default function GuidelineFormat() {
             showProcessingMessage ||
             submitError ||
             jobStatus) && (
-            <div className="rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/60 dark:bg-blue-950/25 p-6 space-y-4">
+            <div className="rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/60 dark:bg-blue-950/25 p-6 space-y-4">
               {showLoadingMessage && (
                 <p className="text-sm text-gray-800 dark:text-gray-100 leading-relaxed">
                   Applying style guide rules to your transcript… This takes
@@ -1728,7 +1728,7 @@ export default function GuidelineFormat() {
               {jobStatus?.status === "completed" &&
                 !submitError &&
                 (showAuthGate && !isLoggedIn() ? (
-                  <div className="rounded-2xl border border-blue-200/80 dark:border-blue-900/50 bg-white/85 dark:bg-gray-900/60 p-6 shadow-sm space-y-4">
+                  <div className="rounded-xl border border-blue-200/80 dark:border-blue-900/50 bg-white/85 dark:bg-gray-900/60 p-6 shadow-sm space-y-4">
                     <div className="flex items-start gap-3">
                       <span className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
                         <Lock className="h-4 w-4" aria-hidden />
@@ -2137,7 +2137,7 @@ export default function GuidelineFormat() {
                                 );
                               };
                               return (
-                                <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-5 space-y-4">
+                                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-5 space-y-4">
                                   <div className="flex flex-wrap items-start justify-between gap-3">
                                     <div className="space-y-1">
                                       <div className="flex flex-wrap items-center gap-2">
@@ -2402,7 +2402,7 @@ export default function GuidelineFormat() {
                                 return (
                                   <div
                                     key={i}
-                                    className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-5 space-y-4"
+                                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-5 space-y-4"
                                   >
                                     <div className="flex flex-wrap items-start justify-between gap-3">
                                       <div className="space-y-1">
@@ -2534,8 +2534,8 @@ export default function GuidelineFormat() {
                           </div>
                         ) : (
                           <div className="grid grid-cols-1 gap-3 lg:grid-cols-5">
-                            <div className="lg:col-span-2 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/30 p-2.5">
-                              <h3 className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+                            <div className="lg:col-span-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/30 p-2.5">
+                              <h3 className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
                                 Original
                               </h3>
                               <div
@@ -2578,8 +2578,8 @@ export default function GuidelineFormat() {
                               </div>
                             </div>
 
-                            <div className="lg:col-span-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-2.5 shadow-sm">
-                              <h3 className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+                            <div className="lg:col-span-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-2.5 shadow-sm">
+                              <h3 className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
                                 Formatted
                               </h3>
                               <div
@@ -2733,7 +2733,7 @@ export default function GuidelineFormat() {
         className="mx-auto mt-8 max-w-3xl border-t border-white/[0.08] px-4 pt-8 pb-12 sm:px-6 sm:pb-16 lg:px-8"
         aria-label="Frequently asked questions"
       >
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-6">
           Transcript Style Guide FAQ
         </h2>
         <dl className="space-y-6">
@@ -2787,7 +2787,7 @@ export default function GuidelineFormat() {
         className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800"
         aria-label="Transcription QA workflow"
       >
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-3">
           The 7-Stage Transcription QA Workflow
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">
@@ -2876,7 +2876,7 @@ export default function GuidelineFormat() {
               </div>
               <div className="pb-7 pt-0.5 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
+                  <h3 className="font-medium text-gray-900 dark:text-white text-sm">
                     {title}
                   </h3>
                   <span
@@ -2899,7 +2899,7 @@ export default function GuidelineFormat() {
         className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800"
         aria-label="Transcript formatting examples"
       >
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-3">
           Raw → Formatted → Client-Ready: What the Formatter Actually Does
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
@@ -2911,7 +2911,7 @@ export default function GuidelineFormat() {
         <div className="space-y-10">
           {/* Example 1 — Rev non-verbatim */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white">
               Example: Rev non-verbatim format
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -2947,7 +2947,7 @@ spk_1: yeah yeah and and the second run was i think more more compelling right`}
 
           {/* Example 2 — GoTranscript with timestamps */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white">
               Example: GoTranscript format with 2-minute timestamps
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -2989,7 +2989,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
 
           {/* Example 3 — Full verbatim */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white">
               Example: Full verbatim (legal / research format)
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -3018,7 +3018,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
         className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800"
         aria-label="Transcription platform style guide comparison"
       >
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-3">
           Style Guide Comparison: Rev, GoTranscript, TranscribeMe, Scribie
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
@@ -3027,7 +3027,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
           scores. This table documents the key formatting rules for each
           platform as of 2026.
         </p>
-        <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700">
+        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
           <table className="min-w-full text-xs">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
@@ -3174,7 +3174,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
         className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800"
         aria-label="How transcript format validation works"
       >
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-3">
           How the Format Validation Engine Works
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
@@ -3212,9 +3212,9 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
           ].map(({ title, body }) => (
             <article
               key={title}
-              className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-5 shadow-sm"
+              className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-5 shadow-sm"
             >
-              <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-2">
+              <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2">
                 {title}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -3230,7 +3230,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
         className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800"
         aria-label="For professional transcriptionists"
       >
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mb-3">
           Built for Professional Transcriptionists, Not Just Beginners
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
@@ -3265,7 +3265,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
               key={heading}
               className="border-l-2 border-blue-200 dark:border-blue-800 pl-5"
             >
-              <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-2">
+              <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2">
                 {heading}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -3283,7 +3283,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
       >
         <div className="flex items-center gap-3 mb-2">
           <BookOpen className="w-5 h-5 text-blue-600" />
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-xl font-medium text-gray-900 dark:text-white">
             Platform-Specific Transcription Style Guides
           </h2>
         </div>
@@ -3487,7 +3487,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
           },
         ].map(({ brand, links }) => (
           <div key={brand} className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
               <FileText className="w-3.5 h-3.5 text-blue-400" />
               {brand}
             </h3>

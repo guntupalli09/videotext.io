@@ -125,7 +125,7 @@ export default function SeoToolPage() {
         <Tool {...toolProps} />
       </Suspense>
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4 sm:p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 sm:p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-semibold text-blue-900">Workflow-native next step</p>
             <p className="text-xs text-blue-700">CTA selected from route family ({routeFamily}) and intent ({intentClass.replace('comparisonAlternative', 'comparison/alternative')}).</p>
@@ -153,7 +153,7 @@ export default function SeoToolPage() {
             <MoneyPagesCta
               title="Best next step after this comparison"
               description="Jump straight into the core workflows used by customers to create transcript and subtitle outputs."
-              className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4 sm:p-5 text-sm"
+              className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 sm:p-5 text-sm"
             />
           </div>
         )}

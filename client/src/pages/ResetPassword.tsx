@@ -45,7 +45,7 @@ export default function ResetPassword() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gray-50 dark:bg-gray-900">
         <div className="w-full max-w-sm text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Invalid reset link</h1>
+          <h1 className="text-2xl font-medium text-gray-900 dark:text-white">Invalid reset link</h1>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
             This link is invalid or has expired. Request a new password reset from the login page.
           </p>
@@ -68,7 +68,7 @@ export default function ResetPassword() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gray-50 dark:bg-gray-900">
         <div className="w-full max-w-sm text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Password updated</h1>
+          <h1 className="text-2xl font-medium text-gray-900 dark:text-white">Password updated</h1>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
             Redirecting you to log in…
           </p>
@@ -80,7 +80,7 @@ export default function ResetPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gray-50 dark:bg-gray-900">
       <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white text-center">Set new password</h1>
+        <h1 className="text-2xl font-medium text-gray-900 dark:text-white text-center">Set new password</h1>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 text-center">
           Enter your new password below. Use at least 8 characters.
         </p>

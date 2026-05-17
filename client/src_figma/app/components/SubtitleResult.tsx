@@ -51,7 +51,7 @@ export function SubtitleResult({
         >
           <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
         </motion.div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-2">
           Your subtitles are ready!
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-1">{fileName}</p>
@@ -64,11 +64,11 @@ export function SubtitleResult({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm"
+        className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm"
       >
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+            <h3 className="font-medium text-gray-900 dark:text-white mb-1">
               {format} File
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -108,7 +108,7 @@ export function SubtitleResult({
 
       {/* Next Step Section */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
           Next step
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -122,7 +122,7 @@ export function SubtitleResult({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -4 }}
+                whileHover={{ y: -2 }}
                 className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 shadow-sm hover:shadow-md transition-all text-left group"
               >
                 <ToolIcon 
@@ -132,7 +132,7 @@ export function SubtitleResult({
                   size="md"
                   className="mb-3"
                 />
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h4 className="font-medium text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {toolConfig.name}
                 </h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">

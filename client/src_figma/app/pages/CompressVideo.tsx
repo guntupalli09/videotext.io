@@ -70,13 +70,13 @@ export default function CompressVideo() {
         ]}
         sidebar={<ToolSidebar />}
       >
-        <div className="bg-pink-50 dark:bg-pink-900/10 rounded-2xl p-8 border border-pink-100 dark:border-pink-900/30">
+        <div className="bg-pink-50 dark:bg-pink-900/10 rounded-xl p-8 border border-pink-100 dark:border-pink-900/30">
           <div className="flex items-center gap-4 mb-8 pb-6 border-b border-pink-200 dark:border-pink-900/30">
             <div className="w-16 h-16 bg-pink-200 dark:bg-pink-900/50 rounded-lg flex items-center justify-center">
               <Layers className="w-8 h-8 text-pink-600 dark:text-pink-400" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">
                 {uploadedFile?.name}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -160,8 +160,8 @@ export default function CompressVideo() {
           />
 
           {/* Compression Stats */}
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 border border-green-200 dark:border-green-800">
-            <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-4">
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
+            <h3 className="text-lg font-medium text-green-900 dark:text-green-100 mb-4">
               Compression Results
             </h3>
             <div className="grid grid-cols-3 gap-6">
@@ -261,7 +261,7 @@ export default function CompressVideo() {
             <div className="bg-gradient-to-br from-pink-50 to-blue-50 dark:from-pink-900/20 dark:to-blue-900/20 rounded-xl p-6 border border-pink-200 dark:border-pink-800">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h4 className="text-sm font-semibold text-pink-900 dark:text-pink-100">
+                  <h4 className="text-sm font-medium text-pink-900 dark:text-pink-100">
                     File size estimate
                   </h4>
                   <p className="text-xs text-pink-700 dark:text-pink-300">

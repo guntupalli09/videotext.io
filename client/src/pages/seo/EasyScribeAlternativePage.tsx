@@ -66,7 +66,7 @@ export default function EasyScribeAlternativePage() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-600/10 border border-blue-200/60 dark:border-blue-500/20 mb-6">
             <span className="text-[12px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">EasyScribe Alternative</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
             The best{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
               EasyScribe alternative
@@ -92,7 +92,7 @@ export default function EasyScribeAlternativePage() {
 
         {/* Why people look for EasyScribe alternative */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Why users look for an EasyScribe alternative</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Why users look for an EasyScribe alternative</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
             EasyScribe covers basic transcription needs — but as soon as workflows involve video files, subtitle formats, or multiple languages, its limitations become clear:
           </p>
@@ -116,8 +116,8 @@ export default function EasyScribeAlternativePage() {
 
         {/* Comparison table */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">VideoText vs EasyScribe — feature comparison</h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">VideoText vs EasyScribe — feature comparison</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
             <div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-white/[0.05]">
               <div />
               <div className="text-center text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">VideoText</div>
@@ -137,7 +137,7 @@ export default function EasyScribeAlternativePage() {
 
         {/* When EasyScribe is better */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">When EasyScribe might suit you</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">When EasyScribe might suit you</h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
             EasyScribe may be suitable if you need <strong>simple audio-to-text transcription</strong> with a very minimal interface and no subtitle or video requirements. If you're transcribing voice memos or short audio clips into plain text and don't need SRT files, translation, or YouTube support, a basic tool can get the job done. VideoText is the better choice the moment your workflow involves any video file, subtitle format, multiple languages, or YouTube content.
           </p>
@@ -150,11 +150,11 @@ export default function EasyScribeAlternativePage() {
             { icon: DollarSign, title: 'Free tier included', body: 'Start with 3 free imports per month — no credit card, no trial expiry. EasyScribe requires payment to get started.' },
             { icon: Shield, title: 'YouTube URL support', body: 'Paste any YouTube link and VideoText transcribes it directly. No need to download the video. EasyScribe has no YouTube integration.' },
           ].map(({ icon: Icon, title, body }) => (
-            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
+            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-3">
                 <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-1">{title}</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">{title}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">{body}</p>
             </div>
           ))}
@@ -162,11 +162,11 @@ export default function EasyScribeAlternativePage() {
 
         {/* FAQ */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
           <div className="space-y-4">
             {FAQ.map(({ q, a }) => (
               <div key={q} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{a}</p>
               </div>
             ))}
@@ -174,8 +174,8 @@ export default function EasyScribeAlternativePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Go beyond basic transcription</h2>
+        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-xl p-8 sm:p-12 text-white text-center">
+          <h2 className="text-2xl sm:text-3xl font-medium mb-3">Go beyond basic transcription</h2>
           <p className="text-white/70 mb-8 max-w-xl mx-auto">Upload any video or paste a YouTube URL. Transcript, SRT file, subtitle translation, or burned-in captions — all from one tool. Free tier, no credit card.</p>
           <Link to="/video-to-transcript">
             <span className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">

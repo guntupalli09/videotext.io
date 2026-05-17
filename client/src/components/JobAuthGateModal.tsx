@@ -152,11 +152,11 @@ export default function JobAuthGateModal({
 
         {/* Card — slides up from bottom on mobile, scales in on desktop */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 40 }}
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="relative bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:max-w-md p-6 sm:p-8 transition-colors duration-300"
+          className="relative bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-xl shadow-2xl w-full sm:max-w-md p-6 sm:p-8 transition-colors duration-300"
           role="dialog"
           aria-modal="true"
           aria-labelledby="auth-gate-title"
@@ -182,7 +182,7 @@ export default function JobAuthGateModal({
                 <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">{jobDescription}</span>
               </div>
 
-              <h2 id="auth-gate-title" className="text-2xl font-extrabold text-gray-900 dark:text-white mb-2 font-display leading-tight">
+              <h2 id="auth-gate-title" className="text-2xl font-medium text-gray-900 dark:text-white mb-2 font-display leading-tight">
                 Finish signing up to get your result
               </h2>
               <p className="text-[15px] text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
@@ -265,7 +265,7 @@ export default function JobAuthGateModal({
           {mode === 'signup-combo' && (
             <form onSubmit={handleSignupCombo} className="space-y-4">
               <div>
-                <h2 id="auth-gate-title" className="text-2xl font-extrabold text-gray-900 dark:text-white font-display">
+                <h2 id="auth-gate-title" className="text-2xl font-medium text-gray-900 dark:text-white font-display">
                   Finish signing up
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -356,7 +356,7 @@ export default function JobAuthGateModal({
           {mode === 'signup-otp' && (
             <form onSubmit={handleSignupOtp} className="space-y-4">
               <div>
-                <h2 id="auth-gate-title" className="text-2xl font-extrabold text-gray-900 dark:text-white font-display">
+                <h2 id="auth-gate-title" className="text-2xl font-medium text-gray-900 dark:text-white font-display">
                   Check your email
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -408,7 +408,7 @@ export default function JobAuthGateModal({
           {mode === 'login' && (
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <h2 id="auth-gate-title" className="text-2xl font-extrabold text-gray-900 dark:text-white font-display">
+                <h2 id="auth-gate-title" className="text-2xl font-medium text-gray-900 dark:text-white font-display">
                   Welcome back
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">

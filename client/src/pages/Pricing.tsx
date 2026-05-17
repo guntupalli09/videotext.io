@@ -125,7 +125,7 @@ export default function Pricing() {
         {/* Header */}
         <div className="text-center mb-14">
           <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-3 tracking-wide uppercase">Pricing</p>
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white tracking-tight">
             The complete transcription workflow
           </h1>
           <p className="mt-4 text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
@@ -162,7 +162,7 @@ export default function Pricing() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
 
           {/* FREE */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('free') ? 'border-blue-300 dark:border-blue-600 ring-2 ring-blue-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('free') ? 'border-blue-300 dark:border-blue-600 ring-2 ring-blue-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
             {isCurrentPlan('free') && (
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
                 Current Plan
@@ -208,7 +208,7 @@ export default function Pricing() {
           </div>
 
           {/* PRO */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('pro') ? 'border-blue-400 dark:border-blue-500 ring-2 ring-blue-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
+          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('pro') ? 'border-blue-400 dark:border-blue-500 ring-2 ring-blue-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
             {isCurrentPlan('pro') && (
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
                 Current Plan
@@ -257,14 +257,14 @@ export default function Pricing() {
           </div>
 
           {/* FOUNDING PRO */}
-          <div className="relative flex flex-col bg-gray-950 dark:bg-gray-900 rounded-2xl p-7 shadow-2xl shadow-amber-500/10 ring-2 ring-amber-400/60">
+          <div className="relative flex flex-col bg-gray-950 dark:bg-gray-900 rounded-xl p-7 shadow-2xl shadow-amber-500/10 ring-2 ring-amber-400/60">
             {/* Badges */}
             <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-amber-500 text-gray-950 text-[11px] font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
               {isCurrentPlan('founding_workflow') ? 'Current Plan' : '⚡ 20 Spots Only'}
             </span>
 
             <div className="mb-6">
-              <h3 className="text-xs font-semibold text-amber-400 uppercase tracking-widest">Founding Pro</h3>
+              <h3 className="text-xs font-medium text-amber-400 uppercase tracking-widest">Founding Pro</h3>
               <div className="mt-2 flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-white">$24.99</span>
                 <span className="text-sm text-gray-400">/ mo</span>
@@ -357,7 +357,7 @@ export default function Pricing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 flex flex-col"
+                className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 flex flex-col"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex gap-0.5">

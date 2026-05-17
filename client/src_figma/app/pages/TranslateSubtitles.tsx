@@ -82,13 +82,13 @@ export default function TranslateSubtitles() {
         ]}
         sidebar={<ToolSidebar />}
       >
-        <div className="bg-pink-50 dark:bg-pink-900/10 rounded-2xl p-8 border border-pink-100 dark:border-pink-900/30">
+        <div className="bg-pink-50 dark:bg-pink-900/10 rounded-xl p-8 border border-pink-100 dark:border-pink-900/30">
           <div className="flex items-center gap-4 mb-8 pb-6 border-b border-pink-200 dark:border-pink-900/30">
             <div className="w-16 h-16 bg-pink-200 dark:bg-pink-900/50 rounded-lg flex items-center justify-center">
               <Languages className="w-8 h-8 text-pink-600 dark:text-pink-400" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">
                 {uploadedFile?.name}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -229,7 +229,7 @@ export default function TranslateSubtitles() {
                   <Languages className="w-5 h-5 text-pink-600 dark:text-pink-400" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-pink-900 dark:text-pink-100 mb-1">
+                  <h4 className="text-sm font-medium text-pink-900 dark:text-pink-100 mb-1">
                     High-quality AI translation
                   </h4>
                   <p className="text-xs text-pink-700 dark:text-pink-300">

@@ -752,7 +752,7 @@ export default function VoiceRecorder() {
 
         {/* ── Main recorder card ──────────────────────────────────────────── */}
         <motion.div
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated overflow-hidden"
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-card-elevated overflow-hidden"
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
@@ -1012,7 +1012,7 @@ export default function VoiceRecorder() {
               >
                 {/* Teaser card for guests */}
                 {showAuthGate && !isLoggedIn() && (
-                  <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
+                  <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
                     <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
@@ -1392,7 +1392,7 @@ export default function VoiceRecorder() {
           </p>
 
           <section className="space-y-3">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Convert Voice to Text Online Instantly</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Convert Voice to Text Online Instantly</h2>
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
               Use your microphone to convert speech into text in real time. No uploads, no processing — just instant results.
               This is built for <strong>voice to text online</strong>, <strong>speech to text instantly</strong>, and
@@ -1402,7 +1402,7 @@ export default function VoiceRecorder() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Live Voice to Text (See Words as You Speak)</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Live Voice to Text (See Words as You Speak)</h2>
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
               This is not traditional transcription. Words appear in real time with continuous live updates and no waiting for
               processing. If you are working from links, use our <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/youtube-transcript-generator">YouTube transcript generator</Link>.
@@ -1410,7 +1410,7 @@ export default function VoiceRecorder() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Voice to Text Without Uploading Files</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Voice to Text Without Uploading Files</h2>
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
               Most tools require uploading audio and waiting. This tool uses your microphone directly, converts speech instantly,
               and avoids file uploads completely. Need captions after transcript? Open the <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/subtitle-generator">subtitle generator</Link>.
@@ -1418,7 +1418,7 @@ export default function VoiceRecorder() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Why This Live Voice to Text Tool Is Different</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Why This Live Voice to Text Tool Is Different</h2>
             <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
               <li>Real-time transcription — not delayed</li>
               <li>No upload required — direct microphone input</li>
@@ -1432,7 +1432,7 @@ export default function VoiceRecorder() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Who Uses Live Voice to Text?</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Who Uses Live Voice to Text?</h2>
             <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
               <li>Writers — dictate ideas instantly</li>
               <li>Students — capture lectures in real time</li>
@@ -1442,7 +1442,7 @@ export default function VoiceRecorder() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">More Transcription &amp; Subtitle Tools</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">More Transcription &amp; Subtitle Tools</h2>
             <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
               <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/video-to-transcript">Video to transcript tool</Link></li>
               <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/youtube-transcript-generator">YouTube transcript generator</Link></li>
@@ -1452,7 +1452,7 @@ export default function VoiceRecorder() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Frequently Asked Questions</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Frequently Asked Questions</h2>
             <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
               <p><strong>How do I convert voice to text online?</strong><br />Use your microphone and start speaking. The tool converts your speech into text instantly.</p>
               <p><strong>Is there a free voice to text tool?</strong><br />Yes, you can use this tool directly in your browser without uploading files.</p>

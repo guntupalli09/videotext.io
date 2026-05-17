@@ -216,7 +216,7 @@ function SpotlightCard({
         <motion.div
           whileHover={{ y: -5 }}
           transition={{ duration: 0.22 }}
-          className="group relative h-full rounded-2xl border border-gray-200 dark:border-white/[0.07] bg-white dark:bg-gray-900 overflow-hidden hover:border-blue-300/60 dark:hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/8 transition-all duration-300"
+          className="group relative h-full rounded-xl border border-gray-200 dark:border-white/[0.07] bg-white dark:bg-gray-900 overflow-hidden hover:border-blue-300/60 dark:hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/8 transition-all duration-300"
           style={{ boxShadow: `0 0 0 0 ${tool.glowColor}` }}
         >
           {/* Subtle top gradient line */}
@@ -321,7 +321,7 @@ function SecondaryCard({
         }
       >
         <motion.div
-          whileHover={{ y: -4 }}
+          whileHover={{ y: -2 }}
           transition={{ duration: 0.2 }}
           className="group h-full rounded-xl border border-gray-200 bg-white p-4 hover:border-blue-300/60 dark:hover:border-blue-500/25 hover:shadow-lg transition-all duration-300"
         >
@@ -363,7 +363,7 @@ export function Features() {
           <p className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 transition-colors duration-500">
             The full toolkit
           </p>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
+          <h2 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
             Everything to deliver client-ready transcripts.
             <span className="block text-gray-300 dark:text-white/20 mt-1">
               One platform. Every stage of your workflow.

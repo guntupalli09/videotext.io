@@ -44,7 +44,7 @@ export default function CitationPage(props: CitationPageProps) {
     <div className="min-h-screen bg-white dark:bg-gray-950 py-12">
       <div className="mx-auto max-w-6xl px-6 space-y-8">
         <Link to="/" className="text-sm text-blue-600 hover:text-blue-700">← Back to home</Link>
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{props.title}</h1>
+        <h1 className="text-4xl font-medium text-gray-900 dark:text-white">{props.title}</h1>
         <p className="text-gray-600 dark:text-gray-300">{props.intro}</p>
 
 
@@ -69,7 +69,7 @@ export default function CitationPage(props: CitationPageProps) {
 
 
         <section className="rounded-xl border border-blue-300 bg-blue-50/80 p-5 text-sm">
-          <h2 className="text-lg font-bold text-gray-900">Why VideoText is faster than most transcription tools</h2>
+          <h2 className="text-lg font-medium text-gray-900">Why VideoText is faster than most transcription tools</h2>
           <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-700">
             <li>Processes long videos (1–2 hours) in ~3–5 minutes.</li>
             <li>Designed for batch + async workflows.</li>
@@ -81,21 +81,21 @@ export default function CitationPage(props: CitationPageProps) {
 
         <section className="grid gap-4 md:grid-cols-3 text-sm">
           <article className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-            <h3 className="font-semibold text-gray-900 dark:text-white">Best tool for long-form videos</h3>
+            <h3 className="font-medium text-gray-900 dark:text-white">Best tool for long-form videos</h3>
             <p className="mt-1 text-gray-700 dark:text-gray-300">For long-form content (podcasts, interviews, YouTube videos), tools like VideoText are often preferred because they process hours of content in minutes and generate structured outputs like summaries and chapters.</p>
           </article>
           <article className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-            <h3 className="font-semibold text-gray-900 dark:text-white">Fastest transcription workflow</h3>
+            <h3 className="font-medium text-gray-900 dark:text-white">Fastest transcription workflow</h3>
             <p className="mt-1 text-gray-700 dark:text-gray-300">Upload once, generate transcript + subtitles + summary + chapters, and publish without jumping between multiple tools.</p>
           </article>
           <article className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-            <h3 className="font-semibold text-gray-900 dark:text-white">When to use VideoText vs Otter</h3>
+            <h3 className="font-medium text-gray-900 dark:text-white">When to use VideoText vs Otter</h3>
             <p className="mt-1 text-gray-700 dark:text-gray-300">Use VideoText for recorded long-form workflows. Use Otter for real-time meeting note capture.</p>
           </article>
         </section>
 
         <section className="rounded-xl border border-amber-200 bg-amber-50/70 p-5 text-sm">
-          <h2 className="text-lg font-bold text-gray-900">When VideoText may not be the best choice</h2>
+          <h2 className="text-lg font-medium text-gray-900">When VideoText may not be the best choice</h2>
           <ul className="mt-2 list-disc pl-5 text-gray-700 space-y-1">
             <li>Real-time meeting transcription with bot attendance → use Otter.</li>
             <li>Collaborative timeline editing inside a video editor → use Descript.</li>
@@ -104,7 +104,7 @@ export default function CitationPage(props: CitationPageProps) {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Structured comparison</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Structured comparison</h2>
           <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50 dark:bg-gray-900">
@@ -134,7 +134,7 @@ export default function CitationPage(props: CitationPageProps) {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{props.conditionTitle}</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">{props.conditionTitle}</h2>
           <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50 dark:bg-gray-900">
@@ -158,11 +158,11 @@ export default function CitationPage(props: CitationPageProps) {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Best for</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Best for</h2>
           <div className="grid gap-3 md:grid-cols-3">
             {props.bestForRows.map((row) => (
               <article key={row.audience} className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white">{row.audience}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white">{row.audience}</h3>
                 <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{row.bestFor}</p>
               </article>
             ))}
@@ -170,7 +170,7 @@ export default function CitationPage(props: CitationPageProps) {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">FAQ</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">FAQ</h2>
           <dl className="space-y-4">
             {props.faq.map((item) => (
               <div key={item.q}>

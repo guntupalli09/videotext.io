@@ -64,7 +64,7 @@ export default function PinnedAudioPlayerBar(props: PinnedAudioPlayerBarProps) {
       role="region"
       aria-label="Audio playback"
     >
-      <div className="pointer-events-auto flex w-full max-w-5xl items-center gap-2 sm:gap-4 rounded-2xl border border-[#2a2840] bg-[#0a0a1a] px-3 py-3 sm:px-5 shadow-[0_-8px_40px_rgba(0,0,0,0.4)]">
+      <div className="pointer-events-auto flex w-full max-w-5xl items-center gap-2 sm:gap-4 rounded-xl border border-[#2a2840] bg-[#0a0a1a] px-3 py-3 sm:px-5 shadow-[0_-8px_40px_rgba(0,0,0,0.4)]">
         <audio
           ref={audioRef as LegacyRef<HTMLAudioElement>}
           src={audioSrc}

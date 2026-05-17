@@ -64,7 +64,7 @@ export function TranscriptResult({
   return (
     <div className="space-y-6">
       {/* Header with Tabs */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200 dark:border-gray-800 overflow-x-auto">
           <div className="flex items-center gap-1 p-2">
@@ -119,7 +119,7 @@ export function TranscriptResult({
         >
           <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
         </motion.div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-2">
           Your file is ready!
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-1">{fileName}</p>
@@ -155,7 +155,7 @@ export function TranscriptResult({
 
       {/* Generate Subtitles Section */}
       {onGenerateSubtitles && (
-        <div className="bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
           <button
             onClick={onGenerateSubtitles}
             className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium mb-4 flex items-center gap-2"
@@ -180,9 +180,9 @@ export function TranscriptResult({
       )}
 
       {/* Transcript Viewer */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
         <div className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
             Transcript
           </h3>
 
@@ -230,7 +230,7 @@ export function TranscriptResult({
 
       {/* Next Step Section */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
           Next step
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
@@ -257,7 +257,7 @@ export function TranscriptResult({
                   size="md"
                   className="mb-3"
                 />
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h4 className="font-medium text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {toolConfig.name}
                 </h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">

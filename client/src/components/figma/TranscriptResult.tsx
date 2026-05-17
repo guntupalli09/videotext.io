@@ -66,7 +66,7 @@ export function TranscriptResult({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full py-4 sm:py-5 px-5 sm:px-6 flex items-center justify-between gap-4 rounded-2xl bg-white/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 shadow-sm"
+        className="w-full py-4 sm:py-5 px-5 sm:px-6 flex items-center justify-between gap-4 rounded-xl bg-white/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 shadow-sm"
       >
         <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
           <motion.div
@@ -78,7 +78,7 @@ export function TranscriptResult({
             <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
           </motion.div>
           <div className="min-w-0 flex-1">
-            <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white leading-tight">Transcript ready</h2>
+            <h2 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white leading-tight">Transcript ready</h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-full mt-0.5" title={fileName}>{fileName}</p>
             <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-0.5">Processed in {processingTime} ⚡</p>
             {fileSize && <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{fileSize}</p>}
@@ -128,9 +128,9 @@ export function TranscriptResult({
 
 
       {showTranscriptCard && (
-        <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden min-w-0">
+        <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden min-w-0">
           <div className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Transcript</h3>
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">Transcript</h3>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
               {onSearchQueryChange && (
                 <div className="flex-1 min-w-0 w-full sm:min-w-[200px] relative">
@@ -204,7 +204,7 @@ export function TranscriptResult({
 
       {showNextSteps && tools.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Next step</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Next step</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Your next file is pre-filled on the next tool.</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {tools.map((tool) => (
@@ -214,7 +214,7 @@ export function TranscriptResult({
                 state={{ useWorkflowVideo: true }}
                 className="block p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 shadow-sm hover:shadow-md transition-all text-left group"
               >
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                <h4 className="font-medium text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                   {tool.name}
                 </h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{tool.description}</p>
