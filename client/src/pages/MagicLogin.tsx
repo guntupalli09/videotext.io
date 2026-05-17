@@ -49,7 +49,7 @@ export default function MagicLogin() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-8">
         <div className="max-w-sm w-full text-center">
           <p className="text-2xl mb-3">🔗</p>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Link expired</h1>
+          <h1 className="text-xl font-medium text-gray-900 dark:text-white mb-2">Link expired</h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">{error}</p>
           <a
             href="/login"

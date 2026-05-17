@@ -8,7 +8,7 @@ export default function Refer() {
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-6">
           <Gift className="w-8 h-8" />
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-white">
           Refer and earn
         </h1>
         <p className="mt-3 text-gray-600 dark:text-gray-300">

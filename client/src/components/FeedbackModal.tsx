@@ -149,7 +149,7 @@ export default function FeedbackModal({ isOpen, onClose, toolId, initialStars }:
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 8 }}
           transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+          className="relative bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full overflow-hidden"
           role="dialog"
           aria-labelledby="feedback-title"
           aria-modal="true"
@@ -188,7 +188,7 @@ export default function FeedbackModal({ isOpen, onClose, toolId, initialStars }:
                   <div className="mb-5 pr-8">
                     <h2
                       id="feedback-title"
-                      className="text-lg font-semibold text-gray-900 dark:text-white font-display leading-tight"
+                      className="text-lg font-medium text-gray-900 dark:text-white font-display leading-tight"
                     >
                       {heading}
                     </h2>

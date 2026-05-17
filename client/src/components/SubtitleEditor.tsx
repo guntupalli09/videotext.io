@@ -26,7 +26,7 @@ export default function SubtitleEditor({
   return (
     <div className="mt-6 rounded-xl border border-gray-200 bg-white p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-800">Subtitle Editor</h3>
+        <h3 className="text-sm font-medium text-gray-800">Subtitle Editor</h3>
         {!editable && (
           <span className="rounded-full bg-gray-100 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-gray-500">
             Read-only on free plan

@@ -14,7 +14,7 @@ export default function TurboScribeAlternative() {
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <section className="max-w-5xl mx-auto px-6 py-14">
         <p className="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">TurboScribe Alternative</p>
-        <h1 className="mt-3 text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
+        <h1 className="mt-3 text-4xl md:text-5xl font-medium text-gray-900 dark:text-white">
           Switching from TurboScribe?
         </h1>
         <p className="mt-4 text-base text-gray-600 dark:text-gray-300 max-w-3xl">
@@ -31,7 +31,7 @@ export default function TurboScribeAlternative() {
       </section>
 
       <section className="max-w-5xl mx-auto px-6 pb-16">
-        <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800">
+        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
           <table className="min-w-full text-sm">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>

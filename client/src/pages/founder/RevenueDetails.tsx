@@ -132,14 +132,14 @@ export default function RevenueDetails({ revenue, snapshot }: Props) {
 
       {/* New vs Churned MRR bars */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-        <h3 className="text-sm font-semibold text-white mb-1">New vs Churned MRR</h3>
+        <h3 className="text-sm font-medium text-white mb-1">New vs Churned MRR</h3>
         <p className="text-xs text-zinc-500 mb-3">Last 12 months</p>
         <NewChurnBars newMrr={revenue.newMrrTrend ?? []} churnedMrr={revenue.churnedMrrTrend ?? []} />
       </div>
 
       {/* Churn rate trend */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-        <h3 className="text-sm font-semibold text-white mb-1">Churn rate trend</h3>
+        <h3 className="text-sm font-medium text-white mb-1">Churn rate trend</h3>
         <p className="text-xs text-zinc-500 mb-3">Monthly %</p>
         <ChurnRateChart trend={revenue.churnRateTrend ?? []} />
         {snapshot.newPaidUsers != null && (

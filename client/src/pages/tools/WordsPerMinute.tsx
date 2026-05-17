@@ -135,7 +135,7 @@ export default function WordsPerMinute() {
           </div>
         )}
         {result && info && (
-          <div className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-6 text-center text-white">
+          <div className="rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 p-6 text-center text-white">
             <p className="text-xs font-semibold uppercase tracking-widest text-blue-200 mb-1">Your speaking rate</p>
             <p className="text-6xl font-display font-bold">{result}</p>
             <p className="text-lg text-blue-200 mt-1">words per minute</p>

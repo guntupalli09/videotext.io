@@ -57,7 +57,7 @@ export default function FeedbackSheet({
             className={`
               relative w-full ${maxWidth} mx-auto
               bg-white dark:bg-gray-900
-              rounded-t-2xl sm:rounded-2xl
+              rounded-t-2xl sm:rounded-xl
               shadow-2xl overflow-hidden
               sm:mb-0 sm:mx-4
             `}
@@ -94,7 +94,7 @@ export default function FeedbackSheet({
 
 export function SheetTitle({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-base font-semibold text-gray-900 dark:text-white font-display leading-snug pr-8">
+    <h2 className="text-base font-medium text-gray-900 dark:text-white font-display leading-snug pr-8">
       {children}
     </h2>
   )

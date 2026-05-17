@@ -62,7 +62,7 @@ export default function OtterAiAlternativePage() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-600/10 border border-blue-200/60 dark:border-blue-500/20 mb-6">
             <span className="text-[12px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Otter.ai Alternative</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
             Switch from Otter when your workflow is{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
               post-recording and export-first
@@ -86,11 +86,11 @@ export default function OtterAiAlternativePage() {
 
       <div className="max-w-4xl mx-auto px-6 pb-24 space-y-16">
 
-        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Should you stay with Otter or switch?</h2>
+        <section className="rounded-xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Should you stay with Otter or switch?</h2>
           <div className="grid sm:grid-cols-2 gap-5 text-sm">
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Stay with Otter if you need:</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Stay with Otter if you need:</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                 <li>• Live assistant behavior during meetings.</li>
                 <li>• Search across ongoing meeting history in one place.</li>
@@ -98,7 +98,7 @@ export default function OtterAiAlternativePage() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Switch to VideoText if you need:</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Switch to VideoText if you need:</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                 <li>• Post-call file processing with export-ready outputs.</li>
                 <li>• Subtitle workflows (SRT/VTT + translation + burn).</li>
@@ -110,7 +110,7 @@ export default function OtterAiAlternativePage() {
 
         {/* Why people leave Otter */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Why users search for an Otter.ai alternative</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Why users search for an Otter.ai alternative</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
             Otter.ai is excellent for live meeting capture. But it has significant limitations for any use case involving pre-recorded video or subtitle workflows:
           </p>
@@ -134,8 +134,8 @@ export default function OtterAiAlternativePage() {
 
         {/* Comparison table */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">VideoText vs Otter.ai — feature comparison</h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">VideoText vs Otter.ai — feature comparison</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
             <div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-white/[0.05]">
               <div />
               <div className="text-center text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">VideoText</div>
@@ -155,21 +155,21 @@ export default function OtterAiAlternativePage() {
 
         {/* When Otter is better */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">When Otter.ai is the right choice</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">When Otter.ai is the right choice</h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
             Otter.ai is the right tool for <strong>live meeting transcription</strong> — especially if you need a bot that automatically joins your calendar's Zoom or Google Meet calls, transcribes in real time, and builds a searchable library of past meetings. Its speaker detection and real-time collaboration are strong. VideoText does not join live calls — it processes recordings after the fact.
           </p>
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Meeting notes vs production-ready deliverables</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Meeting notes vs production-ready deliverables</h2>
           <div className="grid sm:grid-cols-2 gap-5">
             <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Otter workflow</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Otter workflow</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Great for searchable conversation history and live note workflows. Less aligned with subtitle/export-heavy post-production tasks.</p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">VideoText workflow</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">VideoText workflow</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Built for recording-to-output execution: transcript, summary, chapters, and export files for handoff or publishing after the meeting ends.</p>
             </div>
           </div>
@@ -182,18 +182,18 @@ export default function OtterAiAlternativePage() {
             { icon: Shield, title: 'Subtitle export included', body: 'VideoText exports SRT and VTT files with accurate timestamps. Otter only produces plain-text transcripts.' },
             { icon: DollarSign, title: 'Translation in 70+ languages', body: 'Translate your transcript or subtitle file to any language. Otter.ai has no subtitle translation feature.' },
           ].map(({ icon: Icon, title, body }) => (
-            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
+            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-3">
                 <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-1">{title}</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">{title}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">{body}</p>
             </div>
           ))}
         </section>
 
-        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Compare nearby switch paths</h2>
+        <section className="rounded-xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-3">Compare nearby switch paths</h2>
           <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Otter switch intent is close to Notta and Fireflies intent. These pages help users pick by workflow, not hype.</p>
           <div className="flex flex-wrap gap-3 text-sm">
             <Link to="/notta-alternative" className="text-blue-600 dark:text-blue-400 hover:underline">Notta alternative</Link>
@@ -207,11 +207,11 @@ export default function OtterAiAlternativePage() {
 
         {/* FAQ */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
           <div className="space-y-4">
             {FAQ.map(({ q, a }) => (
               <div key={q} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{a}</p>
               </div>
             ))}
@@ -219,8 +219,8 @@ export default function OtterAiAlternativePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Try a no-bot workflow on your next call recording</h2>
+        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-xl p-8 sm:p-12 text-white text-center">
+          <h2 className="text-2xl sm:text-3xl font-medium mb-3">Try a no-bot workflow on your next call recording</h2>
           <p className="text-white/70 mb-8 max-w-xl mx-auto">Upload the file after your meeting and compare how quickly you get a usable transcript package for recaps, subtitles, and handoffs.</p>
           <Link to="/video-to-transcript?source=otter-alternative">
             <span className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">

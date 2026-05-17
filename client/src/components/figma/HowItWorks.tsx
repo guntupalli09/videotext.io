@@ -80,7 +80,7 @@ export function HowItWorks() {
           <p className="text-sm font-bold text-blue-400 uppercase tracking-widest mb-3">
             How it works
           </p>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 font-display leading-tight">
+          <h2 className="text-4xl md:text-5xl font-medium text-white mb-4 font-display leading-tight">
             Three steps.{" "}
             <span className="bg-gradient-to-r from-blue-400 to-blue-400 bg-clip-text text-transparent">
               Seconds to transcript.
@@ -111,14 +111,14 @@ export function HowItWorks() {
                 {/* Icon container */}
                 <div className="relative z-10 mb-6">
                   <motion.div
-                    whileHover={{ scale: 1.08, rotate: 2 }}
+                    whileHover={{ scale: 1.05 }}
                     transition={{ duration: 0.2 }}
-                    className={`relative w-11 h-11 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center shadow-xl ${step.shadowColor}`}
+                    className={`relative w-11 h-11 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center shadow-xl ${step.shadowColor}`}
                   >
                     <Icon className="h-5 w-5 text-white" />
                     {/* Glow behind icon */}
                     <div
-                      className={`absolute inset-0 rounded-2xl ${step.glow} blur-xl scale-150 opacity-0 group-hover:opacity-100`}
+                      className={`absolute inset-0 rounded-xl ${step.glow} blur-xl scale-150 opacity-0 group-hover:opacity-100`}
                     />
                   </motion.div>
                   {/* Step number */}
@@ -156,13 +156,13 @@ export function HowItWorks() {
           className="grid grid-cols-1 lg:grid-cols-2 gap-6"
         >
           {/* Speed benchmark */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-white/[0.03] border border-white/[0.07]">
+          <div className="p-6 sm:p-8 rounded-xl bg-white/[0.03] border border-white/[0.07]">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-9 h-9 rounded-xl bg-blue-600/15 flex items-center justify-center flex-shrink-0">
                 <Zap className="w-4.5 h-4.5 text-blue-400" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white font-display">
+                <h3 className="text-base font-medium text-white font-display">
                   Processing speed
                 </h3>
                 <p className="text-xs text-white/30">
@@ -214,13 +214,13 @@ export function HowItWorks() {
 
           {/* What you get + privacy */}
           <div className="flex flex-col gap-4">
-            <div className="flex-1 p-6 sm:p-8 rounded-2xl bg-white/[0.03] border border-white/[0.07]">
+            <div className="flex-1 p-6 sm:p-8 rounded-xl bg-white/[0.03] border border-white/[0.07]">
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-9 h-9 rounded-xl bg-blue-600/15 flex items-center justify-center flex-shrink-0">
                   <Download className="w-4.5 h-4.5 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white font-display">
+                  <h3 className="text-base font-medium text-white font-display">
                     What you get from one upload
                   </h3>
                   <p className="text-xs text-white/30">
@@ -259,7 +259,7 @@ export function HowItWorks() {
             </div>
 
             {/* Privacy card */}
-            <div className="p-5 rounded-2xl bg-emerald-500/[0.06] border border-emerald-500/[0.15] flex items-start gap-4">
+            <div className="p-5 rounded-xl bg-emerald-500/[0.06] border border-emerald-500/[0.15] flex items-start gap-4">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
                 <Shield className="w-5 h-5 text-emerald-400" />
               </div>

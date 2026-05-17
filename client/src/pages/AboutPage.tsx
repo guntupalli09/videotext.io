@@ -33,7 +33,7 @@ export default function AboutPage() {
 
       {/* Hero */}
       <div className="mb-16">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+        <h1 className="text-4xl font-medium text-gray-900 dark:text-white mb-6">
           About VideoText
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
@@ -46,7 +46,7 @@ export default function AboutPage() {
 
       {/* Stats */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">By the numbers</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-8">By the numbers</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
           {stats.map(({ value, label }) => (
             <div key={label} className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 text-center">
@@ -59,7 +59,7 @@ export default function AboutPage() {
 
       {/* Mission */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Why we built this</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Why we built this</h2>
         <div className="prose prose-gray dark:prose-invert max-w-none">
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
             Most transcription tools were built for enterprises — they are slow, expensive, and retain your files indefinitely. We built VideoText to be the opposite: fast enough to use mid-workflow, priced for independent creators, and private enough that you never have to think about where your content goes.
@@ -75,7 +75,7 @@ export default function AboutPage() {
 
       {/* Technology */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Technology</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Technology</h2>
         <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 space-y-4">
           <div className="flex items-start gap-4">
             <div className="w-2 h-2 rounded-full bg-blue-600 mt-2 shrink-0" />
@@ -110,7 +110,7 @@ export default function AboutPage() {
 
       {/* Core Tools */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">Core tools</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-8">Core tools</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {tools.map(({ name, path, desc }) => (
             <Link
@@ -127,7 +127,7 @@ export default function AboutPage() {
 
       {/* Pricing */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Pricing</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Pricing</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { plan: 'Free', price: '$0/mo', features: '3 uploads/day, no credit card required' },
@@ -146,7 +146,7 @@ export default function AboutPage() {
 
       {/* How VideoText compares */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">How VideoText compares</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">How VideoText compares</h2>
         <div className="space-y-3">
           {comparisons.map(({ competitor, difference }) => (
             <div key={competitor} className="flex gap-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl">
@@ -159,7 +159,7 @@ export default function AboutPage() {
 
       {/* Privacy */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Privacy commitment</h2>
+        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Privacy commitment</h2>
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
             <strong>We do not store your files.</strong> When you upload a video or subtitle file, it is processed in a private pipeline and deleted immediately after your output is generated. VideoText does not retain uploads, transcripts, generated subtitles, or any content you provide.
@@ -172,8 +172,8 @@ export default function AboutPage() {
       </div>
 
       {/* CTA */}
-      <div className="text-center bg-gray-900 dark:bg-gray-800 rounded-2xl p-10">
-        <h2 className="text-2xl font-bold text-white mb-3">Try VideoText free</h2>
+      <div className="text-center bg-gray-900 dark:bg-gray-800 rounded-xl p-10">
+        <h2 className="text-2xl font-medium text-white mb-3">Try VideoText free</h2>
         <p className="text-gray-400 mb-6">3 uploads per day. No credit card required. Files deleted after processing.</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link

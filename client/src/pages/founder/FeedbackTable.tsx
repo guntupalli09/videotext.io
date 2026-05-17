@@ -62,7 +62,7 @@ export default function FeedbackTable({ feedback }: { feedback: DashboardFeedbac
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
       <div className="px-5 py-3 border-b border-zinc-800 flex items-center justify-between flex-wrap gap-2">
-        <h3 className="text-sm font-semibold text-white">All recent feedback</h3>
+        <h3 className="text-sm font-medium text-white">All recent feedback</h3>
         <div className="flex items-center gap-3">
           {surveyCount > 0 && (
             <span className="text-xs bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded-full">

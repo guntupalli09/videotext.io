@@ -73,7 +73,7 @@ export function UploadZone({
           scale: isDragging ? 1.02 : 1,
           borderColor: isDragging ? 'rgb(168, 85, 247)' : undefined
         }}
-        className={`relative overflow-hidden rounded-3xl border-2 border-dashed transition-all duration-300 ${
+        className={`relative overflow-hidden rounded-xl border-2 border-dashed transition-all duration-300 ${
           isDragging
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
             : 'border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50'
@@ -94,10 +94,10 @@ export function UploadZone({
               {/* Upload icon with animation */}
               <motion.div
                 animate={{
-                  y: isDragging ? -10 : [0, -10, 0],
+                  y: isDragging ? -4 : [0, -4, 0],
                 }}
                 transition={{
-                  duration: isDragging ? 0.3 : 2,
+                  duration: isDragging ? 0.3 : 2.5,
                   repeat: isDragging ? 0 : Infinity,
                   ease: "easeInOut"
                 }}
@@ -114,13 +114,13 @@ export function UploadZone({
                     transition={{ duration: 2, repeat: Infinity }}
                   />
 
-                  <div className="relative w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-xl">
+                  <div className="relative w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-xl">
                     <Upload className="w-10 h-10 text-white" />
                   </div>
                 </div>
               </motion.div>
 
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+              <h3 className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
                 Drag and drop your file
               </h3>
 
@@ -165,13 +165,13 @@ export function UploadZone({
                 animate={{ scale: 1, rotate: 0 }}
                 className="flex justify-center"
               >
-                <div className="relative w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-xl">
+                <div className="relative w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-xl">
                   <Loader2 className="w-10 h-10 text-white animate-spin" />
                 </div>
               </motion.div>
 
               <div className="space-y-3">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                <h3 className="text-xl font-medium text-gray-900 dark:text-white">
                   Uploading {fileName}
                 </h3>
 
@@ -200,13 +200,13 @@ export function UploadZone({
               className="space-y-6"
             >
               <div className="flex justify-center">
-                <div className="relative w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-xl">
+                <div className="relative w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-xl">
                   <Check className="w-10 h-10 text-white" />
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                <h3 className="text-xl font-medium text-gray-900 dark:text-white">
                   Upload complete!
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">

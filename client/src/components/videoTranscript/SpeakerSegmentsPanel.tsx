@@ -115,7 +115,7 @@ export default function SpeakerSegmentsPanel(props: {
     <div className="flex flex-col flex-1 min-h-0">
       {/* Header */}
       <div className="flex items-center gap-2 mb-1 shrink-0">
-        <h3 className="text-base font-semibold text-gray-900 dark:text-white">Who said what</h3>
+        <h3 className="text-base font-medium text-gray-900 dark:text-white">Who said what</h3>
         {audioObjectUrl && (
           <span className="ml-auto text-[11px] font-normal text-gray-400 dark:text-gray-500 shrink-0">Tap a line to seek</span>
         )}

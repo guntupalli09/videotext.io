@@ -7,7 +7,7 @@ export default function SubtitleResources() {
       <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-16 px-4">
         <div className="max-w-3xl mx-auto">
           <p className="text-gray-400 text-sm font-semibold uppercase tracking-widest mb-3">Reference Guide</p>
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">Subtitle Resources & Standards</h1>
+          <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">Subtitle Resources & Standards</h1>
           <p className="text-lg text-gray-300 max-w-2xl">
             Subtitle format specs, timing standards, Netflix delivery rules, character limits, and reading speed benchmarks — everything in one place.
           </p>
@@ -18,7 +18,7 @@ export default function SubtitleResources() {
 
         {/* Formats */}
         <section id="formats">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Subtitle Format Reference</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Subtitle Format Reference</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">The most widely used subtitle formats and their key characteristics.</p>
 
           <div className="space-y-6">
@@ -92,7 +92,7 @@ Today we'll cover subtitle formats.`,
             ].map((fmt) => (
               <div key={fmt.name} className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <div className="flex items-center gap-3 px-5 py-4 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm">{fmt.name}</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-white text-sm">{fmt.name}</h3>
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${fmt.badgeColor}`}>{fmt.badge}</span>
                 </div>
                 <div className="p-5 space-y-4">
@@ -116,7 +116,7 @@ Today we'll cover subtitle formats.`,
 
         {/* Netflix Rules */}
         <section id="netflix-rules">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Netflix Subtitle Delivery Requirements</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Netflix Subtitle Delivery Requirements</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Netflix publishes detailed timed text style guides for each language. These are the core technical requirements that apply across most languages.</p>
 
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -157,7 +157,7 @@ Today we'll cover subtitle formats.`,
 
         {/* Platform comparison */}
         <section id="platform-standards">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Subtitle Standards by Platform</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Subtitle Standards by Platform</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Key technical limits for the major streaming and video platforms.</p>
 
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -196,7 +196,7 @@ Today we'll cover subtitle formats.`,
 
         {/* Reading speed */}
         <section id="reading-speed">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Subtitle Reading Speed Reference</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Subtitle Reading Speed Reference</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">Reading speed is measured in CPS (characters per second). Research shows that average adult viewers can comfortably read at 15–17 CPS. Professional subtitle editors target 17 CPS as a safe maximum for most audiences. Netflix uses 20 CPS for English because English has shorter average word lengths, resulting in a naturally faster reading pace per character.</p>
 
           <div className="grid sm:grid-cols-3 gap-4 mb-6">
@@ -222,7 +222,7 @@ Today we'll cover subtitle formats.`,
 
         {/* Timing standards */}
         <section id="timing-standards">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Subtitle Timing Standards</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Subtitle Timing Standards</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Good subtitle timing follows consistent rules developed by broadcast standards bodies and refined through audience research.</p>
 
           <div className="space-y-4">
@@ -248,7 +248,7 @@ Today we'll cover subtitle formats.`,
 
         {/* Character limits */}
         <section id="character-limits">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Subtitle Character Limits Explained</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Subtitle Character Limits Explained</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
             Character limits exist because subtitle rendering on a fixed-width screen has physical constraints. Television subtitles were historically limited to 37–40 characters per line because that's what fit safely within the "safe area" of a standard-definition TV screen without hitting the edges. Modern streaming platforms carry these limits forward because they ensure readability on all screen sizes — from a 75-inch QLED TV to a 5-inch smartphone.
           </p>
@@ -275,7 +275,7 @@ Today we'll cover subtitle formats.`,
 
         {/* Tools */}
         <section>
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-4">Free tools to check your subtitles</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-4">Free tools to check your subtitles</h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {[
               { label: 'Subtitle Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Check CPS against Netflix, BBC, and EBU standards' },
@@ -298,8 +298,8 @@ Today we'll cover subtitle formats.`,
         </section>
 
         {/* AI CTA */}
-        <section className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-8 text-center text-white">
-          <h2 className="text-2xl font-display font-bold mb-2">Generate subtitles automatically with AI</h2>
+        <section className="rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 p-8 text-center text-white">
+          <h2 className="text-2xl font-display font-medium mb-2">Generate subtitles automatically with AI</h2>
           <p className="text-blue-100 mb-6 text-sm max-w-md mx-auto">Upload your video and get accurate, timestamped SRT or VTT subtitles in minutes — no manual transcription needed.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/video-to-subtitles" className="inline-block bg-white text-blue-700 font-semibold px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm">Generate subtitles with AI →</Link>

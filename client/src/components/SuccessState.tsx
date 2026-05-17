@@ -91,7 +91,7 @@ export default function SuccessState({
         <Check className="h-8 w-8 text-success" strokeWidth={1.5} />
       </motion.div>
 
-      <h3 className="page-heading font-bold mb-6">Your file is ready!</h3>
+      <h3 className="page-heading font-medium mb-6">Your file is ready!</h3>
 
       {fileName && (
         <div className="surface-card p-6 mb-8 max-w-md mx-auto">

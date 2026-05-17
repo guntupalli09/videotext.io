@@ -118,7 +118,7 @@ export default function FeedbackPrompt() {
             transition={{ type: 'spring', stiffness: 380, damping: 28 }}
             className="fixed bottom-5 right-5 z-50 w-[340px] max-w-[calc(100vw-2rem)]"
           >
-            <div className="relative rounded-2xl bg-white dark:bg-gray-900 shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+            <div className="relative rounded-xl bg-white dark:bg-gray-900 shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
               {/* Accent bar */}
               <div className="h-0.5 w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700" />
 

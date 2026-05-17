@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Sparkles, Send, Zap, Video, FileText, Languages, Clock, Layers, Wand2, Brain, Rocket, Heart, Star } from 'lucide-react';
+import { X, Sparkles, Send, Video, FileText, Languages, Clock, Layers, Wand2, Brain, Rocket, Heart } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
 
@@ -232,7 +232,7 @@ export function TexAssistant() {
             transition={{ type: 'spring', damping: 20, stiffness: 200 }}
             className="fixed bottom-24 right-6 w-[420px] max-w-[calc(100vw-3rem)] z-50"
           >
-            <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-blue-200 dark:border-blue-900 overflow-hidden backdrop-blur-xl">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-blue-200 dark:border-blue-900 overflow-hidden backdrop-blur-xl">
               {/* Header */}
               <div className="relative bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 p-5">
                 {/* Animated background */}
@@ -260,7 +260,7 @@ export function TexAssistant() {
                       }}
                       className="relative"
                     >
-                      <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-2xl flex items-center justify-center border-2 border-white/60 shadow-xl overflow-hidden">
+                      <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-2xl flex items-center justify-center border-2 border-white/60 shadow-xl overflow-hidden">
                         {/* Tex's face */}
                         <div className="relative">
                           <motion.div
@@ -279,31 +279,11 @@ export function TexAssistant() {
                         className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-gradient-to-br from-green-400 to-emerald-400 rounded-full border-2 border-white shadow-lg"
                       />
                       
-                      {/* Sparkle particles */}
-                      {[...Array(3)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          className="absolute"
-                          animate={{
-                            x: [0, (Math.random() - 0.5) * 30],
-                            y: [0, (Math.random() - 0.5) * 30],
-                            opacity: [0, 1, 0],
-                            scale: [0, 1.5, 0]
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            delay: i * 0.4,
-                          }}
-                        >
-                          <Star className="w-2 h-2 text-yellow-300 fill-yellow-300" />
-                        </motion.div>
-                      ))}
                     </motion.div>
                     
                     <div>
                       <motion.h3 
-                        className="text-white font-black text-xl tracking-tight"
+                        className="text-white font-bold text-xl tracking-tight"
                         animate={{ opacity: [0.9, 1, 0.9] }}
                         transition={{ duration: 3, repeat: Infinity }}
                       >
@@ -357,7 +337,7 @@ export function TexAssistant() {
                     <motion.h4 
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-2xl font-black text-gray-900 dark:text-white mb-2 bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent"
+                      className="text-2xl font-medium text-gray-900 dark:text-white mb-2 bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent"
                     >
                       Hey! I'm Tex ✨
                     </motion.h4>
@@ -394,7 +374,7 @@ export function TexAssistant() {
                           className="w-full group relative overflow-hidden"
                         >
                           <div className={`absolute inset-0 bg-gradient-to-r ${action.color} opacity-10 group-hover:opacity-20 transition-opacity`} />
-                          <div className="relative flex items-center gap-3 p-4 bg-white dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-750 rounded-2xl border-2 border-gray-200 dark:border-gray-700 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-all shadow-sm hover:shadow-md">
+                          <div className="relative flex items-center gap-3 p-4 bg-white dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-750 rounded-xl border-2 border-gray-200 dark:border-gray-700 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-all shadow-sm hover:shadow-md">
                             <motion.div 
                               whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
                               className={`p-2.5 bg-gradient-to-br ${action.color} rounded-xl shadow-lg`}
@@ -436,13 +416,13 @@ export function TexAssistant() {
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                     placeholder="Ask me anything... I'm all ears! 👂"
-                    className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-2xl text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 border-2 border-transparent focus:border-blue-300 transition-all"
+                    className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 border-2 border-transparent focus:border-blue-300 transition-all"
                   />
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={sendMessage}
-                    className="p-3 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl text-white hover:shadow-xl transition-all relative overflow-hidden group"
+                    className="p-3 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl text-white hover:shadow-xl transition-all relative overflow-hidden group"
                   >
                     <motion.div
                       className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
@@ -511,7 +491,7 @@ export function TexAssistant() {
           whileHover={{ scale: 1.15, rotate: [0, -5, 5, 0] }}
           whileTap={{ scale: 0.85 }}
           animate={getMoodAnimation()}
-          className="relative w-20 h-20 bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 rounded-3xl shadow-2xl flex items-center justify-center overflow-hidden"
+          className="relative w-20 h-20 bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 rounded-xl shadow-2xl flex items-center justify-center overflow-hidden"
         >
           {/* Animated shimmer */}
           <motion.div
@@ -524,22 +504,6 @@ export function TexAssistant() {
               repeat: Infinity,
               ease: "linear",
               repeatDelay: 2
-            }}
-          />
-
-          {/* Rotating gradient overlay */}
-          <motion.div
-            className="absolute inset-0"
-            animate={{ 
-              rotate: [0, 360],
-            }}
-            transition={{ 
-              duration: 4, 
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            style={{
-              background: 'conic-gradient(from 0deg, transparent, rgba(255,255,255,0.3), transparent)'
             }}
           />
 
@@ -614,38 +578,12 @@ export function TexAssistant() {
           </motion.div>
         </motion.div>
 
-        {/* Magical sparkle effects */}
-        {[...Array(5)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute"
-            style={{
-              left: '50%',
-              top: '50%',
-            }}
-            animate={{
-              x: [0, Math.cos((i * 72) * Math.PI / 180) * 50],
-              y: [0, Math.sin((i * 72) * Math.PI / 180) * 50],
-              opacity: [0, 1, 0],
-              scale: [0, 1.5, 0]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              delay: i * 0.2,
-              ease: "easeOut"
-            }}
-          >
-            <Zap className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-          </motion.div>
-        ))}
-
         {/* Tooltip with personality */}
         <motion.div
           initial={{ opacity: 0, x: 10, scale: 0.9 }}
           whileHover={{ opacity: 1, x: 0, scale: 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          className="absolute right-24 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gradient-to-r from-gray-900 to-gray-800 text-white text-sm font-bold rounded-2xl whitespace-nowrap pointer-events-none shadow-xl border border-gray-700"
+          className="absolute right-24 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gradient-to-r from-gray-900 to-gray-800 text-white text-sm font-bold rounded-xl whitespace-nowrap pointer-events-none shadow-xl border border-gray-700"
         >
           <motion.span
             animate={{ opacity: [0.8, 1, 0.8] }}
@@ -674,7 +612,7 @@ function ChatMessage({ message }: { message: Message }) {
       <div className={`flex gap-2.5 max-w-[85%] ${isTeX ? 'flex-row' : 'flex-row-reverse'}`}>
         {isTeX && (
           <motion.div 
-            className="flex-shrink-0 w-9 h-9 rounded-2xl bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 flex items-center justify-center shadow-lg relative overflow-hidden"
+            className="flex-shrink-0 w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 flex items-center justify-center shadow-lg relative overflow-hidden"
             whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
           >
             <motion.div
@@ -688,7 +626,7 @@ function ChatMessage({ message }: { message: Message }) {
         
         <motion.div
           whileHover={{ scale: 1.02 }}
-          className={`px-4 py-3 rounded-2xl shadow-md ${
+          className={`px-4 py-3 rounded-xl shadow-md ${
             isTeX
               ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-blue-100 dark:border-blue-900/30'
               : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white'
@@ -718,10 +656,10 @@ function TypingIndicator() {
       animate={{ opacity: 1, y: 0 }}
       className="flex items-center gap-2.5"
     >
-      <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg">
+      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg">
         <Sparkles className="w-5 h-5 text-white" />
       </div>
-      <div className="bg-white dark:bg-gray-800 px-5 py-3 rounded-2xl border-2 border-blue-100 dark:border-blue-900/30 shadow-md">
+      <div className="bg-white dark:bg-gray-800 px-5 py-3 rounded-xl border-2 border-blue-100 dark:border-blue-900/30 shadow-md">
         <div className="flex gap-1.5">
           {[0, 1, 2].map((i) => (
             <motion.div

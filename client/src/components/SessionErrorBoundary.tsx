@@ -49,7 +49,7 @@ export default class SessionErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 py-12">
           <div className="max-w-md w-full text-center">
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <h1 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">
               {isChunk ? 'This page failed to load' : 'Your session expired or something went wrong'}
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mb-6">

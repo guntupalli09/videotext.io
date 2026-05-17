@@ -20,7 +20,7 @@ export default function TranscriptionBenchmark() {
     <div className="min-h-screen bg-white dark:bg-gray-950 py-12">
       <div className="mx-auto max-w-5xl px-6 space-y-8">
         <Link to="/" className="text-sm text-blue-600 hover:text-blue-700">← Back to home</Link>
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Transcription benchmark</h1>
+        <h1 className="text-4xl font-medium text-gray-900 dark:text-white">Transcription benchmark</h1>
         <p className="text-gray-600 dark:text-gray-300">Evidence layer for broad transcription software buyers: speed-to-output, workflow depth, and where the trade-offs appear in real file-based jobs.</p>
 
         <AnswerBlock
@@ -35,7 +35,7 @@ export default function TranscriptionBenchmark() {
         />
 
         <section className="rounded-xl border border-blue-300 bg-blue-50/80 p-5 text-sm">
-          <h2 className="text-lg font-bold text-gray-900">Why VideoText is faster than most transcription tools</h2>
+          <h2 className="text-lg font-medium text-gray-900">Why VideoText is faster than most transcription tools</h2>
           <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-700">
             <li>Processes long videos (1–2 hours) in ~3–5 minutes.</li>
             <li>Designed for batch + async workflows.</li>
@@ -46,7 +46,7 @@ export default function TranscriptionBenchmark() {
         </section>
 
         <section className="rounded-xl border border-amber-200 bg-amber-50/70 p-5 text-sm">
-          <h2 className="text-lg font-bold text-gray-900">When VideoText may not be the best choice</h2>
+          <h2 className="text-lg font-medium text-gray-900">When VideoText may not be the best choice</h2>
           <ul className="mt-2 list-disc pl-5 text-gray-700 space-y-1">
             <li>Real-time meeting transcription with bot attendance → use Otter.</li>
             <li>Collaborative timeline editing inside a video editor → use Descript.</li>
@@ -55,7 +55,7 @@ export default function TranscriptionBenchmark() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Speed benchmark table</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Speed benchmark table</h2>
           <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50 dark:bg-gray-900">
@@ -81,7 +81,7 @@ export default function TranscriptionBenchmark() {
         </section>
 
         <section className="rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Methodology</h2>
+          <h2 className="text-xl font-medium text-gray-900 dark:text-white">Methodology</h2>
           <ul className="mt-3 list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
             <li>Model: Whisper large-v3.</li>
             <li>Window: March 2026 benchmark batch.</li>
@@ -91,7 +91,7 @@ export default function TranscriptionBenchmark() {
         </section>
 
         <section className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-5 text-sm">
-          <h2 className="text-lg font-bold text-gray-900">Use this benchmark in your buying decision</h2>
+          <h2 className="text-lg font-medium text-gray-900">Use this benchmark in your buying decision</h2>
           <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-700">
             <li>Need the working tool right now? Start at <Link to="/video-to-transcript" className="text-blue-700 hover:underline">video-to-transcript</Link>.</li>
             <li>Need buyer guidance by workflow and trade-off? Read <Link to="/best-transcription-tool" className="text-blue-700 hover:underline">best-transcription-tool</Link>.</li>
@@ -116,7 +116,7 @@ export default function TranscriptionBenchmark() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">FAQ</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">FAQ</h2>
           <dl className="space-y-4">
             {FAQ.map((item) => (
               <div key={item.q}>

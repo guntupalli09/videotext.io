@@ -566,10 +566,10 @@ function SpeedCalculator() {
   ];
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 sm:p-8 transition-colors duration-500">
+    <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6 sm:p-8 transition-colors duration-500">
       <div className="flex items-center gap-2 mb-6">
         <Clock className="w-5 h-5 text-blue-500" />
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Time-Saved Calculator</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white">Time-Saved Calculator</h3>
       </div>
       <p className="text-sm text-gray-500 dark:text-white/40 mb-6">
         Estimated AI processing time per video length. VideoText is typically <strong className="text-blue-600 dark:text-blue-400">6–8x faster</strong> than alternatives. Human services (Easyscribe, Go Transcript) take hours to days.
@@ -666,7 +666,7 @@ function DifficultAudioTest() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
         {/* ── VideoText ── */}
-        <div className="rounded-2xl border-2 border-blue-300 dark:border-blue-500/40 bg-blue-50/60 dark:bg-blue-600/[0.04] p-5">
+        <div className="rounded-xl border-2 border-blue-300 dark:border-blue-500/40 bg-blue-50/60 dark:bg-blue-600/[0.04] p-5">
           <div className="flex items-center gap-2 mb-4">
             <span className="font-bold text-blue-700 dark:text-blue-400 text-sm">VideoText</span>
             <span className="text-[11px] bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-semibold">98.5% accurate</span>
@@ -697,7 +697,7 @@ function DifficultAudioTest() {
         </div>
 
         {/* ── Otter.ai ── */}
-        <div className="rounded-2xl border border-gray-200 dark:border-white/[0.07] bg-gray-50 dark:bg-gray-900/50 p-5">
+        <div className="rounded-xl border border-gray-200 dark:border-white/[0.07] bg-gray-50 dark:bg-gray-900/50 p-5">
           <div className="flex items-center gap-2 mb-4">
             <span className="font-bold text-gray-700 dark:text-white/70 text-sm">Otter.ai</span>
             <span className="text-[11px] bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full font-semibold">~68% accurate</span>
@@ -728,7 +728,7 @@ function DifficultAudioTest() {
         </div>
 
         {/* ── Sonix ── */}
-        <div className="rounded-2xl border border-gray-200 dark:border-white/[0.07] bg-gray-50 dark:bg-gray-900/50 p-5">
+        <div className="rounded-xl border border-gray-200 dark:border-white/[0.07] bg-gray-50 dark:bg-gray-900/50 p-5">
           <div className="flex items-center gap-2 mb-4">
             <span className="font-bold text-gray-700 dark:text-white/70 text-sm">Sonix</span>
             <span className="text-[11px] bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 px-2 py-0.5 rounded-full font-semibold">~79% accurate</span>
@@ -831,7 +831,7 @@ function WhereToolsBreak() {
   return (
     <div className="space-y-6">
       {failures.map((f) => (
-        <div key={f.label} className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
+        <div key={f.label} className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
           {/* Header */}
           <div className="flex items-center gap-3 px-5 py-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-white/[0.06]">
             <span className="text-lg">{f.icon}</span>
@@ -875,13 +875,13 @@ export default function Compare() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
+            transition={{ duration: 0.4 }}
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-500/10 border border-red-200/60 dark:border-red-500/20 mb-6">
               <TrendingDown className="w-3.5 h-3.5 text-red-500" />
               <span className="text-[12px] font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">Full Competitor Comparison</span>
             </div>
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
               VideoText vs Descript, Otter.ai & Trint — speed, price, subtitles, privacy
             </h1>
             <p className="text-base sm:text-lg text-gray-500 dark:text-white/45 max-w-3xl mx-auto mb-3">
@@ -932,7 +932,7 @@ export default function Compare() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">
             The alternatives — and why they fall short
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -943,9 +943,9 @@ export default function Compare() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.07 }}
-                className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 transition-colors duration-500"
+                className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6 transition-colors duration-500"
               >
-                <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-1">{c.name}</h3>
+                <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-1">{c.name}</h3>
                 <p className="text-sm text-gray-500 dark:text-white/40 mb-4 leading-relaxed">{c.description}</p>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm">
@@ -986,7 +986,7 @@ export default function Compare() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">
             Time-Saved Calculator
           </h2>
           <SpeedCalculator />
@@ -998,7 +998,7 @@ export default function Compare() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-2">
             Full feature comparison
           </h2>
           <p className="text-sm text-gray-400 dark:text-white/30 mb-6">Scroll horizontally to see all 9 competitors →</p>
@@ -1006,12 +1006,12 @@ export default function Compare() {
           <div className="space-y-8">
             {FEATURE_ROWS.map((section) => (
               <div key={section.category}>
-                <h3 className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                <h3 className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                   <span className="w-5 h-px bg-blue-400" />
                   {section.category}
                 </h3>
 
-                <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden transition-colors duration-500">
+                <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden transition-colors duration-500">
                   <div className="overflow-x-auto">
                     <div className="min-w-[1000px]">
                       {/* Header row */}
@@ -1063,7 +1063,7 @@ export default function Compare() {
         >
           <div className="flex items-center gap-3 mb-2">
             <Mic className="w-6 h-6 text-blue-500" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Difficult Audio Test</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Difficult Audio Test</h2>
           </div>
           <p className="text-sm text-gray-400 dark:text-white/30 mb-6">
             We ran the same hard recording through each tool. Here's exactly what came out.
@@ -1079,7 +1079,7 @@ export default function Compare() {
         >
           <div className="flex items-center gap-3 mb-2">
             <AlertTriangle className="w-6 h-6 text-red-400" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Where existing tools break</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Where existing tools break</h2>
           </div>
           <p className="text-sm text-gray-400 dark:text-white/30 mb-6">
             Three real failure modes — and how VideoText handles them cleanly.
@@ -1092,9 +1092,9 @@ export default function Compare() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-3xl p-8 sm:p-12 text-white"
+          className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-xl p-8 sm:p-12 text-white"
         >
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Why VideoText wins on all fronts</h2>
+          <h2 className="text-2xl sm:text-3xl font-medium mb-3">Why VideoText wins on all fronts</h2>
           <p className="text-white/70 mb-8 max-w-2xl">We're purpose-built for one thing: getting you accurate transcripts and subtitles as fast as possible. No bloated editor. No complex UI. Just results.</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
@@ -1110,7 +1110,7 @@ export default function Compare() {
                   <div className="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center mb-3">
                     <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className="font-bold text-white mb-1">{item.label}</h3>
+                  <h3 className="font-medium text-white mb-1">{item.label}</h3>
                   <p className="text-sm text-white/60">{item.desc}</p>
                 </div>
               );
@@ -1138,7 +1138,7 @@ export default function Compare() {
           viewport={{ once: true }}
         >
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Explore all VideoText tools</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-2">Explore all VideoText tools</h2>
             <p className="text-gray-600 dark:text-gray-300 mb-8">From transcription to subtitles, compression to batch processing — all in one platform.</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1160,7 +1160,7 @@ export default function Compare() {
                 >
                   <div className="flex items-start gap-3 mb-2">
                     <span className="text-xl">{tool.icon}</span>
-                    <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{tool.title}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{tool.title}</h3>
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Try now →</p>
                 </Link>
@@ -1176,7 +1176,7 @@ export default function Compare() {
           viewport={{ once: true }}
         >
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Loved by 100,000+ creators</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Loved by 100,000+ creators</h2>
 
             {/* Trust stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -1251,7 +1251,7 @@ export default function Compare() {
           viewport={{ once: true }}
         >
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Transcription for your specific use case</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-2">Transcription for your specific use case</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">Find the right tool for your exact needs — whether it's podcasts, meetings, YouTube, or any language.</p>
           </div>
 
@@ -1269,15 +1269,15 @@ export default function Compare() {
               { to: '/guideline-format', label: 'Format your transcript to a client style guide →', desc: 'Editable marketplace rule cards; attach PDF/DOCX/TXT for records while parsing ships later.' },
             ].map(({ to, label, desc }) => (
               <Link key={to} to={to} className="block bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-white/[0.08] rounded-xl p-4 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md dark:hover:shadow-lg/20 transition-all">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{label}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-1">{label}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{desc}</p>
               </Link>
             ))}
           </div>
         </motion.section>
 
-        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.08] p-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Citation-grade comparison hubs</h2>
+        <section className="rounded-xl border border-gray-200 dark:border-white/[0.08] p-6">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-3">Citation-grade comparison hubs</h2>
           <div className="flex flex-wrap gap-3 text-sm">
             <Link to="/best-transcription-tool" className="text-blue-600 dark:text-blue-400 hover:underline">Best transcription tool</Link>
             <Link to="/fastest-transcription-software" className="text-blue-600 dark:text-blue-400 hover:underline">Fastest transcription software</Link>

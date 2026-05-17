@@ -42,7 +42,7 @@ export function FinalCTA() {
           </div>
 
           {/* Headline */}
-          <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-white leading-[1.05] mb-6 font-display">
+          <h2 className="text-5xl sm:text-6xl md:text-7xl font-medium text-white leading-[1.05] mb-6 font-display">
             Start transcribing
             <span className="block bg-gradient-to-r from-blue-400 via-blue-400 to-blue-400 bg-clip-text text-transparent">
               right now.

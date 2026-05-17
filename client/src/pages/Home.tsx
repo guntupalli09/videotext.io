@@ -67,7 +67,7 @@ function PricingSection() {
           className="text-center mb-6"
         >
           <p className="text-sm font-bold text-blue-400 uppercase tracking-widest mb-3">Pricing</p>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-3 font-display">
+          <h2 className="text-4xl md:text-5xl font-medium text-white mb-3 font-display">
             Start free. Scale when ready.
           </h2>
           {!isLoggedIn() && (
@@ -86,7 +86,7 @@ function PricingSection() {
             <Link
               key={plan.name}
               to="/pricing"
-              className={`group relative rounded-2xl p-6 text-left transition-all duration-200 ${
+              className={`group relative rounded-xl p-6 text-left transition-all duration-200 ${
                 plan.highlight
                   ? 'bg-gray-900 text-white shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/60'
                   : 'bg-white/[0.04] text-white hover:bg-white/[0.07] border border-white/[0.08] hover:border-white/[0.15]'
@@ -171,7 +171,7 @@ export default function Home() {
             <p className="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
               High-intent guides
             </p>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white font-display transition-colors duration-500">
+            <h2 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white font-display transition-colors duration-500">
               Choose your workflow path (without competing with the core tool page)
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-3xl transition-colors duration-500">
@@ -215,7 +215,7 @@ export default function Home() {
               <p className="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
                 Free — no account needed
               </p>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white font-display transition-colors duration-500">
+              <h2 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white font-display transition-colors duration-500">
                 Free subtitle &amp; video tools
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md transition-colors duration-500">
@@ -276,7 +276,7 @@ export default function Home() {
       <section className="py-10 border-t border-gray-100 dark:border-gray-800">
         <div className="max-w-5xl mx-auto px-6">
           <p className="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">Answer hubs</p>
-          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">Comparison and benchmark pages (secondary to the core tool)</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Comparison and benchmark pages (secondary to the core tool)</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { label: 'Video to transcript (core tool)', path: '/video-to-transcript' },
@@ -308,7 +308,7 @@ export default function Home() {
       <section className="bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 py-12 transition-colors duration-500">
         <div className="max-w-5xl mx-auto px-6">
           <div className="mb-8">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white mb-2">All VideoText features</h2>
+            <h2 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-2">All VideoText features</h2>
             <p className="text-gray-600 dark:text-gray-300">Master transcription, subtitles, translation, and more with integrated tools.</p>
           </div>
 

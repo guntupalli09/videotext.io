@@ -371,7 +371,7 @@ function PostCheckoutHandler() {
   if (activating) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="status" aria-live="polite">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated max-w-sm w-full p-8 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-card-elevated max-w-sm w-full p-8 text-center">
           <div className="mx-auto w-10 h-10 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin mb-4" />
           <p className="text-base font-semibold text-gray-900 dark:text-white">Payment received — activating your plan…</p>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">This takes just a moment.</p>
@@ -383,8 +383,8 @@ function PostCheckoutHandler() {
   if (setPasswordPending) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="set-password-title">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card-elevated max-w-sm w-full p-6">
-          <h2 id="set-password-title" className="text-lg font-semibold text-gray-900 dark:text-white">Set your password</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-card-elevated max-w-sm w-full p-6">
+          <h2 id="set-password-title" className="text-lg font-medium text-gray-900 dark:text-white">Set your password</h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
             So you can log in later and access your plan from any device.
           </p>

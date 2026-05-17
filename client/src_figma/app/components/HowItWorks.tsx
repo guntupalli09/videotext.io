@@ -39,7 +39,7 @@ export function HowItWorks() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-4">
             How it works
           </h2>
         </motion.div>
@@ -50,10 +50,10 @@ export function HowItWorks() {
             return (
               <motion.div
                 key={step.title}
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.7, delay: index * 0.2 }}
+                transition={{ duration: 0.4, delay: index * 0.2 }}
                 className="relative flex flex-col items-center text-center"
               >
                 {/* Connector line */}
@@ -63,7 +63,7 @@ export function HowItWorks() {
 
                 {/* Icon circle */}
                 <motion.div
-                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  whileHover={{ scale: 1.05 }}
                   className="relative z-10 mb-6"
                 >
                   {/* Glow */}
@@ -76,7 +76,7 @@ export function HowItWorks() {
                 </motion.div>
 
                 {/* Content */}
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                <h3 className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
                   {step.title}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 max-w-xs">

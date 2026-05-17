@@ -86,7 +86,7 @@ function HeroDropzone() {
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         className={`
-          relative cursor-pointer rounded-2xl border-2 border-dashed px-6 py-4
+          relative cursor-pointer rounded-xl border-2 border-dashed px-6 py-4
           flex flex-col items-center gap-3 transition-all duration-200 select-none
           ${
             dragging
@@ -188,7 +188,7 @@ export function Hero() {
 
         {/* H1 */}
         <h1
-          className="text-center font-display font-extrabold tracking-tight leading-[1.08] mb-2 whitespace-nowrap"
+          className="text-center font-display font-medium tracking-tight leading-[1.08] mb-2 whitespace-nowrap"
           style={{ fontSize: "clamp(1.35rem, 3.4vw, 2.75rem)" }}
         >
           <span className="text-white">
