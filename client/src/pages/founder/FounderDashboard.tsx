@@ -62,7 +62,7 @@ function KpiCard({ label, value, sub, accent = false, danger = false }: {
 function SectionTitle({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
     <div id={id} className="flex items-center gap-3 mb-4">
-      <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest whitespace-nowrap">{children}</h2>
+      <h2 className="text-xs font-medium text-zinc-500 uppercase tracking-widest whitespace-nowrap">{children}</h2>
       <div className="flex-1 h-px bg-zinc-800" />
     </div>
   )
@@ -141,7 +141,7 @@ export default function FounderDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">Command Centre</h1>
+            <h1 className="text-xl font-medium text-white tracking-tight">Command Centre</h1>
             <p className="text-xs text-zinc-600 mt-0.5">VideoText.io · Founder view</p>
           </div>
           <div className="flex items-center gap-3">
@@ -189,7 +189,7 @@ export default function FounderDashboard() {
             <SectionTitle id="growth">Activation & Upgrade Lift</SectionTitle>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-                <h3 className="text-sm font-semibold text-white mb-3">KPI progress ({growth.latest.windowDays}d)</h3>
+                <h3 className="text-sm font-medium text-white mb-3">KPI progress ({growth.latest.windowDays}d)</h3>
                 <div className="space-y-2 text-xs">
                   <p className="text-zinc-300">Activation: <span className="text-white font-semibold">{growth.latest.activationRatePct}%</span> (target {growth.kpiTargets.activationRatePct.target}%)</p>
                   <p className="text-zinc-300">Upgrade CTR (activated): <span className="text-white font-semibold">{growth.latest.activatedUpgradeCtrPct}%</span> (target ≥{growth.kpiTargets.activatedUpgradeCtrPct.target}%)</p>
@@ -197,7 +197,7 @@ export default function FounderDashboard() {
                 </div>
               </div>
               <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-                <h3 className="text-sm font-semibold text-white mb-3">Daily founder report</h3>
+                <h3 className="text-sm font-medium text-white mb-3">Daily founder report</h3>
                 <div className="grid grid-cols-2 gap-2 text-xs text-zinc-300">
                   <p>New free signups</p><p className="text-right text-white font-semibold">{growth.founderDailyReport.newFreeSignups}</p>
                   <p>Users in 3–6h window</p><p className="text-right text-white font-semibold">{growth.founderDailyReport.usersIn3To6hWindow}</p>
@@ -207,7 +207,7 @@ export default function FounderDashboard() {
                 </div>
               </div>
               <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-                <h3 className="text-sm font-semibold text-white mb-3">Cohort comparison</h3>
+                <h3 className="text-sm font-medium text-white mb-3">Cohort comparison</h3>
                 <p className="text-xs text-zinc-500 mb-2">Release date: {new Date(growth.cohortComparison.releaseDate).toLocaleDateString()}</p>
                 <div className="space-y-2 text-xs text-zinc-300">
                   <p>Day 7: before <span className="text-white font-semibold">{growth.cohortComparison.day7.beforePct}%</span> → after <span className="text-emerald-300 font-semibold">{growth.cohortComparison.day7.afterPct}%</span></p>
@@ -233,7 +233,7 @@ export default function FounderDashboard() {
             <YoutubeResolutionPanel data={data.youtubeResolution} />
           </div>
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 mt-4">
-            <h3 className="text-sm font-semibold text-white mb-4">Jobs by tool (30d)</h3>
+            <h3 className="text-sm font-medium text-white mb-4">Jobs by tool (30d)</h3>
             <JobsByTool data={data.usage?.jobsByToolType ?? []} />
           </div>
           <div className="mt-4">
@@ -263,7 +263,7 @@ export default function FounderDashboard() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div className="lg:col-span-2 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-                <h3 className="text-sm font-semibold text-white mb-1">MRR trend</h3>
+                <h3 className="text-sm font-medium text-white mb-1">MRR trend</h3>
                 <p className="text-xs text-zinc-500 mb-4">Last 12 months</p>
                 <MrrLineChart data={data.revenue?.mrrTrend ?? []} />
               </div>
@@ -287,7 +287,7 @@ export default function FounderDashboard() {
               <TopUsersByJobs users={data.usage?.topUsersByJobCount ?? []} />
             </div>
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-              <h3 className="text-sm font-semibold text-white mb-4">New vs churned (14d)</h3>
+              <h3 className="text-sm font-medium text-white mb-4">New vs churned (14d)</h3>
               <NewVsChurnedDaily daily={data.daily ?? []} />
             </div>
           </div>
@@ -433,7 +433,7 @@ function JobsByTool({ data }: { data: { toolType: string; count: number }[] }) {
 function TopUsersByJobs({ users }: { users: { userId: string; email: string; plan: string; jobCount: number }[] }) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-      <h3 className="text-sm font-semibold text-white mb-4">Most active users (30d)</h3>
+      <h3 className="text-sm font-medium text-white mb-4">Most active users (30d)</h3>
       {users.length === 0 ? (
         <p className="text-zinc-600 text-sm">No data.</p>
       ) : (

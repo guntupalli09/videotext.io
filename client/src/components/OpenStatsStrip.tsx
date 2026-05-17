@@ -5,11 +5,11 @@ import { OPEN_STATS_LAST_UPDATED, OPEN_STATS_STRIP } from '../lib/openStats'
 export default function OpenStatsStrip({ className = '' }: { className?: string }) {
   return (
     <aside
-      className={`rounded-2xl border border-blue-200/80 dark:border-blue-800/60 bg-blue-50/60 dark:bg-blue-950/30 px-4 py-4 sm:px-5 ${className}`}
+      className={`rounded-xl border border-blue-200/80 dark:border-blue-800/60 bg-blue-50/60 dark:bg-blue-950/30 px-4 py-4 sm:px-5 ${className}`}
       aria-labelledby="open-stats-strip-heading"
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-        <h2 id="open-stats-strip-heading" className="text-xs font-semibold uppercase tracking-widest text-blue-700 dark:text-blue-400">
+        <h2 id="open-stats-strip-heading" className="text-xs font-medium uppercase tracking-widest text-blue-700 dark:text-blue-400">
           Measured on our stack
         </h2>
         <p className="text-[11px] text-gray-500 dark:text-gray-400">Updated {OPEN_STATS_LAST_UPDATED}</p>

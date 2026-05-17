@@ -344,7 +344,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
         )}
 
         {status === 'processing' && (
-          <div className="rounded-2xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
+          <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
               {selectedFile?.name} • {filePreview?.durationSeconds != null ? formatDuration(filePreview.durationSeconds) : '—'}
             </div>
@@ -368,7 +368,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
           <div className="space-y-6">
             {/* Teaser card for guests */}
             {showAuthGate && !isLoggedIn() && (
-              <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
+              <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
                 <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
@@ -536,23 +536,23 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
           <p className="text-sm text-gray-600">👉 Works for large files and multiple formats</p>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-3">Compress Video Files Online Instantly</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-3">Compress Video Files Online Instantly</h2>
             <p className="text-gray-600">Reduce the size of your video without compromising quality. If you need subtitles after compression, generate them automatically at <a className="text-blue-600 hover:underline" href="/video-to-subtitles">/video-to-subtitles</a>.</p>
             <p className="mt-3 text-sm text-gray-500">compress video online · video compressor · reduce video size</p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-3">Reduce Video Size Without Losing Quality</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-3">Reduce Video Size Without Losing Quality</h2>
             <p className="text-gray-600">Most tools degrade quality. This compressor optimizes compression, maintains clarity, and reduces file size efficiently. Need text output too? Convert video to transcript at <a className="text-blue-600 hover:underline" href="/video-to-transcript">/video-to-transcript</a>.</p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-3">Compress Large Video Files Fast</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-3">Compress Large Video Files Fast</h2>
             <p className="text-gray-600">Built for large files and long videos with support for large uploads, sharing-ready outputs, and performance-optimized processing. Working with YouTube content? Use <a className="text-blue-600 hover:underline" href="/youtube-transcript-generator">/youtube-transcript-generator</a>.</p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-3">Why Compress Videos?</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-3">Why Compress Videos?</h2>
             <ul className="list-disc pl-6 text-gray-600 space-y-1">
               <li>Upload faster to platforms</li>
               <li>Reduce storage usage</li>
@@ -562,7 +562,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-3">Why This Video Compressor Is Better</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-3">Why This Video Compressor Is Better</h2>
             <ul className="list-disc pl-6 text-gray-600 space-y-1">
               <li>Fast compression</li>
               <li>Minimal quality loss</li>
@@ -574,7 +574,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-3">Complete Video Processing Workflow</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-3">Complete Video Processing Workflow</h2>
             <ul className="list-disc pl-6 text-gray-600 space-y-1">
               <li><a className="text-blue-600 hover:underline" href="/video-to-transcript">Convert video to transcript</a></li>
               <li><a className="text-blue-600 hover:underline" href="/video-to-subtitles">Generate subtitles</a></li>
@@ -584,7 +584,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Frequently Asked Questions</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently Asked Questions</h2>
             <dl className="space-y-4 text-gray-600">
               <div><dt className="font-medium text-gray-800">How do I compress a video online?</dt><dd>Upload your video and the tool will reduce its size instantly.</dd></div>
               <div><dt className="font-medium text-gray-800">Can I reduce video size without losing quality?</dt><dd>Yes. This tool optimizes compression to maintain quality.</dd></div>
@@ -598,7 +598,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
 
       {faq.length > 0 && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Frequently asked questions</h2>
+          <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently asked questions</h2>
           <dl className="space-y-4">
             {faq.map((item, i) => (
               <div key={i}>

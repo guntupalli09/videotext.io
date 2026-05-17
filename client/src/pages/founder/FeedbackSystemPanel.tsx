@@ -241,7 +241,7 @@ export default function FeedbackSystemPanel() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BarChart3 className="w-4 h-4 text-blue-400" />
-          <h2 className="text-sm font-semibold text-white">Feedback Analytics</h2>
+          <h2 className="text-sm font-medium text-white">Feedback Analytics</h2>
           <span className="text-xs bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded-full">v2</span>
         </div>
         <button
@@ -258,7 +258,7 @@ export default function FeedbackSystemPanel() {
       <div className="rounded-xl border border-blue-800/50 bg-gradient-to-br from-blue-950/60 to-zinc-900 p-5">
         <div className="flex items-center gap-2 mb-4">
           <AlertTriangle className="w-4 h-4 text-blue-400" />
-          <h3 className="text-sm font-semibold text-white">Decision Engine</h3>
+          <h3 className="text-sm font-medium text-white">Decision Engine</h3>
           <span className="text-xs text-zinc-600">— what to fix next</span>
         </div>
 
@@ -305,7 +305,7 @@ export default function FeedbackSystemPanel() {
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
         <div className="flex items-center gap-2 mb-4">
           <TrendingDown className="w-4 h-4 text-zinc-500" />
-          <h3 className="text-sm font-semibold text-white">
+          <h3 className="text-sm font-medium text-white">
             Conversion Funnel <span className="text-zinc-600 font-normal">(30d)</span>
           </h3>
         </div>
@@ -340,7 +340,7 @@ export default function FeedbackSystemPanel() {
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
         <div className="flex items-center gap-2 mb-4">
           <MessageSquare className="w-4 h-4 text-zinc-500" />
-          <h3 className="text-sm font-semibold text-white">
+          <h3 className="text-sm font-medium text-white">
             Top Issue Clusters{' '}
             <span className="text-zinc-600 font-normal">({features.totalFeedbackEvents} events, 30d)</span>
           </h3>
@@ -392,7 +392,7 @@ export default function FeedbackSystemPanel() {
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
           <div className="flex items-center gap-2 mb-4">
             <Zap className="w-4 h-4 text-zinc-500" />
-            <h3 className="text-sm font-semibold text-white">PMF Score</h3>
+            <h3 className="text-sm font-medium text-white">PMF Score</h3>
             <span className="text-xs text-zinc-600">(target: &gt;40%)</span>
           </div>
 
@@ -429,7 +429,7 @@ export default function FeedbackSystemPanel() {
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-4 h-4 text-zinc-500" />
-            <h3 className="text-sm font-semibold text-white">Segment Snapshot</h3>
+            <h3 className="text-sm font-medium text-white">Segment Snapshot</h3>
           </div>
           {segments.segments.length === 0 ? (
             <p className="text-zinc-600 text-sm">No data yet.</p>

@@ -73,7 +73,7 @@ export default function FreeToolLayout({
               Free Tool — No account needed
             </span>
           )}
-          <h1 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 dark:text-white leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-display font-medium text-gray-900 dark:text-white leading-tight">
             {title}
           </h1>
           <p className="mt-3 text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -85,10 +85,10 @@ export default function FreeToolLayout({
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-12">
         {isSubtitleCluster && (
           <section
-            className="rounded-2xl border-2 border-blue-300 dark:border-blue-600 bg-gradient-to-br from-blue-100/80 to-white dark:from-blue-950/50 dark:to-gray-900 px-5 py-5 sm:px-6"
+            className="rounded-xl border-2 border-blue-300 dark:border-blue-600 bg-gradient-to-br from-blue-100/80 to-white dark:from-blue-950/50 dark:to-gray-900 px-5 py-5 sm:px-6"
             aria-labelledby="subtitle-pillar-heading"
           >
-            <h2 id="subtitle-pillar-heading" className="text-sm font-bold text-blue-900 dark:text-blue-200 mb-1">
+            <h2 id="subtitle-pillar-heading" className="text-sm font-medium text-blue-900 dark:text-blue-200 mb-1">
               Part of VideoText’s free subtitle tool cluster
             </h2>
             <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
@@ -113,10 +113,10 @@ export default function FreeToolLayout({
         <section>{children}</section>
 
         {/* Upgrade nudge — positioned immediately after the tool delivers value */}
-        <section className="rounded-2xl bg-gray-900 dark:bg-gray-800 border border-gray-700 dark:border-gray-600 overflow-hidden">
+        <section className="rounded-xl bg-gray-900 dark:bg-gray-800 border border-gray-700 dark:border-gray-600 overflow-hidden">
           <div className="px-6 py-7 sm:px-8">
             <p className="text-xs font-semibold uppercase tracking-widest text-blue-400 mb-2">⚡ Skip the manual steps</p>
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-white leading-snug mb-1">
+            <h2 className="text-xl sm:text-2xl font-display font-medium text-white leading-snug mb-1">
               Turn any video into a transcript, chapters &amp; summary — automatically
             </h2>
             <p className="text-sm text-gray-400 mb-5">
@@ -162,7 +162,7 @@ export default function FreeToolLayout({
           <section className="space-y-6">
             {contentSections.map((s, i) => (
               <div key={i}>
-                <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white mb-3">{s.heading}</h2>
+                <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-3">{s.heading}</h2>
                 {typeof s.body === 'string' ? (
                   <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{s.body}</p>
                 ) : (
@@ -176,7 +176,7 @@ export default function FreeToolLayout({
         {/* Mini guide */}
         {guideSteps.length > 0 && (
           <section>
-            <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white mb-5">
+            <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-5">
               {guideTitle ?? `How to use this tool`}
             </h2>
             <ol className="space-y-4">
@@ -198,7 +198,7 @@ export default function FreeToolLayout({
         {/* FAQ */}
         {faqs.length > 0 && (
           <section>
-            <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white mb-5">Frequently Asked Questions</h2>
+            <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-5">Frequently Asked Questions</h2>
             <dl className="space-y-5">
               {faqs.map((f, i) => (
                 <div key={i} className="border-b border-gray-100 dark:border-gray-700 pb-5 last:border-0 last:pb-0">
@@ -212,7 +212,7 @@ export default function FreeToolLayout({
 
         {/* Related tools */}
         <section>
-          <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white mb-5">Related VideoText Tools</h2>
+          <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-5">Related VideoText Tools</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {relatedTools.map((t) => (
               <Link

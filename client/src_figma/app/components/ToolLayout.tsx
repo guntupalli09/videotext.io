@@ -73,18 +73,18 @@ export function ToolLayout({
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: 'spring', damping: 15, stiffness: 300, delay: 0.2 }}
+              transition={{ type: 'tween', duration: 0.25, ease: 'easeOut', delay: 0.2 }}
               className="relative"
             >
-              <div className="absolute inset-0 bg-blue-600/30 blur-xl rounded-2xl" />
-              <div className="relative w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center border border-blue-200 dark:border-blue-800">
+              <div className="absolute inset-0 bg-blue-600/30 blur-xl rounded-xl" />
+              <div className="relative w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center border border-blue-200 dark:border-blue-800">
                 {icon}
               </div>
             </motion.div>
 
             {/* Title */}
             <div className="flex-1">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3">
+              <h1 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-3">
                 {title}
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-400">

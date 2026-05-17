@@ -81,7 +81,7 @@ export function ProcessingProgress({
 
       {/* Processing Message */}
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
           {currentMessage}
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -112,7 +112,7 @@ export function ProcessingProgress({
           animate={{ opacity: 1, y: 0 }}
           className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800"
         >
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+          <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
             Live transcript
           </h4>
           <div className="max-h-48 overflow-y-auto text-sm text-gray-700 dark:text-gray-300 leading-relaxed">

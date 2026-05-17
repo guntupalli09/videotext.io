@@ -18,8 +18,8 @@ export function ToolSidebar({ refreshTrigger: _refreshTrigger, showWhatYouGet = 
       <PlanBadge />
       {extra}
       {showWhatYouGet && whatYouGetContent != null && (
-        <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 dark:border-gray-800 shadow-sm min-w-0">
-          <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 sm:mb-3">
+        <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-800 shadow-sm min-w-0">
+          <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 sm:mb-3">
             What you get
           </h4>
           <div className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">

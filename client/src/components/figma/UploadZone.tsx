@@ -105,7 +105,7 @@ export function UploadZone({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-4 sm:p-5"
+        className="relative overflow-hidden rounded-xl sm:rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-4 sm:p-5"
       >
         <div className="flex items-center justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
@@ -116,7 +116,7 @@ export function UploadZone({
                 {fromWorkflowLabel && (
                   <span className="text-xs font-medium text-blue-600 dark:text-blue-400 block mb-1">{fromWorkflowLabel}</span>
                 )}
-                <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white truncate">{selectedFile.name}</h3>
+                <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">{selectedFile.name}</h3>
                 <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
                   {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB • Ready to configure
                 </p>
@@ -147,7 +147,7 @@ export function UploadZone({
           scale: isDragging ? 1.02 : 1,
           borderColor: isDragging ? 'rgb(168, 85, 247)' : undefined
         }}
-        className={`relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-dashed transition-all duration-300 ${
+        className={`relative overflow-hidden rounded-xl sm:rounded-xl border-2 border-dashed transition-all duration-300 ${
           isDragging
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
             : 'border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50'
@@ -157,15 +157,15 @@ export function UploadZone({
           {uploadStatus === 'idle' && (
             <>
               <motion.div
-                animate={{ y: isDragging ? -10 : [0, -10, 0] }}
-                transition={{ duration: isDragging ? 0.3 : 2, repeat: isDragging ? 0 : Infinity, ease: 'easeInOut' }}
+                animate={{ y: isDragging ? -4 : [0, -4, 0] }}
+                transition={{ duration: isDragging ? 0.3 : 2.5, repeat: isDragging ? 0 : Infinity, ease: 'easeInOut' }}
                 className="mb-2 sm:mb-4 flex justify-center"
               >
                 <div className="relative w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
                   <Upload className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                 </div>
               </motion.div>
-              <h3 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
+              <h3 className="text-base sm:text-xl font-medium text-gray-900 dark:text-white mb-1 sm:mb-2">
                 {multiple ? 'Drag and drop your file(s)' : 'Upload a video or paste a URL (YouTube, Loom, etc.)'}
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-2 sm:mb-3 text-xs sm:text-sm">
@@ -198,7 +198,7 @@ export function UploadZone({
                 </div>
               </div>
               <div className="space-y-2">
-                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Uploading {fileName}</h3>
+                <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white">Uploading {fileName}</h3>
                 <div className="max-w-xs mx-auto">
                   <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                     <motion.div
@@ -221,7 +221,7 @@ export function UploadZone({
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Upload complete!</h3>
+                <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white">Upload complete!</h3>
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Processing {fileName}...</p>
               </div>
             </motion.div>

@@ -25,7 +25,7 @@ export default function MoneyPagesCta({
 }: MoneyPagesCtaProps) {
   return (
     <section className={className}>
-      <h2 className="text-lg font-bold text-gray-900">{title}</h2>
+      <h2 className="text-lg font-medium text-gray-900">{title}</h2>
       <p className="mt-2 text-gray-700">{description}</p>
       <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {MONEY_PAGE_LINKS.map((item) => (

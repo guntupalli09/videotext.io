@@ -856,7 +856,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         )}
 
         {status === 'processing' && (
-          <div className="rounded-2xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
+          <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
               {selectedFile?.name} • {filePreview?.durationSeconds != null ? formatDuration(filePreview.durationSeconds) : '—'}
             </div>
@@ -906,7 +906,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           <div className="space-y-6">
             {/* Teaser card for guests */}
             {showAuthGate && !isLoggedIn() && (
-              <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
+              <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
                 <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
@@ -1009,7 +1009,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             </div>
 
             {subtitleRows.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 shadow-card">
+              <div className="bg-white rounded-xl p-6 shadow-card">
                 <Suspense fallback={null}>
                   <SubtitleEditor
                     entries={subtitleRows}
@@ -1046,8 +1046,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             )}
 
             {result.warnings && result.warnings.length > 0 && (
-              <div className="bg-amber-50/80 rounded-2xl p-6 shadow-card border border-amber-100">
-                <h3 className="text-lg font-semibold text-amber-800 mb-2">Validation (informational)</h3>
+              <div className="bg-amber-50/80 rounded-xl p-6 shadow-card border border-amber-100">
+                <h3 className="text-lg font-medium text-amber-800 mb-2">Validation (informational)</h3>
                 <p className="text-sm text-amber-900 mb-2">Some lines may need attention. Not blocking.</p>
                 <ul className="text-sm text-amber-900 space-y-1">
                   {result.warnings.slice(0, 8).map((w, i) => (
@@ -1059,8 +1059,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             )}
 
             {/* Phase 1B — UTILITY 2B: Convert format. Derived from subtitle files; free: preview 30 lines, paid: full download. */}
-            <div className="bg-white rounded-2xl p-6 shadow-card">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
+            <div className="bg-white rounded-xl p-6 shadow-card">
+              <h3 className="text-lg font-medium text-gray-800 mb-2 flex items-center gap-2">
                 <FileDown className="h-5 w-5 text-blue-600" strokeWidth={1.5} />
                 Convert format
               </h3>
@@ -1188,11 +1188,11 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4 space-y-6" aria-label="Tutorial">
           {seoTutorial?.steps?.length && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Step-by-step tutorial</h2>
+              <h2 className="text-2xl font-medium text-gray-800 mb-4">Step-by-step tutorial</h2>
               <ol className="space-y-4">
                 {seoTutorial.steps.map((step, i) => (
                   <li key={i}>
-                    <h3 className="font-semibold text-gray-800">{step.title}</h3>
+                    <h3 className="font-medium text-gray-800">{step.title}</h3>
                     <p className="text-gray-600 mt-1">{step.detail}</p>
                   </li>
                 ))}
@@ -1202,7 +1202,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
           {seoTutorial?.formatExample?.length && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-3">Valid SRT format example</h2>
+              <h2 className="text-2xl font-medium text-gray-800 mb-3">Valid SRT format example</h2>
               <pre className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-700 overflow-x-auto">
                 {seoTutorial.formatExample.join('\n')}
               </pre>
@@ -1211,7 +1211,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
           {seoTutorial?.commonMistakes?.length && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-3">Common SRT mistakes to avoid</h2>
+              <h2 className="text-2xl font-medium text-gray-800 mb-3">Common SRT mistakes to avoid</h2>
               <ul className="list-disc pl-5 space-y-2 text-gray-600">
                 {seoTutorial.commonMistakes.map((mistake, i) => (
                   <li key={i}>{mistake}</li>
@@ -1236,27 +1236,27 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       {location.pathname === '/video-to-subtitles' && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4 space-y-8" aria-label="Subtitle Generator SEO content">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Generate Subtitles from Video Instantly</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-2">Generate Subtitles from Video Instantly</h2>
             <p className="text-gray-600">Create subtitles automatically from any video file. No timeline editing or manual typing required. This subtitle generator is built for creators who need fast, accurate captions without extra cleanup. Need full text output too? Convert video to transcript with our <Link to="/video-to-transcript" className="text-blue-600 hover:text-blue-700 font-medium">video to transcript tool</Link>.</p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Create SRT &amp; VTT Subtitle Files Automatically</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-2">Create SRT &amp; VTT Subtitle Files Automatically</h2>
             <p className="text-gray-600">Generate ready-to-use subtitle files for YouTube, social media, and video platforms. Export in SRT or VTT in seconds with clean timestamps. Need multilingual workflows after export? Use <Link to="/translate-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">translate subtitles</Link> to localize files instantly.</p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Automatic Subtitle Generator (No Manual Editing)</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-2">Automatic Subtitle Generator (No Manual Editing)</h2>
             <p className="text-gray-600">Most tools require heavy cleanup. This tool generates clean subtitles, adds timestamps automatically, and outputs ready-to-use files. Working from YouTube content? Start with our <Link to="/youtube-transcript-generator" className="text-blue-600 hover:text-blue-700 font-medium">YouTube transcript generator</Link> and export subtitles when ready.</p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Generate Subtitles for Long Videos Fast</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-2">Generate Subtitles for Long Videos Fast</h2>
             <p className="text-gray-600">Built for large files and long-form content: process long videos efficiently, no splitting required, and fast output even for large files. Need higher-volume or queue-style workflows? Use <Link to="/transcribe-long-videos" className="text-blue-600 hover:text-blue-700 font-medium">transcribe long videos</Link>.</p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Why This Subtitle Generator Is Better</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-2">Why This Subtitle Generator Is Better</h2>
             <ul className="list-disc pl-5 space-y-2 text-gray-600">
               <li>Automatic timestamps — no manual sync</li>
               <li>Multi-format export — SRT, VTT</li>
@@ -1267,7 +1267,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Who Needs a Subtitle Generator?</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-2">Who Needs a Subtitle Generator?</h2>
             <ul className="list-disc pl-5 space-y-2 text-gray-600">
               <li>YouTubers → captions for videos</li>
               <li>Social media creators → subtitles for engagement</li>
@@ -1277,7 +1277,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">More Transcription &amp; Subtitle Tools</h2>
+            <h2 className="text-2xl font-medium text-gray-800 mb-2">More Transcription &amp; Subtitle Tools</h2>
             <ul className="space-y-2 text-gray-600">
               <li><Link to="/video-to-transcript" className="text-blue-600 hover:text-blue-700 font-medium">Video to transcript tool</Link></li>
               <li><Link to="/youtube-transcript-generator" className="text-blue-600 hover:text-blue-700 font-medium">YouTube transcript generator</Link></li>
@@ -1291,7 +1291,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
       {effectiveFaq.length > 0 && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Frequently asked questions</h2>
+          <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently asked questions</h2>
           <dl className="space-y-4">
             {effectiveFaq.map((item, i) => (
               <div key={i}>

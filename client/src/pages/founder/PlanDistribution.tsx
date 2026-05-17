@@ -18,7 +18,7 @@ export default function PlanDistribution({ planDistribution }: { planDistributio
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white">Plan distribution</h3>
+        <h3 className="text-sm font-medium text-white">Plan distribution</h3>
         <span className="text-xs text-zinc-500">{convRate}% paid</span>
       </div>
 

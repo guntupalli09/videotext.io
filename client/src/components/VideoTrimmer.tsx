@@ -111,7 +111,7 @@ export default function VideoTrimmer({ file, onChange }: VideoTrimmerProps) {
 
   return (
     <div className="mt-6 rounded-xl border border-gray-200 bg-white p-4">
-      <h3 className="mb-3 text-sm font-semibold text-gray-800">
+      <h3 className="mb-3 text-sm font-medium text-gray-800">
         Trim video before processing
       </h3>
       <video

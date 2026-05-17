@@ -161,7 +161,7 @@ export default function TranscriptResultWorkspaceMock() {
         </div>
 
         {/* Status strip */}
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-3 shadow-sm">
+        <div className="flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-3 shadow-sm">
           <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
             <Check className="w-5 h-5 shrink-0" strokeWidth={2.5} />
             <span className="font-semibold text-gray-900 dark:text-white">Transcript ready</span>
@@ -173,7 +173,7 @@ export default function TranscriptResultWorkspaceMock() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] items-start">
           {/* Main column */}
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden flex flex-col min-h-[420px]">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden flex flex-col min-h-[420px]">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-800 px-4 py-3 bg-gray-50/80 dark:bg-gray-950/50">
               <div className="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-gray-800 p-0.5">
                 <button
@@ -324,7 +324,7 @@ export default function TranscriptResultWorkspaceMock() {
 
           {/* Sidebar */}
           <aside className="space-y-4">
-            <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
+            <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
               <p className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Quick download</p>
               <div className="flex flex-col gap-2">
                 <button
@@ -341,13 +341,13 @@ export default function TranscriptResultWorkspaceMock() {
                 </button>
               </div>
             </div>
-            <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
+            <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
               <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Summary</p>
               <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                 Mock AI summary: discussion covers ergonomic seating and cushion options for office use.
               </p>
             </div>
-            <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
+            <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
               <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">More tools</p>
               <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
                 <li>Speakers</li>
@@ -359,13 +359,13 @@ export default function TranscriptResultWorkspaceMock() {
           </aside>
         </div>
 
-        <section className="space-y-6 rounded-2xl border border-blue-200/70 dark:border-blue-900/50 bg-gradient-to-b from-blue-50/70 to-white dark:from-blue-950/20 dark:to-gray-900 p-4 sm:p-6">
+        <section className="space-y-6 rounded-xl border border-blue-200/70 dark:border-blue-900/50 bg-gradient-to-b from-blue-50/70 to-white dark:from-blue-950/20 dark:to-gray-900 p-4 sm:p-6">
           <header>
             <p className="inline-flex items-center gap-2 rounded-full bg-blue-100 dark:bg-blue-900/40 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300">
               <BadgeCheck className="h-3.5 w-3.5" />
               Final results UX layer (all 4 ideas)
             </p>
-            <h2 className="mt-2 text-xl font-bold text-gray-900 dark:text-white">Post-transcript advantage workspace</h2>
+            <h2 className="mt-2 text-xl font-medium text-gray-900 dark:text-white">Post-transcript advantage workspace</h2>
             <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
               This section appears under the original transcript output above and gives immediate publish + collaboration workflows.
             </p>
@@ -373,7 +373,7 @@ export default function TranscriptResultWorkspaceMock() {
 
           <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-4 space-y-4">
             <div>
-              <h3 className="text-base font-bold text-gray-900 dark:text-white">1) Context-aware output mode</h3>
+              <h3 className="text-base font-medium text-gray-900 dark:text-white">1) Context-aware output mode</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Select the goal first, then shape summary and downstream assets automatically.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
@@ -393,7 +393,7 @@ export default function TranscriptResultWorkspaceMock() {
             </div>
             <article className="rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/70 dark:bg-emerald-950/20 p-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">Generated output</p>
-              <h4 className="mt-1 text-base font-bold text-emerald-900 dark:text-emerald-200">{contextOutput.headline}</h4>
+              <h4 className="mt-1 text-base font-medium text-emerald-900 dark:text-emerald-200">{contextOutput.headline}</h4>
               <p className="mt-2 text-sm text-emerald-800/90 dark:text-emerald-200/90">{contextOutput.summary}</p>
               <ul className="mt-3 grid sm:grid-cols-2 gap-1.5">
                 {contextOutput.focus.map((item) => (
@@ -409,7 +409,7 @@ export default function TranscriptResultWorkspaceMock() {
           <div className="grid lg:grid-cols-2 gap-4">
             <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-4 space-y-4">
               <div>
-                <h3 className="text-base font-bold text-gray-900 dark:text-white">2) Repurposing asset pack</h3>
+                <h3 className="text-base font-medium text-gray-900 dark:text-white">2) Repurposing asset pack</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">One click to generate publish-ready assets.</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -430,7 +430,7 @@ export default function TranscriptResultWorkspaceMock() {
 
             <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-4 space-y-4">
               <div>
-                <h3 className="text-base font-bold text-gray-900 dark:text-white">3) Collaboration layer</h3>
+                <h3 className="text-base font-medium text-gray-900 dark:text-white">3) Collaboration layer</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Inline comments + resolve workflow for editor/team handoff.</p>
               </div>
               <div className="space-y-2.5">
@@ -454,7 +454,7 @@ export default function TranscriptResultWorkspaceMock() {
 
           <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-4 space-y-3">
             <div>
-              <h3 className="text-base font-bold text-gray-900 dark:text-white">4) Drop-anything ingestion</h3>
+              <h3 className="text-base font-medium text-gray-900 dark:text-white">4) Drop-anything ingestion</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Paste links from anywhere and continue creating while ingestion runs in parallel.</p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
@@ -485,7 +485,7 @@ export default function TranscriptResultWorkspaceMock() {
         className="pointer-events-none fixed inset-x-0 bottom-0 z-[100] flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 sm:px-5"
         aria-hidden
       >
-        <div className="pointer-events-none flex w-full max-w-5xl items-center gap-2 sm:gap-4 rounded-2xl border border-[#2a2840] bg-[#0a0a1a] px-3 py-3 sm:px-5 shadow-[0_-8px_40px_rgba(0,0,0,0.4)] opacity-90">
+        <div className="pointer-events-none flex w-full max-w-5xl items-center gap-2 sm:gap-4 rounded-xl border border-[#2a2840] bg-[#0a0a1a] px-3 py-3 sm:px-5 shadow-[0_-8px_40px_rgba(0,0,0,0.4)] opacity-90">
           <button type="button" className="shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white" tabIndex={-1}>
             <Play className="h-5 w-5 ml-0.5" />
           </button>

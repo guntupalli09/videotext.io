@@ -135,7 +135,7 @@ export default function FileUploadZone({
     <div
       {...getRootProps()}
         className={`
-        border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center cursor-pointer transition-motion
+        border-2 border-dashed rounded-xl p-8 sm:p-12 text-center cursor-pointer transition-motion
         ${
           isDragActive || isDragging
             ? 'border-primary bg-primary/5'
@@ -146,7 +146,7 @@ export default function FileUploadZone({
     >
       <input {...getInputProps()} />
       <Upload className="h-11 w-11 text-gray-400 mx-auto mb-3" strokeWidth={1.5} />
-      <h3 className="font-display text-lg font-semibold text-gray-800 dark:text-white mb-2">
+      <h3 className="font-display text-lg font-medium text-gray-800 dark:text-white mb-2">
         {isDragActive
           ? multiple
             ? 'Drop your files here'

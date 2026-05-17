@@ -65,13 +65,13 @@ export function UseCases() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.4 }}
           className="text-center mb-16"
         >
           <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 transition-colors duration-500">
             Built for your workflow
           </p>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-500">
+          <h2 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-4 transition-colors duration-500">
             Built for every professional
             <span className="block text-gray-400 dark:text-white/30 transition-colors duration-500">transcript workflow.</span>
           </h2>
@@ -91,7 +91,7 @@ export function UseCases() {
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ delay: i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className={`group h-full rounded-2xl border border-gray-200 dark:border-white/[0.07] bg-white dark:bg-gray-950 overflow-hidden ${uc.borderHover} hover:shadow-xl hover:shadow-gray-100 dark:hover:shadow-black/30 transition-all duration-300`}>
+                <div className={`group h-full rounded-xl border border-gray-200 dark:border-white/[0.07] bg-white dark:bg-gray-950 overflow-hidden ${uc.borderHover} hover:shadow-xl hover:shadow-gray-100 dark:hover:shadow-black/30 transition-all duration-300`}>
                   {/* Top gradient strip */}
                   <div className={`h-1.5 bg-gradient-to-r ${uc.gradient}`} />
 
@@ -107,7 +107,7 @@ export function UseCases() {
                       </div>
                     </div>
 
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 transition-colors duration-500">
+                    <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-3 transition-colors duration-500">
                       {uc.headline}
                     </h3>
 

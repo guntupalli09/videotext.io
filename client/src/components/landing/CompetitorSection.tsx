@@ -109,7 +109,7 @@ export function CompetitorSection() {
             </span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
             <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
               {speedMultiple}× faster
             </span>
@@ -126,7 +126,7 @@ export function CompetitorSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 sm:p-8 mb-6 transition-colors duration-500"
+          className="bg-white dark:bg-gray-950 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6 sm:p-8 mb-6 transition-colors duration-500"
         >
           <div className="flex items-center gap-2 mb-6">
             <Clock className="w-4 h-4 text-gray-500 dark:text-gray-400" />
@@ -226,7 +226,7 @@ export function CompetitorSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.2, duration: 0.6 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
           className="overflow-x-auto"
         >
           <div className="min-w-[640px]">
@@ -248,7 +248,7 @@ export function CompetitorSection() {
             </div>
 
             {/* Table rows */}
-            <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden divide-y divide-gray-100 dark:divide-white/[0.04] transition-colors duration-500">
+            <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden divide-y divide-gray-100 dark:divide-white/[0.04] transition-colors duration-500">
               {FEATURE_COMPARISON.map((row, i) => (
                 <motion.div
                   key={row.feature}

@@ -62,7 +62,7 @@ export default function RevAlternativePage() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-600/10 border border-blue-200/60 dark:border-blue-500/20 mb-6">
             <span className="text-[12px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Rev Alternative</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
             A credible{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
               Rev alternative
@@ -86,11 +86,11 @@ export default function RevAlternativePage() {
 
       <div className="max-w-4xl mx-auto px-6 pb-24 space-y-16">
 
-        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">How to decide quickly: Rev or VideoText?</h2>
+        <section className="rounded-xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">How to decide quickly: Rev or VideoText?</h2>
           <div className="grid sm:grid-cols-2 gap-5 text-sm">
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Choose VideoText when you need:</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Choose VideoText when you need:</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                 <li>• Fast self-serve turnaround for recorded files.</li>
                 <li>• Structured output (summary, chapters, subtitle exports) in one run.</li>
@@ -98,7 +98,7 @@ export default function RevAlternativePage() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Choose Rev when you need:</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Choose Rev when you need:</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                 <li>• Human-reviewed transcripts with premium accuracy expectations.</li>
                 <li>• Workflows where legal/compliance tolerance for AI errors is low.</li>
@@ -109,8 +109,8 @@ export default function RevAlternativePage() {
         </section>
 
         {/* Cost comparison callout */}
-        <section className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-2xl p-6">
-          <h2 className="text-lg font-bold text-amber-800 dark:text-amber-300 mb-3">Cost comparison: Rev AI vs VideoText</h2>
+        <section className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-6">
+          <h2 className="text-lg font-medium text-amber-800 dark:text-amber-300 mb-3">Cost comparison: Rev AI vs VideoText</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
             {[
               { label: '1 hour of video', rev: '$15.00', us: 'Free (3 imports/month)' },
@@ -128,8 +128,8 @@ export default function RevAlternativePage() {
 
         {/* Comparison table */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">VideoText vs Rev — feature comparison</h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">VideoText vs Rev — feature comparison</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
             <div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-white/[0.05]">
               <div />
               <div className="text-center text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">VideoText</div>
@@ -149,21 +149,21 @@ export default function RevAlternativePage() {
 
         {/* When Rev is the right choice */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">When Rev is worth the premium</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">When Rev is worth the premium</h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
             Rev's <strong>human transcription service ($1.99/min)</strong> is the right choice for legal depositions, medical dictation, journalism interviews, and formal broadcast where every word must be guaranteed accurate and reviewed by a human. VideoText is AI-only. If your use case requires a signed accuracy guarantee or human-verified output, Rev's human tier is appropriate despite the cost.
           </p>
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Output and effort tradeoff</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Output and effort tradeoff</h2>
           <div className="grid sm:grid-cols-2 gap-5">
             <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Rev</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Rev</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Strong for high-stakes accuracy with human review, but slower and often more expensive for high-volume content operations.</p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">VideoText</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">VideoText</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Strong for fast transcript-to-publish workflows with summary, chapters, and subtitle exports in one pass. No human-review tier.</p>
             </div>
           </div>
@@ -176,18 +176,18 @@ export default function RevAlternativePage() {
             { icon: Zap, title: 'Subtitle tools included', body: 'Rev AI charges separately for captions. VideoText includes SRT/VTT export, subtitle translation, timing fix, and burn in every plan.' },
             { icon: Shield, title: 'YouTube URL support', body: 'Rev requires a file upload. VideoText lets you paste any YouTube URL and processes it directly — no download step.' },
           ].map(({ icon: Icon, title, body }) => (
-            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
+            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-3">
                 <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-1">{title}</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">{title}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">{body}</p>
             </div>
           ))}
         </section>
 
-        <section className="rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Alternative pages in this cluster</h2>
+        <section className="rounded-xl border border-gray-200 dark:border-white/[0.06] p-6 bg-white dark:bg-gray-900/40">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-3">Alternative pages in this cluster</h2>
           <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Rev is strong for human-verified work. For faster AI-first workflows, compare these options.</p>
           <div className="flex flex-wrap gap-3 text-sm">
             <Link to="/trint-alternative" className="text-blue-600 dark:text-blue-400 hover:underline">Trint alternative</Link>
@@ -200,11 +200,11 @@ export default function RevAlternativePage() {
 
         {/* FAQ */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
           <div className="space-y-4">
             {FAQ.map(({ q, a }) => (
               <div key={q} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{a}</p>
               </div>
             ))}
@@ -212,8 +212,8 @@ export default function RevAlternativePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Run a real Rev-style test in minutes</h2>
+        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-xl p-8 sm:p-12 text-white text-center">
+          <h2 className="text-2xl sm:text-3xl font-medium mb-3">Run a real Rev-style test in minutes</h2>
           <p className="text-white/70 mb-8 max-w-xl mx-auto">Use one of your typical files and compare turnaround, export readiness, and total effort before deciding where to migrate.</p>
           <Link to="/video-to-transcript?source=rev-alternative">
             <span className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">

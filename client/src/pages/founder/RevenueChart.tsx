@@ -9,7 +9,7 @@ export default function RevenueChart({ revenue }: { revenue: DashboardRevenue })
   if (trend.length === 0) {
     return (
       <div className="bg-white dark:bg-zinc-900 rounded-xl shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">MRR Trend</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">MRR Trend</h3>
         <p className="text-gray-500 dark:text-gray-400 text-sm">No data yet.</p>
       </div>
     )
@@ -36,7 +36,7 @@ export default function RevenueChart({ revenue }: { revenue: DashboardRevenue })
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-xl shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">MRR Trend (last 12 months)</h3>
+      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">MRR Trend (last 12 months)</h3>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-full h-auto" preserveAspectRatio="xMidYMid meet">
         {trend.map((d, i) => (
           <text

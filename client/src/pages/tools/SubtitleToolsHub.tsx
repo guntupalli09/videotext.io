@@ -97,7 +97,7 @@ export default function SubtitleToolsHub() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-pink-600 to-rose-800 text-white py-16 px-4">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
+          <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">
             Subtitle Tools & Resources
           </h1>
           <p className="text-lg text-pink-100 max-w-2xl">
@@ -116,7 +116,7 @@ export default function SubtitleToolsHub() {
             return (
               <div key={idx} className="space-y-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                  <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                     <Icon className="w-6 h-6 text-pink-600" />
                     {category.title}
                   </h2>
@@ -144,7 +144,7 @@ export default function SubtitleToolsHub() {
 
         {/* What are subtitle tools */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white">What are subtitle tools used for?</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white">What are subtitle tools used for?</h2>
           <div className="prose prose-gray dark:prose-invert max-w-none text-sm leading-relaxed space-y-3">
             <p>Subtitle tools handle the technical work of creating, editing, converting, and validating subtitle files. Most video creators need them at some point — whether that's converting an SRT file from a transcription service into VTT format for a web player, checking that subtitle timing is in sync with the video, or validating that files meet broadcast platform requirements before delivery.</p>
             <p>The two most common subtitle formats are SRT (SubRip Text) and VTT (WebVTT). SRT was created in the late 1990s and remains the most widely supported format across media players, editing software, and platforms. VTT is the web standard specified by the W3C and is required for HTML5 video players, YouTube's native captions API, and modern streaming web interfaces. Most subtitle workflows involve converting between these two formats at least once.</p>
@@ -154,7 +154,7 @@ export default function SubtitleToolsHub() {
 
         {/* Standards Table */}
         <section>
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-4">Subtitle standards by streaming platform</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-4">Subtitle standards by streaming platform</h2>
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 dark:bg-gray-800">
@@ -182,7 +182,7 @@ export default function SubtitleToolsHub() {
 
         {/* SRT vs VTT */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white">SRT vs VTT — which format should you use?</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white">SRT vs VTT — which format should you use?</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-5">
               <p className="font-semibold text-gray-900 dark:text-white mb-2">Use SRT when…</p>
@@ -208,8 +208,8 @@ export default function SubtitleToolsHub() {
         </section>
 
         {/* CTA */}
-        <section className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-8 text-center text-white">
-          <h2 className="text-2xl font-display font-bold mb-2">Need subtitles generated automatically?</h2>
+        <section className="rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 p-8 text-center text-white">
+          <h2 className="text-2xl font-display font-medium mb-2">Need subtitles generated automatically?</h2>
           <p className="text-blue-100 mb-6 text-sm max-w-md mx-auto">Upload your video and get accurate, timestamped subtitles in SRT or VTT format — powered by AI, ready in minutes.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/video-to-subtitles" className="inline-block bg-white text-blue-700 font-semibold px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm">Generate subtitles with AI →</Link>
@@ -219,7 +219,7 @@ export default function SubtitleToolsHub() {
 
         {/* FAQ */}
         <section>
-          <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
           <div className="space-y-5">
             {[
               { q: 'Are these subtitle tools really free?', a: 'Yes, completely. All tools on this page run in your browser with no server processing. There are no file size limits, no account requirements, and no usage restrictions. They work using pure JavaScript in your browser.' },

@@ -97,7 +97,7 @@ export default function SurveyPage() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
           <div className="text-6xl mb-6">🎉</div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          <h1 className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
             Thank you so much!
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
@@ -123,7 +123,7 @@ export default function SurveyPage() {
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
             <span className="text-xl font-bold text-blue-600">VideoText</span>
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+          <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-3">
             Help us build the tool you love
           </h1>
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -133,7 +133,7 @@ export default function SurveyPage() {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Q1: Rating */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <label className="block text-base font-semibold text-gray-900 dark:text-white mb-1">
               Overall, how would you rate VideoText?
             </label>
@@ -149,7 +149,7 @@ export default function SurveyPage() {
           </div>
 
           {/* Q2: How can we improve */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <label
               htmlFor="survey-improve"
               className="block text-base font-semibold text-gray-900 dark:text-white mb-1"
@@ -171,7 +171,7 @@ export default function SurveyPage() {
           </div>
 
           {/* Q3: Top tool */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <label
               htmlFor="survey-top-tool"
               className="block text-base font-semibold text-gray-900 dark:text-white mb-1"
@@ -216,7 +216,7 @@ export default function SurveyPage() {
           </div>
 
           {/* Q4: Feature request */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <label
               htmlFor="survey-feature"
               className="block text-base font-semibold text-gray-900 dark:text-white mb-1"
@@ -238,7 +238,7 @@ export default function SurveyPage() {
           </div>
 
           {/* Q5: Anything else */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <label
               htmlFor="survey-other"
               className="block text-base font-semibold text-gray-900 dark:text-white mb-1"
@@ -259,7 +259,7 @@ export default function SurveyPage() {
           </div>
 
           {/* Contact info */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 space-y-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 space-y-4">
             <div>
               <label
                 htmlFor="survey-email"
@@ -310,7 +310,7 @@ export default function SurveyPage() {
           <button
             type="submit"
             disabled={sending}
-            className="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-semibold text-base shadow-lg shadow-blue-200 dark:shadow-blue-900/30 disabled:opacity-60 transition-all"
+            className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-semibold text-base shadow-lg shadow-blue-200 dark:shadow-blue-900/30 disabled:opacity-60 transition-all"
           >
             {sending ? 'Sending…' : 'Submit feedback'}
           </button>

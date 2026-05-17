@@ -23,7 +23,7 @@ export default function ApiCreditsPanel({ data, onRefresh }: Props) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-white">OpenAI Credits</h3>
+          <h3 className="text-sm font-medium text-white">OpenAI Credits</h3>
           <button onClick={onRefresh} className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Refresh</button>
         </div>
         <p className="text-xs text-zinc-500">Loading…</p>
@@ -35,7 +35,7 @@ export default function ApiCreditsPanel({ data, onRefresh }: Props) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-white">OpenAI Credits</h3>
+          <h3 className="text-sm font-medium text-white">OpenAI Credits</h3>
           <button onClick={onRefresh} className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Refresh</button>
         </div>
         <p className="text-xs text-zinc-500">
@@ -64,7 +64,7 @@ export default function ApiCreditsPanel({ data, onRefresh }: Props) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white">OpenAI Credits</h3>
+        <h3 className="text-sm font-medium text-white">OpenAI Credits</h3>
         <button onClick={onRefresh} className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Refresh</button>
       </div>
       <ProgressBar pct={pctUsed} />

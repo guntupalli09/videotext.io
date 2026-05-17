@@ -23,7 +23,7 @@ export default function EmailUsagePanel({ data, onRefresh }: Props) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-white">Email Usage (Resend)</h3>
+          <h3 className="text-sm font-medium text-white">Email Usage (Resend)</h3>
           <button onClick={onRefresh} className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Refresh</button>
         </div>
         <p className="text-xs text-zinc-500">{data ? 'No data available.' : 'Loading…'}</p>
@@ -37,7 +37,7 @@ export default function EmailUsagePanel({ data, onRefresh }: Props) {
   return (
     <div className={`rounded-xl border p-5 ${isNearLimit ? 'border-amber-800/50 bg-amber-950/20' : 'border-zinc-800 bg-zinc-900'}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white">Email Usage (Resend)</h3>
+        <h3 className="text-sm font-medium text-white">Email Usage (Resend)</h3>
         <button onClick={onRefresh} className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Refresh</button>
       </div>
       <div className="space-y-1 mb-4 text-xs text-zinc-500">

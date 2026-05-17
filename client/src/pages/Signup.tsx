@@ -202,7 +202,7 @@ export default function Signup() {
         {/* Headline */}
         <div className="relative z-10 space-y-8">
           <div>
-            <h2 className="text-3xl xl:text-4xl font-bold text-white leading-tight mb-3">
+            <h2 className="text-3xl xl:text-4xl font-medium text-white leading-tight mb-3">
               {fromGuestJob ? 'Your transcript is ready!' : 'Video to transcript.'}
               <span className="block text-white/60 text-2xl xl:text-3xl mt-1">
                 {fromGuestJob ? 'One step to download.' : 'In minutes, not hours.'}
@@ -265,7 +265,7 @@ export default function Signup() {
             ))}
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+          <h1 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
             {stepTitles[step]}
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-7">

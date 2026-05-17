@@ -42,7 +42,7 @@ export function Navigation() {
                 />
                 <img src="/logo.svg" alt="" className="relative w-7 h-7" />
               </div>
-              <span className="font-bold text-gray-900 dark:text-white text-lg tracking-tight relative">
+              <span className="font-semibold text-gray-900 dark:text-white text-lg tracking-tight relative">
                 VideoText
                 <motion.div
                   className="absolute -bottom-0.5 left-0 h-0.5 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full"
@@ -74,7 +74,7 @@ export function Navigation() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+                    className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-gray-900 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
                   >
                     {toolsMenu.map((tool, index) => (
                       <Link

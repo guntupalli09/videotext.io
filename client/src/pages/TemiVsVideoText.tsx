@@ -15,7 +15,7 @@ const PARTIAL = (
 
 function SectionHeading({ id, children }: { id?: string; children: ReactNode }) {
   return (
-    <h2 id={id} className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2 scroll-mt-20">
+    <h2 id={id} className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-2 scroll-mt-20">
       {children}
     </h2>
   )
@@ -23,7 +23,7 @@ function SectionHeading({ id, children }: { id?: string; children: ReactNode }) 
 
 function SubHeading({ children }: { children: ReactNode }) {
   return (
-    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">{children}</h3>
+    <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-1">{children}</h3>
   )
 }
 
@@ -48,7 +48,7 @@ export default function TemiVsVideoText() {
             </div>
 
             {/* H1 — primary keyword target */}
-            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4">
+            <h1 className="text-4xl md:text-5xl font-medium leading-tight mb-4">
               Temi vs VideoText (2025):<br />
               <span className="text-blue-300">The Full 360° Comparison</span>
             </h1>
@@ -124,10 +124,10 @@ export default function TemiVsVideoText() {
           />
 
           {/* ── QUICK VERDICT ── */}
-          <section aria-labelledby="verdict-heading" className="rounded-2xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-800 p-6 md:p-8">
+          <section aria-labelledby="verdict-heading" className="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-800 p-6 md:p-8">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl" aria-hidden>⚡</span>
-              <h2 id="verdict-heading" className="text-xl font-bold text-gray-900 dark:text-white">Quick Verdict</h2>
+              <h2 id="verdict-heading" className="text-xl font-medium text-gray-900 dark:text-white">Quick Verdict</h2>
             </div>
             <p className="text-gray-800 dark:text-gray-200 text-base leading-relaxed mb-4" data-speakable>
               <strong>VideoText wins for nearly every workflow.</strong> If you're paying Temi or Rev $0.25/minute for transcription and getting back a single document,
@@ -167,7 +167,7 @@ export default function TemiVsVideoText() {
               See <Link to="/pricing" className="text-blue-600 hover:underline">VideoText pricing plans</Link> for full details.
             </p>
 
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800 mb-6">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800 mb-6">
               <table className="min-w-full text-sm">
                 <caption className="sr-only">Pricing comparison between Temi, Rev AI, and VideoText at different usage levels</caption>
                 <thead>
@@ -237,7 +237,7 @@ export default function TemiVsVideoText() {
             <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
               Every major capability side by side — no cherry-picking. Sourced from each tool's official documentation and feature pages.
             </p>
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
               <table className="min-w-full text-sm">
                 <caption className="sr-only">Full feature comparison: Temi, Rev AI, and VideoText</caption>
                 <thead>
@@ -441,7 +441,7 @@ export default function TemiVsVideoText() {
           <section
             id="privacy"
             aria-labelledby="privacy-heading"
-            className="rounded-2xl border-2 border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/20 p-6 md:p-8"
+            className="rounded-xl border-2 border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/20 p-6 md:p-8"
           >
             <SectionHeading id="privacy">🔒 Data Privacy: Why This Matters More Than You Think</SectionHeading>
             <p className="text-gray-700 dark:text-gray-300 text-sm mb-5" data-speakable>
@@ -609,7 +609,7 @@ export default function TemiVsVideoText() {
           {/* ── USE CASES ── */}
           <section id="use-cases" aria-labelledby="use-cases-heading">
             <SectionHeading id="use-cases">🏆 Who Wins by Use Case</SectionHeading>
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
               <table className="min-w-full text-sm">
                 <caption className="sr-only">Best tool recommendation by use case</caption>
                 <thead>
@@ -648,7 +648,7 @@ export default function TemiVsVideoText() {
           </section>
 
           {/* ── SWITCHING GUIDE ── */}
-          <section aria-labelledby="switching-heading" className="rounded-2xl border border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/40 dark:to-gray-900 p-6 md:p-8">
+          <section aria-labelledby="switching-heading" className="rounded-xl border border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/40 dark:to-gray-900 p-6 md:p-8">
             <SectionHeading id="switching-heading">🔁 Switching from Temi or Rev to VideoText</SectionHeading>
             <p className="text-gray-700 dark:text-gray-300 text-sm mb-5">
               Switching takes under 5 minutes. No migration, no contracts, no setup.
@@ -734,7 +734,7 @@ export default function TemiVsVideoText() {
           </section>
 
           {/* ── BENCHMARK ── */}
-          <section aria-labelledby="benchmark-heading" className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/60 p-6 md:p-8">
+          <section aria-labelledby="benchmark-heading" className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/60 p-6 md:p-8">
             <SectionHeading id="benchmark-heading">📈 VideoText Benchmark Reference</SectionHeading>
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-5">
               VideoText publishes benchmarks publicly. Temi and Rev do not. Verify the claims below on the{' '}
@@ -835,9 +835,9 @@ export default function TemiVsVideoText() {
           </section>
 
           {/* ── FINAL CTA ── */}
-          <section aria-labelledby="cta-heading" className="rounded-2xl bg-gradient-to-br from-blue-700 to-blue-900 text-white p-8 md:p-10 text-center">
+          <section aria-labelledby="cta-heading" className="rounded-xl bg-gradient-to-br from-blue-700 to-blue-900 text-white p-8 md:p-10 text-center">
             <div className="text-4xl mb-4" aria-hidden>🚀</div>
-            <h2 id="cta-heading" className="text-2xl md:text-3xl font-bold mb-3">
+            <h2 id="cta-heading" className="text-2xl md:text-3xl font-medium mb-3">
               Stop Paying Per Minute. Start Getting More Per File.
             </h2>
             <p className="text-blue-200 text-sm max-w-xl mx-auto mb-6">

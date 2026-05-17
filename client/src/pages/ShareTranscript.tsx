@@ -50,13 +50,13 @@ export default function ShareTranscript() {
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {loading && (
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-10 text-center text-gray-500 dark:text-gray-400 text-sm">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-10 text-center text-gray-500 dark:text-gray-400 text-sm">
             Loading…
           </div>
         )}
 
         {!loading && error && (
-          <div className="rounded-2xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/90 dark:bg-amber-950/25 p-6 flex gap-4">
+          <div className="rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/90 dark:bg-amber-950/25 p-6 flex gap-4">
             <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400 shrink-0" />
             <div>
               <p className="font-semibold text-amber-900 dark:text-amber-200">Unable to open this page</p>
@@ -88,7 +88,7 @@ export default function ShareTranscript() {
                   </span>
                 )}
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
                 {data.title}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -105,8 +105,8 @@ export default function ShareTranscript() {
               (data.payload.summary.summary ||
                 data.payload.summary.bullets?.length ||
                 data.payload.summary.actionItems?.length) && (
-                <section className="rounded-2xl border border-blue-200/70 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20 p-5 space-y-3">
-                  <h2 className="text-sm font-semibold text-blue-900 dark:text-blue-200">Summary</h2>
+                <section className="rounded-xl border border-blue-200/70 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20 p-5 space-y-3">
+                  <h2 className="text-sm font-medium text-blue-900 dark:text-blue-200">Summary</h2>
                   {data.payload.summary.summary && (
                     <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                       {data.payload.summary.summary}
@@ -132,9 +132,9 @@ export default function ShareTranscript() {
                 </section>
               )}
 
-            <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/80 shadow-sm overflow-hidden">
+            <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/80 shadow-sm overflow-hidden">
               <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900">
-                <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Transcript</h2>
+                <h2 className="text-sm font-medium text-gray-800 dark:text-gray-200">Transcript</h2>
               </div>
               <div className="p-5 max-h-[70vh] overflow-y-auto">
                 {data.payload.segments?.length ? (

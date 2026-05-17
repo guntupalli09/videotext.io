@@ -62,7 +62,7 @@ export default function DescriptAlternativePage() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-600/10 border border-blue-200/60 dark:border-blue-500/20 mb-6">
             <span className="text-[12px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Descript Alternative</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-5 leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
             The best free{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
               Descript alternative
@@ -88,7 +88,7 @@ export default function DescriptAlternativePage() {
 
         {/* Why people leave Descript */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Why people look for a Descript alternative</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Why people look for a Descript alternative</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
             Descript is a powerful product — but it is built around a text-based video editor. If you only need transcripts and subtitle files, you are paying for a toolset you will never use. Common complaints from users switching away from Descript:
           </p>
@@ -111,8 +111,8 @@ export default function DescriptAlternativePage() {
 
         {/* Comparison table */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">VideoText vs Descript — feature comparison</h2>
-          <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">VideoText vs Descript — feature comparison</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] overflow-hidden">
             <div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-white/[0.05]">
               <div />
               <div className="text-center text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">VideoText</div>
@@ -132,7 +132,7 @@ export default function DescriptAlternativePage() {
 
         {/* When Descript is better */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">When Descript is still the right choice</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">When Descript is still the right choice</h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
             Descript is the right tool if you need to <strong>edit video by editing text</strong> — removing filler words, replacing audio with Overdub, or producing polished podcast episodes with a visual timeline. VideoText does not have a timeline editor. If your workflow is primarily editing (not just transcribing), Descript's editor is unmatched in that category.
           </p>
@@ -145,11 +145,11 @@ export default function DescriptAlternativePage() {
             { icon: Shield, title: 'Files deleted instantly', body: 'Descript stores your project in their cloud. VideoText deletes your file the moment the job completes — nothing retained.' },
             { icon: DollarSign, title: 'Free tier + Pro at $40/mo', body: 'Descript\'s cheapest paid plan is $24/month with limited features. VideoText starts free — 3 uploads/day, no card needed. Pro is $40/month.' },
           ].map(({ icon: Icon, title, body }) => (
-            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-6">
+            <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-3">
                 <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-1">{title}</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1">{title}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">{body}</p>
             </div>
           ))}
@@ -157,11 +157,11 @@ export default function DescriptAlternativePage() {
 
         {/* FAQ */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
           <div className="space-y-4">
             {FAQ.map(({ q, a }) => (
               <div key={q} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2 text-sm">{q}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{a}</p>
               </div>
             ))}
@@ -169,8 +169,8 @@ export default function DescriptAlternativePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-3xl p-8 sm:p-12 text-white text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Switch from Descript in 2 minutes</h2>
+        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-xl p-8 sm:p-12 text-white text-center">
+          <h2 className="text-2xl sm:text-3xl font-medium mb-3">Switch from Descript in 2 minutes</h2>
           <p className="text-white/70 mb-8 max-w-xl mx-auto">Paste a YouTube URL or upload an MP4. Get your transcript or subtitle file instantly. No editor to learn. Free tier, no credit card.</p>
           <Link to="/video-to-transcript">
             <span className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">

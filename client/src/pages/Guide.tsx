@@ -316,7 +316,7 @@ export default function Guide() {
         <div className="flex items-center gap-3 mb-4">
           <BookOpen className="w-9 h-9 text-blue-600 shrink-0" strokeWidth={1.5} aria-hidden />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">How to use VideoText — tools, workflows, and client guidelines</h1>
+            <h1 className="text-3xl font-medium text-gray-900">How to use VideoText — tools, workflows, and client guidelines</h1>
             <p className="text-gray-600 mt-1">
               A practical guide to each tool: inputs, outputs, limits, plus how freelancers prep transcripts against marketplace rules before QA.
             </p>
@@ -352,7 +352,7 @@ export default function Guide() {
 
         {/* Suggested workflows for creators */}
         <section className="mb-8 rounded-xl border border-blue-100 bg-blue-50/30 p-4 sm:p-6" aria-labelledby="workflows-heading">
-          <h2 id="workflows-heading" className="text-base font-semibold text-gray-900 mb-3">Workflows</h2>
+          <h2 id="workflows-heading" className="text-base font-medium text-gray-900 mb-3">Workflows</h2>
           <p className="text-sm text-gray-600 mb-4">
             Use &quot;Next step&quot; on each tool to continue with the same file (no re-upload).
           </p>
@@ -422,7 +422,7 @@ export default function Guide() {
 
         {/* Quick nav */}
         <nav className="mb-12 rounded-xl border border-gray-200 bg-white p-4" aria-label="Guide sections">
-          <h2 className="text-sm font-semibold text-gray-900 mb-3">Tools in this guide</h2>
+          <h2 className="text-sm font-medium text-gray-900 mb-3">Tools in this guide</h2>
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
             {TOOL_GUIDES.map((g) => (
               <li key={g.path}>
@@ -445,7 +445,7 @@ export default function Guide() {
                   <div className="p-4 sm:p-6 border-b border-gray-100 bg-gray-50/50">
                     <div className="flex items-center gap-3 mb-2">
                       <Icon className="w-6 h-6 text-blue-600 shrink-0" aria-hidden />
-                      <h2 className="text-xl font-bold text-gray-900">{guide.title}</h2>
+                      <h2 className="text-xl font-medium text-gray-900">{guide.title}</h2>
                     </div>
                     <p className="text-gray-600 text-sm mb-4">{guide.shortDesc}</p>
                     <Link
@@ -459,7 +459,7 @@ export default function Guide() {
 
                   <div className="p-4 sm:p-6 space-y-6">
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                      <h3 className="text-sm font-medium text-gray-900 mb-2 flex items-center gap-2">
                         <CheckCircle className="w-4 h-4 text-blue-600" strokeWidth={1.5} aria-hidden />
                         How to use
                       </h3>
@@ -471,7 +471,7 @@ export default function Guide() {
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-2">What we expect</h3>
+                      <h3 className="text-sm font-medium text-gray-900 mb-2">What we expect</h3>
                       <ul className="space-y-1.5 text-sm text-gray-700">
                         {guide.expected.map((e, i) => (
                           <li key={i}>
@@ -482,7 +482,7 @@ export default function Guide() {
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-2">Features</h3>
+                      <h3 className="text-sm font-medium text-gray-900 mb-2">Features</h3>
                       <ul className="space-y-1 text-sm text-gray-700 list-disc list-inside">
                         {guide.features.map((f, i) => (
                           <li key={i}>{f}</li>
@@ -499,7 +499,7 @@ export default function Guide() {
         {/* Plan limits table */}
         <section className="mt-14 rounded-xl border border-gray-200 bg-white overflow-hidden">
           <div className="p-4 sm:p-6 border-b border-gray-100">
-            <h2 className="text-lg font-bold text-gray-900">Plan limits at a glance</h2>
+            <h2 className="text-lg font-medium text-gray-900">Plan limits at a glance</h2>
             <p className="text-sm text-gray-600 mt-1">
               Free: 3 imports/month, 30 min per video. Paid: monthly minute quota. AI features (Summary, Chapters, Speakers, Translation, Batch) are Pro and above. Exact limits enforced at upload.
             </p>
@@ -535,8 +535,8 @@ export default function Guide() {
         </section>
 
         {/* Pro Tips */}
-        <section className="mt-14 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl border border-amber-200/30 dark:border-amber-500/20 p-8">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Pro tips for best results</h2>
+        <section className="mt-14 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl border border-amber-200/30 dark:border-amber-500/20 p-8">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-6">Pro tips for best results</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
@@ -562,7 +562,7 @@ export default function Guide() {
             ].map((section) => (
               <div key={section.title}>
                 <div className="text-3xl mb-3">{section.icon}</div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">{section.title}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-3">{section.title}</h3>
                 <ul className="space-y-2">
                   {section.tips.map((tip, i) => (
                     <li key={i} className="flex gap-2 text-sm text-gray-700 dark:text-gray-300">
@@ -578,7 +578,7 @@ export default function Guide() {
 
         {/* Popular use cases */}
         <section className="mt-14">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Popular use cases</h2>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Popular use cases</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
               { to: '/podcast-transcription', label: 'Podcast Transcription', desc: 'Get transcripts with speaker labels for podcasts.' },

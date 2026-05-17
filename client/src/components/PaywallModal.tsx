@@ -100,7 +100,7 @@ export default function PaywallModal({ isOpen, onClose, reason, onUpgrade }: Pay
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full shadow-xl"
+          className="relative bg-white dark:bg-gray-800 rounded-xl p-8 max-w-md w-full shadow-xl"
         >
           <button
             onClick={onClose}
@@ -109,7 +109,7 @@ export default function PaywallModal({ isOpen, onClose, reason, onUpgrade }: Pay
             <X className="h-5 w-5" strokeWidth={1.5} />
           </button>
 
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{title}</h2>
+          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-2">{title}</h2>
           <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">{body}</p>
 
           <Link
