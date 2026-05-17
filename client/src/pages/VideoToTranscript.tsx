@@ -3363,7 +3363,10 @@ export default function VideoToTranscript(
   };
 
   const breadcrumbs = [
-    { label: "Video to Transcript", href: "/video-to-transcript" },
+    {
+      label: "Fastest Way to Transcribe Your Audio/Video",
+      href: "/video-to-transcript",
+    },
   ];
   const hasDeepContent = Boolean(
     seoDeepContent?.proofPoints?.length ||
@@ -3374,7 +3377,7 @@ export default function VideoToTranscript(
   );
   const layoutProps = {
     breadcrumbs,
-    title: "Video to Transcript",
+    title: "Fastest Way to Transcribe Your Audio/Video",
     subtitle: seoIntro ?? "Extract spoken text from any video in seconds",
     icon: <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     sidebar: null,
