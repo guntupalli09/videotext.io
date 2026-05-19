@@ -18,6 +18,40 @@ import { trackEvent } from "../../lib/analytics";
 
 const SPOTLIGHT_TOOLS = [
   {
+    id: "guideline-format",
+    badge: "Core workflow",
+    badgeColor: "bg-amber-500/15 text-amber-300 border border-amber-500/25",
+    icon: ClipboardCheck,
+    name: "Apply Formatting Guidelines",
+    tagline: "Stop spending 45 minutes on cleanup you could automate.",
+    description:
+      "Drop in your transcript and get a full validation against client rules — what failed, why, and the exact fix. No more guessing what needs to change before delivery.",
+    bullets: [
+      "Reduce cleanup from 45 min to 8 min per transcript",
+      "Apply Rev, GoTranscript & custom rules automatically",
+      "Catch formatting violations before delivery",
+      "Export QA-ready transcripts on first pass",
+    ],
+    gradient: "from-blue-600 to-blue-700",
+    glowColor: "rgba(37,99,235,0.09)",
+    href: "/guideline-format",
+    cta: "Format transcript →",
+    outputPreview: [
+      {
+        time: "FAIL",
+        text: "Speaker labels: mixed case — ‘speaker 1’, ‘SPEAKER 1’ (Rev: consistent caps)",
+      },
+      {
+        time: "FIX",
+        text: "Numbers: ‘5 people’ → ‘five people’ (client rule: spell out 1–9)",
+      },
+      {
+        time: "DONE",
+        text: "38 checks passed · 2 issues fixed · ~37 min saved · Export ready",
+      },
+    ],
+  },
+  {
     id: "video-to-transcript",
     badge: "Most popular",
     badgeColor: "bg-blue-600/15 text-blue-300 border border-blue-500/20",
@@ -25,7 +59,7 @@ const SPOTLIGHT_TOOLS = [
     name: "Video → Transcript",
     tagline: "From video to words at machine speed.",
     description:
-      "Upload any video and get a clean, timestamped transcript. AI-powered with 98.5% accuracy. Export as TXT, PDF, DOCX, or JSON.",
+      "Upload any video and get a clean, timestamped transcript. AI-powered with high accuracy. Export as TXT, PDF, DOCX, or JSON.",
     bullets: [
       "Speaker detection & labels",
       "Auto chapters & summary",
@@ -39,7 +73,7 @@ const SPOTLIGHT_TOOLS = [
     outputPreview: [
       {
         time: "00:00",
-        text: "Welcome back to the channel. Today we're diving into...",
+        text: "Welcome back to the channel. Today we’re diving into...",
       },
       {
         time: "00:08",
@@ -48,37 +82,6 @@ const SPOTLIGHT_TOOLS = [
       {
         time: "00:21",
         text: "Let me walk you through exactly how to set this up...",
-      },
-    ],
-  },
-  {
-    id: "guideline-format",
-    badge: "Client-ready",
-    badgeColor: "bg-blue-500/15 text-blue-300 border border-blue-500/20",
-    icon: ClipboardCheck,
-    name: "Format → Client guidelines",
-    tagline: "Validate + format transcripts to match client rules.",
-    description:
-      "Drop in transcript text and get a clear pass/fail summary, suggested fixes, and rule-by-rule checks — tuned for Rev, GoTranscript, TranscribeMe, Scribie, and custom client style guides.",
-    bullets: [
-      "Validation summary (what failed + why)",
-      "Rule cards you can edit per client",
-      "Consistency checks (labels, numbers, punctuation)",
-      "Export cleaned text for delivery",
-    ],
-    gradient: "from-blue-600 to-blue-700",
-    glowColor: "rgba(37,99,235,0.07)",
-    href: "/guideline-format",
-    cta: "Format transcript →",
-    outputPreview: [
-      { time: "SUM", text: "Pass: 38 • Fix: 7 • Risk: Low • Ready to deliver" },
-      {
-        time: "Rule",
-        text: "Speaker labels: consistent casing + colon formatting",
-      },
-      {
-        time: "Rule",
-        text: "Numbers: 1–9 spelled out, 10+ as numerals (client-specific)",
       },
     ],
   },
@@ -299,6 +302,114 @@ function SpotlightCard({
   );
 }
 
+function HeroSpotlightCard({ tool }: { tool: (typeof SPOTLIGHT_TOOLS)[0] }) {
+  const Icon = tool.icon;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+      className="mb-6"
+    >
+      <Link
+        to={tool.href}
+        onClick={() =>
+          trackEvent("tool_selected", { tool: tool.name, path: tool.href })
+        }
+        className="block"
+      >
+        <motion.div
+          whileHover={{ y: -4 }}
+          transition={{ duration: 0.22 }}
+          className="group relative rounded-2xl border border-gray-200 dark:border-white/[0.09] bg-white dark:bg-gray-900 overflow-hidden hover:border-blue-300/70 dark:hover:border-blue-500/40 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300"
+        >
+          <div
+            className={`h-[2px] bg-gradient-to-r ${tool.gradient} opacity-60 group-hover:opacity-100 transition-opacity`}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 p-6 md:p-8">
+            {/* Left: info */}
+            <div>
+              <div className="flex items-start justify-between mb-5">
+                <div
+                  className={`w-11 h-11 rounded-xl bg-gradient-to-br ${tool.gradient} flex items-center justify-center shadow-lg`}
+                >
+                  <Icon className="h-5 w-5 text-white" />
+                </div>
+                <span
+                  className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${tool.badgeColor}`}
+                >
+                  {tool.badge}
+                </span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1.5 transition-colors">
+                {tool.name}
+              </h3>
+              <p
+                className={`text-[15px] font-medium bg-gradient-to-r ${tool.gradient} bg-clip-text text-transparent mb-3`}
+              >
+                {tool.tagline}
+              </p>
+              <p className="text-[14px] leading-relaxed text-gray-500 dark:text-white/45 mb-5 transition-colors">
+                {tool.description}
+              </p>
+              <ul className="space-y-2.5 mb-6">
+                {tool.bullets.map((b) => (
+                  <li
+                    key={b}
+                    className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-white/60 transition-colors"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex items-center gap-1.5 text-sm font-medium text-gray-500 group-hover:gap-3 group-hover:text-gray-900 dark:text-white/45 dark:group-hover:text-white transition-all">
+                {tool.cta}
+                <ArrowRight className="w-4 h-4" />
+              </div>
+            </div>
+
+            {/* Right: sample output */}
+            <div className="flex flex-col justify-center mt-6 md:mt-0">
+              <div className="rounded-xl border border-gray-100 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.025] p-4 transition-colors">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="text-[9px] text-emerald-600 dark:text-emerald-400/80 font-semibold uppercase tracking-wide">
+                    Sample output
+                  </span>
+                </div>
+                <div className="space-y-2.5">
+                  {tool.outputPreview.map((line) => (
+                    <div key={line.time} className="flex gap-3 items-start">
+                      <span
+                        className={`text-[9px] font-mono font-bold shrink-0 w-10 pt-0.5 ${
+                          line.time === "FAIL"
+                            ? "text-red-400"
+                            : line.time === "FIX"
+                              ? "text-amber-400"
+                              : line.time === "DONE"
+                                ? "text-emerald-400"
+                                : "text-blue-400/60"
+                        }`}
+                      >
+                        {line.time}
+                      </span>
+                      <p className="text-[12px] text-gray-600 dark:text-white/50 leading-snug transition-colors">
+                        {line.text}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </Link>
+    </motion.div>
+  );
+}
+
 function SecondaryCard({
   tool,
   index,
@@ -361,25 +472,28 @@ export function Features() {
           className="text-center mb-6"
         >
           <p className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 transition-colors duration-500">
-            The full toolkit
+            Professional transcript workflow
           </p>
           <h2 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-4 font-display leading-tight transition-colors duration-500">
-            Everything to deliver client-ready transcripts.
+            Stop doing the same cleanup twice.
             <span className="block text-gray-300 dark:text-white/20 mt-1">
-              One platform. Every stage of your workflow.
+              Let the tools handle the formatting.
             </span>
           </h2>
           <p className="text-lg text-gray-500 dark:text-white/40 max-w-xl mx-auto transition-colors duration-500">
-            Transcribe, format against client guidelines, and translate into 70+
-            languages — purpose-built for professional transcript production and
-            delivery. No bloated editor. No learning curve.
+            Transcribe, validate against client formatting rules, and deliver
+            without revisions. The formatting engine alone saves 37 minutes per
+            transcript — purpose-built for professional transcript production.
           </p>
         </motion.div>
 
-        {/* Spotlight tools — 3 equal cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {SPOTLIGHT_TOOLS.map((tool, i) => (
-            <SpotlightCard key={tool.id} tool={tool} index={i} />
+        {/* Primary spotlight — full-width formatting card */}
+        <HeroSpotlightCard tool={SPOTLIGHT_TOOLS[0]} />
+
+        {/* Secondary spotlight tools — 2-col grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {SPOTLIGHT_TOOLS.slice(1).map((tool, i) => (
+            <SpotlightCard key={tool.id} tool={tool} index={i + 1} />
           ))}
         </div>
 

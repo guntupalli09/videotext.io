@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ClipboardCheck, Upload, ChevronRight } from "lucide-react";
+import { ClipboardCheck, Upload, ChevronRight, X, Check } from "lucide-react";
 import { ImageWithFallback } from "./ImageWithFallback";
 import TrustBadge from "../TrustBadge";
 
@@ -76,6 +76,113 @@ function HeroDropzone() {
         onChange={onInputChange}
       />
 
+      {/* PRIMARY: Apply Formatting Guidelines */}
+      <Link
+        to="/guideline-format"
+        className="group block rounded-2xl border border-blue-400/35 bg-gradient-to-br from-blue-600/20 via-blue-500/12 to-blue-400/8 shadow-[0_0_0_1px_rgba(139,92,246,0.28),0_20px_60px_rgba(48,21,114,0.55)] hover:border-blue-400/65 hover:from-blue-600/28 hover:to-blue-400/14 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.55),0_4px_60px_rgba(139,92,246,0.32)] transition-all duration-200 px-5 py-5"
+      >
+        <div className="flex items-start gap-3.5 mb-3.5">
+          <div className="w-10 h-10 rounded-xl bg-blue-600/22 border border-blue-400/20 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600/32 transition-colors">
+            <ClipboardCheck className="w-5 h-5 text-blue-300" />
+          </div>
+          <div className="flex-1">
+            <p className="text-white font-bold text-[15px] leading-tight mb-1">
+              Apply Formatting Guidelines
+            </p>
+            <p className="text-white/50 text-[12px] leading-snug">
+              Validate against Rev, GoTranscript &amp; custom client rules.
+              Get a pass/fail summary with exact fixes — QA-ready in seconds.
+            </p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-blue-400/50 group-hover:text-blue-300 group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-0.5" />
+        </div>
+
+        {/* Operational benefit chips */}
+        <div className="flex flex-wrap gap-1.5 mb-3.5">
+          {[
+            "45 min → 8 min cleanup",
+            "Auto-apply client rules",
+            "QA-ready on first pass",
+          ].map((chip) => (
+            <span
+              key={chip}
+              className="inline-flex items-center text-[10px] font-semibold text-blue-300/80 bg-blue-600/15 border border-blue-500/25 rounded-full px-2.5 py-0.5"
+            >
+              {chip}
+            </span>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-1 text-[12px] font-semibold text-blue-400 group-hover:gap-2 transition-all">
+          Generate client-ready transcript{" "}
+          <ChevronRight className="w-3.5 h-3.5" />
+        </div>
+      </Link>
+
+      {/* BEFORE → AFTER transformation */}
+      <div className="mt-2.5 rounded-xl border border-white/[0.06] bg-white/[0.015] overflow-hidden">
+        <div className="flex">
+          <div className="flex-1 p-3 border-r border-white/[0.06]">
+            <p className="text-[9px] font-bold uppercase tracking-widest text-red-400/65 mb-2">
+              Before
+            </p>
+            <ul className="space-y-1">
+              {[
+                "Inconsistent speaker labels",
+                "Timestamp clutter",
+                "Formatting violations",
+                "Broken segmentation",
+                "Manual QA cleanup",
+              ].map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-1.5 text-[10.5px] text-white/30"
+                >
+                  <X className="w-2.5 h-2.5 text-red-400/50 flex-shrink-0 mt-0.5" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex items-center justify-center w-8 flex-shrink-0">
+            <span className="text-white/20 text-base">→</span>
+          </div>
+
+          <div className="flex-1 p-3">
+            <p className="text-[9px] font-bold uppercase tracking-widest text-emerald-400/70 mb-2">
+              After
+            </p>
+            <ul className="space-y-1">
+              {[
+                "Rev-compliant transcript",
+                "Clean speaker formatting",
+                "QA-ready structure",
+                "Export-ready output",
+              ].map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-1.5 text-[10.5px] text-white/55"
+                >
+                  <Check className="w-2.5 h-2.5 text-emerald-400/70 flex-shrink-0 mt-0.5" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="flex items-center gap-3 my-4">
+        <div className="flex-1 h-px bg-white/[0.07]" />
+        <span className="text-[10px] text-white/20 font-medium tracking-wider uppercase">
+          or transcribe a new file
+        </span>
+        <div className="flex-1 h-px bg-white/[0.07]" />
+      </div>
+
+      {/* SECONDARY: Upload zone */}
       <div
         role="button"
         tabIndex={0}
@@ -86,77 +193,36 @@ function HeroDropzone() {
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         className={`
-          relative cursor-pointer rounded-xl border-2 border-dashed px-6 py-4
-          flex flex-col items-center gap-3 transition-all duration-200 select-none
+          relative cursor-pointer rounded-xl border border-dashed px-4 py-3
+          flex items-center gap-3 transition-all duration-200 select-none
           ${
             dragging
-              ? "border-blue-300 bg-blue-600/18 shadow-[0_0_0_1px_rgba(139,92,246,0.45),0_0_34px_rgba(139,92,246,0.34)] scale-[1.015]"
-              : "border-blue-300/45 bg-gradient-to-b from-blue-600/18 to-blue-400/12 shadow-[0_0_0_1px_rgba(139,92,246,0.28),0_12px_44px_rgba(48,21,114,0.45)] hover:border-blue-300/70 hover:from-blue-600/25 hover:to-blue-400/16 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.45),0_0_38px_rgba(139,92,246,0.25)]"
+              ? "border-blue-300 bg-blue-600/12 shadow-[0_0_0_1px_rgba(139,92,246,0.35)] scale-[1.01]"
+              : "border-blue-300/30 bg-white/[0.02] hover:border-blue-300/50 hover:bg-white/[0.03]"
           }
         `}
       >
-        {/* Icon */}
         <div
-          className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
-            dragging ? "bg-blue-600/20" : "bg-white/[0.05]"
+          className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+            dragging ? "bg-blue-600/20" : "bg-white/[0.04]"
           }`}
         >
           {dragging ? (
-            <Upload className="w-6 h-6 text-blue-400" />
+            <Upload className="w-5 h-5 text-blue-400" />
           ) : (
-            <span className="text-3xl" aria-hidden>
+            <span className="text-2xl" aria-hidden>
               🎬
             </span>
           )}
         </div>
-
-        {/* Text */}
-        <div className="text-center">
-          <p className="text-white font-bold text-base leading-snug">
-            {dragging
-              ? "Release to start transcribing"
-              : "Upload video or audio — get results in minutes"}
+        <div>
+          <p className="text-white/70 font-semibold text-[13px] leading-snug">
+            {dragging ? "Release to start transcribing" : "Upload video or audio"}
           </p>
-          <p className="text-white/40 text-sm mt-0.5">
-            MP4, MOV, MKV, AVI, WebM · MP3, WAV, M4A, FLAC, AAC
-          </p>
-          <p className="text-white/25 text-xs">
-            drag &amp; drop or click to browse
+          <p className="text-white/30 text-[11px]">
+            MP4, MOV, MKV · MP3, WAV, M4A — results in minutes
           </p>
         </div>
-      </div>
-
-      {/* Divider */}
-      <div className="flex items-center gap-3 my-3">
-        <div className="flex-1 h-px bg-white/[0.07]" />
-        <span className="text-[11px] text-white/25 font-medium tracking-wider uppercase">
-          or
-        </span>
-        <div className="flex-1 h-px bg-white/[0.07]" />
-      </div>
-
-      {/* Guideline formatter */}
-      <div className="grid grid-cols-1 gap-2">
-        <Link
-          to="/guideline-format"
-          className="group flex flex-col gap-2.5 rounded-xl border border-blue-300/30 bg-gradient-to-b from-blue-600/14 to-blue-400/12 shadow-[0_0_0_1px_rgba(139,92,246,0.2),0_10px_30px_rgba(48,21,114,0.35)] hover:border-blue-300/60 hover:from-blue-600/22 hover:to-blue-400/16 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.42),0_0_30px_rgba(139,92,246,0.2)] px-4 py-3.5 transition-all duration-200"
-        >
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-600/15 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600/25 transition-colors">
-              <ClipboardCheck className="w-4 h-4 text-blue-400" />
-            </div>
-            <p className="text-white font-semibold text-[12px] leading-tight">
-              Apply Formatting Guidelines in Seconds
-            </p>
-          </div>
-          <p className="text-white/35 text-[11px] leading-snug">
-            Apply client formatting guidelines — ready for QA
-          </p>
-          <div className="flex items-center gap-1 text-[11px] font-semibold text-blue-400 group-hover:gap-1.5 transition-all">
-            Generate Client-Ready Transcript{" "}
-            <ChevronRight className="w-3 h-3" />
-          </div>
-        </Link>
       </div>
     </div>
   );
@@ -201,10 +267,10 @@ export function Hero() {
 
         {/* Sub-headline */}
         <p className="text-center text-[15px] sm:text-[16px] text-white/55 max-w-md mx-auto leading-relaxed mb-4">
-          Built for transcriptionists, proofreaders, translators, and QA teams.
-          Apply client guidelines automatically, generate subtitles, and{" "}
+          Deliver transcripts faster with fewer revisions. Apply client
+          formatting rules automatically —{" "}
           <span className="text-fuchsia-300 font-medium">
-            reduce manual QA work by 60%.
+            and stop doing the same QA corrections over and over.
           </span>
         </p>
 
@@ -217,11 +283,11 @@ export function Hero() {
           <div className="w-full grid grid-cols-3 gap-x-6 gap-y-2.5">
             {(
               [
-                { stat: "~5 min", label: "2-hour transcript" },
-                { stat: "99+", label: "source languages" },
-                { stat: "98.5%", label: "accuracy" },
-                { stat: "DOCX · SRT · VTT", label: "export formats" },
-                { stat: "Speaker labels", label: "& timestamps" },
+                { stat: "45 min → 8 min", label: "transcript cleanup" },
+                { stat: "Auto-applied", label: "client formatting rules" },
+                { stat: "QA-ready", label: "on first pass" },
+                { stat: "Rev · GoTranscript", label: "style guide support" },
+                { stat: "No repeated", label: "QA corrections" },
                 { stat: "Files deleted", label: "after processing" },
               ] as const
             ).map(({ stat, label }) => (
@@ -279,9 +345,9 @@ export function Hero() {
                   </span>
                 </span>
                 <span>
-                  Trusted by{" "}
+                  Built alongside{" "}
                   <span className="text-white/55 font-semibold">
-                    transcriptionists, translators &amp; QA teams
+                    professional transcriptionists &amp; QA reviewers
                   </span>
                 </span>
               </span>
