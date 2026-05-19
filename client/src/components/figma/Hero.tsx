@@ -113,7 +113,7 @@ function HeroDropzone() {
           ))}
         </div>
 
-        <div className="flex items-center gap-1 text-[12px] font-semibold text-blue-400 group-hover:gap-2 transition-all">
+        <div className="flex items-center gap-1 text-[13px] font-bold text-orange-400 group-hover:gap-2 transition-all drop-shadow-[0_0_10px_rgba(251,146,60,0.6)]">
           Generate client-ready transcript{" "}
           <ChevronRight className="w-3.5 h-3.5" />
         </div>
@@ -197,18 +197,18 @@ function HeroDropzone() {
           flex items-center gap-3 transition-all duration-200 select-none
           ${
             dragging
-              ? "border-blue-300 bg-blue-600/12 shadow-[0_0_0_1px_rgba(139,92,246,0.35)] scale-[1.01]"
-              : "border-blue-300/30 bg-white/[0.02] hover:border-blue-300/50 hover:bg-white/[0.03]"
+              ? "border-orange-400 bg-orange-500/10 shadow-[0_0_0_1px_rgba(251,146,60,0.4),0_0_18px_rgba(251,146,60,0.15)] scale-[1.01]"
+              : "border-orange-400/50 bg-orange-500/[0.04] hover:border-orange-400/70 hover:bg-orange-500/[0.07] shadow-[0_0_12px_rgba(251,146,60,0.1)]"
           }
         `}
       >
         <div
           className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
-            dragging ? "bg-blue-600/20" : "bg-white/[0.04]"
+            dragging ? "bg-orange-500/20" : "bg-orange-500/[0.08]"
           }`}
         >
           {dragging ? (
-            <Upload className="w-5 h-5 text-blue-400" />
+            <Upload className="w-5 h-5 text-orange-400" />
           ) : (
             <span className="text-2xl" aria-hidden>
               🎬
@@ -216,10 +216,10 @@ function HeroDropzone() {
           )}
         </div>
         <div>
-          <p className="text-white/70 font-semibold text-[13px] leading-snug">
+          <p className="font-bold text-[13px] leading-snug text-orange-300 drop-shadow-[0_0_8px_rgba(251,146,60,0.45)]">
             {dragging ? "Release to start transcribing" : "Upload video or audio"}
           </p>
-          <p className="text-white/30 text-[11px]">
+          <p className="text-white/40 text-[11px]">
             MP4, MOV, MKV · MP3, WAV, M4A — results in minutes
           </p>
         </div>
