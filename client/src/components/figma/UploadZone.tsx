@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Upload, File, Check, Loader2 } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 interface UploadZoneProps {
   maxSize?: string;
@@ -37,6 +37,7 @@ export function UploadZone({
   const [fileName, setFileName] = useState('');
   const [progress, setProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(initialFiles?.[0] ?? null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -143,6 +144,7 @@ export function UploadZone({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
+        onClick={() => uploadStatus === 'idle' && fileInputRef.current?.click()}
         animate={{
           scale: isDragging ? 1.02 : 1,
           borderColor: isDragging ? 'rgb(168, 85, 247)' : undefined
@@ -151,8 +153,16 @@ export function UploadZone({
           isDragging
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
             : 'border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50'
-        }`}
+        } ${uploadStatus === 'idle' ? 'cursor-pointer' : ''}`}
       >
+        <input
+          ref={fileInputRef}
+          type="file"
+          className="hidden"
+          onChange={handleFileInput}
+          accept={acceptAttribute}
+          {...(multiple ? { multiple: true } : {})}
+        />
         <div className="relative p-4 sm:p-6 md:p-8 text-center min-w-0">
           {uploadStatus === 'idle' && (
             <>
@@ -170,10 +180,9 @@ export function UploadZone({
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-2 sm:mb-3 text-xs sm:text-sm">
                 or{' '}
-                <label className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold cursor-pointer">
+                <span className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold">
                   click to browse
-                  <input type="file" className="hidden" onChange={handleFileInput} accept={acceptAttribute} {...(multiple ? { multiple: true } : {})} />
-                </label>
+                </span>
               </p>
               <div className="flex items-center justify-center gap-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                 <div className="flex items-center gap-1.5">
