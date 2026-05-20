@@ -19,6 +19,7 @@ import {
 } from "../lib/subtitleUtils";
 import JobAuthGateModal from "../components/JobAuthGateModal";
 import { isLoggedIn } from "../lib/auth";
+import { trackAppEvent } from "../lib/feedbackEvents";
 import {
   PRESET_DATA,
   type GuidelinePresetKey,
@@ -406,6 +407,9 @@ export default function GuidelineFormat() {
         if (data.status === "completed" || data.status === "failed") {
           scheduleMore = false;
           setIsSubmitting(false);
+          if (data.status === "completed") {
+            trackAppEvent("transcription_completed", { toolId: "guideline-format" });
+          }
           return;
         }
       } catch (e) {
@@ -474,6 +478,7 @@ export default function GuidelineFormat() {
       }));
     }
 
+    trackAppEvent("upload_started", { toolId: "guideline-format" });
     setIsSubmitting(true);
     setSubmitError(null);
     setJobStatus(null);
@@ -526,6 +531,7 @@ export default function GuidelineFormat() {
   };
 
   const downloadFormattedTxt = () => {
+    trackAppEvent("export_clicked", { toolId: "guideline-format", format: "txt" });
     const { text, warnings } = getExportText();
     if (!text) return;
     if (warnings.length) {
@@ -544,6 +550,7 @@ export default function GuidelineFormat() {
   };
 
   const downloadFormattedSrt = () => {
+    trackAppEvent("export_clicked", { toolId: "guideline-format", format: "srt" });
     if (inputCaptionFormat !== "srt" && inputCaptionFormat !== "vtt") return;
     const original = originalCaptionCues;
     const { text: formattedText, warnings } = getExportText();
@@ -574,6 +581,7 @@ export default function GuidelineFormat() {
   };
 
   const downloadFormattedVtt = () => {
+    trackAppEvent("export_clicked", { toolId: "guideline-format", format: "vtt" });
     if (inputCaptionFormat !== "srt" && inputCaptionFormat !== "vtt") return;
     const { text: formattedText, warnings } = getExportText();
     if (!formattedText) return;
@@ -603,6 +611,7 @@ export default function GuidelineFormat() {
   };
 
   const downloadFormattedJson = () => {
+    trackAppEvent("export_clicked", { toolId: "guideline-format", format: "json" });
     if (!jobStatus) return;
     const { text, warnings } = getExportText();
     const payload = {
@@ -623,6 +632,7 @@ export default function GuidelineFormat() {
   };
 
   const downloadFlaggedCsv = () => {
+    trackAppEvent("export_clicked", { toolId: "guideline-format", format: "csv" });
     const list = Array.isArray(jobStatus?.flaggedSegments)
       ? jobStatus!.flaggedSegments!
       : [];
@@ -649,6 +659,7 @@ export default function GuidelineFormat() {
   };
 
   const downloadFormattedRtf = () => {
+    trackAppEvent("export_clicked", { toolId: "guideline-format", format: "rtf" });
     const { text, warnings } = getExportText();
     if (!text) return;
     if (warnings.length) {
@@ -672,6 +683,7 @@ export default function GuidelineFormat() {
   };
 
   const downloadFormattedDocx = async () => {
+    trackAppEvent("export_clicked", { toolId: "guideline-format", format: "docx" });
     const { text, warnings } = getExportText();
     if (!text) return;
     if (warnings.length) {
@@ -704,6 +716,7 @@ export default function GuidelineFormat() {
   };
 
   const downloadFormattedPdf = async () => {
+    trackAppEvent("export_clicked", { toolId: "guideline-format", format: "pdf" });
     const { text, warnings } = getExportText();
     if (!text) return;
     if (warnings.length) {
