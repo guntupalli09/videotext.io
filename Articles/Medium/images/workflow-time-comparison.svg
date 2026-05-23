@@ -1,0 +1,115 @@
+<svg width="1400" height="600" viewBox="0 0 1400 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#020817;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#060D24;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="oldBar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7F1D1D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#991B1B;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="newBar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0C4A6E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0284C7;stop-opacity:1" />
+    </linearGradient>
+    <filter id="softglow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="600" fill="url(#bg)"/>
+
+  <!-- Header -->
+  <text x="700" y="58" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="800" letter-spacing="-0.5" fill="#F1F5F9">2-Hour Video: Where Your Time Actually Goes</text>
+  <text x="700" y="84" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#475569" letter-spacing="0.3">Standard workflow vs. pre-formatted guideline workflow</text>
+
+  <!-- Divider -->
+  <line x1="80" y1="100" x2="1320" y2="100" stroke="#0F172A" stroke-width="1"/>
+
+  <!-- Column headers -->
+  <text x="250" y="128" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="2" fill="#64748B">PHASE</text>
+  <text x="750" y="128" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="2" fill="#EF4444">STANDARD WORKFLOW</text>
+  <text x="1150" y="128" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="2" fill="#38BDF8">GUIDELINE WORKFLOW</text>
+
+  <!-- Row backgrounds alternating -->
+  <rect x="80" y="140" width="1240" height="64" rx="4" fill="#080F1A" opacity="0.5"/>
+  <rect x="80" y="216" width="1240" height="64" rx="4" fill="#04080F" opacity="0.5"/>
+  <rect x="80" y="292" width="1240" height="64" rx="4" fill="#080F1A" opacity="0.5"/>
+  <rect x="80" y="368" width="1240" height="64" rx="4" fill="#04080F" opacity="0.5"/>
+
+  <!-- Row 1: Transcription -->
+  <text x="130" y="168" font-family="'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#CBD5E1">Upload + AI transcription</text>
+  <text x="130" y="188" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#475569">Whisper large-v3, async queue</text>
+  <!-- Old bar: 6min out of 150min scale = ~50px / 1000px total width -->
+  <rect x="500" y="153" width="50" height="36" rx="4" fill="url(#oldBar)" opacity="0.7"/>
+  <text x="560" y="175" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#FCA5A5">6 min</text>
+  <!-- New bar same -->
+  <rect x="920" y="153" width="50" height="36" rx="4" fill="url(#newBar)" opacity="0.7"/>
+  <text x="980" y="175" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#7DD3FC">6 min</text>
+
+  <!-- Row 2: Formatting -->
+  <text x="130" y="244" font-family="'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#CBD5E1">Style guide formatting</text>
+  <text x="130" y="264" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#475569">Speaker labels, tags, numbers, timestamps</text>
+  <!-- Old bar: 65min -->
+  <rect x="500" y="229" width="433" height="36" rx="4" fill="url(#oldBar)"/>
+  <text x="943" y="251" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#FCA5A5">65 min</text>
+  <!-- New bar: 8min (guideline tool) -->
+  <rect x="920" y="229" width="53" height="36" rx="4" fill="url(#newBar)"/>
+  <text x="983" y="251" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#7DD3FC">8 min</text>
+  <!-- Savings badge -->
+  <rect x="1050" y="232" width="120" height="30" rx="15" fill="#052E16" stroke="#16A34A" stroke-width="1"/>
+  <text x="1110" y="252" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" fill="#4ADE80">↓ 88% faster</text>
+
+  <!-- Row 3: Listen pass -->
+  <text x="130" y="320" font-family="'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#CBD5E1">Listen pass (QA)</text>
+  <text x="130" y="340" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#475569">Content accuracy, proper nouns, attribution</text>
+  <!-- Old bar: 50min (combined pass) -->
+  <rect x="500" y="305" width="333" height="36" rx="4" fill="url(#oldBar)" opacity="0.85"/>
+  <text x="843" y="327" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#FCA5A5">50 min</text>
+  <!-- New bar: 28min (targeted) -->
+  <rect x="920" y="305" width="186" height="36" rx="4" fill="url(#newBar)" opacity="0.85"/>
+  <text x="1116" y="327" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#7DD3FC">28 min</text>
+  <!-- Savings badge -->
+  <rect x="1200" y="308" width="110" height="30" rx="15" fill="#052E16" stroke="#16A34A" stroke-width="1"/>
+  <text x="1255" y="328" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" fill="#4ADE80">↓ 44% faster</text>
+
+  <!-- Row 4: Export -->
+  <text x="130" y="396" font-family="'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#CBD5E1">Final edit + export</text>
+  <text x="130" y="416" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#475569">SRT, VTT, DOCX, PDF</text>
+  <!-- Old bar: 15min -->
+  <rect x="500" y="381" width="100" height="36" rx="4" fill="url(#oldBar)" opacity="0.6"/>
+  <text x="610" y="403" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#FCA5A5">15 min</text>
+  <!-- New bar: 8min -->
+  <rect x="920" y="381" width="53" height="36" rx="4" fill="url(#newBar)" opacity="0.6"/>
+  <text x="983" y="403" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#7DD3FC">8 min</text>
+
+  <!-- Totals divider -->
+  <line x1="80" y1="452" x2="1320" y2="452" stroke="#1E293B" stroke-width="1.5"/>
+
+  <!-- Totals row -->
+  <text x="130" y="490" font-family="'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="800" fill="#F1F5F9">TOTAL DELIVERY TIME</text>
+
+  <!-- Old total -->
+  <rect x="480" y="465" width="280" height="46" rx="8" fill="#450A0A" stroke="#991B1B" stroke-width="1.5"/>
+  <text x="620" y="493" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="900" fill="#FCA5A5">~2.3 hours</text>
+
+  <!-- Arrow -->
+  <text x="800" y="493" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="24" fill="#334155">→</text>
+
+  <!-- New total -->
+  <rect x="860" y="465" width="280" height="46" rx="8" fill="#042F2E" stroke="#0284C7" stroke-width="1.5" filter="url(#softglow)"/>
+  <text x="1000" y="493" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="900" fill="#38BDF8">~50 minutes</text>
+
+  <!-- Total savings badge -->
+  <rect x="1180" y="468" width="160" height="40" rx="8" fill="#052E16" stroke="#16A34A" stroke-width="1.5"/>
+  <text x="1260" y="493" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="800" fill="#4ADE80">↓ ~64% faster</text>
+
+  <!-- Footer CTA -->
+  <text x="700" y="560" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#334155">Apply client style guide rules before QA →</text>
+  <text x="700" y="582" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2" fill="#1E3A5F">VIDEOTEXT.IO / GUIDELINE-FORMAT</text>
+</svg>
