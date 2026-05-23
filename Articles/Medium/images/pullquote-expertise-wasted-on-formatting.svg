@@ -1,0 +1,85 @@
+<svg width="1400" height="787" viewBox="0 0 1400 787" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#030712;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#060D24;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0" />
+      <stop offset="20%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="80%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="accentLine2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0" />
+      <stop offset="20%" style="stop-color:#F59E0B;stop-opacity:0.4" />
+      <stop offset="80%" style="stop-color:#F59E0B;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:0" />
+    </linearGradient>
+    <filter id="ambientglow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="80"/>
+    </filter>
+    <filter id="textglow">
+      <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="787" fill="url(#bg)"/>
+
+  <!-- Ambient glow center -->
+  <ellipse cx="700" cy="393" rx="500" ry="300" fill="#92400E" opacity="0.06" filter="url(#ambientglow)"/>
+
+  <!-- Large decorative quote marks -->
+  <text x="80" y="280" font-family="Georgia, 'Times New Roman', serif" font-size="260" fill="#F59E0B" opacity="0.04">"</text>
+  <text x="1050" y="620" font-family="Georgia, 'Times New Roman', serif" font-size="260" fill="#F59E0B" opacity="0.04">"</text>
+
+  <!-- Top rule lines -->
+  <rect x="200" y="170" width="1000" height="2" fill="url(#accentLine)" rx="1"/>
+  <rect x="200" y="178" width="1000" height="1" fill="url(#accentLine2)" rx="1"/>
+
+  <!-- Category pill -->
+  <rect x="588" y="130" width="224" height="30" rx="15" fill="#1C1208" stroke="#92400E" stroke-width="1"/>
+  <text x="700" y="150" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="2.5" fill="#D97706">TRANSCRIPTION TRUTH</text>
+
+  <!-- Main quote line 1 -->
+  <text x="700" y="295" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="70" font-weight="900" letter-spacing="-2.5" fill="#F8FAFC">"Your expertise</text>
+
+  <!-- Main quote line 2 - amber accent -->
+  <text x="700" y="385" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="70" font-weight="900" letter-spacing="-2.5" fill="#F59E0B" filter="url(#textglow)">is wasted</text>
+
+  <!-- Main quote line 3 -->
+  <text x="700" y="475" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="70" font-weight="900" letter-spacing="-2.5" fill="#F8FAFC">on formatting."</text>
+
+  <!-- Supporting statement -->
+  <text x="700" y="540" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="400" fill="#64748B" letter-spacing="0.2">30–45% of every transcription job. Still. In 2026.</text>
+
+  <!-- Bottom rule lines -->
+  <rect x="200" y="575" width="1000" height="1" fill="url(#accentLine2)" rx="1"/>
+  <rect x="200" y="579" width="1000" height="2" fill="url(#accentLine)" rx="1"/>
+
+  <!-- Stat pills row -->
+  <rect x="200" y="610" width="240" height="52" rx="10" fill="#0C0A00" stroke="#1C1208" stroke-width="1"/>
+  <text x="320" y="631" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#78716C" letter-spacing="1">STANDARD WORKFLOW</text>
+  <text x="320" y="652" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="800" fill="#EF4444">~65 min formatting</text>
+
+  <text x="700" y="640" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" fill="#374151">→</text>
+
+  <rect x="576" y="610" width="250" height="52" rx="10" fill="#0C0A00" stroke="#0C4A6E" stroke-width="1"/>
+  <text x="701" y="631" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#78716C" letter-spacing="1">GUIDELINE WORKFLOW</text>
+  <text x="701" y="652" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="800" fill="#38BDF8">~8 min formatting</text>
+
+  <text x="880" y="640" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" fill="#374151">→</text>
+
+  <rect x="960" y="610" width="240" height="52" rx="10" fill="#052E16" stroke="#166534" stroke-width="1"/>
+  <text x="1080" y="631" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#78716C" letter-spacing="1">TIME RECOVERED</text>
+  <text x="1080" y="652" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="800" fill="#4ADE80">~57 min / job</text>
+
+  <!-- Bottom branding -->
+  <text x="700" y="740" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="3" fill="#1E293B">VIDEOTEXT.IO</text>
+  <text x="700" y="762" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#1E293B" letter-spacing="1">guideline-format tool</text>
+</svg>
