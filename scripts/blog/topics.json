@@ -458,6 +458,54 @@
       "angle": "What SRT is, how timestamps work, character limits, common errors. Include a valid SRT example. When to use SRT vs VTT vs ASS.",
       "tag": "Guide",
       "target_intent": "informational"
+    },
+    {
+      "slug": "transcription-bottleneck-is-not-asr",
+      "keyword": "transcription workflow bottleneck",
+      "title": "Why the Transcription Bottleneck Is No Longer ASR Accuracy",
+      "angle": "ASR accuracy is commoditized (Whisper at 98.5%). The bottleneck is now the delivery workflow: formatting, validation, SRT cleanup, style guide enforcement. Show where post-ASR time actually goes. Target agencies and QA leads.",
+      "tag": "Operations",
+      "target_intent": "informational"
+    },
+    {
+      "slug": "subtitle-qa-turnaround-time",
+      "keyword": "subtitle QA turnaround time",
+      "title": "Why Subtitle QA Still Consumes 60% of Turnaround Time",
+      "angle": "Break down a real subtitle delivery workflow minute-by-minute. Show segmentation cleanup, reading speed validation, timestamp fixes, format compliance. The ASR step is fast — the QA layer isn't. Include real time benchmarks.",
+      "tag": "Operations",
+      "target_intent": "informational"
+    },
+    {
+      "slug": "ai-transcription-review-layer",
+      "keyword": "ai transcription review workflow",
+      "title": "Why Most AI Transcription Tools Don't Have a Real Review Layer",
+      "angle": "There are two product architectures: optimize ASR accuracy (most tools) or build the post-ASR review layer (almost nobody). Explain why the review layer — formatting enforcement, structural validation, delivery compliance — is where production pain lives.",
+      "tag": "Operations",
+      "target_intent": "informational"
+    },
+    {
+      "slug": "transcript-formatting-consistency",
+      "keyword": "transcript formatting consistency",
+      "title": "Why Formatting Consistency Matters More Than Raw Transcription Accuracy",
+      "angle": "A 98% accurate transcript with inconsistent formatting erodes client trust faster than a 97% accurate one formatted perfectly. Cover how formatting variance happens (no codified rules, person-dependent), and why deterministic rule enforcement is the fix.",
+      "tag": "Operations",
+      "target_intent": "informational"
+    },
+    {
+      "slug": "srt-segmentation-readability",
+      "keyword": "srt segmentation readability",
+      "title": "SRT Segmentation and Readability: Why Auto-Splits Break Production Subtitles",
+      "angle": "Silence-based splitting violates phrase boundaries. 800–1,200 segments per 60-minute video. Manual fix rate at 20s per segment. Show the real cost of bad auto-segmentation and what deterministic constraints fix: reading speed, character limits, phrase boundaries.",
+      "tag": "Operations",
+      "target_intent": "informational"
+    },
+    {
+      "slug": "human-in-the-loop-transcription-workflow",
+      "keyword": "human in the loop transcription",
+      "title": "Human-in-the-Loop Transcription: How to Right-Size Human Review",
+      "angle": "AI handles structural validation. Humans handle semantic review (proper nouns, context-sensitive errors, client-specific requirements). Show how to scope human review so it's targeted — not a full re-transcription pass. Target agencies and localization managers.",
+      "tag": "Operations",
+      "target_intent": "informational"
     }
   ]
 }
