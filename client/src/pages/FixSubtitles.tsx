@@ -18,11 +18,13 @@ import { Checkbox } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
 import { incrementUsage } from '../lib/usage'
-import { uploadFileWithProgress, uploadFixSubtitlesDual, getJobStatus, BACKEND_TOOL_TYPES, SessionExpiredError, getAuthToken } from '../lib/api'
+import { uploadFileWithProgress, uploadFixSubtitlesDual, getJobStatus, BACKEND_TOOL_TYPES, SessionExpiredError, getAuthToken, claimGuestJob } from '../lib/api'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
-import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
+import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
+import { isLoggedIn } from '../lib/auth'
+import JobAuthGateModal from '../components/JobAuthGateModal'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 import { trackAppEvent } from '../lib/feedbackEvents'
@@ -70,6 +72,9 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
+  const [showAuthGate, setShowAuthGate] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const canEdit = ['basic', 'pro', 'agency'].includes(plan)
@@ -82,6 +87,20 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   useEffect(() => {
     if (result?.downloadUrl) setFreeExportsUsed(0)
   }, [result?.downloadUrl])
+
+  useEffect(() => {
+    if (showIssues && !isLoggedIn()) {
+      setShowAuthGate(true)
+      setShowAuthModal(true)
+    }
+  }, [showIssues])
+
+  useEffect(() => {
+    if (status === 'completed' && !isLoggedIn()) {
+      setShowAuthGate(true)
+      setShowAuthModal(true)
+    }
+  }, [status])
 
   const handleFileSelect = (file: File) => {
     try {
@@ -167,6 +186,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             setWarnings(jobStatus.result?.warnings ?? [])
             setShowIssues(true)
             setStatus('idle')
+            trackAppEvent('transcription_completed', { toolId: 'fix-subtitles' })
             // texJobCompleted(Date.now() - processingStartedAtRef.current, 'fix-subtitles')
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
@@ -284,6 +304,8 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     setProgress(0)
     setResult(null)
     setSubtitleRows([])
+    setShowAuthGate(false)
+    setShowAuthModal(false)
   }
 
   const getDownloadUrl = () => {
@@ -321,7 +343,10 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       a.remove()
       URL.revokeObjectURL(objectUrl)
 
-      try { trackEvent('result_downloaded', { tool: 'fix-subtitles', plan }) } catch { /* non-blocking */ }
+      try {
+        trackEvent('result_downloaded', { tool: 'fix-subtitles', plan })
+        trackAppEvent('export_clicked', { toolId: 'fix-subtitles' })
+      } catch { /* non-blocking */ }
       if (plan === 'free') {
         setFreeExportsUsed((prev) => prev + 1)
         toast.success('Download started (with watermark)')
@@ -570,6 +595,40 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           const otherWarnings = warnings.filter(w => w.type !== 'scene_cut')
           const totalFindings = issues.length + warnings.length
 
+          if (showAuthGate && !isLoggedIn()) {
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 text-center space-y-4"
+              >
+                <div className="flex items-center justify-center gap-2 text-blue-600 dark:text-blue-400">
+                  <CheckCircle className="h-6 w-6" />
+                  <p className="text-base font-semibold text-gray-900 dark:text-white">Analysis complete!</p>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {totalFindings > 0
+                    ? `Found ${totalFindings} issue${totalFindings !== 1 ? 's' : ''} — create a free account to view and fix them.`
+                    : 'Create a free account to view your results.'}
+                </p>
+                <div className="flex gap-2 justify-center">
+                  <button
+                    onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
+                    className="flex-1 max-w-[200px] py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
+                  >
+                    Create free account
+                  </button>
+                  <button
+                    onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
+                    className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+                  >
+                    Log in
+                  </button>
+                </div>
+              </motion.div>
+            )
+          }
+
           return (
             <div className="space-y-4">
 
@@ -806,7 +865,37 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           </div>
         )}
 
-        {status === 'completed' && result && (
+        {status === 'completed' && result && showAuthGate && !isLoggedIn() && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 text-center space-y-4"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <CheckCircle className="h-6 w-6 text-green-500" />
+              <p className="text-base font-semibold text-gray-900 dark:text-white">Your fixed subtitles are ready!</p>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Create a free account to download your corrected subtitle file.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <button
+                onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
+                className="flex-1 max-w-[200px] py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
+              >
+                Create free account
+              </button>
+              <button
+                onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
+                className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+              >
+                Log in
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {status === 'completed' && result && (!showAuthGate || isLoggedIn()) && (
           <div className="space-y-6">
             <TranslateResult
               title="Subtitles fixed!"
@@ -888,6 +977,23 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           </dl>
         </section>
       )}
+
+      <JobAuthGateModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authModalMode}
+        jobDescription={status === 'completed' ? 'Your fixed subtitles are ready!' : 'Your subtitle analysis is ready!'}
+        onAuthSuccess={async () => {
+          const jobId = getPersistedJobId(location.pathname)
+          const jobToken = getPersistedJobToken(location.pathname)
+          if (jobId && jobToken) {
+            try { await claimGuestJob(jobId, jobToken) } catch { /* non-blocking */ }
+          }
+          setShowAuthGate(false)
+          setShowAuthModal(false)
+          window.location.reload()
+        }}
+      />
     </>
   )
 }
