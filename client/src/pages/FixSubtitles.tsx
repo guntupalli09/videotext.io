@@ -631,93 +631,177 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           }
 
           return (
-            <div className="space-y-4">
+            <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_320px] lg:items-start">
 
-              {/* ── Header / summary ───────────────────────────────────── */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                      {totalFindings === 0 ? 'All checks passed' : `${totalFindings} finding${totalFindings !== 1 ? 's' : ''} detected`}
-                    </h3>
-                    <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-                      {selectedFile?.name}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {issues.length > 0 && (
-                      <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                        {issues.length} fixable
-                      </span>
-                    )}
-                    {otherWarnings.length > 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                        <AlertTriangle className="h-3 w-3" />
-                        {otherWarnings.length} warning{otherWarnings.length !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {sceneCuts.length > 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
-                        <Scissors className="h-3 w-3" />
-                        {sceneCuts.length} scene cut{sceneCuts.length !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {totalFindings === 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-300">
-                        <CheckCircle className="h-3 w-3" />
-                        Clean
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
+              {/* ── Left column: summary + scene cuts + fix options + CTA ── */}
+              <div className="space-y-4">
 
-              {/* ── Scene cuts ─────────────────────────────────────────── */}
-              {sceneCuts.length > 0 && (
+                {/* Header / summary */}
                 <motion.div
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 }}
-                  className="rounded-xl border border-violet-200 bg-violet-50 p-5 dark:border-violet-800 dark:bg-violet-950/20"
+                  className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
                 >
-                  <div className="mb-3 flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/40">
-                      <Scissors className="h-4 w-4 text-violet-600 dark:text-violet-400" />
-                    </div>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-violet-900 dark:text-violet-100">Scene cuts detected — manual review needed</p>
-                      <p className="text-xs text-violet-600 dark:text-violet-400">These cues span a camera cut and cannot be auto-fixed.</p>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                        {totalFindings === 0 ? 'All checks passed' : `${totalFindings} finding${totalFindings !== 1 ? 's' : ''} detected`}
+                      </h3>
+                      <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                        {selectedFile?.name}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {issues.length > 0 && (
+                        <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                          {issues.length} fixable
+                        </span>
+                      )}
+                      {otherWarnings.length > 0 && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                          <AlertTriangle className="h-3 w-3" />
+                          {otherWarnings.length} warning{otherWarnings.length !== 1 ? 's' : ''}
+                        </span>
+                      )}
+                      {sceneCuts.length > 0 && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                          <Scissors className="h-3 w-3" />
+                          {sceneCuts.length} scene cut{sceneCuts.length !== 1 ? 's' : ''}
+                        </span>
+                      )}
+                      {totalFindings === 0 && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                          <CheckCircle className="h-3 w-3" />
+                          Clean
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <ol className="space-y-2">
-                    {sceneCuts.map((w, i) => (
-                      <li key={i} className="flex items-start justify-between gap-3 rounded-lg border border-violet-200 bg-white px-4 py-3 text-sm dark:border-violet-800 dark:bg-gray-900">
-                        <p className="text-violet-800 dark:text-violet-200">{w.message}</p>
-                        {w.line != null && <span className="shrink-0 font-mono text-xs text-violet-400">Cue {w.line}</span>}
-                      </li>
-                    ))}
-                  </ol>
                 </motion.div>
-              )}
 
-              {/* ── Fixable issues + other warnings ────────────────────── */}
-              {(issues.length > 0 || otherWarnings.length > 0) && (
+                {/* Scene cuts */}
+                {sceneCuts.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 }}
+                    className="rounded-xl border border-violet-200 bg-violet-50 p-5 dark:border-violet-800 dark:bg-violet-950/20"
+                  >
+                    <div className="mb-3 flex items-center gap-2.5">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/40">
+                        <Scissors className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-violet-900 dark:text-violet-100">Scene cuts detected — manual review needed</p>
+                        <p className="text-xs text-violet-600 dark:text-violet-400">These cues span a camera cut and cannot be auto-fixed.</p>
+                      </div>
+                    </div>
+                    <ol className="space-y-2">
+                      {sceneCuts.map((w, i) => (
+                        <li key={i} className="flex items-start justify-between gap-3 rounded-lg border border-violet-200 bg-white px-4 py-3 text-sm dark:border-violet-800 dark:bg-gray-900">
+                          <p className="text-violet-800 dark:text-violet-200">{w.message}</p>
+                          {w.line != null && <span className="shrink-0 font-mono text-xs text-violet-400">Cue {w.line}</span>}
+                        </li>
+                      ))}
+                    </ol>
+                  </motion.div>
+                )}
+
+                {/* Fix options */}
                 <motion.div
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden"
+                  className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+                >
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Fix options</h3>
+                      <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Original file is always preserved — only the downloaded copy is modified.</p>
+                    </div>
+                    {(fixTiming || grammarFix || lineBreakFix || removeFillers) && (
+                      <button
+                        onClick={() => { setFixTiming(false); setGrammarFix(false); setLineBreakFix(false); setRemoveFillers(false) }}
+                        className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      >
+                        Clear all
+                      </button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Checkbox
+                      label="Fix timing"
+                      description="Offset correction and clamp long durations"
+                      checked={fixTiming}
+                      onChange={setFixTiming}
+                    />
+                    <Checkbox
+                      label="Grammar"
+                      description="Normalize casing and punctuation"
+                      checked={grammarFix}
+                      onChange={setGrammarFix}
+                    />
+                    <Checkbox
+                      label="Line breaks (CPL)"
+                      description="Enforce 42-char/line broadcast standard"
+                      checked={lineBreakFix}
+                      onChange={setLineBreakFix}
+                    />
+                    <Checkbox
+                      label="Remove filler words"
+                      description="Strip um, uh, like, you know, etc."
+                      checked={removeFillers}
+                      onChange={setRemoveFillers}
+                    />
+                  </div>
+                </motion.div>
+
+                {/* CTA */}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="space-y-3"
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={handleAutoFix}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 font-semibold text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl"
+                  >
+                    {issues.length > 0 ? `Auto-fix ${issues.length} issue${issues.length !== 1 ? 's' : ''}` : 'Apply fixes'}
+                  </motion.button>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                      <Info className="mr-1 inline-block h-3 w-3" />
+                      Scene cuts require manual editing — they are flagged only, not auto-fixed.
+                    </p>
+                    <button
+                      onClick={handleProcessAnother}
+                      className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                      Start over
+                    </button>
+                  </div>
+                </motion.div>
+
+              </div>
+
+              {/* ── Right column: scrollable autofixable issues + warnings ── */}
+              {(issues.length > 0 || otherWarnings.length > 0) && (
+                <motion.div
+                  initial={{ opacity: 0, x: 12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="lg:sticky lg:top-4 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden flex flex-col"
+                  style={{ maxHeight: '70vh' }}
                 >
                   {issues.length > 0 && (
                     <>
-                      <p className="border-b border-gray-100 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:border-gray-800 dark:text-gray-400">
-                        Auto-fixable issues
+                      <p className="shrink-0 border-b border-gray-100 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                        Auto-fixable issues ({issues.length})
                       </p>
-                      <ol className="divide-y divide-gray-100 dark:divide-gray-800">
+                      <ol className="overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800 flex-1">
                         {issues.map((issue, i) => {
                           const meta = FINDING_META[issue.type] ?? DEFAULT_FINDING_META
                           const Icon = meta.icon
@@ -741,10 +825,10 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                   )}
                   {otherWarnings.length > 0 && (
                     <>
-                      <p className={`px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400 ${issues.length > 0 ? 'border-t border-gray-100 dark:border-gray-800' : ''}`}>
-                        Informational warnings
+                      <p className={`shrink-0 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400 ${issues.length > 0 ? 'border-t border-gray-100 dark:border-gray-800' : ''}`}>
+                        Informational warnings ({otherWarnings.length})
                       </p>
-                      <ol className="divide-y divide-gray-100 dark:divide-gray-800">
+                      <ol className="overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800">
                         {otherWarnings.map((w, i) => {
                           const meta = FINDING_META[w.type] ?? DEFAULT_FINDING_META
                           const Icon = meta.icon
@@ -763,84 +847,6 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                   )}
                 </motion.div>
               )}
-
-              {/* ── Fix options ────────────────────────────────────────── */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
-              >
-                <div className="mb-4 flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Fix options</h3>
-                    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Original file is always preserved — only the downloaded copy is modified.</p>
-                  </div>
-                  {(fixTiming || grammarFix || lineBreakFix || removeFillers) && (
-                    <button
-                      onClick={() => { setFixTiming(false); setGrammarFix(false); setLineBreakFix(false); setRemoveFillers(false) }}
-                      className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                    >
-                      Clear all
-                    </button>
-                  )}
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <Checkbox
-                    label="Fix timing"
-                    description="Offset correction and clamp long durations"
-                    checked={fixTiming}
-                    onChange={setFixTiming}
-                  />
-                  <Checkbox
-                    label="Grammar"
-                    description="Normalize casing and punctuation"
-                    checked={grammarFix}
-                    onChange={setGrammarFix}
-                  />
-                  <Checkbox
-                    label="Line breaks (CPL)"
-                    description="Enforce 42-char/line broadcast standard"
-                    checked={lineBreakFix}
-                    onChange={setLineBreakFix}
-                  />
-                  <Checkbox
-                    label="Remove filler words"
-                    description="Strip um, uh, like, you know, etc."
-                    checked={removeFillers}
-                    onChange={setRemoveFillers}
-                  />
-                </div>
-              </motion.div>
-
-              {/* ── CTA ────────────────────────────────────────────────── */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="space-y-3"
-              >
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={handleAutoFix}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 font-semibold text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl"
-                >
-                  {issues.length > 0 ? `Auto-fix ${issues.length} issue${issues.length !== 1 ? 's' : ''}` : 'Apply fixes'}
-                </motion.button>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
-                    <Info className="mr-1 inline-block h-3 w-3" />
-                    Scene cuts require manual editing — they are flagged only, not auto-fixed.
-                  </p>
-                  <button
-                    onClick={handleProcessAnother}
-                    className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                  >
-                    Start over
-                  </button>
-                </div>
-              </motion.div>
 
             </div>
           )
