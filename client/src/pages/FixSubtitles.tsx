@@ -85,6 +85,18 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     return joinExportFilename(exportFileStem(selectedFile?.name, 'subtitles'), 'subtitles_fixed', ext)
   }, [selectedFile?.name])
 
+  const changedCues = useMemo(() => {
+    if (!subtitleRows.length || !originalRows.length) return []
+    return subtitleRows.reduce<Array<{ index: number; before: SubtitleRow; after: SubtitleRow }>>((acc, fixedRow, i) => {
+      const orig = originalRows[i]
+      if (!orig) return acc
+      if (orig.startTime !== fixedRow.startTime || orig.endTime !== fixedRow.endTime || orig.text.trim() !== fixedRow.text.trim()) {
+        acc.push({ index: i, before: orig, after: fixedRow })
+      }
+      return acc
+    }, [])
+  }, [subtitleRows, originalRows])
+
   useEffect(() => {
     if (result?.downloadUrl) setFreeExportsUsed(0)
   }, [result?.downloadUrl])
@@ -916,64 +928,49 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               relatedTools={[]}
             />
 
-            {subtitleRows.length > 0 && originalRows.length > 0 && (() => {
-              const changedCues = subtitleRows.reduce<Array<{ index: number; before: SubtitleRow; after: SubtitleRow }>>((acc, fixedRow, i) => {
-                const orig = originalRows[i]
-                if (!orig) return acc
-                const timingChanged = orig.startTime !== fixedRow.startTime || orig.endTime !== fixedRow.endTime
-                const textChanged = orig.text.trim() !== fixedRow.text.trim()
-                if (timingChanged || textChanged) acc.push({ index: i, before: orig, after: fixedRow })
-                return acc
-              }, [])
-
-              if (changedCues.length === 0) return null
-
-              return (
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden"
-                >
-                  <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3.5 dark:border-gray-800">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-50 dark:bg-blue-900/30">
-                        <Wrench className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                        Before & after — {changedCues.length} cue{changedCues.length !== 1 ? 's' : ''} changed
-                      </p>
+            {changedCues.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden"
+              >
+                <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3.5 dark:border-gray-800">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-50 dark:bg-blue-900/30">
+                      <Wrench className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-gray-400">
-                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-red-200 dark:bg-red-900" />Before</span>
-                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-green-200 dark:bg-green-900" />After</span>
-                    </div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                      Before &amp; after &mdash; {changedCues.length} cue{changedCues.length !== 1 ? 's' : ''} changed
+                    </p>
                   </div>
-                  <ol className="divide-y divide-gray-100 dark:divide-gray-800">
-                    {changedCues.map(({ index, before, after }) => (
-                      <li key={index} className="px-5 py-4 space-y-2">
-                        <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
-                          Cue {before.index}
+                  <div className="flex items-center gap-3 text-xs text-gray-400">
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-red-200 dark:bg-red-900" />Before</span>
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-green-200 dark:bg-green-900" />After</span>
+                  </div>
+                </div>
+                <ol className="divide-y divide-gray-100 dark:divide-gray-800">
+                  {changedCues.map(({ index, before, after }) => (
+                    <li key={index} className="px-5 py-4 space-y-2">
+                      <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                        Cue {before.index}
+                      </p>
+                      <div className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 dark:border-red-900/50 dark:bg-red-950/20">
+                        <p className="font-mono text-[11px] text-red-500 dark:text-red-400 mb-1">
+                          {before.startTime} {'->'} {before.endTime}
                         </p>
-                        {/* Before */}
-                        <div className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 dark:border-red-900/50 dark:bg-red-950/20">
-                          <p className="font-mono text-[11px] text-red-500 dark:text-red-400 mb-1">
-                            {before.startTime} → {before.endTime}
-                          </p>
-                          <p className="text-sm text-red-800 dark:text-red-200 whitespace-pre-wrap">{before.text}</p>
-                        </div>
-                        {/* After */}
-                        <div className="rounded-lg border border-green-200 bg-green-50 px-3.5 py-2.5 dark:border-green-900/50 dark:bg-green-950/20">
-                          <p className="font-mono text-[11px] text-green-600 dark:text-green-400 mb-1">
-                            {after.startTime} → {after.endTime}
-                          </p>
-                          <p className="text-sm text-green-800 dark:text-green-200 whitespace-pre-wrap">{after.text}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                </motion.div>
-              )
-            })()}
+                        <p className="text-sm text-red-800 dark:text-red-200 whitespace-pre-wrap">{before.text}</p>
+                      </div>
+                      <div className="rounded-lg border border-green-200 bg-green-50 px-3.5 py-2.5 dark:border-green-900/50 dark:bg-green-950/20">
+                        <p className="font-mono text-[11px] text-green-600 dark:text-green-400 mb-1">
+                          {after.startTime} {'->'} {after.endTime}
+                        </p>
+                        <p className="text-sm text-green-800 dark:text-green-200 whitespace-pre-wrap">{after.text}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </motion.div>
+            )}
 
             {subtitleRows.length > 0 && (
               <div className="bg-white rounded-xl p-6 shadow-card">
