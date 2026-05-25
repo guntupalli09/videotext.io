@@ -502,6 +502,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               acceptedFormats={['SRT', 'VTT']}
               acceptAttribute=".srt,.vtt"
               maxSize="10 MB"
+              title="Upload a subtitle file"
             />
             {location.pathname === '/fix-subtitles' && (
               <SamplesModule sourcePath={location.pathname} samplesHref="/samples#fix" />
