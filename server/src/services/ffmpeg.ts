@@ -61,6 +61,41 @@ function makeExtractionError(err: Error, stderrLines: string[]): Error {
   return new Error(stderr ? `${err.message}\nffmpeg stderr:\n${stderr}` : err.message)
 }
 
+/**
+ * Detect scene cut timestamps (in seconds) using FFmpeg's scene filter.
+ * Returns an array of timestamps where hard cuts were detected.
+ * Resolves to [] on any error so callers always get a safe result.
+ */
+export async function detectSceneCuts(videoPath: string, threshold = 0.4): Promise<number[]> {
+  return new Promise((resolve) => {
+    const cuts: number[] = []
+    const args = [
+      '-i', videoPath,
+      '-vf', `select='gt(scene,${threshold})',showinfo`,
+      '-vsync', 'vfr',
+      '-f', 'null',
+      '-',
+    ]
+    const proc = spawn(ffmpegPath, args)
+    const chunks: string[] = []
+    // showinfo writes to stderr in standard FFmpeg builds; collect stdout too as a safety net
+    proc.stderr.on('data', (d: Buffer) => chunks.push(d.toString()))
+    proc.stdout.on('data', (d: Buffer) => chunks.push(d.toString()))
+    proc.on('close', () => {
+      const text = chunks.join('')
+      // Match pts_time: followed by any float including scientific notation (e.g. 1.5e+02)
+      const re = /pts_time:([\d.]+(?:e[+-]?\d+)?)/gi
+      let m: RegExpExecArray | null
+      while ((m = re.exec(text)) !== null) {
+        const t = parseFloat(m[1])
+        if (!isNaN(t) && t > 0) cuts.push(t)
+      }
+      resolve(cuts)
+    })
+    proc.on('error', () => resolve([]))
+  })
+}
+
 /** Extraction-first: length of first chunk extracted early (seconds) to reduce TTFW. 10s targets ~5–10s first word. */
 export const EXTRACTION_FIRST_CHUNK_SEC = 10
 
