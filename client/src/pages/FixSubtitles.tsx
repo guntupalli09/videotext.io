@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Wrench, CheckCircle } from 'lucide-react'
+import { motion } from 'framer-motion'
+import {
+  Wrench, CheckCircle, Film, Languages, MessageSquare,
+  AlignLeft, Zap, Layers, Clock, Scissors, UploadCloud, X,
+  AlertTriangle, Info,
+} from 'lucide-react'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
@@ -20,10 +25,20 @@ import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
-import { Film, Languages, MessageSquare } from 'lucide-react'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { exportFileStem, joinExportFilename } from '../lib/exportFileNames'
 // import { emitToolCompleted } from '../workflow/workflowStore'
+
+// ─── Finding type metadata ────────────────────────────────────────────────────
+const FINDING_META: Record<string, { icon: typeof Film; colorText: string; colorBg: string; colorBorder: string; label: string }> = {
+  overlap:       { icon: Layers,     colorText: 'text-orange-600 dark:text-orange-400',  colorBg: 'bg-orange-50 dark:bg-orange-950/20',    colorBorder: 'border-orange-200 dark:border-orange-800',   label: 'Overlapping cues' },
+  long_line:     { icon: AlignLeft,  colorText: 'text-blue-600 dark:text-blue-400',      colorBg: 'bg-blue-50 dark:bg-blue-950/20',         colorBorder: 'border-blue-200 dark:border-blue-800',       label: 'Line too long (CPL)' },
+  fast_reading:  { icon: Zap,        colorText: 'text-amber-600 dark:text-amber-400',    colorBg: 'bg-amber-50 dark:bg-amber-950/20',       colorBorder: 'border-amber-200 dark:border-amber-800',     label: 'Reading speed (CPS)' },
+  reading_speed: { icon: Zap,        colorText: 'text-amber-600 dark:text-amber-400',    colorBg: 'bg-amber-50 dark:bg-amber-950/20',       colorBorder: 'border-amber-200 dark:border-amber-800',     label: 'Reading speed (CPS)' },
+  large_gap:     { icon: Clock,      colorText: 'text-gray-500 dark:text-gray-400',      colorBg: 'bg-gray-50 dark:bg-gray-900/60',         colorBorder: 'border-gray-200 dark:border-gray-700',       label: 'Large gap' },
+  scene_cut:     { icon: Scissors,   colorText: 'text-violet-600 dark:text-violet-400',  colorBg: 'bg-violet-50 dark:bg-violet-950/20',     colorBorder: 'border-violet-200 dark:border-violet-800',   label: 'Spans scene cut' },
+}
+const DEFAULT_FINDING_META = { icon: AlertTriangle, colorText: 'text-gray-600 dark:text-gray-400', colorBg: 'bg-gray-50 dark:bg-gray-900', colorBorder: 'border-gray-200 dark:border-gray-700', label: 'Issue' }
 
 /** Optional SEO overrides for alternate entry points. Do NOT duplicate logic. */
 export type FixSubtitlesSeoProps = {
@@ -276,17 +291,6 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     return getAbsoluteDownloadUrl(result.downloadUrl)
   }
 
-  const getIssueTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      overlap: 'Overlapping timestamps',
-      long_line: 'Line too long',
-      fast_reading: 'Reading speed too fast',
-      large_gap: 'Large gap',
-      scene_cut: 'Subtitle spans scene cut',
-    }
-    return labels[type] || type
-  }
-
   const downloadFixedSubtitles = async () => {
     if (!result?.downloadUrl) {
       toast.error('Download is not ready yet')
@@ -330,76 +334,123 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   }
 
   const renderIssueEditor = () => {
+    const sceneCuts = warnings.filter(w => w.type === 'scene_cut')
+    const otherWarnings = warnings.filter(w => w.type !== 'scene_cut')
     const totalFindings = issues.length + warnings.length
     if (totalFindings === 0) {
       return (
-        <div className="rounded-xl border border-green-200 bg-green-50 p-5 text-green-900 dark:border-green-800 dark:bg-green-950/30 dark:text-green-100">
-          <p className="font-medium">No issues found after fixing.</p>
-          <p className="mt-1 text-sm text-green-800 dark:text-green-200">Your downloadable subtitle file passed the available validation checks.</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl border border-green-200 bg-green-50 p-5 dark:border-green-800 dark:bg-green-950/20"
+        >
+          <div className="flex items-center gap-2.5">
+            <CheckCircle className="h-5 w-5 shrink-0 text-green-600 dark:text-green-400" />
+            <div>
+              <p className="font-medium text-green-900 dark:text-green-100">No issues found after fixing</p>
+              <p className="mt-0.5 text-sm text-green-700 dark:text-green-300">Your subtitle file passed all validation checks.</p>
+            </div>
+          </div>
+        </motion.div>
       )
     }
 
     return (
-      <section
-        className="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
-        aria-labelledby="fixed-subtitle-findings-heading"
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-3"
+        aria-label="Findings after fix"
       >
-        <div className="flex flex-col gap-2 border-b border-gray-200 p-5 dark:border-gray-800 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h3 id="fixed-subtitle-findings-heading" className="text-lg font-medium text-gray-900 dark:text-white">
-              Issues fixed and validation notes
-            </h3>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              Showing about 5 findings at a time. Scroll inside this editor to review all {totalFindings}.
-            </p>
-          </div>
-          <span className="inline-flex w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-200">
-            {issues.length} issue{issues.length !== 1 ? 's' : ''}
-            {warnings.length > 0 ? ` · ${warnings.length} warning${warnings.length !== 1 ? 's' : ''}` : ''}
-          </span>
+        {/* Summary */}
+        <div className="flex flex-wrap gap-2 pb-1">
+          {issues.length > 0 && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+              {issues.length} fixed
+            </span>
+          )}
+          {otherWarnings.length > 0 && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+              {otherWarnings.length} warning{otherWarnings.length !== 1 ? 's' : ''}
+            </span>
+          )}
+          {sceneCuts.length > 0 && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+              <Scissors className="h-3 w-3" />
+              {sceneCuts.length} scene cut{sceneCuts.length !== 1 ? 's' : ''}
+            </span>
+          )}
         </div>
 
-        <div className="max-h-96 overflow-y-auto p-5" tabIndex={0}>
-          {issues.length > 0 && (
-            <ol className="space-y-3">
-              {issues.map((issue, index) => (
-                <li
-                  key={`${issue.type ?? 'issue'}-${issue.index ?? index}-${index}`}
-                  className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-800 dark:bg-gray-950/50"
-                >
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-                    <p className="font-semibold text-gray-900 dark:text-gray-100">
-                      {index + 1}. {getIssueTypeLabel(String(issue.type ?? 'issue'))}
-                    </p>
-                    {issue.index != null && (
-                      <span className="font-mono text-xs text-gray-500 dark:text-gray-400">Cue {issue.index}</span>
-                    )}
+        {/* Scene cuts — manual review required */}
+        {sceneCuts.length > 0 && (
+          <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 dark:border-violet-800 dark:bg-violet-950/20">
+            <div className="mb-3 flex items-center gap-2">
+              <Scissors className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+              <p className="text-sm font-semibold text-violet-800 dark:text-violet-200">Scene cuts — manual review required</p>
+            </div>
+            <ol className="space-y-2">
+              {sceneCuts.map((w, i) => (
+                <li key={i} className="rounded-lg border border-violet-200 bg-white px-4 py-3 text-sm dark:border-violet-800 dark:bg-gray-900">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="font-medium text-violet-800 dark:text-violet-200">{w.message}</p>
+                    {w.line != null && <span className="shrink-0 font-mono text-xs text-violet-500">Cue {w.line}</span>}
                   </div>
-                  <p className="mt-2 text-gray-700 dark:text-gray-300">{issue.message ?? 'Subtitle issue detected and processed.'}</p>
                 </li>
               ))}
             </ol>
-          )}
+          </div>
+        )}
 
-          {warnings.length > 0 && (
-            <div className={issues.length > 0 ? 'mt-5 border-t border-gray-200 pt-5 dark:border-gray-800' : ''}>
-              <p className="mb-3 text-sm font-semibold text-amber-800 dark:text-amber-200">Warnings (informational)</p>
-              <ol className="space-y-3">
-                {warnings.map((warning, index) => (
-                  <li key={`${warning.type}-${warning.line ?? index}-${index}`} className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
-                    <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-                      <p className="font-semibold">{warning.type || 'Warning'}</p>
-                      {warning.line != null && <span className="font-mono text-xs">Line {warning.line}</span>}
+        {/* Auto-fixed issues */}
+        {issues.length > 0 && (
+          <div className="max-h-72 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <p className="border-b border-gray-100 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:border-gray-800 dark:text-gray-400">
+              Auto-fixed
+            </p>
+            <ol className="divide-y divide-gray-100 dark:divide-gray-800">
+              {issues.map((issue, i) => {
+                const meta = FINDING_META[issue.type] ?? DEFAULT_FINDING_META
+                const Icon = meta.icon
+                return (
+                  <li key={i} className="flex items-start gap-3 px-4 py-3 text-sm">
+                    <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${meta.colorText}`} />
+                    <div className="flex-1 min-w-0">
+                      <span className={`font-medium ${meta.colorText}`}>{meta.label}</span>
+                      <span className="ml-2 text-gray-600 dark:text-gray-400">{issue.message}</span>
                     </div>
-                    <p className="mt-2">{warning.message}</p>
+                    {issue.index != null && (
+                      <span className="shrink-0 font-mono text-xs text-gray-400">Cue {issue.index}</span>
+                    )}
                   </li>
-                ))}
-              </ol>
-            </div>
-          )}
-        </div>
-      </section>
+                )
+              })}
+            </ol>
+          </div>
+        )}
+
+        {/* Remaining warnings */}
+        {otherWarnings.length > 0 && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/20">
+            <p className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">Informational</p>
+            <ol className="space-y-2">
+              {otherWarnings.map((w, i) => {
+                const meta = FINDING_META[w.type] ?? DEFAULT_FINDING_META
+                const Icon = meta.icon
+                return (
+                  <li key={i} className="flex items-start gap-3 text-sm">
+                    <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${meta.colorText}`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-amber-900 dark:text-amber-100">{w.message}</p>
+                    </div>
+                    {w.line != null && <span className="shrink-0 font-mono text-xs text-amber-500">Cue {w.line}</span>}
+                  </li>
+                )
+              })}
+            </ol>
+          </div>
+        )}
+      </motion.section>
     )
   }
 
@@ -407,9 +458,9 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const layoutProps = {
     breadcrumbs,
     title: seoH1 ?? 'Fix Subtitles',
-    subtitle: seoIntro ?? 'Auto-correct timing issues and formatting errors',
+    subtitle: seoIntro ?? 'Validate and auto-correct CPS, CPL, timing, and scene cut issues in SRT and VTT files.',
     icon: <Wrench className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
-    tags: ['Timing', 'Sync', 'Format', 'Clean', 'Repair', 'Auto-fix'],
+    tags: ['CPS', 'CPL', 'Timing', 'Scene Cuts', 'Line Breaks', 'Filler Words'],
     sidebar: null,
   }
 
@@ -434,158 +485,306 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
         )}
 
         {status === 'idle' && selectedFile && !showIssues && (
-          <div className="space-y-4">
-            <ProcessingInterface
-              file={{
-                name: selectedFile.name,
-                size: `${((selectedFile.size ?? 0) / 1024).toFixed(2)} KB`,
-              }}
-              onRemove={() => { setSelectedFile(null); setVideoFile(null); setIssues([]); setShowIssues(false) }}
-              actionLabel="Analyze Subtitles"
-              onAction={() => handleAnalyze()}
-              actionLoading={false}
-              showVideoPlayer={false}
-            />
-            <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/40">
-              <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                Detect scene cuts <span className="text-gray-400 font-normal">(optional)</span>
-              </p>
-              <p className="mb-3 text-xs text-gray-500 dark:text-gray-400">
-                Add the original video to flag subtitles that span a camera cut — the timing issue Mounir calls "human precision."
+          <ProcessingInterface
+            file={{
+              name: selectedFile.name,
+              size: `${((selectedFile.size ?? 0) / 1024).toFixed(2)} KB`,
+            }}
+            onRemove={() => { setSelectedFile(null); setVideoFile(null); setIssues([]); setShowIssues(false) }}
+            actionLabel={videoFile ? 'Analyze + Detect Scene Cuts' : 'Analyze Subtitles'}
+            onAction={() => handleAnalyze()}
+            actionLoading={false}
+            showVideoPlayer={false}
+          >
+            {/* Optional video upload for scene cut detection */}
+            <div>
+              <div className="mb-3 flex items-center gap-2">
+                <Scissors className="h-4 w-4 text-violet-500" />
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                  Scene cut detection
+                  <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-normal text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                    optional
+                  </span>
+                </p>
+              </div>
+              <p className="mb-3 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+                Upload the source video to detect camera cuts. Any subtitle that spans a cut will be flagged — the class of issue no automated tool can fix without the original footage.
               </p>
               {videoFile ? (
-                <div className="flex items-center justify-between rounded-lg bg-white px-3 py-2 text-sm shadow-sm dark:bg-gray-800">
-                  <span className="truncate text-gray-700 dark:text-gray-300">{videoFile.name}</span>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex items-center gap-3 rounded-lg border border-violet-200 bg-violet-50 px-3.5 py-2.5 dark:border-violet-800 dark:bg-violet-950/20"
+                >
+                  <Film className="h-4 w-4 shrink-0 text-violet-500" />
+                  <span className="flex-1 truncate text-sm font-medium text-violet-800 dark:text-violet-200">{videoFile.name}</span>
                   <button
                     onClick={() => setVideoFile(null)}
-                    className="ml-3 shrink-0 text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+                    className="shrink-0 rounded p-0.5 text-violet-400 transition-colors hover:bg-violet-200 hover:text-violet-700 dark:hover:bg-violet-900/40 dark:hover:text-violet-300"
                     aria-label="Remove video"
                   >
-                    ✕
+                    <X className="h-3.5 w-3.5" />
                   </button>
-                </div>
+                </motion.div>
               ) : (
-                <label className="cursor-pointer">
+                <label className="group cursor-pointer">
                   <input
                     type="file"
                     accept="video/*,.mp4,.mov,.avi,.mkv,.webm"
                     className="sr-only"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0]
-                      if (f) setVideoFile(f)
-                    }}
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) setVideoFile(f) }}
                   />
-                  <span className="inline-block rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-                    Choose video file
+                  <span className="inline-flex items-center gap-2 rounded-lg border border-dashed border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 transition-colors group-hover:border-violet-400 group-hover:bg-violet-50 group-hover:text-violet-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:group-hover:border-violet-700 dark:group-hover:bg-violet-950/20 dark:group-hover:text-violet-300">
+                    <UploadCloud className="h-4 w-4" />
+                    Add source video
                   </span>
                 </label>
               )}
             </div>
-          </div>
+          </ProcessingInterface>
         )}
 
         {status === 'analyzing' && (
           <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
-            <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-              {selectedFile?.name} • {((selectedFile?.size ?? 0) / 1024).toFixed(2)} KB
+            <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+              {selectedFile?.name}
+              {videoFile && <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700 dark:bg-violet-900/30 dark:text-violet-300"><Scissors className="h-3 w-3" />scene detection enabled</span>}
             </div>
             <ProcessingProgress
               steps={[
                 { label: 'Uploading', status: uploadPhase === 'uploading' ? 'active' : 'completed' },
-                { label: 'Analyzing', status: uploadPhase === 'processing' ? 'active' : 'pending' },
+                { label: videoFile ? 'Analyzing + scene detection' : 'Analyzing', status: uploadPhase === 'processing' ? 'active' : 'pending' },
                 { label: 'Finalizing', status: progress >= 100 ? 'completed' : 'pending' },
               ]}
-              currentMessage={uploadPhase === 'uploading' ? 'Uploading...' : videoFile ? 'Analyzing subtitles and detecting scene cuts...' : 'Analyzing subtitles...'}
+              currentMessage={uploadPhase === 'uploading' ? 'Uploading files...' : videoFile ? 'Checking CPS, CPL, timing, and detecting scene cuts...' : 'Checking CPS, CPL, and timing...'}
               progress={uploadPhase === 'uploading' ? uploadProgress : progress}
-              estimatedTime={uploadPhase === 'uploading' ? undefined : '10–30 seconds'}
+              estimatedTime={uploadPhase === 'uploading' ? undefined : videoFile ? '15–45 seconds' : '5–15 seconds'}
               statusSubtext={uploadPhase === 'processing' && queuePosition !== undefined && queuePosition > 0 ? `Queue position: ${queuePosition}` : undefined}
               onCancel={handleProcessAnother}
             />
           </div>
         )}
 
-        {status === 'idle' && showIssues && (
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
-              <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">Fix options (optional)</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Fixes timing drift, long durations, and overflow issues. Original subtitles are always preserved.</p>
-              <div className="space-y-4 mb-6">
-                <Checkbox label="Fix timing (offset correction, clamp long durations)" checked={fixTiming} onChange={setFixTiming} />
-                <Checkbox label="Grammar (normalize casing, punctuation)" checked={grammarFix} onChange={setGrammarFix} />
-                <Checkbox label="Line breaks (max characters per line, reading speed)" checked={lineBreakFix} onChange={setLineBreakFix} />
-                <Checkbox label="Remove filler words (um, uh, like, you know, etc.)" checked={removeFillers} onChange={setRemoveFillers} />
-              </div>
-            </div>
+        {status === 'idle' && showIssues && (() => {
+          const sceneCuts = warnings.filter(w => w.type === 'scene_cut')
+          const otherWarnings = warnings.filter(w => w.type !== 'scene_cut')
+          const totalFindings = issues.length + warnings.length
 
-            {((issues.length > 0 || warnings.length > 0) && (
-              <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
-            <div className="flex items-center space-x-2 mb-4">
-              <CheckCircle className="h-6 w-6 text-green-600" strokeWidth={1.5} />
-              <h3 className="text-xl font-medium text-gray-800">
-                {issues.length > 0
-                  ? `Found ${issues.length} issue${issues.length !== 1 ? 's' : ''} in your subtitles`
-                  : 'Validation results'}
-              </h3>
-            </div>
+          return (
+            <div className="space-y-4">
 
-            {warnings.length > 0 && (
-              <div className="mb-4">
-                <p className="text-sm font-medium text-amber-800 mb-2">Warnings (informational)</p>
-                <div className="space-y-2">
-                  {warnings.map((w, i) => (
-                    <div key={i} className="bg-amber-50 rounded-lg p-3 text-sm text-amber-900">
-                      {w.line != null && <span className="font-mono">Line {w.line}: </span>}
-                      {w.message}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {issues.length > 0 && (
-              <div className="space-y-2 mb-6">
-                {issues.map((issue, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-medium text-gray-800">
-                      • {getIssueTypeLabel(issue.type)}: {issue.message}
+              {/* ── Header / summary ───────────────────────────────────── */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                      {totalFindings === 0 ? 'All checks passed' : `${totalFindings} finding${totalFindings !== 1 ? 's' : ''} detected`}
+                    </h3>
+                    <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                      {selectedFile?.name}
                     </p>
                   </div>
-                ))}
-              </div>
-            )}
+                  <div className="flex flex-wrap gap-2">
+                    {issues.length > 0 && (
+                      <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                        {issues.length} fixable
+                      </span>
+                    )}
+                    {otherWarnings.length > 0 && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                        <AlertTriangle className="h-3 w-3" />
+                        {otherWarnings.length} warning{otherWarnings.length !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                    {sceneCuts.length > 0 && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                        <Scissors className="h-3 w-3" />
+                        {sceneCuts.length} scene cut{sceneCuts.length !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                    {totalFindings === 0 && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                        <CheckCircle className="h-3 w-3" />
+                        Clean
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
 
-            <button
-              onClick={handleAutoFix}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
-            >
-              Auto-fix all issues →
-            </button>
-              </div>
-            ))}
+              {/* ── Scene cuts ─────────────────────────────────────────── */}
+              {sceneCuts.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
+                  className="rounded-xl border border-violet-200 bg-violet-50 p-5 dark:border-violet-800 dark:bg-violet-950/20"
+                >
+                  <div className="mb-3 flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/40">
+                      <Scissors className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-violet-900 dark:text-violet-100">Scene cuts detected — manual review needed</p>
+                      <p className="text-xs text-violet-600 dark:text-violet-400">These cues span a camera cut and cannot be auto-fixed.</p>
+                    </div>
+                  </div>
+                  <ol className="space-y-2">
+                    {sceneCuts.map((w, i) => (
+                      <li key={i} className="flex items-start justify-between gap-3 rounded-lg border border-violet-200 bg-white px-4 py-3 text-sm dark:border-violet-800 dark:bg-gray-900">
+                        <p className="text-violet-800 dark:text-violet-200">{w.message}</p>
+                        {w.line != null && <span className="shrink-0 font-mono text-xs text-violet-400">Cue {w.line}</span>}
+                      </li>
+                    ))}
+                  </ol>
+                </motion.div>
+              )}
 
-            {issues.length === 0 && warnings.length === 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm text-center">
-            <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" strokeWidth={1.5} />
-            <h3 className="text-xl font-medium text-gray-800 mb-2">No issues found!</h3>
-            <p className="text-gray-600 mb-4">Your subtitles are already in good shape. You can still apply optional fixes (timing, grammar, line breaks) above.</p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <button
-                onClick={handleAutoFix}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              {/* ── Fixable issues + other warnings ────────────────────── */}
+              {(issues.length > 0 || otherWarnings.length > 0) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden"
+                >
+                  {issues.length > 0 && (
+                    <>
+                      <p className="border-b border-gray-100 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                        Auto-fixable issues
+                      </p>
+                      <ol className="divide-y divide-gray-100 dark:divide-gray-800">
+                        {issues.map((issue, i) => {
+                          const meta = FINDING_META[issue.type] ?? DEFAULT_FINDING_META
+                          const Icon = meta.icon
+                          return (
+                            <li key={i} className="flex items-start gap-3 px-4 py-3 text-sm">
+                              <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${meta.colorBg}`}>
+                                <Icon className={`h-3.5 w-3.5 ${meta.colorText}`} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <span className={`font-semibold ${meta.colorText}`}>{meta.label}</span>
+                                <span className="ml-2 text-gray-600 dark:text-gray-400">{issue.message}</span>
+                              </div>
+                              {issue.index != null && (
+                                <span className="shrink-0 font-mono text-xs text-gray-400 dark:text-gray-500">Cue {issue.index}</span>
+                              )}
+                            </li>
+                          )
+                        })}
+                      </ol>
+                    </>
+                  )}
+                  {otherWarnings.length > 0 && (
+                    <>
+                      <p className={`px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400 ${issues.length > 0 ? 'border-t border-gray-100 dark:border-gray-800' : ''}`}>
+                        Informational warnings
+                      </p>
+                      <ol className="divide-y divide-gray-100 dark:divide-gray-800">
+                        {otherWarnings.map((w, i) => {
+                          const meta = FINDING_META[w.type] ?? DEFAULT_FINDING_META
+                          const Icon = meta.icon
+                          return (
+                            <li key={i} className="flex items-start gap-3 px-4 py-3 text-sm">
+                              <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${meta.colorBg}`}>
+                                <Icon className={`h-3.5 w-3.5 ${meta.colorText}`} />
+                              </div>
+                              <p className="flex-1 text-gray-700 dark:text-gray-300">{w.message}</p>
+                              {w.line != null && <span className="shrink-0 font-mono text-xs text-gray-400">Cue {w.line}</span>}
+                            </li>
+                          )
+                        })}
+                      </ol>
+                    </>
+                  )}
+                </motion.div>
+              )}
+
+              {/* ── Fix options ────────────────────────────────────────── */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
               >
-                Apply optional fixes
-              </button>
-              <button
-                onClick={handleProcessAnother}
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Fix options</h3>
+                    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Original file is always preserved — only the downloaded copy is modified.</p>
+                  </div>
+                  {(fixTiming || grammarFix || lineBreakFix || removeFillers) && (
+                    <button
+                      onClick={() => { setFixTiming(false); setGrammarFix(false); setLineBreakFix(false); setRemoveFillers(false) }}
+                      className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    >
+                      Clear all
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Checkbox
+                    label="Fix timing"
+                    description="Offset correction and clamp long durations"
+                    checked={fixTiming}
+                    onChange={setFixTiming}
+                  />
+                  <Checkbox
+                    label="Grammar"
+                    description="Normalize casing and punctuation"
+                    checked={grammarFix}
+                    onChange={setGrammarFix}
+                  />
+                  <Checkbox
+                    label="Line breaks (CPL)"
+                    description="Enforce 42-char/line broadcast standard"
+                    checked={lineBreakFix}
+                    onChange={setLineBreakFix}
+                  />
+                  <Checkbox
+                    label="Remove filler words"
+                    description="Strip um, uh, like, you know, etc."
+                    checked={removeFillers}
+                    onChange={setRemoveFillers}
+                  />
+                </div>
+              </motion.div>
+
+              {/* ── CTA ────────────────────────────────────────────────── */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="space-y-3"
               >
-                Process another file
-              </button>
+                <motion.button
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={handleAutoFix}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 font-semibold text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl"
+                >
+                  {issues.length > 0 ? `Auto-fix ${issues.length} issue${issues.length !== 1 ? 's' : ''}` : 'Apply fixes'}
+                </motion.button>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    <Info className="mr-1 inline-block h-3 w-3" />
+                    Scene cuts require manual editing — they are flagged only, not auto-fixed.
+                  </p>
+                  <button
+                    onClick={handleProcessAnother}
+                    className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                  >
+                    Start over
+                  </button>
+                </div>
+              </motion.div>
+
             </div>
-          </div>
-            )}
-          </div>
-        )}
+          )
+        })()}
 
         {status === 'processing' && (
           <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
