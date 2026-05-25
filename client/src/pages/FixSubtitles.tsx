@@ -904,50 +904,54 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               downloadLabel={plan === 'free' ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download with watermark') : 'Download fixed subtitles'}
               onDownload={downloadFixedSubtitles}
-              afterDownloadContent={renderIssueEditor()}
               onProcessAnother={handleProcessAnother}
-              relatedTools={[
-                { path: '/burn-subtitles', name: 'Burn Subtitles', description: 'Hardcode into video' },
-                { path: '/translate-subtitles', name: 'Translate Subtitles', description: 'Translate to another language' },
-                { path: '/video-to-subtitles', name: 'Video → Subtitles', description: 'Generate SRT/VTT from video' },
-              ]}
+              relatedTools={[]}
             />
 
-            {subtitleRows.length > 0 && (
-              <div className="bg-white rounded-xl p-6 shadow-card">
-                <Suspense fallback={null}>
-                  <SubtitleEditor
-                    entries={subtitleRows}
-                    editable={canEdit}
-                    onChange={setSubtitleRows}
-                  />
-                </Suspense>
-                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                  <button
-                    disabled={!canEdit}
-                    onClick={() => {
-                      const content = rowsToSrt(subtitleRows)
-                      const blob = new Blob([content], { type: 'text/plain' })
-                      const url = URL.createObjectURL(blob)
-                      const a = document.createElement('a')
-                      a.href = url
-                      a.download = (result.fileName || fallbackFixedName).replace(/\.vtt$/i, '.srt')
-                      a.click()
-                      URL.revokeObjectURL(url)
-                    }}
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
-                  >
-                    Download Edited Subtitles
-                  </button>
-                  {!canEdit && (
-                    <div className="text-xs text-gray-500">
-                      Upgrade to Basic to edit fixed subtitles.
+            {(subtitleRows.length > 0 || issues.length > 0 || warnings.length > 0) && (
+              <div className={`gap-6 ${subtitleRows.length > 0 && (issues.length > 0 || warnings.length > 0) ? 'grid grid-cols-1 lg:grid-cols-[1fr_320px]' : 'flex flex-col'}`}>
+                {subtitleRows.length > 0 && (
+                  <div className="bg-white rounded-xl p-6 shadow-card dark:bg-gray-900">
+                    <Suspense fallback={null}>
+                      <SubtitleEditor
+                        entries={subtitleRows}
+                        editable={canEdit}
+                        onChange={setSubtitleRows}
+                      />
+                    </Suspense>
+                    <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                      <button
+                        disabled={!canEdit}
+                        onClick={() => {
+                          const content = rowsToSrt(subtitleRows)
+                          const blob = new Blob([content], { type: 'text/plain' })
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = (result.fileName || fallbackFixedName).replace(/\.vtt$/i, '.srt')
+                          a.click()
+                          URL.revokeObjectURL(url)
+                        }}
+                        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                      >
+                        Download Edited Subtitles
+                      </button>
+                      {!canEdit && (
+                        <div className="text-xs text-gray-500">
+                          Upgrade to Basic to edit fixed subtitles.
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+
+                {(issues.length > 0 || warnings.length > 0) && (
+                  <div className="shrink-0">
+                    {renderIssueEditor()}
+                  </div>
+                )}
               </div>
             )}
-
 
             <CrossToolSuggestions
               workflowHint="Burn into video, translate, or generate subtitles from video."
