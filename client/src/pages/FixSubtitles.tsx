@@ -510,6 +510,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               acceptedFormats={['SRT', 'VTT']}
               acceptAttribute=".srt,.vtt"
               maxSize="10 MB"
+              title="Upload a subtitle file"
             />
             {location.pathname === '/fix-subtitles' && (
               <SamplesModule sourcePath={location.pathname} samplesHref="/samples#fix" />
@@ -911,13 +912,8 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               downloadLabel={plan === 'free' ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download with watermark') : 'Download fixed subtitles'}
               onDownload={downloadFixedSubtitles}
-              afterDownloadContent={renderIssueEditor()}
               onProcessAnother={handleProcessAnother}
-              relatedTools={[
-                { path: '/burn-subtitles', name: 'Burn Subtitles', description: 'Hardcode into video' },
-                { path: '/translate-subtitles', name: 'Translate Subtitles', description: 'Translate to another language' },
-                { path: '/video-to-subtitles', name: 'Video → Subtitles', description: 'Generate SRT/VTT from video' },
-              ]}
+              relatedTools={[]}
             />
 
             {subtitleRows.length > 0 && originalRows.length > 0 && (() => {
@@ -1009,11 +1005,16 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                     <div className="text-xs text-gray-500">
                       Upgrade to Basic to edit fixed subtitles.
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+
+                {(issues.length > 0 || warnings.length > 0) && (
+                  <div className="shrink-0">
+                    {renderIssueEditor()}
+                  </div>
+                )}
               </div>
             )}
-
 
             <CrossToolSuggestions
               workflowHint="Burn into video, translate, or generate subtitles from video."
