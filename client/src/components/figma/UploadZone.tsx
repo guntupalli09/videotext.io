@@ -18,6 +18,8 @@ interface UploadZoneProps {
   initialFiles?: File[] | null;
   onRemove?: () => void;
   fromWorkflowLabel?: string;
+  /** Override the main heading text in the upload zone */
+  title?: string;
 }
 
 export function UploadZone({
@@ -31,6 +33,7 @@ export function UploadZone({
   initialFiles = null,
   onRemove,
   fromWorkflowLabel,
+  title,
 }: UploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success'>('idle');
@@ -166,7 +169,7 @@ export function UploadZone({
                 </div>
               </motion.div>
               <h3 className="text-base sm:text-xl font-medium text-gray-900 dark:text-white mb-1 sm:mb-2">
-                {multiple ? 'Drag and drop your file(s)' : 'Upload a file'}
+                {title ?? (multiple ? 'Drag and drop your file(s)' : 'Upload a file')}
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-2 sm:mb-3 text-xs sm:text-sm">
                 or{' '}
