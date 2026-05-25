@@ -55,7 +55,7 @@ export function normalizeTimingOnly(
 
 /** Phase 1B — UTILITY 2E: Validation only. Returns warnings; does not modify. */
 const LINE_LENGTH_THRESHOLD = 42
-const READING_SPEED_CHARS_PER_SEC = 25
+const READING_SPEED_CHARS_PER_SEC = 21
 
 export function validateSubtitleEntries(entries: SubtitleEntry[]): { warnings: SubtitleWarning[] } {
   const warnings: SubtitleWarning[] = []
@@ -92,6 +92,22 @@ export function validateSubtitleEntries(entries: SubtitleEntry[]): { warnings: S
   }
 
   return { warnings }
+}
+
+export function validateAgainstSceneCuts(entries: SubtitleEntry[], cutTimestamps: number[]): SubtitleWarning[] {
+  if (!cutTimestamps.length) return []
+  const warnings: SubtitleWarning[] = []
+  for (const e of entries) {
+    const cut = cutTimestamps.find(t => t > e.startTime && t < e.endTime)
+    if (cut) {
+      warnings.push({
+        type: 'scene_cut',
+        message: `Subtitle ${e.index} spans a scene cut at ${cut.toFixed(2)}s — consider splitting or retiming`,
+        line: e.index,
+      })
+    }
+  }
+  return warnings
 }
 
 export function validateSubtitleFile(filePath: string): { warnings: SubtitleWarning[] } {

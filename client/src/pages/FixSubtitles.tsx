@@ -13,7 +13,7 @@ import { Checkbox } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
 import { incrementUsage } from '../lib/usage'
-import { uploadFileWithProgress, getJobStatus, BACKEND_TOOL_TYPES, SessionExpiredError, getAuthToken } from '../lib/api'
+import { uploadFileWithProgress, uploadFixSubtitlesDual, getJobStatus, BACKEND_TOOL_TYPES, SessionExpiredError, getAuthToken } from '../lib/api'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
@@ -37,6 +37,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const location = useLocation()
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [videoFile, setVideoFile] = useState<File | null>(null)
   const [issues, setIssues] = useState<any[]>([])
   const [warnings, setWarnings] = useState<{ type: string; message: string; line?: number }[]>([])
   const [showIssues, setShowIssues] = useState(false)
@@ -127,9 +128,11 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       processingStartedAtRef.current = startedAt
       // texJobStarted()
 
-      const response = await uploadFileWithProgress(selectedFile, {
-        toolType: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
-      }, { onProgress: (p) => setUploadProgress(p) })
+      const response = videoFile
+        ? await uploadFixSubtitlesDual(selectedFile, videoFile, { onProgress: (p) => setUploadProgress(p) })
+        : await uploadFileWithProgress(selectedFile, {
+            toolType: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
+          }, { onProgress: (p) => setUploadProgress(p) })
       setUploadPhase('processing')
       setUploadProgress(100)
 
@@ -254,6 +257,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const handleProcessAnother = () => {
     clearPersistedJobId(location.pathname, navigate)
     setSelectedFile(null)
+    setVideoFile(null)
     setIssues([])
     setWarnings([])
     setShowIssues(false)
@@ -278,6 +282,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       long_line: 'Line too long',
       fast_reading: 'Reading speed too fast',
       large_gap: 'Large gap',
+      scene_cut: 'Subtitle spans scene cut',
     }
     return labels[type] || type
   }
@@ -429,17 +434,54 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
         )}
 
         {status === 'idle' && selectedFile && !showIssues && (
-          <ProcessingInterface
-            file={{
-              name: selectedFile.name,
-              size: `${((selectedFile.size ?? 0) / 1024).toFixed(2)} KB`,
-            }}
-            onRemove={() => { setSelectedFile(null); setIssues([]); setShowIssues(false) }}
-            actionLabel="Analyze Subtitles"
-            onAction={() => handleAnalyze()}
-            actionLoading={false}
-            showVideoPlayer={false}
-          />
+          <div className="space-y-4">
+            <ProcessingInterface
+              file={{
+                name: selectedFile.name,
+                size: `${((selectedFile.size ?? 0) / 1024).toFixed(2)} KB`,
+              }}
+              onRemove={() => { setSelectedFile(null); setVideoFile(null); setIssues([]); setShowIssues(false) }}
+              actionLabel="Analyze Subtitles"
+              onAction={() => handleAnalyze()}
+              actionLoading={false}
+              showVideoPlayer={false}
+            />
+            <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/40">
+              <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Detect scene cuts <span className="text-gray-400 font-normal">(optional)</span>
+              </p>
+              <p className="mb-3 text-xs text-gray-500 dark:text-gray-400">
+                Add the original video to flag subtitles that span a camera cut — the timing issue Mounir calls "human precision."
+              </p>
+              {videoFile ? (
+                <div className="flex items-center justify-between rounded-lg bg-white px-3 py-2 text-sm shadow-sm dark:bg-gray-800">
+                  <span className="truncate text-gray-700 dark:text-gray-300">{videoFile.name}</span>
+                  <button
+                    onClick={() => setVideoFile(null)}
+                    className="ml-3 shrink-0 text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+                    aria-label="Remove video"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept="video/*,.mp4,.mov,.avi,.mkv,.webm"
+                    className="sr-only"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0]
+                      if (f) setVideoFile(f)
+                    }}
+                  />
+                  <span className="inline-block rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                    Choose video file
+                  </span>
+                </label>
+              )}
+            </div>
+          </div>
         )}
 
         {status === 'analyzing' && (
@@ -453,7 +495,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                 { label: 'Analyzing', status: uploadPhase === 'processing' ? 'active' : 'pending' },
                 { label: 'Finalizing', status: progress >= 100 ? 'completed' : 'pending' },
               ]}
-              currentMessage={uploadPhase === 'uploading' ? 'Uploading...' : 'Analyzing subtitles...'}
+              currentMessage={uploadPhase === 'uploading' ? 'Uploading...' : videoFile ? 'Analyzing subtitles and detecting scene cuts...' : 'Analyzing subtitles...'}
               progress={uploadPhase === 'uploading' ? uploadProgress : progress}
               estimatedTime={uploadPhase === 'uploading' ? undefined : '10–30 seconds'}
               statusSubtext={uploadPhase === 'processing' && queuePosition !== undefined && queuePosition > 0 ? `Queue position: ${queuePosition}` : undefined}

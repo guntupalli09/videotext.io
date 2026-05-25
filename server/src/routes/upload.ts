@@ -503,10 +503,54 @@ router.post('/dual', upload.fields([
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] }
 
-    if (!toolType || toolType !== 'burn-subtitles') {
-      return res.status(400).json({ message: 'toolType must be burn-subtitles' })
+    const isBurnSubtitles = toolType === 'burn-subtitles'
+    const isFixSubtitles = toolType === 'fix-subtitles'
+
+    if (!toolType || (!isBurnSubtitles && !isFixSubtitles)) {
+      return res.status(400).json({ message: 'toolType must be burn-subtitles or fix-subtitles' })
     }
 
+    // fix-subtitles: subtitle required, video optional
+    if (isFixSubtitles) {
+      if (!files.subtitles) {
+        if (files.video) fs.unlinkSync(files.video[0].path)
+        return res.status(400).json({ message: 'Subtitle file is required' })
+      }
+      const subtitleFileForFix = files.subtitles[0]
+      const videoFileForScenes = files.video?.[0]
+      const subValidation = await validateSubtitleFile(subtitleFileForFix.path)
+      if (subValidation.error) {
+        fs.unlinkSync(subtitleFileForFix.path)
+        if (videoFileForScenes) fs.unlinkSync(videoFileForScenes.path)
+        return res.status(400).json({ message: subValidation.error })
+      }
+      const fixJob = await addJobToQueue(plan, {
+        toolType: 'fix-subtitles',
+        filePath: subtitleFileForFix.path,
+        filePath2: videoFileForScenes?.path,
+        userId,
+        plan,
+        originalName: subtitleFileForFix.originalname,
+        fileSize: subtitleFileForFix.size,
+        requestId: (req as any).requestId,
+      })
+      try {
+        await insertJobRecord({
+          id: String(fixJob.id),
+          userId,
+          toolType: 'fix-subtitles',
+          planAtRun: plan,
+          fileSizeBytes: subtitleFileForFix.size,
+        })
+      } catch { /* non-blocking */ }
+      return res.status(202).json({
+        jobId: fixJob.id,
+        status: 'queued',
+        jobToken: (fixJob.data as any)?.jobToken,
+      })
+    }
+
+    // burn-subtitles: both files required
     if (!files.video || !files.subtitles) {
       // Cleanup any uploaded files
       if (files.video) fs.unlinkSync(files.video[0].path)
