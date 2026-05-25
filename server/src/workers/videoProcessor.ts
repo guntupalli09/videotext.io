@@ -2168,7 +2168,8 @@ async function processJob(job: import('bull').Job<JobData>) {
             try {
               const cutTimestamps = await detectSceneCuts(data.filePath2)
               if (cutTimestamps.length > 0) {
-                const { parseSRT, parseVTT, detectSubtitleFormat } = await import('../utils/srtParser')
+                // Re-parse original file for timing — in analyze mode (all options false) these
+                // match the output entries; the dual-upload path is only used for analyze.
                 const format = detectSubtitleFormat(data.filePath!)
                 const entries = format === 'srt' ? parseSRT(data.filePath!) : parseVTT(data.filePath!)
                 const sceneCutWarnings = validateAgainstSceneCuts(entries, cutTimestamps)
@@ -2176,8 +2177,8 @@ async function processJob(job: import('bull').Job<JobData>) {
                   fixed.warnings = [...(fixed.warnings ?? []), ...sceneCutWarnings]
                 }
               }
-            } catch {
-              // Non-blocking: scene detection failure must not fail the job
+            } catch (err) {
+              workerLog.warn({ msg: 'Scene cut detection failed (non-blocking)', jobId, error: String(err) })
             }
           }
 

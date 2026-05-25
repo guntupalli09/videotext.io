@@ -77,13 +77,19 @@ export async function detectSceneCuts(videoPath: string, threshold = 0.4): Promi
       '-',
     ]
     const proc = spawn(ffmpegPath, args)
-    const lines: string[] = []
-    proc.stderr.on('data', (d: Buffer) => lines.push(d.toString()))
+    const chunks: string[] = []
+    // showinfo writes to stderr in standard FFmpeg builds; collect stdout too as a safety net
+    proc.stderr.on('data', (d: Buffer) => chunks.push(d.toString()))
+    proc.stdout.on('data', (d: Buffer) => chunks.push(d.toString()))
     proc.on('close', () => {
-      const text = lines.join('')
-      const re = /pts_time:(\d+(?:\.\d+)?)/g
+      const text = chunks.join('')
+      // Match pts_time: followed by any float including scientific notation (e.g. 1.5e+02)
+      const re = /pts_time:([\d.]+(?:e[+-]?\d+)?)/gi
       let m: RegExpExecArray | null
-      while ((m = re.exec(text)) !== null) cuts.push(parseFloat(m[1]))
+      while ((m = re.exec(text)) !== null) {
+        const t = parseFloat(m[1])
+        if (!isNaN(t) && t > 0) cuts.push(t)
+      }
       resolve(cuts)
     })
     proc.on('error', () => resolve([]))
