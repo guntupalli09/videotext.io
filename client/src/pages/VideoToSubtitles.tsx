@@ -17,7 +17,6 @@ import { ResultSkeleton } from '../components/figma/ResultSkeleton'
 import { SubtitleResult } from '../components/figma/SubtitleResult'
 import { RadioGroup, Select } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
-const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
 const SubtitleQAReview = lazy(() => import('../components/SubtitleQAReview'))
 import { incrementUsage } from '../lib/usage'
 import { uploadFile, uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob } from '../lib/api'
