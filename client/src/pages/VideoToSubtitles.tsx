@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2, Lock } from 'lucide-react'
+import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2, Lock, CheckCircle2 } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
@@ -14,7 +14,6 @@ import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingInterface } from '../components/figma/ProcessingInterface'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
 import { ResultSkeleton } from '../components/figma/ResultSkeleton'
-import { SubtitleResult } from '../components/figma/SubtitleResult'
 import { RadioGroup, Select } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 const SubtitleQAReview = lazy(() => import('../components/SubtitleQAReview'))
@@ -913,7 +912,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         )}
 
         {status === 'completed' && result && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Teaser card for guests */}
             {showAuthGate && !isLoggedIn() && (
               <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
@@ -956,197 +955,223 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               </div>
             )}
 
-            {/* Full result — hidden until signed in */}
             {(!showAuthGate || isLoggedIn()) && (
-            <SubtitleResult
-              fileName={result.fileName ?? fallbackSubtitleName}
-              processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
-              format={format.toUpperCase() as 'SRT' | 'VTT'}
-              onDownload={
-                plan === 'free'
-                  ? async () => {
-                      if (freeExportsUsed >= 2) {
-                        toast('You\'ve used your 2 free downloads. Upgrade for more.')
-                        return
-                      }
-                      try {
-                        const token = getAuthToken()
-                        const res = await fetch(getDownloadUrl() + '?wm=1', {
-                          headers: token ? { Authorization: `Bearer ${token}` } : {},
-                        })
-                        const blob = await res.blob()
-                        const a = document.createElement('a')
-                        a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || fallbackSubtitleName
-                        a.click()
-                        URL.revokeObjectURL(a.href)
-                        trackAppEvent('export_clicked', { toolId: 'video-to-subtitles' })
-                        try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format, plan: 'free' }) } catch { /* non-blocking */ }
-                        setFreeExportsUsed((prev) => prev + 1)
-                        toast.success('Download started (with watermark)')
-                      } catch {
-                        toast.error('Download failed')
-                      }
-                    }
-                  : async () => {
-                      try {
-                        if (subtitleRows.length > 0) {
-                          // Serve the client-side rows — reflects any edits made in the QA panel
-                          const isVtt = currentResultFormat === 'vtt'
-                          const content = isVtt ? rowsToVtt(subtitleRows) : rowsToSrt(subtitleRows)
-                          const blob = new Blob([content], { type: 'text/plain' })
-                          const a = document.createElement('a')
-                          a.href = URL.createObjectURL(blob)
-                          a.download = result?.fileName || fallbackSubtitleName
-                          a.click()
-                          URL.revokeObjectURL(a.href)
-                        } else {
-                          // Fallback for ZIP / multi-language results where rows aren't loaded
-                          const token = getAuthToken()
-                          const res = await fetch(getDownloadUrl() + '?wm=1', {
-                            headers: token ? { Authorization: `Bearer ${token}` } : {},
-                          })
-                          const blob = await res.blob()
-                          const a = document.createElement('a')
-                          a.href = URL.createObjectURL(blob)
-                          a.download = result?.fileName || fallbackSubtitleName
-                          a.click()
-                          URL.revokeObjectURL(a.href)
-                        }
-                        try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format, plan: 'paid' }) } catch { /* non-blocking */ }
-                      } catch {
-                        toast.error('Download failed')
-                      }
-                    }
-              }
-              onProcessAnother={handleProcessAnother}
-              relatedTools={[]}
-            />
-            )}{/* end gate-hidden result */}
-            <div className="mt-2 min-h-[2.75rem]">
-            {/* <WorkflowChainSuggestion
-              pathname={location.pathname}
-              plan={plan}
-              lastJobCompletedToolId={lastJobCompletedToolId}
-            /> */}
-            </div>
+              <div className="space-y-4">
+                {/* ── Compact success bar ──────────────────────────────────── */}
+                <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/20">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">Subtitles ready</span>
+                    {lastProcessingMs != null && (
+                      <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">· {(lastProcessingMs / 1000).toFixed(1)}s ⚡</span>
+                    )}
+                    <span className="text-xs text-gray-400 dark:text-gray-500 truncate hidden sm:block">— {result.fileName ?? fallbackSubtitleName}</span>
+                  </div>
+                  <button
+                    onClick={handleProcessAnother}
+                    className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors shrink-0"
+                  >
+                    Process another →
+                  </button>
+                </div>
 
-            {subtitleRows.length > 0 && (
-              <div className="space-y-2">
-                <Suspense fallback={<div className="h-64 rounded-xl bg-gray-900 animate-pulse" />}>
-                  <SubtitleQAReview
-                    videoSrc={videoPreviewUrl}
-                    rows={subtitleRows}
-                    onRowsChange={canEdit ? setSubtitleRows : () => {}}
-                    editable={canEdit}
-                    onDownloadEdited={() => {
-                      const isVtt = currentResultFormat === 'vtt'
-                      const content = isVtt ? rowsToVtt(subtitleRows) : rowsToSrt(subtitleRows)
-                      const blob = new Blob([content], { type: 'text/plain' })
-                      const url = URL.createObjectURL(blob)
-                      const a = document.createElement('a')
-                      a.href = url
-                      a.download = result.fileName || fallbackSubtitleName
-                      a.click()
-                      URL.revokeObjectURL(url)
-                      try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: isVtt ? 'vtt' : 'srt', edited: true }) } catch { /* non-blocking */ }
-                    }}
-                  />
-                </Suspense>
-                {!canEdit && (
-                  <p className="text-xs text-gray-500 px-1">
+                {/* ── QA Editor — primary UI ───────────────────────────────── */}
+                {subtitleRows.length > 0 && (
+                  <Suspense fallback={<div className="h-[300px] rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />}>
+                    <SubtitleQAReview
+                      videoSrc={videoPreviewUrl}
+                      rows={subtitleRows}
+                      onRowsChange={canEdit ? setSubtitleRows : () => {}}
+                      editable={canEdit}
+                      onDownloadEdited={() => {
+                        const isVtt = currentResultFormat === 'vtt'
+                        const content = isVtt ? rowsToVtt(subtitleRows) : rowsToSrt(subtitleRows)
+                        const blob = new Blob([content], { type: 'text/plain' })
+                        const url = URL.createObjectURL(blob)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.download = result.fileName || fallbackSubtitleName
+                        a.click()
+                        URL.revokeObjectURL(url)
+                        try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: isVtt ? 'vtt' : 'srt', edited: true }) } catch { /* non-blocking */ }
+                      }}
+                    />
+                  </Suspense>
+                )}
+                {!canEdit && subtitleRows.length > 0 && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 px-1">
                     Upgrade to Basic to edit subtitle text. Click any cue to seek and play the video.
                   </p>
                 )}
+
+                {/* ── Export card ──────────────────────────────────────────── */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden">
+                  {/* Header */}
+                  <div className="px-5 py-3.5 flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40">
+                    <FileDown className="h-4 w-4 text-gray-500 dark:text-gray-400 shrink-0" strokeWidth={1.5} />
+                    <span className="text-sm font-semibold text-gray-800 dark:text-white">Export</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500 truncate ml-1 hidden sm:block">{result.fileName ?? fallbackSubtitleName}</span>
+                    {plan === 'free' && (
+                      <span className="ml-auto text-xs text-gray-400 dark:text-gray-500 shrink-0">{freeExportsUsed}/2 free downloads</span>
+                    )}
+                  </div>
+
+                  <div className="p-5 space-y-4">
+                    {/* Primary download */}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <button
+                        onClick={
+                          plan === 'free'
+                            ? async () => {
+                                if (freeExportsUsed >= 2) {
+                                  toast("You've used your 2 free downloads. Upgrade for more.")
+                                  return
+                                }
+                                try {
+                                  const token = getAuthToken()
+                                  const res = await fetch(getDownloadUrl() + '?wm=1', {
+                                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                                  })
+                                  const blob = await res.blob()
+                                  const a = document.createElement('a')
+                                  a.href = URL.createObjectURL(blob)
+                                  a.download = result?.fileName || fallbackSubtitleName
+                                  a.click()
+                                  URL.revokeObjectURL(a.href)
+                                  trackAppEvent('export_clicked', { toolId: 'video-to-subtitles' })
+                                  try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format, plan: 'free' }) } catch { /* non-blocking */ }
+                                  setFreeExportsUsed((prev) => prev + 1)
+                                  toast.success('Download started (with watermark)')
+                                } catch {
+                                  toast.error('Download failed')
+                                }
+                              }
+                            : async () => {
+                                try {
+                                  if (subtitleRows.length > 0) {
+                                    const isVtt = currentResultFormat === 'vtt'
+                                    const content = isVtt ? rowsToVtt(subtitleRows) : rowsToSrt(subtitleRows)
+                                    const blob = new Blob([content], { type: 'text/plain' })
+                                    const a = document.createElement('a')
+                                    a.href = URL.createObjectURL(blob)
+                                    a.download = result?.fileName || fallbackSubtitleName
+                                    a.click()
+                                    URL.revokeObjectURL(a.href)
+                                  } else {
+                                    const token = getAuthToken()
+                                    const res = await fetch(getDownloadUrl() + '?wm=1', {
+                                      headers: token ? { Authorization: `Bearer ${token}` } : {},
+                                    })
+                                    const blob = await res.blob()
+                                    const a = document.createElement('a')
+                                    a.href = URL.createObjectURL(blob)
+                                    a.download = result?.fileName || fallbackSubtitleName
+                                    a.click()
+                                    URL.revokeObjectURL(a.href)
+                                  }
+                                  try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format, plan: 'paid' }) } catch { /* non-blocking */ }
+                                } catch {
+                                  toast.error('Download failed')
+                                }
+                              }
+                        }
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors shadow-sm"
+                      >
+                        <FileDown className="h-4 w-4" />
+                        Download {currentResultFormat.toUpperCase()}
+                        {plan === 'free' && <span className="text-blue-200 font-normal text-xs ml-0.5">· watermark</span>}
+                      </button>
+                      {subtitleRows.length > 0 && (
+                        <span className="text-xs text-gray-400 dark:text-gray-500">
+                          {subtitleRows.length} cues · reflects any edits
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Convert to different format */}
+                    <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Convert to another format</p>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <select
+                          value={plan === 'free' ? 'srt' : convertTargetFormat}
+                          onChange={(e) => setConvertTargetFormat(e.target.value as 'srt' | 'vtt' | 'txt')}
+                          className="px-2.5 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          disabled={plan === 'free'}
+                        >
+                          <option value="srt">SRT</option>
+                          {plan !== 'free' && (
+                            <>
+                              <option value="vtt">VTT</option>
+                              <option value="txt">TXT (plain text)</option>
+                            </>
+                          )}
+                        </select>
+                        <button
+                          onClick={handleConvertFormat}
+                          disabled={convertProgress}
+                          className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          {convertProgress ? 'Converting…' : `Get as ${(plan === 'free' ? 'srt' : convertTargetFormat).toUpperCase()}`}
+                        </button>
+                        {plan === 'free' && (
+                          <span className="text-xs text-gray-400 dark:text-gray-500">Free: SRT only. <Link to="/pricing" className="text-blue-600 hover:underline">Upgrade for VTT →</Link></span>
+                        )}
+                      </div>
+                      {convertPreview !== null && (
+                        <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg max-h-40 overflow-y-auto border border-gray-100 dark:border-gray-800">
+                          <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Preview (first 30 lines)</p>
+                          <pre className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono">{convertPreview}</pre>
+                        </div>
+                      )}
+                      {plan === 'free' && convertDownloadUrl && freeExportsUsed < 2 && (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (!convertDownloadUrl || freeExportsUsed >= 2) return
+                            try {
+                              const token = getAuthToken()
+                              const res = await fetch(convertDownloadUrl + '?wm=1', {
+                                headers: token ? { Authorization: `Bearer ${token}` } : {},
+                              })
+                              const ext = convertTargetFormat === 'srt' ? 'srt' : convertTargetFormat === 'vtt' ? 'vtt' : 'txt'
+                              const blob = await res.blob()
+                              const a = document.createElement('a')
+                              a.href = URL.createObjectURL(blob)
+                              a.download = joinExportFilename(
+                                exportFileStem(selectedFile?.name, 'video'),
+                                `subtitles_converted_${convertTargetFormat}`,
+                                `.${ext}`
+                              )
+                              a.click()
+                              URL.revokeObjectURL(a.href)
+                              try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: convertTargetFormat, plan: 'free' }) } catch { /* non-blocking */ }
+                              setFreeExportsUsed((prev) => prev + 1)
+                              setConvertDownloadUrl(null)
+                              toast.success('Download started (with watermark)')
+                            } catch {
+                              toast.error('Download failed')
+                            }
+                          }}
+                          className="mt-3 text-sm font-medium text-blue-600 hover:text-blue-700"
+                        >
+                          Download converted file with watermark
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <CrossToolSuggestions
+                  workflowHint="Your last file is pre-filled on the next tool."
+                  suggestions={[
+                    { icon: Languages, title: 'Translate Subtitles', path: '/translate-subtitles', description: 'Translate to another language' },
+                    { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn into video', state: { useWorkflowVideo: true } },
+                    { icon: Wrench, title: 'Fix Subtitles', path: '/fix-subtitles', description: 'Fix timing & format' },
+                    { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
+                  ]}
+                />
               </div>
             )}
-
-            {/* Phase 1B — UTILITY 2B: Convert format. Derived from subtitle files; free: preview 30 lines, paid: full download. */}
-            <div className="bg-white rounded-xl p-6 shadow-card">
-              <h3 className="text-lg font-medium text-gray-800 mb-2 flex items-center gap-2">
-                <FileDown className="h-5 w-5 text-blue-600" strokeWidth={1.5} />
-                Convert format
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">Download subtitles in another format (SRT, VTT, or plain text).</p>
-              <div className="flex flex-wrap items-center gap-3">
-                <select
-                  value={plan === 'free' ? 'srt' : convertTargetFormat}
-                  onChange={(e) => setConvertTargetFormat(e.target.value as 'srt' | 'vtt' | 'txt')}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                  disabled={plan === 'free'}
-                >
-                  <option value="srt">SRT</option>
-                  {plan !== 'free' && (
-                    <>
-                      <option value="vtt">VTT</option>
-                      <option value="txt">TXT (plain text)</option>
-                    </>
-                  )}
-                </select>
-                <button
-                  onClick={handleConvertFormat}
-                  disabled={convertProgress}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {convertProgress ? 'Converting…' : `Get as ${convertTargetFormat.toUpperCase()}`}
-                </button>
-              </div>
-              {plan === 'free' && (
-                <p className="text-xs text-gray-500 mt-2">
-                  Free plan: SRT only. Preview below. You can download 1 format with watermark ({freeExportsUsed}/2 total downloads used).
-                </p>
-              )}
-              {convertPreview !== null && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg max-h-48 overflow-y-auto">
-                  <p className="text-xs font-medium text-gray-700 mb-2">Preview (first 30 lines)</p>
-                  <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono">{convertPreview}</pre>
-                </div>
-              )}
-              {plan === 'free' && convertDownloadUrl && freeExportsUsed < 2 && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (!convertDownloadUrl || freeExportsUsed >= 2) return
-                    try {
-                      const token = getAuthToken()
-                      const res = await fetch(convertDownloadUrl + '?wm=1', {
-                        headers: token ? { Authorization: `Bearer ${token}` } : {},
-                      })
-                      const ext = convertTargetFormat === 'srt' ? 'srt' : convertTargetFormat === 'vtt' ? 'vtt' : 'txt'
-                      const blob = await res.blob()
-                      const a = document.createElement('a')
-                      a.href = URL.createObjectURL(blob)
-                      a.download = joinExportFilename(
-                        exportFileStem(selectedFile?.name, 'video'),
-                        `subtitles_converted_${convertTargetFormat}`,
-                        `.${ext}`
-                      )
-                      a.click()
-                      URL.revokeObjectURL(a.href)
-                      try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: convertTargetFormat, plan: 'free' }) } catch { /* non-blocking */ }
-                      setFreeExportsUsed((prev) => prev + 1)
-                      setConvertDownloadUrl(null)
-                      toast.success('Download started (with watermark)')
-                    } catch {
-                      toast.error('Download failed')
-                    }
-                  }}
-                  className="mt-3 text-sm font-medium text-blue-600 hover:text-blue-700"
-                >
-                  Download converted file with watermark
-                </button>
-              )}
-            </div>
-
-            <CrossToolSuggestions
-              workflowHint="Your last file is pre-filled on the next tool."
-              suggestions={[
-                { icon: Languages, title: 'Translate Subtitles', path: '/translate-subtitles', description: 'Translate to another language' },
-                { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn into video', state: { useWorkflowVideo: true } },
-                { icon: Wrench, title: 'Fix Subtitles', path: '/fix-subtitles', description: 'Fix timing & format' },
-                { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
-              ]}
-            />
           </div>
         )}
 
