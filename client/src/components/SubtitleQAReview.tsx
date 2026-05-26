@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import {
   Play, Pause, RotateCcw, Volume2, VolumeX, ChevronDown, ChevronUp,
   ChevronLeft, ChevronRight, AlertTriangle, AlertCircle, CheckCircle2,
-  Repeat, Download, Eye, EyeOff, X,
+  Repeat, Download, Eye, EyeOff, X, Pencil,
 } from 'lucide-react'
 import type { SubtitleRow } from './SubtitleEditor'
 import { parseTimeToMs } from '../lib/subtitleUtils'
@@ -182,6 +182,7 @@ export default function SubtitleQAReview({
   const [editingIdx, setEditingIdx] = useState<number | null>(null)
   const [editDraft, setEditDraft] = useState('')
   const [showReviewed, setShowReviewed] = useState(true)
+  const [editMode, setEditMode] = useState(false)
 
   const parsedCues = useMemo(() => parseCues(rows), [rows])
   const issues = useMemo(() => runValidation(parsedCues), [parsedCues])
@@ -395,6 +396,20 @@ export default function SubtitleQAReview({
           </button>
           {editable && (
             <button
+              onClick={() => setEditMode(m => !m)}
+              title={editMode ? 'Exit edit mode' : 'Edit subtitle text'}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                editMode
+                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 ring-1 ring-blue-300 dark:ring-blue-700'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{editMode ? 'Editing' : 'Edit'}</span>
+            </button>
+          )}
+          {editable && (
+            <button
               onClick={onDownloadEdited}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors shadow-sm"
             >
@@ -404,6 +419,14 @@ export default function SubtitleQAReview({
           )}
         </div>
       </div>
+
+      {/* ── Edit mode banner ───────────────────────────────────────────── */}
+      {editMode && editable && (
+        <div className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800/50 flex items-center gap-2">
+          <Pencil className="h-3 w-3 text-blue-500 dark:text-blue-400 shrink-0" />
+          <span className="text-[11px] text-blue-600 dark:text-blue-400">Click any subtitle to edit · Enter to save · Esc to cancel</span>
+        </div>
+      )}
 
       {/* ── Main split layout ───────────────────────────────────────────── */}
       <div className="flex flex-col lg:flex-row" style={{ height: 'clamp(300px, 40vh, 420px)' }}>
@@ -634,9 +657,14 @@ export default function SubtitleQAReview({
                       ) : (
                         <>
                           <p
-                            className="text-xs leading-snug text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words line-clamp-2"
+                            className={`text-xs leading-snug text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words line-clamp-2 rounded transition-colors ${
+                              editMode
+                                ? 'cursor-text px-1 -mx-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:ring-1 hover:ring-blue-200 dark:hover:ring-blue-800'
+                                : ''
+                            }`}
+                            onClick={editMode ? e => startEdit(e, idx) : undefined}
                             onDoubleClick={e => startEdit(e, idx)}
-                            title={editable ? 'Double-click to edit' : undefined}
+                            title={editMode ? 'Click to edit' : editable ? 'Double-click to edit' : undefined}
                           >
                             {cue.text || <em className="text-gray-400 dark:text-gray-600">empty</em>}
                           </p>
