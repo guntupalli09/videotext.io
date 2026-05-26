@@ -1091,71 +1091,38 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                     {/* Convert to different format */}
                     <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
                       <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Convert to another format</p>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <select
-                          value={plan === 'free' ? 'srt' : convertTargetFormat}
-                          onChange={(e) => setConvertTargetFormat(e.target.value as 'srt' | 'vtt' | 'txt')}
-                          className="px-2.5 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                          disabled={plan === 'free'}
-                        >
-                          <option value="srt">SRT</option>
-                          {plan !== 'free' && (
-                            <>
+                      {plan === 'free' ? (
+                        <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">VTT and TXT export available on paid plans.</span>
+                          <Link to="/pricing" className="ml-auto shrink-0 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">Upgrade →</Link>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex flex-wrap items-center gap-3">
+                            <select
+                              value={convertTargetFormat}
+                              onChange={(e) => setConvertTargetFormat(e.target.value as 'srt' | 'vtt' | 'txt')}
+                              className="px-2.5 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            >
+                              <option value="srt">SRT</option>
                               <option value="vtt">VTT</option>
                               <option value="txt">TXT (plain text)</option>
-                            </>
+                            </select>
+                            <button
+                              onClick={handleConvertFormat}
+                              disabled={convertProgress}
+                              className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                              {convertProgress ? 'Converting…' : `Get as ${convertTargetFormat.toUpperCase()}`}
+                            </button>
+                          </div>
+                          {convertPreview !== null && (
+                            <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg max-h-40 overflow-y-auto border border-gray-100 dark:border-gray-800">
+                              <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Preview (first 30 lines)</p>
+                              <pre className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono">{convertPreview}</pre>
+                            </div>
                           )}
-                        </select>
-                        <button
-                          onClick={handleConvertFormat}
-                          disabled={convertProgress}
-                          className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                          {convertProgress ? 'Converting…' : `Get as ${(plan === 'free' ? 'srt' : convertTargetFormat).toUpperCase()}`}
-                        </button>
-                        {plan === 'free' && (
-                          <span className="text-xs text-gray-400 dark:text-gray-500">Free: SRT only. <Link to="/pricing" className="text-blue-600 hover:underline">Upgrade for VTT →</Link></span>
-                        )}
-                      </div>
-                      {convertPreview !== null && (
-                        <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg max-h-40 overflow-y-auto border border-gray-100 dark:border-gray-800">
-                          <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Preview (first 30 lines)</p>
-                          <pre className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono">{convertPreview}</pre>
-                        </div>
-                      )}
-                      {plan === 'free' && convertDownloadUrl && freeExportsUsed < 2 && (
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            if (!convertDownloadUrl || freeExportsUsed >= 2) return
-                            try {
-                              const token = getAuthToken()
-                              const res = await fetch(convertDownloadUrl + '?wm=1', {
-                                headers: token ? { Authorization: `Bearer ${token}` } : {},
-                              })
-                              const ext = convertTargetFormat === 'srt' ? 'srt' : convertTargetFormat === 'vtt' ? 'vtt' : 'txt'
-                              const blob = await res.blob()
-                              const a = document.createElement('a')
-                              a.href = URL.createObjectURL(blob)
-                              a.download = joinExportFilename(
-                                exportFileStem(selectedFile?.name, 'video'),
-                                `subtitles_converted_${convertTargetFormat}`,
-                                `.${ext}`
-                              )
-                              a.click()
-                              URL.revokeObjectURL(a.href)
-                              try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: convertTargetFormat, plan: 'free' }) } catch { /* non-blocking */ }
-                              setFreeExportsUsed((prev) => prev + 1)
-                              setConvertDownloadUrl(null)
-                              toast.success('Download started (with watermark)')
-                            } catch {
-                              toast.error('Download failed')
-                            }
-                          }}
-                          className="mt-3 text-sm font-medium text-blue-600 hover:text-blue-700"
-                        >
-                          Download converted file with watermark
-                        </button>
+                        </>
                       )}
                     </div>
                   </div>
