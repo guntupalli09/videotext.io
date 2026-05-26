@@ -89,7 +89,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [convertTargetFormat, setConvertTargetFormat] = useState<'srt' | 'vtt' | 'txt'>('srt')
   const [convertProgress, setConvertProgress] = useState(false)
   const [convertPreview, setConvertPreview] = useState<string | null>(null)
-  const [convertDownloadUrl, setConvertDownloadUrl] = useState<string | null>(null)
   const rehydratePollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const activeUploadPollRef = useRef<(() => void) | null>(null)
   const pollConsecutiveNetworkErrorsRef = useRef(0)
@@ -749,7 +748,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               const text = await prevRes.text()
               const lines = text.split(/\n\n|\n/).slice(0, 30)
               setConvertPreview(lines.join('\n'))
-              setConvertDownloadUrl(convertedUrl)
             } else {
               window.open(convertedUrl, '_blank')
             }
