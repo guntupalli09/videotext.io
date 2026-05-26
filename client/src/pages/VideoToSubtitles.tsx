@@ -443,6 +443,16 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       .join('\n\n')
   }
 
+  const rowsToVtt = (rows: SubtitleRow[]): string => {
+    const lines = ['WEBVTT', '']
+    rows.forEach((r) => {
+      lines.push(`${r.startTime.replace(',', '.')} --> ${r.endTime.replace(',', '.')}`)
+      lines.push(r.text)
+      lines.push('')
+    })
+    return lines.join('\n')
+  }
+
   const handleProcess = async (trimStartPercent?: number, trimEndPercent?: number) => {
     if (!selectedFile) {
       toast.error('Please select a file')
@@ -980,16 +990,29 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                     }
                   : async () => {
                       try {
-                        const token = getAuthToken()
-                        const res = await fetch(getDownloadUrl() + '?wm=1', {
-                          headers: token ? { Authorization: `Bearer ${token}` } : {},
-                        })
-                        const blob = await res.blob()
-                        const a = document.createElement('a')
-                        a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || fallbackSubtitleName
-                        a.click()
-                        URL.revokeObjectURL(a.href)
+                        if (subtitleRows.length > 0) {
+                          // Serve the client-side rows — reflects any edits made in the QA panel
+                          const isVtt = currentResultFormat === 'vtt'
+                          const content = isVtt ? rowsToVtt(subtitleRows) : rowsToSrt(subtitleRows)
+                          const blob = new Blob([content], { type: 'text/plain' })
+                          const a = document.createElement('a')
+                          a.href = URL.createObjectURL(blob)
+                          a.download = result?.fileName || fallbackSubtitleName
+                          a.click()
+                          URL.revokeObjectURL(a.href)
+                        } else {
+                          // Fallback for ZIP / multi-language results where rows aren't loaded
+                          const token = getAuthToken()
+                          const res = await fetch(getDownloadUrl() + '?wm=1', {
+                            headers: token ? { Authorization: `Bearer ${token}` } : {},
+                          })
+                          const blob = await res.blob()
+                          const a = document.createElement('a')
+                          a.href = URL.createObjectURL(blob)
+                          a.download = result?.fileName || fallbackSubtitleName
+                          a.click()
+                          URL.revokeObjectURL(a.href)
+                        }
                         try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format, plan: 'paid' }) } catch { /* non-blocking */ }
                       } catch {
                         toast.error('Download failed')
@@ -1017,15 +1040,16 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                     onRowsChange={canEdit ? setSubtitleRows : () => {}}
                     editable={canEdit}
                     onDownloadEdited={() => {
-                      const content = rowsToSrt(subtitleRows)
+                      const isVtt = currentResultFormat === 'vtt'
+                      const content = isVtt ? rowsToVtt(subtitleRows) : rowsToSrt(subtitleRows)
                       const blob = new Blob([content], { type: 'text/plain' })
                       const url = URL.createObjectURL(blob)
                       const a = document.createElement('a')
                       a.href = url
-                      a.download = (result.fileName || fallbackSubtitleName).replace(/\.vtt$/i, '.srt')
+                      a.download = result.fileName || fallbackSubtitleName
                       a.click()
                       URL.revokeObjectURL(url)
-                      try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: 'srt', edited: true }) } catch { /* non-blocking */ }
+                      try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: isVtt ? 'vtt' : 'srt', edited: true }) } catch { /* non-blocking */ }
                     }}
                   />
                 </Suspense>
