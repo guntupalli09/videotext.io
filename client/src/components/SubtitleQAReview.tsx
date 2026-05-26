@@ -37,7 +37,7 @@ interface QAIssue {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const ROW_HEIGHT = 96
+const ROW_HEIGHT = 76
 const OVERSCAN = 6
 const SPEED_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const
 
@@ -175,7 +175,7 @@ export default function SubtitleQAReview({
   const [isLoopingCue, setIsLoopingCue] = useState(false)
   const [loopRange] = useState<[number, number] | null>(null)
   const [reviewed, setReviewed] = useState<Set<number>>(new Set())
-  const [issuesOpen, setIssuesOpen] = useState(true)
+  const [issuesOpen, setIssuesOpen] = useState(false)
   const [activeIssuePtr, setActiveIssuePtr] = useState(0)
   const [listScrollTop, setListScrollTop] = useState(0)
   const [listHeight, setListHeight] = useState(480)
@@ -406,10 +406,10 @@ export default function SubtitleQAReview({
       </div>
 
       {/* ── Main split layout ───────────────────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row" style={{ height: 'clamp(380px, 58vh, 620px)' }}>
+      <div className="flex flex-col lg:flex-row" style={{ height: 'clamp(300px, 40vh, 420px)' }}>
 
         {/* ── Left: Video Player ──────────────────────────────────────── */}
-        <div className="w-full lg:w-[52%] flex flex-col border-b border-gray-200 dark:border-gray-800 lg:border-b-0 lg:border-r bg-black">
+        <div className="w-full lg:w-[40%] flex flex-col border-b border-gray-200 dark:border-gray-800 lg:border-b-0 lg:border-r bg-black">
           {videoSrc ? (
             <>
               {/* Video area */}
@@ -439,7 +439,7 @@ export default function SubtitleQAReview({
               </div>
 
               {/* Controls */}
-              <div className="px-3 py-2.5 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 space-y-2 shrink-0">
+              <div className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 space-y-1.5 shrink-0">
                 {/* Seek bar */}
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-mono text-gray-500 dark:text-gray-400 tabular-nums w-9 shrink-0">{fmtTime(currentTime)}</span>
@@ -537,10 +537,6 @@ export default function SubtitleQAReview({
                   />
                 </div>
 
-                {/* Keyboard hint */}
-                <p className="text-[10px] text-gray-400 dark:text-gray-600 leading-none">
-                  Click panel → <kbd className="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500 border border-gray-200 dark:border-gray-700">↑↓</kbd> navigate · <kbd className="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500 border border-gray-200 dark:border-gray-700">Enter</kbd> play · double-click to edit
-                </p>
               </div>
             </>
           ) : (
@@ -557,7 +553,7 @@ export default function SubtitleQAReview({
         </div>
 
         {/* ── Right: Subtitle list (virtualized) ──────────────────────── */}
-        <div className="w-full lg:w-[48%] flex flex-col bg-white dark:bg-gray-900 min-h-0">
+        <div className="w-full lg:w-[60%] flex flex-col bg-white dark:bg-gray-900 min-h-0">
           {/* Column headers */}
           <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 shrink-0">
             <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.06em] text-gray-500 dark:text-gray-500">
@@ -603,7 +599,7 @@ export default function SubtitleQAReview({
                   <div
                     key={idx}
                     style={{ position: 'absolute', top: idx * ROW_HEIGHT, height: ROW_HEIGHT, left: 0, right: 0 }}
-                    className={`flex items-start gap-2 px-3 py-2.5 border-b border-gray-100 dark:border-gray-800 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50 ${getRowClasses(idx)}`}
+                    className={`flex items-start gap-2 px-3 py-2 border-b border-gray-100 dark:border-gray-800 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50 ${getRowClasses(idx)}`}
                     onClick={() => seekToCue(idx, true)}
                   >
                     {/* Cue number */}
@@ -638,7 +634,7 @@ export default function SubtitleQAReview({
                       ) : (
                         <>
                           <p
-                            className="text-xs leading-snug text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words line-clamp-3"
+                            className="text-xs leading-snug text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words line-clamp-2"
                             onDoubleClick={e => startEdit(e, idx)}
                             title={editable ? 'Double-click to edit' : undefined}
                           >
@@ -746,7 +742,7 @@ export default function SubtitleQAReview({
 
           {/* Issue list */}
           {issuesOpen && (
-            <div className="max-h-44 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800">
+            <div className="max-h-32 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800">
               {issues.map((issue, i) => (
                 <button
                   key={i}
