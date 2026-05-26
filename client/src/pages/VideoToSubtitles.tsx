@@ -18,6 +18,7 @@ import { SubtitleResult } from '../components/figma/SubtitleResult'
 import { RadioGroup, Select } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
+const SubtitleQAReview = lazy(() => import('../components/SubtitleQAReview'))
 import { incrementUsage } from '../lib/usage'
 import { uploadFile, uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob } from '../lib/api'
 import { isLoggedIn } from '../lib/auth'
@@ -1009,19 +1010,14 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             </div>
 
             {subtitleRows.length > 0 && (
-              <div className="bg-white rounded-xl p-6 shadow-card">
-                <Suspense fallback={null}>
-                  <SubtitleEditor
-                    entries={subtitleRows}
+              <div className="space-y-2">
+                <Suspense fallback={<div className="h-64 rounded-xl bg-gray-900 animate-pulse" />}>
+                  <SubtitleQAReview
+                    videoSrc={videoPreviewUrl}
+                    rows={subtitleRows}
+                    onRowsChange={canEdit ? setSubtitleRows : () => {}}
                     editable={canEdit}
-                    onChange={setSubtitleRows}
-                  />
-                </Suspense>
-
-                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                  <button
-                    disabled={!canEdit}
-                    onClick={() => {
+                    onDownloadEdited={() => {
                       const content = rowsToSrt(subtitleRows)
                       const blob = new Blob([content], { type: 'text/plain' })
                       const url = URL.createObjectURL(blob)
@@ -1032,29 +1028,13 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                       URL.revokeObjectURL(url)
                       try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: 'srt', edited: true }) } catch { /* non-blocking */ }
                     }}
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
-                  >
-                    Download Edited Subtitles
-                  </button>
-                  {!canEdit && (
-                    <div className="text-xs text-gray-500">
-                      Upgrade to Basic to edit subtitles (timestamps stay locked).
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {result.warnings && result.warnings.length > 0 && (
-              <div className="bg-amber-50/80 rounded-xl p-6 shadow-card border border-amber-100">
-                <h3 className="text-lg font-medium text-amber-800 mb-2">Validation (informational)</h3>
-                <p className="text-sm text-amber-900 mb-2">Some lines may need attention. Not blocking.</p>
-                <ul className="text-sm text-amber-900 space-y-1">
-                  {result.warnings.slice(0, 8).map((w, i) => (
-                    <li key={i}>{w.line != null ? `Line ${w.line}: ` : ''}{w.message}</li>
-                  ))}
-                  {result.warnings.length > 8 && <li>… and {result.warnings.length - 8} more</li>}
-                </ul>
+                  />
+                </Suspense>
+                {!canEdit && (
+                  <p className="text-xs text-gray-500 px-1">
+                    Upgrade to Basic to edit subtitle text. Click any cue to seek and play the video.
+                  </p>
+                )}
               </div>
             )}
 
