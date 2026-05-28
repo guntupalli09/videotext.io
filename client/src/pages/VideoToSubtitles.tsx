@@ -1272,29 +1272,29 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                         )}
                       </div>
                     </div>
+
+                  {(() => {
+                    const jid = currentJobId || getPersistedJobId(location.pathname)
+                    const jtok = getPersistedJobToken(location.pathname)
+                    if (!jid || !jtok || subtitleRows.length === 0) return null
+                    const toSegments = (rows: SubtitleRow[]) =>
+                      rows.map((r) => ({ start: srtTimeToSeconds(r.startTime), end: srtTimeToSeconds(r.endTime), text: r.text }))
+                    return (
+                      <TranscriptSharePanel
+                        jobId={jid}
+                        jobToken={jtok}
+                        sourceTool="video-to-subtitles"
+                        title={selectedFile?.name || result.fileName || 'Subtitles'}
+                        originalFullText={subtitleRows.map((r) => r.text).join('\n')}
+                        translatedFullText={translatedSubtitleRows.length > 0 ? translatedSubtitleRows.map((r) => r.text).join('\n') : null}
+                        translationLanguage={translationLanguage}
+                        segments={toSegments(subtitleRows)}
+                        translatedSegments={translatedSubtitleRows.length > 0 ? toSegments(translatedSubtitleRows) : undefined}
+                      />
+                    )
+                  })()}
                   </aside>
                 </div>
-
-                {(() => {
-                  const jid = currentJobId || getPersistedJobId(location.pathname)
-                  const jtok = getPersistedJobToken(location.pathname)
-                  if (!jid || !jtok || subtitleRows.length === 0) return null
-                  const toSegments = (rows: SubtitleRow[]) =>
-                    rows.map((r) => ({ start: srtTimeToSeconds(r.startTime), end: srtTimeToSeconds(r.endTime), text: r.text }))
-                  return (
-                    <TranscriptSharePanel
-                      jobId={jid}
-                      jobToken={jtok}
-                      sourceTool="video-to-subtitles"
-                      title={selectedFile?.name || result.fileName || 'Subtitles'}
-                      originalFullText={subtitleRows.map((r) => r.text).join('\n')}
-                      translatedFullText={translatedSubtitleRows.length > 0 ? translatedSubtitleRows.map((r) => r.text).join('\n') : null}
-                      translationLanguage={translationLanguage}
-                      segments={toSegments(subtitleRows)}
-                      translatedSegments={translatedSubtitleRows.length > 0 ? toSegments(translatedSubtitleRows) : undefined}
-                    />
-                  )
-                })()}
               </div>
             )}
           </div>
