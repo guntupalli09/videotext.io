@@ -24,7 +24,8 @@ import { getFailureMessage } from '../lib/failureMessage'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
-import { getAbsoluteDownloadUrl } from '../lib/apiBase'
+import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
+import { LANGUAGES } from '../lib/languages'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
 import { trackEvent, trackFirstOutputSeen } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
@@ -102,6 +103,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const [failedMessage, setFailedMessage] = useState<string | undefined>(undefined)
+  const [translationLanguage, setTranslationLanguage] = useState<string | null>(null)
+  const [translatedSubtitleRows, setTranslatedSubtitleRows] = useState<SubtitleRow[]>([])
+  const [subtitleView, setSubtitleView] = useState<'original' | 'translated'>('original')
+  const [isTranslating, setIsTranslating] = useState(false)
 
   const fallbackSubtitleName = useMemo(() => {
     const ext = format === 'vtt' ? '.vtt' : '.srt'
@@ -122,6 +127,31 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       setShowAuthModal(true)
     }
   }, [status])
+
+  // Auto-translate subtitles when rows are ready and a translation language is selected
+  useEffect(() => {
+    if (!translationLanguage || subtitleRows.length === 0) return
+    if (translatedSubtitleRows.length > 0) return
+    const srtText = rowsToSrt(subtitleRows)
+    setIsTranslating(true)
+    const token = getAuthToken()
+    fetch(`${getApiBase()}/api/translate-subtitles/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ text: srtText, targetLanguage: translationLanguage }),
+    })
+      .then((r) => r.json())
+      .then(({ translatedText }: { translatedText?: string }) => {
+        if (translatedText) {
+          setTranslatedSubtitleRows(parseSubtitlesToRows(translatedText))
+        }
+      })
+      .catch(() => toast.error('Subtitle translation failed. Please try again.'))
+      .finally(() => setIsTranslating(false))
+  }, [subtitleRows, translationLanguage]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const canEdit = ['basic', 'pro', 'agency'].includes(plan)
@@ -706,6 +736,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setResult(null)
     setSubtitleRows([])
     setPartialSegments([])
+    setTranslationLanguage(null)
+    setTranslatedSubtitleRows([])
+    setSubtitleView('original')
+    setIsTranslating(false)
   }
 
   const getDownloadUrl = () => {
@@ -850,6 +884,21 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                 value={language}
                 onChange={setLanguage}
               />
+              <div>
+                <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                  Translate subtitles to <span className="text-gray-400">(optional)</span>
+                </label>
+                <select
+                  value={translationLanguage ?? ''}
+                  onChange={(e) => setTranslationLanguage(e.target.value || null)}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                >
+                  <option value="">— None —</option>
+                  {LANGUAGES.map((l) => (
+                    <option key={l.value} value={l.value}>{l.label}</option>
+                  ))}
+                </select>
+              </div>
               {canMultiLanguage && (
                 <LanguageSelector
                   primaryLanguage={language || 'en'}
@@ -973,17 +1022,62 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                   </button>
                 </div>
 
+                {/* ── Translation toggle ───────────────────────────────────── */}
+                {translationLanguage && (
+                  <div className="flex items-center gap-2">
+                    {isTranslating ? (
+                      <span className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-blue-500">
+                        <span className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin shrink-0" />
+                        Translating to {translationLanguage}…
+                      </span>
+                    ) : translatedSubtitleRows.length > 0 ? (
+                      <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
+                        <button
+                          type="button"
+                          onClick={() => setSubtitleView('original')}
+                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                            subtitleView === 'original'
+                              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                          }`}
+                        >
+                          Original
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSubtitleView('translated')}
+                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                            subtitleView === 'translated'
+                              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                          }`}
+                        >
+                          {translationLanguage}
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+
                 {/* ── QA Editor — primary UI ───────────────────────────────── */}
                 {subtitleRows.length > 0 && (
                   <Suspense fallback={<div className="h-[300px] rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />}>
+                    {(() => {
+                      const activeRows = subtitleView === 'translated' && translatedSubtitleRows.length > 0
+                        ? translatedSubtitleRows
+                        : subtitleRows
+                      const setActiveRows = subtitleView === 'translated' && translatedSubtitleRows.length > 0
+                        ? setTranslatedSubtitleRows
+                        : setSubtitleRows
+                      return (
                     <SubtitleQAReview
                       videoSrc={videoPreviewUrl}
-                      rows={subtitleRows}
-                      onRowsChange={canEdit ? setSubtitleRows : () => {}}
+                      rows={activeRows}
+                      onRowsChange={canEdit ? setActiveRows : () => {}}
                       editable={canEdit}
                       onDownloadEdited={() => {
                         const isVtt = currentResultFormat === 'vtt'
-                        const content = isVtt ? rowsToVtt(subtitleRows) : rowsToSrt(subtitleRows)
+                        const content = isVtt ? rowsToVtt(activeRows) : rowsToSrt(activeRows)
                         const blob = new Blob([content], { type: 'text/plain' })
                         const url = URL.createObjectURL(blob)
                         const a = document.createElement('a')
@@ -994,6 +1088,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                         try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: isVtt ? 'vtt' : 'srt', edited: true }) } catch { /* non-blocking */ }
                       }}
                     />
+                      )
+                    })()}
                   </Suspense>
                 )}
                 {!canEdit && subtitleRows.length > 0 && (
@@ -1045,10 +1141,13 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                                 }
                               }
                             : async () => {
+                                const activeRows = subtitleView === 'translated' && translatedSubtitleRows.length > 0
+                                  ? translatedSubtitleRows
+                                  : subtitleRows
                                 try {
-                                  if (subtitleRows.length > 0) {
+                                  if (activeRows.length > 0) {
                                     const isVtt = currentResultFormat === 'vtt'
-                                    const content = isVtt ? rowsToVtt(subtitleRows) : rowsToSrt(subtitleRows)
+                                    const content = isVtt ? rowsToVtt(activeRows) : rowsToSrt(activeRows)
                                     const blob = new Blob([content], { type: 'text/plain' })
                                     const a = document.createElement('a')
                                     a.href = URL.createObjectURL(blob)
@@ -1081,7 +1180,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                       </button>
                       {subtitleRows.length > 0 && (
                         <span className="text-xs text-gray-400 dark:text-gray-500">
-                          {subtitleRows.length} cues · reflects any edits
+                          {(subtitleView === 'translated' && translatedSubtitleRows.length > 0 ? translatedSubtitleRows : subtitleRows).length} cues · reflects any edits
                         </span>
                       )}
                     </div>
