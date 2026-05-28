@@ -92,8 +92,6 @@ import { trackAppEvent } from "../lib/feedbackEvents";
 import { trackEvent, trackFirstOutputSeen } from "../lib/analytics";
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import {
-  segmentsToSrt,
-  segmentsToVtt,
   formatTimestamp,
   type Segment,
 } from "../lib/srtExport";
@@ -3243,11 +3241,6 @@ export default function VideoToTranscript(
     editableSegments && editableSegments.length > 0
       ? editableSegments
       : (result?.segments ?? null);
-  // Segments with speaker labels resolved to display names — used by SRT/VTT generators
-  const resolvedSegmentsForExport = segmentsForExport
-    ? withResolvedSpeakers(segmentsForExport, speakerNameMap)
-    : null;
-
   const plainTranscriptForClientReady = useMemo(() => {
     const segs =
       transcriptView === "translated" && translatedSegments?.length
@@ -3277,90 +3270,6 @@ export default function VideoToTranscript(
     transcriptPreview,
   ]);
 
-  const handleExportSrt = () => {
-    trackAppEvent("export_clicked", {
-      toolId: "video-to-transcript",
-      format: "srt",
-    });
-    if (!resolvedSegmentsForExport?.length) {
-      toast.error(
-        "Enable summary or chapters to get timestamps, then export SRT.",
-      );
-      return;
-    }
-    const srt = segmentsToSrt(resolvedSegmentsForExport);
-    const WM1 = "Fast AI transcription by VideoText.io — Free Plan";
-    const WM2 =
-      "⚠  Remove this watermark: videotext.io/pricing  |  Upgrade to Pro";
-    const watermarkedSrt = !isPaidPlan
-      ? `0\n00:00:00,000 --> 00:00:08,000\n${WM1}\n${WM2}\n\n${srt}`
-      : srt;
-    const blob = new Blob([watermarkedSrt], {
-      type: "text/plain;charset=utf-8",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = joinExportFilename(
-      exportFileStem(selectedFile?.name, "video"),
-      `subtitles_original_${langCodeForFile(exportSourceLangCode)}`,
-      ".srt",
-    );
-    a.click();
-    URL.revokeObjectURL(url);
-    try {
-      trackEvent("result_downloaded", {
-        tool: "video-to-transcript",
-        format: "srt",
-        plan: isPaidPlan ? "paid" : "free",
-      });
-    } catch {
-      /* non-blocking */
-    }
-    toast.success("SRT downloaded");
-  };
-
-  const handleExportVtt = () => {
-    if (!resolvedSegmentsForExport?.length) {
-      toast.error(
-        "Enable summary or chapters to get timestamps, then export VTT.",
-      );
-      return;
-    }
-    const vtt = segmentsToVtt(resolvedSegmentsForExport);
-    const WM1_VTT = "Fast AI transcription by VideoText.io — Free Plan";
-    const WM2_VTT =
-      "⚠  Remove this watermark: videotext.io/pricing  |  Upgrade to Pro";
-    const watermarkedVtt = !isPaidPlan
-      ? vtt.replace(
-          "WEBVTT",
-          `WEBVTT\n\n00:00:00.000 --> 00:00:08.000\n${WM1_VTT}\n${WM2_VTT}\n`,
-        )
-      : vtt;
-    const blob = new Blob([watermarkedVtt], {
-      type: "text/plain;charset=utf-8",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = joinExportFilename(
-      exportFileStem(selectedFile?.name, "video"),
-      `subtitles_original_${langCodeForFile(exportSourceLangCode)}`,
-      ".vtt",
-    );
-    a.click();
-    URL.revokeObjectURL(url);
-    try {
-      trackEvent("result_downloaded", {
-        tool: "video-to-transcript",
-        format: "vtt",
-        plan: isPaidPlan ? "paid" : "free",
-      });
-    } catch {
-      /* non-blocking */
-    }
-    toast.success("VTT downloaded");
-  };
 
   const breadcrumbs = [
     {
@@ -4916,22 +4825,6 @@ export default function VideoToTranscript(
                         >
                           <CopyIcon className="h-4 w-4" />
                         </button>
-                        <div className="flex flex-wrap gap-2 lg:hidden">
-                          <button
-                            type="button"
-                            onClick={handleExportSrt}
-                            className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
-                          >
-                            SRT
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleExportVtt}
-                            className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
-                          >
-                            VTT
-                          </button>
-                        </div>
                       </div>
                       <div className="mb-3 flex items-center gap-2">
                         <span className="text-[11px] text-gray-500 dark:text-gray-400">
@@ -5706,64 +5599,6 @@ export default function VideoToTranscript(
                                   3-col: Speaker · Timecode · Dialogue table
                                 </p>
                               </div>
-                              <div>
-                                <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-gray-500">
-                                  Subtitles
-                                </p>
-                                <div className="grid grid-cols-2 gap-2">
-                                  <button
-                                    type="button"
-                                    onClick={handleExportSrt}
-                                    className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                                  >
-                                    SRT (Original)
-                                  </button>
-                                  {translateEnabled &&
-                                  translationLanguage &&
-                                  translatedSegments ? (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const srt =
-                                          segmentsToSrt(translatedSegments);
-                                        const blob = new Blob([srt], {
-                                          type: "text/plain",
-                                        });
-                                        const a = document.createElement("a");
-                                        a.href = URL.createObjectURL(blob);
-                                        a.download = joinExportFilename(
-                                          exportFileStem(
-                                            selectedFile?.name,
-                                            "video",
-                                          ),
-                                          `subtitles_translated_${targetLangFileSlug(translationLanguage)}`,
-                                          ".srt",
-                                        );
-                                        a.click();
-                                        URL.revokeObjectURL(a.href);
-                                        toast.success(
-                                          "Translated SRT downloaded",
-                                        );
-                                      }}
-                                      className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                                    >
-                                      SRT (Translated)
-                                    </button>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      disabled
-                                      className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-400 bg-gray-50 dark:bg-gray-800/50 cursor-not-allowed"
-                                    >
-                                      SRT (Translated)
-                                    </button>
-                                  )}
-                                </div>
-                                <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5 italic">
-                                  SRT/VTT always include timestamps regardless
-                                  of timestamp setting
-                                </p>
-                              </div>
                               {/* ── Translated exports — only shown when translate was enabled ── */}
                               {translateEnabled &&
                                 translationLanguage &&
@@ -5863,34 +5698,6 @@ export default function VideoToTranscript(
                                       );
                                     };
 
-                                  const makeSubtitleHandler =
-                                    (fmt: "srt" | "vtt") => () => {
-                                      if (!translatedSegments) return;
-                                      const resolved = withResolvedSpeakers(
-                                        translatedSegments,
-                                        speakerNameMap,
-                                      );
-                                      const content =
-                                        fmt === "srt"
-                                          ? segmentsToSrt(resolved)
-                                          : segmentsToVtt(resolved);
-                                      const blob = new Blob([content], {
-                                        type: "text/plain;charset=utf-8",
-                                      });
-                                      const a = document.createElement("a");
-                                      a.href = URL.createObjectURL(blob);
-                                      a.download = joinExportFilename(
-                                        stem,
-                                        `subtitles_translated_${slug}`,
-                                        `.${fmt}`,
-                                      );
-                                      a.click();
-                                      URL.revokeObjectURL(a.href);
-                                      toast.success(
-                                        `${fmt.toUpperCase()} (translated) downloaded`,
-                                      );
-                                    };
-
                                   const btnCls = (active: boolean) =>
                                     `rounded-lg border px-2 py-2 text-[11px] font-medium transition-colors ${
                                       active
@@ -5937,31 +5744,6 @@ export default function VideoToTranscript(
                                               {fmt.toUpperCase()}
                                             </button>
                                           ))}
-                                        </div>
-                                      </div>
-
-                                      {/* Subtitles */}
-                                      <div>
-                                        <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-gray-500">
-                                          Subtitles
-                                        </p>
-                                        <div className="grid grid-cols-2 gap-2">
-                                          <button
-                                            type="button"
-                                            disabled={!canClick}
-                                            onClick={makeSubtitleHandler("srt")}
-                                            className={btnCls(canClick)}
-                                          >
-                                            SRT
-                                          </button>
-                                          <button
-                                            type="button"
-                                            disabled={!canClick}
-                                            onClick={makeSubtitleHandler("vtt")}
-                                            className={btnCls(canClick)}
-                                          >
-                                            VTT
-                                          </button>
                                         </div>
                                       </div>
 
