@@ -3241,11 +3241,6 @@ export default function VideoToTranscript(
     editableSegments && editableSegments.length > 0
       ? editableSegments
       : (result?.segments ?? null);
-  // Segments with speaker labels resolved to display names — used by SRT/VTT generators
-  const resolvedSegmentsForExport = segmentsForExport
-    ? withResolvedSpeakers(segmentsForExport, speakerNameMap)
-    : null;
-
   const plainTranscriptForClientReady = useMemo(() => {
     const segs =
       transcriptView === "translated" && translatedSegments?.length
