@@ -3,8 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2, Lock, CheckCircle2, Upload } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
-import CrossToolSuggestions from '../components/CrossToolSuggestions'
-// import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import UpgradeBanner from '../components/UpgradeBanner'
@@ -1269,16 +1267,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                     </div>
                   </aside>
                 </div>
-
-                <CrossToolSuggestions
-                  workflowHint="Your last file is pre-filled on the next tool."
-                  suggestions={[
-                    { icon: Languages, title: 'Translate Subtitles', path: '/translate-subtitles', description: 'Translate to another language' },
-                    { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn into video', state: { useWorkflowVideo: true } },
-                    { icon: Wrench, title: 'Fix Subtitles', path: '/fix-subtitles', description: 'Fix timing & format' },
-                    { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
-                  ]}
-                />
               </div>
             )}
           </div>
