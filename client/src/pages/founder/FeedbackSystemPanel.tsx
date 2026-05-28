@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useState } from 'react'
+import { api } from '../../lib/api'
 import {
   TrendingDown, TrendingUp, Users, Zap, BarChart3, MessageSquare,
   RefreshCw, ChevronDown, ChevronUp, Minus, AlertTriangle, ArrowRight,
@@ -194,10 +195,7 @@ export default function FeedbackSystemPanel() {
     else setRefreshing(true)
     setError(null)
     try {
-      const token = localStorage.getItem('vt_token') ?? ''
-      const res = await fetch('/api/admin/feedback/analytics', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await api('/api/admin/feedback/analytics')
       if (!res.ok) throw new Error(`${res.status}`)
       setData(await res.json())
     } catch (e) {
