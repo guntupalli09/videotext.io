@@ -258,7 +258,7 @@ export function Hero() {
           style={{ fontSize: "clamp(1.35rem, 3.4vw, 2.75rem)" }}
         >
           <span className="text-white">
-            Deliver Client-Ready Transcripts —{" "}
+            Deliver Client-Ready Transcripts &amp; Subtitles —{" "}
           </span>
           <span className="bg-gradient-to-r from-fuchsia-300 via-blue-300 to-blue-300 bg-clip-text text-transparent">
             Fast.
@@ -267,10 +267,10 @@ export function Hero() {
 
         {/* Sub-headline */}
         <p className="text-center text-[15px] sm:text-[16px] text-white/55 max-w-md mx-auto leading-relaxed mb-4">
-          Deliver transcripts faster with fewer revisions. Apply client
-          formatting rules automatically —{" "}
+          Transcribe, subtitle, translate, and format audio/video into
+          delivery-ready files with built-in QA and export workflows —{" "}
           <span className="text-fuchsia-300 font-medium">
-            and stop doing the same QA corrections over and over.
+            all in one place.
           </span>
         </p>
 
