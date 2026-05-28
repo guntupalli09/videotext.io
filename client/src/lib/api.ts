@@ -1825,7 +1825,7 @@ export type CreateTranscriptShareBody = {
   jobId: string
   jobToken: string
   variant: 'original' | 'translated'
-  sourceTool: 'video-to-transcript' | 'voice-to-text'
+  sourceTool: 'video-to-transcript' | 'voice-to-text' | 'video-to-subtitles'
   title?: string
   targetLanguage?: string | null
   payload: TranscriptSharePayload

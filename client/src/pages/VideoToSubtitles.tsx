@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2, Lock, CheckCircle2, Upload } from 'lucide-react'
+import { MessageSquare, FileDown, Lock, CheckCircle2, Upload } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
-import CrossToolSuggestions from '../components/CrossToolSuggestions'
-// import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
+import TranscriptSharePanel from '../components/TranscriptSharePanel'
 import PaywallModal from '../components/PaywallModal'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import UpgradeBanner from '../components/UpgradeBanner'
@@ -479,6 +478,12 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       lines.push('')
     })
     return lines.join('\n')
+  }
+
+  const srtTimeToSeconds = (t: string): number => {
+    const [hms, ms = '0'] = t.replace(',', '.').split('.')
+    const parts = hms.split(':').map(Number)
+    return (parts[0] || 0) * 3600 + (parts[1] || 0) * 60 + (parts[2] || 0) + parseFloat('0.' + ms)
   }
 
   const handleProcess = async (trimStartPercent?: number, trimEndPercent?: number) => {
@@ -1270,15 +1275,26 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                   </aside>
                 </div>
 
-                <CrossToolSuggestions
-                  workflowHint="Your last file is pre-filled on the next tool."
-                  suggestions={[
-                    { icon: Languages, title: 'Translate Subtitles', path: '/translate-subtitles', description: 'Translate to another language' },
-                    { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn into video', state: { useWorkflowVideo: true } },
-                    { icon: Wrench, title: 'Fix Subtitles', path: '/fix-subtitles', description: 'Fix timing & format' },
-                    { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
-                  ]}
-                />
+                {(() => {
+                  const jid = currentJobId || getPersistedJobId(location.pathname)
+                  const jtok = getPersistedJobToken(location.pathname)
+                  if (!jid || !jtok || subtitleRows.length === 0) return null
+                  const toSegments = (rows: SubtitleRow[]) =>
+                    rows.map((r) => ({ start: srtTimeToSeconds(r.startTime), end: srtTimeToSeconds(r.endTime), text: r.text }))
+                  return (
+                    <TranscriptSharePanel
+                      jobId={jid}
+                      jobToken={jtok}
+                      sourceTool="video-to-subtitles"
+                      title={selectedFile?.name || result.fileName || 'Subtitles'}
+                      originalFullText={subtitleRows.map((r) => r.text).join('\n')}
+                      translatedFullText={translatedSubtitleRows.length > 0 ? translatedSubtitleRows.map((r) => r.text).join('\n') : null}
+                      translationLanguage={translationLanguage}
+                      segments={toSegments(subtitleRows)}
+                      translatedSegments={translatedSubtitleRows.length > 0 ? toSegments(translatedSubtitleRows) : undefined}
+                    />
+                  )
+                })()}
               </div>
             )}
           </div>

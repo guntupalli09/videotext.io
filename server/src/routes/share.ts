@@ -75,8 +75,11 @@ router.post('/', express.json({ limit: '4mb' }), async (req: Request, res: Respo
     const jobId = String(req.body?.jobId || '').trim()
     const jobToken = String(req.body?.jobToken || '').trim()
     const variant = String(req.body?.variant || '').toLowerCase() === 'translated' ? 'translated' : 'original'
+    const rawSourceTool = String(req.body?.sourceTool || '')
     const sourceTool =
-      String(req.body?.sourceTool || '') === 'voice-to-text' ? 'voice-to-text' : 'video-to-transcript'
+      rawSourceTool === 'voice-to-text' ? 'voice-to-text' :
+      rawSourceTool === 'video-to-subtitles' ? 'video-to-subtitles' :
+      'video-to-transcript'
     const title = typeof req.body?.title === 'string' ? req.body.title.slice(0, 300) : ''
     const targetLanguage = typeof req.body?.targetLanguage === 'string' ? req.body.targetLanguage.slice(0, 120) : null
 
@@ -115,7 +118,7 @@ router.post('/', express.json({ limit: '4mb' }), async (req: Request, res: Respo
         jobId,
         variant,
         sourceTool,
-        title: title || (sourceTool === 'voice-to-text' ? 'Voice recording' : 'Transcript'),
+        title: title || (sourceTool === 'voice-to-text' ? 'Voice recording' : sourceTool === 'video-to-subtitles' ? 'Subtitles' : 'Transcript'),
         targetLanguage: variant === 'translated' ? targetLanguage : null,
         payload: payload as object,
       },
