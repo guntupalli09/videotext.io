@@ -429,14 +429,14 @@ export default function SubtitleQAReview({
       )}
 
       {/* ── Main split layout ───────────────────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row" style={{ height: 'clamp(300px, 40vh, 420px)' }}>
+      <div className="flex flex-col lg:flex-row lg:h-[420px]">
 
         {/* ── Left: Video Player ──────────────────────────────────────── */}
-        <div className="w-full lg:w-[40%] flex flex-col border-b border-gray-200 dark:border-gray-800 lg:border-b-0 lg:border-r bg-black">
+        <div className="w-full lg:w-[40%] lg:h-full flex flex-col border-b border-gray-200 dark:border-gray-800 lg:border-b-0 lg:border-r bg-black">
           {videoSrc ? (
             <>
               {/* Video area */}
-              <div className="relative flex-1 min-h-0 flex items-center justify-center bg-black overflow-hidden">
+              <div className="relative w-full aspect-video lg:aspect-auto lg:flex-1 lg:min-h-0 flex items-center justify-center bg-black overflow-hidden">
                 <video
                   ref={videoRef}
                   src={videoSrc}
@@ -563,7 +563,7 @@ export default function SubtitleQAReview({
               </div>
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center gap-3 bg-gray-50 dark:bg-gray-900 p-6">
+            <div className="min-h-[120px] lg:flex-1 flex flex-col items-center justify-center gap-3 bg-gray-50 dark:bg-gray-900 p-6">
               <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
                 <Play className="h-5 w-5 text-gray-400 dark:text-gray-500 ml-0.5" />
               </div>
@@ -576,7 +576,7 @@ export default function SubtitleQAReview({
         </div>
 
         {/* ── Right: Subtitle list (virtualized) ──────────────────────── */}
-        <div className="w-full lg:w-[60%] flex flex-col bg-white dark:bg-gray-900 min-h-0">
+        <div className="w-full lg:w-[60%] flex flex-col bg-white dark:bg-gray-900 min-h-0 h-64 lg:h-full">
           {/* Column headers */}
           <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 shrink-0">
             <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.06em] text-gray-500 dark:text-gray-500">
