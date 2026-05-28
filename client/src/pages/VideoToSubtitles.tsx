@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2, Lock, CheckCircle2 } from 'lucide-react'
+import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2, Lock, CheckCircle2, Upload } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
@@ -1035,10 +1035,12 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                     <span className="text-xs text-gray-400 dark:text-gray-500 truncate hidden sm:block">— {result.fileName ?? fallbackSubtitleName}</span>
                   </div>
                   <button
+                    type="button"
                     onClick={handleProcessAnother}
-                    className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors shrink-0"
+                    className="inline-flex items-center gap-2 rounded-xl border border-blue-300 bg-blue-600 px-3 py-2 text-[13px] font-medium text-white hover:bg-blue-700 transition-colors shadow-sm shrink-0"
                   >
-                    Process another →
+                    <Upload className="h-4 w-4" aria-hidden />
+                    Upload new file
                   </button>
                 </div>
 
