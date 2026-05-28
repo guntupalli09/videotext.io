@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { FileText, Mic, AlertCircle } from 'lucide-react'
+import { FileText, Mic, Film, AlertCircle } from 'lucide-react'
 import Seo from '../components/Seo'
 import { fetchPublicTranscriptShare, type PublicTranscriptShareResponse } from '../lib/api'
 import { formatTimestamp } from '../lib/srtExport'
@@ -36,8 +36,13 @@ export default function ShareTranscript() {
   }, [slug])
 
   const toolLabel =
-    data?.sourceTool === 'voice-to-text' ? 'Voice to Text' : 'Video to Transcript'
-  const ToolIcon = data?.sourceTool === 'voice-to-text' ? Mic : FileText
+    data?.sourceTool === 'voice-to-text' ? 'Voice to Text' :
+    data?.sourceTool === 'video-to-subtitles' ? 'Video to Subtitles' :
+    'Video to Transcript'
+  const ToolIcon =
+    data?.sourceTool === 'voice-to-text' ? Mic :
+    data?.sourceTool === 'video-to-subtitles' ? Film :
+    FileText
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
@@ -92,7 +97,7 @@ export default function ShareTranscript() {
                 {data.title}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Shared read-only transcript ·{' '}
+                {data.sourceTool === 'video-to-subtitles' ? 'Shared read-only subtitles' : 'Shared read-only transcript'} ·{' '}
                 {new Date(data.createdAt).toLocaleDateString(undefined, {
                   month: 'short',
                   day: 'numeric',
@@ -134,7 +139,9 @@ export default function ShareTranscript() {
 
             <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/80 shadow-sm overflow-hidden">
               <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900">
-                <h2 className="text-sm font-medium text-gray-800 dark:text-gray-200">Transcript</h2>
+                <h2 className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                  {data.sourceTool === 'video-to-subtitles' ? 'Subtitles' : 'Transcript'}
+                </h2>
               </div>
               <div className="p-5 max-h-[70vh] overflow-y-auto">
                 {data.payload.segments?.length ? (

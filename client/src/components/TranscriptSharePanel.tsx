@@ -11,7 +11,7 @@ import {
   type TranscriptShareSegment,
 } from '../lib/api'
 
-export type TranscriptShareSourceTool = 'video-to-transcript' | 'voice-to-text'
+export type TranscriptShareSourceTool = 'video-to-transcript' | 'voice-to-text' | 'video-to-subtitles'
 
 export interface TranscriptSharePanelProps {
   jobId: string
@@ -155,7 +155,9 @@ export default function TranscriptSharePanel({
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-gray-900 dark:text-white">Share with a link</p>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-            Read-only page — no VideoText account needed for viewers. You can share the original or a translation separately.
+            {sourceTool === 'video-to-subtitles'
+              ? 'Read-only page — no VideoText account needed for viewers. Share the original subtitles or a translation separately.'
+              : 'Read-only page — no VideoText account needed for viewers. You can share the original or a translation separately.'}
           </p>
         </div>
       </div>
