@@ -12,6 +12,8 @@ interface LogEntry {
   extra?: string
 }
 
+const LOG_FETCH_LIMIT = 500
+
 const LEVEL_STYLES: Record<string, string> = {
   error: 'text-red-400 bg-red-950/30',
   warn: 'text-amber-400 bg-amber-950/20',
@@ -40,19 +42,27 @@ export default function LogViewer() {
   const [levelFilter, setLevelFilter] = useState<string>('all')
   const [loading, setLoading] = useState(false)
   const [lastFetched, setLastFetched] = useState<Date | null>(null)
+  const [fetchError, setFetchError] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const url = levelFilter === 'all' ? '/api/admin/logs?limit=300' : `/api/admin/logs?limit=300&level=${levelFilter}`
+      const url = levelFilter === 'all'
+        ? `/api/admin/logs?limit=${LOG_FETCH_LIMIT}`
+        : `/api/admin/logs?limit=${LOG_FETCH_LIMIT}&level=${levelFilter}`
       const res = await api(url)
       if (res.ok) {
         const data = await res.json()
         setEntries(data.entries ?? [])
         setLastFetched(new Date())
+        setFetchError(null)
+      } else {
+        setFetchError(`Failed to load logs (${res.status})`)
       }
-    } catch { /* ignore */ }
+    } catch (err) {
+      setFetchError('Network error loading logs')
+    }
     finally { setLoading(false) }
   }, [levelFilter])
 
@@ -81,7 +91,7 @@ export default function LogViewer() {
       <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3">
           <h3 className="text-sm font-medium text-white">Server logs</h3>
-          <span className="text-xs text-zinc-500">(last 300 entries, newest first)</span>
+          <span className="text-xs text-zinc-500">(last {LOG_FETCH_LIMIT} entries, newest first)</span>
           {errorCount > 0 && (
             <span className="text-xs text-red-400 bg-red-950/40 px-2 py-0.5 rounded-full">{errorCount} error{errorCount !== 1 ? 's' : ''}</span>
           )}
@@ -113,7 +123,10 @@ export default function LogViewer() {
 
       {/* Log entries */}
       <div className="overflow-y-auto max-h-[520px] font-mono text-xs">
-        {entries.length === 0 && (
+        {fetchError && (
+          <div className="py-4 text-center text-red-500 text-xs">{fetchError}</div>
+        )}
+        {!fetchError && entries.length === 0 && (
           <div className="py-10 text-center text-zinc-600">
             {loading ? 'Loading…' : 'No log entries yet. Logs will appear here as the server processes jobs.'}
           </div>
