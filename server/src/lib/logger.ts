@@ -54,8 +54,8 @@ function createRingStream(service: ServiceName): Writable {
         const obj = JSON.parse(line) as Record<string, unknown>
         // formatters.level converts the pino level number to a label string
         const levelStr = String(obj.level || '')
-        if (levelStr === 'error' || levelStr === 'warn' || levelStr === 'fatal') {
-          const ringLevel: LogLevel = levelStr === 'warn' ? 'warn' : 'error'
+        if (levelStr === 'error' || levelStr === 'warn' || levelStr === 'fatal' || levelStr === 'info') {
+          const ringLevel: LogLevel = levelStr === 'warn' ? 'warn' : levelStr === 'info' ? 'info' : 'error'
           // Collect any extra diagnostic fields into a short string
           const extraParts = [
             obj.error,
@@ -79,6 +79,7 @@ function createRingStream(service: ServiceName): Writable {
             msg: String(obj.msg || ''),
             jobId: obj.jobId ? String(obj.jobId) : undefined,
             requestId: obj.requestId ? String(obj.requestId) : undefined,
+            module: obj.module ? String(obj.module) : undefined,
             extra: extraParts.length ? extraParts.join(' | ').slice(0, 300) : undefined,
           })
         }
@@ -91,7 +92,7 @@ function createRingStream(service: ServiceName): Writable {
 function createBaseLogger(service: ServiceName): pino.Logger {
   const streams = pino.multistream([
     { stream: process.stdout },
-    { level: 'warn', stream: createRingStream(service) },
+    { level: 'info', stream: createRingStream(service) },
   ])
   return pino(
     {
