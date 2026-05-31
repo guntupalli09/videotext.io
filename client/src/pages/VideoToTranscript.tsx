@@ -1143,7 +1143,7 @@ export default function VideoToTranscript(
                 rehydratePollRef.current = null;
                 setIsRehydrating(false);
                 toast.error(
-                  "Server unreachable. Start the backend and refresh the page.",
+                  "Unable to reach our servers. Please check your connection and try again.",
                 );
               }
             }
@@ -1805,7 +1805,7 @@ export default function VideoToTranscript(
                 activeUploadPollRef.current = null;
               }
               toast.error(
-                "Server unreachable. Start the backend and refresh the page.",
+                "Unable to reach our servers. Please check your connection and try again.",
               );
             }
           }
@@ -2197,7 +2197,7 @@ export default function VideoToTranscript(
                 activeUploadPollRef.current = null;
               }
               toast.error(
-                "Server unreachable. Start the backend and refresh the page.",
+                "Unable to reach our servers. Please check your connection and try again.",
               );
             }
           }

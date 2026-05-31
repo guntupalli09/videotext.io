@@ -353,14 +353,39 @@ async function transcribeVideoParallel(
       const text = segments.map((s) => s.text).filter(Boolean).join(' ')
       return { text, segments }
     } else if (PROCESSING_V2) {
-      chunkPaths = await extractAndSplitAudio(videoPath, chunkDurations, chunkOutputDir, metrics?.onFirstChunkCreated)
+      try {
+        chunkPaths = await extractAndSplitAudio(videoPath, chunkDurations, chunkOutputDir, metrics?.onFirstChunkCreated)
+      } catch (extractErr) {
+        if (extractErr instanceof Error && extractErr.message === NO_AUDIO_STREAM_ERROR) throw extractErr
+        // MP3 extraction failed (e.g. H.265/HEVC container quirk, AC3/DTS audio). Fall back to WAV.
+        transcriptionLog.warn({ msg: 'extract_split_mp3_failed_wav_fallback', error: (extractErr as Error).message })
+        const wavFallbackPath = path.join(tempDir, `audio-wav-${Date.now()}.wav`)
+        await extractAudioToWav(videoPath, wavFallbackPath)
+        chunkPaths = await splitAudioIntoChunks(wavFallbackPath, chunkDurations, chunkOutputDir, metrics?.onFirstChunkCreated)
+        try { fs.unlinkSync(wavFallbackPath) } catch { /* ignore */ }
+      }
       extractAndSplitMs = Date.now() - phaseStart
     } else {
-      await extractAudio(videoPath, audioPath)
-      extractAudioMs = Date.now() - phaseStart
-      const splitStart = Date.now()
-      chunkPaths = await splitAudioIntoChunks(audioPath, chunkDurations, chunkOutputDir, metrics?.onFirstChunkCreated)
-      chunkSplitMs = Date.now() - splitStart
+      let usedWavFallback = false
+      try {
+        await extractAudio(videoPath, audioPath)
+      } catch (extractErr) {
+        if (extractErr instanceof Error && extractErr.message === NO_AUDIO_STREAM_ERROR) throw extractErr
+        // MP3 extraction threw — try WAV as fallback before giving up.
+        transcriptionLog.warn({ msg: 'extract_mp3_failed_wav_fallback', error: (extractErr as Error).message })
+        const wavFallbackPath = path.join(tempDir, `audio-wav-${Date.now()}.wav`)
+        await extractAudioToWav(videoPath, wavFallbackPath)
+        chunkPaths = await splitAudioIntoChunks(wavFallbackPath, chunkDurations, chunkOutputDir, metrics?.onFirstChunkCreated)
+        try { fs.unlinkSync(wavFallbackPath) } catch { /* ignore */ }
+        extractAudioMs = Date.now() - phaseStart
+        usedWavFallback = true
+      }
+      if (!usedWavFallback) {
+        extractAudioMs = Date.now() - phaseStart
+        const splitStart = Date.now()
+        chunkPaths = await splitAudioIntoChunks(audioPath, chunkDurations, chunkOutputDir, metrics?.onFirstChunkCreated)
+        chunkSplitMs = Date.now() - splitStart
+      }
     }
     const offsets: number[] = []
     {
@@ -498,7 +523,31 @@ export async function transcribeVideo(
     let cleanupWav: string | undefined
     try {
       if (!isAlreadyAudio) {
-        await extractAudio(videoPath, audioPath)
+        try {
+          await extractAudio(videoPath, audioPath)
+        } catch (extractErr) {
+          if (extractErr instanceof Error && extractErr.message === NO_AUDIO_STREAM_ERROR) throw extractErr
+          // extractAudio threw (e.g. H.265/HEVC quirk) — ensureAudioForWhisper WAV fallback handles empty files,
+          // but we also need a fallback here when extraction itself fails.
+          transcriptionLog.warn({ msg: 'extract_mp3_threw_wav_fallback', error: (extractErr as Error).message })
+          const wavFallbackPath = path.join(path.dirname(videoPath), `audio-wav-${Date.now()}.wav`)
+          await extractAudioToWav(videoPath, wavFallbackPath)
+          const wavStat = await fs.promises.stat(wavFallbackPath).catch(() => null)
+          if (!wavStat || wavStat.size < MIN_AUDIO_BYTES) {
+            try { fs.unlinkSync(wavFallbackPath) } catch { /* ignore */ }
+            throw extractErr
+          }
+          cleanupWav = wavFallbackPath
+          const audioFile = await readAudioAsFile(wavFallbackPath, 'audio.wav')
+          const transcription = await openai.audio.transcriptions.create({
+            file: audioFile,
+            model: 'whisper-1',
+            response_format: responseFormat,
+            language: normalizeLanguageCode(language),
+            prompt: prompt?.trim().slice(0, 1500) || undefined,
+          })
+          return transcription as any
+        }
         const ensured = await ensureAudioForWhisper(videoPath, audioPath)
         cleanupWav = ensured.cleanupWav
         const audioFile = await readAudioAsFile(ensured.path, ensured.filename)

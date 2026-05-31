@@ -19,6 +19,17 @@ const SUPPORTED_VIDEO_TYPES = new Set([
   'video/webm',
   'video/x-matroska',
   'video/mpeg',
+  'video/quicktime',
+  'video/x-msvideo',
+  'video/x-ms-wmv',
+  'video/x-flv',
+  'video/3gpp',
+  'video/3gpp2',
+  'video/ogg',
+  'video/mov',
+  // Non-video/* MIME types that browsers sometimes assign to valid video containers
+  'application/x-matroska',
+  'application/mxf',
 ])
 
 export function getFailureMessage(ctx: FailureContext): string | undefined {
@@ -31,7 +42,12 @@ export function getFailureMessage(ctx: FailureContext): string | undefined {
   if (ctx.fileSizeBytes != null && ctx.maxUploadLimitBytes != null && ctx.fileSizeBytes > ctx.maxUploadLimitBytes) {
     return 'File exceeds maximum upload size.'
   }
-  if (ctx.mimeType && !SUPPORTED_VIDEO_TYPES.has(ctx.mimeType) && !ctx.mimeType.startsWith('video/')) {
+  if (
+    ctx.mimeType &&
+    !SUPPORTED_VIDEO_TYPES.has(ctx.mimeType) &&
+    !ctx.mimeType.startsWith('video/') &&
+    ctx.mimeType !== 'application/octet-stream' // browser fallback MIME for unrecognized extensions
+  ) {
     return 'Unsupported codec or file type detected.'
   }
   if (ctx.durationMinutes != null && ctx.planQuotaMinutes != null && ctx.remainingMinutes != null) {
