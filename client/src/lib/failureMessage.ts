@@ -31,6 +31,9 @@ export function getFailureMessage(ctx: FailureContext): string | undefined {
   if (ctx.fileSizeBytes != null && ctx.maxUploadLimitBytes != null && ctx.fileSizeBytes > ctx.maxUploadLimitBytes) {
     return 'File exceeds maximum upload size.'
   }
+  if (ctx.mimeType && ctx.mimeType.startsWith('audio/')) {
+    return 'Audio track may be corrupted or unsupported.'
+  }
   if (ctx.mimeType && !SUPPORTED_VIDEO_TYPES.has(ctx.mimeType) && !ctx.mimeType.startsWith('video/')) {
     return 'Unsupported codec or file type detected.'
   }
@@ -38,9 +41,6 @@ export function getFailureMessage(ctx: FailureContext): string | undefined {
     if (ctx.durationMinutes > ctx.remainingMinutes) {
       return 'Video is longer than your remaining monthly quota.'
     }
-  }
-  if (ctx.mimeType && ctx.mimeType.includes('audio') && !ctx.mimeType.includes('video')) {
-    return 'Audio track may be corrupted or unsupported.'
   }
   return undefined
 }
