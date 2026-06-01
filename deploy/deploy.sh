@@ -7,7 +7,7 @@
 # What it does (in order):
 #   1. Pull latest code from git
 #   2. Build Docker image
-#   3. Apply DB migrations + restart API + worker containers
+#   3. Apply DB migrations + restart Redis + API + worker containers
 #   4. Validate and reload Caddy config (zero-downtime)
 #
 # Prerequisites:
@@ -36,9 +36,9 @@ git pull --ff-only || fail "git pull failed. Resolve conflicts manually."
 log "Building Docker image..."
 docker compose build --pull
 
-# ── 3. Restart API + worker (migrations run inside api container on startup) ──
+# ── 3. Restart Redis + API + worker (migrations run inside api container on startup) ──
 log "Restarting containers..."
-docker compose up -d --remove-orphans api worker
+docker compose up -d --remove-orphans redis api worker
 
 log "Waiting for API healthcheck..."
 for i in $(seq 1 30); do
