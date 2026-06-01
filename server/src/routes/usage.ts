@@ -66,13 +66,17 @@ async function getOrCreateDemoUser(req: Request): Promise<User | null> {
     }
   }
 
-  // Paid plans: from auth, or from existing Stripe-backed user; unauthenticated without Stripe = free (abuse-proof)
+  // Paid plans: from auth, or from existing Stripe-backed user; unauthenticated without Stripe = free (abuse-proof).
+  // Also trust the DB plan for authenticated users without stripeCustomerId (e.g. admin-set plans, promo-code
+  // subscribers whose Stripe customer wasn't linked yet). Guests (no auth.userId) always fall back to free.
   const derivedPlan: PlanType =
     auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow' || auth.plan === 'business')
       ? auth.plan
       : user?.stripeCustomerId
         ? user.plan
-        : 'free'
+        : (auth?.userId && user && (user.plan === 'basic' || user.plan === 'pro' || user.plan === 'agency' || user.plan === 'founding_workflow' || user.plan === 'business'))
+          ? user.plan
+          : 'free'
 
   if (!user) {
     const plan = derivedPlan

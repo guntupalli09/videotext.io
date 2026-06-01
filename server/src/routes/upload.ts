@@ -116,7 +116,9 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
         ? auth.plan
         : user?.stripeCustomerId
           ? user.plan
-          : 'free'
+          : (auth?.userId && user && (user.plan === 'basic' || user.plan === 'pro' || user.plan === 'agency' || user.plan === 'founding_workflow' || user.plan === 'business'))
+            ? user.plan
+            : 'free'
 
     // Guest IP daily cap — prevents limit bypass via fresh guest UUIDs per request
     if (userId.startsWith('guest_')) {
@@ -481,7 +483,9 @@ router.post('/dual', upload.fields([
         ? auth.plan
         : burnUser?.stripeCustomerId
           ? burnUser.plan
-          : 'free'
+          : (auth?.userId && burnUser && (burnUser.plan === 'basic' || burnUser.plan === 'pro' || burnUser.plan === 'agency' || burnUser.plan === 'founding_workflow'))
+            ? burnUser.plan
+            : 'free'
 
     // Guest IP daily cap
     if (userId.startsWith('guest_')) {
@@ -765,7 +769,9 @@ router.post('/init', async (req: Request, res: Response) => {
         ? auth.plan
         : user?.stripeCustomerId
           ? user.plan
-          : 'free'
+          : (auth?.userId && user && (user.plan === 'basic' || user.plan === 'pro' || user.plan === 'agency' || user.plan === 'founding_workflow'))
+            ? user.plan
+            : 'free'
     const plan: PlanType =
       rawPlan === 'basic' || rawPlan === 'pro' || rawPlan === 'agency' || rawPlan === 'founding_workflow' ? rawPlan : 'free'
 
@@ -1249,7 +1255,9 @@ router.post('/youtube', async (req: Request, res: Response) => {
         ? auth.plan
         : user?.stripeCustomerId
           ? user.plan
-          : 'free'
+          : (auth?.userId && user && (user.plan === 'basic' || user.plan === 'pro' || user.plan === 'agency' || user.plan === 'founding_workflow' || user.plan === 'business'))
+            ? user.plan
+            : 'free'
 
     // ── Queue capacity ────────────────────────────────────────────────────────
     const queueCount = await getTotalQueueCount()
