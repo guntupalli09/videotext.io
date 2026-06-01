@@ -69,7 +69,9 @@ async function getOrCreateDemoUser(req: Request): Promise<User> {
       ? auth.plan
       : user?.stripeCustomerId
         ? user.plan
-        : 'free'
+        : (auth?.userId && user && (user.plan === 'basic' || user.plan === 'pro' || user.plan === 'agency' || user.plan === 'founding_workflow' || user.plan === 'business'))
+          ? user.plan
+          : 'free'
 
   if (!user) {
     const plan = derivedPlan
