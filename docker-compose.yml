@@ -1,27 +1,39 @@
-# Redis: set REDIS_PASSWORD in .env (or leave unset for no auth in local dev only).
-# When set, use REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379 in api/worker env.
-# api/worker use redis:6379 on the Docker network. Ports below expose Redis on host for local dev (e.g. API on host).
+# Production-safe Redis defaults:
+# - Redis is only reachable on the private Compose network (no host port publish).
+# - REDIS_PASSWORD is required; api/worker connect with redis://:<password>@redis:6379.
+# - CONFIG, REPLICAOF, and SLAVEOF are disabled because this app uses Redis only as a Bull queue.
 services:
   redis:
     image: redis:7-alpine
     container_name: videotools-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     volumes:
       - redis-data:/data
     # Less aggressive persistence to reduce fork() and blocking; AOF only keeps durability with fewer spikes.
+    # Disable CONFIG/REPLICAOF/SLAVEOF so neither an exposed socket nor an app bug can persistently
+    # reconfigure this standalone queue Redis into a read-only replica.
     command: >
-      sh -c "if [ -n \"$$REDIS_PASSWORD\" ]; then redis-server --save \"\" --appendonly yes --requirepass \"$$REDIS_PASSWORD\" --maxmemory 256mb --maxmemory-policy allkeys-lru; else redis-server --save \"\" --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru; fi"
+      sh -c 'exec redis-server
+      --bind 0.0.0.0
+      --protected-mode yes
+      --dir /data
+      --save ""
+      --appendonly yes
+      --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD is required}"
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --rename-command CONFIG ""
+      --rename-command REPLICAOF ""
+      --rename-command SLAVEOF ""'
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
     deploy:
       resources:
         limits:
           memory: 384m
           cpus: "0.5"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli ping | grep -q PONG"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -58,7 +70,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@redis:6379
       DATABASE_URL: postgresql://videotools:${POSTGRES_PASSWORD}@postgres:5432/videotext
       TEMP_FILE_PATH: /tmp
       STREAM_UPLOAD_ASSEMBLY: "true"
@@ -96,7 +108,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@redis:6379
       DATABASE_URL: postgresql://videotools:${POSTGRES_PASSWORD}@postgres:5432/videotext
       TEMP_FILE_PATH: /tmp
       FFMPEG_PATH: /usr/bin/ffmpeg

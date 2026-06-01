@@ -300,11 +300,11 @@ Promo codes apply only to Basic and Pro (not Agency or one-time overage). Invali
 
 Used for the **Bull job queue** only (not auth or Stripe). Switch by changing `REDIS_URL` and restarting API and worker.
 
-- **Self-hosted (Docker):** `docker-compose.yml` includes Redis; `REDIS_URL=redis://redis:6379`.
-- **Self-hosted (host):** Install Redis, set `REDIS_URL=redis://localhost:6379` (or host IP for containers).
+- **Self-hosted (Docker):** `docker-compose.yml` includes a production-hardened Redis service. Set a strong `REDIS_PASSWORD` in `.env`; Compose injects `REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379` into the API and worker. Redis is intentionally not published to the host.
+- **Self-hosted (host):** Install Redis, require authentication, keep TCP/6379 firewalled from the Internet, and set `REDIS_URL=redis://:password@localhost:6379` (URL-encode special characters in the password).
 - **Upstash:** Set `REDIS_URL=rediss://...` from Upstash console. If using Docker Compose, remove `REDIS_URL` from compose `environment` so `.env` is used.
 
-Changing Redis invalidates existing job IDs (queue state is not migrated).
+Changing Redis invalidates existing job IDs (queue state is not migrated). For incident-response checks and Redis hardening details, see `docs/ops/redis-incident-2026-05.md`.
 
 ### Database (PostgreSQL)
 
