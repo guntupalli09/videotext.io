@@ -89,20 +89,20 @@ export default function SubtitleValidator() {
       ]}
     >
       <div className="space-y-4">
-        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-violet-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
+        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-blue-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
           <input ref={fileRef} type="file" accept=".srt,.vtt,.txt" className="hidden" onChange={handleFile} />
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{fileName || 'Click to upload SRT or VTT file'}</p>
           <p className="text-xs text-gray-400 mt-1">or paste content below</p>
         </div>
 
         <textarea
-          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-mono p-4 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Paste SRT or VTT content here…"
           value={text}
           onChange={(e) => { setText(e.target.value); setIssues(null) }}
         />
 
-        <button onClick={handleValidate} className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors">
+        <button onClick={handleValidate} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors">
           Validate File
         </button>
 
@@ -129,7 +129,7 @@ export default function SubtitleValidator() {
             )}
 
             {!isValid && (
-              <a href="/fix-subtitles" className="block w-full py-2.5 rounded-xl border border-violet-300 dark:border-violet-600 text-violet-700 dark:text-violet-300 font-semibold text-sm text-center hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors">
+              <a href="/fix-subtitles" className="block w-full py-2.5 rounded-xl border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 font-semibold text-sm text-center hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
                 Fix issues automatically with AI →
               </a>
             )}

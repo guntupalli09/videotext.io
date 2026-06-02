@@ -27,13 +27,13 @@ import YoutubeResolutionPanel from './YoutubeResolutionPanel'
 const PLAN_COLORS: Record<string, string> = {
   free: 'text-zinc-400',
   basic: 'text-blue-400',
-  pro: 'text-violet-400',
+  pro: 'text-blue-400',
   agency: 'text-amber-400',
   founding_workflow: 'text-emerald-400',
 }
 
 const TOOL_COLORS_BAR: Record<string, string> = {
-  'video-to-transcript': '#7c3aed',
+  'video-to-transcript': '#2563EB',
   'voice-to-transcript': '#f43f5e',
   'video-to-subtitles': '#2563eb',
   'translate-subtitles': '#db2777',
@@ -49,11 +49,11 @@ function KpiCard({ label, value, sub, accent = false, danger = false }: {
   return (
     <div className={`rounded-xl border p-4 flex flex-col gap-1 ${
       danger ? 'border-red-900/50 bg-red-950/20' :
-      accent ? 'border-violet-700/50 bg-violet-950/30' :
+      accent ? 'border-blue-700/50 bg-blue-950/30' :
       'border-zinc-800 bg-zinc-900'
     }`}>
       <p className="text-xs text-zinc-500 uppercase tracking-wider">{label}</p>
-      <p className={`text-2xl font-bold ${danger ? 'text-red-400' : accent ? 'text-violet-300' : 'text-white'}`}>{value}</p>
+      <p className={`text-2xl font-bold ${danger ? 'text-red-400' : accent ? 'text-blue-300' : 'text-white'}`}>{value}</p>
       {sub && <p className="text-xs text-zinc-600">{sub}</p>}
     </div>
   )
@@ -62,7 +62,7 @@ function KpiCard({ label, value, sub, accent = false, danger = false }: {
 function SectionTitle({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
     <div id={id} className="flex items-center gap-3 mb-4">
-      <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest whitespace-nowrap">{children}</h2>
+      <h2 className="text-xs font-medium text-zinc-500 uppercase tracking-widest whitespace-nowrap">{children}</h2>
       <div className="flex-1 h-px bg-zinc-800" />
     </div>
   )
@@ -141,7 +141,7 @@ export default function FounderDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">Command Centre</h1>
+            <h1 className="text-xl font-medium text-white tracking-tight">Command Centre</h1>
             <p className="text-xs text-zinc-600 mt-0.5">VideoText.io · Founder view</p>
           </div>
           <div className="flex items-center gap-3">
@@ -189,7 +189,7 @@ export default function FounderDashboard() {
             <SectionTitle id="growth">Activation & Upgrade Lift</SectionTitle>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-                <h3 className="text-sm font-semibold text-white mb-3">KPI progress ({growth.latest.windowDays}d)</h3>
+                <h3 className="text-sm font-medium text-white mb-3">KPI progress ({growth.latest.windowDays}d)</h3>
                 <div className="space-y-2 text-xs">
                   <p className="text-zinc-300">Activation: <span className="text-white font-semibold">{growth.latest.activationRatePct}%</span> (target {growth.kpiTargets.activationRatePct.target}%)</p>
                   <p className="text-zinc-300">Upgrade CTR (activated): <span className="text-white font-semibold">{growth.latest.activatedUpgradeCtrPct}%</span> (target ≥{growth.kpiTargets.activatedUpgradeCtrPct.target}%)</p>
@@ -197,7 +197,7 @@ export default function FounderDashboard() {
                 </div>
               </div>
               <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-                <h3 className="text-sm font-semibold text-white mb-3">Daily founder report</h3>
+                <h3 className="text-sm font-medium text-white mb-3">Daily founder report</h3>
                 <div className="grid grid-cols-2 gap-2 text-xs text-zinc-300">
                   <p>New free signups</p><p className="text-right text-white font-semibold">{growth.founderDailyReport.newFreeSignups}</p>
                   <p>Users in 3–6h window</p><p className="text-right text-white font-semibold">{growth.founderDailyReport.usersIn3To6hWindow}</p>
@@ -207,7 +207,7 @@ export default function FounderDashboard() {
                 </div>
               </div>
               <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-                <h3 className="text-sm font-semibold text-white mb-3">Cohort comparison</h3>
+                <h3 className="text-sm font-medium text-white mb-3">Cohort comparison</h3>
                 <p className="text-xs text-zinc-500 mb-2">Release date: {new Date(growth.cohortComparison.releaseDate).toLocaleDateString()}</p>
                 <div className="space-y-2 text-xs text-zinc-300">
                   <p>Day 7: before <span className="text-white font-semibold">{growth.cohortComparison.day7.beforePct}%</span> → after <span className="text-emerald-300 font-semibold">{growth.cohortComparison.day7.afterPct}%</span></p>
@@ -233,7 +233,7 @@ export default function FounderDashboard() {
             <YoutubeResolutionPanel data={data.youtubeResolution} />
           </div>
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 mt-4">
-            <h3 className="text-sm font-semibold text-white mb-4">Jobs by tool (30d)</h3>
+            <h3 className="text-sm font-medium text-white mb-4">Jobs by tool (30d)</h3>
             <JobsByTool data={data.usage?.jobsByToolType ?? []} />
           </div>
           <div className="mt-4">
@@ -263,7 +263,7 @@ export default function FounderDashboard() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div className="lg:col-span-2 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-                <h3 className="text-sm font-semibold text-white mb-1">MRR trend</h3>
+                <h3 className="text-sm font-medium text-white mb-1">MRR trend</h3>
                 <p className="text-xs text-zinc-500 mb-4">Last 12 months</p>
                 <MrrLineChart data={data.revenue?.mrrTrend ?? []} />
               </div>
@@ -287,7 +287,7 @@ export default function FounderDashboard() {
               <TopUsersByJobs users={data.usage?.topUsersByJobCount ?? []} />
             </div>
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-              <h3 className="text-sm font-semibold text-white mb-4">New vs churned (14d)</h3>
+              <h3 className="text-sm font-medium text-white mb-4">New vs churned (14d)</h3>
               <NewVsChurnedDaily daily={data.daily ?? []} />
             </div>
           </div>
@@ -353,7 +353,7 @@ export default function FounderDashboard() {
 function Spinner() {
   return (
     <div className="flex min-h-[40vh] items-center justify-center">
-      <p className="text-violet-500 font-medium text-sm animate-pulse">Loading…</p>
+      <p className="text-blue-600 font-medium text-sm animate-pulse">Loading…</p>
     </div>
   )
 }
@@ -384,8 +384,8 @@ function MrrLineChart({ data }: { data: { monthStart: string; mrrCents: number }
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }} preserveAspectRatio="none">
       <defs>
         <linearGradient id="mrr-grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.02" />
+          <stop offset="0%" stopColor="#2563EB" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#2563EB" stopOpacity="0.02" />
         </linearGradient>
       </defs>
       {yTicks.map((v, i) => (
@@ -395,10 +395,10 @@ function MrrLineChart({ data }: { data: { monthStart: string; mrrCents: number }
         </g>
       ))}
       <path d={areaD} fill="url(#mrr-grad)" />
-      <path d={pathD} fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={pathD} fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       {sorted.map((d, i) => (
         <g key={d.monthStart}>
-          <circle cx={toX(i)} cy={toY(d.mrrCents)} r="3" fill="#7c3aed" />
+          <circle cx={toX(i)} cy={toY(d.mrrCents)} r="3" fill="#2563EB" />
           {(i === 0 || i === sorted.length - 1 || i === Math.floor(sorted.length / 2)) && (
             <text x={toX(i)} y={H - 8} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.35)">
               {new Date(d.monthStart).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}
@@ -422,7 +422,7 @@ function JobsByTool({ data }: { data: { toolType: string; count: number }[] }) {
             <span className="text-zinc-500 tabular-nums">{j.count}</span>
           </div>
           <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-            <div className="h-full rounded-full" style={{ width: `${(j.count / max) * 100}%`, backgroundColor: TOOL_COLORS_BAR[j.toolType] ?? '#7c3aed' }} />
+            <div className="h-full rounded-full" style={{ width: `${(j.count / max) * 100}%`, backgroundColor: TOOL_COLORS_BAR[j.toolType] ?? '#2563EB' }} />
           </div>
         </div>
       ))}
@@ -433,7 +433,7 @@ function JobsByTool({ data }: { data: { toolType: string; count: number }[] }) {
 function TopUsersByJobs({ users }: { users: { userId: string; email: string; plan: string; jobCount: number }[] }) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-      <h3 className="text-sm font-semibold text-white mb-4">Most active users (30d)</h3>
+      <h3 className="text-sm font-medium text-white mb-4">Most active users (30d)</h3>
       {users.length === 0 ? (
         <p className="text-zinc-600 text-sm">No data.</p>
       ) : (

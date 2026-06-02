@@ -16,6 +16,7 @@ import batchRoutes from './routes/batch'
 import billingRoutes from './routes/billing'
 import authRoutes from './routes/auth'
 import translateTranscriptRoutes from './routes/translateTranscript'
+import translateSubtitlesRoutes from './routes/translateSubtitles'
 import { stripeWebhookHandler } from './routes/stripeWebhook'
 import { startWorker, getTotalQueueCount, fileQueue, priorityQueue } from './workers/videoProcessor'
 import { startFileCleanup } from './utils/fileCleanup'
@@ -42,6 +43,9 @@ import { attachLiveTranscription } from './routes/liveTranscription'
 import { maybeRunYoutubeCanary } from './services/youtubeCanary'
 import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
+import guidelinesRoutes from './routes/guidelines'
+import { guidelineQueue, startGuidelineWorker } from './workers/guidelineProcessor'
+import publicStatsRoutes from './routes/publicStats'
 
 const log = getLogger('api')
 
@@ -90,25 +94,7 @@ const generalLimiter = rateLimit({
 })
 
 // CORS: allowlist is managed in utils/allowedOrigins.ts.
-// Production: explicit origins only (hardcoded set + CORS_ORIGINS env var).
-// Development: any localhost origin allowed.
-// The *.vercel.app wildcard has been removed — add preview URLs to CORS_ORIGINS instead.
-
-const corsOptions: cors.CorsOptions = {
-  origin: (origin, callback) => {
-    if (isAllowedOrigin(origin)) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Id', 'X-Plan', 'X-Upload-Id', 'X-Chunk-Index'],
-  credentials: true,
-  optionsSuccessStatus: 204,
-}
-
-// Ensure CORS headers are on every response (including errors). Run first so preflight and error responses get them.
+// Includes: production domain(s), localhost dev, and https://*.vercel.app previews.
 const corsHeaders = [
   'Content-Type',
   'Authorization',
@@ -117,35 +103,97 @@ const corsHeaders = [
   'X-Upload-Id',
   'X-Chunk-Index',
 ]
-app.use((req, res, next) => {
-  const rawOrigin = req.headers.origin
-  const origin = typeof rawOrigin === 'string' ? normalizeOrigin(rawOrigin) || rawOrigin : rawOrigin
-  if (origin && isAllowedOrigin(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin)
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH')
-    res.setHeader('Access-Control-Allow-Headers', corsHeaders.join(', '))
-    res.setHeader('Access-Control-Max-Age', '86400')
+
+function headerValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value.join(', ') : value
+}
+
+function getClientIp(req: express.Request): string | undefined {
+  return (
+    headerValue(req.headers['cf-connecting-ip']) ||
+    headerValue(req.headers['x-forwarded-for']) ||
+    req.socket.remoteAddress ||
+    req.ip
+  )
+}
+
+// Log the full request context for rejected CORS origins before the cors package
+// short-circuits the request. This is intentionally noisy for rejects so we can
+// identify who is calling the API from a disallowed origin in production logs.
+app.use((req, _res, next) => {
+  const rawOrigin = headerValue(req.headers.origin)
+  const normalizedOrigin = rawOrigin ? normalizeOrigin(rawOrigin) : undefined
+
+  if (normalizedOrigin && !isAllowedOrigin(normalizedOrigin)) {
+    log.error({
+      msg: '[cors] rejected origin',
+      origin: normalizedOrigin,
+      rawOrigin,
+      method: req.method,
+      path: req.originalUrl || req.path,
+      referer: headerValue(req.headers.referer),
+      host: headerValue(req.headers.host),
+      userAgent: headerValue(req.headers['user-agent']),
+      ip: getClientIp(req),
+    })
   }
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204)
-  }
+
   next()
 })
 
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    const normalized = typeof origin === 'string' ? normalizeOrigin(origin) : origin
+    log.info({ msg: '[cors] incoming origin', origin: normalized ?? 'undefined' })
+
+    if (!normalized || isAllowedOrigin(normalized)) {
+      callback(null, true)
+      return
+    }
+
+    callback(new Error('Not allowed by CORS'))
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: corsHeaders,
+  credentials: true,
+  optionsSuccessStatus: 204,
+}
+
 app.use(cors(corsOptions))
-// Preflight fallback (in case OPTIONS is not caught above)
-app.options('*', (req, res) => {
-  const rawOrigin = req.headers.origin
-  const origin = typeof rawOrigin === 'string' ? normalizeOrigin(rawOrigin) || rawOrigin : rawOrigin
-  if (origin && isAllowedOrigin(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin)
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH')
-    res.setHeader('Access-Control-Allow-Headers', corsHeaders.join(', '))
-    res.setHeader('Access-Control-Max-Age', '86400')
+app.options('*', cors(corsOptions))
+
+// CORS debug instrumentation (do not alter behavior)
+app.use((req, res, next) => {
+  const origin = req.get('origin') ?? 'undefined'
+  const path = req.originalUrl || req.path
+  log.info({ msg: '[REQ]', method: req.method, path, origin })
+
+  if (req.method === 'OPTIONS') {
+    log.info({ msg: '[OPTIONS]', stage: 'received', method: req.method, path, origin })
   }
-  res.sendStatus(204)
+
+  res.on('finish', () => {
+    const allowOrigin = res.getHeader('Access-Control-Allow-Origin')
+    const hasCorsHeader = allowOrigin !== undefined && allowOrigin !== null
+    log.info({
+      msg: req.method === 'OPTIONS' ? '[OPTIONS]' : '[RES]',
+      stage: 'sent',
+      method: req.method,
+      path,
+      status: res.statusCode,
+      hasAccessControlAllowOrigin: hasCorsHeader,
+      accessControlAllowOrigin: hasCorsHeader ? String(allowOrigin) : null,
+    })
+  })
+
+  next()
+})
+
+app.get('/api/debug/cors', (req, res) => {
+  res.json({
+    origin: req.headers.origin ?? null,
+    responseHeaders: res.getHeaders(),
+  })
 })
 
 // Request ID: correlate UI → API → worker (read from edge or generate)
@@ -181,6 +229,8 @@ app.use('/api/upload', apiKeyAuth)
 app.use('/api/job', apiKeyAuth)
 app.use('/api/batch', apiKeyAuth)
 app.use('/api/translate-transcript', apiKeyAuth)
+app.use('/api/translate-subtitles', apiKeyAuth)
+app.use('/api/guidelines', apiKeyAuth)
 
 // Routes
 app.use('/api/upload', uploadRoutes)
@@ -192,6 +242,8 @@ app.use('/api/batch', batchRoutes)
 app.use('/api/billing', billingRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/translate-transcript', translateTranscriptRoutes)
+app.use('/api/translate-subtitles', translateSubtitlesRoutes)
+app.use('/api/guidelines', guidelinesRoutes)
 app.use('/api/shares', shareRoutes)
 app.use('/api/feedback', feedbackRoutes)
 app.use('/api/events', eventsRoutes)
@@ -199,6 +251,7 @@ app.use('/api/feedback', feedbackSystemRoutes)
 app.use('/api/admin/feedback', feedbackSystemRoutes)
 app.use('/api/admin', adminDashboardRoutes)
 app.use('/api/admin', adminSupportRoutes)
+app.use('/api/stats', publicStatsRoutes)
 
 // Health and ops (no /api prefix)
 app.use(healthRoutes)
@@ -231,6 +284,7 @@ const server = app.listen(PORT, () => {
   // Worker runs in a separate container when Dockerized (DISABLE_WORKER=true).
   if (process.env.DISABLE_WORKER !== 'true') {
     startWorker()
+    startGuidelineWorker()
     log.info({ msg: 'Background worker started' })
   }
 
@@ -360,7 +414,7 @@ const server = app.listen(PORT, () => {
       <table width="480" cellpadding="0" cellspacing="0" style="background:#1a1a2e;border-radius:16px;overflow:hidden;border:1px solid #2d2d4e">
         <tr>
           <td style="padding:40px 40px 24px;text-align:center">
-            <div style="width:56px;height:56px;background:#7c3aed;border-radius:50%;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;line-height:56px;font-size:28px">🎬</div>
+            <div style="width:56px;height:56px;background:#2563EB;border-radius:50%;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;line-height:56px;font-size:28px">🎬</div>
             <h1 style="margin:0 0 8px;color:#ffffff;font-size:28px;font-weight:700;line-height:1.2">3 New Transcriptions<br>Available</h1>
           </td>
         </tr>
@@ -369,13 +423,13 @@ const server = app.listen(PORT, () => {
             <p style="margin:0 0 16px;color:#a0a0c0;font-size:15px;line-height:1.6">Hey!</p>
             <p style="margin:0 0 16px;color:#a0a0c0;font-size:15px;line-height:1.6">Your 3 free daily transcriptions have reset. Upload a video and get your transcript, subtitles, or captions in minutes.</p>
             <p style="margin:0 0 32px;color:#a0a0c0;font-size:15px;line-height:1.6">Click below — you'll be logged in instantly, no password needed.</p>
-            <a href="${openLink}" style="display:block;background:#7c3aed;color:#ffffff;text-decoration:none;text-align:center;padding:16px 32px;border-radius:10px;font-size:15px;font-weight:700;letter-spacing:0.5px">OPEN NOW</a>
+            <a href="${openLink}" style="display:block;background:#2563EB;color:#ffffff;text-decoration:none;text-align:center;padding:16px 32px;border-radius:10px;font-size:15px;font-weight:700;letter-spacing:0.5px">OPEN NOW</a>
           </td>
         </tr>
         <tr>
           <td style="padding:24px 40px;border-top:1px solid #2d2d4e;text-align:center">
             <p style="margin:0 0 8px;color:#606080;font-size:12px">Want unlimited transcriptions with no watermark?</p>
-            <a href="${baseUrl}/pricing" style="color:#7c3aed;font-size:12px;text-decoration:none;font-weight:600">Upgrade to Pro → $10/mo annual</a>
+            <a href="${baseUrl}/pricing" style="color:#2563EB;font-size:12px;text-decoration:none;font-weight:600">Upgrade to Pro → $40/mo</a>
             <p style="margin:16px 0 0;color:#404060;font-size:11px">VideoText.io · <a href="${baseUrl}/unsubscribe?email=${encodeURIComponent(u.email)}" style="color:#404060">unsubscribe</a></p>
           </td>
         </tr>
@@ -398,7 +452,7 @@ const server = app.listen(PORT, () => {
 
   // Activation sequence (Day 0/1/3/7) for free users who signed up but never started.
   startOnboardingEmailCron().catch((e) => {
-    console.error('Failed to start onboarding cron:', e)
+    log.error({ msg: 'Failed to start onboarding cron', error: (e as Error)?.message })
   })
 
   // Upgrade rescue sequence for users who clicked upgrade but did not complete payment in 24h.
@@ -450,6 +504,7 @@ async function shutdown() {
   await Promise.allSettled([
     fileQueue?.close(),
     priorityQueue?.close(),
+    guidelineQueue?.close(),
   ])
   server.close(() => {
     log.info({ msg: 'Server closed' })

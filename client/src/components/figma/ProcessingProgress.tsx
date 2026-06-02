@@ -43,7 +43,7 @@ export function ProcessingProgress({
                   step.status === 'completed'
                     ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
                     : step.status === 'active'
-                    ? 'bg-purple-600 text-white'
+                    ? 'bg-blue-600 text-white'
                     : step.status === 'error'
                     ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
@@ -62,7 +62,7 @@ export function ProcessingProgress({
               <span
                 className={`text-xs font-medium ${
                   step.status === 'active'
-                    ? 'text-purple-600 dark:text-purple-400'
+                    ? 'text-blue-600 dark:text-blue-400'
                     : step.status === 'completed'
                     ? 'text-green-600 dark:text-green-400'
                     : 'text-gray-500 dark:text-gray-400'
@@ -83,7 +83,7 @@ export function ProcessingProgress({
       </div>
 
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{currentMessage}</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">{currentMessage}</h3>
         {(statusSubtext || estimatedTime) && (
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {statusSubtext}
@@ -96,7 +96,7 @@ export function ProcessingProgress({
       <div className="space-y-2">
         <div className="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
           <motion.div
-            className="absolute h-full bg-gradient-to-r from-purple-600 to-blue-600"
+            className="absolute h-full bg-gradient-to-r from-blue-600 to-blue-700"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -114,7 +114,7 @@ export function ProcessingProgress({
           animate={{ opacity: 1, y: 0 }}
           className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800"
         >
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">{livePreviewLabel}</h4>
+          <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">{livePreviewLabel}</h4>
           <div className="max-h-48 overflow-y-auto text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
             {liveTranscript}
           </div>

@@ -114,7 +114,7 @@ export default function VideoMetadataViewer() {
       <div className="space-y-4">
         <div
           onClick={() => fileRef.current?.click()}
-          className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-10 text-center hover:border-violet-300 dark:hover:border-violet-500 transition-colors cursor-pointer"
+          className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-10 text-center hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer"
         >
           <input ref={fileRef} type="file" accept="video/*" className="hidden" onChange={handleFile} />
           <div className="text-4xl mb-3">🎬</div>
@@ -124,7 +124,7 @@ export default function VideoMetadataViewer() {
 
         {loading && (
           <div className="text-center py-4">
-            <div className="inline-block w-6 h-6 border-2 border-violet-600 border-t-transparent rounded-full animate-spin" />
+            <div className="inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-gray-500 mt-2">Reading metadata…</p>
           </div>
         )}

@@ -29,7 +29,7 @@ Run the backend on a Hetzner VM (Docker recommended).
 ### 2.1 Database and Redis
 
 - **Postgres:** Use Hetzner Managed Database (Postgres) or run Postgres in Docker on the same VM. Note the connection string (e.g. `postgresql://user:pass@host:5432/videotext`).
-- **Redis (self‑hosted in Docker):** Run Redis in a container on the same Hetzner server (e.g. via docker-compose). From the API/worker containers, use the Redis service name as host (e.g. `redis://redis:6379`) if they share a Docker network, or `redis://localhost:6379` if Redis is published on the host. With a password: `redis://:YOUR_PASSWORD@redis:6379`.
+- **Redis (self‑hosted in Docker):** Run Redis in a container on the same Hetzner server via `docker-compose.yml`. Set a strong `REDIS_PASSWORD` in `.env`; Compose wires API/worker to `redis://:YOUR_PASSWORD@redis:6379` on the private Compose network. Do not publish Redis to the host or Internet.
 
 ### 2.2 Server env (API + worker)
 
@@ -40,7 +40,8 @@ Create a **`.env`** next to `docker-compose.yml` (or set env in your process man
 | `NODE_ENV` | Yes | `production` |
 | `JWT_SECRET` | Yes | Strong random (e.g. `openssl rand -hex 32`). **Never** `dev-secret` in prod. |
 | `DATABASE_URL` | Yes | `postgresql://user:pass@host:5432/videotext` (Hetzner DB or Docker postgres) |
-| `REDIS_URL` | Yes | With Redis in Docker: `redis://redis:6379` (same compose network) or `redis://localhost:6379` (port published). With password: `redis://:pass@redis:6379` |
+| `REDIS_PASSWORD` | Yes | Strong random password for the Compose Redis service, e.g. `openssl rand -hex 32`. |
+| `REDIS_URL` | Yes | Compose sets this for API/worker as `redis://:${REDIS_PASSWORD}@redis:6379`. If overriding manually, require auth and keep Redis private; URL-encode special characters in the password. |
 | `CORS_ORIGINS` | Yes | Your frontend origin(s), e.g. `https://www.videotext.io` or `https://www.videotext.io,https://videotext.io` |
 | `TEMP_FILE_PATH` | Yes | `/tmp` (API and worker must share this; use shared volume so assembled files are visible to the worker) |
 | `PROCESSING_V2` | Yes (performance) | `true` — extraction-first TTFW (worker) |

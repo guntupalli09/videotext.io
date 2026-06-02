@@ -49,10 +49,10 @@ export default function UpgradeBanner({ variant = 'video-length' }: UpgradeBanne
   const { text, cta } = MESSAGES[variant]
 
   return (
-    <div className="mb-4 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800/50 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+    <div className="mb-4 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
       <div className="flex items-center gap-2 min-w-0">
-        <Zap className="w-4 h-4 text-violet-500 shrink-0" />
-        <span className="text-sm text-violet-700 dark:text-violet-300 font-medium">{text}</span>
+        <Zap className="w-4 h-4 text-blue-600 shrink-0" />
+        <span className="text-sm text-blue-700 dark:text-blue-300 font-medium">{text}</span>
       </div>
       <Link
         to="/pricing"
@@ -60,7 +60,7 @@ export default function UpgradeBanner({ variant = 'video-length' }: UpgradeBanne
           trackAppEvent('upgrade_clicked', { source: `upgrade_banner:${variant}`, plan: 'pro' })
           trackEvent('upgrade_clicked', { source: `upgrade_banner:${variant}`, plan: 'pro' })
         }}
-        className="shrink-0 text-sm font-semibold text-violet-700 dark:text-violet-300 hover:text-violet-900 dark:hover:text-white underline underline-offset-2 transition-colors"
+        className="shrink-0 text-sm font-semibold text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-white underline underline-offset-2 transition-colors"
       >
         {cta} →
       </Link>

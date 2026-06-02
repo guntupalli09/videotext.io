@@ -3,7 +3,7 @@ import type { DashboardPlanCount } from '../../lib/founderDashboard'
 const PLAN_CONFIG: Record<string, { color: string; label: string }> = {
   free: { color: '#52525b', label: 'Free' },
   basic: { color: '#2563eb', label: 'Basic' },
-  pro: { color: '#7c3aed', label: 'Pro' },
+  pro: { color: '#2563EB', label: 'Pro' },
   agency: { color: '#d97706', label: 'Agency' },
   founding_workflow: { color: '#059669', label: 'Founding' },
 }
@@ -18,7 +18,7 @@ export default function PlanDistribution({ planDistribution }: { planDistributio
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white">Plan distribution</h3>
+        <h3 className="text-sm font-medium text-white">Plan distribution</h3>
         <span className="text-xs text-zinc-500">{convRate}% paid</span>
       </div>
 

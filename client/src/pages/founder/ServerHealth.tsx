@@ -73,7 +73,7 @@ export default function ServerHealth() {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white">Server health</h3>
+        <h3 className="text-sm font-medium text-white">Server health</h3>
         <div className="flex items-center gap-2">
           {lastChecked && (
             <span className="text-xs text-zinc-600">{lastChecked.toLocaleTimeString()}</span>

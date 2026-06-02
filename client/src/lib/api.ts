@@ -1202,6 +1202,58 @@ export function uploadDualFilesWithProgress(
   })
 }
 
+/**
+ * Upload subtitle file + optional video for fix-subtitles with scene cut detection.
+ * Video is optional — when provided, the server runs FFmpeg scene detection and
+ * returns scene_cut warnings alongside standard CPS/CPL findings.
+ */
+export function uploadFixSubtitlesDual(
+  subtitleFile: File,
+  videoFile: File | null,
+  progressOptions?: { onProgress?: (percent: number) => void; signal?: AbortSignal }
+): Promise<UploadResponse> {
+  const formData = new FormData()
+  formData.append('subtitles', subtitleFile)
+  if (videoFile) formData.append('video', videoFile)
+  formData.append('toolType', BACKEND_TOOL_TYPES.FIX_SUBTITLES)
+
+  const url = `${API_ORIGIN}/api/upload/dual`
+  const userId = localStorage.getItem('userId') || 'demo-user'
+  const plan = localStorage.getItem('plan') || 'free'
+  const signal = progressOptions?.signal
+
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) { reject(new Error('Upload cancelled')); return }
+    const xhr = new XMLHttpRequest()
+    const onAbort = () => { xhr.abort() }
+    signal?.addEventListener('abort', onAbort, { once: true })
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable && progressOptions?.onProgress) {
+        progressOptions.onProgress(Math.round((e.loaded / e.total) * 100))
+      }
+    })
+    xhr.addEventListener('load', () => {
+      signal?.removeEventListener('abort', onAbort)
+      if (xhr.status === 204 || !xhr.responseText?.trim()) {
+        reject(new Error('Upload accepted but no job ID returned. Please retry.')); return
+      }
+      let data: UploadResponse & { message?: string }
+      try { data = JSON.parse(xhr.responseText) as UploadResponse & { message?: string } }
+      catch { reject(new Error('Invalid upload response. Please retry.')); return }
+      if (xhr.status >= 200 && xhr.status < 300 && data?.jobId) {
+        resolve({ jobId: data.jobId, status: data.status ?? 'queued', jobToken: data.jobToken }); return
+      }
+      reject(new Error(data?.message || 'Upload failed'))
+    })
+    xhr.addEventListener('error', () => { signal?.removeEventListener('abort', onAbort); reject(new Error('Upload failed')) })
+    xhr.addEventListener('abort', () => { signal?.removeEventListener('abort', onAbort); reject(new Error('Upload cancelled')) })
+    xhr.open('POST', url)
+    xhr.setRequestHeader('x-user-id', userId)
+    xhr.setRequestHeader('x-plan', plan)
+    xhr.send(formData)
+  })
+}
+
 /** Thrown when GET /api/job/:id returns 404 (job expired or never existed). Show "Session expired. Please upload again." */
 export class SessionExpiredError extends Error {
   constructor(message = 'Session expired. Please upload again.') {
@@ -1368,6 +1420,7 @@ export async function uploadBatch(
     additionalLanguages?: string[]
   }
 ): Promise<BatchUploadResponse> {
+  const BATCH_UPLOAD_TIMEOUT_MS = 120_000
   const formData = new FormData()
   files.forEach(file => formData.append('files', file))
   formData.append('primaryLanguage', primaryLanguage)
@@ -1387,6 +1440,7 @@ export async function uploadBatch(
 
   const response = await api('/api/batch/upload', {
     method: 'POST',
+    timeout: BATCH_UPLOAD_TIMEOUT_MS,
     body: formData,
     headers: {
       'x-user-id': localStorage.getItem('userId') || 'demo-user',
@@ -1395,7 +1449,10 @@ export async function uploadBatch(
   })
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Batch upload failed' }))
+    const fallbackMessage = response.status === 408
+      ? 'Batch upload timed out. Please retry with fewer files or smaller files.'
+      : 'Batch upload failed'
+    const error = await response.json().catch(() => ({ message: fallbackMessage }))
     throw new Error(error.message || 'Batch upload failed')
   }
 
@@ -1779,7 +1836,7 @@ export type CreateTranscriptShareBody = {
   jobId: string
   jobToken: string
   variant: 'original' | 'translated'
-  sourceTool: 'video-to-transcript' | 'voice-to-text'
+  sourceTool: 'video-to-transcript' | 'voice-to-text' | 'video-to-subtitles'
   title?: string
   targetLanguage?: string | null
   payload: TranscriptSharePayload

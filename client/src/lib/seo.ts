@@ -6,6 +6,15 @@ export const SITE_URL =
   (typeof import.meta.env?.VITE_SITE_URL === 'string' && import.meta.env.VITE_SITE_URL.trim()) ||
   'https://videotext.io'
 
+export const BLOG_URL = 'https://blog.videotext.io'
+
+export function getCanonicalUrlForPath(pathOrUrl: string): string {
+  if (pathOrUrl.startsWith('http')) return pathOrUrl
+  if (pathOrUrl === '/blog') return `${BLOG_URL}/`
+  if (pathOrUrl.startsWith('/blog/')) return `${BLOG_URL}/${pathOrUrl.slice('/blog/'.length)}`
+  return `${SITE_URL}${pathOrUrl === '/' ? '' : pathOrUrl}`
+}
+
 export const SITE_NAME = 'VideoText'
 export const DEFAULT_DESCRIPTION =
   'VideoText: AI-powered video to text and subtitle tools. Paste a YouTube URL or upload a file — get a transcript in seconds. Transcribe, view in 6 languages, generate SRT/VTT, translate subtitles. No download for YouTube. Free tier.'

@@ -1,0 +1,124 @@
+<svg width="1400" height="787" viewBox="0 0 1400 787" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A0E1A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#080B12;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="splitLeft" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0F1E0F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0A0E1A;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="splitRight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0A0E1A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E0F0A;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow-green">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glow-amber">
+      <feGaussianBlur stdDeviation="12" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glow-red">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="leftClip">
+      <rect x="0" y="0" width="700" height="787"/>
+    </clipPath>
+    <clipPath id="rightClip">
+      <rect x="700" y="0" width="700" height="787"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="787" fill="url(#bgGrad)"/>
+
+  <!-- Left panel tint (green/accurate side) -->
+  <rect x="0" y="0" width="680" height="787" fill="url(#splitLeft)" opacity="0.6"/>
+
+  <!-- Right panel tint (red/not ready side) -->
+  <rect x="720" y="0" width="680" height="787" fill="url(#splitRight)" opacity="0.6"/>
+
+  <!-- Background transcript texture - left side (raw/messy) -->
+  <text x="30" y="80" font-family="'Courier New', monospace" font-size="11" fill="#22C55E" opacity="0.08">Speaker 1 - So the thing that I was trying to say is uh you know like basically</text>
+  <text x="30" y="96" font-family="'Courier New', monospace" font-size="11" fill="#22C55E" opacity="0.08">the quarterly results were-- were pretty good overall and uh [Inaudible]</text>
+  <text x="30" y="112" font-family="'Courier New', monospace" font-size="11" fill="#22C55E" opacity="0.08">speaker 1: And then she said um "the net revenue was 40 million dollars"</text>
+  <text x="30" y="128" font-family="'Courier New', monospace" font-size="11" fill="#22C55E" opacity="0.08">Speaker1: Which was actually [INAUDIBLE] compared to last quarter...</text>
+  <text x="30" y="144" font-family="'Courier New', monospace" font-size="11" fill="#22C55E" opacity="0.08">SPEAKER 1 - There were 3 options: first was to...</text>
+  <text x="30" y="160" font-family="'Courier New', monospace" font-size="11" fill="#22C55E" opacity="0.08">Speaker 1: And 56% of respondents said [unclear] they preferred the...</text>
+  <text x="30" y="650" font-family="'Courier New', monospace" font-size="11" fill="#22C55E" opacity="0.08">Speaker 1 - So basically um yeah the timeline was 3 weeks not three weeks</text>
+  <text x="30" y="666" font-family="'Courier New', monospace" font-size="11" fill="#22C55E" opacity="0.08">Speaker1: Right and the-- the point being that [INAUDIBLE 00:42] we tried</text>
+  <text x="30" y="682" font-family="'Courier New', monospace" font-size="11" fill="#22C55E" opacity="0.08">speaker 1: Yeah um so to your point I think uh clearly there's a...</text>
+  <text x="30" y="698" font-family="'Courier New', monospace" font-size="11" fill="#22C55E" opacity="0.08">SPEAKER 1 - And you know the 5 people on the team were all uh [Inaudible]</text>
+
+  <!-- Background transcript texture - right side (clean/formatted) -->
+  <text x="730" y="80" font-family="'Courier New', monospace" font-size="11" fill="#F97316" opacity="0.08">Speaker 1: So the thing I was trying to say is the quarterly results</text>
+  <text x="730" y="96" font-family="'Courier New', monospace" font-size="11" fill="#F97316" opacity="0.08">were pretty good overall. [inaudible 00:00:14]</text>
+  <text x="730" y="112" font-family="'Courier New', monospace" font-size="11" fill="#F97316" opacity="0.08"></text>
+  <text x="730" y="128" font-family="'Courier New', monospace" font-size="11" fill="#F97316" opacity="0.08">Speaker 2: And then she said, "The net revenue was $40 million,"</text>
+  <text x="730" y="144" font-family="'Courier New', monospace" font-size="11" fill="#F97316" opacity="0.08">which was significantly higher compared to last quarter.</text>
+  <text x="730" y="160" font-family="'Courier New', monospace" font-size="11" fill="#F97316" opacity="0.08"></text>
+  <text x="730" y="176" font-family="'Courier New', monospace" font-size="11" fill="#F97316" opacity="0.08">Speaker 1: There were three options. First was to...</text>
+  <text x="730" y="650" font-family="'Courier New', monospace" font-size="11" fill="#F97316" opacity="0.08">Speaker 1: The timeline was three weeks. And 56% of respondents</text>
+  <text x="730" y="666" font-family="'Courier New', monospace" font-size="11" fill="#F97316" opacity="0.08">said they preferred the second option. [inaudible 00:42:17]</text>
+  <text x="730" y="682" font-family="'Courier New', monospace" font-size="11" fill="#F97316" opacity="0.08"></text>
+  <text x="730" y="698" font-family="'Courier New', monospace" font-size="11" fill="#F97316" opacity="0.08">Speaker 2: Right. And to your point, five people on the team</text>
+
+  <!-- Center divider line -->
+  <line x1="700" y1="0" x2="700" y2="787" stroke="#1E293B" stroke-width="2"/>
+
+  <!-- Left side label pill -->
+  <rect x="40" y="44" width="180" height="32" rx="16" fill="#052E16" stroke="#16A34A" stroke-width="1"/>
+  <text x="130" y="65" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2" fill="#22C55E">RAW AI OUTPUT</text>
+
+  <!-- Right side label pill -->
+  <rect x="1180" y="44" width="180" height="32" rx="16" fill="#431407" stroke="#EA580C" stroke-width="1"/>
+  <text x="1270" y="65" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2" fill="#F97316">CLIENT FORMAT</text>
+
+  <!-- Central glowing divider effect -->
+  <rect x="694" y="0" width="12" height="787" fill="#0A0E1A"/>
+  <line x1="700" y1="0" x2="700" y2="787" stroke="#334155" stroke-width="1" stroke-dasharray="6,8"/>
+
+  <!-- Main headline - left side -->
+  <text x="350" y="330" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="82" font-weight="900" letter-spacing="-3" fill="#22C55E" filter="url(#glow-green)">96%</text>
+  <text x="350" y="420" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="44" font-weight="700" fill="#DCFCE7" opacity="0.9">accurate</text>
+
+  <!-- Check mark icon left -->
+  <circle cx="350" cy="490" r="28" fill="none" stroke="#22C55E" stroke-width="2.5" opacity="0.6"/>
+  <text x="350" y="500" text-anchor="middle" font-family="Arial" font-size="26" fill="#22C55E" opacity="0.8">✓</text>
+
+  <!-- NOT EQUAL symbol center - the tension point -->
+  <text x="700" y="430" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="110" font-weight="900" fill="#F59E0B" filter="url(#glow-amber)" opacity="0.9">≠</text>
+
+  <!-- Main headline - right side -->
+  <text x="1050" y="330" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="60" font-weight="900" fill="#FED7AA" opacity="0.95">client-ready</text>
+  <text x="1050" y="396" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="44" font-weight="400" fill="#CBD5E1" opacity="0.5">yet</text>
+
+  <!-- X mark icon right -->
+  <circle cx="1050" cy="490" r="28" fill="none" stroke="#F97316" stroke-width="2.5" opacity="0.6"/>
+  <text x="1050" y="500" text-anchor="middle" font-family="Arial" font-size="26" fill="#F97316" opacity="0.8">✗</text>
+
+  <!-- Divider line above subtitle -->
+  <line x1="140" y1="570" x2="1260" y2="570" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- Main article title -->
+  <text x="700" y="620" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="700" fill="#F1F5F9" letter-spacing="-0.5">Your AI Transcript Is Accurate.</text>
+  <text x="700" y="658" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="400" fill="#94A3B8">It's Not Client-Ready.</text>
+
+  <!-- Subtitle -->
+  <text x="700" y="700" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="15" fill="#475569" letter-spacing="0.3">The formatting gap AI transcription left behind — and the workflow that closes it</text>
+
+  <!-- Bottom branding -->
+  <text x="700" y="755" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="2" fill="#334155">VIDEOTEXT.IO</text>
+</svg>

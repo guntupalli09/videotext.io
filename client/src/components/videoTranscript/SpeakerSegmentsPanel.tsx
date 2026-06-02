@@ -38,7 +38,7 @@ export default function SpeakerSegmentsPanel(props: {
   } = props
 
   const speakerColors: string[] = [
-    'border-violet-400 bg-violet-50 dark:border-violet-600 dark:bg-violet-950/30',
+    'border-blue-400 bg-blue-50 dark:border-blue-600 dark:bg-blue-950/30',
     'border-sky-400 bg-sky-50 dark:border-sky-600 dark:bg-sky-950/30',
     'border-emerald-400 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950/30',
     'border-rose-400 bg-rose-50 dark:border-rose-600 dark:bg-rose-950/30',
@@ -46,7 +46,7 @@ export default function SpeakerSegmentsPanel(props: {
     'border-fuchsia-400 bg-fuchsia-50 dark:border-fuchsia-600 dark:bg-fuchsia-950/30',
   ]
   const speakerTextColors: string[] = [
-    'text-violet-600 dark:text-violet-400',
+    'text-blue-600 dark:text-blue-400',
     'text-sky-600 dark:text-sky-400',
     'text-emerald-600 dark:text-emerald-400',
     'text-rose-600 dark:text-rose-400',
@@ -115,7 +115,7 @@ export default function SpeakerSegmentsPanel(props: {
     <div className="flex flex-col flex-1 min-h-0">
       {/* Header */}
       <div className="flex items-center gap-2 mb-1 shrink-0">
-        <h3 className="text-base font-semibold text-gray-900 dark:text-white">Who said what</h3>
+        <h3 className="text-base font-medium text-gray-900 dark:text-white">Who said what</h3>
         {audioObjectUrl && (
           <span className="ml-auto text-[11px] font-normal text-gray-400 dark:text-gray-500 shrink-0">Tap a line to seek</span>
         )}
@@ -137,7 +137,7 @@ export default function SpeakerSegmentsPanel(props: {
             className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
               showMapPanel
                 ? 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
-                : 'bg-violet-50 dark:bg-violet-950/40 border-violet-200 dark:border-violet-700 text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-950/60'
+                : 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-950/60'
             }`}
           >
             <PenLine className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
@@ -148,8 +148,8 @@ export default function SpeakerSegmentsPanel(props: {
 
       {/* ── Map-speakers panel ───────────────────────────────────────────── */}
       {showMapPanel && canRename && (
-        <div className="mb-4 rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50/60 dark:bg-violet-950/20 p-3 shrink-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-400 mb-3">
+        <div className="mb-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/60 dark:bg-blue-950/20 p-3 shrink-0">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-400 mb-3">
             Name each speaker
           </p>
           <div className="space-y-2">
@@ -173,7 +173,7 @@ export default function SpeakerSegmentsPanel(props: {
                     }}
                     placeholder={`e.g. ${i === 0 ? 'Alice' : i === 1 ? 'Bob' : `Speaker ${i + 1}`}`}
                     maxLength={32}
-                    className="flex-1 min-w-0 text-sm px-2 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400 dark:focus:ring-violet-600"
+                    className="flex-1 min-w-0 text-sm px-2 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600"
                   />
                 </div>
               )
@@ -183,7 +183,7 @@ export default function SpeakerSegmentsPanel(props: {
             <button
               type="button"
               onClick={applyMappings}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors"
             >
               <Check className="w-3.5 h-3.5 shrink-0" strokeWidth={2.5} />
               Apply names
@@ -246,7 +246,7 @@ export default function SpeakerSegmentsPanel(props: {
               </div>
               <p className={`flex-1 text-sm leading-relaxed ${isActive ? 'text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-300'}`}>
                 {isActive && (
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 mr-1.5 mb-0.5 animate-pulse" aria-hidden />
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-600 mr-1.5 mb-0.5 animate-pulse" aria-hidden />
                 )}
                 {transcriptView === 'translated' && translatedSegments?.[i]?.text ? translatedSegments[i].text : item.text}
               </p>

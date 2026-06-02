@@ -63,7 +63,10 @@ router.post('/structured', submitLimit, async (req: Request, res: Response) => {
     const sessionId = sanitize(body.sessionId, 64)
     if (!sessionId) return res.status(400).json({ message: 'sessionId required' })
 
-    const userId = getEffectiveUserId(req) || null
+    const userId = getEffectiveUserId(req)
+    if (!userId) return res.status(401).json({ message: 'Sign up or log in before sending feedback' })
+
+    const toolId = sanitize(body.toolId, 200)
     const rating = sanitize(body.rating, 200)
     const category = sanitize(body.category, 200)
     const freeText = sanitize(body.freeText) ?? ''
@@ -71,30 +74,51 @@ router.post('/structured', submitLimit, async (req: Request, res: Response) => {
 
     // Snapshot user score at submission time
     let userScore: number | null = null
-    if (userId) {
-      const metrics = await prisma.userMetrics.findUnique({ where: { userId } })
-      userScore = metrics?.userScore ?? null
+    const [metrics, user] = await Promise.all([
+      prisma.userMetrics.findUnique({ where: { userId } }),
+      prisma.user.findUnique({ where: { id: userId }, select: { email: true, plan: true } }),
+    ])
+    userScore = metrics?.userScore ?? null
 
-      // Mark one-time triggers as shown
-      if (triggerType === 'pmf') {
-        await prisma.userMetrics.upsert({
-          where: { userId },
-          create: { userId, pmfShown: true },
-          update: { pmfShown: true },
-        })
-      }
-      if (triggerType === 'competitor') {
-        await prisma.userMetrics.upsert({
-          where: { userId },
-          create: { userId, competitorShown: true },
-          update: { competitorShown: true },
-        })
-      }
+    // Mark one-time triggers as shown
+    if (triggerType === 'pmf') {
+      await prisma.userMetrics.upsert({
+        where: { userId },
+        create: { userId, pmfShown: true },
+        update: { pmfShown: true },
+      })
+    }
+    if (triggerType === 'competitor') {
+      await prisma.userMetrics.upsert({
+        where: { userId },
+        create: { userId, competitorShown: true },
+        update: { competitorShown: true },
+      })
     }
 
     await prisma.feedbackEvent.create({
       data: { userId, sessionId, triggerType, rating, category, freeText, userScore, dismissed },
     })
+
+    if (!dismissed) {
+      const starsByResultRating: Record<string, number> = {
+        Perfect: 5,
+        'Good but needs tweaks': 3,
+        'Not usable': 1,
+      }
+      const details = [rating, category, freeText].filter((v): v is string => Boolean(v)).join(' — ')
+      await prisma.feedback.create({
+        data: {
+          toolId,
+          stars: triggerType === 'result' && rating ? starsByResultRating[rating] ?? null : null,
+          comment: details,
+          userId,
+          userNameOrEmail: user?.email ?? null,
+          planAtSubmit: user?.plan ?? null,
+          source: 'in-app',
+        },
+      })
+    }
 
     return res.status(201).json({ ok: true })
   } catch {

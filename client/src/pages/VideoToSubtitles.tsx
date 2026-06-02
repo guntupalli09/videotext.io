@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { MessageSquare, Languages, Film, Wrench, FileDown, Minimize2, Lock } from 'lucide-react'
+import { MessageSquare, FileDown, Lock, CheckCircle2, Upload } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
-import CrossToolSuggestions from '../components/CrossToolSuggestions'
-// import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
+import TranscriptSharePanel from '../components/TranscriptSharePanel'
 import PaywallModal from '../components/PaywallModal'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import UpgradeBanner from '../components/UpgradeBanner'
@@ -14,10 +13,9 @@ import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingInterface } from '../components/figma/ProcessingInterface'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
 import { ResultSkeleton } from '../components/figma/ResultSkeleton'
-import { SubtitleResult } from '../components/figma/SubtitleResult'
 import { RadioGroup, Select } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
-const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
+const SubtitleQAReview = lazy(() => import('../components/SubtitleQAReview'))
 import { incrementUsage } from '../lib/usage'
 import { uploadFile, uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob } from '../lib/api'
 import { isLoggedIn } from '../lib/auth'
@@ -25,14 +23,15 @@ import { getFailureMessage } from '../lib/failureMessage'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
-import { getAbsoluteDownloadUrl } from '../lib/apiBase'
+import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
+import { LANGUAGES } from '../lib/languages'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
-import { trackEvent } from '../lib/analytics'
+import { trackEvent, trackFirstOutputSeen } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 // import { useWorkflow } from '../contexts/WorkflowContext'
 import { trackAppEvent } from '../lib/feedbackEvents'
-import { exportFileStem, joinExportFilename, langCodeForFile } from '../lib/exportFileNames'
+import { exportFileStem, joinExportFilename, langCodeForFile, targetLangFileSlug } from '../lib/exportFileNames'
 // import { emitToolCompleted } from '../workflow/workflowStore'
 
 /** Optional SEO overrides for alternate entry points (e.g. /mp4-to-srt, /subtitle-generator). Do NOT duplicate logic. */
@@ -52,6 +51,14 @@ export type VideoToSubtitlesSeoProps = {
 export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const { seoH1, seoIntro, faq = [], seoTutorial } = props
   const location = useLocation()
+  const defaultFaq = location.pathname === '/video-to-subtitles' ? [
+    { q: 'How do I generate subtitles from a video?', a: 'Upload your video file and the tool will automatically generate subtitles with timestamps.' },
+    { q: 'Can I create SRT files automatically?', a: 'Yes. The tool generates SRT files instantly from video.' },
+    { q: 'Is there a free subtitle generator?', a: 'Yes, you can generate subtitles online without manual editing.' },
+    { q: 'Can I export subtitles in different formats?', a: 'Yes. SRT and VTT formats are supported.' },
+    { q: 'Does this work for long videos?', a: 'Yes. The tool is optimized for large and long video files.' },
+  ] : []
+  const effectiveFaq = faq.length > 0 ? faq : defaultFaq
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [trimStart, setTrimStart] = useState<number | null>(null)
@@ -82,7 +89,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [convertTargetFormat, setConvertTargetFormat] = useState<'srt' | 'vtt' | 'txt'>('srt')
   const [convertProgress, setConvertProgress] = useState(false)
   const [convertPreview, setConvertPreview] = useState<string | null>(null)
-  const [convertDownloadUrl, setConvertDownloadUrl] = useState<string | null>(null)
   const rehydratePollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const activeUploadPollRef = useRef<(() => void) | null>(null)
   const pollConsecutiveNetworkErrorsRef = useRef(0)
@@ -96,6 +102,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const [failedMessage, setFailedMessage] = useState<string | undefined>(undefined)
+  const [translationLanguage, setTranslationLanguage] = useState<string | null>(null)
+  const [translatedSubtitleRows, setTranslatedSubtitleRows] = useState<SubtitleRow[]>([])
+  const [subtitleView, setSubtitleView] = useState<'original' | 'translated'>('original')
+  const [isTranslating, setIsTranslating] = useState(false)
 
   const fallbackSubtitleName = useMemo(() => {
     const ext = format === 'vtt' ? '.vtt' : '.srt'
@@ -116,6 +126,31 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       setShowAuthModal(true)
     }
   }, [status])
+
+  // Auto-translate subtitles when rows are ready and a translation language is selected
+  useEffect(() => {
+    if (!translationLanguage || subtitleRows.length === 0) return
+    if (translatedSubtitleRows.length > 0) return
+    const srtText = rowsToSrt(subtitleRows)
+    setIsTranslating(true)
+    const token = getAuthToken()
+    fetch(`${getApiBase()}/api/translate-subtitles/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ text: srtText, targetLanguage: translationLanguage }),
+    })
+      .then((r) => r.json())
+      .then(({ translatedText }: { translatedText?: string }) => {
+        if (translatedText) {
+          setTranslatedSubtitleRows(parseSubtitlesToRows(translatedText))
+        }
+      })
+      .catch(() => toast.error('Subtitle translation failed. Please try again.'))
+      .finally(() => setIsTranslating(false))
+  }, [subtitleRows, translationLanguage]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const canEdit = ['basic', 'pro', 'agency'].includes(plan)
@@ -435,6 +470,22 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       .join('\n\n')
   }
 
+  const rowsToVtt = (rows: SubtitleRow[]): string => {
+    const lines = ['WEBVTT', '']
+    rows.forEach((r) => {
+      lines.push(`${r.startTime.replace(',', '.')} --> ${r.endTime.replace(',', '.')}`)
+      lines.push(r.text)
+      lines.push('')
+    })
+    return lines.join('\n')
+  }
+
+  const srtTimeToSeconds = (t: string): number => {
+    const [hms, ms = '0'] = t.replace(',', '.').split('.')
+    const parts = hms.split(':').map(Number)
+    return (parts[0] || 0) * 3600 + (parts[1] || 0) * 60 + (parts[2] || 0) + parseFloat('0.' + ms)
+  }
+
   const handleProcess = async (trimStartPercent?: number, trimEndPercent?: number) => {
     if (!selectedFile) {
       toast.error('Please select a file')
@@ -588,6 +639,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_SUBTITLES,
               processing_time_ms: processingMs,
             })
+            trackFirstOutputSeen({ tool: 'video-to-subtitles', source: 'result_panel' })
+            trackAppEvent('first_output_seen', { tool: 'video-to-subtitles', source: 'result_panel' })
             trackEvent('processing_completed', { tool: 'video-to-subtitles' })
             // texJobCompleted(processingMs, 'video-to-subtitles')
             setLastProcessingMs(processingMs)
@@ -688,6 +741,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setResult(null)
     setSubtitleRows([])
     setPartialSegments([])
+    setTranslationLanguage(null)
+    setTranslatedSubtitleRows([])
+    setSubtitleView('original')
+    setIsTranslating(false)
   }
 
   const getDownloadUrl = () => {
@@ -696,6 +753,26 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   }
 
   const currentResultFormat = result?.fileName?.toLowerCase().endsWith('.vtt') ? 'vtt' : result?.fileName?.toLowerCase().endsWith('.txt') ? 'txt' : 'srt'
+
+  const activeSubtitleRows = subtitleView === 'translated' && translatedSubtitleRows.length > 0
+    ? translatedSubtitleRows
+    : subtitleRows
+  const setActiveSubtitleRows = subtitleView === 'translated' && translatedSubtitleRows.length > 0
+    ? setTranslatedSubtitleRows
+    : setSubtitleRows
+
+  const handleDownloadSubtitles = (rows: SubtitleRow[], fmt: 'srt' | 'vtt', langSlug: string) => {
+    const content = fmt === 'vtt' ? rowsToVtt(rows) : rowsToSrt(rows)
+    const stem = exportFileStem(selectedFile?.name, 'video')
+    const filename = joinExportFilename(stem, `subtitles_${langSlug}`, `.${fmt}`)
+    const blob = new Blob([content], { type: 'text/plain' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(a.href)
+    try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: fmt, lang: langSlug }) } catch { /* non-blocking */ }
+  }
 
   const handleConvertFormat = async () => {
     if (!result?.downloadUrl || !result?.fileName) return
@@ -730,7 +807,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               const text = await prevRes.text()
               const lines = text.split(/\n\n|\n/).slice(0, 30)
               setConvertPreview(lines.join('\n'))
-              setConvertDownloadUrl(convertedUrl)
             } else {
               window.open(convertedUrl, '_blank')
             }
@@ -754,8 +830,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const breadcrumbs = [{ label: 'Video to Subtitles', href: '/video-to-subtitles' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Video → Subtitles',
-    subtitle: seoIntro ?? 'Generate SRT and VTT subtitle files instantly',
+    title: seoH1 ?? 'Subtitle Generator (Auto Create SRT & VTT from Video)',
+    subtitle: seoIntro ?? 'Generate subtitles from video automatically. Accurate timestamps, SRT and VTT export — no manual editing.',
     icon: <MessageSquare className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['SRT', 'VTT', 'Subtitles', 'Captions', 'Timestamps', 'Multi-format'],
     sidebar: null,
@@ -833,6 +909,21 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                 value={language}
                 onChange={setLanguage}
               />
+              <div>
+                <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                  Translate subtitles to <span className="text-gray-400">(optional)</span>
+                </label>
+                <select
+                  value={translationLanguage ?? ''}
+                  onChange={(e) => setTranslationLanguage(e.target.value || null)}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                >
+                  <option value="">— None —</option>
+                  {LANGUAGES.map((l) => (
+                    <option key={l.value} value={l.value}>{l.label}</option>
+                  ))}
+                </select>
+              </div>
               {canMultiLanguage && (
                 <LanguageSelector
                   primaryLanguage={language || 'en'}
@@ -846,7 +937,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         )}
 
         {status === 'processing' && (
-          <div className="rounded-2xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
+          <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
               {selectedFile?.name} • {filePreview?.durationSeconds != null ? formatDuration(filePreview.durationSeconds) : '—'}
             </div>
@@ -893,10 +984,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         )}
 
         {status === 'completed' && result && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Teaser card for guests */}
             {showAuthGate && !isLoggedIn() && (
-              <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
+              <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
                 <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
@@ -920,7 +1011,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                     <button
                       type="button"
                       onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
-                      className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors"
+                      className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
                     >
                       Create free account
                     </button>
@@ -936,204 +1027,276 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               </div>
             )}
 
-            {/* Full result — hidden until signed in */}
             {(!showAuthGate || isLoggedIn()) && (
-            <SubtitleResult
-              fileName={result.fileName ?? fallbackSubtitleName}
-              processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
-              format={format.toUpperCase() as 'SRT' | 'VTT'}
-              onDownload={
-                plan === 'free'
-                  ? async () => {
-                      if (freeExportsUsed >= 2) {
-                        toast('You\'ve used your 2 free downloads. Upgrade for more.')
-                        return
-                      }
-                      try {
-                        const token = getAuthToken()
-                        const res = await fetch(getDownloadUrl() + '?wm=1', {
-                          headers: token ? { Authorization: `Bearer ${token}` } : {},
-                        })
-                        const blob = await res.blob()
-                        const a = document.createElement('a')
-                        a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || fallbackSubtitleName
-                        a.click()
-                        URL.revokeObjectURL(a.href)
-                        trackAppEvent('export_clicked', { toolId: 'video-to-subtitles' })
-                        try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format, plan: 'free' }) } catch { /* non-blocking */ }
-                        setFreeExportsUsed((prev) => prev + 1)
-                        toast.success('Download started (with watermark)')
-                      } catch {
-                        toast.error('Download failed')
-                      }
-                    }
-                  : async () => {
-                      try {
-                        const token = getAuthToken()
-                        const res = await fetch(getDownloadUrl() + '?wm=1', {
-                          headers: token ? { Authorization: `Bearer ${token}` } : {},
-                        })
-                        const blob = await res.blob()
-                        const a = document.createElement('a')
-                        a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || fallbackSubtitleName
-                        a.click()
-                        URL.revokeObjectURL(a.href)
-                        try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format, plan: 'paid' }) } catch { /* non-blocking */ }
-                      } catch {
-                        toast.error('Download failed')
-                      }
-                    }
-              }
-              onProcessAnother={handleProcessAnother}
-              relatedTools={[]}
-            />
-            )}{/* end gate-hidden result */}
-            <div className="mt-2 min-h-[2.75rem]">
-            {/* <WorkflowChainSuggestion
-              pathname={location.pathname}
-              plan={plan}
-              lastJobCompletedToolId={lastJobCompletedToolId}
-            /> */}
-            </div>
-
-            {subtitleRows.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 shadow-card">
-                <Suspense fallback={null}>
-                  <SubtitleEditor
-                    entries={subtitleRows}
-                    editable={canEdit}
-                    onChange={setSubtitleRows}
-                  />
-                </Suspense>
-
-                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+              <div className="space-y-4">
+                {/* ── Compact success bar ──────────────────────────────────── */}
+                <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/20">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">Subtitles ready</span>
+                    {lastProcessingMs != null && (
+                      <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">· {(lastProcessingMs / 1000).toFixed(1)}s ⚡</span>
+                    )}
+                    <span className="text-xs text-gray-400 dark:text-gray-500 truncate hidden sm:block">— {result.fileName ?? fallbackSubtitleName}</span>
+                  </div>
                   <button
-                    disabled={!canEdit}
-                    onClick={() => {
-                      const content = rowsToSrt(subtitleRows)
-                      const blob = new Blob([content], { type: 'text/plain' })
-                      const url = URL.createObjectURL(blob)
-                      const a = document.createElement('a')
-                      a.href = url
-                      a.download = (result.fileName || fallbackSubtitleName).replace(/\.vtt$/i, '.srt')
-                      a.click()
-                      URL.revokeObjectURL(url)
-                      try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: 'srt', edited: true }) } catch { /* non-blocking */ }
-                    }}
-                    className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                    type="button"
+                    onClick={handleProcessAnother}
+                    className="inline-flex items-center gap-2 rounded-xl border border-blue-300 bg-blue-600 px-3 py-2 text-[13px] font-medium text-white hover:bg-blue-700 transition-colors shadow-sm shrink-0"
                   >
-                    Download Edited Subtitles
+                    <Upload className="h-4 w-4" aria-hidden />
+                    Upload new file
                   </button>
-                  {!canEdit && (
-                    <div className="text-xs text-gray-500">
-                      Upgrade to Basic to edit subtitles (timestamps stay locked).
+                </div>
+
+                {/* ── Two-column layout: left = editor, right = exports ─────── */}
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_300px] items-start">
+
+                  {/* ── Left column: toggle + QA editor ────────────────────── */}
+                  <div className="space-y-3 min-w-0">
+                    {/* Translation toggle */}
+                    {translationLanguage && (
+                      <div className="flex items-center gap-2">
+                        {isTranslating ? (
+                          <span className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-blue-500">
+                            <span className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin shrink-0" />
+                            Translating to {translationLanguage}…
+                          </span>
+                        ) : translatedSubtitleRows.length > 0 ? (
+                          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
+                            <button
+                              type="button"
+                              onClick={() => setSubtitleView('original')}
+                              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                                subtitleView === 'original'
+                                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                              }`}
+                            >
+                              Original
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setSubtitleView('translated')}
+                              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                                subtitleView === 'translated'
+                                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                              }`}
+                            >
+                              {translationLanguage}
+                            </button>
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
+
+                    {/* QA editor */}
+                    {subtitleRows.length > 0 && (
+                      <Suspense fallback={<div className="h-[300px] rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />}>
+                        <SubtitleQAReview
+                          key={result?.downloadUrl}
+                          videoSrc={videoPreviewUrl}
+                          rows={activeSubtitleRows}
+                          onRowsChange={canEdit ? setActiveSubtitleRows : () => {}}
+                          editable={canEdit}
+                          onDownloadEdited={() => {
+                            const langSlug = subtitleView === 'translated' && translationLanguage
+                              ? targetLangFileSlug(translationLanguage)
+                              : `original_${langCodeForFile(language || undefined)}`
+                            handleDownloadSubtitles(activeSubtitleRows, currentResultFormat === 'vtt' ? 'vtt' : 'srt', langSlug)
+                          }}
+                        />
+                      </Suspense>
+                    )}
+                    {!canEdit && subtitleRows.length > 0 && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 px-1">
+                        Upgrade to Basic to edit subtitle text. Click any cue to seek and play the video.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* ── Right column: exports sidebar ───────────────────────── */}
+                  <aside className="lg:sticky lg:top-20 space-y-3">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden shadow-sm">
+                      {/* Header */}
+                      <div className="px-4 py-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-800/40">
+                        <h3 className="text-sm font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+                          <FileDown className="h-4 w-4 text-blue-600" strokeWidth={1.7} />
+                          Exports
+                        </h3>
+                        {plan === 'free' && (
+                          <span className="text-[11px] text-gray-400 dark:text-gray-500">{freeExportsUsed}/2 free</span>
+                        )}
+                      </div>
+
+                      <div className="p-3 space-y-4">
+                        {plan === 'free' ? (
+                          /* Free plan: single download with watermark */
+                          <div className="space-y-2">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-gray-500 dark:text-gray-400">Original</p>
+                            <button
+                              onClick={async () => {
+                                if (freeExportsUsed >= 2) {
+                                  toast("You've used your 2 free downloads. Upgrade for more.")
+                                  return
+                                }
+                                try {
+                                  const token = getAuthToken()
+                                  const res = await fetch(getDownloadUrl() + '?wm=1', {
+                                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                                  })
+                                  const blob = await res.blob()
+                                  const a = document.createElement('a')
+                                  a.href = URL.createObjectURL(blob)
+                                  a.download = result?.fileName || fallbackSubtitleName
+                                  a.click()
+                                  URL.revokeObjectURL(a.href)
+                                  trackAppEvent('export_clicked', { toolId: 'video-to-subtitles' })
+                                  try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format, plan: 'free' }) } catch { /* non-blocking */ }
+                                  setFreeExportsUsed((prev) => prev + 1)
+                                  toast.success('Download started (with watermark)')
+                                } catch {
+                                  toast.error('Download failed')
+                                }
+                              }}
+                              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors"
+                            >
+                              <FileDown className="h-3.5 w-3.5" />
+                              Download {currentResultFormat.toUpperCase()}
+                              <span className="text-blue-200 font-normal">· watermark</span>
+                            </button>
+                            <div className="flex items-center justify-center gap-1 pt-1">
+                              <Link to="/pricing" className="text-[11px] font-medium text-blue-600 hover:text-blue-700 transition-colors">
+                                Upgrade for VTT + translated exports →
+                              </Link>
+                            </div>
+                          </div>
+                        ) : (
+                          /* Paid plan: SRT + VTT for original and translated */
+                          <>
+                            {/* Original */}
+                            <div>
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-gray-500 dark:text-gray-400 mb-2">Original</p>
+                              <div className="grid grid-cols-2 gap-2">
+                                <button
+                                  onClick={() => handleDownloadSubtitles(
+                                    subtitleRows,
+                                    'srt',
+                                    `original_${langCodeForFile(language || undefined)}`
+                                  )}
+                                  className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                >
+                                  SRT
+                                </button>
+                                <button
+                                  onClick={() => handleDownloadSubtitles(
+                                    subtitleRows,
+                                    'vtt',
+                                    `original_${langCodeForFile(language || undefined)}`
+                                  )}
+                                  className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                >
+                                  VTT
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Translated — shown when ready or loading */}
+                            {translationLanguage && (
+                              <div>
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-gray-500 dark:text-gray-400 mb-2">
+                                  {translationLanguage}
+                                </p>
+                                {isTranslating ? (
+                                  <div className="flex items-center gap-2 px-2 py-2 text-[11px] text-blue-500">
+                                    <span className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin shrink-0" />
+                                    Translating…
+                                  </div>
+                                ) : translatedSubtitleRows.length > 0 ? (
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <button
+                                      onClick={() => handleDownloadSubtitles(
+                                        translatedSubtitleRows,
+                                        'srt',
+                                        targetLangFileSlug(translationLanguage)
+                                      )}
+                                      className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                    >
+                                      SRT
+                                    </button>
+                                    <button
+                                      onClick={() => handleDownloadSubtitles(
+                                        translatedSubtitleRows,
+                                        'vtt',
+                                        targetLangFileSlug(translationLanguage)
+                                      )}
+                                      className="rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-[11px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                    >
+                                      VTT
+                                    </button>
+                                  </div>
+                                ) : null}
+                              </div>
+                            )}
+
+                            {/* TXT conversion for paid plans */}
+                            <div className="pt-3 border-t border-gray-100 dark:border-gray-800">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-gray-500 dark:text-gray-400 mb-2">Convert format</p>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <select
+                                  value={convertTargetFormat}
+                                  onChange={(e) => setConvertTargetFormat(e.target.value as 'srt' | 'vtt' | 'txt')}
+                                  className="flex-1 min-w-0 px-2 py-1.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                >
+                                  <option value="srt">SRT</option>
+                                  <option value="vtt">VTT</option>
+                                  <option value="txt">TXT (plain text)</option>
+                                </select>
+                                <button
+                                  onClick={handleConvertFormat}
+                                  disabled={convertProgress}
+                                  className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-xs font-medium text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                  {convertProgress ? 'Converting…' : 'Convert'}
+                                </button>
+                              </div>
+                              {convertPreview !== null && (
+                                <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg max-h-32 overflow-y-auto border border-gray-100 dark:border-gray-800">
+                                  <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 mb-1">Preview</p>
+                                  <pre className="text-[10px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono">{convertPreview}</pre>
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
-                  )}
+
+                  {(() => {
+                    const jid = currentJobId || getPersistedJobId(location.pathname)
+                    const jtok = getPersistedJobToken(location.pathname)
+                    if (!jid || !jtok || subtitleRows.length === 0) return null
+                    const toSegments = (rows: SubtitleRow[]) =>
+                      rows.map((r) => ({ start: srtTimeToSeconds(r.startTime), end: srtTimeToSeconds(r.endTime), text: r.text }))
+                    return (
+                      <TranscriptSharePanel
+                        jobId={jid}
+                        jobToken={jtok}
+                        sourceTool="video-to-subtitles"
+                        title={selectedFile?.name || result.fileName || 'Subtitles'}
+                        originalFullText={subtitleRows.map((r) => r.text).join('\n')}
+                        translatedFullText={translatedSubtitleRows.length > 0 ? translatedSubtitleRows.map((r) => r.text).join('\n') : null}
+                        translationLanguage={translationLanguage}
+                        segments={toSegments(subtitleRows)}
+                        translatedSegments={translatedSubtitleRows.length > 0 ? toSegments(translatedSubtitleRows) : undefined}
+                      />
+                    )
+                  })()}
+                  </aside>
                 </div>
               </div>
             )}
-
-            {result.warnings && result.warnings.length > 0 && (
-              <div className="bg-amber-50/80 rounded-2xl p-6 shadow-card border border-amber-100">
-                <h3 className="text-lg font-semibold text-amber-800 mb-2">Validation (informational)</h3>
-                <p className="text-sm text-amber-900 mb-2">Some lines may need attention. Not blocking.</p>
-                <ul className="text-sm text-amber-900 space-y-1">
-                  {result.warnings.slice(0, 8).map((w, i) => (
-                    <li key={i}>{w.line != null ? `Line ${w.line}: ` : ''}{w.message}</li>
-                  ))}
-                  {result.warnings.length > 8 && <li>… and {result.warnings.length - 8} more</li>}
-                </ul>
-              </div>
-            )}
-
-            {/* Phase 1B — UTILITY 2B: Convert format. Derived from subtitle files; free: preview 30 lines, paid: full download. */}
-            <div className="bg-white rounded-2xl p-6 shadow-card">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                <FileDown className="h-5 w-5 text-violet-600" strokeWidth={1.5} />
-                Convert format
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">Download subtitles in another format (SRT, VTT, or plain text).</p>
-              <div className="flex flex-wrap items-center gap-3">
-                <select
-                  value={plan === 'free' ? 'srt' : convertTargetFormat}
-                  onChange={(e) => setConvertTargetFormat(e.target.value as 'srt' | 'vtt' | 'txt')}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 text-sm"
-                  disabled={plan === 'free'}
-                >
-                  <option value="srt">SRT</option>
-                  {plan !== 'free' && (
-                    <>
-                      <option value="vtt">VTT</option>
-                      <option value="txt">TXT (plain text)</option>
-                    </>
-                  )}
-                </select>
-                <button
-                  onClick={handleConvertFormat}
-                  disabled={convertProgress}
-                  className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {convertProgress ? 'Converting…' : `Get as ${convertTargetFormat.toUpperCase()}`}
-                </button>
-              </div>
-              {plan === 'free' && (
-                <p className="text-xs text-gray-500 mt-2">
-                  Free plan: SRT only. Preview below. You can download 1 format with watermark ({freeExportsUsed}/2 total downloads used).
-                </p>
-              )}
-              {convertPreview !== null && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg max-h-48 overflow-y-auto">
-                  <p className="text-xs font-medium text-gray-700 mb-2">Preview (first 30 lines)</p>
-                  <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono">{convertPreview}</pre>
-                </div>
-              )}
-              {plan === 'free' && convertDownloadUrl && freeExportsUsed < 2 && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (!convertDownloadUrl || freeExportsUsed >= 2) return
-                    try {
-                      const token = getAuthToken()
-                      const res = await fetch(convertDownloadUrl + '?wm=1', {
-                        headers: token ? { Authorization: `Bearer ${token}` } : {},
-                      })
-                      const ext = convertTargetFormat === 'srt' ? 'srt' : convertTargetFormat === 'vtt' ? 'vtt' : 'txt'
-                      const blob = await res.blob()
-                      const a = document.createElement('a')
-                      a.href = URL.createObjectURL(blob)
-                      a.download = joinExportFilename(
-                        exportFileStem(selectedFile?.name, 'video'),
-                        `subtitles_converted_${convertTargetFormat}`,
-                        `.${ext}`
-                      )
-                      a.click()
-                      URL.revokeObjectURL(a.href)
-                      try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: convertTargetFormat, plan: 'free' }) } catch { /* non-blocking */ }
-                      setFreeExportsUsed((prev) => prev + 1)
-                      setConvertDownloadUrl(null)
-                      toast.success('Download started (with watermark)')
-                    } catch {
-                      toast.error('Download failed')
-                    }
-                  }}
-                  className="mt-3 text-sm font-medium text-violet-600 hover:text-violet-700"
-                >
-                  Download converted file with watermark
-                </button>
-              )}
-            </div>
-
-            <CrossToolSuggestions
-              workflowHint="Your last file is pre-filled on the next tool."
-              suggestions={[
-                { icon: Languages, title: 'Translate Subtitles', path: '/translate-subtitles', description: 'Translate to another language' },
-                { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn into video', state: { useWorkflowVideo: true } },
-                { icon: Wrench, title: 'Fix Subtitles', path: '/fix-subtitles', description: 'Fix timing & format' },
-                { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
-              ]}
-            />
           </div>
         )}
 
@@ -1175,15 +1338,15 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       />
 
       {(seoTutorial?.steps?.length || seoTutorial?.formatExample?.length || seoTutorial?.commonMistakes?.length) && (
-        <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4 space-y-6" aria-label="Tutorial">
+        <section className="mt-12 pt-8 border-t border-gray-100/70 dark:border-gray-700/50 max-w-4xl mx-auto px-4 space-y-6" aria-label="Tutorial">
           {seoTutorial?.steps?.length && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Step-by-step tutorial</h2>
+              <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-4">Step-by-step tutorial</h2>
               <ol className="space-y-4">
                 {seoTutorial.steps.map((step, i) => (
                   <li key={i}>
-                    <h3 className="font-semibold text-gray-800">{step.title}</h3>
-                    <p className="text-gray-600 mt-1">{step.detail}</p>
+                    <h3 className="font-medium text-gray-800 dark:text-gray-200">{step.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">{step.detail}</p>
                   </li>
                 ))}
               </ol>
@@ -1192,8 +1355,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
           {seoTutorial?.formatExample?.length && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-3">Valid SRT format example</h2>
-              <pre className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-700 overflow-x-auto">
+              <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-3">Valid SRT format example</h2>
+              <pre className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3 text-xs text-gray-700 dark:text-gray-300 overflow-x-auto">
                 {seoTutorial.formatExample.join('\n')}
               </pre>
             </div>
@@ -1201,8 +1364,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
           {seoTutorial?.commonMistakes?.length && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-3">Common SRT mistakes to avoid</h2>
-              <ul className="list-disc pl-5 space-y-2 text-gray-600">
+              <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-3">Common SRT mistakes to avoid</h2>
+              <ul className="list-disc pl-5 space-y-2 text-gray-600 dark:text-gray-400">
                 {seoTutorial.commonMistakes.map((mistake, i) => (
                   <li key={i}>{mistake}</li>
                 ))}
@@ -1211,9 +1374,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           )}
 
           {seoTutorial?.ctaText && seoTutorial?.ctaPath && (
-            <div className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-4">
-              <p className="text-sm text-gray-700 mb-2">Manual SRT editing works for short clips. For longer videos, generate subtitles automatically and edit only what needs review.</p>
-              <Link to={seoTutorial.ctaPath} className="inline-flex items-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700">
+            <div className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 px-4 py-4">
+              <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">Manual SRT editing works for short clips. For longer videos, generate subtitles automatically and edit only what needs review.</p>
+              <Link to={seoTutorial.ctaPath} className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
                 {seoTutorial.ctaText}
               </Link>
             </div>
@@ -1221,14 +1384,72 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         </section>
       )}
 
-      {faq.length > 0 && (
-        <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Frequently asked questions</h2>
+
+
+      {location.pathname === '/video-to-subtitles' && (
+        <section className="mt-12 pt-8 border-t border-gray-100/70 dark:border-gray-700/50 max-w-4xl mx-auto px-4 space-y-8" aria-label="Subtitle Generator SEO content">
+          <div>
+            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Generate Subtitles from Video Instantly</h2>
+            <p className="text-gray-600 dark:text-gray-400">Create subtitles automatically from any video file. No timeline editing or manual typing required. This subtitle generator is built for creators who need fast, accurate captions without extra cleanup. Need full text output too? Convert video to transcript with our <Link to="/video-to-transcript" className="text-blue-600 hover:text-blue-700 font-medium">video to transcript tool</Link>.</p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Create SRT &amp; VTT Subtitle Files Automatically</h2>
+            <p className="text-gray-600 dark:text-gray-400">Generate ready-to-use subtitle files for YouTube, social media, and video platforms. Export in SRT or VTT in seconds with clean timestamps. Need multilingual workflows after export? Use <Link to="/translate-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">translate subtitles</Link> to localize files instantly.</p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Automatic Subtitle Generator (No Manual Editing)</h2>
+            <p className="text-gray-600 dark:text-gray-400">Most tools require heavy cleanup. This tool generates clean subtitles, adds timestamps automatically, and outputs ready-to-use files. Working from YouTube content? Start with our <Link to="/youtube-transcript-generator" className="text-blue-600 hover:text-blue-700 font-medium">YouTube transcript generator</Link> and export subtitles when ready.</p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Generate Subtitles for Long Videos Fast</h2>
+            <p className="text-gray-600 dark:text-gray-400">Built for large files and long-form content: process long videos efficiently, no splitting required, and fast output even for large files. Need higher-volume or queue-style workflows? Use <Link to="/transcribe-long-videos" className="text-blue-600 hover:text-blue-700 font-medium">transcribe long videos</Link>.</p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Why This Subtitle Generator Is Better</h2>
+            <ul className="list-disc pl-5 space-y-2 text-gray-600 dark:text-gray-400">
+              <li>Automatic timestamps — no manual sync</li>
+              <li>Multi-format export — SRT, VTT</li>
+              <li>Fast processing — minutes, not hours</li>
+              <li>Clean output — minimal editing needed</li>
+              <li>Privacy-first — files deleted after processing</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Who Needs a Subtitle Generator?</h2>
+            <ul className="list-disc pl-5 space-y-2 text-gray-600 dark:text-gray-400">
+              <li>YouTubers — captions for videos</li>
+              <li>Social media creators — subtitles for engagement</li>
+              <li>Agencies — scale caption workflows</li>
+              <li>Educators — accessibility and learning</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">More Transcription &amp; Subtitle Tools</h2>
+            <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+              <li><Link to="/video-to-transcript" className="text-blue-600 hover:text-blue-700 font-medium">Video to transcript tool</Link></li>
+              <li><Link to="/youtube-transcript-generator" className="text-blue-600 hover:text-blue-700 font-medium">YouTube transcript generator</Link></li>
+              <li><Link to="/voice-recorder" className="text-blue-600 hover:text-blue-700 font-medium">Voice to text (live transcription)</Link></li>
+              <li><Link to="/translate-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">Translate subtitles</Link></li>
+              <li><Link to="/transcribe-long-videos" className="text-blue-600 hover:text-blue-700 font-medium">Transcribe long videos fast</Link></li>
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {effectiveFaq.length > 0 && (
+        <section className="mt-12 pt-8 border-t border-gray-100/70 dark:border-gray-700/50 max-w-4xl mx-auto px-4" aria-label="FAQ">
+          <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-4">Frequently asked questions</h2>
           <dl className="space-y-4">
-            {faq.map((item, i) => (
+            {effectiveFaq.map((item, i) => (
               <div key={i}>
-                <dt className="font-medium text-gray-800">{item.q}</dt>
-                <dd className="mt-1 text-gray-600">{item.a}</dd>
+                <dt className="font-medium text-gray-800 dark:text-gray-200">{item.q}</dt>
+                <dd className="mt-1 text-gray-600 dark:text-gray-400">{item.a}</dd>
               </div>
             ))}
           </dl>

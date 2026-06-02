@@ -9,7 +9,7 @@
 import Redis from 'ioredis'
 
 const LOG_RING_KEY = 'videotext:logs:ring'
-const LOG_RING_MAX = 500
+const LOG_RING_MAX = 1000
 
 export type LogLevel = 'error' | 'warn' | 'info'
 

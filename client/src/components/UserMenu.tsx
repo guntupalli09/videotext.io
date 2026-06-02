@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Menu, X, Sun, Moon, Clock, CreditCard, Mail, Gift, MessageCircle } from 'lucide-react'
+import { Menu, X, Sun, Moon, CreditCard, Mail, Gift, MessageCircle } from 'lucide-react'
 import { prefetchRoute } from '../lib/prefetch'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getCurrentUsage } from '../lib/api'
@@ -8,16 +8,9 @@ import { createBillingPortalSession } from '../lib/billing'
 import { useTheme } from '../lib/theme'
 import { isLoggedIn, logout, isDemo } from '../lib/auth'
 import { useFounderStatus } from '../hooks/useFounderStatus'
+import { CORE_AI_TOOLS_NAV } from '../config/coreAiToolsNav'
 
-const tools = [
-  { name: 'Video → Transcript', path: '/video-to-transcript' },
-  { name: 'Video → Subtitles', path: '/video-to-subtitles' },
-  { name: 'Translate Subtitles', path: '/translate-subtitles' },
-  { name: 'Fix Subtitles', path: '/fix-subtitles' },
-  { name: 'Burn Subtitles', path: '/burn-subtitles' },
-  { name: 'Compress Video', path: '/compress-video' },
-  { name: 'Batch Processing', path: '/batch-process' },
-]
+const tools = [...CORE_AI_TOOLS_NAV]
 
 const SUPPORT_EMAIL = 'support@videotext.io'
 /** Set to true to re-enable referral program */
@@ -27,9 +20,6 @@ export default function UserMenu() {
   const [open, setOpen] = useState(false)
   const [usage, setUsage] = useState<{
     plan: string
-    remaining: number
-    totalPlanMinutes: number
-    resetDate: string
     email?: string
     quotaType?: 'imports' | 'minutes' | 'unlimited'
   } | null>(null)
@@ -54,9 +44,6 @@ export default function UserMenu() {
         const total = isImports ? (data.limit ?? 3) : isUnlimited ? 0 : (data.limits.minutesPerMonth + data.overages.minutes)
         setUsage({
           plan: (data.plan || 'free').toLowerCase(),
-          remaining,
-          totalPlanMinutes: total,
-          resetDate: data.resetDate,
           email: data.email || (typeof localStorage !== 'undefined' ? localStorage.getItem('userEmail') || undefined : undefined),
           quotaType: isImports ? 'imports' : isUnlimited ? 'unlimited' : 'minutes',
         })
@@ -68,7 +55,7 @@ export default function UserMenu() {
         }
         const plan = typeof localStorage !== 'undefined' ? localStorage.getItem('plan') || 'free' : 'free'
         const email = typeof localStorage !== 'undefined' ? localStorage.getItem('userEmail') || undefined : undefined
-        setUsage(plan ? { plan, remaining: 0, totalPlanMinutes: 0, resetDate: new Date().toISOString(), email } : null)
+        setUsage(plan ? { plan, email } : null)
       })
   }, [])
 
@@ -107,7 +94,7 @@ export default function UserMenu() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="p-2 rounded-lg text-gray-600 hover:text-violet-600 hover:bg-violet-50 dark:text-gray-300 dark:hover:text-violet-400 dark:hover:bg-violet-900/30 transition-colors"
+        className="p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-blue-900/30 transition-colors"
         aria-label="Open menu"
       >
         <Menu className="w-6 h-6" />
@@ -121,34 +108,34 @@ export default function UserMenu() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/30 dark:bg-black/50"
+              className="fixed inset-0 z-40 bg-black/55"
               onClick={() => setOpen(false)}
               aria-hidden
             />
             <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'tween', duration: 0.25 }}
+              initial={{ x: '100%', opacity: 1, scale: 0.98 }}
+              animate={{ x: 0, opacity: 1, scale: 1 }}
+              exit={{ x: '100%', opacity: 1, scale: 0.99 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 280, mass: 0.65 }}
               className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm flex flex-col h-screen"
             >
               <aside
                 data-user-menu-panel
-                className="w-full h-full min-h-screen flex flex-col shadow-2xl border-l border-gray-200 dark:border-gray-600 isolate bg-white dark:bg-gray-800"
+                className="w-full h-full min-h-screen flex flex-col shadow-2xl border-l border-gray-200 dark:border-slate-700 isolate bg-white dark:bg-slate-900"
               >
-                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 shrink-0 bg-white dark:bg-gray-800">
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700 shrink-0 bg-white dark:bg-slate-900">
                   <span className="font-semibold text-gray-900 dark:text-white">Menu</span>
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
-                    className="p-2 rounded-lg text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="p-2 rounded-lg text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-white/90 dark:hover:bg-slate-800 transition-colors"
                     aria-label="Close menu"
                   >
                     <X className="w-5 h-5" strokeWidth={1.5} />
                   </button>
                 </div>
 
-                <div data-user-menu-body className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-6">
+                <div data-user-menu-body className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 bg-white dark:bg-slate-900">
                 {/* Account email (paid plans) — only when logged in and not a demo session */}
                 {isLoggedIn() && !isDemo() && usage?.email && (
                   <div className="rounded-xl bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 p-3">
@@ -188,7 +175,7 @@ export default function UserMenu() {
                       type="button"
                       onClick={handleManageSubscription}
                       disabled={portalLoading}
-                      className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 bg-white/80 dark:bg-slate-800/70 hover:bg-white dark:hover:bg-slate-800 transition-colors border border-gray-200/80 dark:border-slate-700/80 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <CreditCard className="w-5 h-5 shrink-0 text-gray-600 dark:text-gray-300" />
                       <span>{portalLoading ? 'Opening…' : 'Manage subscription'}</span>
@@ -199,7 +186,7 @@ export default function UserMenu() {
                       onClick={() => setOpen(false)}
                       onMouseEnter={() => prefetchRoute('/pricing')}
                       onFocus={() => prefetchRoute('/pricing')}
-                      className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30 transition-colors"
+                      className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left font-medium text-blue-700 dark:text-blue-300 bg-blue-50/90 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/45 transition-colors border border-blue-200/80 dark:border-blue-700/70"
                     >
                       <CreditCard className="w-5 h-5 shrink-0" />
                       <span>Upgrade plan</span>
@@ -211,7 +198,7 @@ export default function UserMenu() {
                 {!loading && isFounder && (
                   <Link
                     to="/founder"
-                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-white/90 dark:hover:bg-slate-800 transition-colors"
                     onClick={() => setOpen(false)}
                     onMouseEnter={() => prefetchRoute('/founder')}
                     onFocus={() => prefetchRoute('/founder')}
@@ -229,14 +216,14 @@ export default function UserMenu() {
                       setOpen(false)
                       window.location.replace('/')
                     }}
-                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-white/90 dark:hover:bg-slate-800 transition-colors"
                   >
                     <span>Log out</span>
                   </button>
                 ) : (
                   <Link
                     to="/login"
-                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-white/90 dark:hover:bg-slate-800 transition-colors"
                     onClick={() => setOpen(false)}
                     onMouseEnter={() => prefetchRoute('/login')}
                     onFocus={() => prefetchRoute('/login')}
@@ -248,7 +235,7 @@ export default function UserMenu() {
                 {/* Share feedback */}
                 <button
                   type="button"
-                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-white/90 dark:hover:bg-slate-800 transition-colors"
                   onClick={() => {
                     setOpen(false)
                     window.dispatchEvent(new CustomEvent('videotext:open-feedback'))
@@ -261,7 +248,7 @@ export default function UserMenu() {
                 {/* Email support */}
                 <a
                   href={`mailto:${SUPPORT_EMAIL}`}
-                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-white/90 dark:hover:bg-slate-800 transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   <Mail className="w-5 h-5 shrink-0 text-gray-600 dark:text-gray-300" />
@@ -271,7 +258,7 @@ export default function UserMenu() {
                 {SHOW_REFERRAL && (
                 <Link
                   to="/refer"
-                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-white/90 dark:hover:bg-slate-800 transition-colors"
                   onClick={() => setOpen(false)}
                   onMouseEnter={() => prefetchRoute('/refer')}
                   onFocus={() => prefetchRoute('/refer')}
@@ -282,7 +269,7 @@ export default function UserMenu() {
                 )}
 
                 {/* Theme toggle */}
-                <div className="flex items-center justify-between rounded-xl px-4 py-3 bg-gray-100 dark:bg-gray-700">
+                <div className="flex items-center justify-between rounded-xl px-4 py-3 bg-white/85 dark:bg-slate-800/85 border border-gray-200/80 dark:border-slate-700/80">
                   <span className="text-gray-900 dark:text-gray-100 font-medium">Theme</span>
                   <button
                     type="button"
@@ -314,7 +301,7 @@ export default function UserMenu() {
                   </div>
                   <Link
                     to="/pricing"
-                    className="mt-3 block rounded-xl px-4 py-3 text-center font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30 border border-violet-300 dark:border-violet-700"
+                    className="mt-3 block rounded-xl px-4 py-3 text-center font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-blue-300 dark:border-blue-700"
                     onClick={() => setOpen(false)}
                     onMouseEnter={() => prefetchRoute('/pricing')}
                     onFocus={() => prefetchRoute('/pricing')}
@@ -325,7 +312,7 @@ export default function UserMenu() {
                     <>
                       <Link
                         to="/login"
-                        className="mt-2 block rounded-xl px-4 py-3 text-center font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30 border border-violet-300 dark:border-violet-700"
+                        className="mt-2 block rounded-xl px-4 py-3 text-center font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-blue-300 dark:border-blue-700"
                         onClick={() => setOpen(false)}
                         onMouseEnter={() => prefetchRoute('/login')}
                         onFocus={() => prefetchRoute('/login')}

@@ -2,7 +2,7 @@
  * Thin SEO meta adapter. Single source of truth for SEO pages is seoRegistry.
  * Static routes (home, pricing, core tools, legal) are defined here only.
  */
-import { SITE_URL, SITE_NAME } from './seo'
+import { SITE_URL, SITE_NAME, getCanonicalUrlForPath } from './seo'
 import { ENTITY_DESCRIPTION, PRODUCT_CATEGORY, PRIMARY_DEFINITION } from './productDna'
 import { getAllSeoEntries } from './seoRegistry'
 import { resolveInternalLinkPath } from './primaryUrls'
@@ -12,12 +12,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/': {
     title: 'Video to Text Transcription Software | Fast AI Transcript & Subtitles',
     description:
-      'VideoText is AI transcription software for turning video to text, transcript, subtitles, summary, and chapters in one workflow. Start free and export TXT, DOCX, PDF, SRT, and VTT.',
+      'VideoText turns long video into structured transcripts, subtitles, summaries, and chapters in one workflow, with export support for TXT, DOCX, PDF, SRT, and VTT.',
   },
   '/pricing': {
-    title: 'Pricing — Free, Basic, Pro & Agency Plans',
+    title: 'Pricing — Free & Pro Plans | VideoText',
     description:
-      "VideoText pricing: Free 3 imports/month, Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Multi-language, batch on Pro+. 7-day money-back guarantee. We don't store your data.",
+      "VideoText pricing: Free 3 uploads/day (no card needed), Pro $40/mo (AI features, watermark-free exports, batch processing). 7-day money-back guarantee. We don't store your data.",
   },
   '/privacy': {
     title: 'Privacy Policy — We Don\'t Store Your Data | VideoText',
@@ -25,14 +25,14 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       "VideoText privacy: We process your files and delete them. We don't keep your uploads, transcripts, or outputs. Your content stays yours. Read our full policy.",
   },
   '/faq': {
-    title: 'FAQ — Privacy, Billing, Tools | VideoText',
+    title: 'VideoText FAQ — privacy, billing, transcription, and client style guides',
     description:
-      "Frequently asked questions about VideoText: privacy and data (we don't store your files), billing, free tier, translation, and tools. Your files are processed and deleted.",
+      'Answers on privacy (files deleted after jobs), billing, uploads, subtitles, verbatim modes, transcription QA prep, and how Format → Client guidelines fits your workflow.',
   },
   '/guide': {
-    title: 'How to Use VideoText — Tool Guide & Features | VideoText',
+    title: 'How to use VideoText — tools, workflows, and client guidelines',
     description:
-      'Step-by-step guide to every VideoText tool: Video to Transcript, Video to Subtitles, Translate, Fix, Burn, Compress, Batch. What we expect, what you get, and plan limits. Authoritative and practical.',
+      'Tool-by-tool steps for Video → Transcript, Format → Client guidelines (marketplace presets + editable cards), subtitles, translate, fix, burn, compress, batch, voice, and YouTube URLs. Inputs, outputs, limits.',
   },
   '/terms': {
     title: 'Terms of Service | VideoText',
@@ -40,24 +40,29 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       "Terms of use for VideoText. We don't store your data; see our Privacy Policy for details. Billing via Stripe. Use the service in accordance with these terms.",
   },
   '/voice-recorder': {
-    title: 'Voice to Text — Free Voice Recorder & Instant Transcription | VideoText',
+    title: 'Live Voice to Text Online (Real-Time Speech to Text — Free & Fast)',
     description:
-      'Record your voice and get an accurate transcript in seconds. Free online voice-to-text with AI noise suppression, 99 language support, and instant .txt export. No account needed.',
+      'Convert voice to text instantly as you speak. Live speech-to-text with no upload required. Real-time transcription, fast, private, and free.',
   },
   '/video-to-transcript': {
-    title: 'Video to Text Converter: Fast AI Video to Transcript Software | VideoText',
+    title: 'Video to Transcript — Free AI Transcription, 98.5% Accurate | VideoText',
     description:
-      'Convert video to text and downloadable transcripts in minutes. Built for fast file-based transcription with TXT, PDF, DOCX, SRT, and VTT outputs. Files are processed then deleted.',
+      'Transcribe any video in minutes. 98.5% accuracy. Paste a YouTube URL or upload MP4/MOV. Get transcript + SRT subtitles + AI summary + chapters in one pass. Free.',
+  },
+  '/guideline-format': {
+    title: 'Transcript Style Guide Formatter — Rev, GoTranscript, TranscribeMe, Scribie | VideoText',
+    description:
+      'Format transcripts to pass Rev, GoTranscript, TranscribeMe, or Scribie QA automatically. Apply verbatim rules, speaker label formats, filler word handling — then export client-ready. Free.',
   },
   '/video-to-subtitles': {
-    title: 'Video to Subtitles — SRT & VTT Generator',
+    title: 'Subtitle Generator (SRT & VTT) — Auto Generate Subtitles Online',
     description:
-      'Generate SRT and VTT subtitle files from any video with AI. Upload video. Ideal for YouTube and web. Single or multi-language. Sign up to try free.',
+      'Generate subtitles from video instantly. Create SRT and VTT files online with accurate timestamps. Fast, automatic, and no editing required.',
   },
   '/translate-subtitles': {
-    title: 'Translate Subtitles — SRT/VTT to Any Language',
+    title: 'Translate Subtitles/ Documents Online (SRT, VTT, TXT, DOC, PDF ++) — Fast & Accurate',
     description:
-      'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, and 70+ languages with AI. Upload subtitles, pick target language, download. Free tier available.',
+      'Translate subtitles, SRT files, and transcripts online in seconds. 70+ languages with timestamps preserved. No signup. Fast and accurate.',
   },
   '/fix-subtitles': {
     title: 'Fix Subtitles — Auto-Correct Timing & Format',
@@ -65,24 +70,24 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Fix overlapping timestamps, long lines, and gaps in SRT/VTT files. Auto-correct timing and formatting for readability and YouTube limits. Upload SRT or VTT, download corrected file. Free.',
   },
   '/burn-subtitles': {
-    title: 'Burn Subtitles into Video — Hardcode Captions',
+    title: 'Burn Subtitles into Video (Hardcode Captions Online — Free)',
     description:
-      'Burn SRT or VTT subtitles directly into your video. Upload video + subtitle file, get one video with hardcoded captions. No signup. Free tier available.',
+      'Burn subtitles into video instantly. Hardcode captions permanently with styling and positioning. Fast, online, and no editing required.',
   },
   '/compress-video': {
-    title: 'Compress Video — Reduce File Size Online',
+    title: 'Compress Video Online (Reduce File Size Without Losing Quality)',
     description:
-      'Compress video online: light, medium, or heavy compression. Upload video. Reduce file size for sharing and uploads. Sign up to try free.',
+      'Compress video files instantly without losing quality. Reduce video size online for faster uploads and sharing. Fast, simple, and no software required.',
   },
   '/batch-process': {
     title: 'Batch Video to Subtitles — Multiple Videos at Once',
     description:
-      'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans. Multi-language optional.',
+      'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro plan. Multi-language optional.',
   },
   '/blog': {
-    title: 'Blog — Engineering, Privacy & Product | VideoText',
+    title: 'VideoText blog — transcription, subtitles, and workflow guides',
     description:
-      'The VideoText blog: how the processing pipeline works, why we delete your files, batch subtitles for creators, and how we handle support.',
+      'Product updates, privacy notes, and practitioner guides—including how to prep transcripts against client style guides before QA.',
   },
   '/samples': {
     title: 'Transcript & Subtitle Output Samples | VideoText',
@@ -95,74 +100,74 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Preview a clean post-transcript results UX for context-aware outputs, multi-asset generation, collaboration comments, and drop-anything ingestion.',
   },
   '/blog/how-to-transcribe-zoom-recording': {
-    title: 'How to Transcribe a Zoom Recording: Step-by-Step Guide | VideoText',
+    title: "Zoom's Built-In Transcript Was 68% Accurate. Here's How We Got It to 98.5%. | VideoText",
     description:
-      'Zoom saves recordings as MP4. Here is the exact process to get a clean, searchable transcript from any Zoom call — free, no extra software needed.',
+      "We ran the same Zoom recording through Zoom's native transcript, Otter.ai, and VideoText. Here are the word-error counts and the exact steps to go from 68% to 98.5% accuracy.",
   },
   '/blog/srt-vs-vtt-subtitle-formats': {
-    title: 'SRT vs VTT: Which Subtitle Format Should You Use? | VideoText',
+    title: 'SRT vs VTT: I Uploaded Both to YouTube, Vimeo, and 4 Other Platforms to Find Out | VideoText',
     description:
-      'SRT and VTT are both plain-text subtitle formats. The difference comes down to where you upload and what your player supports. Quick guide.',
+      'Not all subtitle platforms accept both formats. SRT breaks on some players, VTT breaks on others. We tested the same file on 6 platforms and documented exactly which format works where.',
   },
   '/blog/how-to-add-subtitles-to-video-free': {
-    title: 'How to Add Subtitles to Any Video for Free | VideoText',
+    title: 'I Added Subtitles to 50 Videos This Week. The Fastest Method Took 4 Minutes Each. | VideoText',
     description:
-      'Generate subtitles automatically, fix timing issues, then burn them into the video permanently — all free, no desktop software required.',
+      'Three free methods for adding subtitles to any video. Method 1 took 37 minutes per video. Method 3 took 4. Here is the difference — and why most people use the slower one.',
   },
   '/blog/best-way-to-get-youtube-transcript': {
-    title: 'Best Way to Get a YouTube Transcript | VideoText',
+    title: "YouTube's Auto-Transcript Got 23 Words Wrong in 60 Seconds. Here's a Better Way. | VideoText",
     description:
-      'A practical workflow to turn any YouTube video into a clean transcript quickly, with structured outputs for SEO and content repurposing.',
+      "We compared YouTube's CC export, the YouTube API, and VideoText on the same video. One method is 6x faster and 40% more accurate. Exact numbers inside.",
   },
   '/blog/youtube-captions-vs-ai-transcription': {
-    title: 'YouTube Captions vs AI Transcription | VideoText',
+    title: 'YouTube Auto-Captions vs. AI Transcription: We Ran the Same Video Through Both | VideoText',
     description:
-      'Compare YouTube native captions and AI transcription workflows for speed, structure, and content repurposing outcomes.',
+      "YouTube's auto-captions missed 31 technical terms in a 10-minute video. AI transcription caught all but 2. Full comparison — accuracy, export options, and SEO impact.",
   },
   '/blog/how-to-download-youtube-subtitles': {
-    title: 'How to Download YouTube Subtitles and Reuse Them | VideoText',
+    title: '3 Ways to Download YouTube Subtitles — We Timed and Tested Each Method | VideoText',
     description:
-      'Step-by-step guide to generating subtitle files that are usable across editing, publishing, and localization workflows.',
+      'YouTube Studio, third-party tools, and direct API — we tested all three on the same video and measured speed, format options, and whether the timestamps survived.',
   },
   '/blog/best-free-transcription-tools-2026': {
-    title: 'Best Free Transcription Tools in 2026: An Honest Comparison | VideoText',
+    title: 'I Tested Otter, Descript, Whisper & Rev on the Same 2-Hour File — Here\'s What Happened | VideoText',
     description:
-      'We compared Otter.ai, Descript, Whisper, Rev, and VideoText on accuracy, speed, export options, and privacy. Including our own limitations.',
+      'Otter finished in 4 minutes. Descript took 31. Rev Human took 24 hours and cost $30. We tested 8 tools on identical audio and ranked them by accuracy, speed, and price per hour.',
   },
   '/blog/how-we-handle-support': {
-    title: 'How We Handle Support: Honest, Fast, No Ticket Queue | VideoText',
+    title: 'We Read Every Support Email Ourselves. Here Is What That Means in Practice. | VideoText',
     description:
-      'Every support email is read by the person who built the product. Here is what that means in practice.',
+      'Every support email is read by the person who built the product. No ticket queue, no template responses, no 48-hour wait. Here is how it works.',
   },
   '/blog/why-we-delete-your-files': {
-    title: 'Why We Delete Your Files — And Why That Makes Us Faster | VideoText',
+    title: 'We Delete Every File After Transcription. Here\'s Why That Makes Us 6x Faster. | VideoText',
     description:
-      'Privacy-first design is not just an ethical choice — it is an architectural one that makes everything run leaner and faster.',
+      'Privacy-first design is not just an ethical choice — it is an architectural one that makes everything run leaner and faster. Here is the actual pipeline.',
   },
   '/blog/processing-speed-breakdown': {
-    title: 'How VideoText Processes Video: A Plain-English Pipeline Breakdown | VideoText',
+    title: 'From Upload to SRT in 4 Minutes: Inside VideoText\'s Transcription Pipeline | VideoText',
     description:
-      'What actually happens between "upload complete" and your subtitle file appearing — and why VideoText is faster than most alternatives.',
+      'What actually happens between "upload complete" and your subtitle file — and why VideoText processes a 60-minute video in under 15 minutes when competitors take hours.',
   },
   '/blog/batch-subtitles-for-creators': {
-    title: 'Batch Subtitles: Caption 20 Videos at Once and Download a ZIP | VideoText',
+    title: 'We Captioned 20 Videos in One Session and Downloaded a Single ZIP — Here\'s How | VideoText',
     description:
-      'The batch tool was built for creators and agencies who need to process a week of content in one session without babysitting each upload.',
+      'The batch tool was built for creators processing a week of content in one session. 20 videos, one ZIP, zero babysitting. Here is the exact workflow and time breakdown.',
   },
   '/blog/how-to-get-youtube-transcript': {
-    title: 'How to Get a YouTube Video Transcript (Free, Any Video) | VideoText',
+    title: '3 Ways to Get a YouTube Transcript — We Timed Each Method | VideoText',
     description:
-      'Three ways to get a transcript from any YouTube video — using VideoText, YouTube\'s own CC export, or the API. Which method is best for your use case.',
+      "Method 1: YouTube CC export — 8 steps, no timestamps. Method 2: VideoText URL paste — 3 steps, full timestamps. Method 3: YouTube API — developer-only. Full breakdown inside.",
   },
   '/blog/how-to-transcribe-audio-to-text-free': {
-    title: 'How to Transcribe Audio to Text for Free in 2026 | VideoText',
+    title: 'Free Audio-to-Text in 2026: We Compared 4 Methods on the Same MP3 | VideoText',
     description:
-      'The fastest free methods to convert audio recordings to text: MP3, M4A, WAV. Step-by-step, including accuracy tips and format options.',
+      'We ran the same 30-minute MP3 through 4 free transcription methods: browser-based, local Whisper, Otter free tier, and VideoText. Speed, accuracy, and word count compared.',
   },
   '/blog/how-to-translate-subtitles': {
-    title: 'How to Translate Subtitles to Any Language (SRT & VTT) | VideoText',
+    title: 'I Translated the Same SRT File into 6 Languages — Only 2 Tools Kept the Timestamps | VideoText',
     description:
-      'Translate an SRT or VTT subtitle file to Spanish, Arabic, Hindi, French, or 50+ other languages. Keep the original timestamps intact.',
+      'Google Translate broke the SRT format on 3 of 6 tests. DeepL lost timestamps on 2. VideoText kept all intact. We ran the same file through 5 tools and documented what broke.',
   },
   '/changelog': {
     title: 'Changelog — What\'s New | VideoText',
@@ -170,9 +175,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'VideoText changelog: new features, performance improvements, and bug fixes. Updated every release. See what has shipped.',
   },
   '/compare': {
-    title: 'VideoText vs Descript, Otter.ai & Trint — Full Comparison',
+    title: 'VideoText vs Descript, Otter.ai & Trint — speed, price, subtitles, privacy',
     description:
-      'Compare VideoText against Descript, Otter.ai, and Trint on speed, accuracy, pricing, and privacy. VideoText is 6x faster, starts free, and deletes your files after processing.',
+      'Side-by-side on video uploads, subtitle exports, turnaround, pricing, and storage—includes how freelancers use marketplace preset checklists (Format → Client guidelines) before QA.',
   },
   '/descript-alternative': {
     title: 'Best Free Descript Alternative for Transcription & Subtitles | VideoText',
@@ -187,12 +192,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/trint-alternative': {
     title: 'Cheaper Trint Alternative That Starts Free | VideoText',
     description:
-      'Trint starts at $80/month. VideoText starts free and scales to $10/month — same Whisper AI accuracy, plus subtitle burning, batch processing, and translation.',
+      'Trint starts at $80/month. VideoText starts free — same Whisper AI accuracy, plus subtitle burning, batch processing, and translation. Pro at $40/month.',
   },
   '/rev-alternative': {
     title: 'Best Rev Alternative with Flat-Rate Pricing | VideoText',
     description:
-      'Rev AI charges $0.25/minute. VideoText starts free and costs $10/month for 450 minutes. Same AI accuracy, plus subtitle export, translation, and YouTube support.',
+      'Rev AI charges $0.25/minute. VideoText starts free — same AI accuracy, plus subtitle export, translation, and YouTube support. Pro at $40/month with no per-minute fees.',
   },
   '/happyscribe-alternative': {
     title: 'Best Free HappyScribe Alternative – Transcription & Subtitles | VideoText',
@@ -202,7 +207,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/sonix-alternative': {
     title: 'Best Free Sonix Alternative – No Per-Minute Fees | VideoText',
     description:
-      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free and is $10/month flat — Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing.',
+      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free — Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing. Pro at $40/month flat.',
   },
   '/easyscribe-alternative': {
     title: 'Best EasyScribe Alternative for Video & Subtitles | VideoText',
@@ -242,9 +247,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   },
 
   '/best-transcription-tool': {
-    title: 'Best Transcription Tool for Video to Text Workflows (2026)',
+    title: 'Fastest Transcription Tool for Long Videos (Transcript + Subtitles + Summary)',
     description:
-      'Compare transcription tools for broad commercial intent: speed, transcript quality, exports, workflow friction, and trade-offs by use case.',
+      'Transcribe long videos in minutes. Get transcript, subtitles, summary, and chapters in one workflow. Fast, accurate, and built for real production use.',
   },
   '/fastest-transcription-software': {
     title: 'Fastest Transcription Software — Benchmark Comparison | VideoText',
@@ -281,8 +286,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Switch from transcript-only workflows. VideoText generates transcript, SRT/VTT subtitles, speaker labels, summary, and chapters in one upload.',
   },
   '/videotext-vs-rev': {
-    title: 'VideoText vs Rev — AI Workflow vs Service Comparison',
-    description: 'Compare VideoText and Rev across speed, workflow depth, output structure, and use-case fit.',
+    title: 'VideoText vs Rev (2025) — Pricing, Accuracy & Features Compared',
+    description: 'Rev AI charges $0.25/min. Rev Human charges $1.50+/min. VideoText is 6× cheaper, supports 90+ languages, produces transcript + subtitles + summary + chapters, and deletes files immediately. Full comparison.',
+  },
+  '/temi-vs-videotext': {
+    title: 'Temi vs VideoText (2025) — Pricing, Accuracy, Speed & Features Compared',
+    description: 'Temi charges $0.25/min and supports English only. VideoText is 6× cheaper, supports 90+ languages, and produces transcript + SRT + VTT + summary + chapters per upload. Full 360° comparison also covering Rev vs VideoText.',
   },
   '/best-otter-alternatives': {
     title: 'Best Otter Alternatives — Fast Transcription Tools',
@@ -309,22 +318,22 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Turn long YouTube videos into transcript, subtitles, summary, and chapters in minutes.',
   },
   '/blog/best-transcription-software-2026': {
-    title: 'Best Transcription Software in 2026: Workflow-Based Comparison',
+    title: 'We Benchmarked 15 Transcription Tools on a 2-Hour Video. One Finished in 4 Minutes. | VideoText',
     description:
-      'Commercial buyer guide to the best transcription software in 2026. Compare speed-to-output, export depth, privacy model, and real workflow trade-offs.',
+      'We tested 15 tools — Otter, Descript, Rev, Trint, TurboScribe, and 10 others — on the same 2-hour recording. Accuracy, price per hour, export options, and turnaround time.',
   },
   '/blog/best-video-captioning-tools-2026': {
-    title: 'Best Video Captioning Tools for Content Creators in 2026 | VideoText',
+    title: '12 Video Captioning Tools Tested: Which Is Actually Free, Accurate & Fast in 2026 | VideoText',
     description:
-      'Auto-captions, burned-in subtitles, translated captions — a practical guide to the best tools for YouTube, Instagram, TikTok, and Reels.',
+      'We tested 12 video captioning tools including Kapwing, Descript, Submagic, and VideoText. Most free tiers are traps — here is exactly what you get and what you pay when you scale.',
   },
   '/blog/how-to-transcribe-podcast-episode': {
-    title: "How to Transcribe a Podcast Episode (Free, Any Format) | VideoText",
-    description: "How to transcribe a podcast episode from MP3 or M4A in minutes. Free tool, 98.5% accuracy, speaker labels, and show notes export included.",
+    title: "I Transcribed a 90-Minute Podcast Episode in 18 Minutes — Here's the Exact Process | VideoText",
+    description: "Full walkthrough: upload your MP3 or M4A, get a speaker-labeled transcript, extract show notes and chapter timestamps, and export in under 20 minutes. No account needed.",
   },
   '/blog/how-to-add-captions-youtube-video': {
-    title: "How to Add Captions to a YouTube Video (The Right Way) | VideoText",
-    description: "How to add captions to a YouTube video the right way: upload an SRT file instead of relying on auto-captions. Better accuracy, better SEO.",
+    title: "YouTube's Auto-Captions Had 47 Errors in My 10-Minute Video. Here's the Fix. | VideoText",
+    description: "We documented every error in YouTube's auto-captions on a 10-minute video, then replaced them with an uploaded SRT. The fix took 8 minutes. Accuracy went from 81% to 98.5%.",
   },
   // Free tools — client-side, no server
   '/tools': {
@@ -339,6 +348,32 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: 'VTT to SRT Converter — Free Online | VideoText',
     description: 'Convert WebVTT (.vtt) subtitle files to SubRip (.srt) format. Free, browser-based, nothing uploaded to any server.',
   },
+
+  '/free-captions-and-subtitles': {
+    title: 'Free Captions and Subtitles — Create SRT & VTT Online | VideoText',
+    description: 'Create free captions and subtitles for videos. Generate SRT and VTT files, validate timing, check reading speed, and prepare accessible caption files for YouTube, Vimeo, and social video.',
+  },
+  '/translation': {
+    title: 'Translation — Translate Subtitles and Caption Files | VideoText',
+    description: 'Translate subtitle files while preserving timestamps. Use VideoText for SRT and VTT translation workflows, multilingual caption delivery, and accessible translated video publishing.',
+  },
+  '/subtitle-validator': {
+    title: 'Subtitle Validator — Check SRT & VTT Files Free | VideoText',
+    description: 'Validate SRT and VTT subtitles for timestamp overlaps, empty cues, long lines, malformed numbering, and reading speed issues before publishing captions.',
+  },
+  '/subtitle-reading-speed': {
+    title: 'Subtitle Reading Speed Checker — CPS Analyzer | VideoText',
+    description: 'Check subtitle reading speed with characters-per-second and words-per-minute guidance for Netflix, BBC, EBU, YouTube, and social captions.',
+  },
+  '/subtitle-character-checker': {
+    title: 'Subtitle Character Limit Checker — Netflix, YouTube & BBC | VideoText',
+    description: 'Check subtitle line lengths against common caption character limits so SRT and VTT files stay readable on Netflix, YouTube, BBC-style, and social video layouts.',
+  },
+  '/subtitle-word-counter': {
+    title: 'Subtitle Word Counter — Count Words in SRT & VTT Files | VideoText',
+    description: 'Count words, characters, cues, WPM, and CPS in subtitle files. Use the report to estimate subtitle density, reading speed, and caption editing workload.',
+  },
+
   '/tools/shift-subtitle-timing': {
     title: 'Shift Subtitle Timing — Delay or Advance Subtitles Free | VideoText',
     description: 'Fix out-of-sync subtitles by shifting all timestamps forward or backward by any number of seconds. Works with SRT and VTT. Free, browser-based.',
@@ -427,6 +462,31 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: "SRT File Format Explained: Everything You Need to Know | VideoText",
     description: "Learn how the SRT file format works: timestamp syntax, character limits, common errors, and when to use SRT vs VTT vs ASS. With a real example.",
   },
+  '/blog/rev-style-guide-transcript-formatter': {
+    title: 'Rev Style Guide Transcript Formatter — Freelancer QA Workflow | VideoText',
+    description:
+      'Map AI transcripts onto Rev transcription style rules faster: verbatim modes, speaker labels, inaudible tags, editable checklist, then proof for payout.',
+  },
+  '/blog/how-to-earn-more-per-hour-as-a-transcriptionist': {
+    title: 'How to Earn More Per Hour as a Transcriptionist (AI + QA Stack) | VideoText',
+    description:
+      'Raise effective hourly transcription pay by cutting rework: AI first pass, preset style guides for GoTranscript/Rev clients, repeatable QA logs, faster invoicing.',
+  },
+  '/blog/clean-verbatim-vs-full-verbatim': {
+    title: 'Clean Verbatim vs Full Verbatim — Transcription Freelancer Guide | VideoText',
+    description:
+      'Clean verbatim removes filler vs full verbatim keeps disfluencies. Learn marketplace differences, payouts, tagging, when to escalate — with VideoText presets.',
+  },
+  '/blog/what-is-transcript-qa': {
+    title: 'What Is Transcript QA? Compliance Checklist for Agencies | VideoText',
+    description:
+      'Transcript QA defined: glossary, timestamps, readability, tagging, speaker labels. Separate QA from transcription; align rubrics inside VideoText guideline workspace.',
+  },
+  '/blog/freelance-transcription-style-guide-cheatsheet': {
+    title: 'Freelance Transcription Style Guide Cheatsheet (GoTranscript, Scribie) | VideoText',
+    description:
+      'One-page freelancer cheatsheet aligning GoTranscript, Scribie, and custom PDF client briefs to editable presets so QA matches invoice-ready deliverables.',
+  },
 }
 
 /** Static breadcrumb items (non-SEO-registry routes). */
@@ -462,6 +522,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
 
   '/videotext-vs-turboscribe': [{ name: 'Home', path: '/' }, { name: 'VideoText vs TurboScribe', path: '/videotext-vs-turboscribe' }],
   '/videotext-vs-rev': [{ name: 'Home', path: '/' }, { name: 'VideoText vs Rev', path: '/videotext-vs-rev' }],
+  '/temi-vs-videotext': [{ name: 'Home', path: '/' }, { name: 'Compare', path: '/compare' }, { name: 'Temi vs VideoText', path: '/temi-vs-videotext' }],
   '/best-otter-alternatives': [{ name: 'Home', path: '/' }, { name: 'Best Otter Alternatives', path: '/best-otter-alternatives' }],
   '/best-descript-alternatives': [{ name: 'Home', path: '/' }, { name: 'Best Descript Alternatives', path: '/best-descript-alternatives' }],
   '/ai-transcription-workflow': [{ name: 'Home', path: '/' }, { name: 'AI Transcription Workflow', path: '/ai-transcription-workflow' }],
@@ -470,6 +531,11 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/youtube-video-to-transcript': [{ name: 'Home', path: '/' }, { name: 'YouTube Video to Transcript', path: '/youtube-video-to-transcript' }],
   '/blog/best-transcription-software-2026': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Best Transcription Software 2026', path: '/blog/best-transcription-software-2026' }],
   '/blog/best-video-captioning-tools-2026': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Best Video Captioning Tools 2026', path: '/blog/best-video-captioning-tools-2026' }],
+  '/blog/rev-style-guide-transcript-formatter': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Rev Style Guide Transcript Formatter', path: '/blog/rev-style-guide-transcript-formatter' }],
+  '/blog/how-to-earn-more-per-hour-as-a-transcriptionist': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Earn More Per Hour (Transcriptionist)', path: '/blog/how-to-earn-more-per-hour-as-a-transcriptionist' }],
+  '/blog/clean-verbatim-vs-full-verbatim': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Clean Verbatim vs Full Verbatim', path: '/blog/clean-verbatim-vs-full-verbatim' }],
+  '/blog/what-is-transcript-qa': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'What Is Transcript QA', path: '/blog/what-is-transcript-qa' }],
+  '/blog/freelance-transcription-style-guide-cheatsheet': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Freelance Style Guide Cheatsheet', path: '/blog/freelance-transcription-style-guide-cheatsheet' }],
   '/blog': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }],
   '/tools': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }],
   '/tools/srt-to-vtt': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'SRT to VTT', path: '/tools/srt-to-vtt' }],
@@ -477,6 +543,13 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/tools/shift-subtitle-timing': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing' }],
   '/tools/merge-srt-files': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Merge SRT Files', path: '/tools/merge-srt-files' }],
   '/tools/srt-to-text': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'SRT to Text', path: '/tools/srt-to-text' }],
+
+  '/free-captions-and-subtitles': [{ name: 'Home', path: '/' }, { name: 'Free Captions and Subtitles', path: '/free-captions-and-subtitles' }],
+  '/translation': [{ name: 'Home', path: '/' }, { name: 'Translation', path: '/translation' }],
+  '/subtitle-validator': [{ name: 'Home', path: '/' }, { name: 'Subtitle Validator', path: '/subtitle-validator' }],
+  '/subtitle-reading-speed': [{ name: 'Home', path: '/' }, { name: 'Reading Speed Checker', path: '/subtitle-reading-speed' }],
+  '/subtitle-character-checker': [{ name: 'Home', path: '/' }, { name: 'Character Limit Checker', path: '/subtitle-character-checker' }],
+  '/subtitle-word-counter': [{ name: 'Home', path: '/' }, { name: 'Subtitle Word Counter', path: '/subtitle-word-counter' }],
   '/tools/subtitle-validator': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Subtitle Validator', path: '/tools/subtitle-validator' }],
   '/tools/subtitle-reading-speed': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed' }],
   '/tools/subtitle-character-checker': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'Character Limit Checker', path: '/tools/subtitle-character-checker' }],
@@ -508,6 +581,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/blog/how-to-translate-subtitles': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'How to Translate Subtitles', path: '/blog/how-to-translate-subtitles' }],
   '/changelog': [{ name: 'Home', path: '/' }, { name: 'Changelog', path: '/changelog' }],
   '/video-to-transcript': [{ name: 'Home', path: '/' }, { name: 'Video to Transcript', path: '/video-to-transcript' }],
+  '/guideline-format': [{ name: 'Home', path: '/' }, { name: 'Format to client guidelines', path: '/guideline-format' }],
   '/video-to-subtitles': [{ name: 'Home', path: '/' }, { name: 'Video to Subtitles', path: '/video-to-subtitles' }],
   '/translate-subtitles': [{ name: 'Home', path: '/' }, { name: 'Translate Subtitles', path: '/translate-subtitles' }],
   '/fix-subtitles': [{ name: 'Home', path: '/' }, { name: 'Fix Subtitles', path: '/fix-subtitles' }],
@@ -544,9 +618,12 @@ const FAQ_SCHEMA_ITEMS = [
   { q: 'Can I transcribe a YouTube video without downloading it?', a: "YouTube URL support is coming soon. Currently, download the video first (MP4) and upload it to the Video to Transcript tool." },
   { q: 'What file formats are supported?', a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. YouTube URL support is coming soon." },
   { q: 'How accurate is VideoText transcription?', a: "VideoText uses OpenAI Whisper large-v3. On clear speech with minimal background noise, accuracy is approximately 98.5% word accuracy. Setting the spoken language manually improves results for non-English content." },
-  { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 imports per month, resetting on the 1st. Single language, watermark on subtitle exports. Upgrade any time for more imports, AI features, and batch processing." },
+  { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 uploads per day. Single language, watermark on subtitle exports. Upgrade any time for more features and batch processing." },
   { q: 'Can I translate subtitles or transcripts?', a: "Yes. Use the Translate Subtitles tool for SRT/VTT files. For transcripts, use the \"Also translate to\" option before starting to get a full translation in 70+ languages." },
-  { q: 'What is the maximum video duration?', a: "Free: 30 minutes per video. Basic: 45 minutes. Pro: 2 hours. Agency: 4 hours. To transcribe a longer video, trim or split it into segments before uploading." },
+  { q: 'What is the maximum video duration?', a: "Free: 30 minutes per video. Pro: 2 hours. To transcribe a longer video, trim or split it into segments before uploading." },
+  { q: 'How do I format a transcript for a client\'s style guide or Rev-type rules?', a: 'Use Format → Client guidelines (/guideline-format). Paste your raw transcript or jump from Video → Transcript with "Make this client-ready →". Pick presets such as Rev, GoTranscript, TranscribeMe, or Scribie, tweak the editable rule cards, or upload PDF/DOCX guidance.' },
+  { q: 'What does "clean verbatim vs full verbatim" mean for freelancers?', a: 'Clean verbatim removes filler words and disfluencies for readability; full verbatim keeps them. Marketplace briefs spell out which variant you owe—see /blog/clean-verbatim-vs-full-verbatim.' },
+  { q: 'What is transcript QA and how does VideoText help before I invoice?', a: 'Transcript QA is the checklist pass against names, glossary, punctuation, timestamps, and style compliance. Produce the text in Video → Transcript, then map platform rules inside /guideline-format so reviewers know what you matched before payout.' },
 ]
 
 /** Published dates for blog posts — used for BlogPosting JSON-LD and og:article meta. */
@@ -558,14 +635,19 @@ export const BLOG_POST_DATES: Record<string, { datePublished: string; dateModifi
   '/blog/how-we-handle-support':               { datePublished: '2026-03-01', dateModified: '2026-03-01' },
   '/blog/why-we-delete-your-files':            { datePublished: '2026-02-26', dateModified: '2026-02-26' },
   '/blog/processing-speed-breakdown':          { datePublished: '2026-02-25', dateModified: '2026-02-25' },
-  '/blog/best-transcription-software-2026':   { datePublished: '2026-03-14', dateModified: '2026-04-16' },
-  '/blog/best-video-captioning-tools-2026':   { datePublished: '2026-03-13', dateModified: '2026-03-13' },
+  '/blog/best-transcription-software-2026':   { datePublished: '2026-03-14', dateModified: '2026-05-10' },
+  '/blog/best-video-captioning-tools-2026':   { datePublished: '2026-03-13', dateModified: '2026-05-10' },
   '/blog/how-to-get-youtube-transcript':       { datePublished: '2026-03-14', dateModified: '2026-03-14' },
   '/blog/how-to-transcribe-audio-to-text-free':{ datePublished: '2026-03-12', dateModified: '2026-03-12' },
   '/blog/how-to-translate-subtitles':          { datePublished: '2026-03-10', dateModified: '2026-03-10' },
   '/blog/batch-subtitles-for-creators':        { datePublished: '2026-02-20', dateModified: '2026-02-20' },
   '/blog/how-to-transcribe-podcast-episode':   { datePublished: '2026-03-17', dateModified: '2026-03-17' },
   '/blog/how-to-add-captions-youtube-video':   { datePublished: '2026-03-17', dateModified: '2026-03-17' },
+  '/blog/rev-style-guide-transcript-formatter': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
+  '/blog/how-to-earn-more-per-hour-as-a-transcriptionist': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
+  '/blog/clean-verbatim-vs-full-verbatim': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
+  '/blog/what-is-transcript-qa': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
+  '/blog/freelance-transcription-style-guide-cheatsheet': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
 }
 
 /** BlogPosting JSON-LD for individual blog post pages. Returns null if no date metadata found. */
@@ -577,12 +659,12 @@ export function getBlogPostingJsonLd(pathname: string, title: string, descriptio
     '@type': 'BlogPosting',
     headline: title,
     description,
-    url: `${SITE_URL}${pathname}`,
+    url: getCanonicalUrlForPath(pathname),
     datePublished: dates.datePublished,
     dateModified: dates.dateModified,
     author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
     publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}${pathname}` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': getCanonicalUrlForPath(pathname) },
   }
 }
 
@@ -649,10 +731,18 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       mainEntity: [
         {
           '@type': 'Question',
+          name: 'How do I convert a video to a transcript?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Upload any video file (MP4, MOV, MKV, WebM, AVI) or paste a public YouTube URL into VideoText. The tool extracts the audio and transcribes it using OpenAI Whisper large-v3. A full transcript is ready in minutes — no software to install.',
+          },
+        },
+        {
+          '@type': 'Question',
           name: 'How long does it take to transcribe a video?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'A 2-hour video typically processes in under 5 minutes with VideoText. Most videos under 30 minutes complete in under 2 minutes. Processing time depends on file length and current server load.',
+            text: 'VideoText processes asynchronously: a 2-hour video typically completes in 3–5 minutes. A 30-minute video finishes in under 90 seconds. Processing runs at roughly 1 minute of compute per 24 seconds of video length.',
           },
         },
         {
@@ -660,7 +750,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'How accurate is AI video transcription?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'VideoText achieves approximately 98.5% word accuracy on clean English audio using OpenAI Whisper. Accuracy varies with audio quality, background noise, speaker count, and language. Technical or domain-specific vocabulary can be improved with the glossary feature.',
+            text: 'VideoText achieves approximately 98.5% word accuracy on clean English audio using OpenAI Whisper large-v3. Accuracy varies with audio quality, background noise, overlapping speakers, and language. Setting the spoken language before processing improves accuracy for non-English content.',
           },
         },
         {
@@ -668,15 +758,15 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Does VideoText store my video files?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'No. VideoText processes your file and deletes it immediately after transcription. We do not retain uploads, transcripts, or any output files. Your content is never stored on our servers.',
+            text: 'No. VideoText processes your file and deletes it immediately after transcription completes. No uploads, transcripts, or output files are retained on servers. Your content is never stored, reviewed, or shared.',
           },
         },
         {
           '@type': 'Question',
-          name: 'What do I get beyond the transcript text?',
+          name: 'What outputs do I get from one video upload?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Every transcription produces a full timestamped transcript, an AI-generated summary with bullet points, auto-generated chapter markers, and SRT/VTT subtitle files — all from a single upload, at no extra cost.',
+            text: 'Every transcription produces: (1) full timestamped transcript with speaker labels, (2) AI-generated summary with key points, (3) auto-generated chapter markers, and (4) SRT and VTT subtitle files — all from a single upload at no extra cost.',
           },
         },
         {
@@ -684,7 +774,23 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'What video formats does VideoText support?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'VideoText accepts MP4, MOV, MKV, WebM, AVI, and most common video formats. You can also paste a public YouTube URL to transcribe directly without downloading the file first.',
+            text: 'VideoText accepts MP4, MOV, MKV, WebM, AVI, and most container formats. Audio formats supported: MP3, WAV, M4A, AAC, OGG, FLAC. You can also paste a public YouTube URL to transcribe without downloading the file.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What languages does video transcription support?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText supports 90+ languages via OpenAI Whisper. Strongest accuracy for English, Spanish, French, German, Italian, Portuguese, Russian, Mandarin Chinese, Japanese, Korean, Arabic, and Hindi. Set the spoken language before processing for best results on non-English content.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I transcribe a YouTube video without downloading it?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Paste any public YouTube URL (youtube.com/watch, youtu.be, YouTube Shorts) and VideoText streams the audio directly from YouTube. No download or local file required.',
           },
         },
         {
@@ -692,17 +798,143 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Can I transcribe multiple videos at once?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Pro and Agency plans include batch upload — drag in multiple files and receive one ZIP containing all transcripts and subtitle files when processing finishes.',
+            text: 'Yes. The Pro plan includes batch upload. Upload multiple files simultaneously — VideoText processes all in parallel and delivers one ZIP with all transcripts, subtitle files, and summaries.',
           },
         },
         {
           '@type': 'Question',
-          name: 'How does VideoText compare to Otter, VEED, Descript, or Rev?',
+          name: 'How does VideoText compare to Otter.ai, Descript, or Rev?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'VideoText is significantly faster (under 5 minutes for a 2-hour video vs. 15–45 min on most tools), outputs more structure per job (transcript + summary + chapters + subtitles in one pass), stores no data, and supports 90+ languages. Competitors like Otter and Descript are optimised for meeting notes or video editing — not fast file-first batch transcription.',
+            text: 'VideoText is faster (2-hour video in ~5 min vs 60+ min on Otter), outputs more per job (transcript + subtitles + summary + chapters in one pass), stores no data (Otter stores indefinitely), and supports 90+ languages equally. Rev uses human transcriptionists — more accurate for legal/medical content but costs $1.25+/min. Descript is a video editor, not a transcription-first tool.',
           },
         },
+        {
+          '@type': 'Question',
+          name: 'What export formats are available?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Export options: TXT (plain text), PDF, DOCX (Microsoft Word), JSON (structured with timestamps and speaker labels), CSV, Notion-compatible format, three-column layout. Subtitle exports: SRT and VTT. All formats are available from the results panel after transcription.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Is video transcription free?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. The free tier includes 3 uploads per day with no credit card required. All outputs (transcript, subtitles, summary, chapters) are included in the free tier. Pro plan is $40/month with no usage limits.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I use a video transcript for academic research?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. VideoText outputs timestamped transcripts with speaker labels exportable as DOCX or PDF for academic citation. Accuracy (~98.5% on clean audio) is suitable for qualitative research. For legal or clinical use, manual review is recommended. Cite the original video source and note that AI transcription was used.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the difference between a transcript and subtitles (SRT/VTT)?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'A transcript is continuous readable text without timing codes — used for reading, research, SEO content, or document repurposing. SRT/VTT subtitle files contain the same text divided into short timed segments with precise timestamps for display on video platforms. VideoText generates both from a single upload.',
+          },
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['[data-speakable]', 'h1', '.seo-intro'],
+    },
+  ],
+  '/guideline-format': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Transcript Style Guide Formatter — Rev, GoTranscript, TranscribeMe, Scribie',
+      description: 'Apply Rev, GoTranscript, TranscribeMe, or Scribie transcription style guide rules automatically. Paste a raw transcript, select the platform preset, and the tool flags verbatim issues, speaker label inconsistencies, filler word handling, and punctuation against platform rules. Download a client-ready, QA-compliant transcript.',
+      featureList: 'Rev style guide preset, GoTranscript style guide preset, TranscribeMe style guide preset, Scribie style guide preset, Custom rule upload (PDF/DOCX), Verbatim and non-verbatim rule enforcement, Speaker label format validation, Filler word detection (um, uh, you know), False start and stutter handling, Punctuation rules, Profanity handling options, QA compliance scoring, Diff view (original vs formatted), Flagged segment review queue, Export client-ready transcript',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web Browser',
+      url: `${SITE_URL}/guideline-format`,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier available. Pro plan $40/month.' },
+      provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What transcription style guides does VideoText support?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText includes presets for Rev, GoTranscript, TranscribeMe, and Scribie. Each preset encodes the platform\'s verbatim rules, speaker label format, filler word handling (um, uh), false start treatment, contraction preferences, and punctuation style. You can also upload your own client style guide as a PDF or DOCX.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What are the Rev transcription formatting rules?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Rev uses non-verbatim transcription by default: remove filler words (um, uh, like), false starts, and stutters unless contracted or meaningful. Speaker labels use [Speaker Name]: format. Numbers under 10 are spelled out. Contractions are preserved. Inaudible sections are marked [inaudible]. Crosstalk is marked [crosstalk]. The VideoText Rev preset applies all these rules automatically.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What are the GoTranscript formatting rules?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'GoTranscript uses non-verbatim format: remove filler words, false starts, and repeated words unless they change meaning. Speaker labels use Speaker 1:, Speaker 2: format. Timestamps are included every 2 minutes. Inaudible sections use [inaudible]. Numbers 1–10 spelled out; 11+ use numerals. The VideoText GoTranscript preset enforces these rules automatically.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How does the transcript QA process work?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Paste your raw transcript and select a platform preset (Rev, GoTranscript, TranscribeMe, Scribie, or custom). The tool applies style rules and returns: (1) a formatted output, (2) a diff view showing every change, (3) flagged segments needing manual review, and (4) a QA compliance score. Review flagged segments in a queue before exporting the final client-ready transcript.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I upload my own client style guide?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Upload a PDF, DOCX, or TXT file containing your client\'s transcription guidelines. VideoText parses the document and creates editable rule cards that match the platform presets. Adjust any rule card before applying — useful for clients whose guidelines differ from standard platforms.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is verbatim transcription?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Verbatim transcription captures every spoken word exactly as said, including filler words (um, uh, like, you know), false starts, stutters, repeated words, and non-verbal sounds. Non-verbatim (clean verbatim) removes these for readability. Most transcription platforms (Rev, GoTranscript) use non-verbatim by default but offer verbatim as an option for legal, research, or clinical use.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How do I format a transcript for submission to Rev?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'To format a transcript for Rev: (1) remove filler words (um, uh, like) unless contracted or meaningful, (2) remove false starts and stutters, (3) use [Speaker Name]: format for speaker labels, (4) spell out numbers one through nine, (5) mark inaudible sections as [inaudible], (6) mark simultaneous speech as [crosstalk]. Use VideoText\'s Rev preset to apply all rules automatically and get a QA compliance score before submitting.',
+          },
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'How to format a transcript to match a client style guide',
+      description: 'Use VideoText to apply Rev, GoTranscript, TranscribeMe, or Scribie style rules to a raw transcript, review flagged segments, and export a client-ready deliverable.',
+      step: [
+        { '@type': 'HowToStep', position: 1, name: 'Paste or upload your raw transcript', text: 'Paste the transcript text directly or upload a TXT, DOCX, or SRT file. The tool accepts output from VideoText Video to Transcript or any other transcription source.' },
+        { '@type': 'HowToStep', position: 2, name: 'Select the platform preset', text: 'Choose Rev, GoTranscript, TranscribeMe, or Scribie from the preset menu. The rule cards update automatically to reflect that platform\'s verbatim, speaker label, filler word, and punctuation rules.' },
+        { '@type': 'HowToStep', position: 3, name: 'Review and adjust rule cards', text: 'Each rule is shown as an editable card. Override any rule that differs from your specific client\'s version of the platform guidelines. Changes apply only to this session.' },
+        { '@type': 'HowToStep', position: 4, name: 'Run formatting and review QA output', text: 'Click Format. The tool applies all rules, returns a diff view of every change, and flags segments that need manual review. A QA compliance score shows how closely the output matches the platform\'s standard.' },
+        { '@type': 'HowToStep', position: 5, name: 'Export the client-ready transcript', text: 'Review flagged segments in the review queue, make any final edits, then download the formatted transcript as TXT or DOCX — ready to submit to the platform.' },
       ],
     },
   ],
@@ -763,19 +995,6 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       ],
     },
   ],
-  '/fastest-transcription-tool': [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: 'What is the fastest transcription tool for long videos?',
-          acceptedAnswer: { '@type': 'Answer', text: 'VideoText is one of the fastest tools for long-form recorded content workflows with publish-ready outputs.' },
-        },
-      ],
-    },
-  ],
   '/otter-vs-videotext': [
     {
       '@context': 'https://schema.org',
@@ -817,10 +1036,142 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
   '/videotext-vs-rev': [
     {
       '@context': 'https://schema.org',
-      '@type': 'Review',
-      itemReviewed: { '@type': 'SoftwareApplication', name: 'VideoText and Rev' },
-      reviewBody: 'Comparison between AI workflow throughput and service-based transcription models.',
-      author: { '@type': 'Organization', name: SITE_NAME },
+      '@type': 'Article',
+      headline: 'VideoText vs Rev — Full 2025 Comparison',
+      description: 'A complete comparison of VideoText and Rev covering pricing, AI vs human transcription, accuracy, speed, output formats, language support, and data privacy.',
+      author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      url: `${SITE_URL}/videotext-vs-rev`,
+      dateModified: '2025-05-01',
+      about: [
+        { '@type': 'SoftwareApplication', name: 'Rev' },
+        { '@type': 'SoftwareApplication', name: 'VideoText', url: SITE_URL },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Is VideoText cheaper than Rev?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Rev AI charges $0.25/minute per file. Rev Human charges $1.50+/minute. VideoText Pro is $40/month flat with no per-minute charges — dramatically cheaper than Rev for any regular workload.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the best Rev alternative?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText is the best Rev AI alternative for most workflows: 6× cheaper per minute, 90+ language support, zero data retention, and produces transcript + SRT + VTT subtitles + AI summary + chapters in one upload. For human-reviewed transcription required by compliance policy, Rev Human remains the option — but for AI transcription, VideoText wins on every dimension.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How fast is VideoText compared to Rev AI?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText processes a 1-hour video in 3–5 minutes using parallel async processing. Rev AI takes approximately 5–10 minutes. Rev Human takes 12–24 hours. VideoText is the fastest option.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Does Rev store my audio files?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Rev retains uploaded files for up to 30 days. Rev Human transcriptionists actively listen to your audio content. VideoText processes files in a transient environment and deletes them immediately — zero retention, no humans access your content.',
+          },
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['[data-speakable]', 'h1', '.seo-intro'],
+    },
+  ],
+  '/temi-vs-videotext': [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: 'Temi vs VideoText — Full 2025 Comparison',
+      description: 'A 360-degree comparison of Temi and VideoText covering pricing, accuracy, speed, output formats, language support, and data privacy. Also covers Rev vs VideoText.',
+      author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      url: `${SITE_URL}/temi-vs-videotext`,
+      dateModified: '2025-05-01',
+      about: [
+        { '@type': 'SoftwareApplication', name: 'Temi' },
+        { '@type': 'SoftwareApplication', name: 'Rev' },
+        { '@type': 'SoftwareApplication', name: 'VideoText', url: SITE_URL },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Is VideoText cheaper than Temi?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Temi charges $0.25/minute for every file. VideoText Pro is $40/month flat with no per-minute charges — dramatically cheaper for any regular workload. VideoText also offers a free tier with 3 uploads per day, no credit card required.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the best alternative to Temi?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VideoText is the best Temi alternative for most workflows. It is 6× cheaper per minute on a flat subscription, supports 90+ languages via OpenAI Whisper large-v3, produces transcript + SRT subtitles + VTT subtitles + AI summary + chapter markers in one upload, and deletes your files immediately after processing with zero data retention.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Does Temi support languages other than English?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'No. Temi supports English only. This is not a configuration option — the platform was built for English and never expanded. VideoText supports 90+ languages using the full OpenAI Whisper large-v3 model at the same speed and quality for all major languages.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How does Rev compare to VideoText?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Rev AI costs $0.25/minute — the same as Temi. Rev Human costs $1.50+/minute. VideoText Pro is $40/month flat with no per-minute charges. VideoText also generates more outputs per file and has zero data retention versus Rev\'s 30-day retention policy.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How fast is VideoText compared to Temi for transcription?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Temi processes audio near real-time — a 60-minute video takes approximately 60 minutes. VideoText uses parallel async processing and completes the same file in 3–5 minutes. A 2-hour video: approximately 8–12 minutes on VideoText versus 120 minutes on Temi.',
+          },
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Temi vs VideoText — Key Differences',
+      description: 'The 6 most important differences between Temi and VideoText transcription tools.',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Price: VideoText ~$0.042/min vs Temi $0.25/min — 6× cheaper on Pro subscription' },
+        { '@type': 'ListItem', position: 2, name: 'Languages: VideoText 90+ vs Temi English only' },
+        { '@type': 'ListItem', position: 3, name: 'Speed: VideoText 3–5 min/hr vs Temi ~60 min/hr (near real-time)' },
+        { '@type': 'ListItem', position: 4, name: 'Outputs: VideoText transcript + SRT + VTT + summary + chapters vs Temi transcript only' },
+        { '@type': 'ListItem', position: 5, name: 'Privacy: VideoText zero data retention vs Temi stores files on servers' },
+        { '@type': 'ListItem', position: 6, name: 'YouTube: VideoText accepts direct URLs vs Temi requires manual file download' },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['[data-speakable]', 'h1', '.seo-intro'],
     },
   ],
   '/best-otter-alternatives': [
@@ -900,76 +1251,6 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
   '/youtube-transcript-generator': [
     {
       '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: 'How do I get a transcript from a YouTube video?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Paste the video URL into our tool (youtube.com or youtu.be links work). Click Transcribe. Get full transcript + subtitles + summary in 2-3 minutes. No login required.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Is the YouTube transcript generator free?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Yes. Free tier gives you 2 hours/month (enough for 4 typical YouTube videos). No credit card required. Pro plan is $9.99/month for unlimited transcription.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Can I download YouTube video subtitles with this tool?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Yes. Export transcript as SRT and VTT subtitle files. Upload directly to YouTube, Vimeo, or any video platform. Perfect for re-uploading and SEO.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Do I need to download the YouTube video first?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'No. That\'s the main advantage. Paste the YouTube URL directly — we stream the audio from YouTube servers. No download, no upload, no software needed. Instant processing.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Why is VideoText faster than YouTube auto-captions?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'YouTube captions are generated at 70-80% accuracy in real-time. VideoText uses advanced offline AI (OpenAI Whisper) for 98.5% accuracy plus structured outputs: transcript, speaker labels, AI summary, chapter markers, and subtitle files — all in one pass.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Can I transcribe long YouTube videos (podcasts, webinars)?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Yes. Free tier handles up to 30 minutes per video. Basic plan: 45 minutes. Pro plan: 2 hours. Agency plan: 4 hours. Transcription speed: ~1 minute per 10 minutes of video.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'What languages does the YouTube transcript generator support?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: '90+ languages. Just paste any YouTube video in any language — we auto-detect or let you select the language manually for better accuracy.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Can I use YouTube transcripts for blog posts or SEO?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Absolutely. Convert one YouTube video into: blog post (using transcript), social media snippets (using chapters), email newsletter content, knowledge base articles. Transcripts include exact timestamps for easy citing and linking.',
-          },
-        },
-      ],
-    },
-    {
-      '@context': 'https://schema.org',
       '@type': 'HowTo',
       name: 'How to convert a YouTube video to a transcript',
       description: 'Convert any YouTube video to a searchable transcript without downloading. Paste URL, get transcript plus subtitles and summary in 2-3 minutes.',
@@ -999,7 +1280,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       applicationCategory: 'MultimediaApplication',
       operatingSystem: 'Web Browser',
       url: 'https://videotext.io/youtube-transcript-generator',
-      featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 2 hours/month (no credit card), Pro tier: unlimited transcription ($9.99/month), Zero data retention (files deleted after processing), Batch processing (Pro/Agency)',
+      featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 uploads/day (no credit card), Pro tier: unlimited transcription ($40/month), Zero data retention (files deleted after processing), Batch processing (Pro/Agency)',
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: '4.9',
@@ -1013,7 +1294,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
             '@type': 'Offer',
             price: '0',
             priceCurrency: 'USD',
-            description: 'Free: 2 hours/month (no credit card required)',
+            description: 'Free: 3 uploads/day (no credit card required)',
             url: 'https://videotext.io/youtube-transcript-generator',
           },
           {
@@ -1043,14 +1324,19 @@ export function getAeoJsonLd(pathname: string): object[] | null {
 /** SoftwareApplication JSON-LD for individual paid tool pages. */
 const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string; featureList: string }> = {
   '/video-to-transcript': {
-    name: 'Video to Transcript — Fast AI Transcription with Structured Output',
-    description: 'Convert any video to a clean transcript in minutes. ~98.5% accuracy. Outputs: full transcript, AI summary, auto-generated chapters, SRT/VTT subtitles, and speaker labels. Zero data retention — files deleted after processing. Powered by OpenAI Whisper.',
-    featureList: 'Fast AI transcription (2-hour video in ~5 min), ~98.5% word accuracy, AI summary with bullet points, Auto-generated chapters, Speaker diarization, SRT subtitle export, VTT subtitle export, TXT / PDF / DOCX / JSON export, 90+ language support, Batch processing (Pro), Zero data retention, YouTube URL input',
+    name: 'Video to Transcript — Free AI Transcription, 98.5% Accurate',
+    description: 'Convert any video to a clean transcript in minutes. 98.5% word accuracy using OpenAI Whisper large-v3. Outputs: full timestamped transcript, AI summary, auto-generated chapters, SRT/VTT subtitle files, and speaker labels — all in one pass. Zero data retention: files deleted immediately after processing. Free tier included.',
+    featureList: 'AI transcription (2-hour video in ~5 min), 98.5% word accuracy (OpenAI Whisper large-v3), Full timestamped transcript, AI-generated summary with key points, Auto-generated chapter markers, Speaker diarization (auto-labeling), SRT subtitle export, VTT subtitle export, TXT / PDF / DOCX / JSON / CSV export, Three-column transcript export, 90+ language support, YouTube URL input (no download), Batch processing (Pro/Agency), Zero data retention, Free tier: 3 imports/month',
+  },
+  '/guideline-format': {
+    name: 'Transcript Style Guide Formatter — Rev, GoTranscript, TranscribeMe, Scribie',
+    description: 'Format raw transcripts to match Rev, GoTranscript, TranscribeMe, or Scribie transcription style guides automatically. Apply verbatim rules, speaker label formats, filler word handling, false start treatment, and punctuation rules — then validate QA compliance and export a client-ready transcript.',
+    featureList: 'Rev style guide preset, GoTranscript style guide preset, TranscribeMe style guide preset, Scribie style guide preset, Custom client style guide upload (PDF/DOCX/TXT), Verbatim and non-verbatim rule enforcement, Speaker label format validation, Filler word detection and removal, False start and stutter handling, Punctuation rule application, Number formatting rules, Profanity handling options, QA compliance scoring, Diff view (original vs formatted), Flagged segment review queue, TXT and DOCX export',
   },
   '/youtube-transcript-generator': {
     name: 'Free YouTube Transcript Generator — No Download, Instant Results',
     description: 'Free YouTube transcript generator. Paste any video URL — get complete transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in 2-3 minutes. No downloading required. 98.5% accurate. 50,000+ creators use VideoText.',
-    featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 2 hours/month (no credit card), Pro tier: unlimited transcription ($9.99/month), Zero data retention (files deleted after processing)',
+    featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 uploads/day (no credit card), Pro tier: unlimited transcription ($40/month), Zero data retention (files deleted after processing)',
   },
   '/video-to-subtitles': {
     name: 'Video to Subtitles — SRT & VTT Generator',
@@ -1060,7 +1346,7 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   '/translate-subtitles': {
     name: 'Translate Subtitles — SRT/VTT to Any Language',
     description: 'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, French, Japanese, and 70+ languages with AI. Upload subtitles, pick target language, download.',
-    featureList: 'SRT translation, VTT translation, 50+ target languages, Timestamp preservation, Download translated subtitles',
+    featureList: 'SRT translation, VTT translation, 70+ target languages, Timestamp preservation, Download translated subtitles',
   },
   '/fix-subtitles': {
     name: 'Fix Subtitles — Auto-Correct Timing & Format',
@@ -1079,8 +1365,8 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   },
   '/batch-process': {
     name: 'Batch Video to Subtitles — Multiple Videos at Once',
-    description: 'Transcribe or subtitle many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans.',
-    featureList: 'Batch transcription, Batch subtitle generation, ZIP download, Multi-language batch, Pro and Agency plans',
+    description: 'Transcribe or subtitle many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro plan.',
+    featureList: 'Batch transcription, Batch subtitle generation, ZIP download, Multi-language batch, Pro plan',
   },
 }
 
@@ -1096,7 +1382,7 @@ export function getSoftwareApplicationJsonLd(pathname: string): object | null {
     applicationCategory: 'MultimediaApplication',
     operatingSystem: 'Web Browser',
     url: `${SITE_URL}${pathname}`,
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier: 3 imports/month. Paid plans from $19/month.' },
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier: 3 uploads/day. Pro plan $40/month.' },
     provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
   }
 }

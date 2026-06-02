@@ -23,6 +23,7 @@ const TOPICS_FILE = path.join(__dirname, 'topics.json')
 const GENERATED_POSTS_FILE = path.join(ROOT, 'client', 'src', 'data', 'generatedPosts.ts')
 const SITEMAP_FILE = path.join(ROOT, 'client', 'public', 'sitemap-core.xml')
 const SEO_META_FILE = path.join(ROOT, 'client', 'src', 'lib', 'seoMeta.ts')
+const BLOG_URL = 'https://blog.videotext.io'
 
 // ── Load .env from repo root ───────────────────────────────────────────────
 const envPath = path.join(ROOT, '.env')
@@ -229,7 +230,7 @@ function updateSitemap(post: GeneratedPost): void {
   const content = fs.readFileSync(SITEMAP_FILE, 'utf8')
   const today = isoDate(new Date())
   const newEntry = `  <url>
-    <loc>https://videotext.io/blog/${post.slug}</loc>
+    <loc>${BLOG_URL}/${post.slug}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -237,7 +238,7 @@ function updateSitemap(post: GeneratedPost): void {
 
   const updated = content.replace('</urlset>', `${newEntry}\n</urlset>`)
   fs.writeFileSync(SITEMAP_FILE, updated, 'utf8')
-  console.log(`[blog] Sitemap updated with /blog/${post.slug}`)
+  console.log(`[blog] Sitemap updated with ${BLOG_URL}/${post.slug}`)
 }
 
 function updateSeoMeta(post: GeneratedPost): void {

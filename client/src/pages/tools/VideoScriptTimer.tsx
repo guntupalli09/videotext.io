@@ -50,7 +50,7 @@ export default function VideoScriptTimer() {
                 <li><strong className="text-gray-900 dark:text-white">150–180 WPM</strong> — Fast-paced YouTube channels, commentary, reaction content, news narration</li>
                 <li><strong className="text-gray-900 dark:text-white">180–220 WPM</strong> — Very fast-paced shorts, TikToks, entertainment commentary</li>
               </ul>
-              <p className="mt-2">If you don't know your speaking rate, use our <a href="/tools/words-per-minute-calculator" className="text-violet-600 hover:underline">WPM Calculator</a> to measure it from a recorded clip.</p>
+              <p className="mt-2">If you don't know your speaking rate, use our <a href="/tools/words-per-minute-calculator" className="text-blue-600 hover:underline">WPM Calculator</a> to measure it from a recorded clip.</p>
             </>
           ),
         },
@@ -111,34 +111,34 @@ export default function VideoScriptTimer() {
         <div>
           <div className="flex justify-between items-center mb-2">
             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Your script</label>
-            {words > 0 && <span className="text-xs font-medium text-violet-600 dark:text-violet-400">{words.toLocaleString()} words</span>}
+            {words > 0 && <span className="text-xs font-medium text-blue-600 dark:text-blue-400">{words.toLocaleString()} words</span>}
           </div>
-          <textarea className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-4 h-44 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500 leading-relaxed" placeholder="Paste your script here. The estimated video length will update as you type…" value={script} onChange={(e) => setScript(e.target.value)} />
+          <textarea className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-4 h-44 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed" placeholder="Paste your script here. The estimated video length will update as you type…" value={script} onChange={(e) => setScript(e.target.value)} />
         </div>
         <div>
           <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">Speaking rate</p>
           <div className="grid grid-cols-2 gap-2 mb-2">
             {(Object.keys(RATES) as (keyof typeof RATES)[]).map((r) => (
-              <button key={r} onClick={() => { setRate(r); setUseCustom(false) }} className={`p-2.5 rounded-lg text-left transition-colors border ${!useCustom && rate === r ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-violet-300'}`}>
+              <button key={r} onClick={() => { setRate(r); setUseCustom(false) }} className={`p-2.5 rounded-lg text-left transition-colors border ${!useCustom && rate === r ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-blue-300'}`}>
                 <p className="text-xs font-semibold text-gray-900 dark:text-white">{RATES[r].label}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">{RATES[r].wpm} WPM · {RATES[r].desc}</p>
               </button>
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <input type="checkbox" id="custom" checked={useCustom} onChange={(e) => setUseCustom(e.target.checked)} className="rounded text-violet-600" />
+            <input type="checkbox" id="custom" checked={useCustom} onChange={(e) => setUseCustom(e.target.checked)} className="rounded text-blue-600" />
             <label htmlFor="custom" className="text-sm text-gray-700 dark:text-gray-300">Custom WPM:</label>
-            <input type="number" min={50} max={300} value={customWpm} onChange={(e) => { setCustomWpm(parseInt(e.target.value) || 130); setUseCustom(true) }} className="w-20 rounded-lg border border-gray-200 dark:border-gray-600 px-2 py-1.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+            <input type="number" min={50} max={300} value={customWpm} onChange={(e) => { setCustomWpm(parseInt(e.target.value) || 130); setUseCustom(true) }} className="w-20 rounded-lg border border-gray-200 dark:border-gray-600 px-2 py-1.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
         {words > 0 ? (
-          <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-violet-700 p-6 text-center text-white">
-            <p className="text-xs font-semibold uppercase tracking-widest text-violet-200 mb-1">Estimated video length</p>
+          <div className="rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 p-6 text-center text-white">
+            <p className="text-xs font-semibold uppercase tracking-widest text-blue-200 mb-1">Estimated video length</p>
             <p className="text-5xl font-display font-bold mb-2">{formatDuration(durationSec)}</p>
-            <p className="text-sm text-violet-200">{ytFormat(durationSec)}</p>
+            <p className="text-sm text-blue-200">{ytFormat(durationSec)}</p>
             <div className="mt-4 pt-4 border-t border-white/20 grid grid-cols-3 gap-2 text-center">
               {[{ label: 'Words', val: words.toLocaleString() }, { label: 'At WPM', val: wpm }, { label: 'Min/s', val: `${(durationSec / 60).toFixed(1)} min` }].map((s) => (
-                <div key={s.label}><p className="text-lg font-bold">{s.val}</p><p className="text-xs text-violet-200">{s.label}</p></div>
+                <div key={s.label}><p className="text-lg font-bold">{s.val}</p><p className="text-xs text-blue-200">{s.label}</p></div>
               ))}
             </div>
           </div>

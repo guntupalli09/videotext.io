@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { getPopularFooterLinks } from '../lib/seoRegistry'
+import { getBlogOutboundUrl } from '../lib/blogOutbound'
 
 export default function Footer() {
   const popularLinks = getPopularFooterLinks()
@@ -23,12 +24,12 @@ export default function Footer() {
 
           {/* Links */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Navigation</h3>
+            <h3 className="text-white font-medium mb-4">Navigation</h3>
             <ul className="space-y-2 text-sm">
               <li><Link to="/" className="hover:text-white transition-colors">All tools</Link></li>
               <li><Link to="/guide" className="hover:text-white transition-colors">Guide</Link></li>
               <li><Link to="/compare" className="hover:text-white transition-colors">Compare</Link></li>
-              <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+              <li><a href={getBlogOutboundUrl('/blog')} className="hover:text-white transition-colors">Blog</a></li>
               <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
               <li><Link to="/samples" className="hover:text-white transition-colors">Samples</Link></li>
               <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
@@ -40,7 +41,7 @@ export default function Footer() {
 
           {/* Tools & Resources */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Tools & Resources</h3>
+            <h3 className="text-white font-medium mb-4">Tools & Resources</h3>
             <ul className="space-y-2 text-sm">
               <li><Link to="/transcription-tools" className="hover:text-white transition-colors">Transcription tools</Link></li>
               <li><Link to="/subtitle-tools" className="hover:text-white transition-colors">Subtitle tools</Link></li>
@@ -54,7 +55,7 @@ export default function Footer() {
 
           {/* Product & resources */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Popular pages</h3>
+            <h3 className="text-white font-medium mb-4">Popular pages</h3>
             <ul className="space-y-2 text-sm">
               {popularLinks.slice(0, 14).map(({ path, label }) => (
                 <li key={path}>
@@ -68,7 +69,7 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Legal</h3>
+            <h3 className="text-white font-medium mb-4">Legal</h3>
             <ul className="space-y-2 text-sm">
               <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>

@@ -87,7 +87,7 @@ VideoText gives you: clean .txt transcript + .srt + .vtt + summary + chapters �
 - Upload the MP3 to VideoText
 - Get full transcript + SRT + summary + chapters
 
-Full guide: https://videotext.io/blog/how-to-get-youtube-transcript
+Full guide: https://blog.videotext.io/how-to-get-youtube-transcript
 
 ---
 
@@ -119,7 +119,7 @@ YouTube URL imports count the same as video uploads (measured in video minutes).
 - [Translate Subtitles](https://videotext.io/translate-subtitles) — SRT/VTT to 70+ languages
 - [Burn Subtitles](https://videotext.io/burn-subtitles) — Hardcode captions into video
 - [SBV to SRT Converter](https://videotext.io/tools/sbv-to-srt) — Convert YouTube's .sbv export to SRT (free, no account)
-- [How to Get a YouTube Transcript](https://videotext.io/blog/how-to-get-youtube-transcript)
-- [How to Add Captions to a YouTube Video](https://videotext.io/blog/how-to-add-captions-youtube-video)
+- [How to Get a YouTube Transcript](https://blog.videotext.io/how-to-get-youtube-transcript)
+- [How to Add Captions to a YouTube Video](https://blog.videotext.io/how-to-add-captions-youtube-video)
 
 *VideoText — https://videotext.io*

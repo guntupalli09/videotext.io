@@ -17,20 +17,20 @@ export default {
       },
       colors: {
         primary: {
-          DEFAULT: '#7C3AED',
-          hover: '#6D28D9',
-          light: '#A78BFA',
-          tint: '#EDE9FE',
-          subtle: '#F5F3FF',
+          DEFAULT: '#2563EB',
+          hover: '#1D4ED8',
+          light: '#60A5FA',
+          tint: '#DBEAFE',
+          subtle: '#EFF6FF',
         },
-        violet: {
-          50: '#F5F3FF',
-          100: '#EDE9FE',
-          200: '#DDD6FE',
-          400: '#A78BFA',
-          600: '#7C3AED',
-          700: '#6D28D9',
-          800: '#5B21B6',
+        blue: {
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          400: '#60A5FA',
+          600: '#2563EB',
+          700: '#1D4ED8',
+          800: '#1E40AF',
         },
         gray: {
           50: '#F9FAFB',
@@ -64,7 +64,7 @@ export default {
         'card-hover': '0 4px 6px -1px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.04)',
         'card-elevated': '0 4px 12px -2px rgb(0 0 0 / 0.06), 0 2px 6px -2px rgb(0 0 0 / 0.04)',
         'nav': '0 1px 3px 0 rgb(0 0 0 / 0.04)',
-        'input': '0 0 0 3px rgb(124 58 237 / 0.15)',
+        'input': '0 0 0 3px rgb(37 99 235 / 0.15)',
       },
       transitionDuration: {
         '200': '200ms',

@@ -63,6 +63,7 @@ export type SeoToolKey =
   | 'compress-video'
   | 'batch-process'
   | 'voice-to-text'
+  | 'brand-guideline'
 
 export interface SeoRegistryEntry {
   /** Path (e.g. /video-to-text). Must match route path. */
@@ -152,7 +153,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I transcribe a YouTube video without downloading it?', a: 'Yes. Paste any public YouTube URL (youtube.com/watch?v=… or youtu.be/…) and we stream the audio directly. No download, no file upload. The transcript is ready in seconds.' },
       { q: 'Does YouTube to transcript work with age-restricted or private videos?', a: 'Age-restricted videos work when you provide optional cookies (export from your browser). Private and unlisted videos are not supported — only public URLs.' },
       { q: 'What YouTube URL formats are supported?', a: 'We support youtube.com/watch?v=…, youtu.be/…, youtube.com/shorts/…, and youtube.com/embed/…. Any format that contains the 11-character video ID works.' },
-      { q: 'Is YouTube transcription free?', a: 'Yes. The free tier includes 3 imports per month (resets on the 1st). Paste a URL and get a transcript after signing up for free. Paid plans unlock more volume and multi-language output.' },
+      { q: 'Is YouTube transcription free?', a: 'Yes. The free tier includes 3 uploads per day. Paste a URL and get a transcript after signing up for free. Paid plans unlock more volume and multi-language output.' },
     ],
   },
   {
@@ -177,7 +178,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I use the YouTube transcript for subtitles?', a: 'Yes. After transcribing, download as SRT or VTT and upload to YouTube Studio → Subtitles → Upload file. Or use the Subtitle Generator to generate subtitles directly from any video file.' },
       { q: 'Does it work for YouTube Shorts?', a: 'Yes. Shorts URLs (youtube.com/shorts/…) are supported. Transcription quality is the same as regular YouTube videos.' },
       { q: 'Can I translate a YouTube transcript to another language?', a: 'Yes. After transcribing, click Translate and choose from English, Hindi, Telugu, Spanish, Chinese, or Russian. The translated version appears alongside the original.' },
-      { q: 'Is there a limit on video length for YouTube transcription?', a: 'Free tier: 3 imports per month (resets on the 1st). Paid plans support up to 4 hours per video. Very long videos may take a few minutes to process.' },
+      { q: 'Is there a limit on video length for YouTube transcription?', a: 'Free tier: 3 uploads per day. Paid plans support up to 4 hours per video. Very long videos may take a few minutes to process.' },
     ],
   },
   {
@@ -217,7 +218,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     canonicalGroup: 'youtube-transcript',
     defaultInputMode: 'youtube',
     faq: [
-      { q: 'Is it free to transcribe a YouTube video?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st) after signing up for free.' },
+      { q: 'Is it free to transcribe a YouTube video?', a: 'Yes. Free tier includes 3 uploads per day after signing up for free.' },
       { q: 'How accurate is YouTube video transcription?', a: 'We use AI speech recognition trained on diverse content. Accuracy is high for clear speech. Set the spoken language for best results.' },
       { q: 'Can I transcribe YouTube videos in other languages?', a: 'Yes. Set the spoken language before processing. After transcribing, translate to 6 languages with one click.' },
     ],
@@ -239,7 +240,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     defaultInputMode: 'youtube',
     faq: [
       { q: 'How do I convert a YouTube video to text?', a: 'Paste the YouTube URL into our tool and click Transcribe. We extract the audio and convert it to text.' },
-      { q: 'Is YouTube to text free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st).' },
+      { q: 'Is YouTube to text free?', a: 'Yes. Free tier includes 3 uploads per day.' },
       { q: 'Can I use the text for subtitles?', a: 'Yes. Download as SRT or VTT and upload to YouTube, Vimeo, or any platform.' },
     ],
   },
@@ -303,7 +304,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I generate subtitles in multiple languages?', a: 'Yes. Use the Translate Subtitles tool to translate an existing SRT or VTT file into another language. You can also set the spoken language to non-English before processing — VideoText will transcribe the speech in that language and generate correctly timed subtitles.' },
       { q: 'What video formats are supported?', a: 'MP4, MOV, WebM, MKV, AVI, and most other standard video formats. Audio files also work: MP3, WAV, M4A, AAC, OGG, FLAC. Upload directly — no conversion needed.' },
       { q: 'Can I burn the subtitles into the video (hard subtitles)?', a: 'Yes. After generating subtitles, use the Burn Subtitles into Video tool. Upload your video and SRT file, and download a new video with the captions permanently embedded. Useful for social media videos where external subtitle tracks are not supported.' },
-      { q: 'Do I need to sign up to generate subtitles?', a: 'Yes. Sign up for free to try. You get 3 imports per month (resets on the 1st). Upgrade to a paid plan when you need more imports or multi-language subtitle output in one batch.' },
+      { q: 'Do I need to sign up to generate subtitles?', a: 'Yes. Sign up for free to try. You get 3 uploads per day. Upgrade to a paid plan when you need more imports or multi-language subtitle output in one batch.' },
     ],
   },
   {
@@ -340,7 +341,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'meeting-transcript',
     faq: [
-      { q: 'Is meeting transcription free?', a: 'Yes. The free tier includes 3 imports per month (resets on the 1st) — sign up for free to try. Create a free account to track usage across browser sessions. Paid plans start at $19/month for 450 minutes, covering most teams that process a few hours of meetings per week.' },
+      { q: 'Is meeting transcription free?', a: 'Yes. The free tier includes 3 uploads per day — sign up for free to try. Create a free account to track usage across browser sessions. Pro plan is $40/month for unlimited processing.' },
       { q: 'Does this work for Zoom, Teams, and Google Meet recordings?', a: 'Yes. Upload any meeting recording in MP4 or MOV format — Zoom cloud recordings, Teams downloads, and Google Meet exports all work. Use the Speakers branch after transcribing to see who said what, organized by speaker turn rather than continuous paragraphs.' },
       { q: 'Do timestamps stay accurate in meeting transcripts?', a: 'Yes. The transcript preserves paragraph structure aligned to the original audio timing. The Chapters branch breaks the meeting into navigable sections so you can jump to specific topics. Keywords indexes repeated terms and links each to where it first appears in the transcript.' },
       { q: 'Can I get the meeting transcript in another language?', a: 'Yes. Click Translate after transcribing and pick from English, Hindi, Telugu, Spanish, Chinese, or Russian. The translated view appears alongside the original. This is useful for global teams where meeting notes need to reach colleagues in different countries.' },
@@ -360,7 +361,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: false,
     intentKey: 'speaker-diarization',
     faq: [
-      { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is this free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
       { q: 'How are speakers labeled?', a: 'After transcribing, open the Speakers branch. Paragraphs are grouped and labeled (Speaker 1, 2, etc.) from the transcript structure.' },
       { q: 'Do timestamps stay accurate?', a: 'Yes. The transcript and all branches use the same underlying text; you can jump from Chapters or Keywords to the transcript.' },
     ],
@@ -379,7 +380,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: false,
     intentKey: 'video-summary-generator',
     faq: [
-      { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st).' },
+      { q: 'Is this free?', a: 'Yes. Free tier includes 3 uploads per day.' },
       { q: 'What does the summary include?', a: 'The Summary branch extracts decisions, action items, and key points from the transcript using simple pattern matching.' },
       { q: 'Can I export the summary?', a: 'Yes. Use the Exports branch to download JSON, CSV, Markdown, or Notion-style export (paid for full download).' },
     ],
@@ -398,7 +399,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: false,
     intentKey: 'video-chapters-generator',
     faq: [
-      { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st).' },
+      { q: 'Is this free?', a: 'Yes. Free tier includes 3 uploads per day.' },
       { q: 'How are chapters created?', a: 'Chapters are derived from transcript paragraphs. Open the Chapters branch after transcribing to see section headings and jump to that part of the transcript.' },
       { q: 'Can I use these on YouTube?', a: 'Chapters are for navigation in our tool. For YouTube chapters, use the timestamps in your video description; our transcript helps you find where sections start.' },
     ],
@@ -417,7 +418,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: false,
     intentKey: 'keyword-indexed-transcript',
     faq: [
-      { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st).' },
+      { q: 'Is this free?', a: 'Yes. Free tier includes 3 uploads per day.' },
       { q: 'What are keywords?', a: 'Repeated terms in the transcript. The Keywords branch shows them and links each to the transcript section where it first appears.' },
       { q: 'Can I export the index?', a: 'Yes. The Exports branch offers JSON, CSV, Markdown, and Notion-style export (paid for full download).' },
     ],
@@ -532,7 +533,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'multilingual-subtitles',
     faq: [
       { q: 'Can I get subtitles in multiple languages from one file?', a: 'Yes. Upload your subtitle file once and translate it to different languages individually — each download is a separate file for one target language. Paid plans let you generate multiple language outputs in a single batch, which saves time for creators distributing content to international audiences.' },
-      { q: 'Is multilingual subtitle generation free?', a: 'Yes. Free tier is available after signing up for free. Single-language translation is free within the monthly limit. Upgrade to Pro or Agency plans to unlock multi-language batch output, where you generate subtitles in three or more languages from a single upload session.' },
+      { q: 'Is multilingual subtitle generation free?', a: 'Yes. Free tier is available after signing up for free. Single-language translation is free within the daily limit. Upgrade to Pro to unlock multi-language batch output, where you generate subtitles in three or more languages from a single upload session.' },
       { q: 'Do timestamps stay accurate across all translated languages?', a: 'Yes. Subtitle translation only changes the text content — every timestamp is preserved exactly as it was in the original file. Your multilingual subtitles stay perfectly synchronized with the video in every language without any timing adjustments on your part.' },
     ],
   },
@@ -608,7 +609,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'hardcoded-captions',
     faq: [
       { q: 'What are hardcoded captions?', a: 'Hardcoded captions (also called burned-in or open captions) are subtitles permanently embedded into the video frame so they are always visible without the viewer toggling anything. Upload your video and an SRT or VTT file, and we produce a single MP4 with captions baked in — ready for Instagram, TikTok, or silent autoplay environments.' },
-      { q: 'Are hardcoded captions free to create?', a: 'Yes. The free tier is available after signing up for free. Upload your video and subtitle file, choose your font size, position, and opacity, and download the output video at no cost within the monthly free limit. Upgrade to a paid plan for more minutes and larger video files.' },
+      { q: 'Are hardcoded captions free to create?', a: 'Yes. The free tier includes 3 uploads per day — no credit card required. Upload your video and subtitle file, choose your font size, position, and opacity, and download the output video. Upgrade to Pro for unlimited processing and larger video files.' },
       { q: 'Can I choose font size and position for hardcoded captions?', a: 'Yes. Before processing, set font size (small, medium, or large), vertical position (bottom or middle of screen), and background opacity (transparent to solid black box). These options let you match the caption style to your brand without needing a video editing tool.' },
     ],
   },
@@ -627,7 +628,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'video-with-subtitles',
     faq: [
       { q: 'How do I add subtitles to a video permanently?', a: 'Upload your video (MP4, MOV, AVI, WebM, or MKV) and your SRT or VTT subtitle file. Our tool burns the captions into the video frames so they are always visible, and you download a single MP4 with subtitles permanently embedded. No video editing software or timeline work required.' },
-      { q: 'Is adding subtitles to video free?', a: 'Yes. Free tier is available after signing up for free. Upload your video and subtitle file and download the output with captions burned in at no cost within the monthly free limit. Paid plans start at $19/month for 450 minutes if you need to process more videos per month.' },
+      { q: 'Is adding subtitles to video free?', a: 'Yes. Free tier is available after signing up for free. Upload your video and subtitle file and download the output with captions burned in at no cost within the daily free limit. Pro plan is $40/month for unlimited processing.' },
       { q: 'What video formats are supported for adding subtitles?', a: 'MP4, MOV, AVI, WebM, and MKV are all accepted. The output file is an MP4, which is compatible with YouTube, Vimeo, Instagram, TikTok, and every major platform and device. If your original file is MOV or AVI, the output MP4 is ready for direct upload anywhere.' },
     ],
   },
@@ -673,19 +674,19 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/batch-video-processing',
     title: 'Batch Video Processing — Multiple Videos at Once | VideoText',
     description:
-      'Process multiple videos in one batch. Upload many videos, get one ZIP of subtitle files. Pro and Agency plans. Same tool as Batch Process.',
+      'Process multiple videos in one batch. Upload many videos, get one ZIP of subtitle files. Pro plan. Same tool as Batch Process.',
     h1: 'Batch Video Processing — Multiple Videos at Once',
     intro:
-      'Process multiple videos in one batch. Upload many videos, get one ZIP of subtitle files. Pro and Agency plans.',
+      'Process multiple videos in one batch. Upload many videos, get one ZIP of subtitle files. Pro plan.',
     breadcrumbLabel: 'Batch Video Processing',
     toolKey: 'batch-process',
     relatedSlugs: ['/video-to-transcript', '/video-to-subtitles'],
     indexable: false,
     intentKey: 'batch-video-processing',
     faq: [
-      { q: 'Is batch video processing free?', a: 'Batch processing is available on Pro and Agency plans. Free and Basic plans use single-file tools. Pro supports up to 20 videos per batch with a 60-minute total duration. Agency supports up to 100 videos with a 300-minute total, which covers full content calendars and client workflows.' },
+      { q: 'Is batch video processing free?', a: 'Batch processing is available on the Pro plan. Free tier uses single-file tools. Pro supports up to 20 videos per batch with a 60-minute total duration.' },
       { q: 'What do I get from batch video processing?', a: 'Upload multiple videos in one session and receive a single ZIP file containing one SRT subtitle file per video, named to match your original filenames. Videos are processed in parallel workers — not sequentially — so a batch of 10 videos typically completes faster than processing them one by one.' },
-      { q: 'Can I choose the language for batch processing?', a: 'Yes. Set the spoken language when starting the batch for best accuracy. Multi-language output — where each video gets subtitle files in two or more languages simultaneously — is available on Agency plans, which is useful for content localization workflows serving international audiences.' },
+      { q: 'Can I choose the language for batch processing?', a: 'Yes. Set the spoken language when starting the batch for best accuracy. Multi-language output — where each video gets subtitle files in two or more languages simultaneously — is available on Pro plan, which is useful for content localization workflows serving international audiences.' },
     ],
   },
   {
@@ -695,7 +696,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Export SRT subtitles for many videos in one go. Upload multiple videos, download ZIP. Pro+ plans. Same tool as Batch Process.',
     h1: 'Bulk Subtitle Export — SRT for Many Videos',
     intro:
-      'Export SRT subtitles for many videos in one go. Upload multiple videos, download one ZIP. Pro and Agency plans.',
+      'Export SRT subtitles for many videos in one go. Upload multiple videos, download one ZIP. Pro plan.',
     breadcrumbLabel: 'Bulk Subtitle Export',
     toolKey: 'batch-process',
     relatedSlugs: ['/video-to-transcript', '/video-to-subtitles'],
@@ -703,7 +704,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'bulk-subtitle-export',
     faq: [
       { q: 'What is bulk subtitle export?', a: 'Upload multiple videos and get SRT subtitle files for all of them in one ZIP. Same as Batch Processing.' },
-      { q: 'Is this free?', a: 'Bulk/batch is on Pro and Agency plans. Free and Basic use single-file tools.' },
+      { q: 'Is this free?', a: 'Bulk/batch is on Pro plan. Free tier uses single-file tools.' },
       { q: 'What format are the files?', a: 'SRT. One SRT per video in the ZIP.' },
     ],
   },
@@ -714,7 +715,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Get transcripts for many videos in one batch. Upload multiple videos, receive one ZIP. Pro+ plans. Same tool as Batch Process.',
     h1: 'Bulk Transcript Export — Text for Many Videos',
     intro:
-      'Get transcripts for many videos in one batch. Upload multiple videos, receive one ZIP. Pro and Agency plans.',
+      'Get transcripts for many videos in one batch. Upload multiple videos, receive one ZIP. Pro plan.',
     breadcrumbLabel: 'Bulk Transcript Export',
     toolKey: 'batch-process',
     relatedSlugs: ['/video-to-transcript', '/video-to-subtitles'],
@@ -722,7 +723,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'bulk-transcript-export',
     faq: [
       { q: 'What is bulk transcript export?', a: 'Upload multiple videos and get transcript/subtitle output for all in one ZIP. Same as Batch Processing.' },
-      { q: 'Is this free?', a: 'Bulk/batch is on Pro and Agency plans.' },
+      { q: 'Is this free?', a: 'Bulk/batch is on Pro plan.' },
       { q: 'What do I get in the ZIP?', a: 'One SRT (or equivalent) per video. You can use each file as transcript or captions.' },
     ],
   },
@@ -730,10 +731,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/bulk-video-transcription',
     title: 'Bulk Video Transcription — Transcribe Multiple Videos at Once | VideoText',
     description:
-      'Transcribe multiple videos in one upload. Bulk video transcription and batch subtitle generation: upload many files, download one ZIP. Pro & Agency plans. Same workflow as Batch Process.',
+      'Transcribe multiple videos in one upload. Bulk video transcription and batch subtitle generation: upload many files, download one ZIP. Pro plan. Same workflow as Batch Process.',
     h1: 'Bulk Video Transcription — Multiple Videos, One Batch',
     intro:
-      'Transcribe multiple videos at once or generate subtitles for a whole folder in a single run. Upload many MP4/MOV files, set the spoken language once, and download a ZIP with one SRT per video — ideal for bulk video transcription, batch subtitle generation, and creator pipelines. Available on Pro and Agency plans.',
+      'Transcribe multiple videos at once or generate subtitles for a whole folder in a single run. Upload many MP4/MOV files, set the spoken language once, and download a ZIP with one SRT per video — ideal for bulk video transcription, batch subtitle generation, and creator pipelines. Available on Pro plan.',
     breadcrumbLabel: 'Bulk Video Transcription',
     toolKey: 'batch-process',
     relatedSlugs: ['/batch-process', '/video-to-transcript', '/video-to-subtitles', '/bulk-subtitle-export'],
@@ -754,7 +755,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       },
       {
         q: 'Is bulk transcription free?',
-        a: 'Batch processing is available on Pro and Agency plans. Free and Basic plans use single-file transcription and subtitle tools. Upgrade when you need to transcribe multiple videos at once or run batch subtitle generation regularly.',
+        a: 'Batch processing is available on the Pro plan. Free tier uses single-file transcription and subtitle tools. Upgrade when you need to transcribe multiple videos at once or run batch subtitle generation regularly.',
       },
     ],
   },
@@ -793,7 +794,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: false,
     intentKey: 'transcribe-video',
     faq: [
-      { q: 'Is it free to transcribe a video online?', a: 'Yes. The free tier includes 3 imports per month (resets on the 1st) after signing up for free — just upload and go. Create a free account to track usage across browser sessions. Paid plans start at $19/month for 450 minutes, which covers most creators and small teams processing regular content.' },
+      { q: 'Is it free to transcribe a video online?', a: 'Yes. The free tier includes 3 uploads per day after signing up for free — just upload and go. Create a free account to track usage across browser sessions. Pro plan is $40/month for unlimited processing.' },
       { q: 'What video formats can I transcribe?', a: 'MP4, MOV, AVI, WebM, and MKV are all supported. Upload your file and our AI extracts the speech track and converts it to plain text. If your file is in another format, export it to MP4 first using any video editor — most cameras and screen recorders produce MP4 or MOV natively.' },
       { q: 'How accurate is online video transcription?', a: 'Accuracy is high for clear audio with minimal background noise. We use AI speech recognition trained on diverse speakers, accents, and subjects. For best results, set the spoken language manually rather than relying on auto-detect, and trim the video to remove long silent sections before uploading.' },
       { q: 'Can I get the video transcript in another language?', a: 'Yes. After transcribing, click Translate and choose from English, Hindi, Telugu, Spanish, Chinese, or Russian. The translated view appears alongside the original transcript. You can switch between all six languages instantly without re-uploading, which is useful for creating meeting notes in multiple languages.' },
@@ -814,7 +815,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'video-transcription',
     faq: [
       { q: 'What is video transcription?', a: 'Video transcription is the process of converting spoken words in a video into written text using AI speech recognition. You upload a video file, and the transcription engine extracts the audio track, detects speech, and produces a readable plain-text transcript aligned to the timing of the original recording.' },
-      { q: 'Is online video transcription free?', a: 'Yes. The free tier gives you 3 imports per month (resets on the 1st) after signing up for free. Create a free account to track usage across sessions. Paid plans start at $19/month for 450 minutes and include multi-language output, speaker diarization, and export in additional formats.' },
+      { q: 'Is online video transcription free?', a: 'Yes. The free tier gives you 3 uploads per day after signing up for free. Create a free account to track usage across sessions. Pro plan is $40/month and includes multi-language output, speaker diarization, and export in additional formats.' },
       { q: 'How long does video transcription take?', a: 'Most videos are fully transcribed in 30–90 seconds. You see the transcript building in real time as each segment completes — you do not wait for the entire job before reading results. A 60-minute video typically finishes in 5–8 minutes, depending on queue load.' },
       { q: 'Can I download the video transcript?', a: 'Yes. Click Download after transcribing to save the transcript as a plain text file, or click Copy to grab the full text to clipboard. Paid plans unlock additional export formats: JSON, CSV, Markdown, and Notion-style structured output with sections for summary, speakers, chapters, and keywords.' },
     ],
@@ -826,16 +827,16 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Free video transcription. Sign up for free to try. Upload video and get a text transcript in seconds. 3 imports/month free tier (resets on the 1st). AI-powered. MP4, MOV, AVI, WebM supported.',
     h1: 'Free Transcription Online',
     intro:
-      'Get a free transcript from any video — sign up for free. Upload an MP4, MOV, AVI, or WebM, and our AI transcribes the speech into text in seconds. The free tier gives you 3 imports per month (resets on the 1st) with no credit card required. Sign up when you need more minutes or multi-language output.',
+      'Get a free transcript from any video — sign up for free. Upload an MP4, MOV, AVI, or WebM, and our AI transcribes the speech into text in seconds. The free tier gives you 3 uploads per day with no credit card required. Upgrade to Pro for unlimited processing or multi-language output.',
     breadcrumbLabel: 'Free Transcription',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/transcribe-video', '/video-to-text', '/ai-transcription'],
     indexable: false,
     intentKey: 'free-transcription',
     faq: [
-      { q: 'Is transcription really free?', a: 'Yes. You get 3 imports per month (resets on the 1st) after signing up for free. No credit card needed to try.' },
+      { q: 'Is transcription really free?', a: 'Yes. You get 3 uploads per day after signing up for free. No credit card needed to try.' },
       { q: 'What formats are supported for free?', a: 'MP4, MOV, AVI, WebM, and MKV. All formats are available on the free tier.' },
-      { q: 'What is the free tier limit?', a: '3 imports per month (resets on the 1st), single language output. Sign up for a plan to unlock more minutes and multi-language support.' },
+      { q: 'What is the free tier limit?', a: '3 uploads per day, single language output. Upgrade to Pro for unlimited processing and multi-language support.' },
       { q: 'Do I need to install anything?', a: 'No. The tool runs in your browser. Upload your file and get a transcript — no installation required.' },
     ],
   },
@@ -876,7 +877,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How does AI transcription work?', a: 'We run your video through AI speech recognition models that detect spoken words and produce text with high accuracy, even for technical content and accents.' },
       { q: 'Is AI transcription more accurate than manual?', a: 'For clear audio, AI transcription is very accurate and far faster than manual. You can review and edit the result afterward.' },
       { q: 'What languages does the AI support?', a: 'The AI supports many spoken languages. Set the spoken language for best results, or use auto-detect.' },
-      { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st) after signing up for free.' },
+      { q: 'Is this free?', a: 'Yes. Free tier includes 3 uploads per day after signing up for free.' },
     ],
   },
   {
@@ -895,7 +896,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Can I transcribe audio files to text?', a: 'Yes. Upload your audio packaged as a video file — MP4, MOV, AVI, or WebM. Most recordings, podcasts, and interviews are shared in video containers that hold an audio track. If you have an audio-only file (MP3, WAV), export it to MP4 using any free converter before uploading.' },
       { q: 'What audio formats are supported for transcription?', a: 'We accept audio packaged in video containers: MP4, MOV, AVI, WebM, and MKV. These formats cover the vast majority of podcast recordings, interview files, Zoom exports, and screen recordings. The tool extracts the audio track and transcribes it — video resolution and bitrate do not affect speed or accuracy.' },
-      { q: 'Is audio-to-text transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st) after signing up for free. Just upload your file and get a transcript immediately. Paid plans start at $19/month for 450 minutes and add multi-language output, speaker labels, summary, and export formats including JSON, CSV, and Markdown.' },
+      { q: 'Is audio-to-text transcription free?', a: 'Yes. Free tier includes 3 uploads per day after signing up for free. Just upload your file and get a transcript immediately. Pro plan is $40/month and adds multi-language output, speaker labels, summary, and export formats including JSON, CSV, and Markdown.' },
       { q: 'Can I translate transcribed audio to another language?', a: 'Yes. After transcribing, click Translate and choose from English, Hindi, Telugu, Spanish, Chinese, or Russian. The translated transcript appears alongside the original. This is useful for meetings, interviews, or podcast content that needs to reach audiences in multiple languages without re-recording.' },
     ],
   },
@@ -917,7 +918,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Do I get speaker labels in a podcast transcript?', a: 'Yes. After transcribing, open the Speakers branch to see the transcript organized by speaker (Speaker 1, Speaker 2, etc.). For a two-host podcast, this cleanly separates each host\'s contributions. For interview formats, it labels the interviewer and guest without any manual tagging.' },
       { q: 'How do I use podcast transcripts for SEO?', a: 'Add the full transcript to your episode show notes page as body text (not a PDF). Search engines index text, not audio, so a full transcript makes every word you said searchable. This dramatically improves long-tail keyword discovery for each episode — listeners searching for topics you covered can find your episode via Google.' },
       { q: 'Can I generate podcast show notes automatically?', a: 'Yes. After transcribing, open the Summary branch. It extracts key topics, main points, and decisions automatically. Copy the summary output directly into your podcast platform as show notes. Most podcasters find this covers 80% of their show notes writing with one click.' },
-      { q: 'Is podcast transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st) after signing up for free. Most podcast episodes fit within this limit. Paid plans start at $19/month for 450 minutes, suitable for weekly podcasters transcribing every episode.' },
+      { q: 'Is podcast transcription free?', a: 'Yes. Free tier includes 3 uploads per day after signing up for free. Pro plan is $40/month, suitable for podcasters transcribing every episode at unlimited volume.' },
       { q: 'Can I compare Descript vs VideoText for podcast transcription?', a: 'Descript combines recording, editing, and transcription in one video editor. VideoText is a dedicated transcription tool — faster to use for transcription-only tasks, lower cost for teams who do not need video editing, and produces richer metadata outputs (chapters, keywords, keyword index). If you already record and edit elsewhere, VideoText adds transcription without a second subscription to a full editor.' },
       { q: 'Can I transcribe a podcast and get SRT subtitles?', a: 'Yes. After generating the transcript, use the Video to Subtitles tool with the same file to produce an SRT or VTT subtitle file. Useful for publishing podcast clips to YouTube or social media with captions.' },
     ],
@@ -979,7 +980,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How do I download a Zoom cloud recording as MP4?', a: 'Log into your Zoom account at zoom.us → Recordings → Cloud Recordings. Find the meeting and click the download icon next to the MP4 entry. If the recording is on your local machine, find it in Documents/Zoom on Mac or C:\\Users\\[name]\\Documents\\Zoom on Windows.' },
       { q: 'Does it work without Zoom\'s built-in transcription feature?', a: 'Yes. Zoom\'s built-in transcription requires a Business or Enterprise account and must be enabled before the meeting. VideoText works from any Zoom MP4 recording regardless of your Zoom plan — upload the file and get a transcript immediately.' },
       { q: 'Can I compare Zoom vs Google Meet vs Teams recordings?', a: 'All three recording formats (Zoom MP4, Google Meet MP4, Teams MP4) are supported equally. The transcript quality is the same across platforms — it depends on audio quality of the recording, not the source platform.' },
-      { q: 'Is Zoom recording transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st) after signing up for free. A typical 30–60 minute Zoom call fits within this limit. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Is Zoom recording transcription free?', a: 'Yes. Free tier includes 3 uploads per day after signing up for free. A typical 30–60 minute Zoom call fits within this limit. Pro plan is $40/month for unlimited processing.' },
     ],
   },
   {
@@ -1044,7 +1045,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Is interview transcription accurate enough for journalism?', a: 'Yes. VideoText uses Whisper large-v3, which achieves around 3–8% Word Error Rate on clear speech. For journalistic use, always review the transcript against the recording before publishing — AI transcription may mishear proper nouns, technical terms, or overlapping speech. The transcript speeds up the review process but does not replace a final check.' },
       { q: 'Can I transcribe recorded phone interviews?', a: 'Yes. Phone recordings (typically MP3 or M4A from call recording apps) transcribe well, though audio quality is lower than in-person recordings. Clear speech at standard phone quality (8kHz voice codec) transcribes with reasonable accuracy. Higher-quality VOIP recordings (Zoom, Teams) give better results.' },
       { q: 'What are the legal considerations for transcribing interviews?', a: 'Legality of recording and transcribing varies by jurisdiction. In the US, one-party consent states allow recording with one party\'s knowledge; two-party consent states require all participants to consent. Always check local laws and inform interview subjects if required. VideoText processes and deletes your files — it does not retain transcribed content.' },
-      { q: 'Is interview transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st) after signing up for free.' },
+      { q: 'Is interview transcription free?', a: 'Yes. Free tier includes 3 uploads per day after signing up for free.' },
       { q: 'Can I export the interview transcript in different formats?', a: 'Yes. Download as plain TXT, or export as SRT/VTT for timed captions. Paid plans add JSON and CSV export for structured data workflows.' },
     ],
   },
@@ -1066,7 +1067,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does it extract lecture topics automatically?', a: 'Yes. Open the Keywords branch after transcribing to see repeated terms and concepts indexed by where they appear in the transcript. The Chapters branch breaks the lecture into navigable sections based on topic shifts — useful for studying specific parts without listening to the whole recording.' },
       { q: 'How can students use lecture transcripts for studying?', a: 'Paste the transcript into your note-taking app (Notion, Obsidian, Google Docs) and highlight key concepts. Use the Keywords branch to find where specific terms are discussed. Use the Chapters branch to review particular sections. The full text is also searchable — Ctrl+F for any term the professor mentioned.' },
       { q: 'Can professors use transcripts for accessibility compliance?', a: 'Yes. Under ADA and Section 508 requirements, video content in educational settings should be accompanied by captions or transcripts for deaf and hard-of-hearing students. VideoText generates both — use the SRT for captioned video or TXT for a standalone transcript document.' },
-      { q: 'Is this free for students?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try. Most students can transcribe all their key lectures within the free tier.' },
+      { q: 'Is this free for students?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Most students can transcribe all their key lectures within the free tier.' },
       { q: 'What lecture recording formats are supported?', a: 'MP4, MOV, WebM, MKV, AVI (video) and MP3, WAV, M4A, AAC (audio). Zoom lecture recordings, Loom recordings, and screen-captured lecture videos all work.' },
     ],
   },
@@ -1087,7 +1088,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Can I convert MOV to text?', a: 'Yes. Upload your MOV file and we transcribe the speech to text. MOV is the default format for iPhone and Mac recordings.' },
       { q: 'Is there a file size limit for MOV files?', a: 'Large MOV files are supported; check the upload zone for the current limit. Trim the video to a segment if needed.' },
-      { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is this free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
       { q: 'Can I get subtitles from my MOV file?', a: 'Yes. Use the Video to Subtitles tool (also supports MOV) to generate SRT or VTT subtitle files from your MOV video.' },
     ],
   },
@@ -1107,7 +1108,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Can I transcribe a WebM file?', a: 'Yes. WebM is a supported format. Upload your file and get a text transcript in seconds.' },
       { q: 'Where do WebM files come from?', a: 'WebM is common in screen recordings from Chrome, video editors, and web-based recording tools.' },
-      { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is this free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
       { q: 'Can I convert WebM to SRT subtitles?', a: 'Yes. Use the Video to Subtitles tool, upload your WebM file, and choose SRT or VTT format for a timed caption file.' },
     ],
   },
@@ -1147,7 +1148,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'caption-generator',
     faq: [
       { q: 'What is a caption generator and how does it work?', a: 'A caption generator uses AI speech recognition to transcribe speech in a video and align each word to its timestamp, producing timed caption files in SRT or VTT format. You upload a video file, wait 30–90 seconds, and download captions ready to upload to YouTube, Vimeo, or any platform.' },
-      { q: 'Is the caption generator free?', a: 'Yes. Sign up for free to try. You get 3 imports per month (resets on the 1st). Paid plans start at $19/month for 450 minutes, which covers most creators and social media managers processing weekly content.' },
+      { q: 'Is the caption generator free?', a: 'Yes. Sign up for free to try. You get 3 uploads per day. Pro plan is $40/month for unlimited processing.' },
       { q: 'What caption formats does the generator output?', a: 'SRT and VTT, both generated from the same upload at no extra cost. SRT is the best choice for YouTube, Vimeo, LinkedIn, Facebook Video, and most video platforms. VTT is the standard for HTML5 web video players. You choose the format at the point of download — no re-processing needed.' },
       { q: 'Can I burn the generated captions into the video?', a: 'Yes. After generating captions and downloading the SRT or VTT file, upload both the video and the caption file to our Burn Subtitles tool. It hardcodes the captions permanently into the video frames — no software installation required. The output is an MP4 ready for Instagram, TikTok, or any platform.' },
     ],
@@ -1186,7 +1187,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: false,
     intentKey: 'free-subtitle-generator',
     faq: [
-      { q: 'Is the subtitle generator really free?', a: 'Yes. You get 3 imports per month (resets on the 1st) after signing up for free. No credit card needed to try.' },
+      { q: 'Is the subtitle generator really free?', a: 'Yes. You get 3 uploads per day after signing up for free. No credit card needed to try.' },
       { q: 'Do I need to sign up?', a: 'Yes. Sign up for free to try. Upgrade when you need more imports or additional features.' },
       { q: 'What subtitle formats can I download for free?', a: 'SRT and VTT on the free tier. Both are supported by YouTube, Vimeo, and most video platforms.' },
       { q: 'How many languages does the free tier support?', a: 'Single language per job on the free tier. Paid plans unlock multi-language subtitle output in one batch.' },
@@ -1288,7 +1289,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     defaultInputMode: 'youtube',
     faq: [
       { q: 'How do I get a transcript from a YouTube video?', a: 'Paste the video URL into our tool (youtube.com or youtu.be links work). Click Transcribe. Get full transcript + subtitles + summary in 2-3 minutes. No login required.' },
-      { q: 'Is the YouTube transcript generator free?', a: 'Yes. Free tier gives you 2 hours/month (enough for 4 typical YouTube videos). No credit card required. Pro plan is $9.99/month for unlimited transcription.' },
+      { q: 'Is the YouTube transcript generator free?', a: 'Yes. Free tier gives you 3 uploads per day, no credit card required. Pro plan is $40/month for unlimited transcription.' },
       { q: 'Do I need to download the YouTube video first?', a: 'No. That\'s the main advantage of VideoText. Paste the URL directly — we stream the audio from YouTube servers. No download step, no software install. Just copy, paste, and click Generate.' },
       { q: 'Can I download YouTube video subtitles with this tool?', a: 'Yes. Export transcript as SRT and VTT subtitle files. Upload directly to YouTube, Vimeo, or any video platform. Perfect for re-uploading and improving video SEO.' },
       { q: 'Why is VideoText faster than YouTube auto-captions?', a: 'YouTube captions are generated at 70-80% accuracy in real-time with basic formatting. VideoText generates: 98.5% accurate transcript, speaker labels, AI summary, chapter markers, and subtitle files. All in one pass.' },
@@ -1307,7 +1308,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         '90+ languages supported with equal speed',
         'Transcript + subtitles + summary + chapters in one pass',
         'Used by 50,000+ YouTubers, researchers, and teams',
-        'Free tier: 2 hours/month, no credit card',
+        'Free tier: 3 uploads/day, no credit card',
       ],
       workflowSteps: [
         {
@@ -1384,7 +1385,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         { feature: 'Speaker labels', videotext: 'Auto-detected (voice fingerprinting)', alternatives: 'YouTube: generic [SPEAKER 1] only | Rev: manual | Descript: requires setup' },
         { feature: 'Summary generation', videotext: 'AI-generated in 1 pass', alternatives: 'YouTube: none | Rev: none | Descript: you edit manually' },
         { feature: 'Chapter auto-generation', videotext: 'AI-generated, editable', alternatives: 'YouTube: manual only | Rev: none | Descript: requires video editing' },
-        { feature: 'Cost for YouTube creator (100 videos/year)', videotext: 'Free (1 video = 30 min) or $9.99/mo unlimited', alternatives: 'YouTube captions: free but low quality | Rev: $125+ per video | Professional: $1000+/month' },
+        { feature: 'Cost for YouTube creator (100 videos/year)', videotext: 'Free (3 uploads/day) or Pro $40/mo unlimited', alternatives: 'YouTube captions: free but low quality | Rev: $125+ per video | Professional: $1000+/month' },
         { feature: 'Use case', videotext: 'Fast repurposing, SEO, accessibility', alternatives: 'YouTube captions: basic backup only | Rev: high-stakes professional | Descript: video editing' },
       ],
       useCases: [
@@ -1454,7 +1455,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'audio-to-text-converter',
     faq: [
       { q: 'What audio formats are supported?', a: 'We accept audio in video containers: MP4, MOV, AVI, WebM, MKV. Export MP3/WAV to MP4 first if needed.' },
-      { q: 'Is the audio to text converter free?', a: 'Yes. Free tier includes 3 imports per month. Sign up for free to try.' },
+      { q: 'Is the audio to text converter free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -1470,7 +1471,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'transcribe-video-online',
     faq: [
       { q: 'How do I transcribe a video online?', a: 'Upload your video file or paste a YouTube URL. Click Transcribe and get a full text transcript in seconds.' },
-      { q: 'Is online video transcription free?', a: 'Yes. Free tier includes 3 imports per month. Sign up for free.' },
+      { q: 'Is online video transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free.' },
     ],
   },
   {
@@ -1486,7 +1487,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'podcast-transcription',
     faq: [
       { q: 'How do I transcribe a podcast?', a: 'Export your episode as MP4 or MOV, upload here, and get a full transcript with speaker labels in seconds.' },
-      { q: 'Is podcast transcription free?', a: 'Yes. Free tier includes 3 imports per month. Paid plans for weekly podcasters.' },
+      { q: 'Is podcast transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Paid plans for weekly podcasters.' },
     ],
   },
   {
@@ -1534,7 +1535,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'video-caption-generator',
     faq: [
       { q: 'How do I add captions to my video?', a: 'Upload your video, choose SRT or VTT, and click Generate. Download the caption file or burn it into the video with our Burn tool.' },
-      { q: 'Is the caption generator free?', a: 'Yes. Free tier includes 3 imports per month.' },
+      { q: 'Is the caption generator free?', a: 'Yes. Free tier includes 3 uploads per day.' },
     ],
   },
   {
@@ -1550,7 +1551,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'add-subtitles-to-video',
     faq: [
       { q: 'How do I add subtitles to a video?', a: 'Upload your video and generate SRT or VTT. Use Burn Subtitles to hardcode captions into the video, or upload the SRT to YouTube.' },
-      { q: 'Can I add subtitles to a video for free?', a: 'Yes. Free tier includes 3 imports per month. Sign up for free.' },
+      { q: 'Can I add subtitles to a video for free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free.' },
     ],
   },
   {
@@ -1566,7 +1567,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'auto-subtitle-generator',
     faq: [
       { q: 'How does automatic subtitle generation work?', a: 'Our AI transcribes speech and aligns each word to timestamps. Upload your video and get SRT or VTT in seconds.' },
-      { q: 'Is the auto subtitle generator free?', a: 'Yes. Free tier includes 3 imports per month.' },
+      { q: 'Is the auto subtitle generator free?', a: 'Yes. Free tier includes 3 uploads per day.' },
     ],
   },
   {
@@ -1615,7 +1616,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'caption-video-online',
     faq: [
       { q: 'How do I caption a video online?', a: 'Upload your video and generate SRT or VTT. Download the caption file or burn it into the video.' },
-      { q: 'Is online video captioning free?', a: 'Yes. Free tier includes 3 imports per month.' },
+      { q: 'Is online video captioning free?', a: 'Yes. Free tier includes 3 uploads per day.' },
     ],
   },
   {
@@ -1682,7 +1683,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How much faster is VideoText than Descript for transcription?', a: 'In our benchmark test, VideoText processed a 60-minute recording in ~3 minutes. Descript took ~18 minutes. VideoText is approximately 6× faster for transcription-only workflows.' },
       { q: 'Does VideoText replace Descript for video editing?', a: 'No. Descript lets you edit video by editing transcript text — cut filler words, rearrange clips, record overdubs. VideoText does not edit video. If you need transcript-based video editing, use Descript. If you need fast transcription, use VideoText.' },
       { q: 'Can VideoText transcribe YouTube videos like Descript cannot?', a: 'Yes. Paste any public YouTube URL into VideoText — no download needed. Descript does not support direct YouTube URL input.' },
-      { q: 'Is VideoText free to try unlike Descript?', a: 'Yes. VideoText has a permanent free tier with 3 full imports per month, no credit card. Descript has no free video tier — it starts at $24/month.' },
+      { q: 'Is VideoText free to try unlike Descript?', a: 'Yes. VideoText has a permanent free tier with 3 uploads per day, no credit card. Descript has no free video tier — it starts at $24/month.' },
       { q: 'Does VideoText generate subtitles and SRT files like Descript?', a: 'Yes. VideoText generates broadcast-ready SRT and VTT files from any uploaded video or YouTube URL in one step. Included in the free tier.' },
       { q: 'Does Descript delete your files after processing?', a: 'No. Descript retains your video in their project library. VideoText removes your file immediately after the job finishes — nothing is stored on our servers.' },
     ],
@@ -1754,7 +1755,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'rev-alternative',
     deepContent: {
       proofPoints: [
-        'Rev charges $0.25/minute. A 60-minute recording costs $15. VideoText Pro is $49/month flat for 1,200 minutes — $0.04/minute.',
+        'Rev charges $0.25/minute. A 60-minute recording costs $15. VideoText Pro is $40/month flat, unlimited — no per-minute fees.',
         'Rev human review turnaround: 12–24 hours standard. VideoText AI: under 5 minutes for a 60-minute file.',
         'Rev AI (automated) accuracy: ~90–95%. VideoText uses Whisper large-v3: 98.5%+ on clear audio — comparable to Rev human review for clean recordings.',
         'Rev does not transcribe YouTube URLs. VideoText accepts any public YouTube URL — no download needed.',
@@ -1763,7 +1764,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       ],
       comparisonRows: [
         { feature: 'Turnaround time (60-min file)', videotext: 'Under 5 minutes', alternatives: 'Rev AI: ~5 min | Rev Human: 12–24 hours' },
-        { feature: 'Cost per minute', videotext: '$0.04/min (Pro) — $0 free tier', alternatives: 'Rev: $0.25/min AI, $1.99/min human' },
+        { feature: 'Cost model', videotext: '$40/mo flat, unlimited — $0 free tier', alternatives: 'Rev: $0.25/min AI, $1.99/min human' },
         { feature: 'Accuracy (clear audio)', videotext: '98.5%+ (Whisper large-v3)', alternatives: 'Rev AI: ~90–95% | Rev Human: 99%+' },
         { feature: 'YouTube URL input', videotext: 'Yes — paste and transcribe', alternatives: 'Rev: No' },
         { feature: 'SRT / VTT subtitle export', videotext: 'Yes — free tier', alternatives: 'Rev: AI tier does not include SRT' },
@@ -1786,7 +1787,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     },
     faq: [
       { q: 'How accurate is VideoText compared to Rev?', a: 'VideoText uses Whisper large-v3 at 98.5%+ word accuracy on clear audio. Rev human review achieves 99%+. For most podcast, video, and business content on clear audio, the difference is negligible. For legal or medical content requiring absolute accuracy, Rev human review is safer.' },
-      { q: 'How much cheaper is VideoText than Rev?', a: 'Rev charges $0.25/minute. A 60-minute recording costs $15. VideoText has a free tier (3 imports/month) and a Pro plan at $49/month for 1,200 minutes — roughly $0.04/minute. For high-volume work, VideoText is 80–90% cheaper.' },
+      { q: 'How much cheaper is VideoText than Rev?', a: 'Rev charges $0.25/minute. A 60-minute recording costs $15. VideoText has a free tier (3 uploads/day) and Pro at $40/month, unlimited. For high-volume work, VideoText is far cheaper.' },
       { q: 'How much faster is VideoText than Rev?', a: 'VideoText returns results in under 5 minutes for a 60-minute file. Rev AI is similar in speed, but Rev human review takes 12–24 hours (standard) or 5 hours (rush, at higher cost).' },
       { q: 'Can VideoText transcribe YouTube videos like Rev cannot?', a: 'Yes. Paste any public YouTube URL into VideoText — no download needed. Rev does not support direct YouTube URL input.' },
       { q: 'Does VideoText generate SRT files unlike Rev AI?', a: 'Yes. VideoText generates SRT and VTT subtitle files from any upload in one step. Rev\'s automated AI tier does not include subtitle export.' },
@@ -1827,7 +1828,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         { title: 'Subtitle workflow comparison', body: 'VideoText: Upload video → get SRT → translate to 70+ languages → burn into video. Four tools, one platform, free to start. Trint: Upload → transcript → export SRT → use separate tool for translation → use separate tool for burning. More steps, more cost.' },
       ],
       useCases: [
-        { title: 'Use VideoText if: you are a solo creator or small team', body: 'The free tier (3 imports/month) and $19/month Basic plan cover the full workflow for most creators — transcript, SRT, summary, chapters, translation, and subtitle burning. No reason to pay $80/month for features you do not need.' },
+        { title: 'Use VideoText if: you are a solo creator or small team', body: 'The free tier (3 uploads/day) and Pro plan ($40/month) cover the full workflow for most creators — transcript, SRT, summary, chapters, translation, and subtitle burning. No reason to pay $80/month for Trint.' },
         { title: 'Use VideoText if: you transcribe YouTube or online video', body: 'VideoText is the only tool in this comparison that accepts YouTube URLs directly. Paste the URL and get a full transcript in under 5 minutes. No downloading, no re-uploading, no extra steps.' },
         { title: 'When NOT to use VideoText', body: 'If you run a newsroom or media production team where multiple editors need to collaborate on the same transcript, search across thousands of archived transcripts, or integrate with publishing CMSs — Trint\'s collaboration features are worth the premium. VideoText is a single-user workflow tool.' },
       ],
@@ -1835,7 +1836,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       ctaPath: '/video-to-transcript?source=trint-alternative',
     },
     faq: [
-      { q: 'How much cheaper is VideoText than Trint?', a: 'Trint starts at $80/month. VideoText has a free tier (3 imports/month) and paid plans from $19/month. For solo creators and small teams, VideoText is 75–100% cheaper for the same core transcription workflow.' },
+      { q: 'How much cheaper is VideoText than Trint?', a: 'Trint starts at $80/month. VideoText has a free tier (3 uploads/day) and Pro at $40/month. For solo creators and small teams, VideoText is 50% cheaper for the same core transcription workflow.' },
       { q: 'Can VideoText transcribe YouTube videos like Trint cannot?', a: 'Yes. Paste any public YouTube URL — VideoText transcribes it directly in under 5 minutes. Trint does not support YouTube URL input.' },
       { q: 'Does VideoText have collaborative transcript editing like Trint?', a: 'No. VideoText is a single-user transcription and subtitle workflow tool. Trint supports team-based collaborative editing. If multi-user transcript collaboration is a core requirement, Trint is the right tool.' },
       { q: 'How does VideoText accuracy compare to Trint?', a: 'Both use Whisper-based AI for transcription. VideoText uses Whisper large-v3 at 98.5%+ word accuracy. Output quality is comparable for most content on clear audio.' },
@@ -1845,7 +1846,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   {
     path: '/turboscribe-alternative',
     title: 'TurboScribe Alternative: We Tested Both. VideoText is 3× Faster. | VideoText',
-    description: 'Same 60-min file: TurboScribe took 11 min, output needed heavy cleanup. VideoText: 4 min, structured output with chapters and SRT. Free vs $10/mo. YouTube URL. Files deleted.',
+    description: 'Same 60-min file: TurboScribe took 11 min, output needed heavy cleanup. VideoText: 4 min, structured output with chapters and SRT. Free tier available. YouTube URL. Files deleted.',
     h1: 'TurboScribe Alternative: We Tested the Same File. Here is What Happened.',
     intro: 'TurboScribe is fast. But we ran the same 60-minute podcast episode through both tools — same file, same audio quality. VideoText finished in 3 minutes 51 seconds. TurboScribe took 11 minutes 18 seconds. The output quality gap was bigger than the time gap. Here is the full breakdown.',
     breadcrumbLabel: 'TurboScribe Alternative',
@@ -1860,7 +1861,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         'Cleanup needed: VideoText output required 3 minor corrections. TurboScribe output required 47 corrections to be publication-ready.',
         'TurboScribe does not generate SRT or VTT subtitle files. VideoText exports broadcast-ready SRT in one step — free tier.',
         'TurboScribe cannot transcribe YouTube URLs. VideoText accepts any public YouTube URL — no download needed.',
-        'TurboScribe charges $10/month. VideoText starts at $0 — 3 full imports per month, no credit card.',
+        'TurboScribe charges $10/month. VideoText starts at $0 — 3 uploads per day, no credit card.',
         'TurboScribe stores your files. VideoText deletes them the moment processing ends.',
       ],
       comparisonRows: [
@@ -1892,7 +1893,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How much faster is VideoText than TurboScribe?', a: 'In our benchmark test on a 60-minute podcast, VideoText finished in 3 minutes 51 seconds. TurboScribe took 11 minutes 18 seconds. VideoText is approximately 3× faster for the same file.' },
       { q: 'Does TurboScribe generate SRT subtitle files?', a: 'Not in the standard plan. VideoText generates broadcast-ready SRT and VTT subtitle files from any upload — included in the free tier, no extra charge.' },
       { q: 'Can TurboScribe transcribe YouTube videos directly?', a: 'No. TurboScribe requires you to download the video file and then upload it. VideoText accepts any public YouTube URL directly — paste it and get a transcript in under 5 minutes, no download needed.' },
-      { q: 'Is VideoText free unlike TurboScribe?', a: 'VideoText has a permanent free tier with 3 full imports per month, no credit card required. TurboScribe has no free tier — it starts at $10/month.' },
+      { q: 'Is VideoText free unlike TurboScribe?', a: 'VideoText has a permanent free tier with 3 uploads per day, no credit card required. TurboScribe has no free tier — it starts at $10/month.' },
       { q: 'Does TurboScribe produce structured output like VideoText?', a: 'TurboScribe outputs plain text. VideoText outputs a structured package: speaker labels, AI summary with key points, chapter timestamps every 4–6 minutes, and SRT subtitle files — all from the same upload.' },
       { q: 'Does TurboScribe store your files?', a: 'Yes. TurboScribe retains your content in their cloud. VideoText deletes your file immediately after processing completes — nothing is stored on our servers.' },
     ],
@@ -1910,21 +1911,21 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'happyscribe-alternative',
     deepContent: {
       proofPoints: [
-        'HappyScribe has no free tier — only a 10-minute one-time trial. VideoText has 3 full imports per month free, no credit card.',
+        'HappyScribe has no free tier — only a 10-minute one-time trial. VideoText has 3 uploads per day free, no credit card.',
         'HappyScribe cannot transcribe YouTube URLs. VideoText accepts any public YouTube URL directly — no download needed.',
         'HappyScribe does not burn subtitles into video. VideoText includes a free burn-subtitles tool in the same platform.',
-        'HappyScribe starts at $17/month for 120 minutes. VideoText Basic is $19/month for 450 minutes — nearly 4× more minutes.',
+        'HappyScribe starts at $17/month for 120 minutes. VideoText Pro is $40/month for unlimited processing — no per-minute caps.',
         'HappyScribe stores your media files until you manually delete them. VideoText deletes your file immediately after processing.',
       ],
       comparisonRows: [
         { feature: 'Free tier', videotext: 'Yes — 3 full imports/month, no credit card', alternatives: 'HappyScribe: No free tier (10-min one-time trial only)' },
-        { feature: 'Starting price', videotext: '$0 to start, $19/mo for 450 min', alternatives: 'HappyScribe: $17/mo for 120 min' },
+        { feature: 'Starting price', videotext: '$0 to start, $40/mo Pro unlimited', alternatives: 'HappyScribe: $17/mo for 120 min' },
         { feature: 'YouTube URL input', videotext: 'Yes — paste URL, no download needed', alternatives: 'HappyScribe: No — must download and re-upload' },
         { feature: 'SRT / VTT subtitle export', videotext: 'Yes — one step', alternatives: 'HappyScribe: Yes' },
         { feature: 'Subtitle translation (70+ languages)', videotext: 'Yes', alternatives: 'HappyScribe: Yes (fewer languages)' },
         { feature: 'Burn subtitles into video', videotext: 'Yes — free built-in tool', alternatives: 'HappyScribe: No — requires separate tool' },
         { feature: 'AI summary + chapters', videotext: 'Yes', alternatives: 'HappyScribe: No' },
-        { feature: 'Minutes per dollar', videotext: '~24 min/$1 (Basic)', alternatives: 'HappyScribe: ~7 min/$1' },
+        { feature: 'Value', videotext: 'Unlimited at $40/mo flat', alternatives: 'HappyScribe: ~7 min/$1 (pay-as-you-go)' },
         { feature: 'File deletion after processing', videotext: 'Immediate — nothing stored', alternatives: 'HappyScribe: Files stored until manual deletion' },
       ],
       outputExamples: [
@@ -1934,24 +1935,24 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       ],
       useCases: [
         { title: 'Use VideoText if: you need a complete subtitle workflow', body: 'VideoText covers transcription, SRT export, translation, and subtitle burning in one platform — for free. HappyScribe requires a separate tool for burning and has no YouTube URL support.' },
-        { title: 'Use VideoText if: you are evaluating tools before paying', body: 'VideoText\'s free tier gives you 3 full imports per month with every feature enabled — no credit card. HappyScribe\'s only free option is a 10-minute one-time trial with no ongoing free tier.' },
+        { title: 'Use VideoText if: you are evaluating tools before paying', body: 'VideoText\'s free tier gives you 3 uploads per day with every feature enabled — no credit card. HappyScribe\'s only free option is a 10-minute one-time trial with no ongoing free tier.' },
         { title: 'When NOT to use VideoText', body: 'HappyScribe has a polished transcript editor with word-level timestamps and a clean collaborative interface. If your workflow requires in-browser transcript editing with precise word-level timing corrections, HappyScribe\'s editing UI is more refined than VideoText\'s.' },
       ],
       ctaText: 'Get 3 free imports — no credit card',
       ctaPath: '/video-to-transcript',
     },
     faq: [
-      { q: 'Is VideoText free unlike HappyScribe?', a: 'Yes. VideoText has a permanent free tier — 3 imports per month, no credit card. HappyScribe has no free tier, only a 10-minute one-time trial.' },
+      { q: 'Is VideoText free unlike HappyScribe?', a: 'Yes. VideoText has a permanent free tier — 3 uploads per day, no credit card. HappyScribe has no free tier, only a 10-minute one-time trial.' },
       { q: 'Can VideoText transcribe YouTube videos like HappyScribe cannot?', a: 'Yes, and it is easier. Paste any YouTube URL — no download needed. HappyScribe requires you to download and upload the file manually.' },
       { q: 'Does VideoText burn subtitles into video unlike HappyScribe?', a: 'Yes. VideoText includes a free burn-subtitles tool. HappyScribe only exports SRT — you need a separate tool to hard-code captions.' },
       { q: 'Does HappyScribe delete my files after processing?', a: 'No. HappyScribe stores your media until you manually delete it. VideoText removes your file immediately after the job finishes.' },
-      { q: 'How does VideoText pricing compare to HappyScribe?', a: 'HappyScribe starts at $17/month for 120 minutes (~$0.14/min). VideoText Basic is $19/month for 450 minutes (~$0.04/min) — and includes a free tier with no payment required.' },
+      { q: 'How does VideoText pricing compare to HappyScribe?', a: 'HappyScribe starts at $17/month for 120 minutes (~$0.14/min). VideoText Pro is $40/month flat, unlimited processing — and starts free with no credit card required.' },
     ],
   },
   {
     path: '/sonix-alternative',
     title: 'Best Free Sonix Alternative – No Per-Minute Fees | VideoText',
-    description: 'Sonix charges $22/month + $0.10/minute overage. VideoText starts free and costs $10/month flat — same Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing.',
+    description: 'Sonix charges $22/month + $0.10/minute overage. VideoText starts free — same Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing. Pro at $40/month.',
     h1: 'Sonix Alternative',
     intro: 'Looking for a Sonix alternative? VideoText transcribes video and YouTube URLs with Whisper AI, exports SRT/VTT, translates subtitles to 70+ languages, and burns captions — all at a flat price with no per-minute fees. Free tier. Files deleted after processing.',
     breadcrumbLabel: 'Sonix Alternative',
@@ -1960,11 +1961,11 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'sonix-alternative',
     faq: [
-      { q: 'Is VideoText cheaper than Sonix?', a: 'Yes. Sonix is $22/month base + $0.10/min overage. VideoText Creator Pro is $10/month flat — no surprise charges for longer videos.' },
+      { q: 'Is VideoText cheaper than Sonix?', a: 'Yes. Sonix is $22/month base + $0.10/min overage. VideoText Pro is $40/month flat — no surprise charges for longer videos, no per-minute fees.' },
       { q: 'Does VideoText support YouTube URL input like Sonix does not?', a: 'Correct. VideoText lets you paste any YouTube URL and transcribes it directly. Sonix requires downloading and uploading the file.' },
       { q: 'How does VideoText accuracy compare to Sonix?', a: 'Both use Whisper-based AI. VideoText uses Whisper large-v3 at ~98.5% word accuracy. Output quality is comparable for most content.' },
       { q: 'Does Sonix store files permanently?', a: 'Yes. Sonix retains your media and transcripts in their cloud. VideoText deletes your file the moment processing finishes.' },
-      { q: 'Does VideoText have a free tier unlike Sonix?', a: 'Yes. VideoText has 3 free imports per month with no credit card. Sonix only offers a 30-minute trial then requires payment.' },
+      { q: 'Does VideoText have a free tier unlike Sonix?', a: 'Yes. VideoText has 3 uploads per day with no credit card. Sonix only offers a 30-minute trial then requires payment.' },
     ],
   },
   {
@@ -1980,7 +1981,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'easyscribe-alternative',
     faq: [
       { q: 'What can VideoText do that EasyScribe cannot?', a: 'VideoText generates SRT/VTT subtitle files, translates to 70+ languages, burns subtitles into video, supports YouTube URLs, and processes batches. EasyScribe only produces plain-text transcripts.' },
-      { q: 'Is VideoText free to try unlike EasyScribe?', a: 'Yes. VideoText has a permanent free tier with 3 imports per month. No credit card required to get started.' },
+      { q: 'Is VideoText free to try unlike EasyScribe?', a: 'Yes. VideoText has a permanent free tier with 3 uploads per day. No credit card required to get started.' },
       { q: 'Can VideoText transcribe YouTube videos?', a: 'Yes. Paste any YouTube URL and VideoText streams and transcribes it. No need to download the video first.' },
       { q: 'Is VideoText more accurate than EasyScribe?', a: 'VideoText uses OpenAI Whisper large-v3 at ~98.5% word accuracy on clean audio — one of the most accurate models available.' },
       { q: 'Does VideoText delete my files after transcription?', a: 'Yes. Your file is deleted immediately after processing completes. Nothing is stored on our servers.' },
@@ -2009,7 +2010,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       comparisonRows: [
         { feature: 'Best for: speed', videotext: 'VideoText — ~4 min/60-min file', alternatives: 'Runner-up: Rev AI (~5 min)' },
         { feature: 'Best for: structured output', videotext: 'VideoText — transcript + summary + chapters + SRT', alternatives: 'No other tool bundles all four' },
-        { feature: 'Best for: price', videotext: 'VideoText — $0 free tier, $19/mo Basic', alternatives: 'TurboScribe ($10/mo) for basic text only' },
+        { feature: 'Best for: price', videotext: 'VideoText — $0 free tier, $40/mo Pro', alternatives: 'TurboScribe ($10/mo) for basic text only' },
         { feature: 'Best for: YouTube transcription', videotext: 'VideoText — paste URL, no download', alternatives: 'No other tested tool accepts YouTube URLs' },
         { feature: 'Best for: live meetings', videotext: 'Otter.ai — native Zoom/Meet/Teams bot', alternatives: 'VideoText does not support live meetings' },
         { feature: 'Best for: video editing', videotext: 'Descript — transcript-based video editor', alternatives: 'VideoText does not edit video' },
@@ -2029,7 +2030,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Is VideoText better than Otter.ai?', a: 'For recorded video, yes. VideoText accepts video files and YouTube URLs; Otter.ai does not. For live meeting transcription, Otter.ai is better — it joins Zoom/Meet/Teams in real time. VideoText does not support live meetings.' },
       { q: 'Is VideoText better than Descript?', a: 'For pure transcription, yes — VideoText is 6× faster and starts at $0. For transcript-based video editing (cutting video by editing text), Descript is better. VideoText does not edit video.' },
       { q: 'Is VideoText better than TurboScribe?', a: 'Yes for most workflows. VideoText is 3× faster, produces structured output (summary + chapters + SRT), accepts YouTube URLs, and starts free. TurboScribe produces raw text only and charges $10/month.' },
-      { q: 'What is the best free transcription tool?', a: 'VideoText has the most capable free tier for video: 3 full imports per month, all features enabled (SRT export, summary, chapters, translation), no credit card, no watermark. TurboScribe, HappyScribe, Sonix, and Trint have no free video tier.' },
+      { q: 'What is the best free transcription tool?', a: 'VideoText has the most capable free tier for video: 3 uploads per day, all features enabled (SRT export, summary, chapters, translation), no credit card, no watermark. TurboScribe, HappyScribe, Sonix, and Trint have no free video tier.' },
     ],
   },
   {
@@ -2047,7 +2048,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How do I convert video to transcription?', a: 'Upload a video (MP4, MOV, WebM, MKV, AVI) or use a supported URL input, then click Transcribe. VideoText returns transcript text plus optional summaries, chapters, and subtitle exports.' },
       { q: 'Is video to transcription different from video to text?', a: 'Practically, they are the same intent. This page focuses on full workflow output: transcript + structure (summary, chapters, speakers), not just plain text extraction.' },
       { q: 'Can I export subtitle files from a transcription run?', a: 'Yes. After transcription, you can generate or export SRT/VTT and use them on YouTube, web players, or social workflows.' },
-      { q: 'Is there a free tier?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Paid plans unlock higher volume and advanced workflows.' },
+      { q: 'Is there a free tier?', a: 'Yes. Free tier includes 3 uploads per day. Paid plans unlock higher volume and advanced workflows.' },
     ],
   },
   {
@@ -2096,7 +2097,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I transcribe YouTube directly from a URL?', a: 'Yes. Paste any supported YouTube link format and VideoText streams audio for transcription. You do not need to download the file first.' },
       { q: 'What output do I get from YouTube URL transcription?', a: 'You get full transcript text plus optional summary, chapter points, and subtitle export formats like SRT/VTT.' },
       { q: 'Does this work for Shorts?', a: 'Yes. Shorts URLs are supported with the same transcription flow as standard YouTube videos.' },
-      { q: 'Is YouTube URL transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to test with real videos.' },
+      { q: 'Is YouTube URL transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to test with real videos.' },
     ],
   },
   {
@@ -2219,7 +2220,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'best-video-transcription-tool',
     faq: [
       { q: 'What makes VideoText a good video transcription tool?', a: 'Fast AI transcription, SRT/VTT export, speaker labels, chapters, translation. We don\'t store your data.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. No credit card required.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. No credit card required.' },
     ],
   },
   {
@@ -2236,7 +2237,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     defaultInputMode: 'youtube',
     faq: [
       { q: 'How do I transcribe a YouTube video with VideoText?', a: 'Paste the YouTube URL and click Transcribe. No download. Transcript ready in seconds.' },
-      { q: 'Is YouTube transcription free?', a: 'Yes. Free tier includes 3 imports per month.' },
+      { q: 'Is YouTube transcription free?', a: 'Yes. Free tier includes 3 uploads per day.' },
     ],
   },
   {
@@ -2252,7 +2253,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'best-podcast-transcription-tool',
     faq: [
       { q: 'How do I transcribe a podcast with VideoText?', a: 'Export your episode as MP4 or MOV, upload here, and get a full transcript with speaker labels in seconds.' },
-      { q: 'Is podcast transcription free?', a: 'Yes. Free tier includes 3 imports per month.' },
+      { q: 'Is podcast transcription free?', a: 'Yes. Free tier includes 3 uploads per day.' },
     ],
   },
   {
@@ -2307,14 +2308,14 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     title: 'Free Video Transcription Tool – No Credit Card | VideoText',
     description: 'Free video transcription tool. 3 imports/month. SRT, TXT export. AI-powered. We don\'t store your data. Sign up for free.',
     h1: 'Free Video Transcription Tool',
-    intro: 'VideoText offers a free video transcription tool. 3 imports per month, no credit card. Transcribe video, get SRT or TXT. We process and delete your files. Sign up for free.',
+    intro: 'VideoText offers a free video transcription tool. 3 uploads per day, no credit card. Transcribe video, get SRT or TXT. We process and delete your files. Sign up for free.',
     breadcrumbLabel: 'Free Video Transcription Tool',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/free-transcription', '/transcribe-video', '/video-transcription'],
     indexable: true,
     intentKey: 'free-video-transcription-tool',
     faq: [
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). No credit card required.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. No credit card required.' },
       { q: 'What do I get with the free tier?', a: 'Transcript, SRT/VTT export, speaker labels, summary, chapters. Watermark on subtitle exports.' },
     ],
   },
@@ -2336,7 +2337,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: "Why are TikTok's built-in captions not enough?", a: "TikTok auto-captions are display-only — you can't export them as a file, they don't support all languages, and they have no timestamps you can repurpose. VideoText gives you a full transcript file (TXT, SRT, VTT) you can reuse as YouTube captions, blog content, or subtitles for your reposted video." },
       { q: 'How do I get the TikTok video file to upload?', a: 'On mobile, use TikTok\'s built-in save feature to download the video to your camera roll, then upload it here. On desktop, several browser extensions allow downloading TikTok videos. Once you have the MP4, upload it directly.' },
       { q: 'Can I use the TikTok transcript for SEO?', a: 'Yes. TikTok videos are not indexed by Google, but if you republish the content as a blog post or YouTube video and include the transcript, you make that content searchable. Repurposing the transcript is one of the fastest ways to generate text content from your existing video library.' },
-      { q: 'Is TikTok transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Is TikTok transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $40/month with no usage limits.' },
     ],
   },
   {
@@ -2355,7 +2356,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: "Why not use Instagram's built-in captions?", a: "Instagram auto-captions are styled overlays, not exportable subtitle files. You cannot extract them as SRT, they don't include timestamps, and they only appear in the Instagram app. VideoText gives you a real transcript file you can repurpose anywhere." },
       { q: 'Can I get subtitles from my Instagram Reel for YouTube?', a: 'Yes. Upload your Reel, choose Video to Subtitles mode, and download an SRT file. Upload that SRT directly to YouTube Studio as your caption track. You get accurate, timed captions without manually typing anything.' },
       { q: 'Does it work for Reels in other languages?', a: 'Yes. Whisper supports 90+ languages. Set the spoken language before processing to get the best transcription accuracy for non-English Reels.' },
-      { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is this free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2374,7 +2375,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: "Does Loom have built-in transcription?", a: "Yes, Loom offers auto-transcription on paid plans. However, VideoText gives you additional outputs — speaker labels, summary, chapters, keyword index, and export to SRT/VTT/TXT/JSON. If you want to repurpose Loom content as text, copy to Notion, or generate subtitles, VideoText provides more flexibility." },
       { q: 'Can I get a summary of a Loom video?', a: 'Yes. After transcribing, open the Summary branch to see key decisions, action items, and main points extracted automatically. Useful for async video updates where recipients want the TL;DR without watching the full recording.' },
       { q: 'Does it work for Loom recordings with multiple speakers?', a: 'Yes. Upload the Loom MP4 and after transcribing, open the Speakers branch. Speech turns are grouped by speaker (Speaker 1, Speaker 2, etc.) for easy navigation.' },
-      { q: 'Is Loom transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Is Loom transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $40/month with no usage limits.' },
     ],
   },
   {
@@ -2477,7 +2478,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: "Does Teams have built-in transcription?", a: "Yes, Microsoft Teams offers meeting transcription on Microsoft 365 Business Basic plans and above. However, Teams transcription is limited to supported languages, requires the feature to be enabled by an admin, and the transcript lives only inside Teams. VideoText works from any recording download, requires no admin setup, and exports to TXT, SRT, VTT, and JSON." },
       { q: 'Can I get speaker labels from a Teams transcript?', a: 'Yes. After transcribing, open the Speakers branch to see each participant\'s contributions grouped by speaker turn. This works from standard stereo recordings — you do not need a multi-track export.' },
       { q: 'Can I get meeting notes from a Teams transcript automatically?', a: 'Yes. The Summary branch extracts action items, key decisions, and main discussion points. Paste directly into your Teams chat, Outlook email, or Confluence page as meeting notes.' },
-      { q: 'Is Teams meeting transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try. Paid plans start at $19/month for 450 minutes, suitable for teams with weekly meetings.' },
+      { q: 'Is Teams meeting transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $40/month, suitable for teams with weekly meetings.' },
       { q: 'What video format do Teams recordings use?', a: 'Teams recordings are saved as MP4 files. Download the MP4 from Teams or SharePoint and upload it directly. No conversion is needed.' },
     ],
   },
@@ -2496,7 +2497,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How do I transcribe a Vimeo video?', a: 'Download the Vimeo video as MP4 (available from Vimeo\'s download button if the creator enables it, or on your own Vimeo account). Upload the MP4 here and get a full transcript.' },
       { q: "Does Vimeo have built-in transcription?", a: "Vimeo offers auto-generated captions on paid plans (Vimeo Pro and above). If you are on the free tier or want a more accurate transcript to export and repurpose, VideoText provides a higher-accuracy alternative powered by Whisper." },
       { q: 'Can I get SRT captions from a Vimeo video?', a: 'Yes. Upload your Vimeo video, use the Video to Subtitles tool, and download an SRT file. You can then upload the SRT back to Vimeo in Video Manager → Advanced → Captions & Subtitles.' },
-      { q: 'Is Vimeo transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is Vimeo transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
       { q: 'What video format should I download from Vimeo?', a: 'Download as MP4 (1080p or 720p). All standard Vimeo MP4 downloads work directly with VideoText — no conversion needed.' },
     ],
   },
@@ -2516,7 +2517,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: "Does Riverside have built-in transcription?", a: "Yes, Riverside includes transcription on paid plans. VideoText is a useful alternative or complement if you want to: (a) transcribe exports from older recordings, (b) get a richer feature set (keyword index, chapter navigation, JSON export), or (c) avoid upgrading your Riverside plan." },
       { q: 'Can I get podcast show notes from a Riverside transcript?', a: 'Yes. The Summary branch extracts key points and topics automatically. This is the fastest way to generate show notes from a Riverside recording — transcribe, open Summary, copy the output into your podcast platform.' },
       { q: 'Does it support separate Riverside audio tracks?', a: 'Yes. If you export separate MP3 tracks per participant, you can upload each one individually. For a combined transcript with speaker labels, upload the composite video or merged audio.' },
-      { q: 'Is Riverside transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is Riverside transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2534,7 +2535,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What screen recording formats are supported?', a: 'MP4, WebM, MOV, MKV, and AVI are all supported. Most screen recording tools export to one of these formats — Loom (MP4), OBS (MP4/MKV), QuickTime (MOV), Zoom (MP4), and Screenflow (MP4). Upload directly without converting.' },
       { q: 'Does it transcribe voiceover narration in screen recordings?', a: 'Yes. The AI transcribes all spoken audio in the recording — voiceover narration, system audio with speech, and microphone input. For best results, ensure the audio track has clear speech without excessive background noise.' },
       { q: 'Can I transcribe a tutorial or course video?', a: 'Yes. Screen recording transcripts are widely used for online course creators who want searchable text, accessibility captions, or article content repurposed from tutorial videos. Upload the video and get SRT for captions or TXT for blog posts.' },
-      { q: 'Is screen recording transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Is screen recording transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $40/month with no usage limits.' },
       { q: 'Can I generate subtitles from a screen recording?', a: 'Yes. Use the Video to Subtitles tool with your screen recording file to generate SRT or VTT captions. These can be burned into the video using the Burn Subtitles tool or uploaded to YouTube as a caption track.' },
     ],
   },
@@ -2557,7 +2558,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I transcribe a Spanish video and translate it to English?', a: 'Yes. Upload your Spanish video, get the transcript, then click Translate and choose English as the target language. You get a translated version alongside the original Spanish transcript.' },
       { q: 'What are common use cases for Spanish transcription?', a: 'YouTube creators publishing to Spanish-speaking audiences, corporate training videos in Spanish, podcast transcription for Spanish-language shows, customer support call recordings, legal and academic interview transcription, and subtitle generation for Spanish content.' },
       { q: 'Can I generate Spanish subtitles (SRT) from a video?', a: 'Yes. Set the spoken language to Spanish, then use the Video to Subtitles tool. You get a timed SRT or VTT file in Spanish you can upload to YouTube, Vimeo, or burn into the video.' },
-      { q: 'Is Spanish transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is Spanish transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2576,7 +2577,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does it work for Canadian French (Québécois)?', a: 'Yes. Whisper was trained on diverse French data including Canadian French. Accuracy on Québécois is slightly lower than standard French due to distinct phonology, but generally remains high for clear speech.' },
       { q: 'Can I transcribe a French video and get English subtitles?', a: 'Yes. Transcribe the French video, then use the Translate function to translate to English. Download the translated version as SRT or VTT for English subtitles.' },
       { q: 'What formats are supported for French audio?', a: 'All standard video and audio formats: MP4, MOV, WebM, MP3, WAV, M4A, AAC. Upload directly — no conversion needed.' },
-      { q: 'Is French transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is French transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2594,7 +2595,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does it support Brazilian Portuguese?', a: 'Yes. Whisper supports both European Portuguese (PT-PT) and Brazilian Portuguese (PT-BR). For best accuracy, you can specify "Portuguese" as the language — Whisper will auto-detect the regional variant from the audio.' },
       { q: 'What are the main use cases for Portuguese transcription?', a: 'Brazilian YouTube creators transcribing videos for SEO and subtitles, corporate training content in Portuguese, podcast shows targeting Brazil or Portugal, academic interviews, and customer service call recordings from Portuguese-speaking regions.' },
       { q: 'Can I transcribe a Brazilian Portuguese video and translate to English?', a: 'Yes. Upload the video, set the language to Portuguese, get the transcript, and then click Translate to generate an English version alongside the original.' },
-      { q: 'Is Portuguese transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is Portuguese transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2614,7 +2615,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I generate Hindi subtitles for a video?', a: 'Yes. Upload your Hindi video, use the Video to Subtitles tool, and download the SRT or VTT file in Hindi. These can be uploaded to YouTube or burned into the video.' },
       { q: 'Can I transcribe a Hindi video and translate it to English?', a: 'Yes. Upload and transcribe the Hindi video, then click Translate to English. The English version appears alongside the Hindi transcript.' },
       { q: 'Does it work for regional Indian languages?', a: 'Whisper supports many Indian languages beyond Hindi: Tamil, Telugu, Kannada, Marathi, Bengali, Gujarati, and others. Set the spoken language before processing for best accuracy on each language.' },
-      { q: 'Is Hindi transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is Hindi transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2632,7 +2633,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How accurate is German transcription?', a: 'Whisper achieves around 4–7% Word Error Rate on clear German audio, making it comparable to human transcription speed. German compound words are handled well, though complex technical terminology in specialized domains may have slightly higher errors.' },
       { q: 'Does it work for Austrian and Swiss German?', a: 'Yes. Whisper handles standard German (Hochdeutsch), Austrian German, and Swiss Standard German. Dialects like Bavarian or Alemannic have slightly higher error rates due to phonological differences from standard German.' },
       { q: 'What are common uses for German transcription?', a: 'Corporate meetings and webinars in German, academic lecture transcription, podcast shows targeting German-speaking audiences, YouTube channel subtitles, and legal or medical interview recordings.' },
-      { q: 'Is German transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is German transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2650,7 +2651,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How accurate is Arabic transcription with Whisper?', a: 'Whisper achieves around 10–15% WER on Modern Standard Arabic. Dialects (Egyptian, Gulf, Levantine, Maghrebi) have higher error rates as they differ significantly from MSA in vocabulary and phonology. For best accuracy, set the language to Arabic before processing.' },
       { q: 'Does it support different Arabic dialects?', a: 'Whisper transcribes all Arabic dialects to some degree, with best results on Modern Standard Arabic and Egyptian Arabic (the most widely understood dialect). For formal or broadcast Arabic content, accuracy is highest.' },
       { q: 'Can I get English subtitles from an Arabic video?', a: 'Yes. Transcribe the Arabic video, then use the Translate function to generate an English version. Download as SRT for subtitles or TXT for translation repurposing.' },
-      { q: 'Is Arabic transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is Arabic transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2669,7 +2670,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does it support Cantonese?', a: 'Whisper has basic Cantonese support, but accuracy is significantly lower than for Mandarin. For Cantonese-specific transcription, results are less reliable. Mandarin content gets the best results.' },
       { q: 'Can I transcribe a Chinese video and get English subtitles?', a: 'Yes. Upload and transcribe the Chinese video, then use the Translate function to generate English text. Download as SRT for subtitles.' },
       { q: 'What are common use cases for Chinese transcription?', a: 'YouTube channels and Bilibili creators publishing Mandarin content, corporate training videos for Chinese-speaking teams, academic lectures, podcast transcription, and subtitle generation for Chinese films or shows.' },
-      { q: 'Is Chinese transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is Chinese transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2687,7 +2688,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How accurate is Japanese transcription with Whisper?', a: 'Whisper achieves around 8–15% WER on clear Japanese audio. It outputs in kanji/hiragana/katakana as appropriate. For formal speech (news, presentations, lectures) accuracy is highest. Casual conversation and heavy regional dialect use may have more errors.' },
       { q: 'Does it output kanji, hiragana, and katakana correctly?', a: 'Yes. Whisper outputs Japanese in native script — the same mix of kanji, hiragana, and katakana you would expect in natural written Japanese. It does not romanize (romaji) the output by default.' },
       { q: 'Can I get English subtitles from a Japanese video?', a: 'Yes. Transcribe the Japanese video, then use the Translate function to generate English text. Download as SRT or VTT for subtitles.' },
-      { q: 'Is Japanese transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is Japanese transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2706,7 +2707,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I generate Korean subtitles for a video?', a: 'Yes. Upload your Korean video, use the Video to Subtitles tool, and download an SRT or VTT file with Korean text and timestamps. Upload to YouTube or burn into the video.' },
       { q: 'Can I transcribe a Korean video and get English subtitles?', a: 'Yes. Transcribe the Korean video, then use the Translate function to generate English text. Download as SRT for English subtitles.' },
       { q: 'What are common use cases for Korean transcription?', a: 'K-drama content creators, K-pop commentary channels, YouTube creators targeting Korean-speaking audiences, corporate content in Korean, and subtitle generation for Korean video content.' },
-      { q: 'Is Korean transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is Korean transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2724,7 +2725,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How accurate is Italian transcription with Whisper?', a: 'Whisper achieves around 5–8% WER on clear Italian audio. Standard Italian (based on Florentine/Tuscan) gets the best results. Regional dialects may have higher error rates.' },
       { q: 'Can I get Italian subtitles from a video?', a: 'Yes. Upload the video, use the Video to Subtitles tool, and download an SRT or VTT file in Italian with timestamps.' },
       { q: 'Can I transcribe an Italian video and translate to English?', a: 'Yes. Upload and transcribe, then click Translate to English to get an English version alongside the Italian transcript.' },
-      { q: 'Is Italian transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is Italian transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
 
@@ -2746,7 +2747,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does VideoText support speaker labels like Fireflies?', a: 'Yes. After transcribing, open the Speakers branch to see each participant\'s contributions grouped by speaker turn. VideoText identifies speakers from audio cues rather than calendar identities, so names appear as Speaker 1, Speaker 2, etc.' },
       { q: 'Can I get meeting action items like Fireflies?', a: 'Yes. The Summary branch automatically extracts action items, decisions, and key points from any meeting transcript. This covers the core use case of Fireflies without requiring a bot or calendar integration.' },
       { q: 'Does VideoText work without installing anything?', a: 'Yes. VideoText is fully browser-based. No app, no extension, no bot. Upload the recording file and get results. Works on any device with a browser.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Pro plan is $40/month with no usage limits.' },
     ],
   },
   {
@@ -2764,7 +2765,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How does VideoText compare to Riverside for transcription?', a: 'Riverside.fm is a recording platform with built-in transcription on paid plans. VideoText is a dedicated transcription tool that works from any recording source. If you record on Riverside but want more transcription features — keyword indexing, SRT export, multi-language translation — VideoText adds those on top of your existing Riverside workflow.' },
       { q: 'Why do people look for Riverside transcription alternatives?', a: 'Common reasons: Riverside transcription is only available on paid plans, users want to transcribe older recordings made before using Riverside, teams want SRT/VTT subtitle output rather than just text, or users need multi-language translation of the transcript.' },
       { q: 'Can I transcribe a Riverside recording in VideoText?', a: 'Yes. Export your Riverside recording as MP4, upload it here, and get a full transcript with speaker labels and summary show notes.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Pro plan is $40/month with no usage limits.' },
     ],
   },
   {
@@ -2782,7 +2783,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How does VideoText compare to Kapwing for subtitles?', a: 'Kapwing is a full video editor with subtitle features included. VideoText is purpose-built for transcription and subtitle generation — faster subtitle output, no editing overhead, and SRT/VTT export without requiring you to export a new video file.' },
       { q: 'Why do people look for Kapwing alternatives?', a: 'Common reasons: Kapwing adds a watermark on free tier exports, users only need subtitle files (not video editing), the editor is slower for simple subtitle tasks, or users want bulk subtitle processing rather than one-by-one video editing.' },
       { q: 'Does VideoText add a watermark?', a: 'Transcript exports (TXT, SRT, VTT) are available without a watermark on the free tier. Subtitle-burned video exports include a watermark on the free tier — upgrade to remove it.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2799,7 +2800,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How does VideoText compare to Zubtitle?', a: 'Zubtitle charges per video or per minute of video processed. VideoText uses a flat monthly subscription — process as many videos as your plan allows for one price. VideoText also adds transcript, speaker labels, and summary features that Zubtitle does not include.' },
       { q: 'Why do people look for Zubtitle alternatives?', a: 'Common reasons: per-video pricing becomes expensive for high-volume creators, users want a full transcript alongside subtitles, or users need SRT files rather than burned-in captions only.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Pro plan is $40/month with no usage limits.' },
     ],
   },
   {
@@ -2816,7 +2817,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How does VideoText compare to Submagic?', a: 'Submagic focuses on animated captions styled for short-form social content. VideoText focuses on accurate subtitle generation for any video — SRT/VTT files, burned-in captions, full transcripts, and multi-language support. If you need subtitle files rather than styled social captions, VideoText is the better fit.' },
       { q: 'Does VideoText support animated captions?', a: 'VideoText generates SRT/VTT files and can burn plain subtitles into video. Animated caption styles (pop-up words, color-highlighted captions) are Submagic\'s specialty. If styled social captions are the priority, Submagic may still be the right tool. If accurate transcription and SRT export matter, VideoText is stronger.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. Sign up for free to try.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2834,7 +2835,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How does VideoText compare to Premiere Pro captions?', a: 'Premiere Pro\'s Speech to Text tool generates captions inside the editing timeline. VideoText generates an SRT or VTT file outside the editor in seconds — useful when you need captions quickly without opening Premiere, or when you want to generate captions for a video you are not actively editing.' },
       { q: 'Can I import VideoText SRT files back into Premiere Pro?', a: 'Yes. Download the SRT from VideoText, then in Premiere go to File → Import and import the SRT file. It appears as a caption track in your sequence, ready to style and export.' },
       { q: 'Does it work without an Adobe subscription?', a: 'Yes. VideoText requires no Adobe software. It runs entirely in the browser and exports SRT/VTT files compatible with Premiere, DaVinci Resolve, Final Cut Pro, and any NLE that accepts caption files.' },
-      { q: 'Is this free?', a: 'Yes. Free tier includes 3 imports per month. Sign up for free to try.' },
+      { q: 'Is this free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2854,7 +2855,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Which Whisper model does VideoText use?', a: 'VideoText uses large-v3, the most accurate Whisper model available. This model has the best accuracy for complex audio, accents, technical vocabulary, and non-English languages.' },
       { q: 'What file formats does Whisper support?', a: 'Any standard video or audio format: MP4, MOV, WebM, MKV, AVI, MP3, WAV, M4A, AAC, OGG, FLAC. Upload the file directly — no conversion needed.' },
       { q: 'What languages does Whisper support?', a: 'Whisper supports 90+ languages. Best accuracy for English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Chinese, Japanese, and Korean. See the full language list on the OpenAI Whisper paper.' },
-      { q: 'Is using Whisper online free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). No GPU or compute costs — VideoText absorbs the compute. Sign up for free to try.' },
+      { q: 'Is using Whisper online free?', a: 'Yes. Free tier includes 3 uploads per day. No GPU or compute costs — VideoText absorbs the compute. Sign up for free to try.' },
     ],
   },
   {
@@ -2872,7 +2873,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How does VideoText compare to AssemblyAI?', a: 'AssemblyAI is a developer API for speech-to-text — you integrate it into your application via REST API. VideoText is a consumer web app — upload a file in the browser and get results with no code. If you need a browser tool for individual transcription tasks rather than programmatic integration, VideoText is a faster choice.' },
       { q: 'Why do people look for AssemblyAI alternatives?', a: 'Common reasons: teams need a non-developer UI for non-technical users, individual users who do not want to write code, projects that need a quick one-off transcription without API setup, or users who want richer output features (chapters, keyword indexing, translation) in a single interface.' },
       { q: 'Does VideoText support speaker labels like AssemblyAI?', a: 'Yes. After transcribing, open the Speakers branch to see speech grouped by speaker turn. VideoText does not require speaker count pre-configuration — it auto-detects from the audio.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2890,7 +2891,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How does VideoText compare to Castmagic?', a: 'Castmagic combines transcription with AI-generated social posts, blog articles, email newsletters, and other content repurposing outputs. VideoText focuses on accurate transcription, speaker labels, summary, and subtitle export. If you need a transcript and show notes without a full AI content factory, VideoText is simpler and less expensive.' },
       { q: 'Why do people look for Castmagic alternatives?', a: 'Common reasons: Castmagic pricing scales with podcast volume and can become expensive for high-frequency publishers, teams who only need transcription and show notes (not full content generation), or users who want SRT subtitle files from their podcast content.' },
       { q: 'Can I get podcast show notes from VideoText?', a: 'Yes. The Summary branch extracts key points, topics discussed, and action items from any transcript. This covers the core show notes use case at a simpler price point.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. Sign up for free to try.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
 
@@ -2912,7 +2913,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I convert an MP3 podcast to text for show notes?', a: 'Yes. This is one of the most common uses. Upload your MP3 episode, get the transcript, then use the Summary branch to generate show notes automatically. The summary extracts key topics, main points, and timestamps.' },
       { q: 'Can I get SRT subtitles from an MP3 file?', a: 'Yes. VideoText can generate a timed SRT file from any MP3. This is useful for creating captions for a video that uses audio-only source material, or for syncing text to audio in a media player.' },
       { q: 'What languages does MP3 transcription support?', a: 'Whisper supports 90+ languages. Upload an MP3 in any language and set the source language before processing for best accuracy. Transcription works for English, Spanish, French, German, Hindi, Arabic, Chinese, Japanese, Korean, and many others.' },
-      { q: 'Is MP3 to text conversion free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Is MP3 to text conversion free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $40/month with no usage limits.' },
     ],
   },
   {
@@ -2930,7 +2931,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I transcribe a WAV file to text?', a: 'Yes. Upload your WAV file and our AI transcribes the speech to text. WAV is an uncompressed format that provides excellent audio quality for transcription — often better accuracy than compressed formats at equivalent content.' },
       { q: 'What WAV sample rates and bit depths are supported?', a: 'All standard WAV configurations are supported: 16kHz, 22kHz, 44.1kHz, 48kHz, 96kHz sample rates and 16-bit/24-bit/32-bit depths. Both PCM and IEEE float WAV files work. Mono and stereo are both supported.' },
       { q: 'Why use WAV instead of MP3 for transcription?', a: 'WAV is lossless — it preserves all audio fidelity without compression artifacts. For transcription, WAV files often produce slightly higher accuracy on difficult audio because the speech signal is not degraded by MP3 compression, particularly at lower bitrates.' },
-      { q: 'Is WAV to text conversion free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is WAV to text conversion free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
       { q: 'Can I get SRT subtitles from a WAV file?', a: 'Yes. VideoText generates timed SRT or VTT files from any audio or video input, including WAV. Upload the file, select subtitle output, and download the timed caption file.' },
     ],
   },
@@ -2949,7 +2950,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I transcribe an M4A file to text?', a: 'Yes. M4A is a fully supported audio format. Upload your M4A and get a full text transcript. M4A is the default format for iPhone Voice Memos and many mobile recording apps.' },
       { q: 'Where do M4A files come from?', a: 'M4A files are most common from: iPhone/iPad Voice Memos, GarageBand, iTunes podcast downloads, Android voice recorders, and many professional audio interfaces that export AAC audio.' },
       { q: 'Is M4A transcription as accurate as MP3?', a: 'Yes, M4A (AAC encoding) generally provides equal or better accuracy compared to MP3 at the same bitrate because AAC is a more efficient codec that preserves more audio detail. Standard iPhone Voice Memos at 128kbps AAC transcribe with high accuracy.' },
-      { q: 'Is M4A to text conversion free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is M4A to text conversion free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2966,7 +2967,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Can I transcribe an AAC audio file?', a: 'Yes. AAC is supported directly. Upload your .aac file and get a full transcript. AAC is the underlying codec in M4A containers and is used by iOS, Android, and many streaming platforms.' },
       { q: 'What is the difference between AAC and M4A?', a: 'AAC (Advanced Audio Coding) is the audio codec. M4A is a container format that typically contains AAC audio. An .aac file is raw AAC without the M4A container. Both are supported by VideoText without any conversion.' },
-      { q: 'Is AAC to text transcription free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is AAC to text transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -2984,7 +2985,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I transcribe an MKV file to text?', a: 'Yes. MKV (Matroska Video) is supported. Upload your MKV file and get a full transcript. Most MKV files contain H.264 or H.265 video with AAC or AC3 audio — all handled automatically.' },
       { q: 'Where do MKV files come from?', a: 'MKV files are common for: OBS Studio screen and game recordings, downloaded video content, anime and subtitled video files, and video archives from media servers like Plex.' },
       { q: 'Can I get SRT subtitles from an MKV file?', a: 'Yes. Upload your MKV, use the Video to Subtitles tool, and download an SRT file with accurate timestamps. You can then remux the SRT back into the MKV or use it separately.' },
-      { q: 'Is MKV to text conversion free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is MKV to text conversion free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -3002,7 +3003,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I transcribe an AVI file to text?', a: 'Yes. AVI is supported. Upload your AVI file and get a full transcript. AVI files commonly contain DivX, Xvid, or MPEG-4 video with MP3 or PCM audio.' },
       { q: 'Where do AVI files come from?', a: 'AVI is common for: older camcorder recordings, legacy Windows Movie Maker projects, older screen recording software, and archived video files from the early 2000s–2010s.' },
       { q: 'Is AVI transcription as accurate as MP4?', a: 'Accuracy depends on the audio quality in the file, not the container format. AVI files with clear speech at standard audio bitrates transcribe with the same accuracy as MP4.' },
-      { q: 'Is AVI to text conversion free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is AVI to text conversion free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   {
@@ -3019,7 +3020,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Can I transcribe an OGG file to text?', a: 'Yes. OGG (Ogg Vorbis) is supported. Upload your .ogg file and get a full text transcript.' },
       { q: 'Where do OGG files come from?', a: 'OGG files are common for: open-source audio exports (Audacity, Ardour), game audio assets, Linux-based recording software, and some podcast platforms that use open formats.' },
-      { q: 'Is OGG to text conversion free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is OGG to text conversion free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
   // ── Cluster E: Journalist & Student Pages ────────────────────────────────────
@@ -3080,7 +3081,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Free transcription tool for students. Transcribe lecture recordings, class sessions, professor interviews, and study group audio to text. Searchable notes, chapter navigation, keyword index. No credit card.',
     h1: 'Transcription Tool for Students',
     intro:
-      'Turn any recorded lecture, class session, or study interview into searchable, shareable notes. Upload your recording (MP4 from Zoom class, MP3 from your recorder, M4A from iPhone) and get a full text transcript in seconds. Use Keywords to index every topic, Chapters to navigate by section, and Translate to study in your native language. Free tier — 3 imports per month, no credit card.',
+      'Turn any recorded lecture, class session, or study interview into searchable, shareable notes. Upload your recording (MP4 from Zoom class, MP3 from your recorder, M4A from iPhone) and get a full text transcript in seconds. Use Keywords to index every topic, Chapters to navigate by section, and Translate to study in your native language. Free tier — 3 uploads per day, no credit card.',
     breadcrumbLabel: 'Transcription for Students',
     toolKey: 'video-to-transcript',
     relatedSlugs: [
@@ -3095,7 +3096,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       {
         q: 'Is VideoText free for students?',
-        a: 'Yes. The free tier includes 3 imports per month with no credit card required. Most students can transcribe all their key lectures and interviews within the free limit. Sign up for free to start.',
+        a: 'Yes. The free tier includes 3 uploads per day with no credit card required. Most students can transcribe all their key lectures and interviews within the free limit. Sign up for free to start.',
       },
       {
         q: 'Can I transcribe a Zoom lecture recording?',
@@ -3152,7 +3153,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       },
       {
         q: 'Is VideoText free for journalists?',
-        a: 'Yes. Free tier includes 3 imports per month with no credit card. Paid plans start at $19/month for 450 minutes — enough for most active reporters.',
+        a: 'Yes. Free tier includes 3 uploads per day with no credit card. Pro plan is $40/month with no usage limits.',
       },
     ],
   },
@@ -3181,7 +3182,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       },
       {
         q: 'What is the best free transcription tool for students?',
-        a: 'VideoText offers 3 free imports per month with no credit card. Whisper large-v3 accuracy is among the best available. You get chapters, keywords, speaker labels, translation, and TXT/SRT export — all in the free tier.',
+        a: 'VideoText offers 3 uploads per day with no credit card. Whisper large-v3 accuracy is among the best available. You get chapters, keywords, speaker labels, translation, and TXT/SRT export — all in the free tier.',
       },
       {
         q: 'Is VideoText better than Otter.ai for students?',
@@ -3222,7 +3223,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       },
       {
         q: 'Is press conference transcription free?',
-        a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try. Paid plans start at $19/month for 450 minutes.',
+        a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $40/month with no usage limits.',
       },
     ],
   },
@@ -3263,7 +3264,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       },
       {
         q: 'Is it free for PhD students and academic researchers?',
-        a: 'Yes. Free tier includes 3 imports per month with no credit card. Most dissertation students use the paid tier ($10/month) during intensive fieldwork periods.',
+        a: 'Yes. Free tier includes 3 uploads per day with no credit card. Most dissertation students upgrade to Pro ($40/month) during intensive fieldwork periods.',
       },
     ],
   },
@@ -3300,7 +3301,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       },
       {
         q: 'Is VideoText free for academic research?',
-        a: 'Yes. Free tier includes 3 imports per month with no credit card. For intensive fieldwork, the $10/month plan provides 200 minutes and the $19/month plan provides 450 minutes.',
+        a: 'Yes. Free tier includes 3 uploads per day with no credit card. For intensive fieldwork, the Pro plan ($40/month) provides unlimited processing with no per-minute fees.',
       },
     ],
   },
@@ -3342,7 +3343,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       },
       {
         q: 'Is journalism transcription free?',
-        a: 'Yes. Free tier includes 3 imports per month. Sign up for free to try. No credit card.',
+        a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. No credit card.',
       },
     ],
   },
@@ -3380,7 +3381,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       },
       {
         q: 'Is academic transcription free for students?',
-        a: 'Yes. Free tier includes 3 imports per month with no credit card. Most students cover their key lectures within the free limit.',
+        a: 'Yes. Free tier includes 3 uploads per day with no credit card. Most students cover their key lectures within the free limit.',
       },
       {
         q: 'What languages does academic transcription support?',
@@ -3404,7 +3405,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Can I transcribe a FLAC file to text?', a: 'Yes. FLAC is supported. Upload your .flac file and get a full transcript. FLAC is a lossless format that preserves all audio fidelity, which can improve transcription accuracy for recordings with subtle speech details.' },
       { q: 'Does lossless FLAC give better transcription accuracy than MP3?', a: 'For clearly recorded speech, MP3 at 128kbps and FLAC give similar accuracy. FLAC may give measurably better results for: low-quality source recordings where compression artifacts in MP3 degrade speech, high-frequency details in accented or quiet speech, and archival audio from older recordings.' },
-      { q: 'Is FLAC to text conversion free?', a: 'Yes. Free tier includes 3 imports per month (resets on the 1st). Sign up for free to try.' },
+      { q: 'Is FLAC to text conversion free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try.' },
     ],
   },
 
@@ -3427,7 +3428,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does VideoText give better transcription than Zoom?', a: 'VideoText uses Whisper large-v3 (~97–99% word accuracy on clear speech). Zoom\'s accuracy is comparable but its output is less structured — VideoText adds speaker labels, summary, chapters, and keyword index on top of the raw transcript.' },
       { q: 'How do I get my Zoom recording to transcribe?', a: 'Cloud recordings: zoom.us → Recordings → Download the MP4. Local recordings: Documents/Zoom folder on your computer. Upload the MP4 to VideoText and get a transcript in 5–8 minutes for a 60-minute call.' },
       { q: 'Does VideoText store my Zoom recordings?', a: 'No. Your file is deleted immediately after transcription. Zoom stores cloud recordings until you manually delete them — VideoText has zero retention.' },
-      { q: 'Is VideoText free for Zoom transcription?', a: 'Yes. Free tier includes 3 imports per month. No credit card. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Is VideoText free for Zoom transcription?', a: 'Yes. Free tier includes 3 uploads per day. No credit card. Pro plan is $40/month with no usage limits.' },
     ],
   },
   {
@@ -3447,7 +3448,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Do I need Microsoft 365 Copilot to transcribe Teams meetings?', a: 'No — not with VideoText. Download your Teams meeting recording as MP4, upload it here, and get a full speaker-labeled transcript. Copilot costs $30/user/month extra; VideoText starts free.' },
       { q: 'How do I download a Teams meeting recording?', a: 'In Microsoft Teams: go to the Chat or Channel where the meeting was recorded → find the recording → click the three-dot menu → Download. The file saves as MP4. For OneDrive-stored recordings, open SharePoint/OneDrive, find the recording, and download it.' },
       { q: 'Does VideoText support Teams recordings with multiple speakers?', a: 'Yes. The Speakers branch separates speech by speaker turn. For Teams calls with multiple participants, each person\'s speech is labeled separately.' },
-      { q: 'Is VideoText cheaper than Microsoft Copilot for transcription?', a: 'Yes. Microsoft 365 Copilot costs $30/user/month per person. VideoText free tier costs $0. Paid plans start at $19/month for the whole team\'s transcription needs.' },
+      { q: 'Is VideoText cheaper than Microsoft Copilot for transcription?', a: 'Yes. Microsoft 365 Copilot costs $30/user/month per person. VideoText free tier costs $0. Pro plan is $40/month for the whole team\'s transcription needs.' },
     ],
   },
   {
@@ -3467,7 +3468,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I transcribe a Panopto lecture video?', a: 'Yes. Download the Panopto video as MP4 (using the Panopto download option or your institution\'s export), upload it to VideoText, and get a full transcript with speaker labels, chapters, and keywords.' },
       { q: 'How do I download a Panopto video?', a: 'In Panopto: open the video → Settings (gear icon) → Downloads tab → download the MP4. If downloads are disabled by your institution, you can use the Panopto desktop app or request the file from your instructor. Once you have the MP4, upload it to VideoText.' },
       { q: 'Is VideoText better than Panopto\'s built-in captions?', a: 'VideoText gives you exported text (TXT, SRT) you can paste into notes, share, or use for accessibility compliance. Panopto\'s auto-captions are display-only inside the player — no export, no keyword search across transcripts, no chapter generation.' },
-      { q: 'Is VideoText free for students using Panopto?', a: 'Yes. Free tier includes 3 imports per month — enough for most students to cover their key lecture videos. No credit card required.' },
+      { q: 'Is VideoText free for students using Panopto?', a: 'Yes. Free tier includes 3 uploads per day — enough for most students to cover their key lecture videos. No credit card required.' },
     ],
   },
   {
@@ -3486,7 +3487,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How do I transcribe a Panopto lecture?', a: 'Download the Panopto video as MP4, upload it to VideoText, and get a full transcript in minutes. Use Keywords to index every concept and Chapters to navigate the lecture by topic.' },
       { q: 'Can I get an SRT caption file from a Panopto video?', a: 'Yes. Upload the Panopto video to VideoText and use the Video to Subtitles tool — download as SRT or VTT. You can upload this SRT file to other platforms or use it for accessibility compliance.' },
-      { q: 'Is Panopto transcription free?', a: 'Yes. Free tier includes 3 imports per month. Sign up for free to try. No credit card.' },
+      { q: 'Is Panopto transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. No credit card.' },
     ],
   },
   {
@@ -3505,7 +3506,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How do I transcribe a WebEx meeting recording?', a: 'Download the WebEx recording as MP4 from the WebEx site (webex.com → Recordings → Download). Upload the MP4 to VideoText for a full transcript with speaker labels.' },
       { q: 'Does WebEx have built-in transcription?', a: 'Yes, WebEx Meetings offers AI-generated transcription on certain enterprise plans. It is limited to recordings stored in the WebEx cloud and requires a Webex subscription. VideoText works on any downloaded WebEx MP4 without a Webex account.' },
-      { q: 'Is VideoText free for WebEx transcription?', a: 'Yes. Free tier includes 3 imports per month. No credit card.' },
+      { q: 'Is VideoText free for WebEx transcription?', a: 'Yes. Free tier includes 3 uploads per day. No credit card.' },
     ],
   },
   {
@@ -3523,7 +3524,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'webex-transcription',
     faq: [
       { q: 'How do I transcribe a WebEx recording?', a: 'Go to webex.com → Recordings → find your meeting → click Download to save the MP4. Upload the MP4 to VideoText and get a full transcript in minutes.' },
-      { q: 'Is WebEx transcription free with VideoText?', a: 'Yes. Free tier includes 3 imports per month. No credit card, no WebEx plan required.' },
+      { q: 'Is WebEx transcription free with VideoText?', a: 'Yes. Free tier includes 3 uploads per day. No credit card, no WebEx plan required.' },
     ],
   },
 
@@ -3545,7 +3546,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What are Notta\'s limitations compared to VideoText?', a: 'Notta free tier: 3 minutes max per transcription, 120 minutes/month total. VideoText free tier: 3 full-length imports per month with no per-file duration cap. VideoText also gives chapters, keywords, and SRT export on the free tier.' },
       { q: 'Does VideoText support the same file types as Notta?', a: 'Yes. VideoText supports MP4, MOV, AVI, WebM, MKV (video) and MP3, WAV, M4A, AAC, OGG, FLAC (audio) — all the formats Notta supports, plus more.' },
       { q: 'Does VideoText transcribe live meetings like Notta?', a: 'VideoText transcribes uploaded files — it does not join live meetings. For recorded meetings (Zoom, Teams, Meet), download the MP4 and upload it. Results are typically ready in 5–8 minutes for a 60-minute call.' },
-      { q: 'Is VideoText free like Notta?', a: 'Yes. Free tier includes 3 imports per month with no credit card. Paid plans start at $10/month.' },
+      { q: 'Is VideoText free like Notta?', a: 'Yes. Free tier includes 3 uploads per day with no credit card. Pro plan is $40/month.' },
     ],
   },
   {
@@ -3564,7 +3565,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'What is the difference between Tactiq and VideoText?', a: 'Tactiq captures transcription during a live call via browser extension — it cannot transcribe a recording you already have. VideoText transcribes any uploaded file after the fact. If you need to process a past recording, VideoText is the right tool.' },
       { q: 'Can VideoText transcribe Google Meet recordings like Tactiq covers live meetings?', a: 'Yes. Download your Google Meet recording from Google Drive as MP4, upload it to VideoText, and get a full transcript with speaker labels and summary.' },
-      { q: 'Is VideoText free like Tactiq\'s free plan?', a: 'Yes. Free tier includes 3 imports per month, no credit card. Paid plans start at $10/month flat — no per-minute fees.' },
+      { q: 'Is VideoText free like Tactiq\'s free plan?', a: 'Yes. Free tier includes 3 uploads per day, no credit card. Pro plan is $40/month flat — no per-minute fees.' },
     ],
   },
   {
@@ -3583,7 +3584,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'What does Krisp do vs VideoText?', a: 'Krisp focuses on real-time noise cancellation and live meeting notes — it runs during the call. VideoText transcribes completed recordings offline. If you want to process a past meeting without running additional software, VideoText is more direct.' },
       { q: 'Does VideoText require any software installation?', a: 'No. VideoText runs in the browser — no download, no microphone driver, no background app. Upload your file and get the transcript.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month, no credit card. Krisp\'s free plan limits noise cancellation to 60 minutes/week and meeting notes to 1 hour/week.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day, no credit card. Krisp\'s free plan limits noise cancellation to 60 minutes/week and meeting notes to 1 hour/week.' },
     ],
   },
   {
@@ -3623,7 +3624,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I transcribe a meeting recording that Hedy AI coached?', a: 'Yes. Download your meeting recording as MP4 (from Zoom, Teams, or Google Meet), upload it to VideoText, and get a full speaker-labeled transcript — regardless of what tools were used during the live call.' },
       { q: 'Does VideoText have real-time coaching features like Hedy AI?', a: 'No. VideoText focuses exclusively on post-recording transcription — it processes uploaded files, not live audio. Hedy AI focuses on real-time coaching during conversations.' },
       { q: 'What file formats does VideoText accept?', a: 'MP4, MOV, AVI, WebM, MKV (video) and MP3, WAV, M4A, AAC, OGG, FLAC (audio). Any standard recording format from any meeting platform.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
     ],
   },
   {
@@ -3644,7 +3645,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What does Mem AI do that VideoText doesn\'t?', a: 'Mem AI is a persistent knowledge base — it stores, links, and searches across all your notes and meeting content over time. VideoText is a transcription tool — it processes individual recordings and outputs text files. They cover complementary workflows: use VideoText to generate the transcript, Mem to store and reference it.' },
       { q: 'Does VideoText save my transcripts like Mem AI does?', a: 'No — VideoText deletes your file immediately after transcription. Transcripts are not stored on VideoText servers. Download the TXT export and import it into Mem, Notion, or any knowledge base of your choice.' },
       { q: 'What recordings can I transcribe with VideoText?', a: 'Any video or audio file: meeting recordings, interviews, podcasts, lectures, voice memos. Supported formats: MP4, MOV, MP3, WAV, M4A, and more.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
     ],
   },
   {
@@ -3663,7 +3664,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How do I transcribe an iPhone voice memo without VOMO?', a: 'Open the Voice Memos app → tap the recording → tap the three-dot menu → Share → Save to Files. The file saves as M4A. Upload the M4A to VideoText for a full transcript with summary.' },
       { q: 'Does VideoText work on Android voice memos?', a: 'Yes. Android voice recordings (typically MP3 or M4A) upload directly. No conversion needed.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
     ],
   },
   {
@@ -3703,7 +3704,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Does Notability produce a full transcript?', a: 'Notability links audio to note timestamps but does not produce a full text transcript of the spoken content. VideoText transcribes the entire audio to searchable text.' },
       { q: 'Can I transcribe a Notability recording?', a: 'Yes. Export the audio from Notability (tap the note → Share → Export audio as M4A), then upload the M4A to VideoText for a full transcript.' },
-      { q: 'Is VideoText free for students?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free for students?', a: 'Yes. 3 uploads per day, no credit card.' },
     ],
   },
 
@@ -3744,7 +3745,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'What is Superwhisper used for vs VideoText?', a: 'Superwhisper is for real-time voice dictation — speak into your microphone and it types for you. VideoText transcribes pre-recorded files (interview recordings, lecture videos, meeting recordings). Different use cases.' },
       { q: 'Can VideoText replace Whisper Notes and Gravity Notes too?', a: 'Yes, for the file transcription use case. Whisper Notes and Gravity Notes are also primarily dictation/memo apps. VideoText handles file-based transcription (existing recordings) on any device.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
     ],
   },
   {
@@ -3763,15 +3764,15 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'What does WhisperX do that standard Whisper doesn\'t?', a: 'WhisperX adds word-level forced alignment (timestamps for every individual word) and speaker diarization using pyannote.audio. VideoText provides speaker diarization and segment-level timestamps without requiring any local setup.' },
       { q: 'Do I need a GPU to use VideoText like WhisperX?', a: 'No. VideoText runs in the browser — no local hardware required. WhisperX needs a CUDA GPU for reasonable processing speed on long files.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
     ],
   },
   {
     path: '/buzz-alternative',
-    title: 'Best Buzz Alternative in 2026 (Speed, Exports, Workflow) | VideoText',
+    title: 'Buzz Alternative — No Local Setup, Works on Windows | VideoText',
     description:
-      'Looking for a Buzz alternative? Compare desktop Buzz vs VideoText on speed, transcript quality, exports, summaries, subtitles, and workflow fit before you switch.',
-    h1: 'Buzz Alternative — Should You Switch?',
+      'Unlike Buzz, VideoText runs Whisper in the browser — no Python, no GPU, no model downloads. Transcript + SRT subtitles + summary in one pass. Windows supported. Free tier.',
+    h1: 'Buzz Alternative — Browser-Based Whisper Without Local Setup',
     intro:
       "If Buzz feels too manual for day-to-day transcription, here's the short answer: Buzz is excellent for local, offline transcription. VideoText is better when you want faster throughput, structured outputs (transcript + subtitles + summary), and a browser workflow your team can use without installing models. This page compares both directly so you can pick the right fit.",
     breadcrumbLabel: 'Buzz Alternative',
@@ -3865,7 +3866,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'What is the difference between Vizard and VideoText?', a: 'Vizard is a video repurposing platform — it clips long videos into short segments and adds styled captions for social media. VideoText is a transcription and subtitle tool — it gives you the raw transcript text and SRT files for use anywhere.' },
       { q: 'Does VideoText export SRT files like Vizard?', a: 'Yes. VideoText exports SRT and VTT subtitle files with accurate timestamps. These files work on YouTube, Vimeo, and any video platform.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
     ],
   },
   {
@@ -3904,7 +3905,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'fliki-alternative',
     faq: [
       { q: 'Does VideoText do the opposite of Fliki?', a: 'Yes. Fliki converts text/audio to video. VideoText converts video/audio to text and SRT. They cover complementary workflows.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
       { q: 'Can I use VideoText-generated SRT files in Fliki?', a: 'Yes. Generate an SRT from your source audio/video in VideoText, then import the SRT file into Fliki\'s subtitle or caption workflow for your video project.' },
       { q: 'Does VideoText support the same languages as Fliki?', a: 'VideoText transcribes in 90+ languages and translates subtitles to 70+ languages. Fliki supports multiple languages for TTS voice generation — the two tools serve different language workflows (transcription vs. speech synthesis).' },
       { q: 'What can VideoText transcribe?', a: 'Any audio or video file: MP4, MOV, AVI, WebM, MKV, MP3, WAV, M4A, AAC, OGG, FLAC. Also accepts YouTube URLs directly — no download needed for YouTube videos.' },
@@ -3967,7 +3968,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Why are YouTube auto-captions inaccurate?', a: 'YouTube uses its own speech recognition model which performs worse than Whisper large-v3, especially for accented speech, technical vocabulary, proper nouns, and non-English content. VideoText uses Whisper large-v3 for significantly higher accuracy.' },
       { q: 'How do I upload a VideoText SRT to YouTube?', a: 'In YouTube Studio → open your video → Subtitles → Add → Upload file → upload the SRT from VideoText. The captions appear immediately with the timestamps from the SRT.' },
       { q: 'Can I download YouTube auto-captions as SRT?', a: 'YouTube does not allow direct SRT download of auto-generated captions. You have to use third-party tools to extract them. VideoText generates an SRT directly from your video file before you upload.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
     ],
   },
 
@@ -4044,7 +4045,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'genio-alternative',
     faq: [
       { q: 'What does VideoText offer as a Genio alternative?', a: 'Whisper large-v3 accuracy, speaker labels, summary, chapters, keyword index, SRT/VTT/TXT export, YouTube URL input, translate to 70+ languages, and files deleted after processing.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
       { q: 'How accurate is VideoText compared to Genio?', a: 'VideoText uses Whisper large-v3 which achieves ~98.5% word accuracy on clear speech — the highest accuracy open-source model available. It supports 90+ source languages.' },
       { q: 'Does VideoText support batch processing like Genio?', a: 'Yes. The Batch Process tool lets you upload multiple files at once and process them in parallel. Download all transcripts as a ZIP archive.' },
       { q: 'How long does VideoText take to transcribe a file?', a: 'Typically 30–90 seconds for files under 10 minutes, and 5–8 minutes for a 60-minute recording. Results are delivered as soon as processing completes.' },
@@ -4065,7 +4066,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'scribe-alternative',
     faq: [
       { q: 'Is VideoText a good Scribe alternative?', a: 'Yes. VideoText offers Whisper large-v3 transcription, speaker diarization, summary, chapters, keyword index, and SRT/VTT/TXT export — all free to start.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
       { q: 'What file formats does VideoText support?', a: 'VideoText accepts MP4, MOV, AVI, WebM, MKV (video) and MP3, WAV, M4A, AAC, OGG, FLAC (audio). It also transcribes directly from YouTube URLs without downloading.' },
       { q: 'Does VideoText identify different speakers like Scribe does?', a: 'Yes. Speaker diarization is included on all VideoText plans — each speaker\'s turns are automatically labeled in the transcript.' },
       { q: 'How does VideoText accuracy compare to transcription services like Scribe?', a: 'VideoText uses Whisper large-v3 (~98.5% WER on clear speech). For clear, professionally recorded audio this is equivalent to human transcription at a fraction of the cost and in minutes rather than hours.' },
@@ -4086,7 +4087,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'spreaker-alternative',
     faq: [
       { q: 'Can I transcribe my Spreaker podcast episodes with VideoText?', a: 'Yes. Download your episode as MP3 from Spreaker and upload it to VideoText. You get a full transcript with speaker labels, summary, chapters, and downloadable TXT/SRT.' },
-      { q: 'Is VideoText free for podcast transcription?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free for podcast transcription?', a: 'Yes. 3 uploads per day, no credit card.' },
       { q: 'Does Spreaker include podcast transcription?', a: 'Spreaker offers basic auto-transcription on some plans, but it is limited to display inside the platform — no full-text export, no chapter generation, no SRT output. VideoText gives you a complete transcript with all export options.' },
       { q: 'Can I use VideoText to generate show notes for Spreaker episodes?', a: 'Yes. Upload your episode to VideoText — the Summary branch generates a concise summary of the episode content which you can use directly as show notes. Chapters identify the main topics discussed.' },
       { q: 'Can I get SRT subtitle files for my podcast video on Spreaker?', a: 'Yes. Upload your podcast video or audio to VideoText and download an SRT file. This is useful for creating accessible podcast video content on YouTube or embedding captions on your website.' },
@@ -4107,7 +4108,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'headliner-alternative',
     faq: [
       { q: 'Does VideoText replace Headliner for podcast transcription?', a: 'For the transcription use case — yes. VideoText gives you a full transcript, speaker labels, show notes (Summary branch), and SRT files. Headliner focuses on creating audiogram clips for social media.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
       { q: 'Does Headliner (Eddy) include transcription?', a: 'Headliner includes basic transcription primarily to power its audiogram clip selection feature — not as a standalone transcript product. VideoText provides the full transcript as a downloadable TXT, SRT, and VTT file.' },
       { q: 'Can I generate podcast show notes with VideoText like Headliner suggests clips?', a: 'Yes. Upload your podcast episode to VideoText. The Summary branch generates a concise episode summary for show notes. Chapters identify main topics with timestamps for your podcast description.' },
       { q: 'Can VideoText produce subtitles for video podcasts?', a: 'Yes. Upload your video podcast episode (MP4) to VideoText, generate an SRT file, and upload it to YouTube. This gives your video podcast accurate captions significantly better than YouTube auto-captions.' },
@@ -4129,7 +4130,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Is AI transcription accurate enough vs Ditto\'s human transcription?', a: 'VideoText uses Whisper large-v3 (~97–99% WER on clear speech). Human transcription achieves ~99%. For most use cases — journalism, research, meeting notes — the difference is minimal on clear audio. For legal, medical, or verbatim-required transcription, human services like Ditto remain better.' },
       { q: 'Is VideoText faster than Ditto Transcripts?', a: 'Much faster. Ditto Transcripts turnaround is typically same-day to 3 days. VideoText delivers results in 2–8 minutes depending on file length.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card. No per-minute fees.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card. No per-minute fees.' },
     ],
   },
   {
@@ -4147,7 +4148,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'allscribe-alternative',
     faq: [
       { q: 'What does VideoText offer over Allscribe?', a: 'Speaker diarization, auto-generated summary, chapter navigation, keyword indexing, SRT/VTT subtitle export, translation to 70+ languages, YouTube URL input, and instant file deletion after processing.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
       { q: 'How accurate is VideoText compared to Allscribe?', a: 'VideoText uses Whisper large-v3 (~98.5% WER on clear speech). This is comparable to the best available AI transcription engines and significantly more accurate than older Whisper variants.' },
       { q: 'Does VideoText support batch transcription like Allscribe?', a: 'Yes. The Batch Process tool lets you upload and process multiple files simultaneously. All transcripts download as a ZIP archive.' },
       { q: 'How quickly does VideoText process files?', a: 'Typically 30–90 seconds for short files and 5–8 minutes for hour-long recordings. Files are processed on dedicated GPU infrastructure.' },
@@ -4171,7 +4172,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Does VideoProc Converter do transcription?', a: 'VideoProc includes a basic speech-to-text feature but it is not its primary function. VideoText is purpose-built for transcription with speaker diarization, chapters, keyword index, and multi-language export.' },
       { q: 'Is VideoText browser-based unlike VideoProc?', a: 'Yes. VideoText runs in the browser on any OS. VideoProc requires a desktop installation on Windows or Mac.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
     ],
   },
   {
@@ -4190,7 +4191,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Does Movavi auto-generate subtitles?', a: 'Movavi includes a subtitle editor but requires manual text entry and timing. VideoText automatically generates timed subtitles from your video\'s speech using Whisper AI.' },
       { q: 'Is VideoText browser-based unlike Movavi?', a: 'Yes. VideoText runs in any browser on any OS. Movavi requires desktop installation.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
     ],
   },
   {
@@ -4208,7 +4209,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'vocallab-alternative',
     faq: [
       { q: 'Is VideoText better than Vocallab.io?', a: 'VideoText offers Whisper large-v3 transcription, speaker diarization, auto-summary, chapter navigation, keyword indexing, SRT/VTT/TXT export, translation to 70+ languages, and YouTube URL input. Files are deleted immediately after processing.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
       { q: 'What file formats does VideoText accept vs Vocallab?', a: 'VideoText accepts all major video (MP4, MOV, AVI, WebM, MKV) and audio formats (MP3, WAV, M4A, AAC, OGG, FLAC). It also takes YouTube URLs directly — no separate download step needed.' },
       { q: 'Does VideoText delete my files after transcription?', a: 'Yes. Your file is deleted immediately after the transcript is generated. Nothing is stored on VideoText servers. Download your transcript and it is yours to keep.' },
       { q: 'Does VideoText support speaker separation?', a: 'Yes. Speaker diarization is included on all plans — the transcript separates speech by speaker turn, labeled Speaker 1, Speaker 2, etc. Rename speakers to real names after transcription.' },
@@ -4229,7 +4230,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'skribo-alternative',
     faq: [
       { q: 'Why choose VideoText over Skribo?', a: 'VideoText offers Whisper large-v3 accuracy, speaker diarization, summary, chapters, keywords, multi-format export, and translation — all in a single browser-based tool with a free tier and no credit card.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
       { q: 'Does VideoText support the same languages as Skribo?', a: 'VideoText transcribes in 90+ languages using Whisper\'s multilingual model and translates to 70+ languages. It covers all major world languages including English, Spanish, French, German, Portuguese, Japanese, Chinese, Arabic, and more.' },
       { q: 'What video formats can I upload to VideoText?', a: 'MP4, MOV, AVI, WebM, MKV, and all major audio formats (MP3, WAV, M4A, AAC, OGG, FLAC). You can also paste a YouTube URL to transcribe directly without uploading.' },
       { q: 'How long does VideoText take to process a file?', a: 'Typically 30–90 seconds for short files and 5–8 minutes for hour-long recordings. Processing speed does not depend on your local device hardware.' },
@@ -4250,7 +4251,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'whisper-notes-alternative',
     faq: [
       { q: 'What is Whisper Notes used for vs VideoText?', a: 'Whisper Notes is a real-time dictation app for Apple devices. VideoText transcribes pre-recorded files uploaded from any device or OS.' },
-      { q: 'Is VideoText free?', a: 'Yes. 3 free imports per month, no credit card.' },
+      { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
       { q: 'Can Whisper Notes transcribe existing audio or video recordings?', a: 'Whisper Notes is primarily a dictation app — it captures live voice input. For transcribing existing recording files (interviews, lectures, meetings), you need to export the audio file and process it elsewhere. VideoText handles existing files directly — upload and get a full transcript in minutes.' },
       { q: 'Does VideoText work on iPhone like Whisper Notes?', a: 'VideoText is a web app that works in mobile browsers including Safari on iPhone. For voice memo files from iPhone, export as M4A from the Voice Memos app and upload to VideoText.' },
       { q: 'What can VideoText transcribe that Whisper Notes cannot?', a: 'VideoText transcribes video files (MP4, MOV), YouTube URLs, podcast recordings, meeting recordings, and any audio file. Whisper Notes is limited to dictation from microphone input on Apple devices.' },
@@ -4271,7 +4272,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'voice-to-text',
     faq: [
       { q: 'How does voice to text work?', a: 'Click the microphone button and allow browser microphone access. Speak clearly for up to 5 minutes. When you stop recording, VideoText uploads the audio to our AI transcription engine powered by Whisper and delivers a clean text transcript within seconds.' },
-      { q: 'Is voice to text free?', a: 'Yes. The free tier includes 3 recordings per month with no credit card required. Paid plans start at $19/month for more minutes.' },
+      { q: 'Is voice to text free?', a: 'Yes. The free tier includes 3 recordings per month with no credit card required. Pro plan is $40/month with no per-minute limits.' },
       { q: 'What is the best voice to text tool?', a: 'VideoText offers browser-based voice recording with AI transcription powered by Whisper. Unlike Otter.ai or Dragon Dictate, VideoText works entirely in the browser with no app installation and no subscription required for basic use.' },
       { q: 'How accurate is voice to text?', a: 'VideoText uses Whisper large-v3, achieving 95–98% accuracy for clear English speech. Accuracy improves when speaking clearly in a quiet environment. For technical vocabulary, accents, or multiple speakers, accuracy remains high due to Whisper\'s large training corpus.' },
       { q: 'Can I use voice to text on my phone?', a: 'Yes. VideoText works in mobile browsers including Safari on iPhone and Chrome on Android. Open the site, tap the microphone, and speak. Your transcript downloads or copies directly to clipboard.' },
@@ -4361,7 +4362,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'free-voice-to-text',
     faq: [
-      { q: 'Is voice to text really free?', a: 'Yes. VideoText offers 3 free voice recordings per month with no credit card required. Create an account to track your usage. Upgrade to paid plans ($19/month) for more minutes.' },
+      { q: 'Is voice to text really free?', a: 'Yes. VideoText offers 3 free uploads per day with no credit card required. Create an account to track your usage. Pro plan is $40/month for unlimited processing.' },
       { q: 'What is the best free voice to text tool?', a: 'VideoText offers high-accuracy Whisper AI transcription for free, with no watermarks, no forced login, and no usage spying. Alternatives like Otter.ai, Speechnotes, and SpeechTexter offer free tiers but with lower accuracy or intrusive prompts.' },
       { q: 'Does free voice to text store my data?', a: 'VideoText processes and deletes your recordings. We do not store or sell your audio data.' },
     ],
@@ -4431,7 +4432,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How do I convert iPhone Voice Memos to text?', a: 'Open the Voice Memos app on iPhone, tap the memo, tap the three-dot menu, and share as a file. Upload the M4A file to VideoText and get a full text transcript in seconds.' },
       { q: 'Can I transcribe WhatsApp voice messages?', a: 'Yes. Save the WhatsApp voice message as an audio file (tap and hold → Save) and upload to VideoText. Supports the OGG format used by WhatsApp.' },
       { q: 'What formats are supported for voice memo transcription?', a: 'VideoText supports M4A, MP3, WAV, OGG, FLAC, AAC, and video formats containing audio (MP4, MOV, WebM). All common voice memo formats are accepted.' },
-      { q: 'How long can voice memos be?', a: 'VideoText handles voice memos up to 90 minutes. Free tier includes 3 transcriptions per month.' },
+      { q: 'How long can voice memos be?', a: 'VideoText handles voice memos up to 90 minutes on Pro. Free tier includes 3 uploads per day, files up to 30 minutes.' },
     ],
   },
   {
@@ -4500,7 +4501,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'speechify-alternative',
     faq: [
       { q: 'What is the difference between Speechify and VideoText?', a: 'Speechify is a text-to-speech tool that reads documents aloud. VideoText is a speech-to-text tool that converts voice recordings to text. If you\'re looking to transcribe voice recordings, VideoText is the right tool.' },
-      { q: 'Does VideoText have a free plan like Speechify?', a: 'Yes. VideoText offers 3 free transcriptions per month with no credit card. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Does VideoText have a free plan like Speechify?', a: 'Yes. VideoText offers 3 free transcriptions per month with no credit card. Pro plan is $40/month with no usage limits.' },
       { q: 'Can I use VideoText to transcribe voice memos like Speechify?', a: 'Yes. Upload voice memos (M4A, MP3, WAV) or record directly in the browser. VideoText produces accurate text transcripts you can copy or download.' },
     ],
   },
@@ -4584,7 +4585,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How does VideoText compare to Subly for subtitle generation?', a: 'Both tools generate subtitles from video. Subly uses credit-based pricing (pay per video). VideoText uses a flat monthly subscription — no per-video charges. VideoText also includes a full transcript, speaker labels, and AI summary alongside the subtitle file.' },
       { q: 'Does VideoText support subtitle translation like Subly?', a: 'Yes. VideoText translates SRT and VTT subtitle files to 70+ languages. Subly also supports translation, but charges additional credits per language.' },
       { q: 'Can VideoText burn subtitles into video?', a: 'Yes. VideoText can permanently embed (hard-code) subtitles into your video file. The burned-in video is ready to upload to social media without needing a separate subtitle file.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. Paid plans start at $10/month with no per-video credit charges.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Pro plan is $40/month with no per-video credit charges.' },
     ],
   },
   {
@@ -4602,7 +4603,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What is the main difference between MeetGeek and VideoText?', a: 'MeetGeek is a meeting intelligence platform with a bot that auto-joins calendar meetings and transcribes live. VideoText is a video transcription tool for recorded files — upload the meeting recording and get a transcript. VideoText does not require a bot or calendar access.' },
       { q: 'Can VideoText transcribe Zoom recordings?', a: 'Yes. Export your Zoom recording as MP4 and upload it to VideoText. You get a full transcript with speaker detection, AI summary, and SRT/VTT export.' },
       { q: 'Does VideoText generate meeting summaries like MeetGeek?', a: 'Yes. VideoText generates an AI summary of the transcript including key topics and action items. The summary is included with every transcription.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. No meeting bot, no calendar integration, no credit card required.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. No meeting bot, no calendar integration, no credit card required.' },
     ],
   },
   {
@@ -4619,7 +4620,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How does VideoText compare to Maestra?', a: 'Maestra bills per minute of processed audio, which becomes expensive for long videos. VideoText uses flat per-import pricing — a 2-hour documentary costs the same as a 5-minute clip. Both tools produce SRT files and translations, but VideoText also includes a full text transcript and AI summary.' },
       { q: 'Does VideoText support the same languages as Maestra?', a: 'VideoText transcribes and translates in 70+ languages powered by Whisper large-v3. Maestra supports 80+ languages. For the most common content languages (English, Spanish, French, German, Portuguese, Hindi, Japanese, Korean, Chinese, Arabic), both tools deliver strong accuracy.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. No per-minute billing, no credit card required.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. No per-minute billing, no credit card required.' },
     ],
   },
 
@@ -4641,7 +4642,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What subtitle editing features does VideoText offer?', a: 'VideoText includes: automatic timing overlap correction, line-length validation against Netflix and BBC standards, reading speed (CPS) analysis, timestamp shifting to fix sync issues, subtitle merging, SRT/VTT format conversion, and AI-powered re-generation of subtitles from the original video.' },
       { q: 'How do I fix subtitle sync issues online?', a: 'If your subtitles are consistently early or late, use the Shift Subtitle Timing free tool — enter a positive or negative offset in milliseconds and download the corrected file. If the timing varies throughout the video, VideoText\'s AI tool can regenerate the subtitles from the original video with perfect sync.' },
       { q: 'Can I edit individual subtitle lines?', a: 'The Fix Subtitles AI tool allows you to review and edit the transcript text after processing. For manual line-by-line editing of an existing SRT file, you can open it in any text editor (Notepad, VS Code, TextEdit) since SRT is plain text.' },
-      { q: 'Is VideoText a free subtitle editor?', a: 'The free browser tools (timing fixer, validator, format converter) are completely free with no account required. The AI-powered subtitle generation and correction tool has a free tier of 3 imports per month.' },
+      { q: 'Is VideoText a free subtitle editor?', a: 'The free browser tools (timing fixer, validator, format converter) are completely free with no account required. The AI-powered subtitle generation and correction tool has a free tier of 3 uploads per day.' },
     ],
   },
   {
@@ -4656,7 +4657,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'online-subtitle-editor',
     faq: [
-      { q: 'What is the best free online subtitle editor?', a: 'VideoText offers a suite of free browser-based subtitle editing tools including a timing fixer, overlap validator, format converter (SRT/VTT), timing shifter, and merge tool. For AI-powered subtitle generation from video, the free tier includes 3 imports per month.' },
+      { q: 'What is the best free online subtitle editor?', a: 'VideoText offers a suite of free browser-based subtitle editing tools including a timing fixer, overlap validator, format converter (SRT/VTT), timing shifter, and merge tool. For AI-powered subtitle generation from video, the free tier includes 3 uploads per day.' },
       { q: 'Can I edit subtitles without re-uploading the video?', a: 'Yes. Most free tools (timing fixer, validator, converter) work with just the subtitle file — no video needed. Upload your SRT or VTT file, make the corrections, and download.' },
       { q: 'Does VideoText support real-time subtitle preview?', a: 'The subtitle editing tools are file-based rather than video-player-based. You edit the SRT/VTT file and download the corrected version. For a video-player preview, open the corrected SRT in VLC or a video editor alongside your video.' },
     ],
@@ -4680,7 +4681,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How do I get a SRT file from a CapCut project?', a: 'In CapCut, export your video as MP4 (without captions embedded). Then upload the MP4 to VideoText. The AI transcribes the audio and produces an SRT file with accurate timestamps that you can download and use anywhere.' },
       { q: 'Why would I want an SRT file instead of CapCut\'s built-in captions?', a: 'CapCut captions are burned into the video when exported — you can\'t edit them after export, and they can\'t be turned off by viewers. A standalone SRT file lets platforms (YouTube, Vimeo) display captions as a separate track that viewers can toggle on or off, and lets you edit or translate the captions independently.' },
       { q: 'Can I use VideoText SRT files back in CapCut?', a: 'CapCut does not currently support importing external SRT files as caption tracks. The SRT file from VideoText is best used for platform uploads (YouTube, Vimeo) or for burning captions with VideoText\'s burn-in tool if you want more control over the caption style.' },
-      { q: 'Is this free?', a: 'Yes. VideoText has a free tier with 3 imports per month. No credit card required.' },
+      { q: 'Is this free?', a: 'Yes. VideoText has a free tier with 3 uploads per day. No credit card required.' },
     ],
   },
 
@@ -4702,7 +4703,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What is the difference between SDH and closed captions?', a: 'SDH and closed captions serve the same accessibility purpose. Closed captions (CC) are a North American broadcast standard embedded in the video signal (CEA-608/708). SDH is an international subtitle standard used for disc and streaming delivery. SDH is styled like regular subtitles (positioned at the bottom of the screen) rather than the white-on-black CC style. Functionally they contain the same information.' },
       { q: 'Does VideoText automatically generate SDH subtitles?', a: 'VideoText generates accurate dialogue subtitles with speaker labels automatically. Sound effect descriptions ([music], [applause], etc.) need to be added manually in a text editor. The generated SRT or VTT file provides the full dialogue base — you then annotate non-speech events.' },
       { q: 'What format should SDH subtitles be in?', a: 'Netflix requires SDH in TTML (IMSC) format for final delivery. For upload to YouTube and Vimeo, SRT or VTT with SDH formatting works correctly. VideoText exports SRT and VTT.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. No credit card required.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. No credit card required.' },
     ],
   },
   {
@@ -4741,7 +4742,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What is WCAG 2.1 Level AA for video?', a: 'WCAG 2.1 Success Criterion 1.2.2 (Captions, Prerecorded) requires synchronized captions for all pre-recorded video content. Success Criterion 1.2.3 (Audio Description or Media Alternative) requires either audio description or a full text transcript. VideoText produces both — a synchronized SRT/VTT caption file and a full text transcript.' },
       { q: 'How accurate do captions need to be for ADA compliance?', a: 'The FCC requires 99% accuracy for broadcast TV. WCAG does not specify a numeric accuracy threshold but requires captions to be "accurate" and "synchronized." AI-generated captions at 98%+ word accuracy generally meet this standard for most content. Technical and proper-noun-heavy content may need human review.' },
       { q: 'What caption format does YouTube require for accessibility?', a: 'YouTube accepts SRT, VTT, SCC, TTML, and SBV formats for caption uploads. SRT is the simplest and most widely compatible. Upload via YouTube Studio → Subtitles → Add Language → Upload file.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 imports per month. No credit card required. Paid plans start at $10/month.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. No credit card required. Pro plan is $40/month.' },
     ],
   },
   {
@@ -4884,7 +4885,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     canonicalGroup: 'subtitle-generator',
     faq: [
       { q: 'How do I make subtitles for a video?', a: 'Upload your video to VideoText\'s subtitle maker. Our AI generates timed SRT and VTT subtitle files in seconds. Download the file and upload it to YouTube Studio, Vimeo, or any platform. No manual typing, no software installation.' },
-      { q: 'Is the subtitle maker free?', a: 'Yes. Free tier includes 3 imports per month, no credit card required. Paid plans start at $19/month for 450 minutes.' },
+      { q: 'Is the subtitle maker free?', a: 'Yes. Free tier includes 3 uploads per day, no credit card required. Pro plan is $40/month with no usage limits.' },
       { q: 'What subtitle formats does the subtitle maker produce?', a: 'SRT and VTT — the two most widely supported subtitle formats. SRT works on YouTube, Vimeo, and most video platforms. VTT is standard for HTML5 web players.' },
       { q: 'Can I make subtitles for a YouTube video?', a: 'Yes. Paste any public YouTube URL into VideoText — no download needed. Get an SRT subtitle file ready to upload to YouTube Studio.' },
     ],
@@ -4903,7 +4904,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     canonicalGroup: 'caption-generator',
     faq: [
       { q: 'How do I make captions for my video?', a: 'Upload your video to VideoText and click Generate. Our AI captions your video automatically — producing SRT and VTT files in seconds. Download and add them to any platform.' },
-      { q: 'Is the caption maker free?', a: 'Yes. Free tier includes 3 imports per month, no credit card required. All features including SRT/VTT export are available on the free tier.' },
+      { q: 'Is the caption maker free?', a: 'Yes. Free tier includes 3 uploads per day, no credit card required. All features including SRT/VTT export are available on the free tier.' },
       { q: 'What is the difference between captions and subtitles?', a: 'Captions include all audio cues (speech, sounds, speaker labels) for deaf and hard-of-hearing viewers. Subtitles transcribe or translate speech for viewers who can hear. Both use the same SRT and VTT file formats.' },
     ],
   },
@@ -4940,7 +4941,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How do I add captions to a TikTok video?', a: 'For permanent captions: upload your video to VideoText, generate SRT subtitles, then use Burn Subtitles to permanently embed them in the video. Upload the captioned video to TikTok. Or use TikTok\'s auto-caption feature after uploading (lower accuracy).' },
       { q: 'Are TikTok auto-captions accurate?', a: 'TikTok auto-captions have reasonable accuracy for English but are less accurate for accents, technical vocabulary, and non-English content. VideoText uses Whisper large-v3 for significantly higher accuracy (98.5%+) — generate captions before uploading for better results.' },
       { q: 'Can I get an SRT file for TikTok?', a: 'Yes. Upload your video to VideoText and download the SRT file. TikTok\'s web editor accepts SRT uploads for closed captions. Alternatively, burn the captions into the video using VideoText\'s Burn Subtitles tool.' },
-      { q: 'Is TikTok caption generation free?', a: 'Yes. Free tier includes 3 imports per month, no credit card required. Includes SRT generation and subtitle burning.' },
+      { q: 'Is TikTok caption generation free?', a: 'Yes. Free tier includes 3 uploads per day, no credit card required. Includes SRT generation and subtitle burning.' },
       { q: 'Why are burned-in captions better for TikTok?', a: 'Burned-in captions are visible everywhere — in feed, on reposts, in embeds — without the viewer needing to toggle them on. TikTok\'s closed captions can be disabled. For maximum reach, burn captions into the video before uploading.' },
     ],
   },
@@ -4961,7 +4962,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How do I add captions to a YouTube video?', a: 'Step 1: Upload your video to VideoText and generate an SRT file. Step 2: In YouTube Studio, open your video → Subtitles → Add → Upload file. Select your SRT. YouTube maps the timestamps automatically and adds a CC track immediately — no waiting for YouTube auto-captions.' },
       { q: 'Why are YouTube auto-captions inaccurate?', a: 'YouTube uses its own speech model which underperforms Whisper large-v3, particularly for accents, fast speech, technical terms, and non-English content. VideoText generates higher-accuracy captions before you upload.' },
       { q: 'Can I get captions from a YouTube URL without downloading?', a: 'Yes. Paste the YouTube URL into VideoText — VideoText streams the audio directly and generates an SRT file. No download needed.' },
-      { q: 'Are YouTube captions free?', a: 'Yes. VideoText free tier includes 3 imports per month, no credit card required. Full SRT/VTT export included.' },
+      { q: 'Are YouTube captions free?', a: 'Yes. VideoText free tier includes 3 uploads per day, no credit card required. Full SRT/VTT export included.' },
     ],
   },
   {
@@ -4979,7 +4980,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How do I add captions to Instagram Reels?', a: 'Step 1: Upload your Reel video to VideoText and generate subtitles. Step 2: Use Burn Subtitles to permanently embed captions into the video. Step 3: Upload the captioned video to Instagram. Burned-in captions are always visible — unlike Instagram\'s toggleable auto-captions.' },
       { q: 'Are burned-in captions better for Reels?', a: 'Yes. Instagram auto-captions can be turned off and are not shown in embeds or reposts. Burned-in captions are always visible, making your content more accessible and engaging in silent autoplay environments.' },
       { q: 'Can I translate Reels captions to another language?', a: 'Yes. After generating subtitles, use VideoText\'s Translate Subtitles tool to translate to any of 70+ languages. Then burn the translated captions into the video for multilingual Reels.' },
-      { q: 'Is this free?', a: 'Yes. VideoText free tier includes 3 imports per month, no credit card required. Includes subtitle generation and burning.' },
+      { q: 'Is this free?', a: 'Yes. VideoText free tier includes 3 uploads per day, no credit card required. Includes subtitle generation and burning.' },
     ],
   },
   {
@@ -4996,7 +4997,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How do I add captions to YouTube Shorts?', a: 'Option 1: Upload your Shorts video to VideoText, generate an SRT file, and upload to YouTube Studio → Subtitles. Option 2: Burn captions permanently into the Shorts video using VideoText\'s Burn Subtitles tool, then re-upload the captioned version.' },
       { q: 'Do YouTube Shorts support SRT caption files?', a: 'Yes. Upload SRT files to YouTube Studio under the Subtitles section for any Shorts video. The captions appear as a toggleable CC track.' },
-      { q: 'Is this free?', a: 'Yes. VideoText free tier includes 3 imports per month, no credit card required.' },
+      { q: 'Is this free?', a: 'Yes. VideoText free tier includes 3 uploads per day, no credit card required.' },
     ],
   },
   {
@@ -5032,7 +5033,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Can I use Whisper AI transcription online without installing anything?', a: 'Yes. VideoText is a web app powered by Whisper large-v3. Upload your video at videotext.io and get a Whisper-quality transcript in minutes — no Python, no GPU, no local setup required.' },
       { q: 'Which Whisper model does VideoText use?', a: 'VideoText uses Whisper large-v3 — the most accurate version of OpenAI\'s open-source speech recognition model. This achieves 98.5%+ word accuracy on clear audio across 50+ languages.' },
-      { q: 'Is online Whisper transcription free?', a: 'Yes. VideoText free tier includes 3 imports per month, no credit card required. Full Whisper large-v3 quality on every import.' },
+      { q: 'Is online Whisper transcription free?', a: 'Yes. VideoText free tier includes 3 uploads per day, no credit card required. Full Whisper large-v3 quality on every import.' },
       { q: 'What is the difference between VideoText and running Whisper locally?', a: 'Running Whisper locally requires Python, PyTorch, GPU hardware (optional but needed for speed), and command-line experience. VideoText delivers the same Whisper large-v3 quality in a browser — upload a file, get results in minutes. No setup required.' },
     ],
   },
@@ -5049,7 +5050,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'free-speech-to-text',
     canonicalGroup: 'speech-to-text',
     faq: [
-      { q: 'Is speech to text really free?', a: 'Yes. VideoText\'s voice recorder is completely free — record from your microphone and get a transcript instantly with no account required. For video file transcription, the free tier includes 3 full imports per month (no credit card).' },
+      { q: 'Is speech to text really free?', a: 'Yes. VideoText\'s voice recorder is completely free — record from your microphone and get a transcript instantly with no account required. For video file transcription, the free tier includes 3 uploads per day (no credit card).' },
       { q: 'What is the best free speech to text tool?', a: 'VideoText offers the most capable free speech-to-text tier: 3 full video imports per month plus unlimited voice recording. Powered by Whisper AI for 98.5%+ accuracy. No credit card required.' },
       { q: 'How accurate is free speech to text?', a: 'VideoText uses Whisper large-v3 — 98.5%+ word accuracy on clear audio. This is the same model used on paid plans; accuracy is not reduced for free users.' },
       { q: 'Does free speech to text support multiple languages?', a: 'Yes. Whisper large-v3 supports 50+ languages. Set the spoken language before recording or uploading for best accuracy.' },
@@ -5069,7 +5070,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'What is an online transcription service?', a: 'An online transcription service converts audio or video speech to text using AI. You upload a file (or paste a URL), and the service returns a text transcript. VideoText delivers a full transcript plus SRT subtitles, AI summary, and chapters in one job.' },
       { q: 'Is VideoText a transcription service or transcription software?', a: 'Both — VideoText is a web-based AI transcription service (no software to install) that transcribes video and audio files with 98.5%+ accuracy. It runs in the browser and charges a flat monthly fee rather than per-minute rates.' },
-      { q: 'How much does an AI transcription service cost?', a: 'VideoText starts free (3 imports/month, no credit card). Paid plans: Basic $19/month (450 min), Pro $49/month (1,200 min), Agency $129/month (3,000 min). No per-minute fees, no hidden charges.' },
+      { q: 'How much does an AI transcription service cost?', a: 'VideoText starts free (3 uploads/day, no credit card). Pro plan is $40/month — unlimited processing, no per-minute fees, no hidden charges.' },
       { q: 'Is the transcription service private?', a: 'Yes. VideoText deletes all uploaded files immediately after processing. No content is retained or used for AI training. See: videotext.io/privacy' },
     ],
   },
@@ -5087,7 +5088,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How do I add captions to a video?', a: 'Step 1: Upload your video to VideoText and generate an SRT file. Step 2: For a separate caption file — upload the SRT to your video platform (YouTube Studio, Vimeo, etc). For permanently burned-in captions — use VideoText\'s Burn Subtitles tool and download a video with captions embedded.' },
       { q: 'How do I add captions to a video permanently?', a: 'Use VideoText\'s Burn Subtitles tool: upload your video file and SRT caption file, and download a single MP4 with captions permanently burned into the video frames. The captions are always visible — no toggling required.' },
-      { q: 'Is adding captions to video free?', a: 'Yes. VideoText free tier includes 3 imports per month. Includes both SRT generation and subtitle burning. No credit card required.' },
+      { q: 'Is adding captions to video free?', a: 'Yes. VideoText free tier includes 3 uploads per day. Includes both SRT generation and subtitle burning. No credit card required.' },
       { q: 'What video formats are supported for adding captions?', a: 'MP4, MOV, AVI, WebM, MKV. Output is always an MP4, compatible with YouTube, Instagram, TikTok, LinkedIn, and all major platforms.' },
     ],
   },
@@ -5106,7 +5107,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How do I add captions to a video?', a: 'Upload your video to VideoText. Our AI generates timed SRT and VTT caption files in seconds. Download and upload to YouTube, Vimeo, or any platform — or burn captions permanently into the video using the Burn Subtitles tool.' },
       { q: 'What types of video captions are there?', a: 'Closed captions: separate SRT/VTT files you upload to a platform (can be toggled on/off). Open captions: captions burned permanently into the video frame (always visible). VideoText generates both.' },
-      { q: 'Are video captions free?', a: 'Yes. Free tier includes 3 imports per month, no credit card required. Full SRT and VTT export.' },
+      { q: 'Are video captions free?', a: 'Yes. Free tier includes 3 uploads per day, no credit card required. Full SRT and VTT export.' },
     ],
   },
   {
@@ -5122,7 +5123,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'best-caption-generator',
     faq: [
       { q: 'What is the best caption generator for YouTube?', a: 'VideoText is the best caption generator for YouTube: it accepts YouTube URLs directly (no download), produces SRT files ready to upload to YouTube Studio, achieves 98.5%+ accuracy, and translates captions to 70+ languages. Starts free.' },
-      { q: 'What is the best free caption generator?', a: 'VideoText. Free tier includes 3 full imports per month — no credit card required, no watermark, full features including SRT/VTT export and multilanguage transcription.' },
+      { q: 'What is the best free caption generator?', a: 'VideoText. Free tier includes 3 uploads per day — no credit card required, no watermark, full features including SRT/VTT export and multilanguage transcription.' },
       { q: 'Is VideoText the most accurate caption generator?', a: 'Yes — among online tools, VideoText uses Whisper large-v3 which achieves the lowest Word Error Rate of any publicly available model. At 98.5%+ accuracy on clear audio, it outperforms YouTube auto-captions, Otter.ai, and most other web-based caption generators.' },
     ],
   },
@@ -5152,6 +5153,728 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'transcription-tools-hub',
     faq: [],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BRAND TRANSCRIPTION GUIDELINE PAGES
+  // 36 pages targeting brand-specific style guide searches
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ── REV ──────────────────────────────────────────────────────────────────
+  {
+    path: '/rev-transcript-guidelines',
+    title: 'Rev Transcript Guidelines 2025 — Complete Style Guide for Transcribers | VideoText',
+    description: 'Complete Rev transcript guidelines: verbatim rules, speaker label format, timestamp requirements, inaudible notation, and filler word policy. Use our formatter to apply Rev standards instantly.',
+    h1: 'Rev Transcript Guidelines: The Complete Style Guide',
+    intro: 'Everything a Rev transcriber needs: verbatim level, speaker labels, timestamps, inaudible notation, and filler word rules — all in one reference. Use the Guideline Format tool to apply Rev\'s formatting rules to your transcript automatically.',
+    breadcrumbLabel: 'Rev Transcript Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/rev-style-guide', '/rev-transcription-format', '/rev-transcription-requirements', '/gotranscript-guidelines', '/transcribeme-guidelines', '/guideline-format'],
+    indexable: true,
+    intentKey: 'rev-transcript-guidelines',
+    keywords: ['rev transcript guidelines', 'rev transcription style guide', 'rev formatting rules', 'rev transcriber guidelines', 'rev verbatim rules', 'how to format transcription for rev'],
+    faq: [
+      { q: 'Does Rev use clean verbatim or full verbatim?', a: 'Rev uses clean verbatim. Filler words like "um", "uh", "you know", and "like" are removed unless they meaningfully change the sentence. False starts and stutters are removed by default. This is different from platforms like Scribie or GMR Transcription that require full/strict verbatim.' },
+      { q: 'What speaker label format does Rev require?', a: 'Rev uses square bracket format: [Speaker Name] or [Speaker 1], [Speaker 2] for unnamed speakers. The bracket comes before the speaker\'s words, separated by a colon if needed. Example: [John]: The meeting starts at nine.' },
+      { q: 'Are timestamps required for Rev transcription?', a: 'Timestamps are optional by default on Rev and are only included when the client specifically requests them. The format used is [HH:MM:SS]. Always check the job instructions before adding timestamps.' },
+      { q: 'How should I mark inaudible audio in Rev transcripts?', a: 'Use [inaudible] (lowercase, square brackets) for audio you cannot make out. Do not guess at inaudible words — always mark them clearly. Rev\'s QA team will flag transcripts that attempt to guess inaudible content.' },
+      { q: 'Can I use VideoText\'s Guideline Format tool for Rev formatting?', a: 'Yes. The VideoText Guideline Format tool has a Rev preset that automatically applies Rev\'s formatting rules: clean verbatim output, correct speaker label format, inaudible notation, and QA validation. Select the Rev preset, paste your transcript, and export the corrected version.' },
+      { q: 'How do I pass Rev\'s transcription quality test?', a: 'Focus on clean verbatim accuracy, correct speaker labeling, and proper punctuation. The most common failures are: keeping filler words that should be removed, wrong speaker label format, and poor punctuation. Practice with sample audio and check your output against Rev\'s style guide before submitting the test.' },
+    ],
+  },
+  {
+    path: '/rev-transcription-format',
+    title: 'Rev Transcription Format Guide — Timestamps, Speaker Labels & Rules | VideoText',
+    description: 'Rev transcription format guide: exact speaker label syntax, timestamp format [HH:MM:SS], inaudible notation, paragraph rules, and verbatim standards. Format your transcript to Rev specs.',
+    h1: 'Rev Transcription Format Guide',
+    intro: 'A practical formatting reference for Rev transcribers. Learn the exact syntax for speaker labels, when to add timestamps, how to mark inaudible audio, and how Rev\'s clean verbatim standard differs from other platforms.',
+    breadcrumbLabel: 'Rev Transcription Format',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/rev-transcript-guidelines', '/rev-style-guide', '/rev-captioning-guidelines', '/gotranscript-transcription-format', '/scribie-format-guide', '/guideline-format'],
+    indexable: true,
+    intentKey: 'rev-transcription-format',
+    keywords: ['rev transcription format', 'rev format guide', 'rev speaker label format', 'rev timestamp format', 'rev inaudible notation', 'rev paragraph format'],
+    faq: [
+      { q: 'What is the correct timestamp format for Rev?', a: 'Rev uses [HH:MM:SS] format — hours, minutes, and seconds in square brackets. Timestamps are only added when explicitly requested by the client in the job instructions. Do not add timestamps by default.' },
+      { q: 'How do I format speaker labels in Rev?', a: 'Use square brackets with the speaker name or number: [Speaker 1] or [John Smith]. If you know the speaker\'s name, use their real name. For unknown speakers, use sequential numbers: [Speaker 1], [Speaker 2]. A colon follows the closing bracket if needed for readability.' },
+      { q: 'What is the correct inaudible format for Rev?', a: '[inaudible] in lowercase, square brackets. Place it exactly where the inaudible word(s) occur in the sentence. For example: "The project cost [inaudible] in total." Never use (inaudible) with parentheses or [INAUDIBLE] in all caps for Rev.' },
+      { q: 'How long should paragraphs be in Rev transcripts?', a: 'Start a new paragraph for every speaker change. Within a single speaker\'s turn, break paragraphs after 3–5 sentences or when the topic noticeably shifts. Avoid very long or very short single-sentence paragraphs unless the speaker\'s turn is naturally brief.' },
+      { q: 'How are numbers formatted in Rev transcripts?', a: 'Rev follows standard journalistic style: spell out numbers one through ten, use numerals for 11 and above. Percentages use numerals (25%). Dates and times follow standard formats (3 p.m., January 5th). Very large numbers can use a mix: 1.5 million.' },
+    ],
+  },
+  {
+    path: '/rev-style-guide',
+    title: 'Rev Style Guide for Transcribers — Complete Formatting Reference | VideoText',
+    description: 'Rev transcription style guide: all formatting rules including verbatim level, punctuation, numbers, contractions, speaker labels, and special notations. The definitive reference for Rev transcribers.',
+    h1: 'Rev Style Guide: Complete Formatting Reference for Transcribers',
+    intro: 'A comprehensive style guide covering every formatting decision you\'ll face when transcribing for Rev. From verbatim level to punctuation, contractions, numbers, and special notations — all in one place.',
+    breadcrumbLabel: 'Rev Style Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/rev-transcript-guidelines', '/rev-transcription-format', '/rev-transcription-requirements', '/transcribeme-style-guide', '/scribie-style-guide', '/guideline-format'],
+    indexable: true,
+    intentKey: 'rev-style-guide',
+    keywords: ['rev style guide', 'rev transcription style guide 2024', 'rev formatting guide', 'rev transcription rules', 'rev punctuation guide', 'rev number formatting'],
+    faq: [
+      { q: 'What punctuation rules does Rev use?', a: 'Rev follows standard American English punctuation. Use the Oxford comma (serial comma) in lists. Use em dashes (—) for abrupt interruptions or speaker cut-offs. Use ellipses (...) for trailing off. End all sentences with appropriate terminal punctuation. Do not use commas to separate independent clauses (comma splices).' },
+      { q: 'Does Rev use contractions?', a: 'Yes. Rev keeps contractions as spoken. If the speaker says "don\'t", transcribe "don\'t" — not "do not". If the speaker explicitly says both words separately ("do not"), transcribe them as two words. Always transcribe what was actually spoken.' },
+      { q: 'How does Rev handle crosstalk between speakers?', a: 'When two speakers talk simultaneously and you can make out both, transcribe them separately with [crosstalk] notation. Example: [Speaker 1]: [crosstalk] — I was trying to say the same thing. If neither speaker is audible during the overlap, use [crosstalk] alone.' },
+      { q: 'Are false starts included in Rev transcripts?', a: 'No — Rev uses clean verbatim, so false starts are generally removed. If the speaker says "I — I think we should", transcribe "I think we should". However, if a false start meaningfully changes the speech (e.g., "I was going to say — actually, forget it"), consider whether the start is contextually important.' },
+      { q: 'How should I handle non-verbal sounds in Rev transcripts?', a: 'Include non-verbal sounds only when they are relevant to the context: [laughs], [sighs], [applause]. Use lowercase in square brackets. Do not transcribe minor background noises, keyboard clicks, or paper shuffling unless specifically requested by the client.' },
+    ],
+  },
+  {
+    path: '/rev-captioning-guidelines',
+    title: 'Rev Captioning Guidelines — Caption Format, Timing & Accuracy Rules | VideoText',
+    description: 'Rev captioning guidelines: caption line length, timing rules, speaker identification, sound effect notation, and accuracy standards for closed captioning work on Rev.',
+    h1: 'Rev Captioning Guidelines for Caption Writers',
+    intro: 'Rev\'s captioning guidelines differ from their transcription style guide. Captions have specific line-length limits, timing constraints, and formatting rules for speaker changes and sound effects. This guide covers everything you need for Rev caption work.',
+    breadcrumbLabel: 'Rev Captioning Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/rev-transcript-guidelines', '/rev-style-guide', '/rev-transcription-format', '/3play-media-transcription-guidelines', '/speechpad-transcription-guidelines', '/guideline-format'],
+    indexable: true,
+    intentKey: 'rev-captioning-guidelines',
+    keywords: ['rev captioning guidelines', 'rev caption format', 'rev closed captions style guide', 'rev caption timing rules', 'rev caption line length', 'rev caption writer guide'],
+    faq: [
+      { q: 'What is the maximum caption line length for Rev captions?', a: 'Rev captions follow broadcast standards with a maximum of approximately 32 characters per line. This ensures captions are readable on screen without covering too much of the frame. The Rev captioning editor enforces line-length limits automatically.' },
+      { q: 'How do I indicate a speaker change in Rev captions?', a: 'Speaker changes in Rev captions are indicated with >> (double chevron) at the start of the new speaker\'s caption block, or by using speaker labels in brackets. The exact method depends on the caption type and client instructions.' },
+      { q: 'Does Rev captioning use full verbatim or clean verbatim?', a: 'Rev\'s captioning standard is clean verbatim — similar to their transcription standard. Filler words (um, uh, you know) are removed from captions. However, for verbatim caption orders, all speech is captured exactly as spoken.' },
+      { q: 'How are sound effects formatted in Rev captions?', a: 'Non-speech sounds are notated in square brackets: [music], [applause], [laughter], [phone ringing]. These are placed on their own caption line and centered when possible. Only include sounds that are significant to understanding the content.' },
+      { q: 'What accuracy rate does Rev require for captions?', a: 'Rev requires 99%+ accuracy for caption work, which is higher than their standard transcription threshold. Caption errors are more noticeable to viewers and can affect compliance with accessibility standards. QA is strict on caption projects.' },
+    ],
+  },
+  {
+    path: '/rev-transcription-requirements',
+    title: 'Rev Transcription Requirements — What Rev Looks for in Transcripts | VideoText',
+    description: 'Rev transcription requirements: accuracy standards, QA criteria, common rejection reasons, formatting requirements, and what you need to pass Rev\'s quality review. Prepare your transcripts correctly.',
+    h1: 'Rev Transcription Requirements: Pass QA Every Time',
+    intro: 'Understanding what Rev\'s QA team reviews helps you avoid the most common rejection reasons. This guide covers Rev\'s accuracy standards, the criteria used during quality review, and how to format your transcripts to pass consistently.',
+    breadcrumbLabel: 'Rev Transcription Requirements',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/rev-transcript-guidelines', '/rev-style-guide', '/rev-transcription-format', '/transcribeme-exam-guide', '/gotranscript-test-guide', '/guideline-format'],
+    indexable: true,
+    intentKey: 'rev-transcription-requirements',
+    keywords: ['rev transcription requirements', 'rev quality standards', 'rev transcript accuracy', 'rev QA requirements', 'rev transcription test requirements', 'what rev looks for in transcripts'],
+    faq: [
+      { q: 'What accuracy rate does Rev require?', a: 'Rev requires a minimum of 97–98% accuracy for most transcription work. This is calculated as word error rate against the ground truth. Consistent accuracy below this threshold can result in lower job availability or account suspension. Accuracy is tracked across all submitted jobs.' },
+      { q: 'What are the most common reasons Rev transcripts fail QA?', a: 'The most common QA failure reasons are: (1) incorrect verbatim level — keeping fillers that should be removed; (2) wrong speaker label format; (3) missing or incorrect inaudible notations; (4) punctuation errors; (5) number formatting errors (numerals vs. spelled out). Formatting errors are flagged even when the words are transcribed correctly.' },
+      { q: 'How does Rev\'s grading system work?', a: 'Rev uses a continuous quality tracking system. Each submitted transcript is graded based on accuracy, formatting, and style compliance. Your overall grade average determines your access to higher-paying jobs and priority scheduling. Consistently high grades unlock premium job opportunities.' },
+      { q: 'Can I fail Rev\'s test transcript by formatting correctly but with errors?', a: 'Yes. The Rev entry test evaluates both accuracy and formatting. You can have correct words but fail due to wrong speaker label format, incorrect verbatim level, or poor punctuation. Formatting compliance counts alongside word accuracy in the overall score.' },
+      { q: 'What happens if I submit a Rev transcript with too many errors?', a: 'A single low-scoring transcript won\'t immediately affect your account, but consistent quality below Rev\'s threshold will lower your quality score, reduce your access to available jobs, and can eventually result in account restrictions. Rev sends quality feedback notifications when transcripts receive low grades.' },
+    ],
+  },
+  {
+    path: '/rev-ai-transcription-guide',
+    title: 'Rev AI Transcription Guide — Editing & Post-Processing AI Transcripts | VideoText',
+    description: 'Rev AI transcription guide: how to edit AI-generated Rev transcripts, common AI errors to fix, post-processing workflow, and when to use AI vs. human transcription on Rev.',
+    h1: 'Rev AI Transcription Guide: Edit and Post-Process AI Transcripts',
+    intro: 'Rev\'s AI transcription produces fast first drafts that still need human review. This guide covers the most common AI transcription errors, how to correct them efficiently, and the post-processing workflow for cleaning up Rev AI output.',
+    breadcrumbLabel: 'Rev AI Transcription Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/rev-transcript-guidelines', '/rev-transcription-format', '/rev-style-guide', '/transcribio-guidelines', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'rev-ai-transcription-guide',
+    keywords: ['rev AI transcription guide', 'how to edit rev AI transcripts', 'rev AI vs human transcription', 'post-process rev AI output', 'rev automated transcription editing', 'rev AI accuracy'],
+    faq: [
+      { q: 'How accurate is Rev AI transcription?', a: 'Rev AI reports approximately 80–85% accuracy on clear audio, which is typical for AI transcription. Accuracy drops significantly with accents, multiple speakers, technical jargon, background noise, and low-quality audio. Human transcription on Rev reaches 99%+ accuracy.' },
+      { q: 'What are the most common errors in Rev AI transcripts?', a: 'Common Rev AI errors: (1) homophones (their/there/they\'re, to/too/two); (2) proper nouns and names misspelled; (3) technical or domain-specific terms incorrect; (4) punctuation errors; (5) speaker label mix-ups during crosstalk; (6) missing words in fast speech or overlapping dialogue.' },
+      { q: 'How do I efficiently post-process a Rev AI transcript?', a: 'Best workflow: (1) Listen to the audio once while reading the AI transcript to spot obvious errors; (2) Fix proper nouns and names first; (3) Review homophones in context; (4) Check speaker labels at every speaker change; (5) Fix punctuation; (6) Verify technical terms against context. Use playback speed control to catch fast-speech errors.' },
+      { q: 'Is Rev AI transcription cheaper than human transcription?', a: 'Yes. Rev AI transcription costs $0.25/minute vs. $1.99+/minute for human transcription. For content where 80–85% accuracy is acceptable (internal notes, rough drafts, searchable archives), AI is cost-effective. For legal, medical, or publishable content, human transcription is recommended.' },
+      { q: 'Can VideoText replace Rev AI transcription?', a: 'VideoText offers AI transcription using Whisper large-v3, which achieves similar or better accuracy than Rev AI on most content types, at a lower cost on monthly plans. VideoText starts free with 3 imports/month. For the same post-processing workflow, VideoText output can be edited using the Guideline Format tool to meet Rev\'s formatting standards.' },
+    ],
+  },
+
+  // ── GOTRANSCRIPT ──────────────────────────────────────────────────────────
+  {
+    path: '/gotranscript-guidelines',
+    title: 'GoTranscript Guidelines — Full Style Guide for GoTranscript Transcribers | VideoText',
+    description: 'Complete GoTranscript guidelines: clean verbatim rules, mandatory timestamps, speaker labels, inaudible notation with timestamps, and filler word policy. Format transcripts to GoTranscript standards.',
+    h1: 'GoTranscript Guidelines: Full Transcription Style Guide',
+    intro: 'The complete GoTranscript style guide for freelance transcribers. Covers clean verbatim requirements, mandatory timestamp format [HH:MM:SS], speaker label syntax, and every formatting rule you need to pass QA and maintain high ratings.',
+    breadcrumbLabel: 'GoTranscript Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/gotranscript-transcription-format', '/gotranscript-style-guide', '/gotranscript-transcription-rules', '/rev-transcript-guidelines', '/transcribeme-guidelines', '/guideline-format'],
+    indexable: true,
+    intentKey: 'gotranscript-guidelines',
+    keywords: ['gotranscript guidelines', 'gotranscript transcription style guide', 'gotranscript formatting rules', 'gotranscript verbatim rules', 'gotranscript transcriber guide', 'how to format transcription for gotranscript'],
+    faq: [
+      { q: 'Does GoTranscript require timestamps?', a: 'Yes. GoTranscript requires timestamps at the start of every speaker segment. The format is [HH:MM:SS] — hours:minutes:seconds in square brackets. This is a key difference from Rev and TranscribeMe, where timestamps are optional. Missing timestamps will cause QA failures on GoTranscript.' },
+      { q: 'What verbatim level does GoTranscript use?', a: 'GoTranscript uses clean verbatim: remove all filler words (um, uh, you know, like), false starts, and repetitions. Output should be clean and readable while accurately reflecting what was said. This is similar to Rev\'s standard but GoTranscript enforces it more strictly.' },
+      { q: 'How does GoTranscript format speaker labels?', a: 'GoTranscript uses "Speaker 1:", "Speaker 2:" format — no brackets. The speaker label is followed by a colon and a space, then the speaker\'s text. If you know the speaker\'s name from context or the job briefing, use their name directly instead of numbered labels.' },
+      { q: 'How is inaudible audio marked in GoTranscript?', a: 'GoTranscript uses [inaudible H:MM] — the inaudible notation includes an approximate timestamp. Example: "The quarterly budget was [inaudible 3:45] according to the report." This helps the client locate the inaudible section in the original recording.' },
+      { q: 'What is GoTranscript\'s accuracy requirement?', a: 'GoTranscript requires a minimum of 97% accuracy. Quality is measured by their internal QA team. Consistent accuracy and formatting compliance determines your access to higher-paying jobs on the platform.' },
+    ],
+  },
+  {
+    path: '/gotranscript-transcription-format',
+    title: 'GoTranscript Transcription Format — Speaker Labels, Timestamps & Verbatim | VideoText',
+    description: 'GoTranscript transcription format: exact timestamp syntax [HH:MM:SS], speaker label format, inaudible notation with timestamp, paragraph rules, and number formatting. Full reference guide.',
+    h1: 'GoTranscript Transcription Format: Timestamps, Speaker Labels & Rules',
+    intro: 'A detailed format reference for GoTranscript transcribers. Learn the exact syntax for mandatory timestamps, speaker label format, inaudible notation with timestamps, and paragraph structure requirements.',
+    breadcrumbLabel: 'GoTranscript Transcription Format',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/gotranscript-guidelines', '/gotranscript-style-guide', '/gotranscript-transcription-rules', '/rev-transcription-format', '/scribie-format-guide', '/guideline-format'],
+    indexable: true,
+    intentKey: 'gotranscript-transcription-format',
+    keywords: ['gotranscript transcription format', 'gotranscript timestamp format', 'gotranscript speaker label format', 'gotranscript format rules', 'gotranscript paragraph format', 'gotranscript inaudible format'],
+    faq: [
+      { q: 'What is the exact timestamp format for GoTranscript?', a: '[HH:MM:SS] — hours:minutes:seconds in square brackets. A timestamp is required at the start of every speaker segment. Example: [00:02:15] Speaker 1: Let\'s get started with the agenda.' },
+      { q: 'How are numbers formatted in GoTranscript transcripts?', a: 'GoTranscript uses numerals for all numbers except at sentence start. Example: "We have 5 options available." At sentence start: "Five options were presented." Percentages always use numerals: "The growth rate was 12%."' },
+      { q: 'How long should paragraphs be in GoTranscript?', a: 'GoTranscript requires a new paragraph for every speaker change, prefixed with the timestamp and speaker label. Within a single speaker\'s turn, create a new paragraph approximately every 300 characters to maintain readability.' },
+      { q: 'How should contractions be handled in GoTranscript?', a: 'Keep contractions as naturally spoken. If the speaker says "don\'t", write "don\'t". If they say "do not" distinctly, write "do not". GoTranscript\'s clean verbatim standard focuses on removing fillers, not expanding natural contractions.' },
+      { q: 'What punctuation does GoTranscript require at the end of trailing speech?', a: 'Use an ellipsis (...) when a speaker trails off without completing a thought. Example: "I was going to say..." Use an em dash (—) when a speaker is cut off mid-sentence by interruption or crosstalk.' },
+    ],
+  },
+  {
+    path: '/gotranscript-style-guide',
+    title: 'GoTranscript Style Guide — Clean Verbatim & Formatting Reference | VideoText',
+    description: 'GoTranscript style guide: complete reference for clean verbatim, timestamp requirements, speaker labels, punctuation, number formatting, contractions, and special notations.',
+    h1: 'GoTranscript Style Guide: Complete Formatting Reference',
+    intro: 'The full GoTranscript style guide in one place. Every formatting rule for clean verbatim output, timestamps, speaker labels, punctuation, and special notations — with examples for each.',
+    breadcrumbLabel: 'GoTranscript Style Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/gotranscript-guidelines', '/gotranscript-transcription-format', '/gotranscript-transcription-rules', '/rev-style-guide', '/transcribeme-style-guide', '/guideline-format'],
+    indexable: true,
+    intentKey: 'gotranscript-style-guide',
+    keywords: ['gotranscript style guide', 'gotranscript transcription style guide', 'gotranscript format guide', 'gotranscript punctuation guide', 'gotranscript verbatim guide', 'gotranscript complete reference'],
+    faq: [
+      { q: 'Does GoTranscript use Oxford comma?', a: 'Yes. GoTranscript follows standard English punctuation which includes the Oxford (serial) comma in lists of three or more items. Example: "We discussed marketing, operations, and finance."' },
+      { q: 'How should I handle technical jargon in GoTranscript?', a: 'Transcribe technical terms as accurately as possible. If you are unsure of the spelling, use your best judgment and note it. For industry-specific terms, research the correct spelling rather than guessing. GoTranscript clients often specify the domain in job instructions.' },
+      { q: 'What is GoTranscript\'s policy on false starts?', a: 'False starts are removed in GoTranscript\'s clean verbatim standard. If a speaker says "I — actually, let me rephrase that", transcribe only "Let me rephrase that." Remove the incomplete thought entirely.' },
+      { q: 'How does GoTranscript handle simultaneous speech?', a: 'When two speakers talk simultaneously, GoTranscript treats this as inaudible: [inaudible H:MM] with an approximate timestamp. Unlike some platforms, GoTranscript does not use [crosstalk] notation — all unclear simultaneous speech is marked as inaudible.' },
+      { q: 'What accent or dialect rules does GoTranscript use?', a: 'GoTranscript requires standard English spelling regardless of the speaker\'s accent or dialect. If a speaker says "gonna", write "going to". If they say "wanna", write "want to". Transcribe the meaning in standard English, not phonetic dialect.' },
+    ],
+  },
+  {
+    path: '/gotranscript-transcription-rules',
+    title: 'GoTranscript Transcription Rules — Complete Reference for Freelancers | VideoText',
+    description: 'GoTranscript transcription rules: all formatting and accuracy rules for freelance transcribers. Verbatim level, timestamp requirements, QA standards, and common mistake guide.',
+    h1: 'GoTranscript Transcription Rules: Freelancer\'s Complete Reference',
+    intro: 'All the rules GoTranscript freelance transcribers need to follow. From verbatim standards to timestamp requirements, QA thresholds, and the most common formatting mistakes that cause rejections.',
+    breadcrumbLabel: 'GoTranscript Transcription Rules',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/gotranscript-guidelines', '/gotranscript-style-guide', '/gotranscript-transcription-format', '/scribie-transcription-rules', '/rev-transcription-requirements', '/guideline-format'],
+    indexable: true,
+    intentKey: 'gotranscript-transcription-rules',
+    keywords: ['gotranscript transcription rules', 'gotranscript rules for transcribers', 'gotranscript formatting rules', 'gotranscript QA rules', 'gotranscript freelancer rules', 'gotranscript do and dont'],
+    faq: [
+      { q: 'What are the most common GoTranscript QA failures?', a: 'The most common GoTranscript QA failures are: (1) missing timestamps at speaker segment starts; (2) wrong inaudible notation — forgetting the timestamp in [inaudible H:MM]; (3) keeping filler words that should be removed; (4) using brackets around speaker labels instead of "Speaker N:" format; (5) number formatting errors.' },
+      { q: 'Can I work for GoTranscript and other platforms simultaneously?', a: 'Yes. Most transcription platforms allow you to work for multiple services simultaneously. The key is to switch your mental "style guide" when moving between platforms — GoTranscript\'s mandatory timestamps and Speaker N: label format differ significantly from Rev\'s optional timestamps and [Name]: format.' },
+      { q: 'What does GoTranscript pay per audio minute?', a: 'GoTranscript pay rates vary by language and audio quality. English transcription typically ranges from $0.60–$0.90 per audio minute depending on the audio difficulty tier. Higher difficulty audio (accents, noise, multiple speakers) pays more but requires more time.' },
+      { q: 'How do GoTranscript\'s verbatim rules compare to Scribie?', a: 'GoTranscript uses clean verbatim — remove all fillers and false starts. Scribie uses full/strict verbatim — keep every filler, repetition, and stutter. This is a critical difference if you work for both. GoTranscript output would be considered "too clean" (errors) when applied to Scribie standards.' },
+    ],
+  },
+  {
+    path: '/gotranscript-test-guide',
+    title: 'GoTranscript Transcription Test Guide — Tips to Pass the Exam | VideoText',
+    description: 'GoTranscript transcription test tips: what the exam tests, common mistakes to avoid, how to apply clean verbatim correctly, timestamp format, and how to use the Guideline Format tool to prepare.',
+    h1: 'GoTranscript Transcription Test: Tips to Pass the Qualification Exam',
+    intro: 'Preparing for the GoTranscript qualification test? This guide covers exactly what the test evaluates, the most common formatting errors that cause failures, and how to practice before submitting.',
+    breadcrumbLabel: 'GoTranscript Test Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/gotranscript-guidelines', '/gotranscript-transcription-rules', '/transcribeme-exam-guide', '/rev-transcription-requirements', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'gotranscript-test-guide',
+    keywords: ['gotranscript transcription test', 'how to pass gotranscript test', 'gotranscript exam guide', 'gotranscript test tips', 'gotranscript qualification test answers', 'gotranscript test format'],
+    faq: [
+      { q: 'What does the GoTranscript qualification test include?', a: 'The GoTranscript test provides a short audio clip (typically 2–5 minutes) and requires you to transcribe it according to GoTranscript guidelines. It tests: clean verbatim accuracy, timestamp placement, speaker label format, inaudible notation, and punctuation. You must reach a minimum accuracy threshold to pass.' },
+      { q: 'How long does the GoTranscript test take?', a: 'The test audio is typically 2–5 minutes. Allow 30–45 minutes total for transcription and review. Do not rush — careful review after transcription to catch filler words, check timestamps, and verify speaker labels is essential for passing.' },
+      { q: 'What is the passing score for GoTranscript?', a: 'GoTranscript requires approximately 85–90% or higher on the test transcript to be approved as a transcriber. The exact threshold is not publicly stated but test transcripts are evaluated by their QA team. Both accuracy and formatting compliance factor into the score.' },
+      { q: 'What is the biggest mistake candidates make on the GoTranscript test?', a: 'The most common test failure is forgetting the mandatory timestamp requirement. Every speaker segment must start with [HH:MM:SS]. Missing even one timestamp results in QA failures. The second most common mistake is keeping filler words that should be removed under clean verbatim.' },
+      { q: 'How can I practice for the GoTranscript test?', a: 'Use VideoText\'s free transcription tool to generate a draft transcript from any audio, then practice editing it to meet GoTranscript standards: add timestamps to every speaker segment, remove all fillers, convert speaker labels to "Speaker N:" format. Use the Guideline Format tool to validate your work before the real test.' },
+    ],
+  },
+
+  // ── TRANSCRIBEME ──────────────────────────────────────────────────────────
+  {
+    path: '/transcribeme-guidelines',
+    title: 'TranscribeMe Guidelines — Transcription Rules & Style Guide | VideoText',
+    description: 'Complete TranscribeMe guidelines: intelligent verbatim rules, speaker label format, inaudible notation, paragraph rules, and how to apply TranscribeMe standards using the Guideline Format tool.',
+    h1: 'TranscribeMe Guidelines: Transcription Rules & Style Guide',
+    intro: 'TranscribeMe uses intelligent verbatim — a more nuanced standard than clean verbatim. This guide explains exactly when to keep or remove filler words, how to format speaker labels, and every formatting rule for TranscribeMe QA compliance.',
+    breadcrumbLabel: 'TranscribeMe Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/transcribeme-transcription-style', '/transcribeme-style-guide', '/transcribeme-format-guide', '/rev-transcript-guidelines', '/gotranscript-guidelines', '/guideline-format'],
+    indexable: true,
+    intentKey: 'transcribeme-guidelines',
+    keywords: ['transcribeme guidelines', 'transcribeme transcription style guide', 'transcribeme formatting rules', 'transcribeme intelligent verbatim', 'transcribeme transcriber guide', 'how to format for transcribeme'],
+    faq: [
+      { q: 'What is intelligent verbatim and how does TranscribeMe use it?', a: 'Intelligent verbatim (also called smart verbatim) means you use judgement about which filler words to keep vs. remove. Keep fillers that carry meaning — e.g., "um" when it shows genuine hesitation or nervousness. Remove habitual fillers — e.g., "you know" used constantly at the end of every sentence. This is harder than clean verbatim because it requires contextual judgment.' },
+      { q: 'What speaker label format does TranscribeMe use?', a: 'TranscribeMe uses [Name]: or [Speaker 1]: format — brackets around the speaker name or number, followed by a colon. Example: [Dr. Johnson]: The test results were positive. This is the same bracket format as Rev but differs from GoTranscript\'s unbounded Speaker N: format.' },
+      { q: 'Does TranscribeMe require timestamps?', a: 'No. TranscribeMe does not require timestamps by default. Timestamps are only included if the client specifically requests them. When used, the format is [HH:MM:SS].' },
+      { q: 'How does TranscribeMe handle false starts?', a: 'TranscribeMe\'s intelligent verbatim standard keeps false starts that show speaker reconsideration — e.g., "I was going to — actually, let me think about this differently." Remove pure stutters and repeated words that don\'t add meaning — e.g., "I-I-I think so" → "I think so."' },
+      { q: 'What numbers formatting does TranscribeMe use?', a: 'TranscribeMe spells out numbers one through nine and uses numerals for 10 and above. This is slightly different from Rev (one through ten). Example: "We had five participants and 12 observers." Percentages always use numerals: "80% of respondents agreed."' },
+    ],
+  },
+  {
+    path: '/transcribeme-transcription-style',
+    title: 'TranscribeMe Transcription Style — Intelligent Verbatim Explained | VideoText',
+    description: 'TranscribeMe\'s intelligent verbatim style explained: when to keep vs. remove filler words, how to handle false starts, emphasis rules, and TranscribeMe\'s unique approach to natural speech transcription.',
+    h1: 'TranscribeMe Transcription Style: Intelligent Verbatim Explained',
+    intro: 'TranscribeMe\'s intelligent verbatim standard requires judgement that goes beyond simple filler-word rules. This guide explains exactly how to apply intelligent verbatim — with examples for every scenario you\'ll encounter.',
+    breadcrumbLabel: 'TranscribeMe Transcription Style',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/transcribeme-guidelines', '/transcribeme-format-guide', '/transcribeme-style-guide', '/gotranscript-style-guide', '/scribie-style-guide', '/guideline-format'],
+    indexable: true,
+    intentKey: 'transcribeme-transcription-style',
+    keywords: ['transcribeme transcription style', 'transcribeme intelligent verbatim', 'transcribeme smart verbatim', 'transcribeme verbatim rules', 'transcribeme filler word rules', 'transcribeme style explained'],
+    faq: [
+      { q: 'When should I keep "um" and "uh" in TranscribeMe transcripts?', a: 'Keep "um" or "uh" when it reveals the speaker\'s emotional state or thought process: nervousness ("Um... I\'m not sure about that"), genuine hesitation before an important statement, or processing a difficult question. Remove them when they are purely habitual and don\'t add meaning to the conversation.' },
+      { q: 'Should I remove "you know" from TranscribeMe transcripts?', a: '"You know" used as a filler (e.g., "It was, you know, a really difficult decision") should be removed. "You know" that is part of the meaning (e.g., "You know what? I changed my mind.") should be kept. The test is whether removing it changes the meaning or flow of the sentence.' },
+      { q: 'Does TranscribeMe allow all-caps for emphasis?', a: 'No. TranscribeMe explicitly prohibits using ALL CAPS for emphasis. Do not write "It was AMAZING." Use standard casing: "It was amazing." The speaker\'s emphasis is conveyed by transcribing the word, not by capitalizing it.' },
+      { q: 'How does TranscribeMe differ from Rev in verbatim handling?', a: 'Both use a form of clean/intelligent verbatim, but TranscribeMe requires more nuance. Rev\'s clean verbatim is more straightforward — remove most fillers. TranscribeMe\'s intelligent verbatim requires you to judge each filler in context. This makes TranscribeMe transcription slower per audio minute but produces more natural-sounding output.' },
+      { q: 'What is the TranscribeMe policy on repeated words?', a: 'Repeated words are removed unless they indicate emphasis or emotion. "I, I think so" → "I think so." But "No, no, no — I completely disagree" keeps the repetition because it conveys strong disagreement. The repetition must meaningfully contribute to the speaker\'s communication.' },
+    ],
+  },
+  {
+    path: '/transcribeme-format-guide',
+    title: 'TranscribeMe Format Guide — Speaker Labels, Timestamps & Formatting | VideoText',
+    description: 'TranscribeMe format guide: speaker label syntax, optional timestamp format, paragraph structure, number formatting, and punctuation rules. Detailed reference for TranscribeMe transcribers.',
+    h1: 'TranscribeMe Format Guide: Speaker Labels, Timestamps & Paragraph Rules',
+    intro: 'Detailed formatting specifications for TranscribeMe transcribers. Covers speaker label syntax, timestamp format, paragraph structure, number formatting, and punctuation rules — with examples for each.',
+    breadcrumbLabel: 'TranscribeMe Format Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/transcribeme-guidelines', '/transcribeme-transcription-style', '/transcribeme-style-guide', '/rev-transcription-format', '/gotranscript-transcription-format', '/guideline-format'],
+    indexable: true,
+    intentKey: 'transcribeme-format-guide',
+    keywords: ['transcribeme format guide', 'transcribeme speaker label format', 'transcribeme paragraph format', 'transcribeme timestamp format', 'transcribeme number format', 'transcribeme formatting guide'],
+    faq: [
+      { q: 'How are paragraphs structured in TranscribeMe?', a: 'New paragraph for each speaker change. Within a single speaker\'s long turn, break paragraphs every 4–6 sentences or approximately 300 characters. Avoid very short paragraphs (single sentences) and very long ones (more than 8 sentences). Balanced paragraphs improve readability and QA scores.' },
+      { q: 'What is the correct TranscribeMe speaker label format?', a: '[Name]: — square brackets around the name, colon after the closing bracket, then the speaker\'s text. For unknown speakers: [Speaker 1]:, [Speaker 2]:. Example: [Dr. Smith]: The results were encouraging.' },
+      { q: 'When should I use an em dash vs. ellipsis in TranscribeMe?', a: 'Use an em dash (—) when a speaker is abruptly cut off or interrupted. Use an ellipsis (...) when a speaker trails off without completing their thought. Both are acceptable in TranscribeMe transcripts; the choice depends on what actually happened in the audio.' },
+      { q: 'How does TranscribeMe format monetary amounts?', a: 'Monetary amounts use symbols and numerals: $50, €100, £250. Spell out informal references: "fifty bucks", "a hundred euros". Large round amounts: $5 million (not $5,000,000 unless precision matters).' },
+      { q: 'How does TranscribeMe handle foreign words in English audio?', a: 'Transcribe foreign words as spoken in the audio. If you are uncertain of the spelling, use your best judgment and mark with [?]: "The concept of schadenfreude [?] applies here." Do not translate foreign words — transcribe what was said.' },
+    ],
+  },
+  {
+    path: '/transcribeme-style-guide',
+    title: 'TranscribeMe Style Guide — Complete Formatting Reference | VideoText',
+    description: 'TranscribeMe style guide: comprehensive reference for intelligent verbatim, speaker labels, punctuation, numbers, special notations, and everything needed to pass TranscribeMe QA.',
+    h1: 'TranscribeMe Style Guide: Complete Formatting Reference',
+    intro: 'The comprehensive TranscribeMe style guide in one place. Every rule you need for intelligent verbatim, speaker labeling, punctuation, numbers, and special notations — with before/after examples throughout.',
+    breadcrumbLabel: 'TranscribeMe Style Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/transcribeme-guidelines', '/transcribeme-format-guide', '/transcribeme-transcription-style', '/rev-style-guide', '/scribie-style-guide', '/guideline-format'],
+    indexable: true,
+    intentKey: 'transcribeme-style-guide',
+    keywords: ['transcribeme style guide', 'transcribeme transcription style guide 2024', 'transcribeme complete guide', 'transcribeme punctuation guide', 'transcribeme formatting rules 2024', 'transcribeme QA guide'],
+    faq: [
+      { q: 'What punctuation style does TranscribeMe use?', a: 'TranscribeMe uses standard American English punctuation. Oxford comma in lists. Em dash for interruptions and abrupt stops. Ellipsis for trailing off. Question marks for direct questions. Exclamation points sparingly — only for genuinely exclamatory speech.' },
+      { q: 'Does TranscribeMe use full stops (periods) in speaker label lines?', a: 'No. Speaker label lines end with a colon, not a period. The colon is part of the label format: [Speaker 1]: The meeting will begin shortly. The period comes at the end of the speaker\'s sentence, not after the label.' },
+      { q: 'How does TranscribeMe handle laughing or non-verbal sounds?', a: 'Non-verbal sounds are transcribed in square brackets: [laughs], [sighs], [coughs]. Include sounds when they are relevant to the conversation or emotional context. Minor background sounds are not transcribed unless they interfere with the audio or are relevant.' },
+      { q: 'What is TranscribeMe\'s policy on profanity?', a: 'Transcribe profanity exactly as spoken — do not bleep, censor, or replace with asterisks unless the client specifically requests censoring in job instructions. Standard policy is verbatim profanity if clearly spoken.' },
+      { q: 'How does TranscribeMe grade transcripts?', a: 'TranscribeMe uses a grading system where each transcript is reviewed against the original audio. Grades factor in: word accuracy, verbatim compliance (intelligent verbatim judgments), formatting (speaker labels, paragraph structure, punctuation), and special notation accuracy. High graders access premium audio projects.' },
+    ],
+  },
+  {
+    path: '/transcribeme-exam-guide',
+    title: 'TranscribeMe Exam Guide — Tips to Pass the Qualification Test | VideoText',
+    description: 'TranscribeMe qualification exam tips: what the test evaluates, intelligent verbatim on the exam, common failure reasons, practice strategies, and how to prepare with the Guideline Format tool.',
+    h1: 'TranscribeMe Exam Guide: Pass the Qualification Test',
+    intro: 'The TranscribeMe qualification exam tests intelligent verbatim — the hardest part for new transcribers. This guide covers what the exam evaluates, the most common failure reasons, and how to prepare effectively.',
+    breadcrumbLabel: 'TranscribeMe Exam Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/transcribeme-guidelines', '/transcribeme-transcription-style', '/gotranscript-test-guide', '/rev-transcription-requirements', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'transcribeme-exam-guide',
+    keywords: ['transcribeme exam guide', 'how to pass transcribeme test', 'transcribeme qualification test tips', 'transcribeme test answers', 'transcribeme exam format', 'transcribeme entry test guide'],
+    faq: [
+      { q: 'How hard is the TranscribeMe qualification test?', a: 'The TranscribeMe test is considered moderately difficult. The main challenge is applying intelligent verbatim correctly — knowing which fillers to keep vs. remove requires judgement, not just rule-following. Candidates who have only done clean verbatim transcription often struggle with this nuance.' },
+      { q: 'What audio quality is the TranscribeMe test?', a: 'TranscribeMe qualification audio is typically clear, single-speaker audio of 3–5 minutes. Unlike some platforms, the test audio is chosen to be fair — it\'s not deliberately difficult with heavy accents or background noise. The challenge is verbatim handling, not audio quality.' },
+      { q: 'How many attempts do I get on the TranscribeMe test?', a: 'TranscribeMe allows a limited number of retries. After failing, there is typically a waiting period before you can retake the test. Use this time to practice intelligent verbatim on sample audio using VideoText and the Guideline Format tool.' },
+      { q: 'What should I focus on when preparing for the TranscribeMe exam?', a: 'Focus 80% of your preparation on intelligent verbatim judgment: practice keeping meaningful fillers vs. removing habitual ones. Practice with diverse speakers — nervous, fast, casual speakers. Review speaker label format: [Name]:. Avoid ALL CAPS emphasis. Check your paragraph breaks.' },
+      { q: 'Is there a word accuracy requirement for TranscribeMe\'s exam?', a: 'Yes. TranscribeMe requires approximately 85%+ word accuracy on the test. However, formatting errors (wrong verbatim level, speaker labels, paragraph structure) can cause the transcript to fail even at high word accuracy. Both accuracy and formatting compliance are evaluated.' },
+    ],
+  },
+
+  // ── SCRIBIE ───────────────────────────────────────────────────────────────
+  {
+    path: '/scribie-transcription-guidelines',
+    title: 'Scribie Transcription Guidelines — Full Style & Format Guide | VideoText',
+    description: 'Complete Scribie transcription guidelines: full verbatim rules, mandatory paragraph timestamps, speaker label format [MM:SS], inaudible notation, crosstalk handling, and QA standards.',
+    h1: 'Scribie Transcription Guidelines: Full Verbatim Style Guide',
+    intro: 'Scribie uses full verbatim by default — every word, filler, and false start must be captured. This guide covers the complete Scribie style guide including mandatory paragraph timestamps, speaker label format, and 4-pass QA requirements.',
+    breadcrumbLabel: 'Scribie Transcription Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/scribie-format-guide', '/scribie-style-guide', '/scribie-transcription-rules', '/gotranscript-guidelines', '/rev-transcript-guidelines', '/guideline-format'],
+    indexable: true,
+    intentKey: 'scribie-transcription-guidelines',
+    keywords: ['scribie transcription guidelines', 'scribie style guide', 'scribie formatting rules', 'scribie verbatim rules', 'scribie transcriber guide', 'scribie full verbatim guide'],
+    faq: [
+      { q: 'Does Scribie use full verbatim or clean verbatim?', a: 'Scribie uses full verbatim (also called strict verbatim) by default. Every word must be transcribed exactly as spoken — including um, uh, you know, false starts, repetitions, and stutters. This is the opposite of Rev\'s clean verbatim where fillers are removed. Non-verbatim (clean) orders exist but are not the default.' },
+      { q: 'What timestamp format does Scribie require?', a: 'Scribie requires [MM:SS] timestamps at the start of every paragraph. Unlike GoTranscript which uses full [HH:MM:SS], Scribie uses minutes:seconds. Example: [02:30] Speaker 1: Um, so I was thinking about the project.' },
+      { q: 'What speaker label format does Scribie use?', a: 'Scribie uses Speaker 1:, Speaker 2: — no brackets, colon directly after the number. This differs from Rev\'s [Name]: bracket format and TranscribeMe\'s [Name]: bracket format. The timestamp precedes the speaker label: [02:30] Speaker 1: ...' },
+      { q: 'Does Scribie use [crosstalk] notation?', a: 'Yes. Scribie explicitly supports [crosstalk] when two speakers talk simultaneously. Use [crosstalk] within the speaker\'s text where the overlap occurs. Example: Speaker 1: I completely [crosstalk] — yes, that\'s right.' },
+      { q: 'What is Scribie\'s 4-pass quality system?', a: 'Scribie uses a 4-pass QA review: (1) initial transcription; (2) peer review by another transcriber; (3) QA check by a senior reviewer; (4) final client delivery. This multi-pass system means formatting errors are caught at multiple stages. Meeting formatting requirements is essential at every step.' },
+    ],
+  },
+  {
+    path: '/scribie-format-guide',
+    title: 'Scribie Format Guide — Speaker Labels, Verbatim & Timestamps | VideoText',
+    description: 'Scribie format guide: exact timestamp format [MM:SS], speaker label syntax, full verbatim requirements, paragraph structure, inaudible and crosstalk notation. Complete reference.',
+    h1: 'Scribie Format Guide: Timestamps, Speaker Labels & Full Verbatim',
+    intro: 'A practical formatting reference for Scribie transcribers. Covers the mandatory [MM:SS] timestamp format, speaker label syntax without brackets, full verbatim requirements, and every notation you\'ll need.',
+    breadcrumbLabel: 'Scribie Format Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/scribie-transcription-guidelines', '/scribie-style-guide', '/scribie-transcription-rules', '/gotranscript-transcription-format', '/rev-transcription-format', '/guideline-format'],
+    indexable: true,
+    intentKey: 'scribie-format-guide',
+    keywords: ['scribie format guide', 'scribie timestamp format', 'scribie speaker label format', 'scribie paragraph format', 'scribie inaudible format', 'scribie formatting guide 2024'],
+    faq: [
+      { q: 'What is the exact paragraph format for Scribie?', a: 'Each Scribie paragraph starts with [MM:SS] Speaker N: — timestamp in square brackets, then speaker label with colon, then the text. New paragraph for every speaker change and for every 4–6 lines within a single speaker turn. Maximum 4–6 lines per paragraph.' },
+      { q: 'How should inaudible audio be marked in Scribie?', a: 'Use [inaudible] — square brackets, lowercase, no timestamp inside the notation itself (unlike GoTranscript). Place it exactly where the inaudible word(s) occur. The paragraph-level timestamp tells the client approximately when it happens.' },
+      { q: 'Can I switch between verbatim levels within a single Scribie job?', a: 'No. The verbatim level is set per job by the client. If the job is full verbatim, all text must be full verbatim. If it\'s non-verbatim (clean), all text must be clean. You cannot mix approaches within a single transcript.' },
+      { q: 'How are false starts formatted in Scribie full verbatim?', a: 'In Scribie full verbatim, false starts are included with an em dash: "I — I was thinking about" or with a comma: "I, I was thinking about." Both are acceptable. The key is capturing the false start exactly as it occurred in the audio.' },
+      { q: 'How does Scribie handle music or background noise?', a: 'Use [music], [background noise], [applause], or [laughter] — square brackets, lowercase. Include sound effects when they are significant to understanding the content. Minor consistent background noise is not marked for every instance, only when it first appears or changes significantly.' },
+    ],
+  },
+  {
+    path: '/scribie-transcription-rules',
+    title: 'Scribie Transcription Rules — Complete Reference for Freelancers | VideoText',
+    description: 'All Scribie transcription rules: full verbatim standards, QA requirements, 4-pass review process, common rejection reasons, and formatting rules for Scribie freelance transcribers.',
+    h1: 'Scribie Transcription Rules: Complete Freelancer Reference',
+    intro: 'Every rule Scribie freelance transcribers need to know. Full verbatim standards, the 4-pass QA process, common rejection causes, and the formatting rules that determine your accuracy rating and job access.',
+    breadcrumbLabel: 'Scribie Transcription Rules',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/scribie-transcription-guidelines', '/scribie-format-guide', '/scribie-style-guide', '/gotranscript-transcription-rules', '/rev-transcription-requirements', '/guideline-format'],
+    indexable: true,
+    intentKey: 'scribie-transcription-rules',
+    keywords: ['scribie transcription rules', 'scribie rules for transcribers', 'scribie QA rules', 'scribie rejection reasons', 'scribie freelancer rules', 'scribie accuracy requirements'],
+    faq: [
+      { q: 'What are the most common Scribie rejection reasons?', a: 'Most common Scribie rejections: (1) omitting filler words in full verbatim jobs; (2) missing timestamps at paragraph starts; (3) wrong speaker label format — using brackets instead of "Speaker N:"; (4) incorrect crosstalk/inaudible notations; (5) paragraph too long (more than 6 lines). Paragraph timestamps and full verbatim compliance are checked rigorously.' },
+      { q: 'What is Scribie\'s minimum accuracy requirement?', a: 'Scribie requires a minimum of 97% word accuracy. The 4-pass review system means errors are caught at multiple stages. Consistently low accuracy results in reduced job priority and eventually account suspension.' },
+      { q: 'Does Scribie pay per audio minute or per word?', a: 'Scribie pays per audio minute transcribed. Standard rate is approximately $0.10–$0.15 per audio minute for basic transcription. The 4-pass model means your initial transcription is one of four stages, so rates reflect the workflow.' },
+      { q: 'What happens during Scribie\'s peer review stage?', a: 'In the peer review stage, another Scribie transcriber reviews your transcript against the original audio and flags errors. Common peer flags include: missed words, incorrect verbatim level, formatting violations, and inaudible/crosstalk notation errors. Your accuracy score is affected by peer review findings.' },
+    ],
+  },
+  {
+    path: '/scribie-style-guide',
+    title: 'Scribie Style Guide — Formatting Standards for Scribie Transcribers | VideoText',
+    description: 'Scribie style guide: complete formatting standards for full verbatim and non-verbatim transcription. Speaker labels, timestamps, punctuation, special notations, and number formatting.',
+    h1: 'Scribie Style Guide: Formatting Standards for Transcribers',
+    intro: 'The complete Scribie style guide — full verbatim and non-verbatim rules, speaker label format, timestamp standards, punctuation, and special notations in one comprehensive reference.',
+    breadcrumbLabel: 'Scribie Style Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/scribie-transcription-guidelines', '/scribie-transcription-rules', '/scribie-format-guide', '/transcribeme-style-guide', '/gotranscript-style-guide', '/guideline-format'],
+    indexable: true,
+    intentKey: 'scribie-style-guide',
+    keywords: ['scribie style guide', 'scribie transcription style guide', 'scribie formatting standards', 'scribie punctuation guide', 'scribie number guide', 'scribie verbatim guide 2024'],
+    faq: [
+      { q: 'Does Scribie use American or British English spelling?', a: 'Scribie defaults to American English spelling. If the client or audio uses British English, follow the speaker\'s dialect. When in doubt, use American English: "color" not "colour", "organize" not "organise".' },
+      { q: 'How does Scribie handle acronyms and abbreviations?', a: 'Transcribe acronyms as spoken. If spelled out: F-B-I → FBI. If spoken as a word: NATO → NATO. Expand abbreviations that are pronounced as words only if the speaker explicitly spells them out. Otherwise, transcribe what is said.' },
+      { q: 'What is Scribie\'s policy on profanity?', a: 'Transcribe profanity exactly as spoken in the audio. Do not censor with asterisks or replace with euphemisms. Scribie\'s full verbatim standard requires exact transcription of all spoken content including profanity.' },
+      { q: 'How are interrupted sentences formatted in Scribie?', a: 'Use an em dash (—) at the point of interruption: "I was about to say — ". For the interrupting speaker, start a new paragraph immediately. For abrupt self-interruption (false start), include it in full verbatim: "I was — let me rephrase that."' },
+    ],
+  },
+
+  // ── DAILY TRANSCRIPTS ─────────────────────────────────────────────────────
+  {
+    path: '/daily-transcripts-guidelines',
+    title: 'Daily Transcripts Guidelines — Transcription Format & Style Guide | VideoText',
+    description: 'Complete Daily Transcripts (DailyTranscripts.com) guidelines: clean verbatim rules, speaker label format, optional timestamps, and formatting standards for podcast and creator content.',
+    h1: 'Daily Transcripts Guidelines: Transcription Format & Style Guide',
+    intro: 'Daily Transcripts specializes in fast-turnaround transcription for content creators. This guide covers their clean verbatim standard, speaker label format, and formatting rules for podcast, YouTube, and creator content.',
+    breadcrumbLabel: 'Daily Transcripts Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/daily-transcripts-format-guide', '/daily-transcripts-style-guide', '/rev-transcript-guidelines', '/gotranscript-guidelines', '/guideline-format', '/podcast-transcription'],
+    indexable: true,
+    intentKey: 'daily-transcripts-guidelines',
+    keywords: ['daily transcripts guidelines', 'dailytranscripts.com style guide', 'daily transcripts formatting rules', 'daily transcripts verbatim', 'daily transcripts transcriber guide', 'daily transcript format'],
+    faq: [
+      { q: 'What verbatim level does Daily Transcripts use?', a: 'Daily Transcripts uses clean verbatim: remove all filler words and false starts to produce highly readable output. This is ideal for their core client base of podcasters, YouTubers, and content creators who need clean transcripts for blog posts, show notes, and captions.' },
+      { q: 'What speaker label format does Daily Transcripts use?', a: 'Daily Transcripts uses a simple format without brackets: Name: or Speaker 1:. Example: "Host: Welcome back to the show. Guest: Thanks for having me." No square brackets are used, unlike Rev or TranscribeMe.' },
+      { q: 'Are timestamps required for Daily Transcripts?', a: 'Timestamps are optional and client-requested. Most Daily Transcripts orders do not include timestamps, making their format simpler than GoTranscript or Scribie. When requested, the format is [HH:MM:SS].' },
+      { q: 'How does Daily Transcripts handle podcast-specific content?', a: 'For podcast transcription, Daily Transcripts formats output for readability as a blog post or show notes. Speaker changes get clear labels, and content is organized for easy reading. Timestamps are added when the client needs chapter markers or navigation.' },
+    ],
+  },
+  {
+    path: '/daily-transcripts-format-guide',
+    title: 'Daily Transcripts Format Guide — Style Rules for DailyTranscripts.com | VideoText',
+    description: 'Daily Transcripts format guide: speaker label syntax, clean verbatim application, optional timestamps, paragraph rules, and number formatting for DailyTranscripts.com transcription work.',
+    h1: 'Daily Transcripts Format Guide: Complete Formatting Reference',
+    intro: 'Detailed format specifications for Daily Transcripts transcribers. Clean verbatim application, speaker label syntax, paragraph structure, and the formatting choices that produce creator-ready output.',
+    breadcrumbLabel: 'Daily Transcripts Format Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/daily-transcripts-guidelines', '/daily-transcripts-style-guide', '/rev-transcription-format', '/gotranscript-transcription-format', '/guideline-format', '/podcast-transcription'],
+    indexable: true,
+    intentKey: 'daily-transcripts-format-guide',
+    keywords: ['daily transcripts format guide', 'dailytranscripts.com format', 'daily transcripts formatting', 'daily transcripts speaker labels', 'daily transcripts paragraph format', 'daily transcripts style'],
+    faq: [
+      { q: 'How are speaker labels formatted in Daily Transcripts?', a: 'Name followed by colon, no brackets. For two-person podcast: "Host: [text]. Guest: [text]." For named guests: "John: Thanks for the question." For unknown speakers: "Speaker 1: Let me answer that." Keep labels consistent throughout the transcript.' },
+      { q: 'How long should paragraphs be in Daily Transcripts output?', a: 'For creator content, aim for 5–7 sentence paragraphs that feel natural for blog-post reading. At speaker changes, always start a new paragraph. For monologues, break at natural topic shifts or every 5–7 sentences.' },
+      { q: 'How does Daily Transcripts handle slang and informal speech?', a: 'Clean verbatim for Daily Transcripts means removing fillers but preserving the speaker\'s natural vocabulary. Slang and informal words are kept if they are part of the speaker\'s actual vocabulary. "Gonna" and "wanna" are transcribed as spoken — no formal correction to "going to" or "want to".' },
+    ],
+  },
+  {
+    path: '/daily-transcripts-style-guide',
+    title: 'Daily Transcripts Style Guide — Speaker Labels & Formatting Standards | VideoText',
+    description: 'Daily Transcripts style guide: comprehensive formatting reference for clean verbatim, speaker labels, punctuation, numbers, and creator-optimized transcript output.',
+    h1: 'Daily Transcripts Style Guide: Complete Formatting Reference',
+    intro: 'All the formatting rules for Daily Transcripts transcribers. Clean verbatim standards, speaker labeling, punctuation, number formatting, and best practices for creator-optimized transcript output.',
+    breadcrumbLabel: 'Daily Transcripts Style Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/daily-transcripts-guidelines', '/daily-transcripts-format-guide', '/rev-style-guide', '/transcribeme-style-guide', '/guideline-format', '/podcast-transcription'],
+    indexable: true,
+    intentKey: 'daily-transcripts-style-guide',
+    keywords: ['daily transcripts style guide', 'dailytranscripts style guide', 'daily transcripts formatting standards', 'daily transcripts punctuation', 'daily transcripts complete guide', 'daily transcript creator guide'],
+    faq: [
+      { q: 'Does Daily Transcripts use American or British English?', a: 'Daily Transcripts defaults to American English spelling. When the client or speaker clearly uses British English, follow their dialect. When uncertain, use American English conventions.' },
+      { q: 'How are numbers formatted in Daily Transcripts?', a: 'Spell out one through ten, numerals for 11 and above. This is the same as Rev. Percentages use numerals: "35% of respondents". Large round numbers: "$5 million" not "$5,000,000".' },
+      { q: 'What is the Daily Transcripts policy on filler words?', a: 'Daily Transcripts removes all common filler words: um, uh, hmm, you know (as filler), like (as filler), basically (as filler). The goal is highly readable clean text suitable for blog posts and show notes without the listener having to read through speech patterns.' },
+    ],
+  },
+
+  // ── TRANSCRIBIO ───────────────────────────────────────────────────────────
+  {
+    path: '/transcribio-guidelines',
+    title: 'Transcribio Guidelines — Style & Format Guide for Transcribers | VideoText',
+    description: 'Complete Transcribio guidelines: AI-assisted transcription review rules, clean verbatim standards, speaker label format, error correction priorities, and formatting requirements.',
+    h1: 'Transcribio Guidelines: Transcription Rules & Style Guide',
+    intro: 'Transcribio combines AI transcription with human review. This guide covers the formatting and review standards for Transcribio work — what to correct in AI output, speaker label format, and QA requirements.',
+    breadcrumbLabel: 'Transcribio Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/transcribio-format-guide', '/transcribio-style-guide', '/rev-transcript-guidelines', '/transcribeme-guidelines', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'transcribio-guidelines',
+    keywords: ['transcribio guidelines', 'transcribio transcription style guide', 'transcribio formatting rules', 'transcribio review guide', 'transcribio verbatim', 'transcribio transcriber guide'],
+    faq: [
+      { q: 'What is Transcribio\'s transcription model?', a: 'Transcribio uses an AI-plus-human workflow: AI generates an initial transcript, and human reviewers correct and refine the output. Reviewers focus on correcting AI errors (homophones, proper nouns, domain-specific terms) and cleaning filler words rather than transcribing from scratch.' },
+      { q: 'What errors should I prioritize when reviewing Transcribio AI output?', a: 'Priority order for Transcribio AI review: (1) proper nouns and names — most commonly wrong; (2) homophones in context (their/there, to/too); (3) technical/domain terms; (4) filler word removal; (5) punctuation corrections; (6) speaker label verification. Start with high-impact errors and work down.' },
+      { q: 'What speaker label format does Transcribio use?', a: 'Transcribio uses [Speaker N]: format — square brackets around the label, colon after closing bracket. Example: [Speaker 1]: The AI draft looks clean. [Speaker 2]: I spotted a few proper noun errors.' },
+    ],
+  },
+  {
+    path: '/transcribio-format-guide',
+    title: 'Transcribio Format Guide — Transcription Rules & Standards | VideoText',
+    description: 'Transcribio format guide: speaker label syntax, clean verbatim application for AI review, timestamp format, paragraph structure, and correction priorities for Transcribio reviewers.',
+    h1: 'Transcribio Format Guide: Formatting Rules & Standards',
+    intro: 'Formatting specifications for Transcribio human reviewers. Speaker label syntax, clean verbatim application, paragraph structure, and the correction priorities that determine review quality scores.',
+    breadcrumbLabel: 'Transcribio Format Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/transcribio-guidelines', '/transcribio-style-guide', '/rev-transcription-format', '/transcribeme-format-guide', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'transcribio-format-guide',
+    keywords: ['transcribio format guide', 'transcribio formatting', 'transcribio speaker label format', 'transcribio paragraph format', 'transcribio AI review format', 'transcribio review rules'],
+    faq: [
+      { q: 'How do I format speaker labels in Transcribio?', a: '[Speaker N]: format — brackets, colon. When speaker names are known from context: [John]: or [Host]:. Replace AI-generated unnamed labels with actual names when identifiable from the audio or job brief.' },
+      { q: 'What is the Transcribio paragraph format?', a: 'New paragraph for each speaker change. Review and adjust AI-generated paragraph breaks for natural reading flow. Merge AI-fragmented short paragraphs. Split AI-generated run-on paragraphs at natural breaks.' },
+      { q: 'How should I handle timestamps in Transcribio?', a: 'Timestamps are client-optional in Transcribio. When requested, format is [HH:MM:SS]. The AI output may include raw timestamps — review them for accuracy and format consistency before finalizing.' },
+    ],
+  },
+  {
+    path: '/transcribio-style-guide',
+    title: 'Transcribio Style Guide — Complete Formatting Reference | VideoText',
+    description: 'Transcribio style guide: comprehensive reference for AI review and formatting standards. Speaker labels, verbatim level, punctuation corrections, and quality standards for Transcribio work.',
+    h1: 'Transcribio Style Guide: Complete Formatting Reference',
+    intro: 'All the style and formatting rules for Transcribio reviewers. Covers verbatim standards for AI correction, speaker labels, punctuation, and the quality metrics that determine reviewer ratings.',
+    breadcrumbLabel: 'Transcribio Style Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/transcribio-guidelines', '/transcribio-format-guide', '/rev-style-guide', '/transcribeme-style-guide', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'transcribio-style-guide',
+    keywords: ['transcribio style guide', 'transcribio formatting standards', 'transcribio punctuation guide', 'transcribio reviewer guide', 'transcribio QA standards', 'transcribio complete guide'],
+    faq: [
+      { q: 'What punctuation errors are most common in Transcribio AI output?', a: 'Most common AI punctuation errors in Transcribio: (1) comma splices (run-on sentences joined with commas); (2) missing terminal punctuation; (3) incorrect use of apostrophes in possessives; (4) missing question marks for interrogatives; (5) incorrect period placement in dialogue.' },
+      { q: 'How does Transcribio handle domain-specific technical terms?', a: 'AI models often misidentify technical terms. As a reviewer, research correct spellings for domain-specific vocabulary. Use the job brief or client context clues. Mark uncertain terms with [?] if you cannot verify the correct spelling.' },
+      { q: 'What are Transcribio\'s quality rating criteria?', a: 'Transcribio reviewers are rated on: accuracy (word error correction rate), formatting compliance (speaker labels, paragraphs, timestamps), verbatim appropriateness (filler removal, punctuation), and review speed. Higher-rated reviewers access premium audio projects.' },
+    ],
+  },
+
+  // ── VERBIT ────────────────────────────────────────────────────────────────
+  {
+    path: '/verbit-transcription-guidelines',
+    title: 'Verbit Transcription Guidelines — Enterprise Style & Format Reference | VideoText',
+    description: 'Verbit transcription guidelines: contextual verbatim for legal and education, mandatory timestamps, 99% accuracy standard, Q&A format for depositions, and enterprise formatting rules.',
+    h1: 'Verbit Transcription Guidelines: Enterprise Style & Format Reference',
+    intro: 'Verbit serves enterprise clients in legal, education, and media with 99%+ accuracy requirements. This guide covers Verbit\'s contextual verbatim standard, mandatory timestamps, and specialized formatting for legal depositions and academic content.',
+    breadcrumbLabel: 'Verbit Transcription Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/verbit-format-guide', '/3play-media-transcription-guidelines', '/rev-transcript-guidelines', '/speechpad-transcription-guidelines', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'verbit-transcription-guidelines',
+    keywords: ['verbit transcription guidelines', 'verbit style guide', 'verbit transcription format', 'verbit enterprise transcription guide', 'verbit legal transcription', 'verbit education transcription rules'],
+    faq: [
+      { q: 'What verbatim level does Verbit use?', a: 'Verbit uses contextual verbatim — the level differs by client track. Legal depositions require strict verbatim (keep all fillers for accuracy). Education and media tracks use intelligent verbatim (remove habitual fillers, keep meaningful ones). Always check the job specifications for the verbatim level.' },
+      { q: 'Does Verbit require timestamps?', a: 'Yes. Verbit requires mandatory timestamps, especially for legal and education tracks. Timestamps ensure reviewers and clients can locate specific content in long recordings. The format is [HH:MM:SS] at each speaker segment start.' },
+      { q: 'How are legal depositions formatted in Verbit?', a: 'Verbit uses Q: A: format for depositions — attorney questions prefixed with Q:, witness responses prefixed with A:. Speaker names are used for other parties (Judge:, Attorney Smith:). Timestamps are required and accuracy must meet 99%+ for legal work.' },
+      { q: 'What accuracy standard does Verbit require?', a: 'Verbit requires 99%+ word accuracy — higher than most other transcription platforms. This enterprise standard reflects their legal and education clients who need near-perfect transcription. Consistent accuracy below this threshold affects specialist status and job access.' },
+    ],
+  },
+  {
+    path: '/verbit-format-guide',
+    title: 'Verbit Format Guide — Transcription Standards & Rules | VideoText',
+    description: 'Verbit format guide: speaker label format for legal and education tracks, timestamp requirements, Q&A format for depositions, paragraph rules, and enterprise accuracy standards.',
+    h1: 'Verbit Format Guide: Standards & Rules for Enterprise Transcription',
+    intro: 'Detailed formatting specifications for Verbit transcribers across legal, education, and media tracks. Covers speaker label formats, timestamp requirements, deposition Q&A format, and the accuracy standards required for enterprise delivery.',
+    breadcrumbLabel: 'Verbit Format Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/verbit-transcription-guidelines', '/3play-media-format-guide', '/speechpad-format-guide', '/rev-transcription-format', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'verbit-format-guide',
+    keywords: ['verbit format guide', 'verbit transcription format', 'verbit speaker label format', 'verbit timestamp format', 'verbit legal format', 'verbit deposition format'],
+    faq: [
+      { q: 'What is the Verbit speaker label format?', a: 'Known speakers use their name followed by colon: "Witness:", "Attorney Smith:", "Judge:". Unknown speakers use [Speaker N]:. Legal depositions use Q: and A: format. The format varies by track and is specified in the job instructions.' },
+      { q: 'How does Verbit format non-verbal sounds?', a: 'Verbit uses bracketed notations: [pause], [sighs], [whispers]. For legal tracks, pauses and non-verbal sounds are documented when legally relevant. Education tracks include [laughter], [applause] for classroom context. Media tracks follow broadcast standards.' },
+      { q: 'How are long pauses marked in Verbit transcripts?', a: 'Significant pauses are marked as [pause] or [long pause] depending on duration. For legal work, pause timing may need to be approximate: [pause — approximately 5 seconds]. In media and education, shorter pauses are typically not marked.' },
+    ],
+  },
+
+  // ── SPEECHPAD ─────────────────────────────────────────────────────────────
+  {
+    path: '/speechpad-transcription-guidelines',
+    title: 'Speechpad Transcription Guidelines — Media & Broadcast Style Guide | VideoText',
+    description: 'Complete Speechpad transcription guidelines: broadcast clean verbatim, ALL CAPS speaker labels, required timestamps, (INAUDIBLE) notation, and media production formatting standards.',
+    h1: 'Speechpad Transcription Guidelines: Broadcast & Media Style Guide',
+    intro: 'Speechpad serves broadcast, media, and entertainment clients with production-ready transcripts. This guide covers their broadcast verbatim standard, ALL CAPS speaker labels, mandatory timestamp format, and (INAUDIBLE) notation.',
+    breadcrumbLabel: 'Speechpad Transcription Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/speechpad-format-guide', '/verbit-transcription-guidelines', '/3play-media-transcription-guidelines', '/rev-transcript-guidelines', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'speechpad-transcription-guidelines',
+    keywords: ['speechpad transcription guidelines', 'speechpad style guide', 'speechpad transcription format', 'speechpad broadcast transcription', 'speechpad media transcription guide', 'speechpad formatting rules'],
+    faq: [
+      { q: 'What makes Speechpad\'s style guide different from other platforms?', a: 'Speechpad uses broadcast industry conventions that are unique among transcription services: (1) speaker labels in ALL CAPS — "HOST:" not "Host:"; (2) inaudible and sound notations in parentheses and ALL CAPS — "(INAUDIBLE)" not "[inaudible]"; (3) timestamps on a separate line before the speaker label; (4) short caption-compatible line lengths.' },
+      { q: 'Does Speechpad require timestamps?', a: 'Yes. Speechpad requires timestamps for every speaker block. Timestamps are placed on a separate line in HH:MM:SS format (without brackets), followed by the speaker label and text on the next line.' },
+      { q: 'How are sound effects formatted in Speechpad transcripts?', a: 'Sound effects use parentheses and ALL CAPS: (MUSIC), (APPLAUSE), (LAUGHTER), (BACKGROUND NOISE). This is Speechpad\'s broadcast standard. This differs from Rev\'s [music] and GoTranscript\'s [music] which use square brackets and lowercase.' },
+      { q: 'What verbatim level does Speechpad use?', a: 'Speechpad uses broadcast clean verbatim: remove all filler words to produce professional, production-ready output. The result should read like a polished broadcast script. This is the strictest clean verbatim standard of the major platforms.' },
+    ],
+  },
+  {
+    path: '/speechpad-format-guide',
+    title: 'Speechpad Format Guide — Broadcast Transcript Standards | VideoText',
+    description: 'Speechpad format guide: ALL CAPS speaker labels, timestamp-per-line format, (INAUDIBLE) notation, 32-character line length limit, numeral formatting, and broadcast transcript standards.',
+    h1: 'Speechpad Format Guide: Broadcast Transcript Standards',
+    intro: 'Detailed formatting specifications for Speechpad transcribers. ALL CAPS speaker labels, timestamp placement, (INAUDIBLE) notation, 32-character line limits, and numeral formatting for broadcast-ready output.',
+    breadcrumbLabel: 'Speechpad Format Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/speechpad-transcription-guidelines', '/3play-media-format-guide', '/verbit-format-guide', '/rev-transcription-format', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'speechpad-format-guide',
+    keywords: ['speechpad format guide', 'speechpad transcript format', 'speechpad speaker label format', 'speechpad timestamp format', 'speechpad inaudible format', 'speechpad broadcast format'],
+    faq: [
+      { q: 'What is the exact Speechpad timestamp and speaker label format?', a: 'Speechpad uses: timestamp on its own line (00:01:30), then speaker label on the next line (HOST:), then the text. Example:\n00:01:30\nHOST: Welcome back to the program.' },
+      { q: 'How are numbers formatted in Speechpad?', a: 'Speechpad uses all numerals for numbers in broadcast format. "Twelve" → "12". "Fifty-three" → "53". This differs from Rev (one–ten spelled out) and is consistent with broadcast teleprompter conventions.' },
+      { q: 'What is the maximum line length for Speechpad?', a: 'Speechpad targets 32 characters per caption line — the broadcast closed-captioning standard. Long sentences should be split at natural phrase boundaries to stay within this limit. The Speechpad platform editor may enforce this automatically.' },
+    ],
+  },
+
+  // ── HAPPY SCRIBE ──────────────────────────────────────────────────────────
+  {
+    path: '/happy-scribe-transcription-guidelines',
+    title: 'Happy Scribe Transcription Guidelines — Multi-Language Style Guide | VideoText',
+    description: 'Happy Scribe transcription guidelines: clean verbatim for human review, multi-language support, accent preservation, foreign word handling, and formatting standards for 120+ language transcription.',
+    h1: 'Happy Scribe Transcription Guidelines: Multi-Language Style Guide',
+    intro: 'Happy Scribe supports transcription in 120+ languages with human review on top of AI. This guide covers their clean verbatim standard, multi-language handling, accent preservation rules, and platform-specific formatting.',
+    breadcrumbLabel: 'Happy Scribe Transcription Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/happy-scribe-format-guide', '/transcribeme-guidelines', '/rev-transcript-guidelines', '/gotranscript-guidelines', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'happy-scribe-transcription-guidelines',
+    keywords: ['happy scribe transcription guidelines', 'happy scribe style guide', 'happy scribe transcription format', 'happy scribe multilingual guide', 'happy scribe accent rules', 'happy scribe verbatim guide'],
+    faq: [
+      { q: 'Does Happy Scribe correct accents or preserve them in transcripts?', a: 'Happy Scribe preserves accents and dialect as spoken. If a speaker says "gonna" or "wanna", transcribe it as spoken — not corrected to "going to" or "want to". This differs from GoTranscript which standardizes dialect. Happy Scribe values authentic representation of the speaker\'s speech.' },
+      { q: 'How does Happy Scribe handle language switches within a transcript?', a: 'When a speaker switches languages, note the language change in brackets: [Spanish] then the foreign text. [English] when switching back. This applies to code-switching (switching languages mid-conversation) as well as single sentences in a different language.' },
+      { q: 'What verbatim level does Happy Scribe use for human transcription?', a: 'Happy Scribe uses clean verbatim for human transcription orders: remove filler words for readable output. Their automatic transcription preserves speech more literally; human reviewers clean it according to guidelines.' },
+      { q: 'How are foreign words handled in Happy Scribe English transcripts?', a: 'Transcribe foreign words as spoken. If you are uncertain of the spelling, add [?] after the word: "The concept of schadenfreude [?] is central here." Do not translate foreign words into English — transcribe what was actually said.' },
+    ],
+  },
+  {
+    path: '/happy-scribe-format-guide',
+    title: 'Happy Scribe Format Guide — Transcription Rules & Standards | VideoText',
+    description: 'Happy Scribe format guide: speaker label syntax, multi-language notation, accent handling, foreign word formatting, optional timestamps, and paragraph structure for 120+ language transcription.',
+    h1: 'Happy Scribe Format Guide: Transcription Rules & Standards',
+    intro: 'Detailed formatting specifications for Happy Scribe transcribers. Speaker labels, multi-language handling, accent preservation, foreign word notation, and the platform-specific formatting rules for human review work.',
+    breadcrumbLabel: 'Happy Scribe Format Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/happy-scribe-transcription-guidelines', '/transcribeme-format-guide', '/rev-transcription-format', '/guideline-format', '/video-to-transcript', '/translate-subtitles'],
+    indexable: true,
+    intentKey: 'happy-scribe-format-guide',
+    keywords: ['happy scribe format guide', 'happy scribe transcript format', 'happy scribe speaker label format', 'happy scribe multilingual format', 'happy scribe foreign words format', 'happy scribe formatting guide'],
+    faq: [
+      { q: 'What is the Happy Scribe speaker label format?', a: '"Speaker N:" format — speaker number followed by colon. When actual names are provided by the client, replace "Speaker 1:" with the actual name: "Host:", "Interviewer:", or the speaker\'s name. The platform editor allows you to rename speakers globally.' },
+      { q: 'How are percentages formatted in Happy Scribe?', a: 'Percentages always use numerals: "80% of respondents", "a 15% increase". Spell out descriptive percentages only in informal contexts where the speaker uses approximate language: "about half" not "about 50%".' },
+      { q: 'Does Happy Scribe export transcripts with timestamps?', a: 'Happy Scribe\'s platform handles timestamps in the editor and exports them depending on format: SRT exports include timestamps; plain text exports may or may not include them based on client settings. Human reviewers work in the platform editor where timestamps are auto-managed.' },
+    ],
+  },
+
+  // ── 3PLAY MEDIA ───────────────────────────────────────────────────────────
+  {
+    path: '/3play-media-transcription-guidelines',
+    title: '3Play Media Transcription Guidelines — ADA Captioning & Style Guide | VideoText',
+    description: '3Play Media transcription guidelines: ADA/Section 508 compliance, >> speaker label format, [INAUDIBLE] notation, 32-character caption lines, intelligent verbatim, and accessibility standards.',
+    h1: '3Play Media Transcription Guidelines: ADA-Compliant Style Guide',
+    intro: '3Play Media specializes in ADA and Section 508-compliant captioning and transcription for higher education, media, and enterprise. This guide covers their accessibility-first style guide, unique >> speaker format, and compliance standards.',
+    breadcrumbLabel: '3Play Media Transcription Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/3play-media-format-guide', '/verbit-transcription-guidelines', '/speechpad-transcription-guidelines', '/rev-transcript-guidelines', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: '3play-media-transcription-guidelines',
+    keywords: ['3play media transcription guidelines', '3play media style guide', '3play media captioning guidelines', '3play media ADA transcription', '3play media accessibility guide', '3play media format rules'],
+    faq: [
+      { q: 'What is 3Play Media\'s unique speaker label format?', a: '3Play Media uses >> (double chevron) as a speaker change indicator: >> SPEAKER NAME: or just >> for an unnamed speaker change. Example: >> PROFESSOR: The concept of entropy is central here. This is unique among major transcription platforms.' },
+      { q: 'Does 3Play Media require ADA-compliant captioning?', a: 'Yes. 3Play Media\'s transcription and captioning work meets ADA and Section 508 accessibility standards. This requires: punctuation for comprehension, accurate word transcription, 32-character caption line limits, and proper sound effect notation. These requirements are stricter than most other platforms.' },
+      { q: 'What notation does 3Play Media use for inaudible audio?', a: '3Play Media uses [INAUDIBLE] — all caps, square brackets. This is their ADA-standard notation. It differs from Rev\'s [inaudible] (lowercase) and Speechpad\'s (INAUDIBLE) (parentheses). Always use the correct casing and bracket type for each platform.' },
+      { q: 'Why is punctuation especially important in 3Play Media transcripts?', a: 'Punctuation is required for ADA compliance — captions without proper punctuation are harder for deaf and hard-of-hearing viewers to parse. 3Play Media requires every sentence to end with appropriate terminal punctuation (period, question mark, exclamation point). Missing punctuation is a compliance failure.' },
+    ],
+  },
+  {
+    path: '/3play-media-format-guide',
+    title: '3Play Media Format Guide — Captioning & Transcription Rules | VideoText',
+    description: '3Play Media format guide: >> speaker label syntax, [INAUDIBLE] all-caps notation, 32-character line limits, sound effect formatting, punctuation requirements for ADA compliance, and academic content rules.',
+    h1: '3Play Media Format Guide: Captioning & Transcription Rules',
+    intro: 'Detailed formatting specifications for 3Play Media transcribers and caption writers. Unique >> speaker labels, [INAUDIBLE] notation, 32-character line limits, punctuation requirements, and academic content handling.',
+    breadcrumbLabel: '3Play Media Format Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/3play-media-transcription-guidelines', '/verbit-format-guide', '/speechpad-format-guide', '/rev-transcription-format', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: '3play-media-format-guide',
+    keywords: ['3play media format guide', '3play media transcript format', '3play media captioning format', '3play media speaker label format', '3play media formatting rules', '3play media caption guide'],
+    faq: [
+      { q: 'What is the exact >> speaker label format for 3Play Media?', a: 'Two chevrons (>>) followed by a space and the speaker name in caps, then a colon. Example:\n>> PROFESSOR SMITH: The kinetic energy equation is important here. For unnamed speaker changes, just >> on a new line. This is 3Play Media\'s proprietary format.' },
+      { q: 'How are technical terms handled in 3Play Media academic content?', a: '3Play Media recommends marking uncertain technical spellings with [sp?]: "The coefficient of [sp?] viscosity..." Research terms when possible using the job\'s topic context. Accuracy with technical terms is critical for academic audiences.' },
+      { q: 'What is the line length limit for 3Play Media captions?', a: '3Play Media uses a maximum of 32 characters per caption line — the broadcast accessibility standard. Long sentences split at natural phrase boundaries. The 3Play Media platform editor enforces this automatically in caption work.' },
+      { q: 'How are numbers formatted in 3Play Media academic transcription?', a: 'Academic content spells out numbers in narrative: "three variables", "a sample of 150 participants". Data and statistics use numerals. Equations and formulas use standard mathematical notation as spoken: "x squared" or "x to the power of 2".' },
+    ],
+  },
+
+  // ── GMR TRANSCRIPTION ─────────────────────────────────────────────────────
+  {
+    path: '/gmr-transcription-guidelines',
+    title: 'GMR Transcription Guidelines — Human-Only Strict Verbatim Style Guide | VideoText',
+    description: 'Complete GMR Transcription guidelines: strict verbatim for US-based human transcribers, all filler words included, em dash for false starts, no AI used, and formatting standards for legal, medical, and academic clients.',
+    h1: 'GMR Transcription Guidelines: Strict Verbatim Style Guide',
+    intro: 'GMR Transcription uses US-based human transcribers only — no AI. Their strict verbatim standard captures every word exactly as spoken. This guide covers their complete formatting requirements for legal, medical, academic, and business transcription.',
+    breadcrumbLabel: 'GMR Transcription Guidelines',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/gmr-transcript-format-guide', '/scribie-transcription-guidelines', '/verbit-transcription-guidelines', '/rev-transcript-guidelines', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'gmr-transcription-guidelines',
+    keywords: ['gmr transcription guidelines', 'gmr transcription style guide', 'gmr transcription formatting rules', 'gmr transcription verbatim', 'gmr transcriber guide', 'gmr transcription requirements'],
+    faq: [
+      { q: 'Does GMR Transcription use AI?', a: 'No. GMR Transcription uses US-based human transcribers exclusively — no AI-generated content. Every transcript is produced entirely by a human transcriber. This is a key differentiator from platforms like Transcribio or Happy Scribe that combine AI and human review.' },
+      { q: 'What verbatim level does GMR Transcription use?', a: 'GMR Transcription uses strict (full) verbatim: capture every word exactly as spoken including all filler words (um, uh, hmm, you know, like), false starts, repetitions, and stutters. Nothing is cleaned or omitted. This is the same level as Scribie\'s default.' },
+      { q: 'How are false starts formatted in GMR Transcription?', a: 'False starts are captured with an em dash at the point of interruption: "I — I was thinking about the report." The stutter is included exactly as spoken. For repeated words: "the the project" is transcribed as "the the project" — no correction.' },
+      { q: 'What is GMR Transcription\'s turnaround time?', a: 'GMR Transcription offers standard (1–2 business days), rush (same day), and super rush (within hours) turnaround options. Rates increase with faster turnaround. Human-only transcription naturally takes longer than AI-assisted services.' },
+      { q: 'What clients does GMR Transcription serve?', a: 'GMR Transcription serves legal firms (depositions, hearings), medical providers (dictation, consultations), academic researchers (interviews, focus groups), and businesses. Their strict verbatim and human-only model is preferred for content requiring guaranteed accuracy.' },
+    ],
+  },
+  {
+    path: '/gmr-transcript-format-guide',
+    title: 'GMR Transcript Format Guide — Rules for GMR Transcription Freelancers | VideoText',
+    description: 'GMR Transcription format guide: strict verbatim formatting, speaker label syntax, em dash for false starts, inaudible and crosstalk notation, optional timestamps, and paragraph structure.',
+    h1: 'GMR Transcript Format Guide: Rules for GMR Transcription Freelancers',
+    intro: 'Detailed formatting specifications for GMR Transcription freelancers. Strict verbatim formatting rules, speaker label syntax, em dash usage, inaudible and crosstalk notation, and paragraph structure for professional delivery.',
+    breadcrumbLabel: 'GMR Transcript Format Guide',
+    toolKey: 'brand-guideline',
+    relatedSlugs: ['/gmr-transcription-guidelines', '/scribie-format-guide', '/verbit-format-guide', '/rev-transcription-format', '/guideline-format', '/video-to-transcript'],
+    indexable: true,
+    intentKey: 'gmr-transcript-format-guide',
+    keywords: ['gmr transcription format guide', 'gmr transcript format', 'gmr transcription formatting', 'gmr speaker label format', 'gmr inaudible format', 'gmr transcription rules for freelancers'],
+    faq: [
+      { q: 'What is the speaker label format for GMR Transcription?', a: 'Name or role followed by colon — no brackets. Known speakers: "Interviewer:", "Respondent:", or actual names. Unknown speakers: "Speaker 1:", "Speaker 2:". Consistent labeling throughout the transcript is required.' },
+      { q: 'How should I format strict verbatim false starts in GMR?', a: 'Use em dash (—) at the point of self-interruption: "I — I wanted to clarify that." Use comma for simple word repetitions: "I, I wanted to clarify that." Both are acceptable. Be consistent throughout a single transcript.' },
+      { q: 'Does GMR Transcription require timestamps?', a: 'Timestamps are optional and client-requested. Unlike GoTranscript and Scribie, GMR does not require timestamps by default. When requested, format is [HH:MM:SS]. Always check job instructions before adding timestamps.' },
+      { q: 'How does GMR Transcription handle inaudible and crosstalk?', a: 'Inaudible: [inaudible] — square brackets, lowercase, no timestamp. Crosstalk: [crosstalk] — used when two speakers talk simultaneously. Place notations exactly where in the sentence the audio is unclear or overlapping.' },
+    ],
   },
 ]
 
@@ -5247,6 +5970,7 @@ const CATEGORY_HUBS: Partial<Record<SeoToolKey, readonly string[]>> = {
   'compress-video': ['/video-to-transcript'],
   'batch-process': ['/video-to-transcript'],
   'voice-to-text': ['/fastest-transcription-tool'],
+  'brand-guideline': ['/rev-transcript-guidelines', '/gotranscript-guidelines', '/transcribeme-guidelines'],
 }
 
 function isPathIndexable(path: string): boolean {

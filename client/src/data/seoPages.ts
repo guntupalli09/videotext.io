@@ -11,6 +11,8 @@ export const transcriptionTargets = [
   'webinar',
   'lecture',
   'zoom recording',
+  'google meet',
+  'teams meeting',
   'mp4 video',
   'audio recording',
   'online course',

@@ -11,6 +11,29 @@ const POSTHOG_HOST = (import.meta.env.VITE_POSTHOG_HOST as string) || 'https://u
 
 let optedOut = false
 
+
+let lifecycleHooksAttached = false
+
+function attachLifecycleFlushHooks(): void {
+  if (lifecycleHooksAttached) return
+  lifecycleHooksAttached = true
+  if (typeof window === 'undefined') return
+
+  const flush = () => {
+    try {
+      posthog.capture('$pageleave', undefined, { transport: 'sendBeacon' })
+    } catch {
+      // no-op
+    }
+  }
+
+  window.addEventListener('pagehide', flush)
+  window.addEventListener('beforeunload', flush)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flush()
+  })
+}
+
 /** If PostHog host is unreachable (e.g. blocked by ad blocker), opt out so the SDK stops retrying. */
 function probeAndOptOutIfBlocked(): void {
   if (optedOut) return
@@ -44,11 +67,13 @@ function probeAndOptOutIfBlocked(): void {
 
 /** Probe for ad blockers after PostHog initializes. Call once from a root component. */
 export function startAdBlockProbe(): void {
+  attachLifecycleFlushHooks()
   setTimeout(probeAndOptOutIfBlocked, 1500)
 }
 
 /** Send PostHog's standard $pageview so Web analytics dashboard gets SPA route changes. */
 export function capturePageview(pathname: string): void {
+  attachLifecycleFlushHooks()
   if (optedOut) return
   try {
     const url = typeof window !== 'undefined' ? `${window.location.origin}${pathname}` : ''
@@ -60,6 +85,7 @@ export function capturePageview(pathname: string): void {
 
 /** Identify user (e.g. after checkout). Safe to call with anonymous id or skip for anonymous. */
 export function identifyUser(userId: string, traits?: { email?: string; plan?: string }): void {
+  attachLifecycleFlushHooks()
   if (optedOut) return
   try {
     posthog.identify(userId)
@@ -75,6 +101,8 @@ export type AnalyticsEvent =
   | 'file_selected'
   | 'upload_started'
   | 'upload_completed'
+  | 'transcription_autostarted'
+  | 'transcription_manual_started'
   | 'job_started'
   | 'job_completed'
   | 'result_downloaded'
@@ -146,7 +174,25 @@ export type AnalyticsEvent =
   | 'upgrade_prompt_seen'
   | 'checkout_started'
 
+
+
+const FIRST_OUTPUT_SEEN_KEY_PREFIX = 'videotext:first_output_seen'
+
+/** Track once per browser+user id (fallback anon) to avoid duplicate first-output events. */
+export function trackFirstOutputSeen(props?: Record<string, unknown>): void {
+  if (typeof window === 'undefined') return
+  try {
+    const userId = localStorage.getItem('userId') || 'anon'
+    const key = `${FIRST_OUTPUT_SEEN_KEY_PREFIX}:${userId}`
+    if (localStorage.getItem(key) === '1') return
+    trackEvent('first_output_seen', props)
+    localStorage.setItem(key, '1')
+  } catch {
+    // non-blocking
+  }
+}
 export function trackEvent(event: AnalyticsEvent, props?: Record<string, unknown>): void {
+  attachLifecycleFlushHooks()
   if (import.meta.env.DEV) {
     // eslint-disable-next-line no-console
     console.log('[analytics]', event, props ?? {})

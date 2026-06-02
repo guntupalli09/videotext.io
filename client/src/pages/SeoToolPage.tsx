@@ -9,8 +9,10 @@ import { FileText } from 'lucide-react'
 import { getSeoEntry, getRelatedSuggestionsForEntry } from '../lib/seoRegistry'
 import type { SeoToolKey } from '../lib/seoRegistry'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
+import MoneyPagesCta from '../components/MoneyPagesCta'
 import NotFound from './NotFound'
 import { resolveInternalLinkPath } from '../lib/primaryUrls'
+import { getContextualCta, getRouteFamily, getWorkflowStageCtas } from '../lib/routeFamilyTemplates'
 
 // Lazy-load core tools so only the needed one is loaded for each SEO URL
 const VideoToTranscript = lazy(() => import('./VideoToTranscript'))
@@ -21,6 +23,7 @@ const BurnSubtitles = lazy(() => import('./BurnSubtitles'))
 const CompressVideo = lazy(() => import('./CompressVideo'))
 const BatchProcess = lazy(() => import('./BatchProcess'))
 const VoiceRecorder = lazy(() => import('./VoiceRecorder'))
+const BrandGuidelinePage = lazy(() => import('./BrandGuidelinePage'))
 
 const TOOL_MAP: Record<SeoToolKey, React.LazyExoticComponent<React.ComponentType<any>>> = {
   'video-to-transcript': VideoToTranscript,
@@ -31,14 +34,8 @@ const TOOL_MAP: Record<SeoToolKey, React.LazyExoticComponent<React.ComponentType
   'compress-video': CompressVideo,
   'batch-process': BatchProcess,
   'voice-to-text': VoiceRecorder,
+  'brand-guideline': BrandGuidelinePage,
 }
-
-const PRIMARY_CTA_BY_INTENT_CLASS = {
-  converter: 'Upload file now',
-  generator: 'Generate in X minutes',
-  comparisonAlternative: 'See side-by-side + try free',
-  howTo: 'Use the exact workflow now',
-} as const
 
 const PRIMARY_TOOL_PATH_BY_KEY: Record<SeoToolKey, string> = {
   'video-to-transcript': '/video-to-transcript',
@@ -49,9 +46,10 @@ const PRIMARY_TOOL_PATH_BY_KEY: Record<SeoToolKey, string> = {
   'compress-video': '/compress-video',
   'batch-process': '/batch-process',
   'voice-to-text': '/voice-recorder',
+  'brand-guideline': '/guideline-format',
 }
 
-function getIntentClass(intentKey: string, toolKey: SeoToolKey): keyof typeof PRIMARY_CTA_BY_INTENT_CLASS {
+function getIntentClass(intentKey: string, toolKey: SeoToolKey): 'converter' | 'generator' | 'comparisonAlternative' | 'howTo' {
   const normalizedIntent = intentKey.toLowerCase()
   if (/(comparison|compare|versus|\bvs\b|alternative|alternatives)/.test(normalizedIntent)) {
     return 'comparisonAlternative'
@@ -75,7 +73,7 @@ function getIntentClass(intentKey: string, toolKey: SeoToolKey): keyof typeof PR
 function RouteFallback() {
   return (
     <div className="flex min-h-[40vh] items-center justify-center" role="status" aria-live="polite">
-      <p className="text-violet-600 font-medium">Loading…</p>
+      <p className="text-blue-600 font-medium">Loading…</p>
     </div>
   )
 }
@@ -114,8 +112,12 @@ export default function SeoToolPage() {
   }
 
   const intentClass = getIntentClass(entry.intentKey, entry.toolKey)
-  const primaryCtaText = PRIMARY_CTA_BY_INTENT_CLASS[intentClass]
-  const primaryCtaPath = resolveInternalLinkPath(PRIMARY_TOOL_PATH_BY_KEY[entry.toolKey])
+  const routeFamily = getRouteFamily(pathname)
+  const ctaIntent = intentClass === 'comparisonAlternative' ? 'switching' : intentClass === 'howTo' ? 'cleanup' : intentClass
+  const contextualPrimaryCta = getContextualCta(routeFamily, pathname, 'hero', ctaIntent)
+  const primaryCtaText = contextualPrimaryCta.text
+  const primaryCtaPath = resolveInternalLinkPath(contextualPrimaryCta.path || PRIMARY_TOOL_PATH_BY_KEY[entry.toolKey])
+  const stageCtas = getWorkflowStageCtas(routeFamily, pathname).slice(0, 2)
 
   return (
     <div className="min-h-screen">
@@ -123,26 +125,38 @@ export default function SeoToolPage() {
         <Tool {...toolProps} />
       </Suspense>
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="rounded-2xl border border-violet-100 bg-violet-50/60 p-4 sm:p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 sm:p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-semibold text-violet-900">Ready to run this workflow?</p>
-            <p className="text-xs text-violet-700">Primary CTA is mapped from intent class ({intentClass.replace('comparisonAlternative', 'comparison/alternative')}).</p>
+            <p className="text-sm font-semibold text-blue-900">Workflow-native next step</p>
+            <p className="text-xs text-blue-700">CTA selected from route family ({routeFamily}) and intent ({intentClass.replace('comparisonAlternative', 'comparison/alternative')}).</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
             <Link
               to={primaryCtaPath}
-              className="inline-flex items-center justify-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700"
+              className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
             >
               {primaryCtaText}
             </Link>
-            <Link
-              to="/samples"
-              className="inline-flex items-center justify-center rounded-lg border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-700 hover:bg-violet-100"
-            >
-              View samples
-            </Link>
+            {stageCtas.map((cta) => (
+              <Link
+                key={`${cta.stage}-${cta.text}`}
+                to={resolveInternalLinkPath(cta.path)}
+                className="inline-flex items-center justify-center rounded-lg border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100"
+              >
+                {cta.text}
+              </Link>
+            ))}
           </div>
         </div>
+        {intentClass === 'comparisonAlternative' && (
+          <div className="mt-4">
+            <MoneyPagesCta
+              title="Best next step after this comparison"
+              description="Jump straight into the core workflows used by customers to create transcript and subtitle outputs."
+              className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 sm:p-5 text-sm"
+            />
+          </div>
+        )}
       </div>
       {suggestions.length > 0 && (
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-12">

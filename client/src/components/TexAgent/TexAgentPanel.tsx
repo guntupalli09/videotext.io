@@ -294,7 +294,7 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
       className="flex flex-col h-full min-h-0 bg-white dark:bg-gray-800 rounded-l-2xl overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-center justify-between shrink-0 px-2 py-1.5 border-b border-gray-100 dark:border-gray-600 bg-violet-50 dark:bg-violet-900/20">
+      <div className="flex items-center justify-between shrink-0 px-2 py-1.5 border-b border-gray-100 dark:border-gray-600 bg-blue-50 dark:bg-blue-900/20">
         <div className="flex items-center gap-1.5">
           <TexAvatar size="sm" pose="wave" />
           <div>
@@ -305,7 +305,7 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
         <button
           type="button"
           onClick={onClose}
-          className="p-1.5 rounded-md text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+          className="p-1.5 rounded-md text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           aria-label="Close"
         >
           <X className="w-4 h-4" strokeWidth={1.5} />
@@ -323,9 +323,9 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
             <div
               className={`max-w-[85%] rounded-lg px-2.5 py-1.5 ${
                 msg.type === 'user'
-                  ? 'bg-violet-600 text-white'
+                  ? 'bg-blue-600 text-white'
                   : msg.contextual
-                    ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-900 dark:text-violet-100 border border-violet-200 dark:border-violet-800'
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 border border-blue-200 dark:border-blue-800'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
               }`}
             >
@@ -334,7 +334,7 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
                 <Link
                   to={msg.entry.link.path}
                   onClick={onClose}
-                  className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-medium text-violet-600 dark:text-violet-400 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-1 rounded"
+                  className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-medium text-blue-600 dark:text-blue-400 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
                 >
                   {msg.entry.link.label} →
                 </Link>
@@ -348,9 +348,9 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
           <div className="flex gap-1.5">
             <TexAvatar size="sm" className="shrink-0 mt-0.5" />
             <div className="rounded-lg px-2.5 py-2 bg-gray-100 dark:bg-gray-700 flex items-center gap-0.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         )}
@@ -359,14 +359,14 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
         {showFeedbackStrip && (
           <div className="flex gap-1.5">
             <TexAvatar size="sm" className="shrink-0 mt-0.5" />
-            <div className="rounded-lg px-2.5 py-1.5 bg-violet-100 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-800 max-w-[85%] space-y-1">
+            <div className="rounded-lg px-2.5 py-1.5 bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 max-w-[85%] space-y-1">
               <div className="flex gap-0.5" role="group" aria-label="Star rating">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button
                     key={n}
                     type="button"
                     onClick={() => setFeedbackStars(n)}
-                    className="p-0.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                    className="p-0.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     aria-label={`${n} star${n === 1 ? '' : 's'}`}
                   >
                     <span className="text-xs leading-none">
@@ -381,7 +381,7 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
                   value={feedbackComment}
                   onChange={(e) => setFeedbackComment(e.target.value.slice(0, 500))}
                   placeholder="Comment (optional)"
-                  className="rounded border border-violet-200 dark:border-violet-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-[10px] px-2 py-1 placeholder:text-gray-400 focus:ring-1 focus:ring-violet-500 focus:outline-none"
+                  className="rounded border border-blue-200 dark:border-blue-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-[10px] px-2 py-1 placeholder:text-gray-400 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                   maxLength={500}
                   aria-label="Share your experience"
                 />
@@ -391,7 +391,7 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
                     value={feedbackNameOrEmail}
                     onChange={(e) => setFeedbackNameOrEmail(e.target.value.slice(0, 500))}
                     placeholder="Name or email (optional)"
-                    className="rounded border border-violet-200 dark:border-violet-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-[10px] px-2 py-1 placeholder:text-gray-400 focus:ring-1 focus:ring-violet-500 focus:outline-none"
+                    className="rounded border border-blue-200 dark:border-blue-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-[10px] px-2 py-1 placeholder:text-gray-400 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                     maxLength={500}
                     aria-label="Name or email"
                   />
@@ -399,7 +399,7 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
                 <button
                   type="submit"
                   disabled={feedbackSending}
-                  className="self-start text-[10px] font-medium text-violet-700 dark:text-violet-300 hover:text-violet-800 dark:hover:text-violet-200 disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded px-1.5 py-0.5"
+                  className="self-start text-[10px] font-medium text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded px-1.5 py-0.5"
                 >
                   {feedbackSending ? 'Sending…' : 'Send feedback'}
                 </button>
@@ -416,7 +416,7 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
                 key={s.entryId}
                 type="button"
                 onClick={() => handleSuggestionClick(s.entryId)}
-                className="text-left text-[9px] px-1.5 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-violet-100 dark:hover:bg-violet-900/30 hover:text-violet-700 dark:hover:text-violet-300 border border-transparent hover:border-violet-200 dark:hover:border-violet-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                className="text-left text-[9px] px-1.5 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300 border border-transparent hover:border-blue-200 dark:hover:border-blue-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               >
                 {s.label}
               </button>
@@ -436,7 +436,7 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
               setSoundEnabled(v)
               setSuccessSoundEnabled(v)
             }}
-            className="rounded border-gray-300 text-violet-600 focus:ring-violet-500"
+            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             aria-label="Play sound when a job completes"
           />
           Sound on success
@@ -451,13 +451,13 @@ export default function TexAgentPanel({ onClose, isOpen = true }: TexAgentPanelP
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about tools, plans, or issues..."
-            className="flex-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 px-2 py-1.5 text-[11px] focus:ring-1 focus:ring-violet-500 focus:border-violet-500 focus:outline-none"
+            className="flex-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 px-2 py-1.5 text-[11px] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
             aria-label="Ask Tex a question"
           />
           <button
             type="submit"
             disabled={!input.trim()}
-            className="p-1.5 rounded-md bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+            className="p-1.5 rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
             aria-label="Send"
           >
             <Send className="w-4 h-4" strokeWidth={1.5} />

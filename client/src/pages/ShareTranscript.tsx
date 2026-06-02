@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { FileText, Mic, AlertCircle } from 'lucide-react'
+import { FileText, Mic, Film, AlertCircle } from 'lucide-react'
 import Seo from '../components/Seo'
 import { fetchPublicTranscriptShare, type PublicTranscriptShareResponse } from '../lib/api'
 import { formatTimestamp } from '../lib/srtExport'
@@ -36,8 +36,13 @@ export default function ShareTranscript() {
   }, [slug])
 
   const toolLabel =
-    data?.sourceTool === 'voice-to-text' ? 'Voice to Text' : 'Video to Transcript'
-  const ToolIcon = data?.sourceTool === 'voice-to-text' ? Mic : FileText
+    data?.sourceTool === 'voice-to-text' ? 'Voice to Text' :
+    data?.sourceTool === 'video-to-subtitles' ? 'Video to Subtitles' :
+    'Video to Transcript'
+  const ToolIcon =
+    data?.sourceTool === 'voice-to-text' ? Mic :
+    data?.sourceTool === 'video-to-subtitles' ? Film :
+    FileText
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
@@ -50,18 +55,18 @@ export default function ShareTranscript() {
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {loading && (
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-10 text-center text-gray-500 dark:text-gray-400 text-sm">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-10 text-center text-gray-500 dark:text-gray-400 text-sm">
             Loading…
           </div>
         )}
 
         {!loading && error && (
-          <div className="rounded-2xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/90 dark:bg-amber-950/25 p-6 flex gap-4">
+          <div className="rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/90 dark:bg-amber-950/25 p-6 flex gap-4">
             <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400 shrink-0" />
             <div>
               <p className="font-semibold text-amber-900 dark:text-amber-200">Unable to open this page</p>
               <p className="text-sm text-amber-800/90 dark:text-amber-300/90 mt-1">{error}</p>
-              <Link to="/" className="inline-block mt-4 text-sm font-medium text-violet-600 dark:text-violet-400 hover:underline">
+              <Link to="/" className="inline-block mt-4 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
                 Go to VideoText home →
               </Link>
             </div>
@@ -88,11 +93,11 @@ export default function ShareTranscript() {
                   </span>
                 )}
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
                 {data.title}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Shared read-only transcript ·{' '}
+                {data.sourceTool === 'video-to-subtitles' ? 'Shared read-only subtitles' : 'Shared read-only transcript'} ·{' '}
                 {new Date(data.createdAt).toLocaleDateString(undefined, {
                   month: 'short',
                   day: 'numeric',
@@ -105,8 +110,8 @@ export default function ShareTranscript() {
               (data.payload.summary.summary ||
                 data.payload.summary.bullets?.length ||
                 data.payload.summary.actionItems?.length) && (
-                <section className="rounded-2xl border border-violet-200/70 dark:border-violet-900/40 bg-violet-50/50 dark:bg-violet-950/20 p-5 space-y-3">
-                  <h2 className="text-sm font-semibold text-violet-900 dark:text-violet-200">Summary</h2>
+                <section className="rounded-xl border border-blue-200/70 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20 p-5 space-y-3">
+                  <h2 className="text-sm font-medium text-blue-900 dark:text-blue-200">Summary</h2>
                   {data.payload.summary.summary && (
                     <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                       {data.payload.summary.summary}
@@ -132,9 +137,11 @@ export default function ShareTranscript() {
                 </section>
               )}
 
-            <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/80 shadow-sm overflow-hidden">
+            <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/80 shadow-sm overflow-hidden">
               <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900">
-                <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Transcript</h2>
+                <h2 className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                  {data.sourceTool === 'video-to-subtitles' ? 'Subtitles' : 'Transcript'}
+                </h2>
               </div>
               <div className="p-5 max-h-[70vh] overflow-y-auto">
                 {data.payload.segments?.length ? (
@@ -163,7 +170,7 @@ export default function ShareTranscript() {
             <footer className="text-center text-xs text-gray-400 dark:text-gray-500 pt-4">
               <p>
                 Transcribed with{' '}
-                <Link to="/" className="text-violet-600 dark:text-violet-400 font-medium hover:underline">
+                <Link to="/" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
                   VideoText
                 </Link>
               </p>

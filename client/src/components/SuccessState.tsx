@@ -1,7 +1,39 @@
 import { Check, Download, File } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { formatFileSize } from '../lib/utils'
 import { trackEvent } from '../lib/analytics'
 import { motion } from 'framer-motion'
+
+/** Shared with tool pages — saves plain transcript for /guideline-format prefill (sessionStorage vt_prefill_transcript). */
+export function MakeClientReadyTranscriptButton({
+  plainTranscript,
+  className = 'w-full',
+}: {
+  plainTranscript: string
+  className?: string
+}) {
+  const navigate = useNavigate()
+  const text = plainTranscript.trim()
+  if (!text) return null
+
+  const handleClick = () => {
+    sessionStorage.setItem('vt_prefill_transcript', text)
+    navigate('/guideline-format')
+  }
+
+  return (
+    <>
+      <div className="my-4 border-t border-gray-200 dark:border-gray-700 w-full" role="separator" />
+      <button
+        type="button"
+        onClick={handleClick}
+        className={`${className} rounded-xl border border-gray-300 dark:border-gray-600 bg-transparent py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/70 transition-colors shadow-none`}
+      >
+        Make this client-ready →
+      </button>
+    </>
+  )
+}
 
 interface SuccessStateProps {
   fileName?: string
@@ -17,6 +49,8 @@ interface SuccessStateProps {
   downloadLabel?: string
   /** Show "Processed in XX.Xs ⚡" above download when set (e.g. from job_completed). */
   processedInSeconds?: number
+  /** Plain transcript text — when set, enables "Make this client-ready" below export actions. */
+  jobTranscriptPlainText?: string
 }
 
 export default function SuccessState({
@@ -29,6 +63,7 @@ export default function SuccessState({
   onDownloadClick,
   downloadLabel = 'Download',
   processedInSeconds,
+  jobTranscriptPlainText,
 }: SuccessStateProps) {
   const trackDownload = () => {
     try {
@@ -56,7 +91,7 @@ export default function SuccessState({
         <Check className="h-8 w-8 text-success" strokeWidth={1.5} />
       </motion.div>
 
-      <h3 className="page-heading font-bold mb-6">Your file is ready!</h3>
+      <h3 className="page-heading font-medium mb-6">Your file is ready!</h3>
 
       {fileName && (
         <div className="surface-card p-6 mb-8 max-w-md mx-auto">
@@ -79,7 +114,7 @@ export default function SuccessState({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.15, duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-            className="badge text-base font-semibold text-violet-600 dark:text-violet-400 px-3 py-1 bg-violet-50 dark:bg-violet-900/30 success-speed-badge rounded-full"
+            className="badge text-base font-semibold text-blue-600 dark:text-blue-400 px-3 py-1 bg-blue-50 dark:bg-blue-900/30 success-speed-badge rounded-full"
             aria-label={`Processed in ${processedInSeconds.toFixed(1)} seconds`}
           >
             Processed in {processedInSeconds.toFixed(1)}s ⚡
@@ -112,6 +147,12 @@ export default function SuccessState({
           </a>
         )
       )}
+
+      {jobTranscriptPlainText?.trim() ? (
+        <div className="w-full max-w-md mx-auto">
+          <MakeClientReadyTranscriptButton plainTranscript={jobTranscriptPlainText} />
+        </div>
+      ) : null}
 
       {onProcessAnother && (
         <button

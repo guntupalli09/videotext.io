@@ -516,7 +516,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
       prisma.feedback.findMany({
         orderBy: { createdAt: 'desc' },
         take: 20,
-        select: { id: true, toolId: true, stars: true, comment: true, planAtSubmit: true, createdAt: true, userId: true, userNameOrEmail: true },
+        select: { id: true, toolId: true, stars: true, comment: true, planAtSubmit: true, createdAt: true, userId: true, userNameOrEmail: true, email: true, topTool: true, topToolReason: true, featureRequest: true, otherFeedback: true, source: true },
       }),
       prisma.$queryRaw<[{ mrrCents: bigint | null }]>`
         SELECT SUM("priceMonthly")::bigint as "mrrCents"
@@ -750,6 +750,12 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
       createdAt: f.createdAt.toISOString(),
       userId: f.userId,
       userNameOrEmail: f.userNameOrEmail ?? (f.userId ? feedbackEmailMap[f.userId] ?? null : null),
+      email: f.email,
+      topTool: f.topTool,
+      topToolReason: f.topToolReason,
+      featureRequest: f.featureRequest,
+      otherFeedback: f.otherFeedback,
+      source: f.source,
     }))
 
     const users = (allUsers ?? []).map((u) => ({

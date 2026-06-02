@@ -75,7 +75,7 @@ Happy to answer anything about how we handle accuracy, languages, or the privacy
 
 ## Thumbnail / Gallery suggestions (get these made)
 
-1. **Main thumbnail**: Dark background, tool name "VideoText", tagline below, purple gradient (matches brand)
+1. **Main thumbnail**: Dark background, tool name "VideoText", tagline below, blue gradient (matches brand)
 2. **GIF 1**: Upload video → transcript appears word by word (15 seconds)
 3. **GIF 2**: Subtitles tool → SRT file downloads (10 seconds)
 4. **GIF 3**: Batch upload → ZIP export (10 seconds)

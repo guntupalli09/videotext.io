@@ -57,7 +57,7 @@ export default function FeedbackSheet({
             className={`
               relative w-full ${maxWidth} mx-auto
               bg-white dark:bg-gray-900
-              rounded-t-2xl sm:rounded-2xl
+              rounded-t-2xl sm:rounded-xl
               shadow-2xl overflow-hidden
               sm:mb-0 sm:mx-4
             `}
@@ -65,7 +65,7 @@ export default function FeedbackSheet({
             aria-modal="true"
           >
             {/* Accent bar */}
-            <div className="h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-violet-600" />
+            <div className="h-1 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700" />
 
             {/* Drag handle (mobile only) */}
             <div className="flex justify-center pt-2 pb-0 sm:hidden">
@@ -94,7 +94,7 @@ export default function FeedbackSheet({
 
 export function SheetTitle({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-base font-semibold text-gray-900 dark:text-white font-display leading-snug pr-8">
+    <h2 className="text-base font-medium text-gray-900 dark:text-white font-display leading-snug pr-8">
       {children}
     </h2>
   )
@@ -114,14 +114,14 @@ interface OptionButtonProps {
 }
 
 const VARIANT_CLASSES: Record<string, string> = {
-  default: 'border-gray-200 dark:border-gray-700 hover:border-violet-300 dark:hover:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-950/30',
+  default: 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/30',
   positive: 'border-emerald-200 dark:border-emerald-800 hover:border-emerald-400 hover:bg-emerald-50',
   negative: 'border-red-200 dark:border-red-800 hover:border-red-400 hover:bg-red-50',
   warning: 'border-amber-200 dark:border-amber-800 hover:border-amber-400 hover:bg-amber-50',
 }
 
 const SELECTED_CLASSES: Record<string, string> = {
-  default: 'border-violet-500 bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300',
+  default: 'border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300',
   positive: 'border-emerald-500 bg-emerald-50 text-emerald-700',
   negative: 'border-red-500 bg-red-50 text-red-700',
   warning: 'border-amber-500 bg-amber-50 text-amber-700',
@@ -158,7 +158,7 @@ export function SubmitButton({
       type="button"
       onClick={onClick}
       disabled={disabled || loading}
-      className="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 active:scale-[0.98] text-white text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-violet-200 dark:shadow-violet-900/30"
+      className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-blue-200 dark:shadow-blue-900/30"
     >
       {loading ? 'Sending…' : label}
     </button>

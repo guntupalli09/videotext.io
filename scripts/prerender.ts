@@ -18,6 +18,8 @@ import { getProgrammaticSeoEntries } from '../client/src/lib/generateSeoPages'
 import { getCanonicalPathForRoute } from '../client/src/lib/primaryUrls'
 import { getSoftwareApplicationJsonLd, getHowToJsonLd } from '../client/src/lib/seoMeta'
 import { getIndexablePaths } from './seo/registry'
+import { renderPageToHtml } from '../client/src/ssr-render'
+import { getContextualCta, getRouteFamily, getWorkflowStageCtas } from '../client/src/lib/routeFamilyTemplates'
 
 const REPO_ROOT = path.resolve(__dirname, '..')
 // Vercel outputDirectory is the root-level dist/ (build copies client/dist → dist/).
@@ -25,6 +27,7 @@ const REPO_ROOT = path.resolve(__dirname, '..')
 const DIST_DIR = path.join(REPO_ROOT, 'dist')
 const REGISTRY_PATH = path.join(REPO_ROOT, 'client', 'src', 'lib', 'seoRegistry.ts')
 const SITE_URL = 'https://videotext.io'
+const BLOG_URL = 'https://blog.videotext.io'
 const SITE_NAME = 'VideoText'
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`
 
@@ -85,10 +88,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/faq',
-    title: `FAQ — Privacy, Billing, Tools | ${SITE_NAME}`,
+    title: `VideoText FAQ — privacy, billing, transcription, and client style guides | ${SITE_NAME}`,
     description:
-      "Frequently asked questions about VideoText: privacy, data storage, billing, free tier, translation, and tools. Your files are processed and deleted immediately.",
-    h1: 'Frequently Asked Questions',
+      'Answers on privacy (files deleted after jobs), billing, uploads, subtitles, verbatim modes, QA prep, and how Format → Client guidelines fits freelancer workflows.',
+    h1: 'VideoText FAQ — privacy, billing, transcription, and client style guides',
     faq: [
       { q: 'Do you store my videos or files?', a: "No. We process your files and then delete them. We don't keep your uploads, transcripts, or generated outputs. Your content is never stored on our servers." },
       { q: 'Is my content used for AI training?', a: "No. Your content is used only to deliver the service you requested. We do not use it for training AI models." },
@@ -100,10 +103,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/guide',
-    title: `How to Use VideoText — Tool Guide & Features | ${SITE_NAME}`,
+    title: `How to use VideoText — tools, workflows, and client guidelines | ${SITE_NAME}`,
     description:
-      'Step-by-step guide to every VideoText tool: Video to Transcript, Video to Subtitles, Translate, Fix, Burn, Compress, Batch. What we expect, what you get, and plan limits.',
-    h1: 'How to Use VideoText',
+      'Tool-by-tool steps for Video → Transcript, Format → Client guidelines (marketplace presets + editable cards), subtitles, translate, fix, burn, compress, batch, voice, YouTube URLs. Inputs, outputs, limits.',
+    h1: 'How to use VideoText — tools, workflows, and client guidelines',
     keywords: ['how to use VideoText', 'VideoText tutorial', 'video transcription guide', 'subtitle generation guide', 'how to transcribe video', 'how to generate subtitles', 'step-by-step tutorial', 'feature guide', 'all tools explained'],
   },
   {
@@ -115,10 +118,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/blog',
-    title: `Blog — Engineering, Privacy & Product | ${SITE_NAME}`,
+    title: `VideoText blog — transcription, subtitles, and workflow guides | ${SITE_NAME}`,
     description:
-      'The VideoText blog: how the processing pipeline works, why we delete your files, batch subtitles for creators, transcription guides, and product updates.',
-    h1: 'Blog',
+      'Product updates, privacy notes, practitioner guides, and links to tools like Format → Client guidelines for marketplace-style QA prep.',
+    h1: 'VideoText blog — transcription, subtitles, and workflow guides',
   },
   {
     path: '/samples',
@@ -137,37 +140,45 @@ const STATIC_META: RouteMeta[] = [
 
   {
     path: '/site-index',
-    title: `All VideoText Pages — Complete HTML Index for Crawlers | ${SITE_NAME}`,
+    title: `All VideoText Pages — Transcript, Subtitle, and Formatting Workflows | ${SITE_NAME}`,
     description:
-      'Complete HTML index of VideoText pages for search crawlers and LLM agents. Browse all transcription, subtitle, tools, and comparison pages from one place.',
+      'Browse VideoText transcription, subtitle, formatting, free tool, comparison, and alternatives pages from one organized workflow index.',
     h1: 'Complete VideoText Page Index',
     noindex: false,
   },
 
   {
     path: '/video-to-transcript',
-    title: `Video to Transcript — Free AI Transcription & Translation | ${SITE_NAME}`,
+    title: 'Video to Transcript in Minutes (Free, Fast & Private Tool)',
     description:
-      'Convert video to text with AI. View transcript in English, Hindi, Telugu, Spanish, Chinese, or Russian. Upload video, get plain-text transcript. Summary, chapters, speakers. Free tier.',
-    h1: 'Video to Transcript',
-    valueProposition: 'Convert any video into searchable, editable text in under 5 minutes. 98.5%+ accuracy with speaker labels, chapters, and multi-language translation. No download limits. Files deleted after processing.',
-    keywords: ['video to transcript', 'transcribe video', 'AI transcription', 'video to text', 'speech to text', 'accurate transcription', 'free transcription tool', 'transcription software'],
+      'Convert any video to transcript online in minutes. Upload or paste a link to get transcripts, subtitles (SRT/VTT), summary and chapters. No signup. Private.',
+    h1: 'Video to Transcript in 3 Minutes (Free, Fast & Private)',
+    valueProposition: 'VideoText lets you convert video to transcript online in minutes. Upload any video and get transcript text, subtitles (SRT/VTT), summary, and chapters in one click. 2-hour video → transcript in ~3–5 minutes.',
+    keywords: ['video to transcript', 'convert video to transcript', 'transcribe video online', 'video to text', 'youtube transcript generator', 'subtitle generator', 'long video transcription', 'private transcription tool'],
     comparison: [
-      { tool: 'Otter.ai', vs: '18-30 min processing, $120/year minimum' },
-      { tool: 'Descript', vs: '15 min processing, $24/month, desktop only' },
-      { tool: 'Rev', vs: 'Human transcription, $1.25/min, slow turnaround' },
+      { tool: 'Typical tools', vs: '20–40+ minutes for 2-hour videos' },
+      { tool: 'VideoText workflow', vs: 'Upload → download transcript + SRT/VTT + summary + chapters' },
+      { tool: 'Privacy', vs: 'Files deleted after processing' },
     ],
     howToUse: [
-      { step: 1, title: 'Upload Your Video', detail: 'MP4, MOV, AVI, WebM, MKV supported. Or paste a YouTube URL directly.' },
-      { step: 2, title: 'Get Instant Transcript', detail: 'AI processing runs in seconds. You\'ll see the transcript building in real-time.' },
-      { step: 3, title: 'Edit & Export', detail: 'Copy text, download TXT, get speaker labels, or generate SRT subtitles.' },
+      { step: 1, title: 'Upload your video or paste a link', detail: 'Works for MP4, MOV, MP3, YouTube, Zoom, and more.' },
+      { step: 2, title: 'AI transcribes in minutes', detail: 'Built for long videos and large files, not just short clips.' },
+      { step: 3, title: 'Download transcript, subtitles, and summary', detail: 'Get transcript text, SRT/VTT subtitles, summary, and chapters in one run.' },
     ],
     socialProof: [
-      { stat: '127,000+', desc: 'Videos transcribed' },
-      { stat: '98.5%', desc: 'Word accuracy rate' },
-      { stat: '3-5 min', desc: 'Average processing time' },
-      { stat: '50,000+', desc: 'Creators using VideoText' },
+      { stat: '2-hour → 3–5 min', desc: 'Processing benchmark' },
+      { stat: '70+', desc: 'Languages supported' },
+      { stat: 'SRT + VTT', desc: 'Subtitle outputs included' },
+      { stat: 'Deleted files', desc: 'Privacy-first processing' },
     ],
+  },
+  {
+    path: '/guideline-format',
+    title: `Format transcripts to match client transcription style guides | ${SITE_NAME}`,
+    description:
+      'Paste or upload a transcript, then work through editable Rev-, GoTranscript-, TranscribeMe-, and Scribie-style rule presets before QA. Optional client PDF/DOCX/TXT upload is stored for your workflow; automated parsing and auto-reformat from those files is not live yet—use presets and rule cards today.',
+    h1: 'Format transcripts to match client transcription style guides',
+    breadcrumbLabel: 'Format to client guidelines',
   },
   {
     path: '/video-to-subtitles',
@@ -322,10 +333,10 @@ const STATIC_META: RouteMeta[] = [
   // ── Comparison & alternative pages ──────────────────────────────────────────
   {
     path: '/compare',
-    title: `VideoText vs Descript, Otter.ai & Trint — Full Comparison | ${SITE_NAME}`,
+    title: `VideoText vs Descript, Otter.ai & Trint — speed, price, subtitles, privacy | ${SITE_NAME}`,
     description:
-      'Compare VideoText against Descript, Otter.ai, and Trint on speed, accuracy, pricing, and privacy. VideoText is 6x faster, starts free, and deletes your files after processing.',
-    h1: 'Compare VideoText',
+      'Side-by-side on video behaviour, subtitle exports, turnaround, pricing, storage—plus freelancer preset checklists via Format → Client guidelines.',
+    h1: 'VideoText vs Descript, Otter.ai & Trint — speed, price, subtitles, privacy',
     breadcrumbLabel: 'Compare',
     valueProposition: 'Switch from Otter, Descript, or Trint and save 80% on costs while cutting processing time in half. Same AI accuracy. Better privacy. No vendor lock-in.',
     keywords: ['transcription tools comparison', 'Otter alternative', 'Descript alternative', 'best transcription software', 'affordable transcription', 'fast transcription'],
@@ -589,6 +600,41 @@ const STATIC_META: RouteMeta[] = [
       'How to add captions to a YouTube video the right way: upload an SRT file instead of relying on auto-captions. Better accuracy, better SEO.',
     breadcrumbLabel: 'Add Captions to YouTube Video',
   },
+  {
+    path: '/blog/rev-style-guide-transcript-formatter',
+    title: `Rev Style Guide Transcript Formatter — Freelancer QA Workflow | ${SITE_NAME}`,
+    description:
+      'Map AI transcripts onto Rev transcription style rules faster: verbatim modes, speaker labels, inaudible tags, editable checklist, then proof for payout.',
+    breadcrumbLabel: 'Rev Style Guide Transcript Formatter',
+  },
+  {
+    path: '/blog/how-to-earn-more-per-hour-as-a-transcriptionist',
+    title: `How to Earn More Per Hour as a Transcriptionist (AI + QA Stack) | ${SITE_NAME}`,
+    description:
+      'Raise effective hourly transcription pay by cutting rework: AI first pass, preset style guides for GoTranscript/Rev clients, repeatable QA logs, faster invoicing.',
+    breadcrumbLabel: 'Earn More Per Hour (Transcriptionist)',
+  },
+  {
+    path: '/blog/clean-verbatim-vs-full-verbatim',
+    title: `Clean Verbatim vs Full Verbatim — Transcription Freelancer Guide | ${SITE_NAME}`,
+    description:
+      'Clean verbatim removes filler vs full verbatim keeps disfluencies. Learn marketplace differences, payouts, tagging, when to escalate — with VideoText presets.',
+    breadcrumbLabel: 'Clean Verbatim vs Full Verbatim',
+  },
+  {
+    path: '/blog/what-is-transcript-qa',
+    title: `What Is Transcript QA? Compliance Checklist for Agencies | ${SITE_NAME}`,
+    description:
+      'Transcript QA defined: glossary, timestamps, readability, tagging, speaker labels. Separate QA from transcription; align rubrics inside VideoText guideline workspace.',
+    breadcrumbLabel: 'What Is Transcript QA',
+  },
+  {
+    path: '/blog/freelance-transcription-style-guide-cheatsheet',
+    title: `Freelance Transcription Style Guide Cheatsheet (GoTranscript, Scribie) | ${SITE_NAME}`,
+    description:
+      'One-page freelancer cheatsheet aligning GoTranscript, Scribie, and custom PDF client briefs to editable presets so QA matches invoice-ready deliverables.',
+    breadcrumbLabel: 'Freelance Style Guide Cheatsheet',
+  },
   // ── Free client-side tools ───────────────────────────────────────────────────
   {
     path: '/tools',
@@ -745,6 +791,74 @@ const STATIC_META: RouteMeta[] = [
       'Subtitle format specs, Netflix delivery requirements, platform character limits, reading speed standards, and timing rules — all in one reference guide.',
     breadcrumbLabel: 'Subtitle Resources',
   },
+
+  // ── Comparison / vs pages ────────────────────────────────────────────────
+  {
+    path: '/temi-vs-videotext',
+    title: `Temi vs VideoText (2025) — Pricing, Accuracy, Speed & Features Compared | ${SITE_NAME}`,
+    description:
+      'Temi charges $0.25/min and supports English only. VideoText is 6× cheaper, supports 90+ languages, and produces transcript + SRT + VTT + summary + chapters per upload. Full 360° comparison.',
+    h1: 'Temi vs VideoText (2025): The Full 360° Comparison',
+    breadcrumbLabel: 'Temi vs VideoText',
+  },
+  {
+    path: '/videotext-vs-rev',
+    title: `VideoText vs Rev (2025) — AI Pricing, Accuracy & Features Compared | ${SITE_NAME}`,
+    description:
+      'Rev AI charges $0.25/min; VideoText Pro is ~$0.042/min flat. VideoText adds 90+ languages, zero data retention, AI summary, chapters, and subtitle burn-in. Full comparison.',
+    h1: 'VideoText vs Rev (2025): Full Comparison',
+    breadcrumbLabel: 'VideoText vs Rev',
+  },
+  {
+    path: '/otter-vs-videotext',
+    title: `Otter vs VideoText — Meeting Notes vs File Transcription | ${SITE_NAME}`,
+    description:
+      'Otter is optimised for live meeting capture. VideoText is stronger for file-first transcription: faster processing, SRT/VTT subtitle export, YouTube URL input, and benchmark transparency.',
+    h1: 'Otter vs VideoText',
+    breadcrumbLabel: 'Otter vs VideoText',
+  },
+  {
+    path: '/descript-vs-videotext',
+    title: `Descript vs VideoText — Editor Workflow vs Transcription Throughput | ${SITE_NAME}`,
+    description:
+      'Descript is an editor-first tool. VideoText is transcription-first: 6× faster, starts at $0, no desktop install. Choose based on whether editing or throughput is your bottleneck.',
+    h1: 'Descript vs VideoText',
+    breadcrumbLabel: 'Descript vs VideoText',
+  },
+  {
+    path: '/videotext-vs-turboscribe',
+    title: `VideoText vs TurboScribe — Full 2025 Comparison | ${SITE_NAME}`,
+    description:
+      'VideoText vs TurboScribe: both are fast, but VideoText adds SRT/VTT subtitles, AI summary, chapter markers, YouTube URL input, and subtitle burn-in in one workflow.',
+    h1: 'VideoText vs TurboScribe',
+    breadcrumbLabel: 'VideoText vs TurboScribe',
+  },
+  {
+    path: '/best-otter-alternatives',
+    title: `Best Otter AI Alternatives (2025) — Free & Paid Options | ${SITE_NAME}`,
+    description:
+      'Top Otter AI alternatives for file-first transcription: VideoText (free tier, 90+ languages, SRT/VTT), Descript (editing), Rev (human review). Full neutral comparison.',
+    h1: 'Best Otter AI Alternatives (2025)',
+    breadcrumbLabel: 'Best Otter Alternatives',
+    faq: [
+      { q: 'What is the best free Otter AI alternative?', a: 'VideoText offers a free tier with no credit card required, supports video file uploads and YouTube URLs, and exports transcript + SRT/VTT subtitles — covering the core use cases where Otter falls short for file-based workflows.' },
+      { q: 'Which Otter alternative supports subtitles and summaries?', a: 'VideoText supports transcript, SRT/VTT subtitles, AI summary, and chapter markers in a single workflow. Otter does not produce subtitle files.' },
+      { q: 'Is VideoText a good Otter replacement for podcast workflows?', a: 'Yes. VideoText processes long-form audio/video faster than Otter, exports broadcast-safe SRT files, and supports 90+ languages — making it a strong fit for podcast transcription and repurposing.' },
+    ],
+  },
+  {
+    path: '/best-descript-alternatives',
+    title: `Best Descript Alternatives (2025) for Transcription Workflows | ${SITE_NAME}`,
+    description:
+      'Top Descript alternatives when you need fast transcription without editor overhead: VideoText (transcript + subtitles + summary), Otter (meetings), Rev (human QA). Neutral comparison.',
+    h1: 'Best Descript Alternatives (2025)',
+    breadcrumbLabel: 'Best Descript Alternatives',
+    faq: [
+      { q: 'What is the best Descript alternative for transcription-only workflows?', a: 'VideoText is usually the best fit when you need speed and structured output (transcript + SRT/VTT + summary + chapters) without the editing overhead of Descript.' },
+      { q: 'Is VideoText faster than Descript for long videos?', a: 'For transcription-first workloads, VideoText typically processes a 1-hour video in 3–5 minutes versus Descript\'s 5–10 minutes. VideoText has lower overhead since there is no editor to load.' },
+      { q: 'Can I replace Descript if I only need transcripts and subtitles?', a: 'Yes. VideoText is designed for transcript and subtitle generation. If you do not need timeline editing or audio correction, VideoText is a lighter and more affordable replacement.' },
+    ],
+  },
 ]
 
 // ── Registry parser ───────────────────────────────────────────────────────────
@@ -827,6 +941,14 @@ function parseRegistryEntries(): ParsedEntry[] {
 }
 
 // ── HTML injection ────────────────────────────────────────────────────────────
+
+
+function getCanonicalUrlForPath(pathOrUrl: string): string {
+  if (pathOrUrl.startsWith('http')) return pathOrUrl
+  if (pathOrUrl === '/blog') return `${BLOG_URL}/`
+  if (pathOrUrl.startsWith('/blog/')) return `${BLOG_URL}/${pathOrUrl.slice('/blog/'.length)}`
+  return pathOrUrl === '/' ? SITE_URL + '/' : `${SITE_URL}${pathOrUrl}`
+}
 
 function escapeHtml(s: string): string {
   return s
@@ -931,7 +1053,7 @@ function descriptionFromPath(routePath: string): string {
     return 'VideoText helps you transcribe videos, generate subtitles, translate captions, and export clean transcripts in your browser.'
   }
   const label = routePath.replace(/^\//, '').replace(/\//g, ' ').replace(/-/g, ' ')
-  return `VideoText page for ${label}. Fully prerendered HTML for search crawlers, SEO tools, and LLM agents.`
+  return `VideoText workflow page for ${label}. Learn the relevant transcript, subtitle, formatting, export, or comparison path and choose the right tool for the job.`
 }
 
 function optimizeMetaDescription(rawDescription: string, routePath: string): string {
@@ -1271,16 +1393,52 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
 }
 
 function buildH1Html(meta: RouteMeta): string {
-  const h1Text = meta.h1 ? escapeHtml(meta.h1) : ''
+  const h1Text = meta.h1 ? escapeHtml(meta.h1) : escapeHtml(titleFromPath(meta.path).replace(` | ${SITE_NAME}`, ''))
   const description = escapeHtml(meta.description)
-  const primaryCta = meta.path === '/pricing' ? '/pricing' : '/signup'
-  const primaryLabel = meta.path === '/pricing' ? 'See pricing' : 'Start free'
+  const routeFamily = getRouteFamily(meta.path)
+  const contextualCta = meta.path === '/pricing' ? { path: '/pricing', text: 'Compare minute capacity by workflow' } : getContextualCta(routeFamily, meta.path, 'hero')
+  const primaryCta = contextualCta.path
+  const primaryLabel = contextualCta.text
+  const label = h1Text.replace(/\s+\|\s+VideoText$/i, '')
+  const related = [
+    { path: '/video-to-transcript', label: 'Video to Transcript' },
+    { path: '/video-to-subtitles', label: 'Video to Subtitles' },
+    { path: '/translate-subtitles', label: 'Translate Subtitles' },
+    { path: '/subtitle-tools', label: 'Subtitle Tools' },
+    { path: '/transcription-tools', label: 'Transcription Tools' },
+  ].filter((item) => item.path !== meta.path)
+  const keywordList = (meta.keywords?.length ? meta.keywords : generateKeywordsFromTitle(meta.title, meta.path)).slice(0, 6)
 
   return `
-    <section id="vt-prerender-h1" style="max-width:960px;margin:24px auto 8px auto;padding:0 16px;font-family:system-ui,-apple-system,sans-serif">
+    <section id="vt-prerender-h1" style="max-width:960px;margin:24px auto 8px auto;padding:0 16px;font-family:system-ui,-apple-system,sans-serif;color:#111827">
       <h1 style="margin:0 0 10px 0;font-size:32px;line-height:1.2;font-weight:800;color:#111827">${h1Text}</h1>
-      <p style="margin:0 0 14px 0;font-size:16px;line-height:1.6;color:#4b5563">${description}</p>
-      <a href="${primaryCta}" style="display:inline-block;background:#6d28d9;color:#ffffff;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none">${primaryLabel}</a>
+      <p style="margin:0 0 14px 0;font-size:16px;line-height:1.7;color:#4b5563">${description}</p>
+      <a href="${primaryCta}" style="display:inline-block;background:#1d4ed8;color:#ffffff;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none">${primaryLabel}</a>
+      <section style="margin:28px 0 0 0">
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 10px 0;color:#111827">What this page helps you do</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">Use ${label} to choose the right VideoText workflow for transcript, subtitle, caption, translation, validation, or publishing tasks. The page is designed for practical production work: upload or prepare media, review timing and text quality, and export files that are ready for editors, platforms, clients, or accessibility review.</p>
+      </section>
+      <section style="margin:28px 0 0 0">
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 10px 0;color:#111827">Recommended workflow</h2>
+        <p style="margin:0 0 10px 0;color:#374151;line-height:1.7">Choose the closest VideoText tool, inspect the generated transcript or subtitle output, then download SRT, VTT, TXT, or review-ready text depending on your delivery target. For subtitle pages, check line length, reading speed, timing overlap, and cue structure before publishing.</p>
+        <ul style="margin:0;padding-left:20px;line-height:1.8;color:#374151">
+          <li>Prepare source media, transcript text, or subtitle files before running the workflow.</li>
+          <li>Review timestamps, speaker labels, caption density, and export format requirements.</li>
+          <li>Use related tools for translation, validation, repair, burning captions, or compression.</li>
+        </ul>
+      </section>
+      <section style="margin:28px 0 0 0">
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 10px 0;color:#111827">Quality checks before export</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">Before sharing the result, confirm that the transcript is readable, subtitles are synchronized, paragraphs are not duplicated, captions stay within platform limits, and translated text preserves the original timing. These checks help prevent rework in YouTube, Vimeo, social video, LMS, legal review, and agency handoff workflows.</p>
+      </section>
+      <section style="margin:28px 0 0 0">
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 10px 0;color:#111827">Related VideoText tools</h2>
+        <p style="margin:0 0 10px 0;color:#374151;line-height:1.7">Continue with the adjacent workflow when you need transcript generation, subtitle creation, caption translation, or file-level QA.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          ${related.map((item) => `<a href="${item.path}" style="display:inline-block;border:1px solid #ddd6fe;border-radius:999px;padding:8px 12px;color:#5b21b6;background:#faf5ff;text-decoration:none;font-size:13px;font-weight:700">${escapeHtml(item.label)}</a>`).join('')}
+        </div>
+        ${keywordList.length ? `<p style="margin:14px 0 0 0;color:#6b7280;font-size:13px">Common use cases: ${keywordList.map(escapeHtml).join(', ')}.</p>` : ''}
+      </section>
     </section>
     <script>
       (function () {
@@ -1304,7 +1462,46 @@ function buildH1Html(meta: RouteMeta): string {
 }
 
 function buildConversionContent(meta: RouteMeta): string {
+  // Restrict marketing conversion blocks to the compressor landing pages only.
+  if (meta.path !== '/compress-video' && meta.path !== '/video-compressor') return ''
+
   const parts: string[] = []
+
+  if (meta.path === '/video-to-transcript') {
+    parts.push(`
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Video to Transcript Online (Free &amp; Fast)</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">VideoText lets you convert video to transcript online in minutes with one upload and one clean output package.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Transcribe Video to Text in Minutes</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">Upload a file or paste a URL, then download transcript text, SRT/VTT subtitles, summary, and chapters.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Convert Video to Transcript Without Editing</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">No timeline editing, no manual cleanup, and no extra steps. One-click output for publishing workflows.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">The Fastest Video to Transcript Tool</h2>
+        <p style="margin:0;color:#374151;line-height:1.7">Built for speed with parallel processing for long files and structured outputs in minutes.</p>
+      </section>
+      <section style="margin:32px 0">
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Related transcription tools</h2>
+        <ul style="margin:0;padding-left:18px;line-height:1.8">
+          <li><a href="/youtube-transcript-generator">Transcribe YouTube videos</a></li>
+          <li><a href="/subtitle-generator">Generate subtitles automatically</a></li>
+          <li><a href="/transcribe-long-videos">Transcribe long videos</a></li>
+        </ul>
+        <p style="margin:14px 0 6px 0;color:#374151;font-weight:600">More workflow tools</p>
+        <ul style="margin:0;padding-left:18px;line-height:1.8">
+          <li><a href="/translate-subtitles">Translate your transcripts</a></li>
+          <li><a href="/burn-subtitles">Burn subtitles</a></li>
+          <li><a href="/compress-video">Compress your video</a></li>
+          <li><a href="/voice-recorder">Need notes/transcripts from your voice</a></li>
+        </ul>
+      </section>
+    `)
+  }
 
   // Value Proposition
   if (meta.valueProposition) {
@@ -1402,11 +1599,12 @@ function buildConversionContent(meta: RouteMeta): string {
   }
 
   // CTA
+  const conversionCta = getContextualCta(getRouteFamily(meta.path), meta.path, 'footer')
   parts.push(`
     <section style="margin:32px 0;padding:24px;background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);border-radius:8px;text-align:center;color:white">
-      <h2 style="margin:0 0 12px 0;font-size:18px;font-weight:bold">Ready to Get Started?</h2>
-      <p style="margin:0 0 16px 0;font-size:14px;opacity:0.95">Sign up free. No credit card required. 3 imports per month included.</p>
-      <a href="/" style="display:inline-block;background:white;color:#2563eb;padding:12px 24px;border-radius:6px;font-weight:600;text-decoration:none;font-size:14px">Start Now Free</a>
+      <h2 style="margin:0 0 12px 0;font-size:18px;font-weight:bold">Run the next workflow step</h2>
+      <p style="margin:0 0 16px 0;font-size:14px;opacity:0.95">Use the same processing pass for structured text, subtitle timing, and export-ready files.</p>
+      <a href="${conversionCta.path}" style="display:inline-block;background:white;color:#2563eb;padding:12px 24px;border-radius:6px;font-weight:600;text-decoration:none;font-size:14px">${escapeHtml(conversionCta.text)}</a>
     </section>
   `)
 
@@ -1501,17 +1699,20 @@ function buildAllPagesIndexHtml(routes: RouteMeta[]): string {
   return `
     <section style="max-width:1280px;margin:32px auto;padding:0 16px">
       <h2 style="font-size:20px;font-weight:700;margin:0 0 16px 0">All VideoText Pages</h2>
-      <p style="margin:0 0 16px 0;color:#4b5563">This crawlable HTML index links to every prerendered page for search engines and LLM agents.</p>
+      <p style="margin:0 0 16px 0;color:#4b5563">Use this index to jump to VideoText transcript, subtitle, formatting, comparison, sample, and utility workflows.</p>
       <ul style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px;list-style:none;padding:0;margin:0">${items}</ul>
     </section>
   `
 }
 
-function buildGlobalDiscoverabilityLinksHtml(): string {
+function buildGlobalDiscoverabilityLinksHtml(routePath: string): string {
+  const routeFamily = getRouteFamily(routePath)
+  const stageLinks = getWorkflowStageCtas(routeFamily, routePath).slice(0, 3)
   return `
     <section style="margin:20px 0;padding:16px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px">
-      <h3 style="font-size:13px;font-weight:600;color:#3730a3;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:0.5px">Crawler Navigation</h3>
+      <h3 style="font-size:13px;font-weight:600;color:#3730a3;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:0.5px">Workflow shortcuts</h3>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
+${stageLinks.map((cta, index) => `<a href="${escapeHtml(cta.path)}" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:${index === 0 ? 700 : 600}">${escapeHtml(cta.text)}</a>`).join('')}
         <a href="/site-index" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #c7d2fe;border-radius:5px;text-decoration:none;color:#3730a3;font-size:13px;font-weight:600">All Pages Index</a>
         <a href="/alternatives" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Tool Alternatives</a>
         <a href="/transcription-tools" style="display:inline-block;padding:8px 12px;background:white;border:1px solid #d1d5db;border-radius:5px;text-decoration:none;color:#2563eb;font-size:13px;font-weight:500">Transcription Tools</a>
@@ -1555,7 +1756,7 @@ function injectHead(template: string, meta: RouteMeta): string {
 
   // Replace canonical (match SPA primary map so static HTML agrees with Helmet)
   const primaryPath = getCanonicalPathForRoute(meta.path)
-  const canonicalUrl = primaryPath === '/' ? SITE_URL + '/' : `${SITE_URL}${primaryPath}`
+  const canonicalUrl = getCanonicalUrlForPath(primaryPath)
   html = html.replace(
     /<link\s+rel="canonical"\s+href="[^"]*"\s*\/>/,
     `<link rel="canonical" href="${canonicalUrl}" />`
@@ -1602,6 +1803,77 @@ function injectHead(template: string, meta: RouteMeta): string {
   return html
 }
 
+interface PrerenderOutputAudit {
+  routePath: string
+  htmlPath: string
+  titleCount: number
+  h1Count: number
+  h2Count: number
+  paragraphCount: number
+  rootIsEmpty: boolean
+  htmlSize: number
+}
+
+function htmlPathForRoute(routePath: string): string {
+  return routePath === '/' ? path.join(DIST_DIR, 'index.html') : path.join(DIST_DIR, routePath.slice(1), 'index.html')
+}
+
+function stripTags(html: string): string {
+  return html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
+function countMatches(html: string, pattern: RegExp): number {
+  return [...html.matchAll(pattern)].length
+}
+
+function auditPrerenderedHtml(routePath: string): PrerenderOutputAudit {
+  const htmlPath = htmlPathForRoute(routePath)
+  if (!fs.existsSync(htmlPath)) {
+    return { routePath, htmlPath, titleCount: 0, h1Count: 0, h2Count: 0, paragraphCount: 0, rootIsEmpty: true, htmlSize: 0 }
+  }
+  const html = fs.readFileSync(htmlPath, 'utf8')
+  const rootMatch = html.match(/<div\s+id=["']root["'][^>]*>([\s\S]*?)<\/div>/i)
+  return {
+    routePath,
+    htmlPath,
+    titleCount: countMatches(html, /<title\b[^>]*>[\s\S]*?<\/title>/gi),
+    h1Count: countMatches(html, /<h1\b[^>]*>[\s\S]*?<\/h1>/gi),
+    h2Count: countMatches(html, /<h2\b[^>]*>[\s\S]*?<\/h2>/gi),
+    paragraphCount: countMatches(html, /<p\b[^>]*>[\s\S]*?<\/p>/gi),
+    rootIsEmpty: rootMatch ? stripTags(rootMatch[1]).length === 0 : true,
+    htmlSize: Buffer.byteLength(html, 'utf8'),
+  }
+}
+
+function assertPrerenderCoverage(allRoutes: RouteMeta[], generatedPaths: Set<string>): void {
+  const indexablePaths = new Set(getIndexablePaths().map((routePath) => getCanonicalPathForRoute(routePath)))
+  const expectedPaths = new Set([...allRoutes.map((route) => route.path), ...indexablePaths])
+  const errors: string[] = []
+
+  for (const routePath of [...expectedPaths].sort()) {
+    const audit = auditPrerenderedHtml(routePath)
+    if (!fs.existsSync(audit.htmlPath)) errors.push(`${routePath}: missing ${path.relative(REPO_ROOT, audit.htmlPath)}`)
+    if (audit.titleCount < 1) errors.push(`${routePath}: missing <title>`)
+    if (audit.h1Count < 1) errors.push(`${routePath}: missing <h1>`)
+    if (audit.h2Count < 2) errors.push(`${routePath}: missing semantic <h2> sections`)
+    if (audit.paragraphCount < 3) errors.push(`${routePath}: insufficient paragraphs (${audit.paragraphCount})`)
+    if (audit.rootIsEmpty && audit.h2Count < 2) errors.push(`${routePath}: empty SPA shell without semantic fallback`)
+    if (!generatedPaths.has(routePath)) errors.push(`${routePath}: expected route was not written by prerender loop`)
+  }
+
+  const generatedIndexableCount = [...generatedPaths].filter((routePath) => indexablePaths.has(routePath)).length
+  if (generatedIndexableCount !== indexablePaths.size) {
+    errors.push(`indexable route count mismatch: generated ${generatedIndexableCount}, registry/sitemap inventory ${indexablePaths.size}`)
+  }
+
+  if (errors.length) {
+    console.error('[prerender] Static HTML validation failed:')
+    for (const error of errors.slice(0, 80)) console.error(`  - ${error}`)
+    if (errors.length > 80) console.error(`  - ...and ${errors.length - 80} more`)
+    process.exit(1)
+  }
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 function main() {
@@ -1617,7 +1889,6 @@ function main() {
   const registryEntries = parseRegistryEntries()
   const programmaticEntries = getProgrammaticSeoEntries()
   const allRoutes: RouteMeta[] = mergeRouteMetaWithSitemapCoverage([
-    ...STATIC_META,
     ...registryEntries.map((e) => ({
       path: e.path,
       title: e.title,
@@ -1644,16 +1915,25 @@ function main() {
       howToUse: e.howToUse,
       socialProof: e.socialProof,
     })),
+    // Keep static routes last so canonical core pages (e.g. /video-to-transcript)
+    // are not overwritten by registry aliases that resolve to the same primary URL.
+    ...STATIC_META,
   ])
 
   let count = 0
+  const generatedPaths = new Set<string>()
   for (const meta of allRoutes) {
     const routePath = meta.path
     let html = injectHead(template, meta)
     html = injectStructuredData(html, routePath, meta)
 
-    // Inject visible prerender H1 block so non-JS crawlers can read headings and context.
-    if (meta.h1) {
+    // Full SSR: inject complete React-rendered HTML into the root div for comparison/vs pages.
+    // Non-JS crawlers (LLM training pipelines, etc.) will see the full page content.
+    const ssrHtml = renderPageToHtml(routePath)
+    if (ssrHtml) {
+      html = html.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`)
+    } else if (meta.h1) {
+      // For all other pages: inject minimal H1 + description for non-JS crawlers.
       const h1Html = buildH1Html(meta)
       html = html.replace('</body>', `${h1Html}\n</body>`)
     }
@@ -1683,7 +1963,7 @@ function main() {
     }
 
     // Inject crawlable discoverability links on ALL pages.
-    const discoverabilityHtml = buildGlobalDiscoverabilityLinksHtml()
+    const discoverabilityHtml = buildGlobalDiscoverabilityLinksHtml(routePath)
     html = html.replace('</body>', `${discoverabilityHtml}\n</body>`)
 
     // Inject authority links to money pages on all indexable pages.
@@ -1708,9 +1988,11 @@ function main() {
       fs.writeFileSync(path.join(dir, 'index.html'), html, 'utf8')
     }
 
+    generatedPaths.add(routePath)
     count++
   }
 
+  assertPrerenderCoverage(allRoutes, generatedPaths)
   console.log(`[prerender] Generated ${count} static HTML files in ${DIST_DIR}`)
 }
 

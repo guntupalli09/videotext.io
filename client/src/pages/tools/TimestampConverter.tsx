@@ -102,7 +102,7 @@ export default function TimestampConverter() {
         {/* Mode + Input */}
         <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600 mb-3">
           {[{ key: 'seconds', label: 'Enter seconds' }, { key: 'hms', label: 'Enter HH:MM:SS' }].map((m) => (
-            <button key={m.key} onClick={() => { setInputMode(m.key as typeof inputMode); setInput('') }} className={`flex-1 py-2.5 text-sm font-medium transition-colors ${inputMode === m.key ? 'bg-violet-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>
+            <button key={m.key} onClick={() => { setInputMode(m.key as typeof inputMode); setInput('') }} className={`flex-1 py-2.5 text-sm font-medium transition-colors ${inputMode === m.key ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>
               {m.label}
             </button>
           ))}
@@ -114,7 +114,7 @@ export default function TimestampConverter() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={inputMode === 'seconds' ? '3661' : '01:01:01,000'}
-          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 px-4 py-3 text-lg font-mono bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 px-4 py-3 text-lg font-mono bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
         {inputMode === 'seconds' ? null : (
@@ -126,7 +126,7 @@ export default function TimestampConverter() {
           <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Frame rate (for timecode):</label>
           <div className="flex gap-1">
             {['24', '25', '29.97', '30', '60'].map((f) => (
-              <button key={f} onClick={() => setFps(f)} className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${fps === f ? 'bg-violet-600 text-white' : 'border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>
+              <button key={f} onClick={() => setFps(f)} className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${fps === f ? 'bg-blue-600 text-white' : 'border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}>
                 {f}
               </button>
             ))}
@@ -142,7 +142,7 @@ export default function TimestampConverter() {
                 <div key={row.label} className="flex items-center justify-between px-4 py-2.5">
                   <span className="text-xs text-gray-500 dark:text-gray-400 w-48 shrink-0">{row.label}</span>
                   <span className={`flex-1 text-sm text-gray-900 dark:text-white ${row.mono ? 'font-mono' : ''}`}>{row.val}</span>
-                  <button onClick={() => navigator.clipboard.writeText(row.val)} className="ml-2 text-xs text-violet-500 hover:text-violet-700 font-medium shrink-0">copy</button>
+                  <button onClick={() => navigator.clipboard.writeText(row.val)} className="ml-2 text-xs text-blue-600 hover:text-blue-700 font-medium shrink-0">copy</button>
                 </div>
               ))}
             </div>

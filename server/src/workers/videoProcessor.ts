@@ -7,13 +7,13 @@ import fs from 'fs'
 import archiver from 'archiver'
 import { transcribeVideo, transcribeVideoVerbose, transcribeAudioGapWindows } from '../services/transcription'
 import { translateSubtitleFile, translateSubtitles, detectLanguageConsistency, translatePreservingLines } from '../services/translation'
-import { fixSubtitleFile, validateSubtitleFile } from '../services/subtitles'
+import { fixSubtitleFile, validateSubtitleFile, validateAgainstSceneCuts } from '../services/subtitles'
 import { generateSummary, generateChapters } from '../services/transcriptSummary'
 import { exportTranscriptJson, exportTranscriptDocx, exportTranscriptPdf } from '../services/transcriptExport'
 import { fireWebhook } from '../utils/webhook'
 import { transcribeWithDiarization, resolveSpeakerNames } from '../services/diarization'
 import { convertSubtitleFile } from '../services/subtitleConverter'
-import { burnSubtitles, compressVideo, HUNG_JOB_MESSAGE, extractAudioForPlayback, type CompressProfile } from '../services/ffmpeg'
+import { burnSubtitles, compressVideo, HUNG_JOB_MESSAGE, extractAudioForPlayback, detectSceneCuts, type CompressProfile } from '../services/ffmpeg'
 import {
   downloadVideoFromURL,
   validateVideoDuration,
@@ -85,6 +85,7 @@ import {
 } from '../services/youtube'
 import { resetProxyPoolState } from '../utils/youtubeProxyPool'
 import { v4 as uuidv4 } from 'uuid'
+import { startGuidelineWorker } from './guidelineProcessor'
 
 /**
  * Fires 'first_paid_job_completed' analytics event exactly once per user.
@@ -2161,6 +2162,26 @@ async function processJob(job: import('bull').Job<JobData>) {
           }
           const fixed = fixSubtitleFile(data.filePath!, fixOptions)
 
+          // Scene cut detection: if a video was uploaded alongside, detect cuts and flag spanning cues
+          await job.progress(50)
+          if (data.filePath2) {
+            try {
+              const cutTimestamps = await detectSceneCuts(data.filePath2)
+              if (cutTimestamps.length > 0) {
+                // Re-parse original file for timing — in analyze mode (all options false) these
+                // match the output entries; the dual-upload path is only used for analyze.
+                const format = detectSubtitleFormat(data.filePath!)
+                const entries = format === 'srt' ? parseSRT(data.filePath!) : parseVTT(data.filePath!)
+                const sceneCutWarnings = validateAgainstSceneCuts(entries, cutTimestamps)
+                if (sceneCutWarnings.length > 0) {
+                  fixed.warnings = [...(fixed.warnings ?? []), ...sceneCutWarnings]
+                }
+              }
+            } catch (err) {
+              workerLog.warn({ msg: 'Scene cut detection failed (non-blocking)', jobId, error: String(err) })
+            }
+          }
+
           // Save fixed file
           await job.progress(70)
           const ext = fixed.format === 'srt' ? '.srt' : '.vtt'
@@ -2594,6 +2615,7 @@ export function startWorker() {
 if (require.main === module) {
   initSentry()
   startWorker()
+  startGuidelineWorker()
   workerLog.info({
     msg: 'Worker process started',
     normalConcurrency: NORMAL_CONCURRENCY,

@@ -11,12 +11,14 @@ import {
   CheckCircle,
   ArrowRight,
   BookOpen,
+  ClipboardCheck,
 } from 'lucide-react'
 
 const TOOL_ICONS = {
   'Voice → Text': Mic,
   'YouTube → Transcript': FileText,
   'Video → Transcript': FileText,
+  'Format → Client guidelines': ClipboardCheck,
   'Video → Subtitles': MessageSquare,
   'Translate Subtitles': Languages,
   'Fix Subtitles': Wrench,
@@ -42,6 +44,7 @@ const TOOL_SLUGS: Record<ToolKey, string> = {
   'Voice → Text': 'voice-recorder',
   'YouTube → Transcript': 'youtube-transcript',
   'Video → Transcript': 'video-to-transcript',
+  'Format → Client guidelines': 'guideline-format',
   'Video → Subtitles': 'video-to-subtitles',
   'Translate Subtitles': 'translate-subtitles',
   'Fix Subtitles': 'fix-subtitles',
@@ -138,6 +141,30 @@ const TOOL_GUIDES: ToolGuide[] = [
       'Translate to 70+ languages: get a full translation alongside the original — Pro only.',
       'Export as TXT, SRT, VTT (all plans); JSON, CSV, Markdown, Notion, DOCX, PDF on Pro.',
       'Shareable read-only links (Pro): send a transcript URL — viewers do not need to log in.',
+    ],
+  },
+  {
+    key: 'Format → Client guidelines',
+    path: '/guideline-format',
+    title: 'Format → Client guidelines',
+    shortDesc:
+      'Prep transcript text against editable Rev-, GoTranscript-, TranscribeMe-, and Scribie-style rule presets. Attach a client PDF/DOCX/TXT for your records; parsing those files into rules ships separately.',
+    howTo: [
+      'Finish a transcript in Video → Transcript, then click "Make this client-ready →" in Exports — your text loads here automatically — or open this tool and paste or upload .txt.',
+      'Choose a preset from the dropdown (Rev, GoTranscript, TranscribeMe, Scribie), or pick Custom and drop a client PDF, DOCX, or TXT.',
+      'Edit any rule summary in-place. Use Reset on a rule or Reset all when you want defaults back.',
+      'When your transcript text and guideline (preset plus rules or uploaded file) are ready, tap Format Transcript → to confirm receipt.',
+    ],
+    expected: [
+      { label: 'Best for', detail: 'Freelancers handing off to agencies, QA checklists against platform rules, and teams with branded style sheets.' },
+      { label: 'Inputs', detail: 'Plain transcript text; optional .txt paste or upload; presets or custom guide file.' },
+      { label: 'Workflow', detail: 'Pairs with Video → Transcript exports; no retyping long jobs into a blank doc.' },
+    ],
+    features: [
+      'One-click handoff from Video → Transcript with session pre-fill.',
+      'Four platform presets tuned to verbatim, tags, speaker label, and number conventions.',
+      'Per-rule edits with Edited badges so reviewers see what changed from default.',
+      'Custom client guide slot for PDF/DOCX/TXT (server parsing rolls out in a later release).',
     ],
   },
   {
@@ -274,24 +301,24 @@ const TOOL_GUIDES: ToolGuide[] = [
 
 /** Plan limits at a glance (authoritative summary; exact values in server/utils/limits.ts). */
 const PLAN_LIMITS = [
-  { plan: 'Free', minutes: '3 imports/day', maxDuration: '30 min', maxSize: '2 GB', languages: '1', batch: '-', aiFeatures: '-' },
-  { plan: 'Pro', minutes: 'Unlimited', maxDuration: '2 h', maxSize: '10 GB', languages: '70+', batch: 'Unlimited', aiFeatures: 'Summary, Chapters, Speakers, Translation' },
+  { plan: 'Free', uploads: '3/day', maxDuration: '30 min', maxSize: '2 GB', languages: '1', batch: '-', aiFeatures: '-' },
+  { plan: 'Pro', uploads: 'Unlimited', maxDuration: '2 h', maxSize: '10 GB', languages: '70+', batch: 'Unlimited', aiFeatures: 'Summary, Chapters, Speakers, Translation' },
 ]
 
 export default function Guide() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 sm:py-16">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="text-sm text-violet-600 hover:text-violet-700 font-medium mb-6 inline-block">
+        <Link to="/" className="text-sm text-blue-600 hover:text-blue-700 font-medium mb-6 inline-block">
           ← Back to home
         </Link>
 
         <div className="flex items-center gap-3 mb-4">
-          <BookOpen className="w-9 h-9 text-violet-600 shrink-0" strokeWidth={1.5} aria-hidden />
+          <BookOpen className="w-9 h-9 text-blue-600 shrink-0" strokeWidth={1.5} aria-hidden />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">How to use VideoText</h1>
+            <h1 className="text-3xl font-medium text-gray-900">How to use VideoText — tools, workflows, and client guidelines</h1>
             <p className="text-gray-600 mt-1">
-              A practical guide to each tool: how to use it, what we expect, and what you get.
+              A practical guide to each tool: inputs, outputs, limits, plus how freelancers prep transcripts against marketplace rules before QA.
             </p>
           </div>
         </div>
@@ -299,9 +326,9 @@ export default function Guide() {
         <p className="text-gray-700 mb-6">
           This guide is the full &quot;How it works&quot; reference for VideoText. Step-by-step: how each tool works,
           what inputs we expect, and what you get. Most tools accept file uploads (MP4, MOV, AVI, WebM); YouTube → Transcript accepts direct URL input (no download needed). For billing and limits, see{' '}
-          <Link to="/pricing" className="text-violet-600 hover:text-violet-700 font-medium">Pricing</Link>; for privacy, see our{' '}
-          <Link to="/faq" className="text-violet-600 hover:text-violet-700 font-medium">FAQ</Link> and{' '}
-          <Link to="/privacy" className="text-violet-600 hover:text-violet-700 font-medium">Privacy Policy</Link>. Ask Tex (bottom-right) for quick answers about any tool or plan.
+          <Link to="/pricing" className="text-blue-600 hover:text-blue-700 font-medium">Pricing</Link>; for privacy, see our{' '}
+          <Link to="/faq" className="text-blue-600 hover:text-blue-700 font-medium">FAQ</Link> and{' '}
+          <Link to="/privacy" className="text-blue-600 hover:text-blue-700 font-medium">Privacy Policy</Link>. Ask Tex (bottom-right) for quick answers about any tool or plan.
         </p>
 
         {/* Quick persona guides */}
@@ -313,72 +340,81 @@ export default function Guide() {
             { who: 'Social media creators', want: 'Subtitles burned in for silent autoplay. Translate to reach global audiences.', path: '#burn-subtitles' },
             { who: 'Teams & agencies', want: 'Batch process 20–100 videos in one go, download ZIP with SRT per video', path: '#batch-process' },
             { who: 'Meeting notes', want: 'Transcribe Zoom/Teams MP4, speaker-labelled notes + AI action items', path: '#video-to-transcript' },
+            { who: 'Freelance transcriptionists', want: 'Match Rev / GoTranscript / client PDF rules before invoice — presets + cheatsheet-ready exports', path: '#guideline-format' },
             { who: 'Educators', want: 'Auto-captions + timing fix for accessibility. Translate to 70+ languages for global reach.', path: '#fix-subtitles' },
           ].map(({ who, want, path }) => (
-            <a key={who} href={path} className="block bg-violet-50/50 border border-violet-100 rounded-lg p-3 hover:bg-violet-50 transition-colors">
-              <span className="text-xs font-bold text-violet-600 uppercase tracking-wide">{who}</span>
+            <a key={who} href={path} className="block bg-blue-50/50 border border-blue-100 rounded-lg p-3 hover:bg-blue-50 transition-colors">
+              <span className="text-xs font-bold text-blue-600 uppercase tracking-wide">{who}</span>
               <p className="text-sm text-gray-700 mt-1">{want}</p>
             </a>
           ))}
         </div>
 
         {/* Suggested workflows for creators */}
-        <section className="mb-8 rounded-xl border border-violet-100 bg-violet-50/30 p-4 sm:p-6" aria-labelledby="workflows-heading">
-          <h2 id="workflows-heading" className="text-base font-semibold text-gray-900 mb-3">Workflows</h2>
+        <section className="mb-8 rounded-xl border border-blue-100 bg-blue-50/30 p-4 sm:p-6" aria-labelledby="workflows-heading">
+          <h2 id="workflows-heading" className="text-base font-medium text-gray-900 mb-3">Workflows</h2>
           <p className="text-sm text-gray-600 mb-4">
             Use &quot;Next step&quot; on each tool to continue with the same file (no re-upload).
           </p>
           <div className="grid gap-4 sm:grid-cols-1">
-            <div className="rounded-lg bg-white/80 border border-violet-100/80 p-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 mb-1.5">Voice notes / interviews</p>
+            <div className="rounded-lg bg-white/80 border border-blue-100/80 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-600 mb-1.5">Voice notes / interviews</p>
               <p className="text-sm text-gray-700">
-                <Link to="/voice-recorder" className="text-violet-600 hover:text-violet-700 font-medium">Record</Link>
+                <Link to="/voice-recorder" className="text-blue-600 hover:text-blue-700 font-medium">Record</Link>
                 <span className="text-gray-400 mx-1">→</span>
                 Copy or download .txt
               </p>
             </div>
-            <div className="rounded-lg bg-white/80 border border-violet-100/80 p-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 mb-1.5">YouTubers</p>
+            <div className="rounded-lg bg-white/80 border border-blue-100/80 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-600 mb-1.5">YouTubers</p>
               <p className="text-sm text-gray-700">
-                <Link to="/video-to-transcript" className="text-violet-600 hover:text-violet-700 font-medium">Transcript</Link>
+                <Link to="/video-to-transcript" className="text-blue-600 hover:text-blue-700 font-medium">Transcript</Link>
                 <span className="text-gray-400 mx-1">→</span>
-                <Link to="/video-to-subtitles" className="text-violet-600 hover:text-violet-700 font-medium">Subtitles</Link>
+                <Link to="/video-to-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">Subtitles</Link>
                 <span className="text-gray-400 mx-1">→</span>
-                <Link to="/translate-subtitles" className="text-violet-600 hover:text-violet-700 font-medium">Translate</Link>
+                <Link to="/translate-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">Translate</Link>
                 <span className="text-gray-400 mx-1">→</span>
-                <Link to="/burn-subtitles" className="text-violet-600 hover:text-violet-700 font-medium">Burn</Link>
+                <Link to="/burn-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">Burn</Link>
                 <span className="text-gray-400 mx-1">→</span>
-                <Link to="/compress-video" className="text-violet-600 hover:text-violet-700 font-medium">Compress</Link>
+                <Link to="/compress-video" className="text-blue-600 hover:text-blue-700 font-medium">Compress</Link>
               </p>
             </div>
-            <div className="rounded-lg bg-white/80 border border-violet-100/80 p-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 mb-1.5">Editors</p>
+            <div className="rounded-lg bg-white/80 border border-blue-100/80 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-600 mb-1.5">Client-ready transcripts</p>
               <p className="text-sm text-gray-700">
-                <Link to="/video-to-transcript" className="text-violet-600 hover:text-violet-700 font-medium">Transcript</Link>
+                <Link to="/video-to-transcript" className="text-blue-600 hover:text-blue-700 font-medium">Transcript</Link>
                 <span className="text-gray-400 mx-1">→</span>
-                <Link to="/video-to-subtitles" className="text-violet-600 hover:text-violet-700 font-medium">Subtitles</Link>
-                <span className="text-gray-400 mx-1">→</span>
-                <Link to="/fix-subtitles" className="text-violet-600 hover:text-violet-700 font-medium">Fix</Link>
-                <span className="text-gray-400 mx-1">→</span>
-                <Link to="/burn-subtitles" className="text-violet-600 hover:text-violet-700 font-medium">Burn</Link>
-                <span className="text-gray-400 mx-1">→</span>
-                <Link to="/compress-video" className="text-violet-600 hover:text-violet-700 font-medium">Compress</Link>
+                <Link to="/guideline-format" className="text-blue-600 hover:text-blue-700 font-medium">Guideline presets</Link>
               </p>
             </div>
-            <div className="rounded-lg bg-white/80 border border-violet-100/80 p-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 mb-1.5">Clip editors</p>
+            <div className="rounded-lg bg-white/80 border border-blue-100/80 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-600 mb-1.5">Editors</p>
+              <p className="text-sm text-gray-700">
+                <Link to="/video-to-transcript" className="text-blue-600 hover:text-blue-700 font-medium">Transcript</Link>
+                <span className="text-gray-400 mx-1">→</span>
+                <Link to="/video-to-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">Subtitles</Link>
+                <span className="text-gray-400 mx-1">→</span>
+                <Link to="/fix-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">Fix</Link>
+                <span className="text-gray-400 mx-1">→</span>
+                <Link to="/burn-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">Burn</Link>
+                <span className="text-gray-400 mx-1">→</span>
+                <Link to="/compress-video" className="text-blue-600 hover:text-blue-700 font-medium">Compress</Link>
+              </p>
+            </div>
+            <div className="rounded-lg bg-white/80 border border-blue-100/80 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-600 mb-1.5">Clip editors</p>
               <p className="text-sm text-gray-700">
                 Trim
                 <span className="text-gray-400 mx-1">→</span>
-                <Link to="/video-to-subtitles" className="text-violet-600 hover:text-violet-700 font-medium">Subtitles</Link>
+                <Link to="/video-to-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">Subtitles</Link>
                 <span className="text-gray-400 mx-1">/</span>
-                <Link to="/video-to-transcript" className="text-violet-600 hover:text-violet-700 font-medium">Transcript</Link>
+                <Link to="/video-to-transcript" className="text-blue-600 hover:text-blue-700 font-medium">Transcript</Link>
                 <span className="text-gray-400 mx-1">→</span>
-                <Link to="/fix-subtitles" className="text-violet-600 hover:text-violet-700 font-medium">Fix</Link>
+                <Link to="/fix-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">Fix</Link>
                 <span className="text-gray-400 mx-1">→</span>
-                <Link to="/burn-subtitles" className="text-violet-600 hover:text-violet-700 font-medium">Burn</Link>
+                <Link to="/burn-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">Burn</Link>
                 <span className="text-gray-400 mx-1">→</span>
-                <Link to="/compress-video" className="text-violet-600 hover:text-violet-700 font-medium">Compress</Link>
+                <Link to="/compress-video" className="text-blue-600 hover:text-blue-700 font-medium">Compress</Link>
               </p>
             </div>
           </div>
@@ -386,11 +422,11 @@ export default function Guide() {
 
         {/* Quick nav */}
         <nav className="mb-12 rounded-xl border border-gray-200 bg-white p-4" aria-label="Guide sections">
-          <h2 className="text-sm font-semibold text-gray-900 mb-3">Tools in this guide</h2>
+          <h2 className="text-sm font-medium text-gray-900 mb-3">Tools in this guide</h2>
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
             {TOOL_GUIDES.map((g) => (
               <li key={g.path}>
-                <a href={`#${TOOL_SLUGS[g.key]}`} className="text-violet-600 hover:text-violet-700 font-medium">
+                <a href={`#${TOOL_SLUGS[g.key]}`} className="text-blue-600 hover:text-blue-700 font-medium">
                   {g.title}
                 </a>
               </li>
@@ -408,13 +444,13 @@ export default function Guide() {
                 <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
                   <div className="p-4 sm:p-6 border-b border-gray-100 bg-gray-50/50">
                     <div className="flex items-center gap-3 mb-2">
-                      <Icon className="w-6 h-6 text-violet-600 shrink-0" aria-hidden />
-                      <h2 className="text-xl font-bold text-gray-900">{guide.title}</h2>
+                      <Icon className="w-6 h-6 text-blue-600 shrink-0" aria-hidden />
+                      <h2 className="text-xl font-medium text-gray-900">{guide.title}</h2>
                     </div>
                     <p className="text-gray-600 text-sm mb-4">{guide.shortDesc}</p>
                     <Link
                       to={guide.path}
-                      className="inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-700"
+                      className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700"
                     >
                       Open {guide.title}
                       <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
@@ -423,8 +459,8 @@ export default function Guide() {
 
                   <div className="p-4 sm:p-6 space-y-6">
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-violet-600" strokeWidth={1.5} aria-hidden />
+                      <h3 className="text-sm font-medium text-gray-900 mb-2 flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-blue-600" strokeWidth={1.5} aria-hidden />
                         How to use
                       </h3>
                       <ol className="list-decimal list-inside space-y-1.5 text-sm text-gray-700">
@@ -435,7 +471,7 @@ export default function Guide() {
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-2">What we expect</h3>
+                      <h3 className="text-sm font-medium text-gray-900 mb-2">What we expect</h3>
                       <ul className="space-y-1.5 text-sm text-gray-700">
                         {guide.expected.map((e, i) => (
                           <li key={i}>
@@ -446,7 +482,7 @@ export default function Guide() {
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-2">Features</h3>
+                      <h3 className="text-sm font-medium text-gray-900 mb-2">Features</h3>
                       <ul className="space-y-1 text-sm text-gray-700 list-disc list-inside">
                         {guide.features.map((f, i) => (
                           <li key={i}>{f}</li>
@@ -463,7 +499,7 @@ export default function Guide() {
         {/* Plan limits table */}
         <section className="mt-14 rounded-xl border border-gray-200 bg-white overflow-hidden">
           <div className="p-4 sm:p-6 border-b border-gray-100">
-            <h2 className="text-lg font-bold text-gray-900">Plan limits at a glance</h2>
+            <h2 className="text-lg font-medium text-gray-900">Plan limits at a glance</h2>
             <p className="text-sm text-gray-600 mt-1">
               Free: 3 imports/month, 30 min per video. Paid: monthly minute quota. AI features (Summary, Chapters, Speakers, Translation, Batch) are Pro and above. Exact limits enforced at upload.
             </p>
@@ -473,7 +509,7 @@ export default function Guide() {
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
                   <th className="px-4 py-3 font-semibold text-gray-900">Plan</th>
-                  <th className="px-4 py-3 font-semibold text-gray-900">Quota</th>
+                  <th className="px-4 py-3 font-semibold text-gray-900">Uploads</th>
                   <th className="px-4 py-3 font-semibold text-gray-900">Max duration</th>
                   <th className="px-4 py-3 font-semibold text-gray-900">Max file size</th>
                   <th className="px-4 py-3 font-semibold text-gray-900">Languages</th>
@@ -483,9 +519,9 @@ export default function Guide() {
               </thead>
               <tbody>
                 {PLAN_LIMITS.map((row) => (
-                  <tr key={row.plan} className={`border-b border-gray-100 ${row.plan === 'Pro' ? 'bg-violet-50/40' : ''}`}>
-                    <td className="px-4 py-3 font-medium text-gray-800">{row.plan}{row.plan === 'Pro' ? <span className="ml-2 text-[10px] bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full font-semibold">Popular</span> : ''}</td>
-                    <td className="px-4 py-3 text-gray-700">{row.minutes}</td>
+                  <tr key={row.plan} className={`border-b border-gray-100 ${row.plan === 'Pro' ? 'bg-blue-50/40' : ''}`}>
+                    <td className="px-4 py-3 font-medium text-gray-800">{row.plan}{row.plan === 'Pro' ? <span className="ml-2 text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full font-semibold">Popular</span> : ''}</td>
+                    <td className="px-4 py-3 text-gray-700">{row.uploads}</td>
                     <td className="px-4 py-3 text-gray-700">{row.maxDuration}</td>
                     <td className="px-4 py-3 text-gray-700">{row.maxSize}</td>
                     <td className="px-4 py-3 text-gray-700">{row.languages}</td>
@@ -499,8 +535,8 @@ export default function Guide() {
         </section>
 
         {/* Pro Tips */}
-        <section className="mt-14 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl border border-amber-200/30 dark:border-amber-500/20 p-8">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Pro tips for best results</h2>
+        <section className="mt-14 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl border border-amber-200/30 dark:border-amber-500/20 p-8">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-6">Pro tips for best results</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
@@ -526,11 +562,11 @@ export default function Guide() {
             ].map((section) => (
               <div key={section.title}>
                 <div className="text-3xl mb-3">{section.icon}</div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">{section.title}</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-3">{section.title}</h3>
                 <ul className="space-y-2">
                   {section.tips.map((tip, i) => (
                     <li key={i} className="flex gap-2 text-sm text-gray-700 dark:text-gray-300">
-                      <span className="text-violet-600 dark:text-violet-400 font-bold">✓</span>
+                      <span className="text-blue-600 dark:text-blue-400 font-bold">✓</span>
                       <span>{tip}</span>
                     </li>
                   ))}
@@ -542,7 +578,7 @@ export default function Guide() {
 
         {/* Popular use cases */}
         <section className="mt-14">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Popular use cases</h2>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Popular use cases</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
               { to: '/podcast-transcription', label: 'Podcast Transcription', desc: 'Get transcripts with speaker labels for podcasts.' },
@@ -555,8 +591,8 @@ export default function Guide() {
               { to: '/spanish-transcription', label: 'Spanish Transcription', desc: 'Transcribe Spanish audio and video files.' },
               { to: '/video-to-subtitles', label: 'Video to Subtitles', desc: 'Generate SRT/VTT subtitles from any video.' },
             ].map(({ to, label, desc }) => (
-              <Link key={to} to={to} className="block bg-gray-50 border border-gray-200 rounded-lg p-3 hover:border-violet-300 hover:bg-violet-50/30 transition-all">
-                <span className="text-sm font-semibold text-violet-600">{label}</span>
+              <Link key={to} to={to} className="block bg-gray-50 border border-gray-200 rounded-lg p-3 hover:border-blue-300 hover:bg-blue-50/30 transition-all">
+                <span className="text-sm font-semibold text-blue-600">{label}</span>
                 <p className="text-xs text-gray-600 mt-1">{desc}</p>
               </Link>
             ))}
@@ -564,14 +600,15 @@ export default function Guide() {
         </section>
 
         {/* Cross-links to related pages */}
-        <section className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <section className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { to: '/compare', label: 'Compare vs Descript, Otter, Trint', desc: 'See how VideoText stacks up on speed, price, and privacy.' },
-            { to: '/blog', label: 'Blog & guides', desc: 'How to transcribe Zoom, SRT vs VTT, batch subtitles, and more.' },
-            { to: '/faq', label: 'FAQ', desc: 'Answers about privacy, billing, accuracy, and supported formats.' },
+            { to: '/guideline-format', label: 'Format your transcript to a client style guide →', desc: 'Rev-, GoTranscript-, TranscribeMe-, and Scribie-style presets plus editable rule cards.' },
+            { to: '/compare', label: 'Compare vs Descript, Otter, Trint', desc: 'Speed, subtitle exports, privacy, and where guideline presets fit.' },
+            { to: '/blog', label: 'Blog & guides', desc: 'Zoom transcription, SRT vs VTT, batch subtitles, verbatim QA.' },
+            { to: '/faq', label: 'FAQ', desc: 'Privacy, billing, accuracy, uploads, transcription vs subtitles.' },
           ].map(({ to, label, desc }) => (
-            <Link key={to} to={to} className="block bg-white border border-gray-200 rounded-xl p-4 hover:border-violet-300 hover:shadow-sm transition-all">
-              <span className="text-sm font-semibold text-violet-600">{label} →</span>
+            <Link key={to} to={to} className="block bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-sm transition-all">
+              <span className="text-sm font-semibold text-blue-600">{label} →</span>
               <p className="text-xs text-gray-500 mt-1">{desc}</p>
             </Link>
           ))}
@@ -580,7 +617,7 @@ export default function Guide() {
         <div className="mt-10 text-center">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 font-medium"
+            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
           >
             ← All tools
           </Link>
