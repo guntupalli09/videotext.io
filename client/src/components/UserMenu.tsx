@@ -36,12 +36,6 @@ export default function UserMenu() {
       .then((data) => {
         const isImports = data.quotaType === 'imports'
         const isUnlimited = data.quotaType === 'unlimited'
-        const remaining = isImports
-          ? (data.remaining ?? Math.max(0, (data.limit ?? 3) - (data.used ?? 0)))
-          : isUnlimited
-            ? 0
-            : data.usage.remaining
-        const total = isImports ? (data.limit ?? 3) : isUnlimited ? 0 : (data.limits.minutesPerMonth + data.overages.minutes)
         setUsage({
           plan: (data.plan || 'free').toLowerCase(),
           email: data.email || (typeof localStorage !== 'undefined' ? localStorage.getItem('userEmail') || undefined : undefined),
@@ -149,15 +143,14 @@ export default function UserMenu() {
                 {!isLoggedIn() || isDemo() ? null : usage ? (
                   <div className="rounded-xl bg-violet-100 dark:bg-violet-900/40 border border-violet-200 dark:border-violet-800 p-4">
                     <div className="flex items-center gap-2 text-violet-800 dark:text-violet-200 text-sm font-medium">
-                      <Clock className="w-4 h-4 shrink-0" />
-                      {usage.quotaType === 'imports' ? 'Imports left' : usage.quotaType === 'unlimited' ? 'Plan access' : 'Minutes left'}
+                      {usage.quotaType === 'imports' ? 'Imports' : usage.quotaType === 'unlimited' ? 'Plan access' : 'Minutes'}
                     </div>
-                    <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
+                    <p className="mt-2 text-base text-gray-900 dark:text-white">
                       {usage.quotaType === 'unlimited'
-                        ? <span>Unlimited <span className="text-base font-normal text-gray-600 dark:text-gray-300">uploads</span></span>
-                        : usage.quotaType === 'imports' && usage.remaining === 0
-                        ? <span className="text-base font-normal">You&apos;ve used all 3 imports. Upgrade to use the tool.</span>
-                        : <>{usage.remaining} <span className="text-base font-normal text-gray-600 dark:text-gray-300">{usage.quotaType === 'imports' ? `of ${usage.totalPlanMinutes} free imports left today` : 'min remaining'}</span></>}
+                        ? <span>Unlimited <span className="font-normal text-gray-600 dark:text-gray-300">uploads</span></span>
+                        : usage.quotaType === 'imports'
+                        ? <span className="font-normal">3 free imports included. Upgrade for more.</span>
+                        : <span className="font-normal">Minutes-based plan active</span>}
                     </p>
                   </div>
                 ) : (
