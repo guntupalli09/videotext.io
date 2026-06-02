@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { probeVideoDurationResult } from '../services/ffmpeg'
 import { validateFileSize, validateFileType } from '../utils/fileValidation'
 import { BatchJob, saveBatch, getBatchById } from '../models/BatchJob'
-import { getUser, saveUser, PlanType, User, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
+import { getUser, saveUser, User, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
 import {
   getPlanLimits,
   enforceBatchLimits,
@@ -25,6 +25,7 @@ import { sanitizeFilename } from '../utils/sanitizeFilename'
 import { isQueueAtHardLimit, isQueueAtSoftLimit } from '../utils/queueConfig'
 import { checkAndRecordUpload } from '../utils/uploadRateLimit'
 import { getLogger } from '../lib/logger'
+import { enforceSubscriptionState, resolveRequestPlan } from '../utils/subscriptionGuard'
 
 const log = getLogger('api')
 const router = express.Router()
@@ -64,17 +65,13 @@ async function getOrCreateDemoUser(req: Request): Promise<User> {
     throw err
   }
   let user = await getUser(userId)
-  const derivedPlan: PlanType =
-    auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow' || auth.plan === 'business')
-      ? auth.plan
-      : user?.stripeCustomerId
-        ? user.plan
-        : 'free'
+  const now = new Date()
+  if (user) await enforceSubscriptionState(user, now)
+  const derivedPlan = resolveRequestPlan(user, auth?.plan)
 
   if (!user) {
     const plan = derivedPlan
     const limits = getPlanLimits(plan)
-    const now = new Date()
     const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
 
     user = {
@@ -111,13 +108,6 @@ async function getOrCreateDemoUser(req: Request): Promise<User> {
 
     await saveUser(user)
   } else {
-    if (user.plan !== derivedPlan) {
-      user.plan = derivedPlan
-      user.limits = getPlanLimits(derivedPlan)
-      user.updatedAt = new Date()
-      await saveUser(user)
-    }
-    const now = new Date()
     if (resetUserUsageIfNeeded(user, now)) {
       await saveUser(user)
     }

@@ -23,6 +23,7 @@ import { STREAM_UPLOAD_ASSEMBLY } from '../utils/featureFlags'
 import { getLogger } from '../lib/logger'
 import { isValidYoutubeUrl, getYoutubeMetadata, normalizeYoutubeUrl } from '../services/youtube'
 import { checkAndRecordYoutubeJob } from '../utils/youtubeRateLimit'
+import { enforceSubscriptionState, resolveRequestPlan } from '../utils/subscriptionGuard'
 
 const router = express.Router()
 const uploadLog = getLogger('api')
@@ -111,12 +112,9 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
     const auth = getAuthFromRequest(req)
     const rateLimitKey = userId
     let user = await getUser(userId)
-    const plan: PlanType =
-      auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow' || auth.plan === 'business')
-        ? auth.plan
-        : user?.stripeCustomerId
-          ? user.plan
-          : 'free'
+    const now = new Date()
+    if (user) await enforceSubscriptionState(user, now)
+    const plan = resolveRequestPlan(user, auth?.plan)
 
     // Guest IP daily cap — prevents limit bypass via fresh guest UUIDs per request
     if (userId.startsWith('guest_')) {
@@ -142,7 +140,6 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       return res.status(503).json({ message: 'High demand right now. Please retry shortly.' })
     }
 
-    const now = new Date()
     const limits = user?.limits ?? getPlanLimits(plan)
     if (!user) {
       const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
@@ -476,12 +473,9 @@ router.post('/dual', upload.fields([
     const { toolType, trimmedStart, trimmedEnd, burnFontSize, burnPosition, burnBackgroundOpacity } = req.body
     const auth = getAuthFromRequest(req)
     let burnUser = await getUser(userId)
-    const plan: PlanType =
-      auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow')
-        ? auth.plan
-        : burnUser?.stripeCustomerId
-          ? burnUser.plan
-          : 'free'
+    const now = new Date()
+    if (burnUser) await enforceSubscriptionState(burnUser, now)
+    const plan = resolveRequestPlan(burnUser, auth?.plan)
 
     // Guest IP daily cap
     if (userId.startsWith('guest_')) {
@@ -518,7 +512,6 @@ router.post('/dual', upload.fields([
     const subtitleFile = files.subtitles[0]
 
     const burnLimits = getPlanLimits(plan)
-    const now = new Date()
     if (!burnUser) {
       const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
       burnUser = {
@@ -716,14 +709,9 @@ router.post('/init', async (req: Request, res: Response) => {
       }
       uploadLog.warn({ msg: '[upload/init] getUser failed', error: msg })
     }
-    const rawPlan =
-      auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow')
-        ? auth.plan
-        : user?.stripeCustomerId
-          ? user.plan
-          : 'free'
-    const plan: PlanType =
-      rawPlan === 'basic' || rawPlan === 'pro' || rawPlan === 'agency' || rawPlan === 'founding_workflow' ? rawPlan : 'free'
+    const now = new Date()
+    if (user) await enforceSubscriptionState(user, now)
+    const plan = resolveRequestPlan(user, auth?.plan)
 
     if (user?.suspended) {
       return res.status(403).json({ message: 'Your account has been suspended. Please contact support.' })
@@ -890,6 +878,13 @@ router.post('/complete', async (req: Request, res: Response) => {
       return res.status(409).json({ message: 'Upload completion already in progress for this session' })
     }
     completingUploads.add(uploadId)
+    if (meta.userId && !meta.userId.startsWith('guest_')) {
+      const user = await getUser(meta.userId)
+      if (user) {
+        await enforceSubscriptionState(user)
+        meta.plan = user.plan
+      }
+    }
     // Do NOT delete meta here — only after /complete finishes successfully (in finish handler)
 
     const dir = path.join(chunksDir, uploadId)
@@ -931,6 +926,10 @@ router.post('/complete', async (req: Request, res: Response) => {
       if (!meta) throw new Error('Upload session not found')
       let user = meta.userId ? await getUser(meta.userId) : null
       const now = new Date()
+      if (user) {
+        await enforceSubscriptionState(user, now)
+        meta.plan = user.plan
+      }
       if (!user && meta.userId) {
         const limits = getPlanLimits(meta.plan)
         const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
@@ -1200,12 +1199,9 @@ router.post('/youtube', async (req: Request, res: Response) => {
 
     const auth = getAuthFromRequest(req)
     let user = await getUser(userId)
-    const plan: PlanType =
-      auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow' || auth.plan === 'business')
-        ? auth.plan
-        : user?.stripeCustomerId
-          ? user.plan
-          : 'free'
+    const now = new Date()
+    if (user) await enforceSubscriptionState(user, now)
+    const plan = resolveRequestPlan(user, auth?.plan)
 
     // ── Queue capacity ────────────────────────────────────────────────────────
     const queueCount = await getTotalQueueCount()
@@ -1250,7 +1246,6 @@ router.post('/youtube', async (req: Request, res: Response) => {
     }
 
     // ── Ensure/create user record ─────────────────────────────────────────────
-    const now = new Date()
     const limits = user?.limits ?? getPlanLimits(plan)
     if (!user) {
       const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)

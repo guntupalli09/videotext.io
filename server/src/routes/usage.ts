@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express'
-import { getUser, saveUser, User, PlanType, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
+import { getUser, saveUser, User, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
 import { getPlanLimits, getJobPriority, isProSoftCapActive } from '../utils/limits'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import { getPlanAndEmailForStripeCustomer, getSubscriptionPeriodEnd } from '../services/stripe'
-import { enforceSubscriptionState } from '../utils/subscriptionGuard'
+import { enforceSubscriptionState, resolveRequestPlan } from '../utils/subscriptionGuard'
 
 const router = express.Router()
 
@@ -66,13 +66,7 @@ async function getOrCreateDemoUser(req: Request): Promise<User | null> {
     }
   }
 
-  // Paid plans: from auth, or from existing Stripe-backed user; unauthenticated without Stripe = free (abuse-proof)
-  const derivedPlan: PlanType =
-    auth?.plan && (auth.plan === 'basic' || auth.plan === 'pro' || auth.plan === 'agency' || auth.plan === 'founding_workflow' || auth.plan === 'business')
-      ? auth.plan
-      : user?.stripeCustomerId
-        ? user.plan
-        : 'free'
+  const derivedPlan = resolveRequestPlan(user, auth?.plan)
 
   if (!user) {
     const plan = derivedPlan
@@ -107,14 +101,6 @@ async function getOrCreateDemoUser(req: Request): Promise<User | null> {
     }
 
     await saveUser(user)
-  } else {
-    // Keep user plan/limits in sync with request (free, basic, pro, agency, business) so minute balance is correct
-    if (user.plan !== derivedPlan) {
-      user.plan = derivedPlan
-      user.limits = getPlanLimits(derivedPlan)
-      user.updatedAt = now
-      await saveUser(user)
-    }
   }
 
   if (user) {

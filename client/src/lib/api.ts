@@ -1568,6 +1568,17 @@ export async function getCurrentUsage(options?: { skipCache?: boolean }): Promis
     }
     const data = await response.json()
     lastUsageFailureAt = 0
+    if (typeof localStorage !== 'undefined' && data?.plan) {
+      const nextPlan = String(data.plan).toLowerCase()
+      const previousPlan = localStorage.getItem('plan')
+      if (previousPlan !== nextPlan) {
+        localStorage.setItem('plan', nextPlan)
+        if (data.email) localStorage.setItem('userEmail', String(data.email))
+        window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
+      } else if (data.email && localStorage.getItem('userEmail') !== String(data.email)) {
+        localStorage.setItem('userEmail', String(data.email))
+      }
+    }
     usageCache = { data, at: Date.now() }
     return data as UsageData
   } catch (e) {

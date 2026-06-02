@@ -14,8 +14,26 @@
  *     downgrade there.  We never cut users off mid-dunning-window.
  */
 
-import { User, saveUser } from '../models/User'
+import { PlanType, User, saveUser } from '../models/User'
 import { getPlanLimits } from './limits'
+
+const VALID_PLANS: PlanType[] = ['free', 'basic', 'pro', 'agency', 'founding_workflow', 'business']
+
+export function isValidPlan(plan: unknown): plan is PlanType {
+  return typeof plan === 'string' && (VALID_PLANS as string[]).includes(plan)
+}
+
+/**
+ * Pick the plan used for request gating.
+ *
+ * Once a DB user exists, the DB is authoritative. JWTs can be stale after a
+ * promo-code or webhook upgrade, so a signed old "free" token must not
+ * downgrade an already-upgraded Pro user back to Free.
+ */
+export function resolveRequestPlan(user: User | null | undefined, authPlan?: unknown): PlanType {
+  if (user) return user.plan
+  return isValidPlan(authPlan) ? authPlan : 'free'
+}
 
 /**
  * Enforce subscription access rules and persist any state change.

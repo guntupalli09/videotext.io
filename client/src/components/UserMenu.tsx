@@ -31,7 +31,7 @@ export default function UserMenu() {
     totalPlanMinutes: number
     resetDate: string
     email?: string
-    quotaType?: 'imports' | 'minutes'
+    quotaType?: 'imports' | 'minutes' | 'unlimited'
   } | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
   const { theme, toggleTheme } = useTheme()
@@ -45,17 +45,20 @@ export default function UserMenu() {
     getCurrentUsage({ skipCache: true })
       .then((data) => {
         const isImports = data.quotaType === 'imports'
+        const isUnlimited = data.quotaType === 'unlimited'
         const remaining = isImports
           ? (data.remaining ?? Math.max(0, (data.limit ?? 3) - (data.used ?? 0)))
-          : data.usage.remaining
-        const total = isImports ? (data.limit ?? 3) : (data.limits.minutesPerMonth + data.overages.minutes)
+          : isUnlimited
+            ? 0
+            : data.usage.remaining
+        const total = isImports ? (data.limit ?? 3) : isUnlimited ? 0 : (data.limits.minutesPerMonth + data.overages.minutes)
         setUsage({
           plan: (data.plan || 'free').toLowerCase(),
           remaining,
           totalPlanMinutes: total,
           resetDate: data.resetDate,
           email: data.email || (typeof localStorage !== 'undefined' ? localStorage.getItem('userEmail') || undefined : undefined),
-          quotaType: isImports ? 'imports' : 'minutes',
+          quotaType: isImports ? 'imports' : isUnlimited ? 'unlimited' : 'minutes',
         })
       })
       .catch(() => {
@@ -160,10 +163,12 @@ export default function UserMenu() {
                   <div className="rounded-xl bg-violet-100 dark:bg-violet-900/40 border border-violet-200 dark:border-violet-800 p-4">
                     <div className="flex items-center gap-2 text-violet-800 dark:text-violet-200 text-sm font-medium">
                       <Clock className="w-4 h-4 shrink-0" />
-                      {usage.quotaType === 'imports' ? 'Imports left' : 'Minutes left'}
+                      {usage.quotaType === 'imports' ? 'Imports left' : usage.quotaType === 'unlimited' ? 'Plan access' : 'Minutes left'}
                     </div>
                     <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-                      {usage.quotaType === 'imports' && usage.remaining === 0
+                      {usage.quotaType === 'unlimited'
+                        ? <span>Unlimited <span className="text-base font-normal text-gray-600 dark:text-gray-300">uploads</span></span>
+                        : usage.quotaType === 'imports' && usage.remaining === 0
                         ? <span className="text-base font-normal">You&apos;ve used all 3 imports. Upgrade to use the tool.</span>
                         : <>{usage.remaining} <span className="text-base font-normal text-gray-600 dark:text-gray-300">{usage.quotaType === 'imports' ? `of ${usage.totalPlanMinutes} free imports left today` : 'min remaining'}</span></>}
                     </p>
