@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Menu, X, Sun, Moon, CreditCard, Mail, Gift, MessageCircle } from 'lucide-react'
+import { Menu, X, Sun, Moon, CreditCard, Mail, Gift, MessageCircle, Clock } from 'lucide-react'
 import { prefetchRoute } from '../lib/prefetch'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getCurrentUsage } from '../lib/api'
@@ -22,6 +22,8 @@ export default function UserMenu() {
     plan: string
     email?: string
     quotaType?: 'imports' | 'minutes' | 'unlimited'
+    remaining?: number
+    totalPlanMinutes?: number
   } | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
   const { theme, toggleTheme } = useTheme()
@@ -46,6 +48,8 @@ export default function UserMenu() {
           plan: (data.plan || 'free').toLowerCase(),
           email: data.email || (typeof localStorage !== 'undefined' ? localStorage.getItem('userEmail') || undefined : undefined),
           quotaType: isImports ? 'imports' : isUnlimited ? 'unlimited' : 'minutes',
+          remaining,
+          totalPlanMinutes: total,
         })
       })
       .catch(() => {
