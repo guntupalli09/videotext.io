@@ -40,8 +40,6 @@ export default function UserMenu() {
           plan: (data.plan || 'free').toLowerCase(),
           email: data.email || (typeof localStorage !== 'undefined' ? localStorage.getItem('userEmail') || undefined : undefined),
           quotaType: isImports ? 'imports' : isUnlimited ? 'unlimited' : 'minutes',
-          remaining,
-          totalPlanMinutes: total,
         })
       })
       .catch(() => {
