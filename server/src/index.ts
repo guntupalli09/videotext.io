@@ -43,9 +43,11 @@ import { attachLiveTranscription } from './routes/liveTranscription'
 import { maybeRunYoutubeCanary } from './services/youtubeCanary'
 import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
+import { generateUnsubscribeToken } from './routes/newsletter'
 import guidelinesRoutes from './routes/guidelines'
 import { guidelineQueue, startGuidelineWorker } from './workers/guidelineProcessor'
 import publicStatsRoutes from './routes/publicStats'
+import newsletterRoutes from './routes/newsletter'
 
 const log = getLogger('api')
 
@@ -252,6 +254,7 @@ app.use('/api/admin/feedback', feedbackSystemRoutes)
 app.use('/api/admin', adminDashboardRoutes)
 app.use('/api/admin', adminSupportRoutes)
 app.use('/api/stats', publicStatsRoutes)
+app.use('/api/newsletter', newsletterRoutes)
 
 // Health and ops (no /api prefix)
 app.use(healthRoutes)
@@ -363,23 +366,33 @@ const server = app.listen(PORT, () => {
         return
       }
 
-      // Fetch all free-plan users with a real email (exclude demo accounts)
+      // Fetch all free-plan users with a real email who haven't unsubscribed
       const freeUsers = await prisma.user.findMany({
         where: {
           plan: 'free',
           email: { not: { startsWith: 'demo-user-' }, contains: '@' },
+          newsletterSubscribed: { not: false },
         },
         select: { id: true, email: true },
       })
 
-      const sendOne = async (email: string, html: string): Promise<boolean> => {
+      const sendOne = async (email: string, html: string, unsubscribeUrl: string): Promise<boolean> => {
         const maxAttempts = 4
         let backoff = 2000
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
           const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
-            body: JSON.stringify({ from: fromEmail, to: [email], subject: 'Your 3 free daily transcriptions have arrived! 🎬', html }),
+            body: JSON.stringify({
+              from: fromEmail,
+              to: [email],
+              subject: 'Your 3 free daily transcriptions have arrived! 🎬',
+              html,
+              headers: {
+                'List-Unsubscribe': `<${unsubscribeUrl}>`,
+                'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+              },
+            }),
             signal: AbortSignal.timeout(8000),
           })
           if (res.ok) return true
@@ -402,8 +415,10 @@ const server = app.listen(PORT, () => {
       let sent = 0
       for (const u of freeUsers) {
         try {
-          const token = await createMagicLinkToken(u.id)
-          const openLink = `${baseUrl}/magic-login?token=${token}&next=/video-to-transcript`
+          const magicToken = await createMagicLinkToken(u.id)
+          const openLink = `${baseUrl}/magic-login?token=${magicToken}&next=/video-to-transcript`
+          const unsubToken = generateUnsubscribeToken(u.email)
+          const unsubLink = `${baseUrl}/unsubscribe?email=${encodeURIComponent(u.email)}&token=${unsubToken}`
           const html = `
 <!DOCTYPE html>
 <html>
@@ -430,7 +445,7 @@ const server = app.listen(PORT, () => {
           <td style="padding:24px 40px;border-top:1px solid #2d2d4e;text-align:center">
             <p style="margin:0 0 8px;color:#606080;font-size:12px">Want unlimited transcriptions with no watermark?</p>
             <a href="${baseUrl}/pricing" style="color:#2563EB;font-size:12px;text-decoration:none;font-weight:600">Upgrade to Pro → $40/mo</a>
-            <p style="margin:16px 0 0;color:#404060;font-size:11px">VideoText.io · <a href="${baseUrl}/unsubscribe?email=${encodeURIComponent(u.email)}" style="color:#404060">unsubscribe</a></p>
+            <p style="margin:16px 0 0;color:#404060;font-size:11px">VideoText.io · <a href="${unsubLink}" style="color:#404060">unsubscribe</a></p>
           </td>
         </tr>
       </table>
@@ -438,7 +453,7 @@ const server = app.listen(PORT, () => {
   </table>
 </body>
 </html>`
-          if (await sendOne(u.email, html)) sent++
+          if (await sendOne(u.email, html, unsubLink)) sent++
         } catch (e) {
           log.warn({ msg: 'Daily email error', email: u.email, error: (e as Error)?.message })
         }

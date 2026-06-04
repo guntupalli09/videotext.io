@@ -1,5 +1,6 @@
 import { prisma } from '../db'
 import { createMagicLinkToken } from '../routes/auth'
+import { generateUnsubscribeToken } from '../routes/newsletter'
 import { createRedisClient } from '../utils/redis'
 import { getLogger } from '../lib/logger'
 import { captureFunnelEvent } from '../utils/funnelEvents'
@@ -55,7 +56,7 @@ function isUserInStage(hoursSinceSignup: number, stage: OnboardingStage): boolea
   return hoursSinceSignup >= config.minHours && hoursSinceSignup < config.maxHours
 }
 
-function onboardingHtml(stage: OnboardingStage, ctaUrl: string): string {
+function onboardingHtml(stage: OnboardingStage, ctaUrl: string, unsubLink: string): string {
   const template = STAGE_CONFIG[stage]
   return `
 <!DOCTYPE html>
@@ -80,6 +81,11 @@ function onboardingHtml(stage: OnboardingStage, ctaUrl: string): string {
             <a href="${ctaUrl}" style="display:block;background:#2563EB;color:#fff;text-decoration:none;text-align:center;padding:14px 24px;border-radius:10px;font-size:15px;font-weight:700">Open /video-to-transcript</a>
           </td>
         </tr>
+        <tr>
+          <td style="padding:16px 36px 24px;border-top:1px solid #2d2d4e;text-align:center">
+            <p style="margin:0;color:#404060;font-size:11px">VideoText.io · <a href="${unsubLink}" style="color:#404060">unsubscribe</a></p>
+          </td>
+        </tr>
       </table>
     </td></tr>
   </table>
@@ -97,7 +103,7 @@ export async function runOnboardingEmailSequence(): Promise<void> {
   const now = Date.now()
 
   const users = await prisma.user.findMany({
-    where: { plan: 'free' },
+    where: { plan: 'free', newsletterSubscribed: { not: false } },
     select: { id: true, email: true, createdAt: true, usageThisMonth: true },
   })
 
@@ -147,13 +153,24 @@ export async function runOnboardingEmailSequence(): Promise<void> {
 
     const token = await createMagicLinkToken(user.id)
     const ctaUrl = `${baseUrl}/magic-login?token=${encodeURIComponent(token)}&next=/video-to-transcript`
-    const html = onboardingHtml(stage, ctaUrl)
+    const unsubToken = generateUnsubscribeToken(user.email)
+    const unsubLink = `${baseUrl}/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`
+    const html = onboardingHtml(stage, ctaUrl, unsubLink)
     const subject = STAGE_CONFIG[stage].subject
 
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
-      body: JSON.stringify({ from: fromEmail, to: [user.email], subject, html }),
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [user.email],
+        subject,
+        html,
+        headers: {
+          'List-Unsubscribe': `<${unsubLink}>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        },
+      }),
       signal: AbortSignal.timeout(8_000),
     })
 
