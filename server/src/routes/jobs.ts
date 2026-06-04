@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express'
 import { getJobById, type JobData } from '../workers/videoProcessor'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
-import { getUser, saveUser } from '../models/User'
+import { incrementUserUsage } from '../models/User'
 import { getJobPartial, trimPartialPayloadForResponse, segmentsToPartialTranscript } from '../utils/jobPartial'
 import { getJobSummary } from '../utils/jobSummary'
 import { getJobStage, type YoutubeJobStage } from '../utils/jobStage'
@@ -306,13 +306,10 @@ router.post('/:jobId/claim', async (req: Request, res: Response) => {
       // non-blocking — queue update already succeeded
     }
 
-    // Increment real user's import count to reflect the guest trial job
-    const user = await getUser(userId)
-    if (user) {
-      user.usageThisMonth.importCount = (user.usageThisMonth.importCount ?? 0) + 1
-      user.updatedAt = new Date()
-      await saveUser(user)
-    }
+    // Increment real user's import counts to reflect the guest trial job.
+    // Must update both importCount and importCountToday — the free-plan UI
+    // reads importCountToday, so missing it leaves the counter stuck at 3/3.
+    await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
 
     return res.status(200).json({ ok: true })
   } catch (error: any) {

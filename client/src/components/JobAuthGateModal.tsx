@@ -12,7 +12,7 @@
  * rather than a wall — feels like saving progress, not a paywall.
  */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Download, CheckCircle2, ChevronRight, Lock, Zap } from 'lucide-react'
 import { sendOtp, verifyOtp, loginWithGoogle } from '../lib/api'
@@ -42,9 +42,9 @@ export default function JobAuthGateModal({
   const [mode, setMode] = useState<Mode>(initialMode)
 
   // Reset mode when modal reopens
-  useState(() => {
+  useEffect(() => {
     if (isOpen) setMode(initialMode)
-  })
+  }, [isOpen])
 
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
