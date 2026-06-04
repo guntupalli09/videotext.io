@@ -30,6 +30,7 @@ model User {
   limits                   Json     // PlanLimits
   overagesThisMonth        Json     // { minutes, languages, batches, totalCharge }
   role                     String   @default("user")  // founder | admin | user
+  newsletterSubscribed     Boolean  @default(true)
   utmSource                String?
   utmMedium                String?
   utmCampaign              String?
