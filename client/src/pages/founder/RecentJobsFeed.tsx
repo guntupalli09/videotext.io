@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import type { DashboardJob } from '../../lib/founderDashboard'
 import { generateCSV, downloadCSV } from '../../lib/csvExport'
+import UserHistoryModal from './UserHistoryModal'
 
 const TOOL_LABELS: Record<string, string> = {
   'video-to-transcript': 'Transcript',
@@ -53,6 +55,12 @@ function fmtVideoLen(sec: number | null): string {
 }
 
 export default function RecentJobsFeed({ jobs }: { jobs: DashboardJob[] }) {
+  const [selectedEmail, setSelectedEmail] = useState<string | null>(null)
+
+  function handleEmailClick(email: string | null | undefined) {
+    if (email) setSelectedEmail(email)
+  }
+
   function handleExport() {
     const headers = ['Time', 'User', 'Tool', 'Plan', 'Status', 'Failure Reason', 'Duration (ms)', 'Video Duration (s)']
     const rows = jobs.map((j) => [
@@ -70,6 +78,7 @@ export default function RecentJobsFeed({ jobs }: { jobs: DashboardJob[] }) {
   }
 
   return (
+    <>
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
       <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
         <h3 className="text-sm font-medium text-white">Recent jobs</h3>
@@ -105,8 +114,18 @@ export default function RecentJobsFeed({ jobs }: { jobs: DashboardJob[] }) {
             {jobs.map((j) => (
               <tr key={j.id} className="border-b border-zinc-800/50 hover:bg-zinc-800/30 transition-colors">
                 <td className="py-2 px-4 text-zinc-500 whitespace-nowrap">{timeAgo(j.createdAt)}</td>
-                <td className="py-2 px-4 text-zinc-300 font-mono truncate max-w-[140px]">
-                  {j.email ?? j.userId.slice(0, 8)}
+                <td className="py-2 px-4 max-w-[140px]">
+                  {j.email ? (
+                    <button
+                      onClick={() => handleEmailClick(j.email)}
+                      className="text-zinc-300 font-mono truncate block max-w-full text-left underline decoration-zinc-600 hover:text-white hover:decoration-zinc-400 transition-colors"
+                      title={j.email}
+                    >
+                      {j.email}
+                    </button>
+                  ) : (
+                    <span className="text-zinc-500 font-mono">{j.userId.slice(0, 8)}</span>
+                  )}
                 </td>
                 <td className={`py-2 px-4 font-medium ${TOOL_COLORS[j.toolType] ?? 'text-zinc-400'}`}>
                   {TOOL_LABELS[j.toolType] ?? j.toolType}
@@ -131,5 +150,10 @@ export default function RecentJobsFeed({ jobs }: { jobs: DashboardJob[] }) {
         </table>
       </div>
     </div>
+
+    {selectedEmail && (
+      <UserHistoryModal email={selectedEmail} onClose={() => setSelectedEmail(null)} />
+    )}
+    </>
   )
 }
