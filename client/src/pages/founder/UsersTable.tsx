@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import type { DashboardUser } from '../../lib/founderDashboard'
 import { generateCSV, downloadCSV } from '../../lib/csvExport'
+import UserHistoryModal from './UserHistoryModal'
 
 const PLAN_COLORS: Record<string, string> = {
   free: 'bg-zinc-700 text-zinc-300',
@@ -33,6 +34,7 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
   const [planFilter, setPlanFilter] = useState('all')
   const [sortKey, setSortKey] = useState<SortKey>('createdAt')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
+  const [historyEmail, setHistoryEmail] = useState<string | null>(null)
 
   const plans = useMemo(() => {
     const seen = new Set<string>()
@@ -155,7 +157,14 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
             {filtered.map((u) => (
               <tr key={u.id} className="border-b border-zinc-800/50 hover:bg-zinc-800/40 transition-colors">
                 <td className="py-2.5 px-4 text-zinc-300 text-xs truncate max-w-[140px]">{u.name ?? <span className="text-zinc-600">—</span>}</td>
-                <td className="py-2.5 px-4 text-white font-mono text-xs">{u.email}</td>
+                <td className="py-2.5 px-4 text-xs">
+                  <button
+                    className="text-blue-400 hover:text-blue-300 font-mono underline underline-offset-2 decoration-dotted transition-colors text-left"
+                    onClick={() => setHistoryEmail(u.email)}
+                  >
+                    {u.email}
+                  </button>
+                </td>
                 <td className="py-2.5 px-4">
                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${PLAN_COLORS[u.plan] ?? 'bg-zinc-700 text-zinc-300'}`}>
                     {u.plan}
@@ -177,6 +186,10 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
           </tbody>
         </table>
       </div>
+
+      {historyEmail && (
+        <UserHistoryModal email={historyEmail} onClose={() => setHistoryEmail(null)} />
+      )}
     </div>
   )
 }
