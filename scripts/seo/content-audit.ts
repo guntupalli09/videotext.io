@@ -88,6 +88,7 @@ const NON_INDEXABLE_REACT_PATHS = new Set([
   '/refer',
   '/feedback',
   '/survey',
+  '/unsubscribe',
   '/founder',
   '/status',
   '/pro-access',
