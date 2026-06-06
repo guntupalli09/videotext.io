@@ -95,6 +95,7 @@ const NON_INDEXABLE_REACT_PATHS = new Set([
   '/preview/transcript-results',
   '/preview/icp-results-studio',
   '/icp-results-studio',
+  '/unsubscribe',
 ])
 
 type Severity = 'good' | 'warning' | 'critical'
