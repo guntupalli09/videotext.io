@@ -22,7 +22,9 @@ export function generateUnsubscribeToken(email: string): string {
 }
 
 router.post('/unsubscribe', unsubscribeLimiter, async (req, res) => {
-  const { email, token } = req.body as { email?: unknown; token?: unknown }
+  // Accept params from body (browser fetch) or query string (RFC 8058 one-click from email clients)
+  const email = (req.body?.email ?? req.query.email) as unknown
+  const token = (req.body?.token ?? req.query.token) as unknown
 
   if (!email || typeof email !== 'string' || !token || typeof token !== 'string') {
     return res.status(400).json({ message: 'Missing email or token.' })
