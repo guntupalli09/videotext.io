@@ -102,16 +102,8 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   }, [result?.downloadUrl])
 
   useEffect(() => {
-    if (showIssues && !isLoggedIn()) {
-      setShowAuthGate(true)
-      setShowAuthModal(true)
-    }
-  }, [showIssues])
-
-  useEffect(() => {
     if (status === 'completed' && !isLoggedIn()) {
       setShowAuthGate(true)
-      setShowAuthModal(true)
     }
   }, [status])
 
@@ -764,40 +756,6 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           const otherWarnings = warnings.filter(w => w.type !== 'scene_cut')
           const totalFindings = issues.length + warnings.length
 
-          if (showAuthGate && !isLoggedIn()) {
-            return (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 text-center space-y-4"
-              >
-                <div className="flex items-center justify-center gap-2 text-blue-600 dark:text-blue-400">
-                  <CheckCircle className="h-6 w-6" />
-                  <p className="text-base font-semibold text-gray-900 dark:text-white">Analysis complete!</p>
-                </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {totalFindings > 0
-                    ? `Found ${totalFindings} issue${totalFindings !== 1 ? 's' : ''} — create a free account to view and fix them.`
-                    : 'Create a free account to view your results.'}
-                </p>
-                <div className="flex gap-2 justify-center">
-                  <button
-                    onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
-                    className="flex-1 max-w-[200px] py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
-                  >
-                    Create free account
-                  </button>
-                  <button
-                    onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
-                    className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
-                  >
-                    Log in
-                  </button>
-                </div>
-              </motion.div>
-            )
-          }
-
           return (
             <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_320px] lg:items-start">
 
@@ -931,14 +889,40 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                   transition={{ delay: 0.15 }}
                   className="space-y-3"
                 >
-                  <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={handleAutoFix}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 font-semibold text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl"
-                  >
-                    {issues.length > 0 ? `Auto-fix ${issues.length} issue${issues.length !== 1 ? 's' : ''}` : 'Apply fixes'}
-                  </motion.button>
+                  {!isLoggedIn() ? (
+                    <div className="space-y-2">
+                      <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+                        {issues.length > 0
+                          ? `Sign up to auto-fix ${issues.length} issue${issues.length !== 1 ? 's' : ''} and download the corrected file.`
+                          : 'Sign up to apply fixes and download the corrected file.'}
+                      </p>
+                      <div className="flex gap-2">
+                        <motion.button
+                          whileHover={{ scale: 1.01 }}
+                          whileTap={{ scale: 0.99 }}
+                          onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
+                          className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 font-semibold text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl"
+                        >
+                          Create free account
+                        </motion.button>
+                        <button
+                          onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
+                          className="px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+                        >
+                          Log in
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <motion.button
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={handleAutoFix}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 font-semibold text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl"
+                    >
+                      {issues.length > 0 ? `Auto-fix ${issues.length} issue${issues.length !== 1 ? 's' : ''}` : 'Apply fixes'}
+                    </motion.button>
+                  )}
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-gray-400 dark:text-gray-500">
                       <Info className="mr-1 inline-block h-3 w-3" />
