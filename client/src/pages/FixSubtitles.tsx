@@ -805,39 +805,11 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                   </div>
                 </motion.div>
 
-                {/* Scene cuts */}
-                {sceneCuts.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 }}
-                    className="rounded-xl border border-violet-200 bg-violet-50 p-5 dark:border-violet-800 dark:bg-violet-950/20"
-                  >
-                    <div className="mb-3 flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/40">
-                        <Scissors className="h-4 w-4 text-violet-600 dark:text-violet-400" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-violet-900 dark:text-violet-100">Scene cuts detected — manual review needed</p>
-                        <p className="text-xs text-violet-600 dark:text-violet-400">These cues span a camera cut and cannot be auto-fixed.</p>
-                      </div>
-                    </div>
-                    <ol className="space-y-2">
-                      {sceneCuts.map((w, i) => (
-                        <li key={i} className="flex items-start justify-between gap-3 rounded-lg border border-violet-200 bg-white px-4 py-3 text-sm dark:border-violet-800 dark:bg-gray-900">
-                          <p className="text-violet-800 dark:text-violet-200">{w.message}</p>
-                          {w.line != null && <span className="shrink-0 font-mono text-xs text-violet-400">Cue {w.line}</span>}
-                        </li>
-                      ))}
-                    </ol>
-                  </motion.div>
-                )}
-
                 {/* Fix options */}
                 <motion.div
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
+                  transition={{ delay: 0.05 }}
                   className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
                 >
                   <div className="mb-4 flex items-center justify-between">
@@ -886,7 +858,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                 <motion.div
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 }}
+                  transition={{ delay: 0.1 }}
                   className="space-y-3"
                 >
                   {!isLoggedIn() ? (
@@ -936,6 +908,34 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                     </button>
                   </div>
                 </motion.div>
+
+                {/* Scene cuts */}
+                {sceneCuts.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }}
+                    className="rounded-xl border border-violet-200 bg-violet-50 p-5 dark:border-violet-800 dark:bg-violet-950/20"
+                  >
+                    <div className="mb-3 flex items-center gap-2.5">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/40">
+                        <Scissors className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-violet-900 dark:text-violet-100">Scene cuts detected — manual review needed</p>
+                        <p className="text-xs text-violet-600 dark:text-violet-400">These cues span a camera cut and cannot be auto-fixed.</p>
+                      </div>
+                    </div>
+                    <ol className="space-y-2">
+                      {sceneCuts.map((w, i) => (
+                        <li key={i} className="flex items-start justify-between gap-3 rounded-lg border border-violet-200 bg-white px-4 py-3 text-sm dark:border-violet-800 dark:bg-gray-900">
+                          <p className="text-violet-800 dark:text-violet-200">{w.message}</p>
+                          {w.line != null && <span className="shrink-0 font-mono text-xs text-violet-400">Cue {w.line}</span>}
+                        </li>
+                      ))}
+                    </ol>
+                  </motion.div>
+                )}
 
               </div>
 
