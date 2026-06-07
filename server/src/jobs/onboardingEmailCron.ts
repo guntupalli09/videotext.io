@@ -155,6 +155,7 @@ export async function runOnboardingEmailSequence(): Promise<void> {
     const ctaUrl = `${baseUrl}/magic-login?token=${encodeURIComponent(token)}&next=/video-to-transcript`
     const unsubToken = generateUnsubscribeToken(user.email)
     const unsubLink = `${baseUrl}/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`
+    const apiUnsubLink = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`
     const html = onboardingHtml(stage, ctaUrl, unsubLink)
     const subject = STAGE_CONFIG[stage].subject
 
@@ -167,7 +168,7 @@ export async function runOnboardingEmailSequence(): Promise<void> {
         subject,
         html,
         headers: {
-          'List-Unsubscribe': `<${unsubLink}>`,
+          'List-Unsubscribe': `<${apiUnsubLink}>`,
           'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
         },
       }),

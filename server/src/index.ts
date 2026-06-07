@@ -419,6 +419,7 @@ const server = app.listen(PORT, () => {
           const openLink = `${baseUrl}/magic-login?token=${magicToken}&next=/video-to-transcript`
           const unsubToken = generateUnsubscribeToken(u.email)
           const unsubLink = `${baseUrl}/unsubscribe?email=${encodeURIComponent(u.email)}&token=${unsubToken}`
+          const apiUnsubLink = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(u.email)}&token=${unsubToken}`
           const html = `
 <!DOCTYPE html>
 <html>
@@ -453,7 +454,7 @@ const server = app.listen(PORT, () => {
   </table>
 </body>
 </html>`
-          if (await sendOne(u.email, html, unsubLink)) sent++
+          if (await sendOne(u.email, html, apiUnsubLink)) sent++
         } catch (e) {
           log.warn({ msg: 'Daily email error', email: u.email, error: (e as Error)?.message })
         }
