@@ -108,6 +108,36 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     }
   }, [status])
 
+  // Restore a completed job after page reload (e.g. user refreshed after signing in)
+  useEffect(() => {
+    const jobId = getPersistedJobId(location.pathname)
+    if (!jobId || !isLoggedIn()) return
+    const jobToken = getPersistedJobToken(location.pathname)
+    ;(async () => {
+      try {
+        const jobStatus = await getJobStatus(jobId, jobToken ? { jobToken } : undefined)
+        const transition = getJobLifecycleTransition(jobStatus)
+        if (transition !== 'completed') return
+        setResult(jobStatus.result ?? null)
+        setIssues(jobStatus.result?.issues ?? [])
+        setWarnings(jobStatus.result?.warnings ?? [])
+        setShowIssues(true)
+        if (jobStatus.result?.downloadUrl) {
+          setStatus('completed')
+          try {
+            const token = getAuthToken()
+            const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl), {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            })
+            const txt = await res.text()
+            setSubtitleRows(parseSubtitlesToRows(txt))
+          } catch { /* non-blocking */ }
+        }
+      } catch { /* non-blocking */ }
+    })()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const handleFileSelect = (file: File) => {
     try {
       trackEvent('file_selected', {
@@ -1264,6 +1294,10 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             const action = pendingDownloadRef.current
             pendingDownloadRef.current = null
             action()
+          } else if (result) {
+            // Result is already in memory — just close the modal.
+            // The download panel (line: status==='completed' && result && isLoggedIn()) will
+            // become visible on the next render since isLoggedIn() is now true.
           } else {
             window.location.reload()
           }
