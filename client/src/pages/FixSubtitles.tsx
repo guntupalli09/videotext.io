@@ -76,6 +76,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const [showAuthGate, setShowAuthGate] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
+  const pendingDownloadRef = useRef<(() => void) | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const canEdit = ['basic', 'pro', 'agency'].includes(plan)
@@ -418,6 +419,15 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const getDownloadUrl = () => {
     if (!result?.downloadUrl) return ''
     return getAbsoluteDownloadUrl(result.downloadUrl)
+  }
+
+  function requireAuthForDownload(action: () => void) {
+    if (isLoggedIn()) {
+      action()
+    } else {
+      pendingDownloadRef.current = action
+      setShowAuthModal(true)
+    }
   }
 
   const downloadFixedSubtitles = async () => {
@@ -1061,7 +1071,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               fileName={result.fileName ?? fallbackFixedName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               downloadLabel={plan === 'free' ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download SRT') : 'Download SRT'}
-              onDownload={downloadFixedSubtitles}
+              onDownload={() => requireAuthForDownload(downloadFixedSubtitles)}
               onProcessAnother={handleProcessAnother}
               relatedTools={[]}
             />
@@ -1131,13 +1141,13 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                   <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Subtitle files</p>
                   <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={handleExportSrt}
+                      onClick={() => requireAuthForDownload(handleExportSrt)}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:text-blue-400"
                     >
                       SRT {!isPaid && <span className="text-[10px] text-gray-400">(watermark)</span>}
                     </button>
                     <button
-                      onClick={handleExportVtt}
+                      onClick={() => requireAuthForDownload(handleExportVtt)}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:text-blue-400"
                     >
                       VTT
@@ -1149,13 +1159,13 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                   <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Documents</p>
                   <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={handleExportTxt}
+                      onClick={() => requireAuthForDownload(handleExportTxt)}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:text-blue-400"
                     >
                       TXT
                     </button>
                     <button
-                      onClick={handleExportPdf}
+                      onClick={() => requireAuthForDownload(handleExportPdf)}
                       className={`inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-sm font-medium transition-colors ${
                         isPaid
                           ? 'border-gray-200 bg-white text-gray-700 hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:text-blue-400'
@@ -1165,7 +1175,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                       PDF {!isPaid && <span className="text-[10px]">Pro</span>}
                     </button>
                     <button
-                      onClick={handleExportDocx}
+                      onClick={() => requireAuthForDownload(handleExportDocx)}
                       className={`inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-sm font-medium transition-colors ${
                         isPaid
                           ? 'border-gray-200 bg-white text-gray-700 hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:text-blue-400'
@@ -1250,7 +1260,13 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           }
           setShowAuthGate(false)
           setShowAuthModal(false)
-          window.location.reload()
+          if (pendingDownloadRef.current) {
+            const action = pendingDownloadRef.current
+            pendingDownloadRef.current = null
+            action()
+          } else {
+            window.location.reload()
+          }
         }}
       />
     </>
