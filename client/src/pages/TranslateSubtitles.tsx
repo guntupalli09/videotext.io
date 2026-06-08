@@ -5,6 +5,7 @@ import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
+import JobAuthGateModal from '../components/JobAuthGateModal'
 import UpgradeBanner from '../components/UpgradeBanner'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
@@ -16,6 +17,7 @@ import type { SubtitleRow } from '../components/SubtitleEditor'
 const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
 import { incrementUsage } from '../lib/usage'
 import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, getAuthToken } from '../lib/api'
+import { isLoggedIn } from '../lib/auth'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
@@ -203,6 +205,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [targetLanguage, setTargetLanguage] = useState<string>('Spanish')
   const [copied, setCopied] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [showAuthGate, setShowAuthGate] = useState(false)
+  const pendingDownloadRef = useRef<(() => void) | null>(null)
 
   // ── Subtitles (job queue) ──────────────────────────────────────────────────
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
@@ -252,6 +256,16 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     )
 
   const subtitleBaseName = (result?.fileName ?? fallbackTranslatedName('.srt')).replace(/\.\w+$/, '')
+
+  /** Gate any download action behind authentication. */
+  function requireAuthForDownload(action: () => void) {
+    if (isLoggedIn()) {
+      action()
+    } else {
+      pendingDownloadRef.current = action
+      setShowAuthGate(true)
+    }
+  }
 
   // ── Subtitle file select ──────────────────────────────────────────────────
   const handleFileSelect = (file: File) => {
@@ -617,13 +631,13 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       {/* Export buttons */}
       <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
         <button
-          onClick={() => generateStyledVtt(subtitleRows, subStyles, subtitleBaseName)}
+          onClick={() => requireAuthForDownload(() => generateStyledVtt(subtitleRows, subStyles, subtitleBaseName))}
           className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
         >
           <Download className="w-3.5 h-3.5" /> Styled VTT
         </button>
         <button
-          onClick={() => generateAssFile(subtitleRows, subStyles, subtitleBaseName)}
+          onClick={() => requireAuthForDownload(() => generateAssFile(subtitleRows, subStyles, subtitleBaseName))}
           className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
         >
           <Download className="w-3.5 h-3.5" /> ASS / SSA
@@ -771,7 +785,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                   downloadLabel={isPaidPlan ? 'Download translated file' : (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download with watermark')}
                   onDownload={
                     !isPaidPlan
-                      ? async () => {
+                      ? () => requireAuthForDownload(async () => {
                           if (freeExportsUsed >= 2) { toast('You\'ve used your 2 free downloads. Upgrade for more.'); return }
                           try {
                             const token = getAuthToken()
@@ -786,8 +800,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                             setFreeExportsUsed((prev) => prev + 1)
                             toast.success('Download started')
                           } catch { toast.error('Download failed') }
-                        }
-                      : async () => {
+                        })
+                      : () => requireAuthForDownload(async () => {
                           try {
                             const token = getAuthToken()
                             const res = await fetch(getDownloadUrl(), { headers: token ? { Authorization: `Bearer ${token}` } : {} })
@@ -799,7 +813,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                             URL.revokeObjectURL(a.href)
                             try { trackEvent('result_downloaded', { tool: 'translate-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
                           } catch { toast.error('Download failed') }
-                        }
+                        })
                   }
                   onProcessAnother={handleProcessAnother}
                   relatedTools={[
@@ -995,19 +1009,19 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button
-                    onClick={() => downloadBlob(docTranslated, 'text/plain', `${docBaseName}.txt`)}
+                    onClick={() => requireAuthForDownload(() => downloadBlob(docTranslated, 'text/plain', `${docBaseName}.txt`))}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
                     <Download className="w-3.5 h-3.5" /> Download TXT
                   </button>
                   <button
-                    onClick={() => downloadDocAsDocx(docTranslated, `${docBaseName}.docx`)}
+                    onClick={() => requireAuthForDownload(() => downloadDocAsDocx(docTranslated, `${docBaseName}.docx`))}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
                     <Download className="w-3.5 h-3.5" /> Download DOCX
                   </button>
                   <button
-                    onClick={() => downloadDocAsPdf(docTranslated, `${docBaseName}.pdf`)}
+                    onClick={() => requireAuthForDownload(() => downloadDocAsPdf(docTranslated, `${docBaseName}.pdf`))}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
                     <Download className="w-3.5 h-3.5" /> Download PDF
@@ -1058,6 +1072,18 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
         </section>
       )}
 
+
+      <JobAuthGateModal
+        isOpen={showAuthGate}
+        onClose={() => { setShowAuthGate(false); pendingDownloadRef.current = null }}
+        dismissable
+        jobDescription="Sign up to download your translation"
+        onAuthSuccess={() => {
+          setShowAuthGate(false)
+          pendingDownloadRef.current?.()
+          pendingDownloadRef.current = null
+        }}
+      />
 
       <PaywallModal
         isOpen={showPaywall}
