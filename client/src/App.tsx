@@ -93,6 +93,7 @@ const YoutubeTranscriptGenerator = lazy(() => import('./pages/YoutubeTranscriptG
 const Unsubscribe = lazy(() => import('./pages/Unsubscribe'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const Status = lazy(() => import('./pages/Status'))
+const Security = lazy(() => import('./pages/Security'))
 const ShareTranscript = lazy(() => import('./pages/ShareTranscript'))
 // Free tools — client-side only, zero server dependency
 const FreeToolsIndex = lazy(() => import('./pages/tools/FreeToolsIndex'))
@@ -572,6 +573,7 @@ function App() {
             <Route path="/descript-vs-videotext" element={<DescriptVsVideoText />} />
             <Route path="/ai-transcription-tools" element={<AiTranscriptionTools />} />
             <Route path="/status" element={<Status />} />
+            <Route path="/security" element={<Security />} />
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/guideline-format" element={<GuidelineFormat />} />

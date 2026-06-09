@@ -5,8 +5,9 @@ import { completeSignup, storeLoginResult } from '../lib/auth'
 import { identifyUser, trackEvent } from '../lib/analytics'
 import { getSamplesModuleAttribution } from '../lib/samplesAttribution'
 import { motion } from 'framer-motion'
-import { FileText, Youtube, Shield, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { FileText, Languages, Shield, ChevronRight, CheckCircle2 } from 'lucide-react'
 import GoogleSignInButton, { GOOGLE_CLIENT_ID } from '../components/GoogleSignInButton'
+import { SITE_METRICS } from '../lib/siteMetrics'
 
 type Step = 'email' | 'otp' | 'password'
 const SIGNUP_STARTED_AT_KEY = 'videotext:signup_started_at'
@@ -183,7 +184,7 @@ export default function Signup() {
       ]
     : [
         { icon: FileText, text: 'Try free — no credit card needed' },
-        { icon: Youtube, text: 'YouTube URL → transcript instantly' },
+        { icon: Languages, text: `${SITE_METRICS.wordAccuracy} accuracy · ${SITE_METRICS.transcriptionLanguages} languages` },
         { icon: Shield, text: 'Files deleted right after processing' },
       ]
 
@@ -231,7 +232,7 @@ export default function Signup() {
 
           <div className="pt-4 border-t border-white/10">
             <p className="text-white/40 text-xs">
-              Joined by 2,000+ creators, podcasters, and agencies.
+              {SITE_METRICS.primarySocialProof}.
             </p>
           </div>
         </div>

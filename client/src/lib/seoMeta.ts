@@ -84,6 +84,11 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro plan. Multi-language optional.',
   },
+  '/security': {
+    title: 'Security Overview — Data Handling, Encryption & Privacy | VideoText',
+    description:
+      'VideoText deletes your files immediately after processing. Zero data retention. TLS encryption in transit. Stripe PCI DSS Level 1 billing. Subprocessors, infrastructure, and GDPR details.',
+  },
   '/blog': {
     title: 'VideoText blog — transcription, subtitles, and workflow guides',
     description:

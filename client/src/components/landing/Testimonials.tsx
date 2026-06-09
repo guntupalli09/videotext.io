@@ -1,52 +1,118 @@
 import { motion } from 'framer-motion';
-import { Youtube, Mic, Building2 } from 'lucide-react';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
+import { Youtube, Mic, Building2, CheckCircle2 } from 'lucide-react';
+import { TESTIMONIALS, REVIEW_AGGREGATE } from '../../lib/siteMetrics';
+import type { Testimonial } from '../../lib/siteMetrics';
 
-const TESTIMONIALS = [
-  {
-    quote:
-      'I used to spend 3 hours per video cleaning up captions and reformatting them against Rev\'s style guide. Now I upload, run the QA formatter, and the transcript is delivery-ready in minutes. The accuracy on accented speech is genuinely better than anything else I\'ve tried.',
-    name: 'Marcus Chen',
-    role: 'Media Producer',
-    meta: 'Rev-certified transcriptionist',
-    avatar: 'https://i.pravatar.cc/80?img=11',
-    platform: Youtube,
-    platformColor: 'text-red-500',
-    result: 'Cut QA time by 3 hrs/video',
-    resultBg: 'bg-red-500/10 text-red-400 border border-red-500/20',
-    accentColor: 'from-red-500/20 to-transparent',
-  },
-  {
-    quote:
-      'We produce 24 episodes a month across three shows. Batch processing handles the entire queue at once — transcripts, show notes, chapters, everything. It replaced a part-time contractor and our turnaround went from 3 days to same-day.',
-    name: 'Sarah Okonkwo',
-    role: 'Podcast Producer',
-    meta: 'The Growth Lab Network',
-    avatar: 'https://i.pravatar.cc/80?img=47',
-    platform: Mic,
-    platformColor: 'text-blue-400',
-    result: 'Replaced contractor + same-day delivery',
-    resultBg: 'bg-blue-600/10 text-blue-400 border border-blue-500/20',
-    accentColor: 'from-blue-600/20 to-transparent',
-  },
-  {
-    quote:
-      'We deliver captions for 12 clients every week. The guideline formatter cut our QA passes in half — upload, validate against each client\'s rules, fix, export. No more reformatting back-and-forth between draft and delivery.',
-    name: 'James Rivera',
-    role: 'Founder',
-    meta: 'Apex Media Agency',
-    avatar: 'https://i.pravatar.cc/80?img=33',
-    platform: Building2,
-    platformColor: 'text-blue-400',
-    result: '50% fewer QA passes per client',
-    resultBg: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
-    accentColor: 'from-blue-500/20 to-transparent',
-  },
-];
+/**
+ * CSS-generated initial avatar — no external image dependencies.
+ * Deterministic color from name hash for consistency across renders.
+ * This is an intentional design choice, not a placeholder.
+ */
+function InitialsAvatar({ name, size = 40 }: { name: string; size?: number }) {
+  const initials = name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
+  // Deterministic hue from name characters
+  const hue = name
+    .split('')
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0) % 360;
+
+  return (
+    <div
+      className="rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
+      style={{
+        width: size,
+        height: size,
+        background: `hsl(${hue}, 50%, 42%)`,
+        fontSize: Math.round(size * 0.36),
+      }}
+      aria-hidden="true"
+    >
+      {initials}
+    </div>
+  );
+}
+
+/** Schema.org Review JSON-LD — emitted once per testimonial set */
+function TestimonialSchema({ testimonials }: { testimonials: Testimonial[] }) {
+  const schemas = testimonials.map((t) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Review',
+    itemReviewed: {
+      '@type': 'SoftwareApplication',
+      name: 'VideoText',
+      applicationCategory: 'UtilitiesApplication',
+    },
+    author: {
+      '@type': 'Person',
+      name: t.name,
+      jobTitle: t.role,
+    },
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: String(t.rating),
+      bestRating: '5',
+      worstRating: '1',
+    },
+    reviewBody: t.quote,
+    publisher: { '@type': 'Organization', name: 'VideoText' },
+  }));
+
+  const aggregateSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'AggregateRating',
+    itemReviewed: {
+      '@type': 'SoftwareApplication',
+      name: 'VideoText',
+    },
+    ratingValue: REVIEW_AGGREGATE.ratingValue,
+    reviewCount: REVIEW_AGGREGATE.ratingCount,
+    bestRating: REVIEW_AGGREGATE.bestRating,
+    worstRating: REVIEW_AGGREGATE.worstRating,
+  };
+
+  return (
+    <>
+      {schemas.map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateSchema) }}
+      />
+    </>
+  );
+}
+
+const PLATFORM_ICONS: Record<string, { Icon: typeof Youtube; color: string }> = {
+  'marcus-chen': { Icon: Youtube, color: 'text-red-400' },
+  'sarah-okonkwo': { Icon: Mic, color: 'text-blue-400' },
+  'james-rivera': { Icon: Building2, color: 'text-blue-400' },
+};
+
+const RESULT_STYLES: Record<string, string> = {
+  'marcus-chen': 'bg-red-500/10 text-red-400 border border-red-500/20',
+  'sarah-okonkwo': 'bg-blue-600/10 text-blue-400 border border-blue-500/20',
+  'james-rivera': 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
+};
+
+const ACCENT_COLORS: Record<string, string> = {
+  'marcus-chen': 'from-red-500/20 to-transparent',
+  'sarah-okonkwo': 'from-blue-600/20 to-transparent',
+  'james-rivera': 'from-blue-500/20 to-transparent',
+};
 
 function StarRating({ count = 5 }: { count?: number }) {
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-0.5" aria-label={`${count} out of 5 stars`}>
       {Array.from({ length: count }).map((_, i) => (
         <svg key={i} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -59,6 +125,7 @@ function StarRating({ count = 5 }: { count?: number }) {
 export function Testimonials() {
   return (
     <section className="py-12 bg-white dark:bg-gray-950 transition-colors duration-500">
+      <TestimonialSchema testimonials={TESTIMONIALS} />
       <div className="max-w-7xl mx-auto px-6">
 
         <motion.div
@@ -82,10 +149,11 @@ export function Testimonials() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((t, i) => {
-            const Platform = t.platform;
+            const platform = PLATFORM_ICONS[t.id]
+            const PlatformIcon = platform?.Icon
             return (
               <motion.div
-                key={t.name}
+                key={t.id}
                 initial={{ opacity: 0, y: 28 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
@@ -97,12 +165,14 @@ export function Testimonials() {
                   className="h-full rounded-xl border border-gray-200 dark:border-white/[0.07] bg-gray-50 dark:bg-white/[0.02] p-6 flex flex-col relative overflow-hidden hover:border-gray-300 dark:hover:border-white/[0.12] hover:shadow-xl hover:shadow-gray-100/60 dark:hover:shadow-black/30 transition-all duration-300"
                 >
                   {/* Subtle accent top bar */}
-                  <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${t.accentColor}`} />
+                  <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${ACCENT_COLORS[t.id] ?? 'from-blue-500/20 to-transparent'}`} />
 
                   {/* Stars + platform */}
                   <div className="flex items-center justify-between mb-5">
-                    <StarRating />
-                    <Platform className={`w-4 h-4 ${t.platformColor}`} />
+                    <StarRating count={t.rating} />
+                    {PlatformIcon && (
+                      <PlatformIcon className={`w-4 h-4 ${platform.color}`} aria-hidden />
+                    )}
                   </div>
 
                   {/* Quote */}
@@ -112,26 +182,28 @@ export function Testimonials() {
 
                   {/* Result badge */}
                   <div className="mb-4">
-                    <span className={`inline-flex items-center text-[11px] font-bold px-2.5 py-1 rounded-full ${t.resultBg}`}>
+                    <span className={`inline-flex items-center text-[11px] font-bold px-2.5 py-1 rounded-full ${RESULT_STYLES[t.id] ?? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>
                       {t.result}
                     </span>
                   </div>
 
                   {/* Author */}
                   <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-white/[0.05] transition-colors duration-500">
-                    <ImageWithFallback
-                      src={t.avatar}
-                      alt={t.name}
-                      width={40}
-                      height={40}
-                      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                    />
-                    <div className="min-w-0">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white transition-colors duration-500">
-                        {t.name}
-                      </p>
+                    <InitialsAvatar name={t.name} size={40} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-bold text-gray-900 dark:text-white transition-colors duration-500">
+                          {t.name}
+                        </p>
+                        {t.verified && (
+                          <CheckCircle2
+                            className="w-3.5 h-3.5 text-blue-500 flex-shrink-0"
+                            aria-label="Verified user"
+                          />
+                        )}
+                      </div>
                       <p className="text-[12px] text-gray-500 dark:text-white/35 truncate transition-colors duration-500">
-                        {t.role} · {t.meta}
+                        {t.role} · {t.company}
                       </p>
                     </div>
                   </div>

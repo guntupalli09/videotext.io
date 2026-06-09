@@ -18,7 +18,7 @@ export default function Footer() {
             </div>
 
             <p className="text-sm text-gray-300">
-              Turn speech into text: transcripts, subtitles, translation. For creators & teams. We don’t store your data.
+              Transcripts, subtitles, translation, and QA workflows — start to delivery. We don’t store your data.
             </p>
           </div>
 
@@ -73,6 +73,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
+              <li><Link to="/security" className="hover:text-white transition-colors">Security</Link></li>
               <li>
                 <button
                   type="button"
