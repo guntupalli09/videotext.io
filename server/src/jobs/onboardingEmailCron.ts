@@ -78,7 +78,7 @@ function onboardingHtml(stage: OnboardingStage, ctaUrl: string, unsubLink: strin
         </tr>
         <tr>
           <td style="padding:0 36px 30px">
-            <a href="${ctaUrl}" style="display:block;background:#2563EB;color:#fff;text-decoration:none;text-align:center;padding:14px 24px;border-radius:10px;font-size:15px;font-weight:700">Open /video-to-transcript</a>
+            <a href="${ctaUrl}" style="display:block;background:#2563EB;color:#fff;text-decoration:none;text-align:center;padding:14px 24px;border-radius:10px;font-size:15px;font-weight:700">Try VideoText free →</a>
           </td>
         </tr>
         <tr>
@@ -152,7 +152,7 @@ export async function runOnboardingEmailSequence(): Promise<void> {
     if (jobCount >= 2) continue
 
     const token = await createMagicLinkToken(user.id)
-    const ctaUrl = `${baseUrl}/magic-login?token=${encodeURIComponent(token)}&next=/video-to-transcript`
+    const ctaUrl = `${baseUrl}/magic-login?token=${encodeURIComponent(token)}&next=/`
     const unsubToken = generateUnsubscribeToken(user.email)
     const unsubLink = `${baseUrl}/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`
     const apiUnsubLink = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`

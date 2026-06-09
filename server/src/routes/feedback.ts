@@ -1,7 +1,9 @@
+import crypto from 'crypto'
 import express, { Request, Response } from 'express'
 import rateLimit from 'express-rate-limit'
 import { prisma } from '../db'
 import { getEffectiveUserId } from '../utils/auth'
+import { makeFeedbackEmailToken } from '../jobs/feedbackEmailCron'
 
 const router = express.Router()
 
@@ -80,6 +82,32 @@ router.post('/', feedbackPostLimit, async (req: Request, res: Response) => {
   } catch (e) {
     return res.status(500).json({ message: 'Failed to save feedback' })
   }
+})
+
+/** GET /api/feedback/email-rate — one-click star rating from feedback emails. Records and redirects to homepage. */
+router.get('/email-rate', async (req: Request, res: Response) => {
+  const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
+  const { userId, rating, token } = req.query as Record<string, string>
+
+  if (!userId || !rating || !token) return res.redirect(`${baseUrl}/?feedback=invalid`)
+
+  const stars = parseInt(rating, 10)
+  if (isNaN(stars) || stars < 1 || stars > 5) return res.redirect(`${baseUrl}/?feedback=invalid`)
+
+  const expected = makeFeedbackEmailToken(userId)
+  if (token.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected))) {
+    return res.redirect(`${baseUrl}/?feedback=invalid`)
+  }
+
+  try {
+    await prisma.feedback.create({
+      data: { toolId: 'email-feedback', stars, userId, source: 'email', comment: '' },
+    })
+  } catch {
+    // Non-blocking — still redirect on DB error
+  }
+
+  return res.redirect(`${baseUrl}/?feedback=thanks`)
 })
 
 /** GET /api/feedback — list all feedback (newest first). Requires X-Feedback-Viewer header matching FEEDBACK_VIEWER_SECRET. */

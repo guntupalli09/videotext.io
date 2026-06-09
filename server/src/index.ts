@@ -43,6 +43,7 @@ import { attachLiveTranscription } from './routes/liveTranscription'
 import { maybeRunYoutubeCanary } from './services/youtubeCanary'
 import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
+import { startFeedbackEmailCron } from './jobs/feedbackEmailCron'
 import { generateUnsubscribeToken } from './routes/newsletter'
 import guidelinesRoutes from './routes/guidelines'
 import { guidelineQueue, startGuidelineWorker } from './workers/guidelineProcessor'
@@ -473,6 +474,9 @@ const server = app.listen(PORT, () => {
 
   // Upgrade rescue sequence for users who clicked upgrade but did not complete payment in 24h.
   startUpgradeRescueCron()
+
+  // Post-first-job feedback email — fires 2–6 hours after a user's first completed job.
+  startFeedbackEmailCron()
 
   // Optional heap memory monitoring — set MEMORY_DEBUG=1 to enable
   if (process.env.MEMORY_DEBUG === '1') {
