@@ -164,6 +164,14 @@ const corsOptions: cors.CorsOptions = {
 app.use(cors(corsOptions))
 app.options('*', cors(corsOptions))
 
+// Clickjacking protection: deny all framing
+app.use((_req, res, next) => {
+  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('Content-Security-Policy', "frame-ancestors 'none'")
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  next()
+})
+
 // CORS debug instrumentation (do not alter behavior)
 app.use((req, res, next) => {
   const origin = req.get('origin') ?? 'undefined'
