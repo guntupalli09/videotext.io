@@ -564,6 +564,7 @@ async function uploadFileChunked(
         if (signal) {
           signal.addEventListener('abort', () => controller.abort(), { once: true })
         }
+        const chunkToken = getAuthToken()
         const res = await fetch(`${API_ORIGIN}/api/upload/chunk`, {
           method: 'POST',
           signal: controller.signal,
@@ -573,6 +574,7 @@ async function uploadFileChunked(
             'x-chunk-index': String(chunkIndex),
             'x-user-id': userId,
             'x-plan': plan,
+            ...(chunkToken ? { 'Authorization': `Bearer ${chunkToken}` } : {}),
           },
           body: blob,
         })
@@ -921,6 +923,8 @@ export function uploadFileWithProgress(
       xhr.open('POST', url)
       xhr.setRequestHeader('x-user-id', userId)
       xhr.setRequestHeader('x-plan', plan)
+      const token = getAuthToken()
+      if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`)
       uploadStartMs = Date.now()
       xhr.send(formData)
     })
@@ -1198,6 +1202,8 @@ export function uploadDualFilesWithProgress(
     xhr.open('POST', url)
     xhr.setRequestHeader('x-user-id', userId)
     xhr.setRequestHeader('x-plan', plan)
+    const dualToken = getAuthToken()
+    if (dualToken) xhr.setRequestHeader('Authorization', `Bearer ${dualToken}`)
     xhr.send(formData)
   })
 }
@@ -1250,6 +1256,8 @@ export function uploadFixSubtitlesDual(
     xhr.open('POST', url)
     xhr.setRequestHeader('x-user-id', userId)
     xhr.setRequestHeader('x-plan', plan)
+    const fixToken = getAuthToken()
+    if (fixToken) xhr.setRequestHeader('Authorization', `Bearer ${fixToken}`)
     xhr.send(formData)
   })
 }
