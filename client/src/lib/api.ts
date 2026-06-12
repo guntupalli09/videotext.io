@@ -919,8 +919,13 @@ export function uploadFileWithProgress(
         signal?.removeEventListener('abort', onAbort)
         reject(new Error('Upload cancelled'))
       })
+      xhr.ontimeout = () => {
+        signal?.removeEventListener('abort', onAbort)
+        reject(new Error('Upload timed out'))
+      }
 
       xhr.open('POST', url)
+      xhr.timeout = 120_000
       xhr.setRequestHeader('x-user-id', userId)
       xhr.setRequestHeader('x-plan', plan)
       const token = getAuthToken()
@@ -1142,70 +1147,92 @@ export function uploadDualFilesWithProgress(
     file_size_bytes: videoFile.size,
     upload_mode: 'dual',
   })
-  const formData = new FormData()
-  formData.append('video', videoFile)
-  formData.append('subtitles', subtitleFile)
-  formData.append('toolType', toolType)
-  if (options?.trimmedStart !== undefined) formData.append('trimmedStart', options.trimmedStart.toString())
-  if (options?.trimmedEnd !== undefined) formData.append('trimmedEnd', options.trimmedEnd.toString())
-  if (options?.burnFontSize) formData.append('burnFontSize', options.burnFontSize)
-  if (options?.burnPosition) formData.append('burnPosition', options.burnPosition)
-  if (options?.burnBackgroundOpacity) formData.append('burnBackgroundOpacity', options.burnBackgroundOpacity)
 
   const url = `${API_ORIGIN}/api/upload/dual`
   const userId = localStorage.getItem('userId') || 'demo-user'
   const plan = localStorage.getItem('plan') || 'free'
   const signal = progressOptions?.signal
 
-  return new Promise((resolve, reject) => {
-    if (signal?.aborted) {
-      reject(new Error('Upload cancelled'))
-      return
-    }
-    const xhr = new XMLHttpRequest()
-    const onAbort = () => { xhr.abort() }
-    signal?.addEventListener('abort', onAbort, { once: true })
+  const runOne = (): Promise<UploadResponse> => {
+    const formData = new FormData()
+    formData.append('video', videoFile)
+    formData.append('subtitles', subtitleFile)
+    formData.append('toolType', toolType)
+    if (options?.trimmedStart !== undefined) formData.append('trimmedStart', options.trimmedStart.toString())
+    if (options?.trimmedEnd !== undefined) formData.append('trimmedEnd', options.trimmedEnd.toString())
+    if (options?.burnFontSize) formData.append('burnFontSize', options.burnFontSize)
+    if (options?.burnPosition) formData.append('burnPosition', options.burnPosition)
+    if (options?.burnBackgroundOpacity) formData.append('burnBackgroundOpacity', options.burnBackgroundOpacity)
 
-    xhr.upload.addEventListener('progress', (e) => {
-      if (e.lengthComputable && progressOptions?.onProgress) {
-        progressOptions.onProgress(Math.round((e.loaded / e.total) * 100))
+    return new Promise((resolve, reject) => {
+      if (signal?.aborted) { reject(new Error('Upload cancelled')); return }
+      const xhr = new XMLHttpRequest()
+      const onAbort = () => { xhr.abort() }
+      signal?.addEventListener('abort', onAbort, { once: true })
+
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable && progressOptions?.onProgress) {
+          progressOptions.onProgress(Math.round((e.loaded / e.total) * 100))
+        }
+      })
+      xhr.addEventListener('load', () => {
+        signal?.removeEventListener('abort', onAbort)
+        if (xhr.status === 204 || !xhr.responseText?.trim()) {
+          reject(new Error('Upload accepted but no job ID returned. Please retry.'))
+          return
+        }
+        let data: UploadResponse & { message?: string }
+        try {
+          data = JSON.parse(xhr.responseText) as UploadResponse & { message?: string }
+        } catch {
+          reject(new Error('Invalid upload response. Please retry.'))
+          return
+        }
+        if (xhr.status >= 200 && xhr.status < 300 && data?.jobId) {
+          trackUploadEvent('upload_completed', { job_id: data.jobId, tool_type: toolType, file_size_bytes: videoFile.size, upload_mode: 'dual' })
+          resolve({ jobId: data.jobId, status: data.status ?? 'queued', jobToken: data.jobToken })
+          return
+        }
+        reject(new Error(data?.message || 'Upload failed'))
+      })
+      xhr.addEventListener('error', () => {
+        signal?.removeEventListener('abort', onAbort)
+        reject(new Error('Upload failed'))
+      })
+      xhr.addEventListener('abort', () => {
+        signal?.removeEventListener('abort', onAbort)
+        reject(new Error('Upload cancelled'))
+      })
+      xhr.ontimeout = () => {
+        signal?.removeEventListener('abort', onAbort)
+        reject(new Error('Upload timed out'))
       }
+      xhr.open('POST', url)
+      xhr.timeout = 180_000
+      xhr.setRequestHeader('x-user-id', userId)
+      xhr.setRequestHeader('x-plan', plan)
+      const dualToken = getAuthToken()
+      if (dualToken) xhr.setRequestHeader('Authorization', `Bearer ${dualToken}`)
+      xhr.send(formData)
     })
-    xhr.addEventListener('load', () => {
-      signal?.removeEventListener('abort', onAbort)
-      if (xhr.status === 204 || !xhr.responseText?.trim()) {
-        reject(new Error('Upload accepted but no job ID returned. Please retry.'))
-        return
-      }
-      let data: UploadResponse & { message?: string }
+  }
+
+  return (async () => {
+    let lastErr: Error | null = null
+    for (let attempt = 0; attempt < SINGLE_UPLOAD_MAX_RETRIES; attempt++) {
+      if (signal?.aborted) throw new Error('Upload cancelled')
       try {
-        data = JSON.parse(xhr.responseText) as UploadResponse & { message?: string }
-      } catch {
-        reject(new Error('Invalid upload response. Please retry.'))
-        return
+        return await runOne()
+      } catch (e) {
+        lastErr = e instanceof Error ? e : new Error('Upload failed')
+        if (lastErr.message === 'Upload cancelled') throw lastErr
+        if (attempt < SINGLE_UPLOAD_MAX_RETRIES - 1) {
+          await new Promise((r) => setTimeout(r, getRetryDelayMs(attempt)))
+        }
       }
-      if (xhr.status >= 200 && xhr.status < 300 && data?.jobId) {
-        trackUploadEvent('upload_completed', { job_id: data.jobId, tool_type: toolType, file_size_bytes: videoFile.size, upload_mode: 'dual' })
-        resolve({ jobId: data.jobId, status: data.status ?? 'queued', jobToken: data.jobToken })
-        return
-      }
-      reject(new Error(data?.message || 'Upload failed'))
-    })
-    xhr.addEventListener('error', () => {
-      signal?.removeEventListener('abort', onAbort)
-      reject(new Error('Upload failed'))
-    })
-    xhr.addEventListener('abort', () => {
-      signal?.removeEventListener('abort', onAbort)
-      reject(new Error('Upload cancelled'))
-    })
-    xhr.open('POST', url)
-    xhr.setRequestHeader('x-user-id', userId)
-    xhr.setRequestHeader('x-plan', plan)
-    const dualToken = getAuthToken()
-    if (dualToken) xhr.setRequestHeader('Authorization', `Bearer ${dualToken}`)
-    xhr.send(formData)
-  })
+    }
+    throw lastErr ?? new Error('Upload failed')
+  })()
 }
 
 /**
@@ -1218,48 +1245,69 @@ export function uploadFixSubtitlesDual(
   videoFile: File | null,
   progressOptions?: { onProgress?: (percent: number) => void; signal?: AbortSignal }
 ): Promise<UploadResponse> {
-  const formData = new FormData()
-  formData.append('subtitles', subtitleFile)
-  if (videoFile) formData.append('video', videoFile)
-  formData.append('toolType', BACKEND_TOOL_TYPES.FIX_SUBTITLES)
-
   const url = `${API_ORIGIN}/api/upload/dual`
   const userId = localStorage.getItem('userId') || 'demo-user'
   const plan = localStorage.getItem('plan') || 'free'
   const signal = progressOptions?.signal
 
-  return new Promise((resolve, reject) => {
-    if (signal?.aborted) { reject(new Error('Upload cancelled')); return }
-    const xhr = new XMLHttpRequest()
-    const onAbort = () => { xhr.abort() }
-    signal?.addEventListener('abort', onAbort, { once: true })
-    xhr.upload.addEventListener('progress', (e) => {
-      if (e.lengthComputable && progressOptions?.onProgress) {
-        progressOptions.onProgress(Math.round((e.loaded / e.total) * 100))
-      }
+  const runOne = (): Promise<UploadResponse> => {
+    const formData = new FormData()
+    formData.append('subtitles', subtitleFile)
+    if (videoFile) formData.append('video', videoFile)
+    formData.append('toolType', BACKEND_TOOL_TYPES.FIX_SUBTITLES)
+
+    return new Promise((resolve, reject) => {
+      if (signal?.aborted) { reject(new Error('Upload cancelled')); return }
+      const xhr = new XMLHttpRequest()
+      const onAbort = () => { xhr.abort() }
+      signal?.addEventListener('abort', onAbort, { once: true })
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable && progressOptions?.onProgress) {
+          progressOptions.onProgress(Math.round((e.loaded / e.total) * 100))
+        }
+      })
+      xhr.addEventListener('load', () => {
+        signal?.removeEventListener('abort', onAbort)
+        if (xhr.status === 204 || !xhr.responseText?.trim()) {
+          reject(new Error('Upload accepted but no job ID returned. Please retry.')); return
+        }
+        let data: UploadResponse & { message?: string }
+        try { data = JSON.parse(xhr.responseText) as UploadResponse & { message?: string } }
+        catch { reject(new Error('Invalid upload response. Please retry.')); return }
+        if (xhr.status >= 200 && xhr.status < 300 && data?.jobId) {
+          resolve({ jobId: data.jobId, status: data.status ?? 'queued', jobToken: data.jobToken }); return
+        }
+        reject(new Error(data?.message || 'Upload failed'))
+      })
+      xhr.addEventListener('error', () => { signal?.removeEventListener('abort', onAbort); reject(new Error('Upload failed')) })
+      xhr.addEventListener('abort', () => { signal?.removeEventListener('abort', onAbort); reject(new Error('Upload cancelled')) })
+      xhr.ontimeout = () => { signal?.removeEventListener('abort', onAbort); reject(new Error('Upload timed out')) }
+      xhr.open('POST', url)
+      xhr.timeout = 180_000
+      xhr.setRequestHeader('x-user-id', userId)
+      xhr.setRequestHeader('x-plan', plan)
+      const fixToken = getAuthToken()
+      if (fixToken) xhr.setRequestHeader('Authorization', `Bearer ${fixToken}`)
+      xhr.send(formData)
     })
-    xhr.addEventListener('load', () => {
-      signal?.removeEventListener('abort', onAbort)
-      if (xhr.status === 204 || !xhr.responseText?.trim()) {
-        reject(new Error('Upload accepted but no job ID returned. Please retry.')); return
+  }
+
+  return (async () => {
+    let lastErr: Error | null = null
+    for (let attempt = 0; attempt < SINGLE_UPLOAD_MAX_RETRIES; attempt++) {
+      if (signal?.aborted) throw new Error('Upload cancelled')
+      try {
+        return await runOne()
+      } catch (e) {
+        lastErr = e instanceof Error ? e : new Error('Upload failed')
+        if (lastErr.message === 'Upload cancelled') throw lastErr
+        if (attempt < SINGLE_UPLOAD_MAX_RETRIES - 1) {
+          await new Promise((r) => setTimeout(r, getRetryDelayMs(attempt)))
+        }
       }
-      let data: UploadResponse & { message?: string }
-      try { data = JSON.parse(xhr.responseText) as UploadResponse & { message?: string } }
-      catch { reject(new Error('Invalid upload response. Please retry.')); return }
-      if (xhr.status >= 200 && xhr.status < 300 && data?.jobId) {
-        resolve({ jobId: data.jobId, status: data.status ?? 'queued', jobToken: data.jobToken }); return
-      }
-      reject(new Error(data?.message || 'Upload failed'))
-    })
-    xhr.addEventListener('error', () => { signal?.removeEventListener('abort', onAbort); reject(new Error('Upload failed')) })
-    xhr.addEventListener('abort', () => { signal?.removeEventListener('abort', onAbort); reject(new Error('Upload cancelled')) })
-    xhr.open('POST', url)
-    xhr.setRequestHeader('x-user-id', userId)
-    xhr.setRequestHeader('x-plan', plan)
-    const fixToken = getAuthToken()
-    if (fixToken) xhr.setRequestHeader('Authorization', `Bearer ${fixToken}`)
-    xhr.send(formData)
-  })
+    }
+    throw lastErr ?? new Error('Upload failed')
+  })()
 }
 
 /** Thrown when GET /api/job/:id returns 404 (job expired or never existed). Show "Session expired. Please upload again." */
