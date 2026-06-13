@@ -103,6 +103,20 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
   try {
     const userId = getEffectiveUserId(req) ?? `guest_${uuidv4()}`
 
+    // Detect authenticated users whose client sent the upload without a JWT (missing
+    // Authorization header). The x-user-id header is not trusted for identity, but
+    // when it contains a real (non-guest) userId and there is no valid JWT, the request
+    // almost certainly came from a logged-in client that forgot to attach its token.
+    // Return 401 so the client retries with proper auth rather than silently falling
+    // back to the guest quota, which allows free-plan users to exceed their daily limit.
+    if (userId.startsWith('guest_')) {
+      const xUserId = (req.headers['x-user-id'] as string | undefined)?.trim()
+      if (xUserId && !xUserId.startsWith('guest_') && xUserId !== 'demo-user') {
+        if (req.file) try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
+        return res.status(401).json({ message: 'Session expired. Please log in again.' })
+      }
+    }
+
     const { toolType, url, webhookUrl, ...options } = req.body
 
     if (url && (toolType === 'video-to-transcript' || toolType === 'video-to-subtitles')) {
@@ -469,6 +483,14 @@ router.post('/dual', upload.fields([
 ]), async (req: Request, res: Response) => {
   try {
     const userId = getEffectiveUserId(req) ?? `guest_${uuidv4()}`
+
+    // Same guard as POST / — reject unauthenticated requests that carry a real x-user-id
+    if (userId.startsWith('guest_')) {
+      const xUserId = (req.headers['x-user-id'] as string | undefined)?.trim()
+      if (xUserId && !xUserId.startsWith('guest_') && xUserId !== 'demo-user') {
+        return res.status(401).json({ message: 'Session expired. Please log in again.' })
+      }
+    }
 
     const { toolType, trimmedStart, trimmedEnd, burnFontSize, burnPosition, burnBackgroundOpacity } = req.body
     const auth = getAuthFromRequest(req)
