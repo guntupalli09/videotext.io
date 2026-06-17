@@ -15,12 +15,14 @@ export type ValidateVideoDurationResult = {
 }
 
 /**
- * Validate video duration against plan max. Missing/unknown duration does not invalidate the job;
- * only a known duration over the limit is rejected.
+ * Validate video duration against plan max. For free plan, unknown duration
+ * rejects the job (prevents unbounded processing). Paid plans allow unknown
+ * duration since metering catches it post-hoc.
  */
 export async function validateVideoDuration(
   videoPath: string,
-  maxDurationMinutes = 15
+  maxDurationMinutes = 15,
+  plan?: string
 ): Promise<ValidateVideoDurationResult> {
   if (!fs.existsSync(videoPath)) {
     return {
@@ -31,6 +33,19 @@ export async function validateVideoDuration(
 
   const r = await probeVideoDurationResult(videoPath)
   if (!r.known) {
+    if (plan === 'free') {
+      videoLog.info({
+        msg: 'video_duration_unknown_rejecting_free',
+        videoPath,
+        duration_source: r.source,
+      })
+      return {
+        valid: false,
+        durationKnown: false,
+        durationSource: r.source,
+        error: 'Could not determine video length. Please re-encode the file or try a different format.',
+      }
+    }
     videoLog.info({
       msg: 'video_duration_unknown_allowing_job',
       videoPath,

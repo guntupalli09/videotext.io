@@ -337,15 +337,16 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
       }
     }
 
-    // Server-side minute limit for paid plans only; free plan uses import count (checked above)
+    // Server-side duration & minute limits
     const minuteChargingTools = ['video-to-transcript', 'video-to-subtitles', 'burn-subtitles', 'compress-video']
-    if (user.plan !== 'free' && minuteChargingTools.includes(toolType)) {
+    if (minuteChargingTools.includes(toolType)) {
       const probe = await probeVideoDurationResult(file.path)
       let durationSeconds = probe.known ? probe.seconds : 0
       if (!probe.known) {
         uploadLog.info({
-          msg: 'upload_duration_unknown_allowing_job',
+          msg: 'upload_duration_unknown',
           toolType,
+          plan: user.plan,
           duration_source: probe.source,
         })
       }
@@ -354,11 +355,32 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
         const end = parseFloat(String(options.trimmedEnd))
         durationSeconds = Math.max(0, end - start)
       }
-      const requestedMinutes = Math.ceil(durationSeconds / 60)
-      const limitCheck = await enforceUsageLimits(user, requestedMinutes)
-      if (!limitCheck.allowed) {
+
+      // Enforce per-video max duration for ALL plans (free = 30 min, basic = 45 min, etc.)
+      const limits = getPlanLimits(user.plan)
+      if (probe.known && durationSeconds > limits.maxVideoDuration * 60) {
         fs.unlinkSync(file.path)
-        return res.status(403).json({ message: 'Monthly minute limit reached. Upgrade or wait for reset.' })
+        const durationMin = Math.round(durationSeconds / 60)
+        return res.status(400).json({
+          message: `Video is ${durationMin} minutes — your plan allows up to ${limits.maxVideoDuration} minutes per video. Trim or upgrade.`,
+        })
+      }
+      // Free plan: reject unknown-duration files to prevent unbounded processing
+      if (!probe.known && user.plan === 'free') {
+        fs.unlinkSync(file.path)
+        return res.status(400).json({
+          message: 'Could not determine video length. Please re-encode the file or try a different format.',
+        })
+      }
+
+      // Paid plans: enforce monthly minute usage
+      if (user.plan !== 'free') {
+        const requestedMinutes = Math.ceil(durationSeconds / 60)
+        const limitCheck = await enforceUsageLimits(user, requestedMinutes)
+        if (!limitCheck.allowed) {
+          fs.unlinkSync(file.path)
+          return res.status(403).json({ message: 'Monthly minute limit reached. Upgrade or wait for reset.' })
+        }
       }
     }
 
