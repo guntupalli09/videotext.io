@@ -1269,7 +1269,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           // Validate duration (works for both video and audio via ffprobe)
           await job.progress(15)
           videoPathForDuration = videoPath
-          durationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration)
+          durationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration, plan)
           if (!durationCheck.valid) {
             throw new Error(durationCheck.error || 'Video too long')
           }
@@ -1706,7 +1706,7 @@ async function processJob(job: import('bull').Job<JobData>) {
 
           // Validate duration (works for both video and audio)
           await job.progress(15)
-          const durationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration)
+          const durationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration, plan)
           if (!durationCheck.valid) {
             throw new Error(durationCheck.error || 'Video too long')
           }
@@ -2237,7 +2237,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           }
 
           await job.progress(14)
-          const burnDurationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration)
+          const burnDurationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration, plan)
           if (!burnDurationCheck.valid) {
             throw new Error(burnDurationCheck.error || 'Video too long')
           }
@@ -2321,7 +2321,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           const crf = profile ? 28 : crfMap[options?.compressionLevel || 'medium']
 
           await job.progress(18)
-          const compressDurationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration)
+          const compressDurationCheck = await validateVideoDuration(videoPath, getPlanLimits(plan).maxVideoDuration, plan)
           if (!compressDurationCheck.valid) {
             throw new Error(compressDurationCheck.error || 'Video too long')
           }
