@@ -21,6 +21,8 @@ import {
   trackSubscriptionDeleted,
   trackSubscriptionRenewed,
   trackPaymentFailed,
+  trackPlanUpgraded,
+  trackPaymentCompleted,
 } from '../utils/analytics'
 import { captureFunnelEvent } from '../utils/funnelEvents'
 
@@ -283,6 +285,7 @@ async function handleInvoicePaymentSucceeded(
   }
 
   // ── Update plan, status, and billing period ───────────────────────────────
+  const previousPlan = user.plan
   if (activePlan) {
     user.plan = activePlan
     user.limits = getPlanLimits(activePlan)
@@ -332,6 +335,23 @@ async function handleInvoicePaymentSucceeded(
     plan: activePlan ?? user.plan,
     metadata: { invoice_id: invoice.id },
   }).catch(() => {})
+
+  // Server-side PostHog events — reliable even if the user closes the tab after Stripe checkout
+  trackPaymentCompleted({
+    user_id: user.id,
+    plan: activePlan ?? user.plan,
+    source: 'stripe_webhook',
+    invoice_id: invoice.id,
+  })
+  if (activePlan) {
+    trackPlanUpgraded({
+      user_id: user.id,
+      plan: activePlan,
+      previous_plan: previousPlan !== activePlan ? previousPlan : undefined,
+      source: 'stripe_webhook',
+      invoice_id: invoice.id,
+    })
+  }
 
   log.info({
     msg: 'stripe: invoice.payment_succeeded processed',
@@ -796,12 +816,18 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
     log.info({ msg: 'stripe: webhook handled successfully', eventId: event.id, eventType: event.type })
     return res.json({ received: true })
   } catch (error) {
-    // On handler error Stripe will retry.  The event ID is already claimed in
-    // StripeEventLog, so retries will be treated as duplicates and skipped.
-    // To allow a retry to reprocess after a bug fix, delete the event row from
-    // StripeEventLog or use the Stripe Dashboard to resend the event with a new ID.
+    // Release the idempotency claim so Stripe's retry can reprocess this event.
+    try {
+      await prisma.stripeEventLog.delete({ where: { eventId: event.id } })
+    } catch (deleteErr) {
+      log.error({
+        msg: 'stripe: failed to unclaim event after handler error — manual intervention required',
+        eventId: event.id,
+        error: (deleteErr as Error).message,
+      })
+    }
     log.error({
-      msg: 'stripe: webhook handler threw — event will NOT be retried automatically',
+      msg: 'stripe: webhook handler threw — event unclaimed for Stripe retry',
       eventId: event.id,
       eventType: event.type,
       error: (error as Error).message,

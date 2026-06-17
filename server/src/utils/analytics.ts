@@ -149,6 +149,36 @@ export function trackFirstPaidJobCompleted(params: {
 
 // ─── Billing & Churn ────────────────────────────────────────────────────────
 
+export function trackPlanUpgraded(params: {
+  user_id: string
+  plan: string
+  previous_plan?: string
+  source: string
+  invoice_id?: string
+}): void {
+  capture('plan_upgraded', params.user_id, {
+    user_id: params.user_id,
+    plan: params.plan,
+    ...(params.previous_plan && { previous_plan: params.previous_plan }),
+    source: params.source,
+    ...(params.invoice_id && { invoice_id: params.invoice_id }),
+  })
+}
+
+export function trackPaymentCompleted(params: {
+  user_id: string
+  plan: string
+  source: string
+  invoice_id?: string
+}): void {
+  capture('payment_completed', params.user_id, {
+    user_id: params.user_id,
+    plan: params.plan,
+    source: params.source,
+    ...(params.invoice_id && { invoice_id: params.invoice_id }),
+  })
+}
+
 export function trackSubscriptionCancelled(params: {
   user_id: string
   plan: string

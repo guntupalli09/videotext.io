@@ -99,13 +99,6 @@ export default function Pricing() {
         mode: 'subscription', plan,
         returnToPath: '/pricing', frontendOrigin: window.location.origin,
       })
-      trackEvent('payment_completed', {
-        type: 'subscription_checkout_started',
-        plan,
-        source: 'pricing_page',
-        job_count: jobCount,
-        ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
-      })
       window.location.href = url
     } catch (e: any) {
       const msg: string = e.message || ''

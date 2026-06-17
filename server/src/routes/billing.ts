@@ -160,8 +160,9 @@ router.post('/checkout', async (req: Request, res: Response) => {
           plan,
           returnToPath: normalizedPath,
         },
-        allow_promotion_codes: true,
-        ...(promoId ? { discounts: [{ promotion_code: promoId }] } : {}),
+        ...(promoId
+          ? { discounts: [{ promotion_code: promoId }] }
+          : { allow_promotion_codes: true }),
       }
 
       const session = await stripe.checkout.sessions.create(sessionParams)
