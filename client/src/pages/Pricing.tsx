@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Youtube, Mic, Building2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { createCheckoutSession, createBillingPortalSession } from '../lib/billing'
 import { trackEvent } from '../lib/analytics'
 import type { BillingPlan } from '../lib/billing'
@@ -65,6 +66,8 @@ export default function Pricing() {
     try { return Number(localStorage.getItem('videotext:job_completed_count') || '0') || 0 } catch { return 0 }
   })()
 
+  const checkoutInFlight = useRef(false)
+
   async function handleManageSubscription() {
     if (!isPaidPlan) return
     setPortalLoading(true)
@@ -72,13 +75,16 @@ export default function Pricing() {
       const { url } = await createBillingPortalSession(window.location.origin + '/pricing')
       window.location.href = url
     } catch (err: any) {
-      alert(err.message || 'Failed to open billing')
+      toast.error(err.message || 'Failed to open billing')
     } finally {
       setPortalLoading(false)
     }
   }
 
   async function handleSubscribe(plan: BillingPlan) {
+    if (checkoutInFlight.current) return
+    checkoutInFlight.current = true
+
     try { trackEvent('plan_clicked', { plan }) } catch { /* non-blocking */ }
 
     setCheckoutLoading(plan)
@@ -105,9 +111,10 @@ export default function Pricing() {
       if (msg.includes('session has expired') || msg.includes('log out and log back in')) {
         logout(); window.location.reload(); return
       }
-      alert(msg || 'Failed to start checkout. Please try again.')
+      toast.error(msg || 'Failed to start checkout. Please try again.')
     } finally {
       setCheckoutLoading(null)
+      checkoutInFlight.current = false
     }
   }
 
@@ -240,7 +247,7 @@ export default function Pricing() {
             <button
               onClick={() => isCurrentPlan('pro') ? handleManageSubscription() : handleSubscribe('pro')}
               disabled={(isCurrentPlan('pro') && portalLoading) || checkoutLoading !== null}
-              className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-600 text-white font-semibold text-sm shadow-lg shadow-blue-900/20 transition-colors disabled:opacity-60"
+              className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-lg shadow-blue-900/20 transition-colors disabled:opacity-60"
             >
               {isCurrentPlan('pro')
                 ? (portalLoading ? 'Opening…' : 'Manage subscription')

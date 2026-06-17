@@ -1,9 +1,12 @@
-import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { X, Loader2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { trackEvent } from '../lib/analytics'
 import { trackAppEvent } from '../lib/feedbackEvents'
+import { createCheckoutSession } from '../lib/billing'
+import { logout } from '../lib/auth'
 
 export type PaywallReason =
   | 'FREE_DAILY_LIMIT_REACHED'
@@ -77,6 +80,8 @@ function getContent(reason?: PaywallReason) {
 }
 
 export default function PaywallModal({ isOpen, onClose, reason, onUpgrade }: PaywallModalProps) {
+  const [loading, setLoading] = useState(false)
+
   useEffect(() => {
     if (isOpen) trackEvent('paywall_shown', { reason })
   }, [isOpen, reason])
@@ -84,6 +89,30 @@ export default function PaywallModal({ isOpen, onClose, reason, onUpgrade }: Pay
   if (!isOpen) return null
 
   const { title, body, cta, secondaryLabel, secondary } = getContent(reason)
+
+  async function handleDirectCheckout() {
+    if (loading) return
+    try { trackEvent('upgrade_clicked', { source: 'paywall_modal', reason }) } catch { /* non-blocking */ }
+    trackAppEvent('upgrade_clicked', { source: 'paywall_modal', reason })
+
+    setLoading(true)
+    try {
+      const { url } = await createCheckoutSession({
+        mode: 'subscription',
+        plan: 'pro',
+        returnToPath: window.location.pathname,
+        frontendOrigin: window.location.origin,
+      })
+      window.location.href = url
+    } catch (e: any) {
+      setLoading(false)
+      const msg: string = e.message || ''
+      if (msg.includes('session has expired') || msg.includes('log out and log back in')) {
+        logout(); window.location.reload(); return
+      }
+      toast.error(msg || 'Failed to start checkout. Please try again.')
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -112,16 +141,22 @@ export default function PaywallModal({ isOpen, onClose, reason, onUpgrade }: Pay
           <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-2">{title}</h2>
           <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">{body}</p>
 
+          <button
+            type="button"
+            onClick={handleDirectCheckout}
+            disabled={loading}
+            className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm text-center transition-colors shadow-sm disabled:opacity-60"
+          >
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+            {loading ? 'Redirecting to checkout…' : cta}
+          </button>
+
           <Link
             to="/pricing"
-            onClick={() => {
-              try { trackEvent('upgrade_clicked', { source: 'paywall_modal', reason }) } catch { /* non-blocking */ }
-              trackAppEvent('upgrade_clicked', { source: 'paywall_modal', reason })
-              ;(onUpgrade ?? onClose)?.()
-            }}
-            className="block w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm text-center transition-colors shadow-sm"
+            onClick={() => (onUpgrade ?? onClose)?.()}
+            className="mt-2 block text-center text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
-            {cta}
+            Compare all plans →
           </Link>
 
           {secondaryLabel && (
