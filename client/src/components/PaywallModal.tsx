@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Loader2, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Link } from 'react-router-dom'
 import { trackEvent } from '../lib/analytics'
 import { trackAppEvent } from '../lib/feedbackEvents'
+import { createCheckoutSession } from '../lib/billing'
 
 export type PaywallReason =
   | 'FREE_DAILY_LIMIT_REACHED'
@@ -77,6 +77,8 @@ function getContent(reason?: PaywallReason) {
 }
 
 export default function PaywallModal({ isOpen, onClose, reason, onUpgrade }: PaywallModalProps) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   useEffect(() => {
     if (isOpen) trackEvent('paywall_shown', { reason })
   }, [isOpen, reason])
@@ -84,6 +86,30 @@ export default function PaywallModal({ isOpen, onClose, reason, onUpgrade }: Pay
   if (!isOpen) return null
 
   const { title, body, cta, secondaryLabel, secondary } = getContent(reason)
+
+  async function handleUpgrade() {
+    if (loading) return
+    setError(null)
+    setLoading(true)
+    try {
+      try { trackEvent('upgrade_clicked', { source: 'paywall_modal', reason, plan: 'pro' }) } catch { /* non-blocking */ }
+      trackAppEvent('upgrade_clicked', { source: 'paywall_modal', reason, plan: 'pro' })
+      onUpgrade?.()
+      const { url } = await createCheckoutSession({
+        mode: 'subscription',
+        plan: 'pro',
+        returnToPath: '/pricing',
+        frontendOrigin: window.location.origin,
+      })
+      trackEvent('checkout_session_created', { source: 'paywall_modal', reason, plan: 'pro' })
+      trackEvent('stripe_redirect', { source: 'paywall_modal', reason, plan: 'pro' })
+      window.location.assign(url)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to start checkout. Please try again.'
+      setError(message)
+      setLoading(false)
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -112,17 +138,16 @@ export default function PaywallModal({ isOpen, onClose, reason, onUpgrade }: Pay
           <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-2">{title}</h2>
           <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">{body}</p>
 
-          <Link
-            to="/pricing"
-            onClick={() => {
-              try { trackEvent('upgrade_clicked', { source: 'paywall_modal', reason }) } catch { /* non-blocking */ }
-              trackAppEvent('upgrade_clicked', { source: 'paywall_modal', reason })
-              ;(onUpgrade ?? onClose)?.()
-            }}
-            className="block w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm text-center transition-colors shadow-sm"
+          <button
+            type="button"
+            onClick={handleUpgrade}
+            disabled={loading}
+            className="flex w-full items-center justify-center gap-2 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm text-center transition-colors shadow-sm disabled:cursor-wait disabled:opacity-75"
           >
-            {cta}
-          </Link>
+            {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+            {loading ? 'Opening checkout…' : cta}
+          </button>
+          {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400 text-center" role="alert">{error}</p>}
 
           {secondaryLabel && (
             <button
