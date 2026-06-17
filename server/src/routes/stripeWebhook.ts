@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express'
+import crypto from 'crypto'
 import Stripe from 'stripe'
 import { stripe, getPlanFromPriceId } from '../services/stripe'
 import {
@@ -21,6 +22,7 @@ import {
   trackSubscriptionDeleted,
   trackSubscriptionRenewed,
   trackPaymentFailed,
+  trackPlanUpgraded,
 } from '../utils/analytics'
 import { captureFunnelEvent } from '../utils/funnelEvents'
 
@@ -66,7 +68,7 @@ async function ensureUserForStripeCustomer(
   const fallbackEmail = email || `${stripeCustomerId}@stripe-placeholder.internal`
   const limits = getPlanLimits('free')
   const user: User = {
-    id: stripeCustomerId,
+    id: crypto.randomUUID(),
     email: fallbackEmail,
     passwordHash: '',
     plan: 'free',
@@ -345,6 +347,13 @@ async function handleInvoicePaymentSucceeded(
   })
 
   if (activePlan) {
+    trackPlanUpgraded({
+      user_id: user.id,
+      plan: activePlan,
+      stripe_customer_id: stripeCustomerId,
+      email: user.email,
+    })
+
     const mrrData = computeNormalizedMonthlyCentsFromInvoice(invoice)
     trackSubscriptionRenewed({
       user_id: user.id,

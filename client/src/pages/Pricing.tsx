@@ -99,6 +99,16 @@ export default function Pricing() {
         mode: 'subscription', plan,
         returnToPath: '/pricing', frontendOrigin: window.location.origin,
       })
+      trackEvent('checkout_session_created', {
+        plan,
+        source: 'pricing_page',
+        job_count: jobCount,
+        ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
+      })
+      trackEvent('stripe_redirect', {
+        plan,
+        source: 'pricing_page',
+      })
       trackEvent('payment_completed', {
         type: 'subscription_checkout_started',
         plan,

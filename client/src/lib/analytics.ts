@@ -173,6 +173,8 @@ export type AnalyticsEvent =
   | 'first_output_seen'
   | 'upgrade_prompt_seen'
   | 'checkout_started'
+  | 'checkout_session_created'
+  | 'stripe_redirect'
 
 
 

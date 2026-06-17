@@ -27,6 +27,19 @@ function getClient(): PostHog | null {
 }
 
 /** Fire-and-forget; never throws. distinctId = userId or jobId. */
+function identify(distinctId: string, properties?: Record<string, unknown>): void {
+  try {
+    const c = getClient()
+    if (!c) return
+    ;(c as unknown as { identify?: (payload: { distinctId: string; properties?: Record<string, unknown> }) => void }).identify?.({
+      distinctId,
+      properties,
+    })
+  } catch {
+    // no-op
+  }
+}
+
 function capture(event: string, distinctId: string, properties?: Record<string, unknown>): void {
   try {
     if (process.env.NODE_ENV !== 'production') {
@@ -144,6 +157,25 @@ export function trackFirstPaidJobCompleted(params: {
     plan: params.plan,
     tool_type: params.tool_type,
     job_id: params.job_id,
+  })
+}
+
+export function trackPlanUpgraded(params: {
+  user_id: string
+  plan: string
+  stripe_customer_id?: string
+  email?: string
+}): void {
+  identify(params.user_id, {
+    plan: params.plan,
+    ...(params.stripe_customer_id && { stripe_customer_id: params.stripe_customer_id }),
+    ...(params.email && { email: params.email }),
+  })
+  capture('plan_upgraded', params.user_id, {
+    user_id: params.user_id,
+    plan: params.plan,
+    ...(params.stripe_customer_id && { stripe_customer_id: params.stripe_customer_id }),
+    ...(params.email && { email: params.email }),
   })
 }
 

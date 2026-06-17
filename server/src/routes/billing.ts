@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express'
+import crypto from 'crypto'
 import { stripe, getStripePriceConfig, BillingPlan, findStripeCustomerIdByEmail } from '../services/stripe'
 import { getUser, getUserByStripeCustomerId, getUserByEmail, saveUser } from '../models/User'
 import { prisma } from '../db'
@@ -155,10 +156,13 @@ router.post('/checkout', async (req: Request, res: Response) => {
         ],
         success_url: successUrl,
         cancel_url: cancelUrl,
+        client_reference_id: auth?.userId || checkoutEmail || undefined,
         metadata: {
           purchaseType: 'subscription',
           plan,
           returnToPath: normalizedPath,
+          ...(auth?.userId ? { userId: auth.userId } : {}),
+          ...(checkoutEmail ? { email: checkoutEmail } : {}),
         },
         allow_promotion_codes: true,
         ...(promoId ? { discounts: [{ promotion_code: promoId }] } : {}),
@@ -313,7 +317,7 @@ router.get('/session-details', async (req: Request, res: Response) => {
       const now = new Date()
       const limits = getPlanLimits(resolvedPlan)
       user = {
-        id: customerId,
+        id: crypto.randomUUID(),
         email,
         passwordHash: '',
         plan: resolvedPlan,
