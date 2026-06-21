@@ -2196,6 +2196,11 @@ async function processJob(job: import('bull').Job<JobData>) {
               consistencyIssues: consistencyIssues.length > 0 ? consistencyIssues : undefined,
             }
           }
+
+          if (userId && !job.data.usageIncremented) {
+            await job.update({ ...job.data, usageIncremented: true })
+            await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
+          }
           break
         }
 
@@ -2238,6 +2243,11 @@ async function processJob(job: import('bull').Job<JobData>) {
           const outputPath = path.join(tempDir, outputFilename)
           await fs.promises.writeFile(outputPath, fixed.content, 'utf-8')
 
+          if (userId && !job.data.usageIncremented) {
+            await job.update({ ...job.data, usageIncremented: true })
+            await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
+          }
+
           result = {
             downloadUrl: `/api/download/${outputFilename}`,
             fileName: outputFilename,
@@ -2257,6 +2267,11 @@ async function processJob(job: import('bull').Job<JobData>) {
           const outputFilename = subtitlesConvertedFilename(data.originalName, converted.format)
           const outputPath = path.join(tempDir, outputFilename)
           await fs.promises.writeFile(outputPath, converted.content, 'utf-8')
+
+          if (userId && !job.data.usageIncremented) {
+            await job.update({ ...job.data, usageIncremented: true })
+            await incrementUserUsage(userId, { importCount: 1, importCountToday: 1 })
+          }
 
           result = {
             downloadUrl: `/api/download/${outputFilename}`,
