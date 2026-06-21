@@ -1,4 +1,4 @@
-import { useState, useRef, Suspense, lazy } from 'react'
+import { useState, useEffect, useRef, Suspense, lazy } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { Languages, Copy, Check, Download, ArrowRight, Bold, Italic, AlignLeft, AlignCenter, AlignRight } from 'lucide-react'
 import FailedState from '../components/FailedState'
@@ -20,7 +20,7 @@ import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYP
 import { isLoggedIn } from '../lib/auth'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
-import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
+import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 import { Film, Wrench, MessageSquare } from 'lucide-react'
@@ -266,6 +266,33 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       setShowAuthGate(true)
     }
   }
+
+  // On mount: restore a completed job if jobId is persisted in URL/sessionStorage
+  // (handles browser refresh after a translate job completes)
+  useEffect(() => {
+    const jobId = getPersistedJobId(location.pathname)
+    if (!jobId) return
+    const jobToken = getPersistedJobToken(location.pathname)
+    ;(async () => {
+      try {
+        const jobStatus = await getJobStatus(jobId, jobToken ? { jobToken } : undefined)
+        const transition = getJobLifecycleTransition(jobStatus)
+        if (transition !== 'completed') return
+        setStatus('completed')
+        setResult(jobStatus.result ?? null)
+        if (jobStatus.result?.downloadUrl) {
+          try {
+            const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
+            const txt = await res.text()
+            const isTxt = (jobStatus.result.fileName ?? '').toLowerCase().endsWith('.txt')
+            if (isTxt) setPlainTextResult(txt)
+            else setSubtitleRows(parseSubtitlesToRows(txt))
+          } catch { /* non-blocking */ }
+        }
+      } catch { /* non-blocking */ }
+    })()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ── Subtitle file select ──────────────────────────────────────────────────
   const handleFileSelect = (file: File) => {

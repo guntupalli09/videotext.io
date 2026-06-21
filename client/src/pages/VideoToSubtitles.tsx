@@ -1329,11 +1329,16 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           const jobId = currentJobId || getPersistedJobId(location.pathname)
           const jobToken = getPersistedJobToken(location.pathname)
           if (jobId && jobToken) {
-            await claimGuestJob(jobId, jobToken)
+            try { await claimGuestJob(jobId, jobToken) } catch { /* non-blocking */ }
           }
           setShowAuthGate(false)
           setShowAuthModal(false)
-          window.location.reload()
+          if (result) {
+            // Result is already in memory — no reload needed.
+            // The full result panel becomes visible on next render since isLoggedIn() is now true.
+          } else {
+            window.location.reload()
+          }
         }}
       />
 
