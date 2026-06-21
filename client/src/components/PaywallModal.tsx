@@ -26,50 +26,50 @@ function getContent(reason?: PaywallReason) {
   switch (reason) {
     case 'VIDEO_TOO_LONG':
       return {
-        title: 'Free plan: 30 min max',
-        body: 'Free plan supports videos up to 30 minutes. Upgrade to Pro to process full-length videos (up to 2 hours).',
-        cta: 'Upgrade to Pro',
+        title: 'This video is over 30 minutes',
+        body: 'Free stops at 30 minutes. Pro handles videos up to 2 hours, so full webinars, podcasts, and lectures can finish in one run.',
+        cta: 'Process long videos — upgrade to Pro',
         secondaryLabel: 'Upload shorter video',
         secondary: null,
       }
     case 'BATCH_NOT_AVAILABLE':
       return {
-        title: 'Batch processing is Pro',
-        body: 'Process 20 videos at once. Pro also unlocks speaker labels, AI summaries, and full-length videos.',
-        cta: 'Unlock batch — upgrade to Pro',
+        title: 'You selected multiple files',
+        body: 'Free processes one file at a time. Pro runs up to 20 videos per batch and gives you one ZIP with every transcript/subtitle.',
+        cta: 'Run batches — upgrade to Pro',
         secondaryLabel: null,
         secondary: null,
       }
     case 'MULTI_LANGUAGE_NOT_AVAILABLE':
       return {
-        title: 'Multiple languages require Pro',
-        body: 'Pro supports 5 languages with speaker diarization, AI summaries, and batch processing.',
-        cta: 'Upgrade to Pro',
+        title: 'You selected multiple languages',
+        body: 'Free exports one language. Pro generates up to 5 language files in the same job, plus speaker labels and summaries.',
+        cta: 'Create multi-language files — upgrade to Pro',
         secondaryLabel: null,
         secondary: null,
       }
     case 'COPY_LIMIT_REACHED':
       return {
-        title: 'Keep this workflow uninterrupted',
-        body: "You've already generated a production-quality transcript. Upgrade to Pro for unlimited copy/export, no watermark, and no daily interruptions.",
-        cta: 'Upgrade to Pro — keep going',
+        title: 'You hit the free copy/export limit',
+        body: 'Your transcript is ready. Pro removes copy/export limits and watermark interruptions so you can finish the handoff now.',
+        cta: 'Copy and export — upgrade to Pro',
         secondaryLabel: null,
         secondary: null,
       }
     case 'AI_FEATURES':
       return {
-        title: 'Unlock AI Summary & Chapters',
-        body: 'Pro automatically generates a summary, bullet points, and chapter markers for every transcript.',
-        cta: 'Upgrade to Pro',
+        title: 'You asked for AI summary and chapters',
+        body: 'Free gives you the transcript. Pro adds summary, bullet points, and chapter markers automatically for each video.',
+        cta: 'Generate AI outputs — upgrade to Pro',
         secondaryLabel: null,
         secondary: null,
       }
     case 'FREE_DAILY_LIMIT_REACHED':
     default:
       return {
-        title: "Today's 3 free imports used",
-        body: 'Upgrade to Pro to keep processing without daily stops: no watermark, longer videos, speaker labels, summary, chapters, and batch export.',
-        cta: 'Upgrade to Pro — continue instantly',
+        title: "Today's 3 free imports are used",
+        body: 'Free resets tomorrow. Pro removes the daily stop so you can keep transcribing today, including longer videos, speaker labels, summaries, and batch export.',
+        cta: 'Keep processing today — upgrade to Pro',
         secondaryLabel: null,
         secondary: null,
       }
