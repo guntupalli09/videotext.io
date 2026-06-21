@@ -554,6 +554,47 @@ router.post('/dual', upload.fields([
         if (files.video) fs.unlinkSync(files.video[0].path)
         return res.status(400).json({ message: 'Subtitle file is required' })
       }
+
+      // Enforce free plan daily import cap (same as other tools)
+      const fixLimits = getPlanLimits(plan)
+      let fixUser = await getUser(userId)
+      const fixNow = new Date()
+      if (fixUser) {
+        await enforceSubscriptionState(fixUser, fixNow)
+        if (resetUserUsageIfNeeded(fixUser, fixNow)) await saveUser(fixUser)
+        const dailyImportReset = resetDailyImportIfNeeded(fixUser, fixNow)
+        if (dailyImportReset) await atomicResetDailyImportIfNeeded(fixUser.id, fixNow, fixUser.usageThisMonth.importCountTodayResetDate!)
+      } else if (!userId.startsWith('guest_')) {
+        const resetDate = new Date(fixNow.getFullYear(), fixNow.getMonth() + 1, 1)
+        fixUser = {
+          id: userId,
+          email: `${userId}@example.com`,
+          passwordHash: '',
+          plan,
+          stripeCustomerId: undefined,
+          subscriptionId: undefined,
+          paymentMethodId: undefined,
+          usageThisMonth: {
+            totalMinutes: 0, videoCount: 0, batchCount: 0, languageCount: 0, translatedMinutes: 0, importCount: 0, resetDate,
+            importCountToday: 0,
+            importCountTodayResetDate: new Date(fixNow.getTime() + 24 * 60 * 60 * 1000),
+            dailyMinutesToday: 0,
+            dailyMinutesTodayResetDate: new Date(fixNow.getTime() + 24 * 60 * 60 * 1000),
+          },
+          limits: fixLimits,
+          overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
+          createdAt: fixNow,
+          updatedAt: fixNow,
+        }
+        await saveUser(fixUser)
+      }
+      const fixDailyCap = getMaxDailyImports(plan)
+      if (fixDailyCap !== null && fixUser && (fixUser.usageThisMonth.importCountToday ?? 0) >= fixDailyCap) {
+        fs.unlinkSync(files.subtitles[0].path)
+        if (files.video) fs.unlinkSync(files.video[0].path)
+        return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
+      }
+
       const subtitleFileForFix = files.subtitles[0]
       const videoFileForScenes = files.video?.[0]
       const subValidation = await validateSubtitleFile(subtitleFileForFix.path)
