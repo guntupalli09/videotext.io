@@ -75,6 +75,7 @@ import {
 import { withJobContext, withJobContextFull, getLogger } from '../lib/logger'
 import { initSentry, captureJobError } from '../lib/sentry'
 import { pushLogEntry } from '../lib/logRing'
+import { incrementResendCounter } from '../lib/apiCreditsCache'
 import {
   streamYoutubeAudioToFile,
   fetchYoutubeCaptions,
@@ -113,6 +114,54 @@ async function deleteJobStage(redis: import('ioredis').Redis, id: string | numbe
 }
 
 const workerLog = getLogger('worker')
+
+const JOB_COMPLETED_EMAIL_SUBJECT = 'Your transcript is ready →'
+const jobCompletedEmailRedis = createRedisClient('client')
+
+function isRealEmail(email: string | undefined | null): email is string {
+  return Boolean(email && email.includes('@') && !email.startsWith('demo-user-'))
+}
+
+function absoluteUrl(pathOrUrl: string): string {
+  if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl
+  const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
+  const pathWithSlash = pathOrUrl.startsWith('/') ? pathOrUrl : `/${pathOrUrl}`
+  return `${baseUrl}${pathWithSlash}`
+}
+
+async function sendJobCompletedEmail(params: { jobId: string; userId?: string; downloadUrl?: string }): Promise<void> {
+  const resendKey = process.env.RESEND_API_KEY
+  if (!resendKey || !params.userId || !params.downloadUrl) return
+
+  const lock = await jobCompletedEmailRedis.set(`job_completed_email:${params.jobId}`, '1', 'EX', 30 * 24 * 60 * 60, 'NX')
+  if (lock !== 'OK') return
+
+  const user = await getUser(params.userId)
+  if (!isRealEmail(user?.email)) return
+
+  const link = absoluteUrl(params.downloadUrl)
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
+    body: JSON.stringify({
+      from: process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>',
+      to: [user.email],
+      subject: JOB_COMPLETED_EMAIL_SUBJECT,
+      text: `Your transcript is ready →\n\n${link}`,
+    }),
+    signal: AbortSignal.timeout(8_000),
+  })
+
+  if (res.ok) {
+    incrementResendCounter()
+    workerLog.info({ msg: 'job_completed_email_sent', jobId: params.jobId, userId: params.userId })
+    return
+  }
+
+  const body = await res.text().catch(() => '')
+  workerLog.warn({ msg: 'job_completed_email_failed', jobId: params.jobId, userId: params.userId, status: res.status, body })
+}
+
 
 /** Lock settings: 10-minute lock (covers long YouTube audio downloads) with 15s renewal intervals. */
 const QUEUE_SETTINGS = {
@@ -2497,6 +2546,14 @@ function attachQueueEvents(queue: import('bull').Queue<JobData>) {
     if ((job.returnvalue as any)?.__handedOff) return
     workerLog.info({ jobId: job.id, msg: 'job_completed' })
     const data = job.data as JobData
+    const returnValue = job.returnvalue as { downloadUrl?: string } | undefined
+    sendJobCompletedEmail({
+      jobId: String(job.id),
+      userId: data.userId,
+      downloadUrl: returnValue?.downloadUrl,
+    }).catch((err) => {
+      workerLog.warn({ msg: 'job_completed_email_error', jobId: job.id, error: (err as Error)?.message })
+    })
     if (data.batchId) {
       const batch = await getBatchById(data.batchId)
       if (batch) {
