@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import express, { Request, Response } from 'express'
 import type { Prisma } from '@prisma/client'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
+import { getEffectivePlan } from '../utils/subscriptionGuard'
 import { prisma } from '../db'
 import { guidelineQueue } from '../workers/guidelineProcessor'
 import type { CaptionCue, CaptionFormat, ParsedRule } from '../services/guidelineEnforcer'
@@ -68,11 +69,9 @@ function estimateTranscriptMinutes(text: string): number {
   return words / 150
 }
 
-function getPlanFromRequest(req: Request): PlanType {
-  const auth = getAuthFromRequest(req)
-  if (auth?.plan) return auth.plan
-  const apiKeyPlan = (req as unknown as { apiKeyUser?: { plan?: PlanType } }).apiKeyUser?.plan
-  return apiKeyPlan || 'free'
+async function getPlanFromRequest(req: Request): Promise<PlanType> {
+  const { plan } = await getEffectivePlan(req)
+  return plan
 }
 
 function validateRules(body: unknown): ParsedRule[] | null {
@@ -131,7 +130,7 @@ router.post('/format', async (req: Request, res: Response) => {
     const userId = authedUserId ?? `guest_${crypto.randomUUID()}`
     const jobToken = crypto.randomUUID()
 
-    const plan = getPlanFromRequest(req)
+    const plan = await getPlanFromRequest(req)
 
     const transcriptText =
       typeof req.body?.transcriptText === 'string' ? req.body.transcriptText : ''
