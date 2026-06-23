@@ -2153,6 +2153,7 @@ async function processJob(job: import('bull').Job<JobData>) {
         }
 
         case 'translate-subtitles': {
+          const userId = data.userId
           await job.progress(20)
           const targetLang = options?.targetLanguage || 'Spanish'
           const langSlug = targetLangFileSlug(targetLang)
@@ -2205,6 +2206,7 @@ async function processJob(job: import('bull').Job<JobData>) {
         }
 
         case 'fix-subtitles': {
+          const userId = data.userId
           await job.progress(20)
           const opt = options as Record<string, unknown> | undefined
           const fixOptions = {
@@ -2259,6 +2261,7 @@ async function processJob(job: import('bull').Job<JobData>) {
 
         // Phase 1B — UTILITY 2B: Subtitle Format Converter. Derived from subtitle files only; no AI.
         case 'convert-subtitles': {
+          const userId = data.userId
           await job.progress(20)
           const targetFormat = (options?.targetFormat || 'vtt') as 'srt' | 'vtt' | 'txt'
           const converted = convertSubtitleFile(data.filePath!, targetFormat)
