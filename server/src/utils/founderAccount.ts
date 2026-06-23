@@ -42,12 +42,10 @@ export function getTokenPlanForJwt(user: Pick<User, 'email' | 'plan'>): PlanType
 
 /**
  * Effective tier for API routes: founder always resolves as business regardless of DB/JWT drift.
- * Keeps the same precedence as legacy handlers (JWT paid plan > Stripe-backed user > free).
+ * DB is authoritative — JWT plan is ignored in favor of user.plan.
  */
 export function resolveEffectivePlan(auth: AuthPlanCarrier, user: User | null | undefined): PlanType {
   if (user && isFounderAccountEmail(user.email)) return 'business'
-  const p = auth?.plan
-  if (p === 'basic' || p === 'pro' || p === 'agency' || p === 'founding_workflow' || p === 'business') return p
-  if (user?.stripeCustomerId) return user.plan
+  if (user) return user.plan
   return 'free'
 }

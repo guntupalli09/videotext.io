@@ -14,8 +14,12 @@
  *     downgrade there.  We never cut users off mid-dunning-window.
  */
 
-import { PlanType, User, saveUser } from '../models/User'
+import { PlanType, User, getUser, saveUser } from '../models/User'
 import { getPlanLimits } from './limits'
+import { getAuthFromRequest, getEffectiveUserId } from './auth'
+import { verifyAuthToken } from './auth'
+import { isFounderAccountEmail } from './founderAccount'
+import type { Request } from 'express'
 
 const VALID_PLANS: PlanType[] = ['free', 'basic', 'pro', 'agency', 'founding_workflow', 'business']
 
@@ -78,6 +82,41 @@ export async function enforceSubscriptionState(user: User, now: Date = new Date(
   }
 
   return user
+}
+
+/**
+ * DB-authoritative plan resolution for any Express request.
+ * Loads the user from the database and returns the effective plan.
+ * No route should inspect auth.plan / jwt.plan directly.
+ */
+export async function getEffectivePlan(req: Request): Promise<{ plan: PlanType; user: User | null }> {
+  const userId = getEffectiveUserId(req)
+  if (!userId) return { plan: 'free', user: null }
+
+  const user = await getUser(userId)
+  if (!user) return { plan: 'free', user: null }
+
+  if (isFounderAccountEmail(user.email)) return { plan: 'business', user }
+
+  await enforceSubscriptionState(user)
+  return { plan: user.plan, user }
+}
+
+/**
+ * DB-authoritative plan resolution from a raw auth token string (for WebSocket routes).
+ */
+export async function getEffectivePlanFromToken(token: string | null): Promise<{ plan: PlanType; user: User | null }> {
+  if (!token) return { plan: 'free', user: null }
+  const auth = verifyAuthToken(token)
+  if (!auth?.userId) return { plan: 'free', user: null }
+
+  const user = await getUser(auth.userId)
+  if (!user) return { plan: 'free', user: null }
+
+  if (isFounderAccountEmail(user.email)) return { plan: 'business', user }
+
+  await enforceSubscriptionState(user)
+  return { plan: user.plan, user }
 }
 
 /**

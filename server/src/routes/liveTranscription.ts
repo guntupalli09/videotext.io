@@ -6,6 +6,7 @@ import type { Duplex } from 'stream'
 import { DeepgramClient } from '@deepgram/sdk'
 import { getLogger } from '../lib/logger'
 import { verifyAuthToken } from '../utils/auth'
+import { getEffectivePlanFromToken } from '../utils/subscriptionGuard'
 import { isAllowedOrigin, normalizeOrigin } from '../utils/allowedOrigins'
 
 const log = getLogger('api')
@@ -132,11 +133,11 @@ export function attachLiveTranscription(server: Server): void {
     const sessionId = url.searchParams.get('session_id') ?? `${Date.now()}-${Math.random()}`
     const tokenParam = url.searchParams.get('token')
 
-    // Determine plan for usage cap
+    // Determine plan for usage cap — DB-authoritative
     let plan = 'anon'
     if (tokenParam) {
-      const auth = verifyAuthToken(tokenParam)
-      if (auth?.plan) plan = auth.plan
+      const { plan: dbPlan } = await getEffectivePlanFromToken(tokenParam)
+      plan = dbPlan
     }
     const capSeconds = getSessionCap(plan)
 

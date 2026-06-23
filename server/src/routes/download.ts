@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express'
 import path from 'path'
 import fs from 'fs'
-import { getAuthFromRequest } from '../utils/auth'
+import { getEffectivePlan } from '../utils/subscriptionGuard'
 import { getLogger } from '../lib/logger'
 
 const log = getLogger('api')
@@ -69,7 +69,7 @@ function applyWatermark(content: string, ext: string): string {
   }
 }
 
-router.get('/:filename', (req: Request, res: Response) => {
+router.get('/:filename', async (req: Request, res: Response) => {
   try {
     const { filename } = req.params
     const filePath = path.join(tempDir, filename)
@@ -95,8 +95,8 @@ router.get('/:filename', (req: Request, res: Response) => {
 
     // Apply server-side watermark when ?wm=1 and user is on free plan (or unauthenticated)
     if (isDownloadRequest && TEXT_EXTENSIONS.has(ext)) {
-      const auth = getAuthFromRequest(req)
-      const isPaid = auth !== null && auth.plan !== 'free'
+      const { plan } = await getEffectivePlan(req)
+      const isPaid = plan !== 'free'
 
       if (!isPaid) {
         const content = fs.readFileSync(filePath, 'utf-8')
