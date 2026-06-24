@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "name": "VideoText",
+  "description": "AI video transcription, subtitle generation, and translation. Upload a video or paste a YouTube URL to get a transcript, SRT/VTT subtitles, summary, and chapters in minutes. 98.5%+ accuracy. Privacy-first: files deleted after processing.",
+  "url": "https://videotext.io",
+  "capabilities": [
+    "video-transcription",
+    "subtitle-generation",
+    "subtitle-translation",
+    "youtube-transcript",
+    "batch-processing"
+  ],
+  "discovery": {
+    "api_catalog": "https://videotext.io/.well-known/api-catalog",
+    "ai_plugin": "https://videotext.io/.well-known/ai-plugin.json",
+    "llms_txt": "https://videotext.io/llms.txt",
+    "llms_full_txt": "https://videotext.io/llms-full.txt"
+  },
+  "contact": "support@videotext.io"
+}
