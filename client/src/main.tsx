@@ -5,11 +5,13 @@ import { HelmetProvider } from 'react-helmet-async'
 import { ThemeProvider } from './lib/theme'
 import { identifyUser } from './lib/analytics'
 import { initSentry } from './lib/sentry'
+import { initWebMCP } from './lib/webmcp'
 import { PostHogProvider } from '@posthog/react'
 import App from './App.tsx'
 import './index.css'
 
 initSentry()
+initWebMCP()
 
 // Expose release for debugging (correlation with API/worker logs)
 const release = import.meta.env.VITE_RELEASE ?? 'dev'

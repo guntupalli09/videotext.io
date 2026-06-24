@@ -1,0 +1,91 @@
+{
+  "serverInfo": {
+    "name": "VideoText",
+    "version": "1.0.0",
+    "description": "AI video transcription, subtitle generation, and translation. Upload a video or paste a YouTube URL to get a transcript, SRT/VTT subtitles, summary, and chapters in minutes."
+  },
+  "url": "https://videotext.io",
+  "transport": {
+    "type": "https",
+    "endpoint": "https://videotext.io/api"
+  },
+  "capabilities": {
+    "tools": [
+      {
+        "name": "transcribe_video",
+        "description": "Upload a video file and get a transcript with speaker labels, chapters, and summary. Supports MP4, MOV, AVI, WebM.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "file": {
+              "type": "string",
+              "description": "Video file to transcribe (MP4, MOV, AVI, WebM)"
+            },
+            "language": {
+              "type": "string",
+              "description": "Source language code (auto-detected if omitted)"
+            }
+          },
+          "required": ["file"]
+        }
+      },
+      {
+        "name": "transcribe_youtube",
+        "description": "Transcribe a YouTube video by URL. No download required.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "Public YouTube video URL"
+            }
+          },
+          "required": ["url"]
+        }
+      },
+      {
+        "name": "generate_subtitles",
+        "description": "Generate SRT or VTT subtitle files from a video file or YouTube URL.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "file": {
+              "type": "string",
+              "description": "Video file (MP4, MOV, AVI, WebM) or YouTube URL"
+            },
+            "format": {
+              "type": "string",
+              "enum": ["srt", "vtt"],
+              "description": "Output subtitle format"
+            }
+          },
+          "required": ["file"]
+        }
+      },
+      {
+        "name": "translate_subtitles",
+        "description": "Translate an SRT or VTT subtitle file to another language. Timestamps preserved.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "file": {
+              "type": "string",
+              "description": "SRT or VTT subtitle file to translate"
+            },
+            "target_language": {
+              "type": "string",
+              "description": "Target language code (e.g., es, fr, ja, hi)"
+            }
+          },
+          "required": ["file", "target_language"]
+        }
+      }
+    ]
+  },
+  "authentication": {
+    "type": "bearer",
+    "token_endpoint": "https://videotext.io/api/auth/login"
+  },
+  "contact": "support@videotext.io",
+  "documentation": "https://videotext.io/llms.txt"
+}

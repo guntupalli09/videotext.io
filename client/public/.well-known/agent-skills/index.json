@@ -1,0 +1,61 @@
+{
+  "$schema": "https://agentskills.io/schema/v0.2.0/index.json",
+  "skills": [
+    {
+      "name": "video-transcription",
+      "type": "api",
+      "description": "Transcribe video files (MP4, MOV, AVI, WebM) or YouTube URLs into text transcripts with speaker labels, chapters, and AI summary. Powered by OpenAI Whisper large-v3 with 98.5%+ accuracy.",
+      "url": "https://videotext.io/video-to-transcript",
+      "sha256": ""
+    },
+    {
+      "name": "subtitle-generation",
+      "type": "api",
+      "description": "Generate broadcast-ready SRT and VTT subtitle files from video files or YouTube URLs with AI-powered timing.",
+      "url": "https://videotext.io/video-to-subtitles",
+      "sha256": ""
+    },
+    {
+      "name": "subtitle-translation",
+      "type": "api",
+      "description": "Translate SRT or VTT subtitle files to 70+ languages while preserving exact timestamps.",
+      "url": "https://videotext.io/translate-subtitles",
+      "sha256": ""
+    },
+    {
+      "name": "youtube-transcript",
+      "type": "api",
+      "description": "Generate transcripts from YouTube videos by URL. No download required. Returns full transcript, subtitles, summary, and chapters.",
+      "url": "https://videotext.io/youtube-transcript-generator",
+      "sha256": ""
+    },
+    {
+      "name": "subtitle-format-conversion",
+      "type": "tool",
+      "description": "Convert between subtitle formats: SRT, VTT, SBV, ASS/SSA, TTML/DFXP. Runs entirely in-browser.",
+      "url": "https://videotext.io/tools",
+      "sha256": ""
+    },
+    {
+      "name": "burn-subtitles",
+      "type": "api",
+      "description": "Permanently embed (hardcode) SRT or VTT subtitles into a video file for burned-in captions.",
+      "url": "https://videotext.io/burn-subtitles",
+      "sha256": ""
+    },
+    {
+      "name": "video-compression",
+      "type": "tool",
+      "description": "Compress video files with light, medium, or heavy compression. Runs in-browser using FFmpeg WASM.",
+      "url": "https://videotext.io/compress-video",
+      "sha256": ""
+    },
+    {
+      "name": "voice-to-text",
+      "type": "tool",
+      "description": "Record voice in-browser and get an accurate transcript immediately. Supports 99 languages.",
+      "url": "https://videotext.io/voice-recorder",
+      "sha256": ""
+    }
+  ]
+}
