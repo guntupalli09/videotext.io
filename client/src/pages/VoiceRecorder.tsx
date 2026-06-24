@@ -1472,7 +1472,7 @@ export default function VoiceRecorder() {
         jobDescription="Your voice transcript is ready!"
         onAuthSuccess={async () => {
           if (voiceJobId && voiceJobToken) {
-            await claimGuestJob(voiceJobId, voiceJobToken)
+            try { await claimGuestJob(voiceJobId, voiceJobToken) } catch { /* best-effort */ }
           }
           setShowAuthGate(false)
           setShowAuthModal(false)
