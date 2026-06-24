@@ -1,0 +1,12 @@
+{
+  "entries": [
+    {
+      "title": "VideoText",
+      "description": "AI video transcription, subtitle generation, and translation. Upload a video or paste a YouTube URL to get a transcript, SRT/VTT subtitles, summary, and chapters in minutes.",
+      "links": {
+        "service-doc": "https://videotext.io/llms.txt",
+        "service-desc": "https://videotext.io/llms-full.txt"
+      }
+    }
+  ]
+}

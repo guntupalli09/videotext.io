@@ -164,6 +164,15 @@ const corsOptions: cors.CorsOptions = {
 app.use(cors(corsOptions))
 app.options('*', cors(corsOptions))
 
+// Agent discovery: Link response headers (RFC 8288)
+app.use((_req, res, next) => {
+  res.setHeader('Link', [
+    '</.well-known/api-catalog>; rel="api-catalog"',
+    '</llms.txt>; rel="service-doc"',
+  ].join(', '))
+  next()
+})
+
 // CORS debug instrumentation (do not alter behavior)
 app.use((req, res, next) => {
   const origin = req.get('origin') ?? 'undefined'
@@ -273,7 +282,17 @@ const clientDist = process.env.CLIENT_DIST || path.join(__dirname, '../../dist')
 if (fs.existsSync(clientDist)) {
   app.use(express.static(clientDist, { index: false }))
   // SPA fallback: any GET not served by static (e.g. /video-to-transcript) returns index.html
+  // Markdown for Agents: serve markdown when Accept: text/markdown on homepage
   app.get('*', (req, res) => {
+    if (req.path === '/' && (req.headers.accept || '').includes('text/markdown')) {
+      const mdPath = path.join(clientDist, 'llms.txt')
+      if (fs.existsSync(mdPath)) {
+        const content = fs.readFileSync(mdPath, 'utf-8')
+        res.setHeader('Content-Type', 'text/markdown; charset=utf-8')
+        res.setHeader('x-markdown-tokens', String(content.split(/\s+/).length))
+        return res.send(content)
+      }
+    }
     res.setHeader('Cache-Control', 'no-cache')
     res.sendFile(path.join(clientDist, 'index.html'))
   })

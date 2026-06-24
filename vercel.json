@@ -3,6 +3,15 @@
   "outputDirectory": "dist",
   "headers": [
     {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "</.well-known/api-catalog>; rel=\"api-catalog\", </llms.txt>; rel=\"service-doc\""
+        }
+      ]
+    },
+    {
       "source": "/index.html",
       "headers": [
         {
