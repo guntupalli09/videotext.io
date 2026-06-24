@@ -1836,16 +1836,16 @@ export async function getDemoToken(): Promise<{ token: string; userId: string; p
   return { token: data.token, userId: data.userId, plan: data.plan, email: data.email, isDemo: true }
 }
 
-/** Claim a guest job after signup/login. Associates the job with the authenticated user and increments their importCount. Best-effort — failures are non-blocking. */
+/** Claim a guest job after signup/login. Associates the job with the authenticated user and increments their importCount. */
 export async function claimGuestJob(jobId: string, jobToken: string): Promise<void> {
-  try {
-    await api(`/api/job/${jobId}/claim`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jobToken }),
-    })
-  } catch {
-    // non-blocking
+  const res = await api(`/api/job/${jobId}/claim`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jobToken }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: 'Failed to claim job' }))
+    throw new Error(err.message || 'Failed to claim job')
   }
 }
 

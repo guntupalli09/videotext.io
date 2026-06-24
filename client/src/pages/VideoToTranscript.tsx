@@ -6090,7 +6090,7 @@ export default function VideoToTranscript(
           const jobId = currentJobId || getPersistedJobId(location.pathname);
           const jobToken = getPersistedJobToken(location.pathname);
           if (jobId && jobToken) {
-            await claimGuestJob(jobId, jobToken);
+            try { await claimGuestJob(jobId, jobToken); } catch { /* best-effort */ }
           }
           setShowAuthGate(false);
           setShowAuthModal(false);
