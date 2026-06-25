@@ -14,7 +14,13 @@
     "api_catalog": "https://videotext.io/.well-known/api-catalog",
     "ai_plugin": "https://videotext.io/.well-known/ai-plugin.json",
     "llms_txt": "https://videotext.io/llms.txt",
-    "llms_full_txt": "https://videotext.io/llms-full.txt"
+    "llms_full_txt": "https://videotext.io/llms-full.txt",
+    "oauth_authorization_server": "https://videotext.io/.well-known/oauth-authorization-server",
+    "openid_configuration": "https://videotext.io/.well-known/openid-configuration",
+    "oauth_protected_resource": "https://videotext.io/.well-known/oauth-protected-resource",
+    "auth_md": "https://videotext.io/auth.md",
+    "mcp_server_card": "https://videotext.io/.well-known/mcp/server-card.json",
+    "agent_skills": "https://videotext.io/.well-known/agent-skills/index.json"
   },
   "contact": "support@videotext.io"
 }
