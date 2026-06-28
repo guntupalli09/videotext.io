@@ -8,6 +8,7 @@ import { Testimonials } from '../components/landing/Testimonials';
 import { UseCases } from '../components/landing/UseCases';
 import { FAQ } from '../components/landing/FAQ';
 import { FinalCTA } from '../components/landing/FinalCTA';
+import { FoundingTeamCTA } from '../components/landing/FoundingTeamCTA';
 import { ArrowRight } from 'lucide-react';
 
 // Conversion order (psychologically optimised):
@@ -335,7 +336,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 10 — Final CTA */}
+      {/* 10 — Founding Team */}
+      <FoundingTeamCTA />
+
+      {/* 11 — Final CTA */}
       <FinalCTA />
     </div>
   );

@@ -48,6 +48,7 @@ import guidelinesRoutes from './routes/guidelines'
 import { guidelineQueue, startGuidelineWorker } from './workers/guidelineProcessor'
 import publicStatsRoutes from './routes/publicStats'
 import newsletterRoutes from './routes/newsletter'
+import foundingTeamRoutes from './routes/foundingTeam'
 
 const log = getLogger('api')
 
@@ -264,6 +265,7 @@ app.use('/api/admin', adminDashboardRoutes)
 app.use('/api/admin', adminSupportRoutes)
 app.use('/api/stats', publicStatsRoutes)
 app.use('/api/newsletter', newsletterRoutes)
+app.use('/api/founding-team', foundingTeamRoutes)
 
 // Health and ops (no /api prefix)
 app.use(healthRoutes)
