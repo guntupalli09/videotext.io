@@ -19,8 +19,14 @@ if (typeof window !== 'undefined') {
   (window as unknown as { __RELEASE__?: string }).__RELEASE__ = release
 }
 
-const userId = typeof localStorage !== 'undefined' ? localStorage.getItem('userId') : null
-const plan = typeof localStorage !== 'undefined' ? localStorage.getItem('plan') : null
+let userId: string | null = null
+let plan: string | null = null
+try {
+  userId = localStorage.getItem('userId')
+  plan = localStorage.getItem('plan')
+} catch {
+  // localStorage unavailable (e.g. blocked storage, privacy mode)
+}
 if (userId && userId !== 'demo-user') {
   identifyUser(userId, { plan: plan ?? undefined })
 }
