@@ -118,15 +118,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
-## /speechpad-format-guide
-
-- **Missing subtopics:** microphone and audio quality, privacy and storage
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Add microphone, noise, and recording quality guidance.
-  - Clarify recording privacy, storage, and retention behavior.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
 ## /speechpad-transcription-guidelines
 
 - **Missing subtopics:** QA rejection criteria, privacy and storage
@@ -196,32 +187,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
-## /vomo-alternative
-
-- **Missing subtopics:** microphone and audio quality, privacy and storage
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Add microphone, noise, and recording quality guidance.
-  - Clarify recording privacy, storage, and retention behavior.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /youtube-subtitle-generator
-
-- **Missing subtopics:** timing and synchronization, line length and reading speed
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Add timing/sync guidance with common subtitle edge cases.
-  - Discuss line length, reading speed, and accessibility constraints.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /3play-media-format-guide
-
-- **Missing subtopics:** timing and synchronization
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Add timing/sync guidance with common subtitle edge cases.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
 ## /aac-to-text
 
 - **Missing subtopics:** long recordings
@@ -264,15 +229,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Add guidance for long recordings, large files, and batching.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
-## /blog/how-to-add-captions-youtube-video
-
-- **Missing subtopics:** timing and synchronization, line length and reading speed
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Add timing/sync guidance with common subtitle edge cases.
-  - Discuss line length, reading speed, and accessibility constraints.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
 ## /buzz-alternative
 
 - **Missing subtopics:** pricing or plan limits
@@ -289,15 +245,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
-## /dictation-io-alternative
-
-- **Missing subtopics:** microphone and audio quality, privacy and storage
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Add microphone, noise, and recording quality guidance.
-  - Clarify recording privacy, storage, and retention behavior.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
 ## /dictation-tool
 
 - **Missing subtopics:** privacy and storage
@@ -306,15 +253,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Clarify recording privacy, storage, and retention behavior.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
-
-## /dragon-dictate-alternative
-
-- **Missing subtopics:** microphone and audio quality, privacy and storage
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Add microphone, noise, and recording quality guidance.
-  - Clarify recording privacy, storage, and retention behavior.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /flac-to-text
 
@@ -406,47 +344,12 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
-## /speechify-alternative
+## /speechpad-format-guide
 
 - **Missing subtopics:** microphone and audio quality, privacy and storage
 - **Weak sections:** None detected
 - **Expansion opportunities:**
   - Add microphone, noise, and recording quality guidance.
-  - Clarify recording privacy, storage, and retention behavior.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /speechmatics-alternative
-
-- **Missing subtopics:** microphone and audio quality, privacy and storage
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Add microphone, noise, and recording quality guidance.
-  - Clarify recording privacy, storage, and retention behavior.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /speechnotes-alternative
-
-- **Missing subtopics:** microphone and audio quality, privacy and storage
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Add microphone, noise, and recording quality guidance.
-  - Clarify recording privacy, storage, and retention behavior.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /speechtexter-alternative
-
-- **Missing subtopics:** microphone and audio quality, privacy and storage
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Add microphone, noise, and recording quality guidance.
-  - Clarify recording privacy, storage, and retention behavior.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /superwhisper-alternative
-
-- **Missing subtopics:** privacy and storage
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
   - Clarify recording privacy, storage, and retention behavior.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
@@ -486,6 +389,13 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
+## /videotext-vs-rev
+
+- **Missing subtopics:** best-fit user types
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Identify which user types each option fits best.
+
 ## /vimeo-transcription
 
 - **Missing subtopics:** long recordings
@@ -513,6 +423,14 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
+## /vomo-alternative
+
+- **Missing subtopics:** microphone and audio quality
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Add microphone, noise, and recording quality guidance.
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
 ## /wav-to-text
 
 - **Missing subtopics:** long recordings
@@ -530,21 +448,20 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Discuss pricing, plan limits, or usage constraints.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
-## /youtube-captions
-
-- **Missing subtopics:** timing and synchronization, line length and reading speed
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Add timing/sync guidance with common subtitle edge cases.
-  - Discuss line length, reading speed, and accessibility constraints.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
 ## /youtube-video-transcription
 
 - **Missing subtopics:** long recordings
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
 - **Expansion opportunities:**
   - Add guidance for long recordings, large files, and batching.
+
+## /3play-media-format-guide
+
+- **Missing subtopics:** timing and synchronization
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Add timing/sync guidance with common subtitle edge cases.
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /add-subtitles-to-video
 
@@ -567,43 +484,12 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
-## /blog/freelance-transcription-style-guide-cheatsheet
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
 ## /blog/how-to-get-youtube-transcript
 
 - **Missing subtopics:** long recordings
 - **Weak sections:** None detected
 - **Expansion opportunities:**
   - Add guidance for long recordings, large files, and batching.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /blog/how-to-transcribe-audio-to-text-free
-
-- **Missing subtopics:** pricing or plan limits
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Discuss pricing, plan limits, or usage constraints.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
-
-## /blog/how-to-translate-subtitles
-
-- **Missing subtopics:** review and localization QA
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Add localization QA and review workflow guidance.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /blog/rev-style-guide-transcript-formatter
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /caption-video-online
@@ -620,14 +506,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Add a transcript QA workflow and common rejection reasons.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
-
-## /daily-transcripts-style-guide
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /descript-vs-videotext
 
@@ -636,11 +514,27 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
+## /dictation-io-alternative
+
+- **Missing subtopics:** microphone and audio quality
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Add microphone, noise, and recording quality guidance.
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
 ## /ditto-transcripts-alternative
 
 - **Missing subtopics:** None detected
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
 - **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /dragon-dictate-alternative
+
+- **Missing subtopics:** microphone and audio quality
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Add microphone, noise, and recording quality guidance.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /fliki-alternative
@@ -657,7 +551,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Clarify recording privacy, storage, and retention behavior.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
 
 ## /generate-subtitles-from-video
 
@@ -667,35 +560,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /genio-alternative
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /google-docs-voice-typing-alternative
-
-- **Missing subtopics:** privacy and storage
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Clarify recording privacy, storage, and retention behavior.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /gotranscript-guidelines
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /gotranscript-style-guide
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /gotranscript-transcription-rules
 
 - **Missing subtopics:** None detected
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
@@ -715,13 +579,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
 - **Expansion opportunities:**
   - Maintain current topical depth.
-
-## /happy-scribe-format-guide
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /headliner-alternative
 
@@ -788,49 +645,7 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
-## /rev-captioning-guidelines
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /rev-style-guide
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /rev-transcript-guidelines
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
 ## /scribe-alternative
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /scribie-style-guide
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /scribie-transcription-guidelines
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /scribie-transcription-rules
 
 - **Missing subtopics:** None detected
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
@@ -865,9 +680,47 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Clarify recording privacy, storage, and retention behavior.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
+
+## /speechify-alternative
+
+- **Missing subtopics:** microphone and audio quality
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Add microphone, noise, and recording quality guidance.
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /speechmatics-alternative
+
+- **Missing subtopics:** microphone and audio quality
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Add microphone, noise, and recording quality guidance.
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /speechnotes-alternative
+
+- **Missing subtopics:** microphone and audio quality
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Add microphone, noise, and recording quality guidance.
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /speechtexter-alternative
+
+- **Missing subtopics:** microphone and audio quality
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Add microphone, noise, and recording quality guidance.
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /spreaker-alternative
+
+- **Missing subtopics:** None detected
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /superwhisper-alternative
 
 - **Missing subtopics:** None detected
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
@@ -880,35 +733,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
 - **Expansion opportunities:**
   - Maintain current topical depth.
-
-## /transcribeme-guidelines
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /transcribeme-style-guide
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /transcribio-style-guide
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /translate-subtitles
-
-- **Missing subtopics:** review and localization QA
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Add localization QA and review workflow guidance.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /video-caption-generator
 
@@ -930,13 +754,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /videotext-vs-rev
-
-- **Missing subtopics:** None detected
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Maintain current topical depth.
 
 ## /videotext-vs-turboscribe
 
@@ -966,7 +783,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Clarify recording privacy, storage, and retention behavior.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
 
 ## /voice-to-text-converter
 
@@ -975,7 +791,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Clarify recording privacy, storage, and retention behavior.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
 
 ## /voice-to-text-online
 
@@ -984,7 +799,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Clarify recording privacy, storage, and retention behavior.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
 
 ## /webex-alternative
 
@@ -1001,6 +815,13 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /whisperx-alternative
+
+- **Missing subtopics:** None detected
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /youtube-subtitle-generator
 
 - **Missing subtopics:** None detected
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
@@ -1041,7 +862,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Weak sections:** None detected
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
 
 ## /auto-captions
 
@@ -1071,8 +891,44 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Weak sections:** None detected
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+  - Replace generic AI-style transitions with concrete examples and constraints.
+
+## /blog/freelance-transcription-style-guide-cheatsheet
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /blog/how-to-add-captions-youtube-video
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /blog/how-to-add-subtitles-to-video-free
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /blog/how-to-transcribe-audio-to-text-free
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /blog/how-to-translate-subtitles
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /blog/rev-style-guide-transcript-formatter
 
 - **Missing subtopics:** None detected
 - **Weak sections:** None detected
@@ -1085,6 +941,7 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Weak sections:** None detected
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+  - Replace generic AI-style transitions with concrete examples and constraints.
 
 ## /burn-subtitles
 
@@ -1129,6 +986,14 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /compare
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+  - Replace generic AI-style transitions with concrete examples and constraints.
+
+## /daily-transcripts-style-guide
 
 - **Missing subtopics:** None detected
 - **Weak sections:** None detected
@@ -1191,9 +1056,43 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Weak sections:** None detected
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
 
 ## /glean-alternative
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /google-docs-voice-typing-alternative
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /gotranscript-guidelines
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /gotranscript-style-guide
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /gotranscript-transcription-rules
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /happy-scribe-format-guide
 
 - **Missing subtopics:** None detected
 - **Weak sections:** None detected
@@ -1292,7 +1191,49 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
+## /rev-captioning-guidelines
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /rev-style-guide
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /rev-transcript-guidelines
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
 ## /riverside-alternative
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /scribie-style-guide
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /scribie-transcription-guidelines
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /scribie-transcription-rules
 
 - **Missing subtopics:** None detected
 - **Weak sections:** None detected
@@ -1502,6 +1443,34 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
+## /transcribeme-guidelines
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /transcribeme-style-guide
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /transcribio-style-guide
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /translate-subtitles
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
 ## /trint-alternative
 
 - **Missing subtopics:** None detected
@@ -1524,6 +1493,13 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /whispertype-alternative
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /youtube-captions
 
 - **Missing subtopics:** None detected
 - **Weak sections:** None detected
