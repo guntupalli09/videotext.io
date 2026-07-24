@@ -116,9 +116,8 @@ export async function runUpgradeRescueCron(): Promise<void> {
     }
 
     const unsubToken = generateUnsubscribeToken(email)
-    const unsubLink = `${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}&token=${unsubToken}`
     const apiUnsubLink = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}&token=${unsubToken}`
-    const html = upgradeRescueHtml(`${baseUrl}/pricing`, unsubLink)
+    const html = upgradeRescueHtml(`${baseUrl}/pricing`, apiUnsubLink)
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
