@@ -154,9 +154,8 @@ export async function runOnboardingEmailSequence(): Promise<void> {
     const token = await createMagicLinkToken(user.id)
     const ctaUrl = `${baseUrl}/magic-login?token=${encodeURIComponent(token)}&next=/video-to-transcript`
     const unsubToken = generateUnsubscribeToken(user.email)
-    const unsubLink = `${baseUrl}/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`
     const apiUnsubLink = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`
-    const html = onboardingHtml(stage, ctaUrl, unsubLink)
+    const html = onboardingHtml(stage, ctaUrl, apiUnsubLink)
     const subject = STAGE_CONFIG[stage].subject
 
     const res = await fetch('https://api.resend.com/emails', {
@@ -211,7 +210,7 @@ export async function startOnboardingEmailCron(): Promise<void> {
   if (process.env.ONBOARDING_EMAILS_ENABLED !== 'true') return
 
   const intervalMinutes = Number(process.env.ONBOARDING_EMAILS_INTERVAL_MINUTES || 15)
-  console.log('[CRON] Onboarding scheduler started', { intervalMinutes })
+  log.info({ msg: 'Onboarding scheduler started', intervalMinutes })
 
   await runOnboardingEmailSequence()
 
@@ -219,7 +218,7 @@ export async function startOnboardingEmailCron(): Promise<void> {
     try {
       await runOnboardingEmailSequence()
     } catch (err) {
-      console.error('Onboarding cron error:', err)
+      log.error({ msg: 'Onboarding cron error', error: (err as Error)?.message })
     }
   }, intervalMinutes * 60 * 1000)
 }

@@ -439,7 +439,6 @@ const server = app.listen(PORT, () => {
           const magicToken = await createMagicLinkToken(u.id)
           const openLink = `${baseUrl}/magic-login?token=${magicToken}&next=/video-to-transcript`
           const unsubToken = generateUnsubscribeToken(u.email)
-          const unsubLink = `${baseUrl}/unsubscribe?email=${encodeURIComponent(u.email)}&token=${unsubToken}`
           const apiUnsubLink = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(u.email)}&token=${unsubToken}`
           const html = `
 <!DOCTYPE html>
@@ -467,7 +466,7 @@ const server = app.listen(PORT, () => {
           <td style="padding:24px 40px;border-top:1px solid #2d2d4e;text-align:center">
             <p style="margin:0 0 8px;color:#606080;font-size:12px">Want unlimited transcriptions with no watermark?</p>
             <a href="${baseUrl}/pricing" style="color:#2563EB;font-size:12px;text-decoration:none;font-weight:600">Upgrade to Pro → $40/mo</a>
-            <p style="margin:16px 0 0;color:#404060;font-size:11px">VideoText.io · <a href="${unsubLink}" style="color:#404060">unsubscribe</a></p>
+            <p style="margin:16px 0 0;color:#404060;font-size:11px">VideoText.io · <a href="${apiUnsubLink}" style="color:#404060">unsubscribe</a></p>
           </td>
         </tr>
       </table>
