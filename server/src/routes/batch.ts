@@ -16,6 +16,7 @@ import {
   getMaxDailyImports,
   sumBatchVideoDurationsSeconds,
 } from '../utils/limits'
+import { safeErrorMessage } from '../utils/errorResponse'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import { addJobToQueue, getTotalQueueCount } from '../workers/videoProcessor'
 import { insertJobRecord } from '../lib/jobAnalytics'
@@ -355,7 +356,7 @@ router.post(
       })
     } catch (error: any) {
       log.error({ msg: 'Batch upload error', error: (error as Error)?.message ?? String(error) })
-      res.status(500).json({ message: error.message || 'Batch upload failed' })
+      res.status(500).json({ message: safeErrorMessage('Batch upload failed') })
     }
   }
 )

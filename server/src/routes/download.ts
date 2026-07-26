@@ -3,6 +3,7 @@ import path from 'path'
 import fs from 'fs'
 import { getEffectivePlan } from '../utils/subscriptionGuard'
 import { getLogger } from '../lib/logger'
+import { safeErrorMessage } from '../utils/errorResponse'
 
 const log = getLogger('api')
 const router = express.Router()
@@ -137,7 +138,7 @@ router.get('/:filename', async (req: Request, res: Response) => {
     fileStream.pipe(res)
   } catch (error: any) {
     log.error({ msg: 'Download error', error: String(error) })
-    res.status(500).json({ message: error.message || 'Download failed' })
+    res.status(500).json({ message: safeErrorMessage('Download failed') })
   }
 })
 

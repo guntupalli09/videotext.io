@@ -3,6 +3,7 @@ import path from 'path'
 import fs from 'fs'
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 import { initSentry, setupSentryErrorHandler, sentryRequestIdScope } from './lib/sentry'
 
 initSentry()
@@ -81,6 +82,18 @@ process.on('uncaughtException', (err) => {
 
 const app = express()
 app.disable('etag')
+
+// Baseline security headers. CSP and cross-origin resource/embedder policies are left
+// disabled for now since the app depends on Stripe, Google OAuth, PostHog, and
+// cross-origin video/file delivery — enabling those requires an explicit allowlist
+// audit first so we don't break checkout/login/analytics for paying users.
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
+  })
+)
 const PORT = process.env.PORT || 3001
 
 // Required behind Railway / Render / Fly / Vercel: trust one proxy hop so rate-limit doesn't throw on X-Forwarded-For

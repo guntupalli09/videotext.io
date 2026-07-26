@@ -20,6 +20,7 @@ import {
   trackGoogleAuthCompleted,
   trackDemoLoginStarted,
 } from '../utils/analytics'
+import { safeErrorMessage } from '../utils/errorResponse'
 
 const log = getLogger('api')
 
@@ -32,6 +33,18 @@ const otpSendLimit = rateLimit({
   legacyHeaders: false,
   keyGenerator: (req) => (req.ip ?? 'unknown'),
   message: { message: 'Too many OTP requests. Please wait a minute before trying again.' },
+})
+
+const loginRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 8,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    const email = (req.body?.email || '').toString().trim().toLowerCase()
+    return `${req.ip ?? 'unknown'}:${email || 'unknown'}`
+  },
+  message: { message: 'Too many login attempts. Please wait 15 minutes before trying again.' },
 })
 
 // OTP store: Redis-backed so OTPs survive server restarts and work across multiple instances
@@ -164,7 +177,7 @@ router.post('/send-otp', otpSendLimit, async (req: Request, res: Response) => {
     res.json({ ok: true, message: 'Verification code sent.' })
   } catch (error: any) {
     log.error({ msg: 'send-otp error', error: (error as Error)?.message ?? String(error) })
-    res.status(500).json({ message: error.message || 'Failed to send code.' })
+    res.status(500).json({ message: safeErrorMessage('Failed to send code.') })
   }
 })
 
@@ -192,7 +205,7 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
     res.json({ ok: true, token, email: normalized })
   } catch (error: any) {
     log.error({ msg: 'verify-otp error', error: (error as Error)?.message ?? String(error) })
-    res.status(500).json({ message: error.message || 'Verification failed.' })
+    res.status(500).json({ message: safeErrorMessage('Verification failed.') })
   }
 })
 
@@ -240,7 +253,7 @@ router.post('/setup-password', async (req: Request, res: Response) => {
     return res.json({ token: jwt })
   } catch (error: any) {
     log.error({ msg: 'setup-password error', error: (error as Error)?.message ?? String(error) })
-    return res.status(500).json({ message: error.message || 'Failed to set password' })
+    return res.status(500).json({ message: safeErrorMessage('Failed to set password') })
   }
 })
 
@@ -334,7 +347,7 @@ interface LoginBody {
   password: string
 }
 
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', loginRateLimit, async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body as LoginBody
     if (!email || !password) {
@@ -375,7 +388,7 @@ router.post('/login', async (req: Request, res: Response) => {
     })
   } catch (error: any) {
     log.error({ msg: 'login error', error: (error as Error)?.message ?? String(error) })
-    return res.status(500).json({ message: error.message || 'Login failed' })
+    return res.status(500).json({ message: safeErrorMessage('Login failed') })
   }
 })
 
@@ -405,7 +418,7 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
     res.json({ ok: true, message: "If an account exists with that email, we've sent a password reset link." })
   } catch (error: any) {
     log.error({ msg: 'forgot-password error', error: (error as Error)?.message ?? String(error) })
-    res.status(500).json({ message: error.message || 'Failed to send reset link.' })
+    res.status(500).json({ message: safeErrorMessage('Failed to send reset link.') })
   }
 })
 
@@ -443,7 +456,7 @@ router.post('/reset-password', async (req: Request, res: Response) => {
     res.json({ ok: true, message: 'Password updated. You can now log in.' })
   } catch (error: any) {
     log.error({ msg: 'reset-password error', error: (error as Error)?.message ?? String(error) })
-    res.status(500).json({ message: error.message || 'Failed to reset password.' })
+    res.status(500).json({ message: safeErrorMessage('Failed to reset password.') })
   }
 })
 
@@ -569,7 +582,7 @@ router.post('/demo', demoRateLimit, async (req: Request, res: Response) => {
     return res.json({ token, userId: user.id, plan: user.plan, email: user.email, isDemo: true })
   } catch (error: any) {
     log.error({ msg: 'demo login error', error: (error as Error)?.message ?? String(error) })
-    return res.status(500).json({ message: error.message || 'Demo login failed.' })
+    return res.status(500).json({ message: safeErrorMessage('Demo login failed.') })
   }
 })
 

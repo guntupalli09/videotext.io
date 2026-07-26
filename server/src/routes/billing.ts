@@ -10,6 +10,7 @@ import { isAllowedOrigin, normalizeOrigin } from '../utils/allowedOrigins'
 import { getLogger } from '../lib/logger'
 import { captureFunnelEvent } from '../utils/funnelEvents'
 import { recordUpgradeIntent } from '../models/UpgradeIntent'
+import { safeErrorMessage } from '../utils/errorResponse'
 
 const log = getLogger('api')
 const router = express.Router()
@@ -197,7 +198,7 @@ router.post('/checkout', async (req: Request, res: Response) => {
     log.error({ msg: 'Stripe checkout error', error: (error as Error)?.message ?? String(error) })
     return res
       .status(500)
-      .json({ message: error.message || 'Failed to create checkout session' })
+      .json({ message: safeErrorMessage('Failed to create checkout session') })
   }
 })
 
@@ -246,7 +247,7 @@ router.post('/portal', async (req: Request, res: Response) => {
     log.error({ msg: 'Stripe portal error', error: (error as Error)?.message ?? String(error) })
     return res
       .status(500)
-      .json({ message: error.message || 'Failed to open billing portal' })
+      .json({ message: safeErrorMessage('Failed to open billing portal') })
   }
 })
 
@@ -403,7 +404,7 @@ router.get('/session-details', async (req: Request, res: Response) => {
     log.error({ msg: 'Session details error', error: (error as Error)?.message ?? String(error) })
     return res
       .status(500)
-      .json({ message: error.message || 'Failed to get session details' })
+      .json({ message: safeErrorMessage('Failed to get session details') })
   }
 })
 
@@ -442,7 +443,7 @@ router.get('/session-status', async (req: Request, res: Response) => {
     return res.json({ subscriptionActive, plan, email })
   } catch (error: any) {
     log.error({ msg: 'Stripe session-status error', error: (error as Error)?.message ?? String(error) })
-    return res.status(500).json({ message: error.message || 'Failed to check session status' })
+    return res.status(500).json({ message: safeErrorMessage('Failed to check session status') })
   }
 })
 

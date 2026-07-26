@@ -7,6 +7,7 @@ import { getJobSummary } from '../utils/jobSummary'
 import { getJobStage, type YoutubeJobStage } from '../utils/jobStage'
 import { getLogger } from '../lib/logger'
 import { prisma } from '../db'
+import { safeErrorMessage } from '../utils/errorResponse'
 
 const log = getLogger('api')
 const router = express.Router()
@@ -128,7 +129,7 @@ router.get('/:jobId/summary', async (req: Request, res: Response) => {
   } catch (error: any) {
     log.error({ msg: 'Job summary error', error: (error as Error)?.message ?? String(error) })
     res.set({ 'Cache-Control': 'no-store, no-cache, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' })
-    return res.status(500).json({ message: error.message || 'Failed to get job summary' })
+    return res.status(500).json({ message: safeErrorMessage('Failed to get job summary') })
   }
 })
 
@@ -203,7 +204,7 @@ router.get('/:jobId/stream', async (req: Request, res: Response) => {
     })
   } catch (error: any) {
     if (!res.headersSent) {
-      res.status(500).json({ message: error.message || 'Failed to stream job status' })
+      res.status(500).json({ message: safeErrorMessage('Failed to stream job status') })
     }
   }
 })
@@ -250,7 +251,7 @@ router.get('/:jobId', async (req: Request, res: Response) => {
       'Expires': '0',
       'Surrogate-Control': 'no-store',
     })
-    res.status(500).json({ message: error.message || 'Failed to get job status' })
+    res.status(500).json({ message: safeErrorMessage('Failed to get job status') })
   }
 })
 
@@ -314,7 +315,7 @@ router.post('/:jobId/claim', async (req: Request, res: Response) => {
     return res.status(200).json({ ok: true })
   } catch (error: any) {
     log.error({ msg: 'Claim job error', error: (error as Error)?.message ?? String(error) })
-    return res.status(500).json({ message: error.message || 'Failed to claim job' })
+    return res.status(500).json({ message: safeErrorMessage('Failed to claim job') })
   }
 })
 

@@ -24,6 +24,7 @@ import { getLogger } from '../lib/logger'
 import { isValidYoutubeUrl, getYoutubeMetadata, normalizeYoutubeUrl } from '../services/youtube'
 import { checkAndRecordYoutubeJob } from '../utils/youtubeRateLimit'
 import { enforceSubscriptionState, resolveRequestPlan } from '../utils/subscriptionGuard'
+import { safeErrorMessage } from '../utils/errorResponse'
 
 const router = express.Router()
 const uploadLog = getLogger('api')
@@ -494,7 +495,7 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
         // Ignore cleanup errors
       }
     }
-    res.status(500).json({ message: error.message || 'Upload failed' })
+    res.status(500).json({ message: safeErrorMessage('Upload failed') })
   }
 })
 
@@ -801,7 +802,7 @@ router.post('/dual', upload.fields([
         // Ignore cleanup errors
       }
     }
-    res.status(500).json({ message: error.message || 'Upload failed' })
+    res.status(500).json({ message: safeErrorMessage('Upload failed') })
   }
 })
 
@@ -986,7 +987,7 @@ export async function handleUploadChunk(req: Request, res: Response): Promise<vo
     res.json({ ok: true })
   } catch (error: any) {
     uploadLog.error({ msg: '[upload/chunk] 500', error: error?.message || String(error), stack: error?.stack })
-    res.status(500).json({ message: error.message || 'Chunk upload failed' })
+    res.status(500).json({ message: safeErrorMessage('Chunk upload failed') })
   }
 }
 
@@ -1296,7 +1297,7 @@ router.post('/complete', async (req: Request, res: Response) => {
   } catch (error: any) {
     if (uploadId) completingUploads.delete(uploadId)
     uploadLog.error({ msg: '[upload/complete] 500', error: error?.message || String(error), stack: error?.stack })
-    return res.status(500).json({ message: error.message || 'Upload complete failed' })
+    return res.status(500).json({ message: safeErrorMessage('Upload complete failed') })
   }
 })
 
@@ -1532,7 +1533,7 @@ router.post('/youtube', async (req: Request, res: Response) => {
     })
   } catch (error: any) {
     uploadLog.error({ msg: '[youtube] endpoint error', error: String(error) })
-    return res.status(500).json({ message: error.message || 'Failed to process YouTube URL.' })
+    return res.status(500).json({ message: safeErrorMessage('Failed to process YouTube URL.') })
   }
 })
 

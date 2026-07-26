@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express'
 import path from 'path'
 import fs from 'fs'
 import { getLogger } from '../lib/logger'
+import { safeErrorMessage } from '../utils/errorResponse'
 
 const log = getLogger('api')
 const router = express.Router()
@@ -69,7 +70,7 @@ router.get('/:filename', (req: Request, res: Response) => {
     fs.createReadStream(filePath).pipe(res)
   } catch (error: any) {
     log.error({ msg: 'Audio serve error', error: String(error) })
-    res.status(500).json({ message: error.message || 'Audio serve failed' })
+    res.status(500).json({ message: safeErrorMessage('Audio serve failed') })
   }
 })
 
