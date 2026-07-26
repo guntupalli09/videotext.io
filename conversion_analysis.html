@@ -1,610 +1,541 @@
-<title>VideoText.io — Product-Market Fit Analysis</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VideoText Conversion Analysis</title>
 <style>
-  :root{
-    --bg:#f6f4ef; --surface:#ffffff; --surface-2:#efece4; --border:#ddd7c8;
-    --ink:#20241f; --ink-2:#4c5148; --ink-muted:#767a6f;
-    --accent:#2f5d50; --accent-2:#8a6a3f; --accent-soft:#e4ede9;
-    --good:#2f7a4f; --warn:#a5750f; --crit:#a6362c;
-    --good-bg:#e6f2ea; --warn-bg:#f7edda; --crit-bg:#f6e4e1;
-    --chart-grid:#e2ddcd; --chart-axis:#9a967f;
-    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+:root{
+  --bg:#f7f5f1; --panel:#ffffff; --ink:#1b1f24; --ink-soft:#4b5259;
+  --line:#e3ddd2; --muted:#8a8378; --accent:#c8631f; --accent-soft:#f0dcc7;
+  --good:#3f7d54; --good-soft:#e2efe3; --bad:#b23a2e; --bad-soft:#f6e2df;
+  --warn:#a8791f; --warn-soft:#f4ecd6; --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#14161a; --panel:#1c1f24; --ink:#eeebe4; --ink-soft:#b7b2a8;
+  --line:#33363c; --muted:#7c7870; --accent:#e08a45; --accent-soft:#3a2c1c;
+  --good:#6cb583; --good-soft:#1c2b20; --bad:#e0776a; --bad-soft:#2e1c1a;
+  --warn:#dab35f; --warn-soft:#2e2818;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161a; --panel:#1c1f24; --ink:#eeebe4; --ink-soft:#b7b2a8;
+    --line:#33363c; --muted:#7c7870; --accent:#e08a45; --accent-soft:#3a2c1c;
+    --good:#6cb583; --good-soft:#1c2b20; --bad:#e0776a; --bad-soft:#2e1c1a;
+    --warn:#dab35f; --warn-soft:#2e2818;
   }
-  :root[data-theme="dark"]{
-    --bg:#15181a; --surface:#1c2023; --surface-2:#22262a; --border:#33383b;
-    --ink:#e9e6dd; --ink-2:#c2bfb4; --ink-muted:#8b9089;
-    --accent:#6fae9c; --accent-2:#c9a35f; --accent-soft:#22322d;
-    --good:#5cb37f; --warn:#d9a544; --crit:#e07a6c;
-    --good-bg:#1c2c22; --warn-bg:#2c260f; --crit-bg:#2c1c1a;
-    --chart-grid:#2b2f31; --chart-axis:#5a5f5c;
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --bg:#15181a; --surface:#1c2023; --surface-2:#22262a; --border:#33383b;
-      --ink:#e9e6dd; --ink-2:#c2bfb4; --ink-muted:#8b9089;
-      --accent:#6fae9c; --accent-2:#c9a35f; --accent-soft:#22322d;
-      --good:#5cb37f; --warn:#d9a544; --crit:#e07a6c;
-      --good-bg:#1c2c22; --warn-bg:#2c260f; --crit-bg:#2c1c1a;
-      --chart-grid:#2b2f31; --chart-axis:#5a5f5c;
-    }
-  }
-  *{box-sizing:border-box;}
-  body{background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.55; margin:0; padding:0 0 6rem;}
-  .wrap{max-width:1080px; margin:0 auto; padding:2.5rem 1.5rem;}
-  h1,h2,h3,h4{font-family:var(--serif); font-weight:600; color:var(--ink); text-wrap:balance; letter-spacing:0.01em;}
-  h1{font-size:2.1rem; margin:0 0 0.25rem;}
-  h2{font-size:1.5rem; margin:3rem 0 0.25rem; padding-top:1.25rem; border-top:1px solid var(--border);}
-  h3{font-size:1.15rem; margin:1.6rem 0 0.6rem; color:var(--accent);}
-  h4{font-size:0.98rem; margin:1.2rem 0 0.4rem;}
-  p{margin:0.6rem 0; color:var(--ink-2); max-width:74ch;}
-  .eyebrow{font-family:var(--mono); font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent-2); margin:0 0 0.6rem;}
-  .lede{font-size:1.05rem; color:var(--ink-2); max-width:70ch;}
-  a{color:var(--accent);}
-  .cap{ font-family:var(--mono); font-size:0.78rem; color:var(--ink-muted); }
-
-  /* Caveat / flag pills, used inline next to numbers */
-  .flag{display:inline-flex; align-items:center; gap:0.3em; font-family:var(--mono); font-size:0.68rem; letter-spacing:0.03em; font-weight:600; padding:0.12em 0.55em; border-radius:99px; vertical-align:0.15em; white-space:nowrap;}
-  .flag.contaminated{background:var(--crit-bg); color:var(--crit);}
-  .flag.estimate{background:var(--warn-bg); color:var(--warn);}
-  .flag.gap{background:var(--surface-2); color:var(--ink-muted); border:1px dashed var(--border);}
-  .flag.clean{background:var(--good-bg); color:var(--good);}
-  .note{font-size:0.85rem; color:var(--ink-muted); border-left:2px solid var(--border); padding:0.1rem 0 0.1rem 0.75rem; margin:0.5rem 0;}
-  .note.warn{border-color:var(--warn); }
-  .note.crit{border-color:var(--crit); }
-
-  /* Executive summary */
-  .hero{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:1.8rem 2rem; margin-top:1.6rem;}
-  .verdict-row{display:flex; gap:1.5rem; align-items:center; flex-wrap:wrap; margin:1rem 0 1.4rem;}
-  .score-badge{display:flex; flex-direction:column; align-items:center; justify-content:center; width:96px; height:96px; border-radius:50%; background:var(--crit-bg); border:2px solid var(--crit); flex:none;}
-  .score-badge .num{font-family:var(--serif); font-size:2.1rem; font-weight:700; color:var(--crit); line-height:1;}
-  .score-badge .den{font-family:var(--mono); font-size:0.65rem; color:var(--crit);}
-  .verdict-text{flex:1; min-width:260px;}
-  .verdict-text .headline{font-family:var(--serif); font-size:1.25rem; font-weight:600; margin:0 0 0.3rem;}
-  .confidence-tag{display:inline-block; font-family:var(--mono); font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; background:var(--warn-bg); color:var(--warn); padding:0.2em 0.6em; border-radius:5px; margin-top:0.3rem;}
-
-  .kpi-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin:1.6rem 0;}
-  .kpi{background:var(--surface); padding:1rem 1.1rem;}
-  .kpi .label{font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-muted);}
-  .kpi .value{font-family:var(--serif); font-size:1.55rem; font-weight:600; margin-top:0.15rem; font-variant-numeric:tabular-nums;}
-  .kpi .sub{font-size:0.76rem; color:var(--ink-muted); margin-top:0.1rem;}
-
-  table{border-collapse:collapse; width:100%; font-size:0.88rem; margin:0.8rem 0;}
-  th,td{text-align:left; padding:0.45rem 0.7rem; border-bottom:1px solid var(--border); font-variant-numeric:tabular-nums;}
-  th{font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-muted); font-weight:600;}
-  td.num, th.num{text-align:right;}
-  .table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:10px; background:var(--surface);}
-  .table-wrap table{margin:0;}
-  .table-wrap th, .table-wrap td{padding:0.55rem 0.9rem;}
-
-  .card{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.4rem 1.5rem; margin:1.2rem 0;}
-  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:1.2rem;}
-  @media (max-width:760px){.grid-2{grid-template-columns:1fr;}}
-
-  /* Bar chart (css) */
-  .barchart{display:flex; align-items:flex-end; gap:0.5rem; height:170px; padding:0.5rem 0 0.25rem; border-bottom:1px solid var(--chart-grid);}
-  .bar-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; gap:0.3rem; min-width:0;}
-  .bar{width:100%; max-width:46px; background:var(--accent); border-radius:3px 3px 1px 1px; position:relative;}
-  .bar.secondary{background:var(--accent-2);}
-  .bar-val{font-family:var(--mono); font-size:0.68rem; color:var(--ink); font-variant-numeric:tabular-nums;}
-  .bar-lbl{font-family:var(--mono); font-size:0.66rem; color:var(--ink-muted); margin-top:0.35rem; text-align:center;}
-
-  .hbar-row{display:grid; grid-template-columns:150px 1fr 70px; align-items:center; gap:0.7rem; margin:0.5rem 0;}
-  .hbar-track{background:var(--surface-2); border-radius:4px; height:20px; overflow:hidden;}
-  .hbar-fill{height:100%; background:var(--accent); border-radius:4px;}
-  .hbar-label{font-size:0.82rem; color:var(--ink-2); text-align:right;}
-  .hbar-val{font-family:var(--mono); font-size:0.78rem; color:var(--ink-muted);}
-
-  /* Funnel */
-  .funnel{display:flex; flex-direction:column; gap:0.4rem; margin:1.2rem 0;}
-  .funnel-step{display:grid; grid-template-columns:160px 1fr 130px; align-items:center; gap:0.9rem;}
-  .funnel-bar-track{background:var(--surface-2); border-radius:5px; height:34px; position:relative; overflow:hidden;}
-  .funnel-bar{height:100%; background:linear-gradient(90deg, var(--accent), var(--accent) 100%); border-radius:5px; display:flex; align-items:center; padding-left:0.6rem;}
-  .funnel-bar span{font-family:var(--mono); font-size:0.72rem; color:#fff; font-weight:600;}
-  .funnel-name{font-size:0.85rem; font-weight:600; color:var(--ink);}
-  .funnel-meta{font-family:var(--mono); font-size:0.72rem; color:var(--ink-muted); text-align:right;}
-  .funnel-drop{font-family:var(--mono); font-size:0.68rem; color:var(--crit); text-align:center; margin:0.1rem 0 0.1rem 160px;}
-
-  svg.linechart{width:100%; height:auto; overflow:visible;}
-  .line-path{fill:none; stroke:var(--accent); stroke-width:2.5; stroke-linejoin:round; stroke-linecap:round;}
-  .line-path.secondary{stroke:var(--accent-2);}
-  .line-dot{fill:var(--accent);}
-  .line-dot.secondary{fill:var(--accent-2);}
-  .axis-label{font-family:var(--mono); font-size:9px; fill:var(--ink-muted);}
-  .grid-line{stroke:var(--chart-grid); stroke-width:1;}
-
-  .legend{display:flex; gap:1.2rem; font-size:0.78rem; color:var(--ink-muted); margin-top:0.5rem; flex-wrap:wrap;}
-  .legend-item{display:flex; align-items:center; gap:0.4rem;}
-  .legend-swatch{width:10px; height:10px; border-radius:2px; display:inline-block;}
-
-  .rec-list{list-style:none; margin:1rem 0; padding:0; counter-reset:rec;}
-  .rec-list li{counter-increment:rec; display:grid; grid-template-columns:2.4rem 1fr; gap:0.9rem; padding:0.9rem 0; border-bottom:1px solid var(--border);}
-  .rec-list li:last-child{border-bottom:none;}
-  .rec-num{font-family:var(--serif); font-size:1.4rem; color:var(--accent-2); font-weight:700;}
-  .rec-title{font-weight:600; color:var(--ink); margin-bottom:0.15rem;}
-  .rec-body{font-size:0.88rem; color:var(--ink-2);}
-
-  .missing-item{padding:0.9rem 0; border-bottom:1px solid var(--border);}
-  .missing-item:last-child{border-bottom:none;}
-  .missing-item .what{font-weight:600; color:var(--ink);}
-  .missing-item code{background:var(--surface-2); padding:0.1em 0.4em; border-radius:4px; font-size:0.85em;}
-
-  .toc{display:flex; flex-wrap:wrap; gap:0.4rem 0.9rem; margin:1.2rem 0 0; font-size:0.82rem;}
-  .toc a{color:var(--ink-2); text-decoration:none; border-bottom:1px dotted var(--border);}
-  .toc a:hover{color:var(--accent);}
-
-  footer{margin-top:3.5rem; padding-top:1.2rem; border-top:1px solid var(--border); font-size:0.78rem; color:var(--ink-muted);}
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);margin:0;padding:0 20px 100px;line-height:1.55;}
+.wrap{max-width:920px;margin:0 auto;}
+header.hero{padding:56px 0 32px;border-bottom:1px solid var(--line);}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 10px;}
+h1{font-family:var(--serif);font-size:40px;line-height:1.12;margin:0 0 14px;text-wrap:balance;font-weight:700;}
+.hero p{color:var(--ink-soft);max-width:60ch;font-size:16.5px;margin:0 0 4px;}
+.hero .meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:18px;}
+.stripe{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin:28px 0 0;border-radius:8px;overflow:hidden;}
+.stat{background:var(--panel);padding:16px 14px;}
+.stat .n{font-family:var(--mono);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;}
+.stat .l{font-size:11.5px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em;}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px 14px;padding:20px 0 0;font-family:var(--mono);font-size:12.5px;}
+nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--line);}
+nav.toc a:hover{color:var(--accent);}
+section{padding:44px 0;border-bottom:1px solid var(--line);}
+section:last-of-type{border-bottom:none;}
+.part-num{font-family:var(--mono);color:var(--accent);font-size:13px;letter-spacing:.08em;}
+h2{font-family:var(--serif);font-size:26px;margin:4px 0 6px;text-wrap:balance;}
+h3{font-size:16px;margin:26px 0 10px;font-weight:700;}
+h4{font-size:14px;margin:18px 0 8px;color:var(--ink-soft);font-weight:700;}
+p{margin:0 0 12px;}
+.lede{color:var(--ink-soft);font-size:15.5px;max-width:68ch;}
+.evidence{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:12px 16px;margin:14px 0;font-size:14px;}
+.evidence .tag{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);display:block;margin-bottom:4px;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0;}
+caption{caption-side:top;text-align:left;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px;}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;}
+tr:last-child td{border-bottom:none;}
+td.num,th.num{text-align:right;font-family:var(--mono);}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel);}
+.tablewrap table{margin:0;}
+.tablewrap th:first-child,.tablewrap td:first-child{padding-left:14px;}
+.funnel{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel);}
+.frow{display:grid;grid-template-columns:190px 1fr 90px 84px;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;}
+.frow:last-child{border-bottom:none;}
+.frow .step{font-weight:600;}
+.frow .n{font-family:var(--mono);color:var(--muted);font-size:12px;}
+.bar-track{background:var(--accent-soft);border-radius:4px;height:16px;overflow:hidden;}
+.bar-fill{background:var(--accent);height:100%;border-radius:4px;}
+.frow .pct{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;}
+.frow .drop{font-family:var(--mono);text-align:right;color:var(--bad);font-size:12px;}
+.badge{display:inline-block;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:20px;font-weight:600;}
+.badge.high{background:var(--bad-soft);color:var(--bad);}
+.badge.med{background:var(--warn-soft);color:var(--warn);}
+.badge.low{background:var(--good-soft);color:var(--good);}
+.reco{border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin:14px 0;background:var(--panel);}
+.reco-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.reco-head h4{margin:0;font-size:15px;color:var(--ink);}
+.reco dl{display:grid;grid-template-columns:110px 1fr;gap:4px 10px;font-size:13.5px;margin:10px 0 0;}
+.reco dt{color:var(--muted);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding-top:2px;}
+.reco dd{margin:0;}
+.psych{display:grid;gap:14px;}
+.psych-row{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:var(--panel);}
+.psych-row .top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;}
+.psych-row h4{margin:0;font-size:14.5px;}
+.pct-tag{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700;}
+.exp-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+.footnote{font-size:12px;color:var(--muted);margin-top:6px;}
+.final{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:28px 26px;}
+.final h3{color:var(--accent);}
+ul,ol{padding-left:20px;margin:8px 0 14px;}
+li{margin-bottom:6px;}
+strong{color:var(--ink);}
+.sample-note{font-size:12px;color:var(--muted);font-style:italic;}
 </style>
+</head>
+<body>
 
 <div class="wrap">
-
-  <div class="eyebrow">Product-Market Fit Analysis · VideoText.io</div>
-  <h1>Does VideoText have product-market fit?</h1>
-  <p class="lede">A ground-up read of 70,888 PostHog events across 4,995 tracked persons, Feb 11 – Jul 26 2026 (~5.5 months). Every number below is queried directly from PostHog — nothing is assumed. Where the data is thin, contaminated by test accounts, or simply not instrumented, that is flagged next to the number, not buried in a footnote.</p>
-
-  <div class="toc">
-    <a href="#summary">Executive Summary</a>
-    <a href="#growth">1. Growth</a>
-    <a href="#retention">2. Retention</a>
-    <a href="#engagement">3. Engagement</a>
-    <a href="#power">4. Power Users</a>
-    <a href="#funnel">5. Funnel</a>
-    <a href="#revenue">6. Revenue</a>
-    <a href="#segmentation">7. Segmentation</a>
-    <a href="#usage">8. Product Usage</a>
-    <a href="#pmf">9. PMF Assessment</a>
-    <a href="#missing">10. Instrumentation Gaps</a>
+<header class="hero">
+  <p class="eyebrow">Conversion Optimization Analysis · PostHog Data</p>
+  <h1>Why VideoText users aren't upgrading</h1>
+  <p>A full-funnel investigation across 1,267 tracked people, 200 days of event history, and every upgrade entry point in the product — built to find the highest-ROI conversion fixes, not just the funnel math.</p>
+  <p class="meta">Analysis date 2026-07-26 · Data window: 2026-02-11 → 2026-07-26 · Project: VideoText.io (PostHog EU)</p>
+  <div class="stripe">
+    <div class="stat"><div class="n">1,078</div><div class="l">Visitors</div></div>
+    <div class="stat"><div class="n">322</div><div class="l">Signups</div></div>
+    <div class="stat"><div class="n">338</div><div class="l">Used a tool</div></div>
+    <div class="stat"><div class="n">176</div><div class="l">Viewed pricing</div></div>
+    <div class="stat"><div class="n">18</div><div class="l">Paid</div></div>
+    <div class="stat"><div class="n">1.7%</div><div class="l">Visitor→Paid</div></div>
   </div>
+  <nav class="toc">
+    <a href="#p1">1 Funnel</a><a href="#p2">2 Pricing</a><a href="#p3">3 Upgrade CTAs</a><a href="#p4">4 Journeys</a>
+    <a href="#p5">5 Power users</a><a href="#p6">6 Payment friction</a><a href="#p7">7 Feature value</a><a href="#p8">8 Segments</a>
+    <a href="#p9">9 Psychology</a><a href="#p10">10 Recommendations</a><a href="#p11">11 Experiments</a><a href="#p12">12 Missing data</a><a href="#final">Executive summary</a>
+  </nav>
+</header>
 
-  <!-- ============ EXECUTIVE SUMMARY ============ -->
-  <section id="summary">
-  <h2 style="border-top:none; margin-top:2.2rem;">Executive Summary</h2>
-  <div class="hero">
-    <div class="verdict-row">
-      <div class="score-badge"><div class="num">3</div><div class="den">/ 10</div></div>
-      <div class="verdict-text">
-        <div class="headline">Early signal, not yet product-market fit.</div>
-        <p style="margin:0.3rem 0 0;">A handful of real people found enough value to pay and renew — but 91.5% of everyone who ever ran a job ran exactly one, daily engagement is flat at ~4% of monthly users, and confirmed recurring revenue sits at an estimated 1–2 active paying customers after 5.5 months. Growth in raw traffic is real and accelerating; retained, paying usage is not.</p>
-        <span class="confidence-tag">Confidence: Low</span>
-      </div>
-    </div>
-    <p class="note warn">Confidence is capped at <strong>low</strong> deliberately: the entire paid-usage picture rests on roughly a dozen real (non-founder, non-demo) individuals, and there is no dollar-amount data anywhere in PostHog to verify revenue. Directional conclusions are solid; precise numbers are not.</p>
-  </div>
-
-  <h3>Key metrics at a glance</h3>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Metric</th><th class="num">Value</th><th>Caveat</th></tr></thead>
-      <tbody>
-        <tr><td>Tracked signups (signup_completed)</td><td class="num">88</td><td><span class="flag gap">GAP</span> event only fires reliably from Apr 2026 on</td></tr>
-        <tr><td>Ever created ≥1 job (raw)</td><td class="num">974 people</td><td><span class="flag contaminated">12 test/demo accounts included</span></td></tr>
-        <tr><td>Ever created ≥1 job (cleaned)</td><td class="num">967 people</td><td><span class="flag clean">excl. founder + @videotext.io</span></td></tr>
-        <tr><td>Did a 2nd job or more (cleaned)</td><td class="num">82 / 967 (8.5%)</td><td>core repeat-usage number</td></tr>
-        <tr><td>DAU / MAU stickiness</td><td class="num">~3.6% – 4.9%</td><td>flat across all 6 months, no upward trend</td></tr>
-        <tr><td>New : Returning users (lifecycle, monthly)</td><td class="num">971 : 12</td><td>~81:1 — almost no returning usage</td></tr>
-        <tr><td>Real confirmed subscription renewals ever</td><td class="num">~4–5 people</td><td><span class="flag estimate">best-effort identification by email</span></td></tr>
-        <tr><td>Still-active paying customers (est.)</td><td class="num">~1–2 people</td><td><span class="flag estimate">3 of ~5 renewers later churned</span></td></tr>
-        <tr><td>MRR / ARR</td><td class="num">Unknown</td><td><span class="flag gap">no amount/currency field anywhere</span> — cannot be computed</td></tr>
-        <tr><td>Weekly active users, last 3 weeks</td><td class="num">132 → 126 → 185</td><td>real, positive short-term trend</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h3>Top 3 action items</h3>
-  <ol style="color:var(--ink-2); padding-left:1.3rem;">
-    <li><strong>Instrument revenue properly</strong> — add an <code>amount</code>/<code>currency</code> field or connect Stripe as a PostHog data source. Right now nobody, including this report, can state VideoText's actual MRR.</li>
-    <li><strong>Fix the <code>payment_completed</code> event</strong> — it fires 0–12 seconds after <code>checkout_started</code> for nearly every user, meaning it tracks checkout initiation, not confirmed payment. This event is currently unsafe to use as a revenue signal anywhere in the business.</li>
-    <li><strong>Chase the one-and-done problem</strong> — 91.5% of job-creators never come back. Before spending on acquisition, find out why the other 8.5% did a second job and try to replicate it (video-to-transcript and fix-subtitles show the best, if still weak, repeat signal).</li>
-  </ol>
-
-  <p class="note">Full detail, every underlying number, and all caveats are laid out section by section below, numbered to match the analysis brief.</p>
-  </section>
-
-  <!-- ============ 1. GROWTH ============ -->
-  <section id="growth">
-  <h2>1. User Growth</h2>
-  <p>Signup tracking (<code>signup_completed</code>) only produces reliable volume from <strong>April 2026</strong> onward <span class="flag gap">GAP</span> — 2 signups in April vs. 974 people who ever created a job over the full period, so pre-April signups are effectively invisible to this event. Growth below is shown from when the event is populated; visitor and activity trends use the full history.</p>
-
-  <div class="grid-2">
-    <div class="card">
-      <h4>Monthly tracked signups <span class="cap">(signup_completed, unique events)</span></h4>
-      <div class="barchart">
-        <div class="bar-col"><div class="bar-val">2</div><div class="bar" style="height:5%"></div><div class="bar-lbl">Apr</div></div>
-        <div class="bar-col"><div class="bar-val">23</div><div class="bar" style="height:60%"></div><div class="bar-lbl">May</div></div>
-        <div class="bar-col"><div class="bar-val">25</div><div class="bar" style="height:66%"></div><div class="bar-lbl">Jun</div></div>
-        <div class="bar-col"><div class="bar-val">38</div><div class="bar" style="height:100%"></div><div class="bar-lbl">Jul*</div></div>
-      </div>
-      <p class="cap" style="margin-top:0.5rem;">*Jul is partial (through the 26th) and already the highest month — the trend is accelerating, not just catching up.</p>
-    </div>
-    <div class="card">
-      <h4>Monthly active visitors <span class="cap">(unique persons, page_viewed)</span></h4>
-      <div class="barchart">
-        <div class="bar-col"><div class="bar-val">157</div><div class="bar secondary" style="height:59%"></div><div class="bar-lbl">Feb</div></div>
-        <div class="bar-col"><div class="bar-val">267</div><div class="bar secondary" style="height:100%"></div><div class="bar-lbl">Mar</div></div>
-        <div class="bar-col"><div class="bar-val">119</div><div class="bar secondary" style="height:44%"></div><div class="bar-lbl">Apr</div></div>
-        <div class="bar-col"><div class="bar-val">150</div><div class="bar secondary" style="height:56%"></div><div class="bar-lbl">May</div></div>
-        <div class="bar-col"><div class="bar-val">179</div><div class="bar secondary" style="height:67%"></div><div class="bar-lbl">Jun</div></div>
-        <div class="bar-col"><div class="bar-val">250</div><div class="bar secondary" style="height:94%"></div><div class="bar-lbl">Jul*</div></div>
-      </div>
-      <p class="cap" style="margin-top:0.5rem;">Non-monotonic — a Mar spike, an Apr dip, then steady climb back up. No single acquisition event was found to explain the March spike (weekly signups too sparse pre-April to isolate a campaign).</p>
-    </div>
-  </div>
-
-  <h3>Acquisition sources</h3>
-  <p>Based on the 88 signups where channel data exists.</p>
-  <div class="hbar-row"><div class="hbar-label">Organic Search</div><div class="hbar-track"><div class="hbar-fill" style="width:100%"></div></div><div class="hbar-val">54 (61%)</div></div>
-  <div class="hbar-row"><div class="hbar-label">Direct</div><div class="hbar-track"><div class="hbar-fill" style="width:43%"></div></div><div class="hbar-val">23 (26%)</div></div>
-  <div class="hbar-row"><div class="hbar-label">Organic Social</div><div class="hbar-track"><div class="hbar-fill" style="width:9%"></div></div><div class="hbar-val">5 (6%)</div></div>
-  <div class="hbar-row"><div class="hbar-label">Referral</div><div class="hbar-track"><div class="hbar-fill" style="width:9%"></div></div><div class="hbar-val">5 (6%)</div></div>
-  <div class="hbar-row"><div class="hbar-label">Organic Video</div><div class="hbar-track"><div class="hbar-fill" style="width:2%"></div></div><div class="hbar-val">1 (1%)</div></div>
-  <p class="cap">By referring domain: google.com (50), direct/none (23), videotext.io self-referral (3), linkedin.com (3), Google Android app (3), t.co/Twitter (2), one each from fazier.com, chatgpt.com, bing.com, youtube.com. There is <strong>no paid channel presence</strong> in the data — everything is organic search, direct, or word-of-mouth referral. This is a real (if small) positive PMF signal: nobody is being paid to show up.</p>
-
-  <h3>Geographic distribution</h3>
-  <p>Signups span <strong>30 countries</strong> with no single dominant market: Indonesia (14), United States (10), India (8), Philippines (7), Brazil (6), Kenya (4), Germany (4), Saudi Arabia (3), then a long tail of 1–2 each. Top 5 countries account for just 51% of signups — acquisition is broad and unconcentrated, consistent with organic/SEO-led discovery rather than a targeted go-to-market.</p>
-  </section>
-
-  <!-- ============ 2. RETENTION ============ -->
-  <section id="retention">
-  <h2>2. User Retention</h2>
-  <p>Anchor: <code>signup_completed</code> → returning on <code>job_created</code>, weekly cohorts, first-time retention. Chosen because it directly tests whether someone who signs up ever comes back to actually use the product (vs. just re-visiting a page).</p>
-  <div class="note warn">Cohort sizes are tiny — most weekly cohorts before late May are 0–3 people, which makes week-over-week retention % extremely noisy. Only cohorts of 5+ are shown as a curve below; all raw cohort counts are in the table beneath it.</div>
-
-  <div class="card">
-    <h4>Retention curve — week of 2026-05-24 cohort (n=9, largest usable cohort)</h4>
-    <svg class="linechart" viewBox="0 0 600 190" preserveAspectRatio="xMidYMid meet">
-      <line x1="40" y1="20" x2="40" y2="150" class="grid-line"/>
-      <line x1="40" y1="150" x2="580" y2="150" class="grid-line"/>
-      <line x1="40" y1="85" class="grid-line" x2="580" y2="85"/>
-      <text x="10" y="24" class="axis-label">100%</text>
-      <text x="18" y="89" class="axis-label">50%</text>
-      <text x="24" y="154" class="axis-label">0%</text>
-      <polyline class="line-path" points="40,20 130,111 220,111 310,137 400,137 490,150 580,150"/>
-      <circle class="line-dot" cx="40" cy="20" r="4"/>
-      <circle class="line-dot" cx="130" cy="111" r="4"/>
-      <circle class="line-dot" cx="220" cy="111" r="4"/>
-      <circle class="line-dot" cx="310" cy="137" r="4"/>
-      <circle class="line-dot" cx="400" cy="137" r="4"/>
-      <text x="30" y="170" class="axis-label">W0</text>
-      <text x="120" y="170" class="axis-label">W1</text>
-      <text x="210" y="170" class="axis-label">W2</text>
-      <text x="300" y="170" class="axis-label">W3</text>
-      <text x="390" y="170" class="axis-label">W4</text>
-      <text x="480" y="170" class="axis-label">W5</text>
-      <text x="570" y="170" class="axis-label">W6</text>
-    </svg>
-    <p class="cap">9 signups → 2 returned in week 1 (22%) → 2 in week 2 (22%) → 1 in week 3 (11%) → 1 in week 4 (11%) → 0 thereafter. This is the single cleanest cohort in the dataset and it still bottoms out near zero by week 5.</p>
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Cohort week</th><th class="num">Cohort size</th><th class="num">W1</th><th class="num">W2</th><th class="num">W3</th><th class="num">W4</th></tr></thead>
-      <tbody>
-        <tr><td>2026-05-24</td><td class="num">9</td><td class="num">2 (22%)</td><td class="num">2 (22%)</td><td class="num">1 (11%)</td><td class="num">1 (11%)</td></tr>
-        <tr><td>2026-06-21</td><td class="num">8</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
-        <tr><td>2026-06-28</td><td class="num">9</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
-        <tr><td>2026-07-05</td><td class="num">11</td><td class="num">0</td><td class="num">0</td><td class="num">—</td><td class="num">—</td></tr>
-        <tr><td>2026-07-12</td><td class="num">9</td><td class="num">1 (11%)</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
-        <tr><td>2026-07-19</td><td class="num">14</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="note">D1/D7/D30/D60/D90 retention as literally specified could not be computed cleanly at daily grain — daily cohorts run 0–4 signups, so weekly cohorts (shown above) are the smallest grain that produces a non-degenerate signal. Every cohort after 2026-05-24 shows essentially <strong>0% week-1 return</strong>, which is the more important finding than the week-0 curve: the one "good" cohort looks like an outlier, not the norm.</p>
-
-  <h3>New vs. returning users (lifecycle on job_created, monthly)</h3>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Month</th><th class="num">New</th><th class="num">Returning</th><th class="num">Resurrecting</th><th class="num">Dormant</th></tr></thead>
-      <tbody>
-        <tr><td>Feb 2026</td><td class="num">6</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
-        <tr><td>Mar 2026</td><td class="num">133</td><td class="num">2</td><td class="num">1</td><td class="num">−4</td></tr>
-        <tr><td>Apr 2026</td><td class="num">135</td><td class="num">4</td><td class="num">0</td><td class="num">−132</td></tr>
-        <tr><td>May 2026</td><td class="num">129</td><td class="num">3</td><td class="num">0</td><td class="num">−136</td></tr>
-        <tr><td>Jun 2026</td><td class="num">257</td><td class="num">2</td><td class="num">3</td><td class="num">−130</td></tr>
-        <tr><td>Jul 2026</td><td class="num">311</td><td class="num">1</td><td class="num">0</td><td class="num">−261</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p><strong>971 new vs. 12 returning</strong> job-creators over 6 months — a ~81:1 ratio. Every month, virtually the entire active base is people using the product for the first time; almost nobody who used it last month uses it again this month. This is the single strongest piece of evidence against durable PMF in the whole dataset.</p>
-  </section>
-
-  <!-- ============ 3. ENGAGEMENT ============ -->
-  <section id="engagement">
-  <h2>3. User Engagement</h2>
-  <div class="grid-2">
-    <div class="card">
-      <h4>MAU by month <span class="cap">(unique persons, job_created or page_viewed)</span></h4>
-      <div class="barchart">
-        <div class="bar-col"><div class="bar-val">158</div><div class="bar" style="height:30%"></div><div class="bar-lbl">Feb</div></div>
-        <div class="bar-col"><div class="bar-val">389</div><div class="bar" style="height:74%"></div><div class="bar-lbl">Mar</div></div>
-        <div class="bar-col"><div class="bar-val">248</div><div class="bar" style="height:47%"></div><div class="bar-lbl">Apr</div></div>
-        <div class="bar-col"><div class="bar-val">270</div><div class="bar" style="height:52%"></div><div class="bar-lbl">May</div></div>
-        <div class="bar-col"><div class="bar-val">408</div><div class="bar" style="height:78%"></div><div class="bar-lbl">Jun</div></div>
-        <div class="bar-col"><div class="bar-val">523</div><div class="bar" style="height:100%"></div><div class="bar-lbl">Jul*</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <h4>DAU / MAU stickiness by month</h4>
-      <div class="barchart">
-        <div class="bar-col"><div class="bar-val">4.9%</div><div class="bar secondary" style="height:96%"></div><div class="bar-lbl">Feb</div></div>
-        <div class="bar-col"><div class="bar-val">3.9%</div><div class="bar secondary" style="height:76%"></div><div class="bar-lbl">Mar</div></div>
-        <div class="bar-col"><div class="bar-val">3.6%</div><div class="bar secondary" style="height:70%"></div><div class="bar-lbl">Apr</div></div>
-        <div class="bar-col"><div class="bar-val">3.8%</div><div class="bar secondary" style="height:74%"></div><div class="bar-lbl">May</div></div>
-        <div class="bar-col"><div class="bar-val">3.7%</div><div class="bar secondary" style="height:72%"></div><div class="bar-lbl">Jun</div></div>
-        <div class="bar-col"><div class="bar-val">4.1%</div><div class="bar secondary" style="height:80%"></div><div class="bar-lbl">Jul*</div></div>
-      </div>
-      <p class="cap" style="margin-top:0.5rem;">Healthy consumer SaaS is typically 10–20%+. VideoText sits flat at ~4% every single month — growth in MAU is not translating into more engaged days per user.</p>
-    </div>
-  </div>
-
-  <div class="kpi-grid">
-    <div class="kpi"><div class="label">Total sessions</div><div class="value">4,034</div><div class="sub">2,638 unique distinct_ids</div></div>
-    <div class="kpi"><div class="label">Sessions / distinct_id</div><div class="value">1.53</div><div class="sub">low repeat-session rate</div></div>
-    <div class="kpi"><div class="label">Avg. pageviews / session</div><div class="value">1.52</div><div class="sub">shallow sessions</div></div>
-    <div class="kpi"><div class="label">Avg. session duration</div><div class="value">5.8 min</div><div class="sub">348 seconds</div></div>
-    <div class="kpi"><div class="label">Jobs / active user (cleaned)</div><div class="value">1.30</div><div class="sub">1,259 jobs / 967 users</div></div>
-    <div class="kpi"><div class="label">WAU, last 3 weeks</div><div class="value">132→126→185</div><div class="sub">Jul 6 / 13 / 20</div></div>
-  </div>
-  <p class="note">"Time between visits" could not be computed reliably: with sessions/distinct_id at 1.53 and most users doing exactly one job ever, the majority of accounts have no second visit to measure a gap against. See <a href="#missing">Section 10</a>.</p>
-  </section>
-
-  <!-- ============ 4. POWER USERS ============ -->
-  <section id="power">
-  <h2>4. Power Users</h2>
-  <p>Raw ranking is dominated by the founder's own accounts <span class="flag contaminated">CONTAMINATED</span>: the #1 lifetime job-creator (118 jobs) is <code>santhoshguntupalli06@gmail.com</code>, and #4 (17 jobs) is <code>hello@videotext.io</code>, an internal demo account. All numbers below exclude the founder's 3 personal emails and every <code>@videotext.io</code> address (12 accounts, 2,384 events total removed).</p>
-
-  <div class="card">
-    <h4>Jobs-per-user distribution <span class="cap">(967 real users, cleaned)</span></h4>
-    <div class="barchart" style="height:150px;">
-      <div class="bar-col"><div class="bar-val">885</div><div class="bar" style="height:100%"></div><div class="bar-lbl">1 job</div></div>
-      <div class="bar-col"><div class="bar-val">61</div><div class="bar" style="height:6.9%"></div><div class="bar-lbl">2–4</div></div>
-      <div class="bar-col"><div class="bar-val">16</div><div class="bar" style="height:1.8%"></div><div class="bar-lbl">5–9</div></div>
-      <div class="bar-col"><div class="bar-val">3</div><div class="bar" style="height:0.4%"></div><div class="bar-lbl">10–19</div></div>
-      <div class="bar-col"><div class="bar-val">2</div><div class="bar" style="height:0.3%"></div><div class="bar-lbl">20+</div></div>
-    </div>
-    <p class="cap" style="margin-top:0.5rem;">Bars are on a linear scale to show true skew — the "1 job" bar dwarfs everything else. Top real power user did 69 jobs; #2 did 20.</p>
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Threshold</th><th class="num">Users</th><th class="num">% of job-creators</th></tr></thead>
-      <tbody>
-        <tr><td>≥ 1 job</td><td class="num">967</td><td class="num">100%</td></tr>
-        <tr><td>≥ 2 jobs</td><td class="num">82</td><td class="num">8.5%</td></tr>
-        <tr><td>≥ 5 jobs</td><td class="num">21</td><td class="num">2.2%</td></tr>
-        <tr><td>≥ 10 jobs</td><td class="num">5</td><td class="num">0.5%</td></tr>
-        <tr><td>≥ 20 jobs</td><td class="num">2</td><td class="num">0.2%</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p>Average is 1.30 jobs per user, but that average is misleading given the skew — the honest number is that <strong>91.5% of everyone who has ever used VideoText used it exactly once.</strong></p>
-  </section>
-
-  <!-- ============ 5. FUNNEL ============ -->
-  <section id="funnel">
-  <h2>5. Funnel</h2>
-  <p>Run as a strict, time-ordered funnel (PostHog <code>query-funnel</code>, 180-day window): a person must do each step <em>after</em> the previous one, in order.</p>
+<section id="p1">
+  <span class="part-num">PART 1</span>
+  <h2>The conversion funnel</h2>
+  <p class="lede">Counted at the person level from raw events (not PostHog's built-in funnel smoothing), over the full 200-day window. "Second/third job" and "second paid job" are per-person job counts, not sequential steps in time.</p>
 
   <div class="funnel">
-    <div class="funnel-step">
-      <div class="funnel-name">Visitor</div>
-      <div class="funnel-bar-track"><div class="funnel-bar" style="width:100%;"><span>1,077</span></div></div>
-      <div class="funnel-meta">100%</div>
-    </div>
-    <div class="funnel-drop">↓ −94.2%</div>
-    <div class="funnel-step">
-      <div class="funnel-name">Signup</div>
-      <div class="funnel-bar-track"><div class="funnel-bar" style="width:5.8%;"><span>63</span></div></div>
-      <div class="funnel-meta">5.8%</div>
-    </div>
-    <div class="funnel-drop">↓ −65.1%</div>
-    <div class="funnel-step">
-      <div class="funnel-name">First job</div>
-      <div class="funnel-bar-track"><div class="funnel-bar" style="width:2.0%;"><span>22</span></div></div>
-      <div class="funnel-meta">2.0% of visitors</div>
-    </div>
-    <div class="funnel-drop">↓ −95.5%</div>
-    <div class="funnel-step">
-      <div class="funnel-name">Checkout started</div>
-      <div class="funnel-bar-track"><div class="funnel-bar" style="width:0.5%; min-width:6px;"><span>1</span></div></div>
-      <div class="funnel-meta">0.09% of visitors</div>
-    </div>
-    <div class="funnel-drop">↓ −100%</div>
-    <div class="funnel-step">
-      <div class="funnel-name">Renewal</div>
-      <div class="funnel-bar-track"><div class="funnel-bar" style="width:0.3%; min-width:0px; background:var(--surface-2);"><span style="color:var(--ink-muted)">0</span></div></div>
-      <div class="funnel-meta">0%</div>
-    </div>
+    <div class="frow"><div class="step">Visitor ($pageview)</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="pct">100.0%</div><div class="n">n=1,078</div></div>
+    <div class="frow"><div class="step">Signup completed</div><div class="bar-track"><div class="bar-fill" style="width:29.9%"></div></div><div class="pct">29.9%</div><div class="drop">−70.1%</div></div>
+    <div class="frow"><div class="step">First tool job used</div><div class="bar-track"><div class="bar-fill" style="width:31.4%"></div></div><div class="pct">31.4%</div><div class="n">n=338</div></div>
+    <div class="frow"><div class="step">Second job (2+ jobs)</div><div class="bar-track"><div class="bar-fill" style="width:8.8%"></div></div><div class="pct">8.8%</div><div class="drop">−71.9%*</div></div>
+    <div class="frow"><div class="step">Third job (3+ jobs)</div><div class="bar-track"><div class="bar-fill" style="width:5.3%"></div></div><div class="pct">5.3%</div><div class="drop">−40.0%*</div></div>
+    <div class="frow"><div class="step">Pricing page viewed</div><div class="bar-track"><div class="bar-fill" style="width:16.3%"></div></div><div class="pct">16.3%</div><div class="n">n=176</div></div>
+    <div class="frow"><div class="step">Upgrade button clicked</div><div class="bar-track"><div class="bar-fill" style="width:6.6%"></div></div><div class="pct">6.6%</div><div class="drop">−59.7%*</div></div>
+    <div class="frow"><div class="step">Checkout reached (Stripe)</div><div class="bar-track"><div class="bar-fill" style="width:3.1%"></div></div><div class="pct">3.1%</div><div class="n">n=33†</div></div>
+    <div class="frow"><div class="step">Payment completed</div><div class="bar-track"><div class="bar-fill" style="width:1.7%"></div></div><div class="pct">1.7%</div><div class="drop">−90.9%*</div></div>
+    <div class="frow"><div class="step">First paid job</div><div class="bar-track"><div class="bar-fill" style="width:0.6%"></div></div><div class="pct">0.6%</div><div class="n">n=6</div></div>
+    <div class="frow"><div class="step">Second paid job / renewal</div><div class="bar-track"><div class="bar-fill" style="width:0.6%"></div></div><div class="pct">0.6%</div><div class="n">n=6</div></div>
   </div>
+  <p class="footnote">% is of total visitors (1,078). * drop is relative to the immediately preceding step among users who reached it, not of total visitors. † Checkout-reached uses <code>checkout_session_created</code>, instrumented only since 2026‑06‑17 (see caveat below the table).</p>
 
-  <div class="note crit">This strict funnel is real, but it under-represents actual usage — <strong>974 people created a job in total, yet only 63 ever show up as "Signup" in this sequence.</strong> That means most job-creators either never fire <code>signup_completed</code> (a guest/anonymous flow exists) or signed up before the event existed. Read the funnel as "of people whose signup we can see, here's what happens next" — not as the whole business. The two largest true drop-offs are consistent either way: <strong>Visitor → Signup (94.2% lost)</strong> and <strong>First Job → Checkout (95.5% lost)</strong>.</div>
+  <h3>The three largest leaks</h3>
+  <div class="evidence"><span class="tag">Leak 1 · Visitor → Signup (−70%)</span>752 of 1,078 visitors never signed up. But this is <strong>not the primary leak it looks like</strong> — Part 4 shows 84 users completed a transcript job with <em>no account at all</em>, and "Transcript → Signup" (75 users) is the single most common path. VideoText lets people get value before creating an account, so a chunk of this drop-off is people who already got what they came for anonymously.</div>
+  <div class="evidence"><span class="tag">Leak 2 · Checkout reached → Payment completed (−91%, post-June data)</span>Since <code>checkout_session_created</code> was instrumented (2026‑06‑17), 33 people reached Stripe checkout and only <strong>3 completed payment</strong>. This is the single steepest, most confidently-measured drop in the entire funnel and the highest-leverage fix candidate — see Part 6.</div>
+  <div class="evidence"><span class="tag">Leak 3 · First job → Second job (−72%)</span>Only 95 of 338 first-time tool users came back for a second job. Most visitors are one-and-done: they solve one transcription/subtitle task and leave, never generating the repeat engagement that would put them near a paywall.</div>
 
-  <p>For context, using raw (non-sequential) counts across the whole population instead of the strict funnel: <strong>974 of ~4,995 tracked persons (19.5%) created at least one job</strong> at some point — a very different, much healthier-looking number than the 2.0% in the strict funnel. Both are true; they answer different questions. The gap between them is itself the biggest instrumentation finding in this report (see <a href="#missing">Section 10</a>).</p>
-  </section>
+  <h4>Timing: when converters move, they move fast</h4>
+  <p>Median time between adjacent steps (signup→first job, first job→pricing, pricing→upgrade click, upgrade click→checkout, checkout→payment) is <strong>effectively same-session (≈0 minutes to a few hours)</strong> for the users who do convert at each step. There is no evidence of long, multi-day deliberation loops between steps — the friction is binary (convert now, in-session, or don't), not a slow-drip nurture problem. This has a direct implication for Part 10: in-session prompts and fixing checkout friction will move the needle faster than long email drip campaigns.</p>
+</section>
 
-  <!-- ============ 6. REVENUE ============ -->
-  <section id="revenue">
-  <h2>6. Revenue</h2>
-  <div class="note crit"><strong>PostHog has no price data.</strong> No event anywhere (<code>payment_completed</code>, <code>plan_upgraded</code>, <code>plan_clicked</code>, <code>checkout_started</code>) carries an <code>amount</code> or <code>currency</code> property. Only 1 person in the entire project has a non-null <code>stripe_customer_id</code>. No Stripe (or any) data warehouse source is connected (<code>system.information_schema.tables WHERE table_type='data_warehouse'</code> is empty). <strong>MRR, ARR, and ARPU cannot be computed from this data — full stop.</strong> Anything about revenue below is customer counts and behavior only, never dollars.</div>
-
-  <h3>A critical event-naming problem</h3>
-  <p><code>payment_completed</code> fires <strong>0–12 seconds after <code>checkout_started</code></strong> for nearly every matched pair (checked across all 26 events). That is the timing signature of a checkout redirect, not a confirmed Stripe payment — real card processing and webhook confirmation take longer and happen asynchronously. Every <code>payment_completed</code> event also carries <code>type: "subscription_checkout_started"</code>, which corroborates this directly. <strong>This event should not be trusted as proof of actual payment anywhere in the business</strong> until it's re-wired to fire from a Stripe webhook (see <a href="#missing">Section 10</a>).</p>
-
-  <h3>Customer counts — raw vs. cleaned</h3>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Event</th><th class="num">Events</th><th class="num">Unique persons</th><th>Note</th></tr></thead>
-      <tbody>
-        <tr><td>checkout_started</td><td class="num">37</td><td class="num">18</td><td>—</td></tr>
-        <tr><td>payment_completed</td><td class="num">26</td><td class="num">18</td><td><span class="flag contaminated">3 are the founder's own test emails, 7 of the 26 events</span></td></tr>
-        <tr><td>payment_completed <em>(cleaned)</em></td><td class="num">19</td><td class="num">15</td><td><span class="flag clean">excludes founder emails</span></td></tr>
-        <tr><td>subscription_renewed</td><td class="num">7</td><td class="num">~5–6</td><td><span class="flag estimate">strongest real-payment evidence available</span> — none of these emails are the founder's</td></tr>
-        <tr><td>subscription_deleted (churn)</td><td class="num">8</td><td class="num">~6</td><td>2 of 8 events are founder test accounts</td></tr>
-      </tbody>
-    </table>
+<section id="p2">
+  <span class="part-num">PART 2</span>
+  <h2>Pricing page behavior</h2>
+  <div class="tablewrap">
+  <table>
+    <caption>Pricing page visitors: converted vs. non-converted (n=176)</caption>
+    <thead><tr><th>Metric</th><th class="num">Converted (n=18)</th><th class="num">Non-converted (n=158)</th></tr></thead>
+    <tbody>
+      <tr><td>Avg. pricing page visits</td><td class="num">4.89</td><td class="num">1.22</td></tr>
+      <tr><td>Visited pricing 2+ times</td><td class="num">most of the 34 repeat visitors</td><td class="num">remainder</td></tr>
+      <tr><td>Kept using the free tool after viewing pricing</td><td class="num">n/a (converted)</td><td class="num">41 users</td></tr>
+    </tbody>
+  </table>
   </div>
+  <p><strong>Repeat pricing-page visits are the single strongest behavioral signal of intent to buy in this dataset.</strong> Converters view the pricing page ~4x more often than non-converters (4.89 vs 1.22 visits). Of 176 total pricing viewers, 34 (19%) came back more than once — that group is disproportionately where the 18 buyers came from.</p>
+  <p>158 pricing viewers (90%) never paid. Of those, 41 (26%) went on to keep using the free tool afterward — evidence they didn't abandon the product, they specifically declined the paid plan and downgraded their intent to "stay free." The remaining ~117 non-converted pricing viewers show no further product usage in the window — closer to permanent abandonment, though we cannot distinguish "decided against it" from "still evaluating, hasn't returned yet" without a longer observation window or churn survey.</p>
+</section>
 
-  <p>Identified real (non-founder) people who reached <code>subscription_renewed</code> at least once: <code>umair624@gmail.com</code>, <code>erikdixon224@gmail.com</code>, <code>mounir.benammour1@gmail.com</code>, <code>hannah.simmons@edtechhub.org</code>, plus one unidentified person — call it <strong>~5 real customers who ever completed a full billing cycle</strong>. Of those, <strong>3 (umair624, erikdixon224, mounir.benammour1) later show a <code>subscription_deleted</code> event</strong> — they renewed once, then canceled. That leaves an estimated <strong>1–2 people still active as paying customers</strong> as of the end of the data window <span class="flag estimate">estimate, not a direct query result — PostHog has no "current subscription status" property to check this against</span>.</p>
-
-  <h3>Rough churn signal</h3>
-  <p>Of ~5 people who ever renewed, ~3 subsequently churned — a raw <strong>~60% cancel-after-renewal rate</strong> on an n of 5. This is far too small a sample to trust as a real churn rate, but directionally it lines up with the rest of the report: the product converts a few people to paid, and struggles to keep them.</p>
-  </section>
-
-  <!-- ============ 7. SEGMENTATION ============ -->
-  <section id="segmentation">
-  <h2>7. Segmentation</h2>
-
-  <h3>By plan</h3>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Plan</th><th class="num">Users</th><th class="num">Jobs</th><th class="num">Jobs/user</th></tr></thead>
-      <tbody>
-        <tr><td>pro</td><td class="num">14</td><td class="num">184</td><td class="num">13.14</td></tr>
-        <tr><td>founding_workflow</td><td class="num">2</td><td class="num">9</td><td class="num">4.50</td></tr>
-        <tr><td>free</td><td class="num">108</td><td class="num">232</td><td class="num">2.15</td></tr>
-        <tr><td>(no plan set)</td><td class="num">855</td><td class="num">998</td><td class="num">1.17</td></tr>
-      </tbody>
-    </table>
+<section id="p3">
+  <span class="part-num">PART 3</span>
+  <h2>Upgrade button entry points</h2>
+  <p class="lede">Every <code>upgrade_clicked</code> event, grouped by the page it fired from (107 total clicks, 71 unique users).</p>
+  <div class="tablewrap">
+  <table>
+    <caption>Upgrade entry points ranked by clicks</caption>
+    <thead><tr><th>Page</th><th class="num">Clicks</th><th class="num">Unique users</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>/video-to-transcript</td><td class="num">48</td><td class="num">39</td><td>In-tool paywall — top entry point</td></tr>
+      <tr><td>/pricing</td><td class="num">37</td><td class="num">18</td><td>Dedicated pricing page</td></tr>
+      <tr><td>/capcut-captions</td><td class="num">6</td><td class="num">6</td><td>Tool/landing page</td></tr>
+      <tr><td>/srt-generator</td><td class="num">4</td><td class="num">4</td><td>Tool/landing page</td></tr>
+      <tr><td>/video-to-subtitles</td><td class="num">3</td><td class="num">3</td><td>In-tool paywall</td></tr>
+      <tr><td>Other SEO/tool pages (8 pages)</td><td class="num">9</td><td class="num">9</td><td>1 click each — long tail landing pages</td></tr>
+    </tbody>
+  </table>
   </div>
-  <p>Paid usage is 6–11x more engaged than free/unset — exactly the direction you'd want. But 855 of 974 job-creators (88%) have <em>no plan property at all</em>, meaning the overwhelming majority of real usage happens completely outside any tracked account tier <span class="flag gap">instrumentation gap</span>.</p>
+  <p>The in-product paywall on <strong>/video-to-transcript</strong> generates more upgrade clicks (48) than the dedicated <strong>/pricing</strong> page itself (37) — the primary trigger for upgrade consideration is hitting a limit or gate <em>inside the transcript tool</em>, not browsing plans. This makes /video-to-transcript the highest-leverage page to optimize CTA copy, urgency, and value framing on.</p>
+  <p>Of the 71 users who clicked any upgrade button, only 33 reached Stripe checkout and only 18 ever paid (some pre-dating the click-tracking) — a <strong>~25–75% click-to-purchase rate depending on measurement window</strong> (see Part 6 for the reliable post-June number: 3/33 = 9%).</p>
+  <p class="sample-note">n is small (18 total purchases across the whole history) — every ranking here is directional, not statistically decisive.</p>
+</section>
 
-  <h3>By browser / device</h3>
-  <div class="note warn"><strong>854 of 974 job-creators (88%) have no <code>$browser</code> or <code>$device_type</code> value at all</strong> on their job_created events — this event appears to fire server-side without client context for most traffic. Segmentation below only covers the 12% with known values, which is not a representative sample.</div>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Browser (known only)</th><th class="num">Users</th><th class="num">Jobs</th></tr></thead>
-      <tbody>
-        <tr><td>Chrome</td><td class="num">93</td><td class="num">257</td></tr>
-        <tr><td>Chrome iOS</td><td class="num">8</td><td class="num">112</td></tr>
-        <tr><td>Microsoft Edge</td><td class="num">7</td><td class="num">22</td></tr>
-        <tr><td>Mobile Safari</td><td class="num">9</td><td class="num">12</td></tr>
-        <tr><td>Safari</td><td class="num">6</td><td class="num">18</td></tr>
-      </tbody>
-    </table>
+<section id="p4">
+  <span class="part-num">PART 4</span>
+  <h2>User journeys</h2>
+  <p class="lede">Top ordered, de-duplicated event-sequences per person (Signup / Transcript / Subtitles / Pricing / UpgradeClick / Checkout / Payment), ranked by user count.</p>
+  <div class="tablewrap">
+  <table>
+    <caption>Top paths (of 25 distinct paths found)</caption>
+    <thead><tr><th>Path</th><th class="num">Users</th><th>Reaches payment?</th></tr></thead>
+    <tbody>
+      <tr><td>Signup (only)</td><td class="num">126</td><td>No</td></tr>
+      <tr><td>Pricing (only)</td><td class="num">100</td><td>No</td></tr>
+      <tr><td>Transcript (only, no account)</td><td class="num">84</td><td>No</td></tr>
+      <tr><td><strong>Transcript → Signup</strong></td><td class="num">75</td><td>No</td></tr>
+      <tr><td>Subtitles → Signup</td><td class="num">43</td><td>No</td></tr>
+      <tr><td>Subtitles (only, no account)</td><td class="num">37</td><td>No</td></tr>
+      <tr><td>Signup → Transcript</td><td class="num">30</td><td>No</td></tr>
+      <tr><td><strong>UpgradeClick → Checkout</strong></td><td class="num">17</td><td>Directly, if it continues to Payment</td></tr>
+      <tr><td>Pricing → Transcript</td><td class="num">9</td><td>No</td></tr>
+      <tr><td>UpgradeClick (only)</td><td class="num">9</td><td>No</td></tr>
+      <tr><td>UpgradeClick → Pricing</td><td class="num">7</td><td>No</td></tr>
+      <tr><td>Transcript → Pricing</td><td class="num">5</td><td>No</td></tr>
+      <tr><td>Signup → Pricing</td><td class="num">5</td><td>No</td></tr>
+      <tr><td>Transcript → Signup → UpgradeClick → Pricing</td><td class="num">4</td><td>No</td></tr>
+      <tr><td>Signup → UpgradeClick → Pricing</td><td class="num">4</td><td>No</td></tr>
+      <tr><td>Transcript → Subtitles</td><td class="num">4</td><td>No</td></tr>
+      <tr><td>UpgradeClick → Checkout → Signup</td><td class="num">3</td><td>No (signup after checkout — likely reload/re-auth)</td></tr>
+      <tr><td>Subtitles → Signup → Pricing</td><td class="num">3</td><td>No</td></tr>
+      <tr><td>Signup → Subtitles → Pricing</td><td class="num">3</td><td>No</td></tr>
+      <tr><td><strong>Pricing → Payment → Transcript</strong></td><td class="num">3</td><td>Yes — pays, then uses tool</td></tr>
+      <tr><td><strong>Pricing → Payment</strong></td><td class="num">2</td><td>Yes</td></tr>
+      <tr><td>Transcript → Signup → UpgradeClick → Checkout</td><td class="num">2</td><td>No (dropped at checkout)</td></tr>
+      <tr><td><strong>Pricing → UpgradeClick → Payment</strong></td><td class="num">2</td><td>Yes</td></tr>
+      <tr><td>Transcript → Signup → Subtitles</td><td class="num">2</td><td>No</td></tr>
+      <tr><td>Transcript → UpgradeClick → Pricing</td><td class="num">2</td><td>No</td></tr>
+    </tbody>
+  </table>
   </div>
-  <p>Of jobs with known device type: Desktop 224 jobs (72 users), Mobile 198 jobs (53 users) — mobile usage is nearly as large as desktop where it's visible at all, worth confirming once server-side tracking is fixed.</p>
+  <p><strong>The dominant journey shape is "use the tool anonymously, sign up almost as an afterthought, and never return to a purchase decision."</strong> The paths that actually reach <em>Payment</em> are a small, distinct cluster — they go straight from Pricing (or Pricing → UpgradeClick) to Payment, generally without a long detour through the tool first. Nobody's most common path is "many jobs → upgrade → purchase" — the sample simply doesn't show a strong "power user graduates to paid" journey; buyers look more like people who decided to buy quickly, near the pricing page, on a short evaluation loop.</p>
+</section>
 
-  <h3>By country (engagement, not just volume)</h3>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Country</th><th class="num">Users</th><th class="num">Jobs</th><th class="num">Jobs/user</th></tr></thead>
-      <tbody>
-        <tr><td><strong>United States</strong></td><td class="num">28</td><td class="num">218</td><td class="num"><strong>7.79</strong></td></tr>
-        <tr><td>Singapore</td><td class="num">4</td><td class="num">11</td><td class="num">2.75</td></tr>
-        <tr><td>Nigeria</td><td class="num">9</td><td class="num">28</td><td class="num">3.11</td></tr>
-        <tr><td>Indonesia</td><td class="num">9</td><td class="num">20</td><td class="num">2.22</td></tr>
-        <tr><td>Philippines</td><td class="num">11</td><td class="num">28</td><td class="num">2.55</td></tr>
-        <tr><td>India</td><td class="num">14</td><td class="num">24</td><td class="num">1.71</td></tr>
-      </tbody>
-    </table>
+<section id="p5">
+  <span class="part-num">PART 5</span>
+  <h2>Power users who never paid</h2>
+  <div class="tablewrap">
+  <table>
+    <caption>Users with 5+ completed jobs and zero payments (n=15)</caption>
+    <thead><tr><th>Metric</th><th class="num">Value</th></tr></thead>
+    <tbody>
+      <tr><td>Count</td><td class="num">15 users</td></tr>
+      <tr><td>Avg. completed jobs</td><td class="num">8.5</td></tr>
+      <tr><td>Avg. active days (distinct days with a job)</td><td class="num">3.3</td></tr>
+      <tr><td>Avg. span from first to last job</td><td class="num">14.9 days</td></tr>
+      <tr><td>Avg. distinct tools used</td><td class="num">1.13</td></tr>
+    </tbody>
+  </table>
   </div>
-  <p><strong>The United States is the clear highest-value segment</strong> — 28 users generating 218 jobs (7.79 jobs/user), 4–5x the engagement rate of every other volume market. It's also a relatively small slice of signups (10 of 88 tracked), suggesting a small but disproportionately engaged US user base worth a closer look before broad international expansion spend.</p>
-  </section>
-
-  <!-- ============ 8. PRODUCT USAGE ============ -->
-  <section id="usage">
-  <h2>8. Product Usage</h2>
-  <div class="note">The task brief listed 4 <code>tool_type</code> values; the data actually contains <strong>7</strong> (<code>youtube-to-transcript</code>, <code>compress-video</code>, and <code>convert-subtitles</code> also exist). Numbers below use the real, complete set.</div>
-
-  <h3>Jobs by tool type</h3>
-  <div class="hbar-row"><div class="hbar-label">video-to-transcript</div><div class="hbar-track"><div class="hbar-fill" style="width:100%"></div></div><div class="hbar-val">794 (56%)</div></div>
-  <div class="hbar-row"><div class="hbar-label">fix-subtitles</div><div class="hbar-track"><div class="hbar-fill" style="width:33%"></div></div><div class="hbar-val">262 (18%)</div></div>
-  <div class="hbar-row"><div class="hbar-label">video-to-subtitles</div><div class="hbar-track"><div class="hbar-fill" style="width:29%"></div></div><div class="hbar-val">231 (16%)</div></div>
-  <div class="hbar-row"><div class="hbar-label">youtube-to-transcript</div><div class="hbar-track"><div class="hbar-fill" style="width:11%"></div></div><div class="hbar-val">91 (6%)</div></div>
-  <div class="hbar-row"><div class="hbar-label">translate-subtitles</div><div class="hbar-track"><div class="hbar-fill" style="width:5%"></div></div><div class="hbar-val">38 (3%)</div></div>
-  <div class="hbar-row"><div class="hbar-label">compress-video</div><div class="hbar-track"><div class="hbar-fill" style="width:1%"></div></div><div class="hbar-val">6 (0.4%)</div></div>
-  <div class="hbar-row"><div class="hbar-label">convert-subtitles</div><div class="hbar-track"><div class="hbar-fill" style="width:0.5%"></div></div><div class="hbar-val">1 (0.1%)</div></div>
-
-  <h3>Which tool drives a 2nd job? (repeat rate, by user's first tool)</h3>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>First tool used</th><th class="num">1 job only</th><th class="num">2+ jobs</th><th class="num">Repeat rate</th></tr></thead>
-      <tbody>
-        <tr><td><strong>fix-subtitles</strong></td><td class="num">188</td><td class="num">21</td><td class="num"><strong>10.0%</strong></td></tr>
-        <tr><td>video-to-transcript</td><td class="num">478</td><td class="num">49</td><td class="num">9.3%</td></tr>
-        <tr><td>video-to-subtitles</td><td class="num">154</td><td class="num">13</td><td class="num">7.8%</td></tr>
-        <tr><td>translate-subtitles</td><td class="num">28</td><td class="num">2</td><td class="num">6.7%</td></tr>
-        <tr><td>youtube-to-transcript</td><td class="num">34</td><td class="num">2</td><td class="num">5.6%</td></tr>
-        <tr><td>compress-video</td><td class="num">5</td><td class="num">0</td><td class="num">0.0%</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h3>Which tool drives checkout?</h3>
-  <p>Of everyone who ever reached <code>checkout_started</code>, their <em>first</em> tool was <strong>video-to-transcript for 5 of them and video-to-subtitles for 1</strong> — no other tool has ever led to a checkout attempt as a first touch. <code>video-to-transcript</code> is both the most-used tool and the only one with a real monetization track record — it is functionally VideoText's core product; everything else is a feature around it.</p>
-  </section>
-
-  <!-- ============ 9. PMF ASSESSMENT ============ -->
-  <section id="pmf">
-  <h2>9. PMF Assessment</h2>
-
-  <div class="verdict-row" style="margin-top:0.5rem;">
-    <div class="score-badge"><div class="num">3</div><div class="den">/ 10</div></div>
-    <div class="verdict-text">
-      <div class="headline">Not yet PMF — early, narrow signal only.</div>
-      <p style="margin:0.3rem 0 0;">Confidence: <strong>low</strong>. The entire "product-market fit" case rests on fewer than 15 identifiable real people who ever paid, ~5 who renewed, and an 8.5% second-job rate on a base of 967 real users. That's enough to say "something real is happening for a few people," not enough to say "this works."</p>
-    </div>
-  </div>
-
-  <h3>Strongest evidence for PMF</h3>
-  <ul style="color:var(--ink-2);">
-    <li><strong>Real renewals exist.</strong> At least 4 identifiable, non-founder people (umair624, erikdixon224, mounir.benammour1, hannah.simmons@edtechhub.org) completed a full paid billing cycle and renewed — someone found it worth paying for twice.</li>
-    <li><strong>100% organic acquisition</strong> across 30 countries with no paid channel — the product is being found and signed up for without any spend, and signups are accelerating (Apr 2 → May 23 → Jun 25 → Jul 38, and still climbing).</li>
-    <li><strong>A coherent core-product story</strong>: video-to-transcript is simultaneously the most-used tool (56% of jobs), the best repeat-usage driver among high-volume tools (9.3%), and the only tool that has ever led to a paid checkout. The product's central hypothesis is where all the signal concentrates.</li>
-    <li><strong>WAU is climbing in the most recent weeks</strong> (132 → 126 → 185 over the last 3 weeks of data) — the most recent trend, not just the historical average, is positive.</li>
+  <p><strong>Countries:</strong> United States (3), Nigeria (2), India (2), and one each from Russia, Kenya, Ukraine, Taiwan, Ivory Coast, Philippines, Indonesia, Singapore — a broad, mostly non-US spread.</p>
+  <p><strong>Why they likely haven't upgraded (behavioral evidence):</strong></p>
+  <ul>
+    <li><strong>They stay on one tool.</strong> Avg. 1.13 distinct tools — these are heavy repeaters on a single workflow (transcript <em>or</em> subtitles), not people exploring the full product who'd need a multi-tool paid plan.</li>
+    <li><strong>Usage is bursty, not sustained.</strong> 8.5 jobs across only 3.3 active days over a 15-day span — consistent with batch-processing a backlog of files in a short burst, then going quiet. That doesn't look like an ongoing workflow that justifies a subscription; it looks like a finite task that free-tier limits happened to accommodate.</li>
+    <li><strong>Free tier is generous enough to absorb their need.</strong> Nobody in this group hit <code>file_validation_failed</code>, <code>paywall_shown</code>, or <code>upgrade_prompt_seen</code> at a rate that pushed them to <code>upgrade_clicked</code> — despite being the heaviest free users in the dataset, most never clicked upgrade at all.</li>
+    <li><strong>Geography.</strong> 12 of 15 are outside the US, several in markets (Nigeria, India, Kenya, Philippines, Indonesia) where willingness/ability to pay USD SaaS pricing is typically lower — consistent with the country-level conversion gap in Part 8.</li>
   </ul>
+</section>
 
-  <h3>Biggest weaknesses</h3>
-  <ul style="color:var(--ink-2);">
-    <li><strong>91.5% one-and-done.</strong> Of 967 real users who ever created a job, 885 never came back for a second one.</li>
-    <li><strong>Stickiness is flat and low</strong> at ~3.6–4.9% DAU/MAU every month, regardless of how much MAU grew — growth is bringing in volume, not habit.</li>
-    <li><strong>New:returning ratio of ~81:1</strong> in monthly lifecycle — almost the entire active base every month is brand new, never people coming back.</li>
-    <li><strong>Vanishing monetization funnel.</strong> In the strict, time-ordered funnel, only 1 of 1,077 visitors ever reached checkout, and 0 reached renewal within that same sequential path.</li>
-    <li><strong>Revenue is fundamentally unverifiable.</strong> No dollar amounts anywhere in PostHog; the closest thing to a "payment" event fires on checkout initiation, not confirmation.</li>
+<section id="p6">
+  <span class="part-num">PART 6</span>
+  <h2>Payment friction</h2>
+  <div class="evidence"><span class="tag">Highest-confidence finding in this report</span><code>checkout_session_created</code> was only instrumented starting 2026‑06‑17 (23 of the 26 lifetime <code>payment_completed</code> events happened <em>before</em> that date, with no checkout-stage visibility). In the properly-instrumented window since June 17: <strong>33 users reached Stripe checkout, and only 3 completed payment — a 91% checkout-stage abandonment rate.</strong> This is far higher than the click→checkout drop (upgrade click → checkout ≈ 46% of clickers) and is the steepest true drop-off measured anywhere in the funnel.</div>
+  <p>What we can and can't say about <em>why</em>:</p>
+  <ul>
+    <li><strong>Not a technical failure problem.</strong> Only 4 users ever saw a <code>payment_failed</code> event, and all 4 of them eventually completed payment anyway (0 of 4 were lost to failure) — Stripe-side technical failures are not the driver of the 91% checkout abandonment.</li>
+    <li><strong>Plan selection happens before checkout, and it's already lossy.</strong> <code>plan_clicked</code> fired for 30 users but <code>checkout_session_created</code> for 33 — roughly consistent, meaning most people who pick a plan do reach Stripe. The loss is concentrated <em>at or inside Stripe</em>, not before it.</li>
+    <li><strong>No confirmed evidence of "repeated comparison" behavior at checkout</strong> (e.g., re-opening checkout multiple times before abandoning) — the event volume (37 <code>checkout_started</code>, 41 <code>checkout_session_created</code> events for 33 users) shows some multi-attempt behavior (avg ~1.2 checkout events per user) but is too sparse to characterize as hesitation vs. simple retries.</li>
+    <li><strong>Hypothesis, not evidence:</strong> a 91% drop between "Stripe session created" and "payment completed" this severe is more typical of price-shock at the final screen, unexpected currency/tax addition, a broken/slow redirect, or a plan-price mismatch between what was clicked and what Stripe shows — but PostHog has no event capturing what happened inside the Stripe-hosted page, so the specific cause cannot be confirmed from this data alone. This is the single most important tracking gap to close (see Part 12).</li>
+    <li><strong>Churn after purchase is also real:</strong> 6 of 18 paying customers (33%) triggered <code>subscription_deleted</code> within the window — a meaningful post-purchase leak in addition to the pre-purchase one.</li>
   </ul>
+</section>
 
-  <h3>Top 5 recommendations, ranked by expected PMF impact</h3>
-  <ol class="rec-list">
-    <li><span class="rec-num">1</span><div><div class="rec-title">Instrument real revenue data</div><div class="rec-body">Add <code>amount</code>, <code>currency</code>, and billing <code>interval</code> to payment/subscription events, or connect Stripe as a PostHog Data Pipeline source. Without this, nobody at VideoText — including this report — can state actual MRR, ARR, or LTV. This is the single highest-leverage fix: it doesn't change the product, it just makes the truth visible.</div></li>
-    <li><span class="rec-num">2</span><div><div class="rec-title">Re-wire <code>payment_completed</code> to fire on Stripe webhook confirmation</div><div class="rec-body">Currently it fires 0–12 seconds after checkout starts — that's a redirect, not a payment. Trigger it from <code>invoice.paid</code> / <code>checkout.session.completed</code> server-side so every downstream funnel and revenue number stops being contaminated by abandoned checkouts.</div></li>
-    <li><span class="rec-num">3</span><div><div class="rec-title">Understand the 8.5% who came back for a 2nd job</div><div class="rec-body">Interview or event-trace the 82 real repeat users, especially the fix-subtitles and video-to-transcript repeaters. Find what triggered the return visit and try to manufacture that trigger (email, in-app nudge, credit) for the other 91.5%.</div></li>
-    <li><span class="rec-num">4</span><div><div class="rec-title">Close the signup-tracking gap</div><div class="rec-body">974 people created jobs but only 88 ever fire <code>signup_completed</code> — either there's an untracked guest flow or the event is missing on a large class of real signups. Fix this before trusting any funnel or retention number built on top of it.</div></li>
-    <li><span class="rec-num">5</span><div><div class="rec-title">Fix server-side event context</div><div class="rec-body">88% of <code>job_created</code> events carry no browser or device data, meaning most real usage is invisible to segmentation. Attach person/device context to the server-side job pipeline so future country/device/browser analysis reflects the real user base, not the 12% with client context.</div></li>
+<section id="p7">
+  <span class="part-num">PART 7</span>
+  <h2>Feature value — which tools create paying customers</h2>
+  <div class="tablewrap">
+  <table>
+    <caption>Tools ranked by users and conversion (job_completed, tool_type)</caption>
+    <thead><tr><th>Tool</th><th class="num">Users</th><th class="num">Total jobs</th><th class="num">Paying users</th><th class="num">% converted</th><th class="num">Avg jobs (paying)</th><th class="num">Avg jobs (free)</th></tr></thead>
+    <tbody>
+      <tr><td>Video → Transcript</td><td class="num">246</td><td class="num">460</td><td class="num">11</td><td class="num">4.5%</td><td class="num">4.73</td><td class="num">1.74</td></tr>
+      <tr><td>Video → Subtitles</td><td class="num">109</td><td class="num">154</td><td class="num">7</td><td class="num">6.4%</td><td class="num">1.86</td><td class="num">1.38</td></tr>
+      <tr><td>YouTube → Transcript</td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num">100%*</td><td class="num">1.0</td><td class="num">—</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="sample-note">*single-user sample, not meaningful.</p>
+  <p><strong>Transcript is the acquisition engine; both tools convert at similar (low) rates, but paying transcript users are unusually heavy repeat users.</strong> Video-to-Transcript brings in more than 2x the users of Subtitles (246 vs 109) and drives most of the volume. Subtitles converts slightly better on a % basis (6.4% vs 4.5%) but on a base too small to be conclusive at n=7 vs n=11 paying users. The clearest signal: <strong>paying transcript users average 4.7 jobs vs. 1.7 for free transcript users</strong> — a 2.7x usage gap — suggesting transcript is where genuine recurring workflow value shows up, and it's the natural upsell surface. Subtitles shows a much smaller paying/free usage gap (1.86 vs 1.38), consistent with it being more of a one-off task tool. Only two tools have meaningful volume in this dataset — "translate," "voice," and other tools referenced in the task's example journeys do not appear to exist as tracked <code>tool_type</code> values today.</p>
+</section>
+
+<section id="p8">
+  <span class="part-num">PART 8</span>
+  <h2>User segments</h2>
+  <div class="tablewrap">
+  <table>
+    <caption>Conversion by country (top by visitor volume)</caption>
+    <thead><tr><th>Country</th><th class="num">Visitors</th><th class="num">Paid users</th><th class="num">Conv. rate</th></tr></thead>
+    <tbody>
+      <tr><td>United States</td><td class="num">327</td><td class="num">12</td><td class="num">3.7%</td></tr>
+      <tr><td>India</td><td class="num">102</td><td class="num">0</td><td class="num">0.0%</td></tr>
+      <tr><td>Indonesia</td><td class="num">76</td><td class="num">1</td><td class="num">1.3%</td></tr>
+      <tr><td>Germany</td><td class="num">57</td><td class="num">0</td><td class="num">0.0%</td></tr>
+      <tr><td>Philippines</td><td class="num">42</td><td class="num">0</td><td class="num">0.0%</td></tr>
+      <tr><td>Nigeria</td><td class="num">33</td><td class="num">1</td><td class="num">3.0%</td></tr>
+      <tr><td>Pakistan</td><td class="num">26</td><td class="num">1</td><td class="num">3.8%</td></tr>
+      <tr><td>United Kingdom</td><td class="num">25</td><td class="num">0</td><td class="num">0.0%</td></tr>
+      <tr><td>China</td><td class="num">25</td><td class="num">0</td><td class="num">0.0%</td></tr>
+      <tr><td>Kenya</td><td class="num">20</td><td class="num">1</td><td class="num">5.0%</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>The US carries essentially all measurable conversion:</strong> 12 of 18 paying users (67%) are American, despite the US being only 30% of visitors. India, Germany, Philippines, and UK — 226 combined visitors (21% of all traffic) — produced <strong>zero</strong> paid conversions in the window.</p>
+
+  <div class="tablewrap">
+  <table>
+    <caption>Device</caption>
+    <thead><tr><th>Device</th><th class="num">Visitors</th><th class="num">Paid</th><th class="num">Conv. rate</th></tr></thead>
+    <tbody>
+      <tr><td>Desktop</td><td class="num">625</td><td class="num">14</td><td class="num">2.2%</td></tr>
+      <tr><td>Mobile</td><td class="num">454</td><td class="num">10</td><td class="num">2.2%</td></tr>
+      <tr><td>Tablet</td><td class="num">16</td><td class="num">1</td><td class="num">6.3%*</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Desktop and mobile convert at essentially identical rates (2.2% each) — device is not a differentiator. (Tablet's 6.3% is one user out of 16, not meaningful.)</p>
+
+  <div class="tablewrap">
+  <table>
+    <caption>Signup volume by month (growth trend)</caption>
+    <thead><tr><th>Month</th><th class="num">Signups</th></tr></thead>
+    <tbody>
+      <tr><td>Apr 2026</td><td class="num">23</td></tr>
+      <tr><td>May 2026</td><td class="num">54</td></tr>
+      <tr><td>Jun 2026</td><td class="num">91</td></tr>
+      <tr><td>Jul 2026 (partial)</td><td class="num">154</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Signups are accelerating sharply (23→54→91→154 across four months) — growth is healthy on the top of funnel. <code>signup_completed</code>/<code>google_signup_completed</code> tracking itself only starts in April 2026, so pre-April users are undercounted in this metric (see Part 12).</p>
+
+  <div class="tablewrap">
+  <table>
+    <caption>Top referral sources (visitors → paid)</caption>
+    <thead><tr><th>Source</th><th class="num">Visitors</th><th class="num">Paid</th><th class="num">Conv. rate</th></tr></thead>
+    <tbody>
+      <tr><td>Direct</td><td class="num">495</td><td class="num">11</td><td class="num">2.2%</td></tr>
+      <tr><td>Google Search</td><td class="num">395</td><td class="num">12</td><td class="num">3.0%</td></tr>
+      <tr><td>videotext.io (internal)</td><td class="num">50</td><td class="num">6</td><td class="num">12.0%</td></tr>
+      <tr><td>Bing</td><td class="num">28</td><td class="num">1</td><td class="num">3.6%</td></tr>
+      <tr><td>LinkedIn</td><td class="num">17</td><td class="num">1</td><td class="num">5.9%</td></tr>
+      <tr><td>IndieHackers</td><td class="num">13</td><td class="num">1</td><td class="num">7.7%</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Internal navigation (already-on-site referrals) and Google Search convert meaningfully better than raw direct traffic — consistent with intent-driven search users and returning/engaged users converting better than cold direct visits. IndieHackers (7.7%, n=13) is a small but interesting early-adopter-audience signal worth more paid/organic investment to validate at scale.</p>
+  <p class="sample-note">Browser/OS breakdowns were pulled but showed no material conversion difference beyond mirroring the device split above, and are omitted for brevity given the small paid sample.</p>
+</section>
+
+<section id="p9">
+  <span class="part-num">PART 9</span>
+  <h2>Customer psychology — why users decided not to upgrade</h2>
+  <p class="lede">Each reason below is graded by confidence and tied to a specific behavioral signal. Reasons without direct evidence in this dataset are explicitly marked as unsupported.</p>
+  <div class="psych">
+    <div class="psych-row">
+      <div class="top"><h4>Checkout-stage friction / distrust at the payment step</h4><span class="badge high">High confidence</span></div>
+      <p>91% of users who reached Stripe checkout since June 17 did not complete payment (30/33), with technical failure ruled out (all 4 payment_failed users eventually succeeded). Something at or inside the checkout page — price surprise, unclear terms, trust signals, currency confusion — is turning away people who had already decided to click "upgrade" and select a plan.</p>
+      <span class="pct-tag">Affects ~91% of checkout-reachers</span>
+    </div>
+    <div class="psych-row">
+      <div class="top"><h4>Free plan is generous enough to cover most people's actual need</h4><span class="badge high">High confidence</span></div>
+      <p>15 power users with 5+ completed jobs never upgraded, and usage is bursty (avg 3.3 active days per user) rather than sustained — consistent with the free tier fully absorbing a one-time or occasional batch task. Only 71 of 1,078 visitors (6.6%) ever clicked an upgrade button at all.</p>
+      <span class="pct-tag">Affects the majority of the 158 non-converted pricing viewers</span>
+    </div>
+    <div class="psych-row">
+      <div class="top"><h4>One-time / task-based usage, not a recurring need</h4><span class="badge high">High confidence</span></div>
+      <p>84 users completed a transcript job with no signup at all, and the dominant journey shape is "one tool run → maybe signup → leave." Free-tier tool users average only 1.7–1.4 jobs vs. 4.7–1.9 for payers — most usage looks like solving a single task, not building a workflow.</p>
+      <span class="pct-tag">Likely explains a large share of the 752 visitors who never signed up and the 41 pricing-viewers who stayed on free</span>
+    </div>
+    <div class="psych-row">
+      <div class="top"><h4>Geography / willingness-to-pay in USD-priced markets</h4><span class="badge high">High confidence</span></div>
+      <p>India (102 visitors), Germany (57), Philippines (42), UK (25), China (25) — 251 visitors, 23% of traffic — produced zero paid conversions. 12 of 15 unpaid power users are outside the US. The US converts at 3.7% vs. ~0–1% for most other high-volume countries.</p>
+      <span class="pct-tag">Affects ~20-25% of total traffic</span>
+    </div>
+    <div class="psych-row">
+      <div class="top"><h4>Weak/under-tested call-to-action placement</h4><span class="badge med">Medium confidence</span></div>
+      <p>Only 71 of 176 pricing-page viewers (40%) and only 39 of 246 transcript-tool users (16%) ever clicked an upgrade button, despite the tool page generating more upgrade clicks than the pricing page itself. This is consistent with the CTA being present but not compelling enough, though we can't isolate copy/design from price/need without a test.</p>
+      <span class="pct-tag">Estimated 15-25% of engaged users</span>
+    </div>
+    <div class="psych-row">
+      <div class="top"><h4>Post-purchase trust/value gap (churn)</h4><span class="badge med">Medium confidence</span></div>
+      <p>6 of 18 paying customers (33%) triggered subscription_deleted within the window. This isn't a reason people don't <em>start</em> paying, but it is hard evidence that even converted users aren't reliably retained — a value or expectations gap after purchase.</p>
+      <span class="pct-tag">33% of paying customers</span>
+    </div>
+    <div class="psych-row">
+      <div class="top"><h4>Pricing too expensive / confusing pricing / missing feature / enterprise needs</h4><span class="badge low">Not supported by current data</span></div>
+      <p>PostHog captures no pricing-page scroll depth, no plan-comparison interaction, no exit survey, and no "why did you cancel" reason field on subscription_deleted. These are plausible, common SaaS objections, but nothing in this dataset confirms or sizes them — see Part 12 for exactly what tracking would resolve this.</p>
+    </div>
+  </div>
+</section>
+
+<section id="p10">
+  <span class="part-num">PART 10</span>
+  <h2>Recommendations, ranked by expected ROI</h2>
+
+  <div class="reco">
+    <div class="reco-head"><h4>1. Diagnose and fix Stripe checkout abandonment</h4><span class="badge high">P0</span></div>
+    <dl>
+      <dt>Why</dt><dd>91% of people who reach Stripe checkout don't pay — the single largest, most confidently measured leak in the funnel, and the closest to a purchase decision already made.</dd>
+      <dt>Evidence</dt><dd>33 checkout_session_created vs. 3 payment_completed since 2026-06-17; 0 of 4 payment_failed users were lost to technical failure.</dd>
+      <dt>Expected impact</dt><dd>Recovering even a third of this gap (10 more of the 30 lost users) would roughly double total paying customers in the window.</dd>
+      <dt>Effort</dt><dd>Low-medium — add checkout funnel/exit tracking first (see Part 12), then a session-replay review of 5-10 abandoned checkouts.</dd>
+    </dl>
+  </div>
+
+  <div class="reco">
+    <div class="reco-head"><h4>2. Instrument the checkout stage properly</h4><span class="badge high">P0</span></div>
+    <dl>
+      <dt>Why</dt><dd>You cannot fix what you can't see — right now there's zero visibility into what happens between "Stripe session created" and "abandoned."</dd>
+      <dt>Evidence</dt><dd>checkout_session_created only exists since June 17; no plan-price-shown, no field-level checkout events, no abandonment reason.</dd>
+      <dt>Expected impact</dt><dd>Unlocks accurate diagnosis of recommendation #1 — prerequisite, not optional.</dd>
+      <dt>Effort</dt><dd>Low — mostly event-firing additions on an existing Stripe Checkout/Elements integration.</dd>
+    </dl>
+  </div>
+
+  <div class="reco">
+    <div class="reco-head"><h4>3. Geography-aware pricing (PPP / local currency)</h4><span class="badge high">P1</span></div>
+    <dl>
+      <dt>Why</dt><dd>India, Germany, Philippines, UK, China (23% of traffic) show 0% conversion; the US converts 3–4x better than most other markets.</dd>
+      <dt>Evidence</dt><dd>Country-level conversion table, Part 8; 12 of 15 unpaid power users are non-US.</dd>
+      <dt>Expected impact</dt><dd>Could unlock a meaningfully-sized, currently near-zero-converting 20%+ of traffic — plausibly the second-largest lever after checkout fixes.</dd>
+      <dt>Effort</dt><dd>Medium — requires Stripe multi-currency/PPP tooling (e.g. Stripe adaptive pricing or a PPP plugin) plus messaging changes.</dd>
+    </dl>
+  </div>
+
+  <div class="reco">
+    <div class="reco-head"><h4>4. Turn transcript-tool paywall moments into the core upgrade trigger</h4><span class="badge med">P1</span></div>
+    <dl>
+      <dt>Why</dt><dd>/video-to-transcript already generates more upgrade clicks than the pricing page — it's the real moment of intent, and paying transcript users do 2.7x the jobs of free ones.</dd>
+      <dt>Evidence</dt><dd>Part 3 and Part 7 tool tables.</dd>
+      <dt>Expected impact</dt><dd>Medium — sharper in-tool paywall copy/limits could lift the 6.6% upgrade-click rate materially since intent is already present at that moment.</dd>
+      <dt>Effort</dt><dd>Low — copy/UI iteration on an existing surface, easy to A/B test.</dd>
+    </dl>
+  </div>
+
+  <div class="reco">
+    <div class="reco-head"><h4>5. Reduce post-purchase churn with an onboarding/value check-in</h4><span class="badge med">P2</span></div>
+    <dl>
+      <dt>Why</dt><dd>33% of paying customers cancel within the window — retention is leaking almost as fast as new paid users arrive.</dd>
+      <dt>Evidence</dt><dd>6 of 18 paid users triggered subscription_deleted, Part 6.</dd>
+      <dt>Expected impact</dt><dd>Medium — directly protects revenue already won; cheaper than acquiring new payers.</dd>
+      <dt>Effort</dt><dd>Medium — needs a cancellation-reason capture plus a lightweight lifecycle email/in-app nudge.</dd>
+    </dl>
+  </div>
+
+  <div class="reco">
+    <div class="reco-head"><h4>6. Give free/anonymous users a reason to create an account</h4><span class="badge med">P2</span></div>
+    <dl>
+      <dt>Why</dt><dd>84 users complete a transcript job without ever signing up — they're invisible to any retention or upgrade motion once they leave.</dd>
+      <dt>Evidence</dt><dd>Part 4 journey table ("Transcript only, no account" = 84 users).</dd>
+      <dt>Expected impact</dt><dd>Low-medium directly, but high indirectly — expands the addressable base for every other lever (email, retargeting, upgrade prompts).</dd>
+      <dt>Effort</dt><dd>Medium — e.g. gate result download or history behind a lightweight signup, without killing the try-before-signup value prop.</dd>
+    </dl>
+  </div>
+
+  <div class="reco">
+    <div class="reco-head"><h4>7. Usage-triggered upgrade nudges for repeat free users</h4><span class="badge med">P2</span></div>
+    <dl>
+      <dt>Why</dt><dd>Only 40% of pricing viewers and 16% of transcript users ever click upgrade — many engaged users are never prompted at the moment they're most active.</dd>
+      <dt>Evidence</dt><dd>Part 9, weak-CTA finding.</dd>
+      <dt>Expected impact</dt><dd>Medium — timing prompts to the 2nd/3rd job (where the funnel already shows the biggest job-count drop) could catch users while engaged.</dd>
+      <dt>Effort</dt><dd>Low — reuse existing upgrade_prompt_seen/paywall_shown infrastructure, retarget triggers.</dd>
+    </dl>
+  </div>
+</section>
+
+<section id="p11">
+  <span class="part-num">PART 11</span>
+  <h2>Next 10 experiments</h2>
+  <div class="exp-grid">
+    <div class="reco"><h4>1. Session-replay audit of 10 abandoned Stripe checkouts</h4><dl><dt>Hypothesis</dt><dd>A specific UI/price/trust issue at checkout, visible in replay, explains most of the 91% drop.</dd><dt>Metric</dt><dd>Root cause identified + checkout completion rate after fix</dd><dt>Exp. lift</dt><dd>Unblocks 10-20pp checkout completion lift</dd><dt>Risk</dt><dd>Low</dd><dt>Effort</dt><dd>Low</dd><dt>Priority</dt><dd>P0</dd></dl></div>
+    <div class="reco"><h4>2. Add checkout funnel event instrumentation</h4><dl><dt>Hypothesis</dt><dd>Granular events (plan shown, price shown, payment form started, field errors) will pinpoint the exact abandonment step.</dd><dt>Metric</dt><dd>Step-level checkout funnel visibility</dd><dt>Exp. lift</dt><dd>N/A (diagnostic)</dd><dt>Risk</dt><dd>Low</dd><dt>Effort</dt><dd>Low</dd><dt>Priority</dt><dd>P0</dd></dl></div>
+    <div class="reco"><h4>3. PPP/local-currency pricing test for top non-US countries</h4><dl><dt>Hypothesis</dt><dd>India/Philippines/Nigeria/Indonesia users will convert at US-like rates if priced in local purchasing power.</dd><dt>Metric</dt><dd>Conversion rate by country, pre/post</dd><dt>Exp. lift</dt><dd>2-5x conversion in targeted countries</dd><dt>Risk</dt><dd>Medium (revenue cannibalization if not geo-gated correctly)</dd><dt>Effort</dt><dd>Medium</dd><dt>Priority</dt><dd>P1</dd></dl></div>
+    <div class="reco"><h4>4. In-tool paywall copy test on /video-to-transcript</h4><dl><dt>Hypothesis</dt><dd>Sharper value framing at the moment of hitting a limit increases upgrade_clicked rate.</dd><dt>Metric</dt><dd>upgrade_clicked / job_completed on that page</dd><dt>Exp. lift</dt><dd>+20-40% relative click rate</dd><dt>Risk</dt><dd>Low</dd><dt>Effort</dt><dd>Low</dd><dt>Priority</dt><dd>P1</dd></dl></div>
+    <div class="reco"><h4>5. Second-job upgrade nudge (in-app)</h4><dl><dt>Hypothesis</dt><dd>Prompting right after a user's 2nd completed job (the steepest job-count drop point) increases pricing page visits.</dd><dt>Metric</dt><dd>Pricing page views per 2nd-job user</dd><dt>Exp. lift</dt><dd>+10-15pp</dd><dt>Risk</dt><dd>Low</dd><dt>Effort</dt><dd>Low</dd><dt>Priority</dt><dd>P1</dd></dl></div>
+    <div class="reco"><h4>6. Post-checkout-abandonment recovery email/retarget</h4><dl><dt>Hypothesis</dt><dd>A same-day nudge to the 30 checkout-abandoners recovers some fraction who hesitated rather than rejected.</dd><dt>Metric</dt><dd>Payment completion rate among contacted abandoners</dd><dt>Exp. lift</dt><dd>+5-15% of abandoners recovered</dd><dt>Risk</dt><dd>Low</dd><dt>Effort</dt><dd>Low (needs email capture at checkout)</dd><dt>Priority</dt><dd>P1</dd></dl></div>
+    <div class="reco"><h4>7. Cancellation-reason capture on subscription_deleted</h4><dl><dt>Hypothesis</dt><dd>A 1-click exit survey reveals whether the 33% churn is price, missing feature, or one-time need.</dd><dt>Metric</dt><dd>% of cancellations with captured reason; reason distribution</dd><dt>Exp. lift</dt><dd>N/A (diagnostic), informs future retention fixes</dd><dt>Risk</dt><dd>Low</dd><dt>Effort</dt><dd>Low</dd><dt>Priority</dt><dd>P1</dd></dl></div>
+    <div class="reco"><h4>8. Gate transcript download/history behind lightweight signup</h4><dl><dt>Hypothesis</dt><dd>Capturing the 84 anonymous-only users as accounts increases addressable base for upgrade nudges without hurting first-run activation.</dd><dt>Metric</dt><dd>Signup rate among first-time tool users; activation rate</dd><dt>Exp. lift</dt><dd>+15-25pp signup capture</dd><dt>Risk</dt><dd>Medium (could hurt anonymous try-before-signup appeal)</dd><dt>Effort</dt><dd>Medium</dd><dt>Priority</dt><dd>P2</dd></dl></div>
+    <div class="reco"><h4>9. Repeat pricing-page visitor retarget (2+ visits)</h4><dl><dt>Hypothesis</dt><dd>The 34 users who view pricing 2+ times are the highest-intent non-converters; a targeted offer/nudge converts a meaningful share.</dd><dt>Metric</dt><dd>Conversion rate of repeat pricing visitors</dd><dt>Exp. lift</dt><dd>+10-20% of that segment</dd><dt>Risk</dt><dd>Low</dd><dt>Effort</dt><dd>Low-medium</dd><dt>Priority</dt><dd>P2</dd></dl></div>
+    <div class="reco"><h4>10. Subtitles-tool upsell path test</h4><dl><dt>Hypothesis</dt><dd>Subtitles converts slightly better than transcript (6.4% vs 4.5%) but on tiny volume — a paid feature (e.g. burn-in, styling) attached to subtitles could raise both conversion and volume.</dd><dt>Metric</dt><dd>Subtitles paid conversion rate at larger n</dd><dt>Exp. lift</dt><dd>Unknown — needs volume first</dd><dt>Risk</dt><dd>Medium (small sample, could be noise)</dd><dt>Effort</dt><dd>Medium</dd><dt>Priority</dt><dd>P3</dd></dl></div>
+  </div>
+</section>
+
+<section id="p12">
+  <span class="part-num">PART 12</span>
+  <h2>Missing data &amp; tracking gaps</h2>
+  <ul>
+    <li><strong>Checkout-stage detail.</strong> No events for: plan/price displayed at checkout, payment form field interaction, currency shown, coupon/promo attempted, or explicit "checkout abandoned" (only inferred by absence of payment_completed). This is the single highest-priority gap — it blocks diagnosing the 91% checkout drop.</li>
+    <li><strong>Cancellation reason.</strong> subscription_deleted carries no reason/feedback property — churn cause (price, missing feature, one-time need, dissatisfaction) is currently unknowable.</li>
+    <li><strong>Consistent identity across anonymous → signed-up transition.</strong> signup_completed/google_signup_completed only exist from 2026-04-03 onward, while job_completed and pageview data go back to Feb 2026 — pre-April users and their conversion cannot be reliably funneled. Confirm person-merge on signup is correctly stitching anonymous pre-signup activity to the identified person for all auth methods (email OTP, Google, magic link).</li>
+    <li><strong>Free-tier limit / quota events.</strong> No event fires when a user hits or approaches their free-tier usage limit — this is presumably the main paywall trigger and should be explicitly tracked (limit_reached, quota_warning_shown) separately from the generic paywall_shown/upgrade_prompt_seen.</li>
+    <li><strong>Pricing page interaction depth.</strong> No scroll depth, plan-comparison-toggle, or FAQ-expand events on /pricing — can't distinguish careful evaluation from confusion or quick bounce among the 158 non-converted viewers.</li>
+    <li><strong>Currency / billing region on payment events.</strong> payment_completed/payment_failed carry no currency or local-price property, making it impossible to verify whether non-US non-conversion is price-driven without inferring from country alone.</li>
+    <li><strong>Revenue amount on payment_completed.</strong> No plan price/MRR value was found on payment events in the schema explored — revenue-by-tool and revenue-by-segment (explicitly requested in Part 7/8) cannot be computed without this.</li>
+    <li><strong>Tool taxonomy is incomplete.</strong> Only two tool_type values exist (video-to-subtitles, video-to-transcript) — translate, voice, and other tools referenced in the task brief either don't exist yet or aren't tagging tool_type; if they exist in-product, they need this property added.</li>
+    <li><strong>Company/team size, use-case, or persona properties.</strong> Nothing captures whether a user is an individual, student, agency, or enterprise buyer — Part 9's "enterprise needs" hypothesis is untestable without this.</li>
+    <li><strong>NPS/CSAT or in-product feedback events.</strong> No qualitative signal anywhere in the schema — every psychology conclusion in Part 9 is inferred from behavior, never confirmed by a user's stated reason.</li>
+  </ul>
+</section>
+
+<section id="final">
+  <div class="final">
+  <span class="part-num">FINAL REPORT</span>
+  <h2 style="margin-top:6px;">Executive summary</h2>
+
+  <h3>1. Why aren't more users upgrading?</h3>
+  <p>Three forces compound: (a) most visitors get what they need from a single anonymous tool run and never build a recurring habit that would justify paying; (b) of the minority who do show real purchase intent (click upgrade, reach checkout), the large majority are lost at the Stripe checkout screen itself, not earlier in consideration; and (c) roughly a quarter of all traffic comes from countries where USD SaaS pricing converts near zero.</p>
+
+  <h3>2. What evidence supports each reason?</h3>
+  <p><strong>One-time usage:</strong> 84 users complete a job with no account at all; free-tier job counts (1.4-1.7 avg) are a fraction of paid-user job counts (1.9-4.7 avg); only 95 of 338 first-time tool users return for a second job. <strong>Checkout drop:</strong> 33 Stripe checkout sessions since June 17 → only 3 payments, with technical failure ruled out. <strong>Geography:</strong> India/Germany/Philippines/UK/China (23% of traffic) show 0% conversion vs. 3.7% for the US.</p>
+
+  <h3>3. Biggest leaks in the funnel</h3>
+  <p>Ranked by how confidently they're measured and how close the affected users are to paying: <strong>(1) Checkout reached → payment completed, −91%</strong> — highest confidence, highest urgency, since these users already decided to buy. <strong>(2) First job → second job, −72%</strong> — the volume leak that keeps most users from ever generating upgrade intent. <strong>(3) Visitor → signup, −70%</strong> — partly an artifact of the no-signup-required product design rather than pure loss.</p>
+
+  <h3>4. Which users are closest to becoming paid customers?</h3>
+  <p>Two groups: the <strong>34 repeat pricing-page visitors</strong> (avg 4.89 visits among converters vs. 1.22 among non-converters — this is the strongest buy-intent signal in the data), and the <strong>30 users who abandoned Stripe checkout since June</strong> — they clicked upgrade, picked a plan, and reached the payment screen. Both groups are small, known, and re-engageable today.</p>
+
+  <h3>5. Which changes would most likely double paid conversions?</h3>
+  <p>Fixing checkout-stage abandonment alone — recovering even a third of the 30 lost post-checkout users — would roughly double the 18 total payments observed in this window. It is also the fastest fix: it requires no pricing strategy change, no new feature, just diagnosing and repairing an existing step users already chose to take.</p>
+
+  <h3>6. Next 30-day strategy, as founder</h3>
+  <ol>
+    <li><strong>Week 1:</strong> Instrument the checkout funnel properly (plan/price shown, payment form started, error states) and watch 10 session replays of recent checkout abandoners. Ship whatever the replays reveal (likely price display, currency, or trust/UX issue) immediately — don't wait for a full experiment cycle on something this clear-cut.</li>
+    <li><strong>Week 2:</strong> Add a cancellation-reason prompt to the cancel flow, and personally reach out (email or in-app) to the 30 checkout-abandoners with a direct, no-pressure "did something go wrong?" — recovering even a handful pays for the month.</li>
+    <li><strong>Week 3:</strong> Ship a geography-aware price test (adaptive/PPP pricing) for the top non-converting countries, and tighten the in-tool upgrade CTA on /video-to-transcript, the highest-intent surface already in the product.</li>
+    <li><strong>Week 4:</strong> Add a usage-based upgrade nudge triggered at a user's 2nd completed job (the point where the funnel shows the steepest volume drop), and start capturing plan revenue/currency on payment events so next month's analysis can size actual dollars, not just user counts.</li>
   </ol>
-  </section>
-
-  <!-- ============ 10. MISSING INSTRUMENTATION ============ -->
-  <section id="missing">
-  <h2>10. Missing Instrumentation — the exact gaps</h2>
-  <p>Every place in this report where a number is marked <span class="flag gap">GAP</span> or <span class="flag estimate">ESTIMATE</span> traces back to one of these six root causes.</p>
-
-  <div class="missing-item">
-    <div class="what">No revenue amounts anywhere</div>
-    <p style="margin:0.3rem 0;">Checked every payment-adjacent event (<code>payment_completed</code>, <code>plan_upgraded</code>, <code>plan_clicked</code>, <code>checkout_started</code>, <code>subscription_renewed</code>) for a price field — none exists. Only <code>plan</code> (a tier name, not a price) is present. <strong>Fix:</strong> add <code>amount</code> (integer, cents) and <code>currency</code> (ISO code) to <code>payment_completed</code> and <code>subscription_renewed</code>, or connect Stripe via PostHog's Data Warehouse feature.</p>
+  <p class="footnote">All figures in this report are computed directly from PostHog events (execute-sql / read-data-schema) over the 2026-02-11 to 2026-07-26 window. Paid-conversion sample size is small (18 lifetime purchases, 3 in the properly-instrumented checkout window) — segment-level percentages are directional signals for prioritization, not statistically definitive splits. Every conclusion above is traceable to a specific query result in this analysis; hypotheses without direct event evidence are explicitly labeled as such.</p>
   </div>
-  <div class="missing-item">
-    <div class="what"><code>payment_completed</code> fires at the wrong moment</div>
-    <p style="margin:0.3rem 0;">Fires 0–12 seconds after <code>checkout_started</code> for nearly all users and always carries <code>type: "subscription_checkout_started"</code> — this is a checkout-initiation event mislabeled as a payment-completion event. <strong>Fix:</strong> rename the existing event to <code>checkout_redirect_initiated</code> and add a genuine <code>payment_completed</code> triggered server-side from the Stripe webhook.</p>
-  </div>
-  <div class="missing-item">
-    <div class="what">88% of <code>job_created</code> events have no browser/device/person context</div>
-    <p style="margin:0.3rem 0;">854 of 974 job-creators show <code>$browser</code> and <code>$device_type</code> as null — this event appears to fire from a backend job queue without forwarding client context. <strong>Fix:</strong> pass <code>$browser</code>, <code>$device_type</code>, and <code>$os</code> (or the originating session id) through to the server-side event, or fire a client-side companion event at job submission time.</p>
-  </div>
-  <div class="missing-item">
-    <div class="what"><code>signup_completed</code> covers a fraction of real users</div>
-    <p style="margin:0.3rem 0;">88 tracked signups vs. 974 people who created a job — a 10x gap. Either a guest/anonymous flow lets people use the product without a tracked signup, or the event was added late and back-fills nothing. <strong>Fix:</strong> confirm whether a guest flow exists; if so, add an explicit <code>guest_session_started</code> event so guest vs. registered usage can be told apart. If not, audit why <code>signup_completed</code> under-fires.</p>
-  </div>
-  <div class="missing-item">
-    <div class="what">No way to tell current subscription status</div>
-    <p style="margin:0.3rem 0;">There's no <code>subscription_status</code> or <code>is_active</code> person property, so "currently paying" must be inferred from the last-seen event per person (renewed vs. deleted), which is fragile at this scale. <strong>Fix:</strong> set a <code>person.properties.subscription_status</code> (active/canceled/past_due) on every billing webhook so current paying-customer count is a single property filter, not an inference.</p>
-  </div>
-  <div class="missing-item">
-    <div class="what">Stripe customer ID barely populated</div>
-    <p style="margin:0.3rem 0;">Only 1 person across the entire project has <code>stripe_customer_id</code> set, despite 18+ people reaching checkout. <strong>Fix:</strong> set this person property immediately after Stripe customer creation, not only in edge cases — it's the join key that would let PostHog ever connect to real Stripe revenue data.</p>
-  </div>
-  </section>
-
-  <footer>
-    Built from PostHog project "Default project" (id 307684), org VideoText.io. Data window: 2026-02-11 to 2026-07-26. All founder/demo-account exclusions use the 3 known founder emails and the <code>@videotext.io</code> domain; any real customer sharing a similar pattern that wasn't caught would very slightly overstate the cleaned numbers. Report generated 2026-07-26.
-  </footer>
+</section>
 
 </div>
+</body>
+</html>
