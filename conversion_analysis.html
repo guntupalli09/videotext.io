@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VideoText — Who Actually Uses This</title>
+<style>
+:root{
+  --bg:#f6f7f6;
+  --paper:#ffffff;
+  --ink:#1a2023;
+  --ink-soft:#4c565c;
+  --line:#dde2e1;
+  --accent:#0f7c82;
+  --accent-soft:#e3f1f0;
+  --good:#2e8b57;
+  --warn:#c98a2b;
+  --crit:#b23b3b;
+  --mono-bg:#eef1f0;
+}
+:root[data-theme="dark"]{
+  --bg:#12181a;
+  --paper:#181f21;
+  --ink:#e7edee;
+  --ink-soft:#a9b4b6;
+  --line:#2b3538;
+  --accent:#5fc9cd;
+  --accent-soft:#1c3435;
+  --good:#5cbb85;
+  --warn:#e0ac5c;
+  --crit:#e07070;
+  --mono-bg:#1f2729;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12181a;
+    --paper:#181f21;
+    --ink:#e7edee;
+    --ink-soft:#a9b4b6;
+    --line:#2b3538;
+    --accent:#5fc9cd;
+    --accent-soft:#1c3435;
+    --good:#5cbb85;
+    --warn:#e0ac5c;
+    --crit:#e07070;
+    --mono-bg:#1f2729;
+  }
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px;margin:0 auto;padding:64px 24px 120px;}
+.kicker{
+  font-size:12.5px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--accent);
+  font-weight:600;
+  margin:0 0 10px;
+}
+h1{
+  font-family:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  font-size:clamp(28px,4.2vw,42px);
+  line-height:1.12;
+  margin:0 0 14px;
+  text-wrap:balance;
+  letter-spacing:-.01em;
+}
+.dek{
+  font-size:17px;
+  color:var(--ink-soft);
+  max-width:62ch;
+  margin:0 0 36px;
+}
+.meta{
+  display:flex;gap:18px;flex-wrap:wrap;
+  font-size:12.5px;color:var(--ink-soft);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  padding:10px 0;margin-bottom:44px;
+}
+.meta b{color:var(--ink);font-variant-numeric:tabular-nums;}
+h2{
+  font-family:Georgia,"Iowan Old Style",serif;
+  font-size:24px;
+  margin:56px 0 6px;
+  letter-spacing:-.005em;
+}
+h2 .num{color:var(--accent);font-weight:600;margin-right:10px;font-size:16px;vertical-align:2px;}
+h3{
+  font-size:15px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--ink-soft);
+  margin:28px 0 12px;
+  font-weight:600;
+}
+p{max-width:68ch;}
+.callout{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-left:3px solid var(--accent);
+  border-radius:6px;
+  padding:16px 20px;
+  margin:18px 0;
+  max-width:68ch;
+}
+.callout.warn{border-left-color:var(--warn);}
+.callout.crit{border-left-color:var(--crit);}
+.callout p{margin:0;max-width:none;}
+.callout p+p{margin-top:8px;}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13.5px;
+  margin:14px 0 8px;
+  font-variant-numeric:tabular-nums;
+}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;}
+th,td{
+  text-align:left;
+  padding:9px 12px;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+th{
+  background:var(--accent-soft);
+  color:var(--ink);
+  font-weight:600;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+}
+tr:last-child td{border-bottom:none;}
+td.num,th.num{text-align:right;}
+.pill{
+  display:inline-block;
+  padding:2px 9px;
+  border-radius:999px;
+  font-size:11.5px;
+  font-weight:600;
+}
+.pill.good{background:color-mix(in srgb, var(--good) 18%, transparent);color:var(--good);}
+.pill.warn{background:color-mix(in srgb, var(--warn) 18%, transparent);color:var(--warn);}
+.pill.crit{background:color-mix(in srgb, var(--crit) 18%, transparent);color:var(--crit);}
+.bar-row{display:flex;align-items:center;gap:10px;margin:7px 0;}
+.bar-label{width:230px;flex-shrink:0;font-size:13px;color:var(--ink-soft);}
+.bar-track{flex:1;background:var(--mono-bg);border-radius:4px;height:16px;overflow:hidden;}
+.bar-fill{height:100%;background:var(--accent);border-radius:4px;}
+.bar-val{width:56px;text-align:right;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink-soft);}
+.spark{display:flex;align-items:flex-end;gap:2px;height:36px;margin-top:6px;}
+.spark div{flex:1;background:var(--accent);border-radius:1px 1px 0 0;min-height:2px;opacity:.85;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+.chip{
+  background:var(--paper);border:1px solid var(--line);
+  padding:6px 12px;border-radius:7px;font-size:13px;
+}
+.chip b{display:block;font-size:17px;font-variant-numeric:tabular-nums;}
+.qa{border-top:1px solid var(--line);padding:20px 0;}
+.qa:last-child{border-bottom:1px solid var(--line);}
+.qa .q{font-weight:700;font-size:15.5px;margin-bottom:6px;}
+.qa .q span{color:var(--accent);margin-right:8px;}
+code,.mono{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  background:var(--mono-bg);
+  padding:1px 6px;border-radius:4px;font-size:.9em;
+}
+.toc{
+  display:flex;flex-wrap:wrap;gap:6px 18px;
+  font-size:13px;color:var(--ink-soft);
+  margin-bottom:8px;
+}
+.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--line);}
+.toc a:hover{color:var(--accent);border-color:var(--accent);}
+footer{
+  margin-top:70px;padding-top:20px;border-top:1px solid var(--line);
+  font-size:12.5px;color:var(--ink-soft);
+}
+a{color:var(--accent);}
+::selection{background:var(--accent-soft);}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <p class="kicker">Behavioral analysis · PostHog, all-time data</p>
+  <h1>Who VideoText is actually built for, according to the data</h1>
+  <p class="dek">A ground-up segmentation of every active user based on what they did, not what we assumed they'd do. No persona field exists in this dataset — every conclusion below is inferred from tool choice, file characteristics, repeat behavior, and payment events.</p>
+
+  <div class="meta">
+    <span>Window: <b>Feb 11 – Jul 26, 2026</b> (~5.5 months)</span>
+    <span>Active users (≥1 job): <b>973</b></span>
+    <span>Total events analyzed: <b>70,888</b></span>
+    <span>Paying accounts: <b>18</b></span>
+  </div>
+
+  <div class="toc">
+    <a href="#gaps">0. Data reality check</a>
+    <a href="#segments">1. Segments</a>
+    <a href="#compare">2. Comparison</a>
+    <a href="#unexpected">3. Unexpected use</a>
+    <a href="#answers">4. Six answers</a>
+    <a href="#instrument">5. What to instrument next</a>
+  </div>
+
+  <h2 id="gaps"><span class="num">0</span>What the data can and can't tell you</h2>
+  <p>Before segmenting anyone, it's worth being blunt about the instrumentation as it stands today, because it shapes every conclusion below.</p>
+
+  <div class="callout crit">
+    <p><b>There is no persona, role, or use-case field anywhere in the schema.</b> No "what do you use this for" onboarding question, no job title, no company/team property, no seats, no industry. Every label in this report (transcript-extractor, subtitle-fixer, etc.) is a <i>behavioral cluster name I assigned</i> based on tool choice and file characteristics — not a self-reported identity. Treat labels like "students" or "journalists" as plausible interpretations, not confirmed facts.</p>
+  </div>
+  <div class="callout warn">
+    <p><b>87.5% of active users (851 of 973) are functionally anonymous</b> — no plan, no email, no country, no referrer captured on their person profile. They ran a job and PostHog never saw an <code>identify</code> call attached to them. This means "conversion to paid" and "retention" can only be measured reliably for the 122 identified accounts (12.5% of active users) — the anonymous majority is a black box beyond job count and tool choice.</p>
+  </div>
+  <div class="callout warn">
+    <p><b>Revenue amounts aren't tracked at all.</b> <code>$virt_revenue</code> and <code>$virt_mrr</code> are $0 on every single person, and <code>payment_completed</code> carries no amount/currency property. I can tell you <i>who</i> paid and <i>how often they came back</i>, but not <i>how much money</i> any segment generated. LTV comparisons below are therefore expressed in engagement terms (jobs, active days), not dollars.</p>
+  </div>
+  <div class="callout">
+    <p><b>One account (<code>santhoshguntupalli06@gmail.com</code>) looks like internal/founder testing</b> — 118 jobs, 75 active days, 52 of the platform's 91 total YouTube-transcript jobs, and 4 of the 18 paid conversions. It's excluded from every segment statistic below so it doesn't distort what a real customer looks like.</p>
+  </div>
+
+  <h2 id="segments"><span class="num">1</span>The segments the data actually supports</h2>
+  <p>With no company size, industry, or team data, the only reliable axis left is <b>which tool a user's behavior is dominated by</b> — cross-referenced with file size (video vs. subtitle-file upload), repeat usage, and identification/payment status. That splits the 972 real active users into five clean, mutually exclusive clusters:</p>
+
+  <div class="tablewrap">
+  <table>
+    <tr>
+      <th>Segment</th><th class="num">Users</th><th class="num">% of active</th><th class="num">Avg jobs</th>
+      <th class="num">Avg active days</th><th class="num">Avg lifetime span</th><th class="num">Retained &gt;1 day</th>
+      <th class="num">Identified</th><th class="num">Paid (pro/founding)</th>
+    </tr>
+    <tr><td>Transcript extractors <span class="mono">video-to-transcript + youtube-to-transcript</span></td><td class="num">500</td><td class="num">51.4%</td><td class="num">1.47</td><td class="num">1.38</td><td class="num">1.7 d</td><td class="num">8.2%</td><td class="num">15.2%</td><td class="num"><b>2.6%</b></td></tr>
+    <tr><td>Subtitle fixers <span class="mono">fix-subtitles</span></td><td class="num">260</td><td class="num">26.7%</td><td class="num">1.20</td><td class="num">1.12</td><td class="num">0.5 d</td><td class="num">4.6%</td><td class="num">9.2%</td><td class="num">0.4%</td></tr>
+    <tr><td>Subtitle creators <span class="mono">video-to-subtitles</span></td><td class="num">171</td><td class="num">17.6%</td><td class="num">1.19</td><td class="num">1.10</td><td class="num">0.2 d</td><td class="num">4.1%</td><td class="num">9.4%</td><td class="num">0.0%</td></tr>
+    <tr><td>Translators <span class="mono">translate-subtitles</span></td><td class="num">32</td><td class="num">3.3%</td><td class="num">1.25</td><td class="num">1.31</td><td class="num">1.0 d</td><td class="num">6.2%</td><td class="num">6.2%</td><td class="num">0.0%</td></tr>
+    <tr><td>Utility <span class="mono">compress-video, convert-subtitles</span></td><td class="num">5</td><td class="num">0.5%</td><td class="num">1.00</td><td class="num">1.00</td><td class="num">0.0 d</td><td class="num">0.0%</td><td class="num">0.0%</td><td class="num">0.0%</td></tr>
+    <tr><td>Multi-tool (no dominant tool)</td><td class="num">4</td><td class="num">0.4%</td><td class="num">2.00</td><td class="num">2.00</td><td class="num">5.6 d</td><td class="num">75.0%</td><td class="num">75.0%</td><td class="num">0.0%</td></tr>
+  </table>
+  </div>
+
+  <h3>Segment size, visually</h3>
+  <div class="bar-row"><div class="bar-label">Transcript extractors</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">500</div></div>
+  <div class="bar-row"><div class="bar-label">Subtitle fixers</div><div class="bar-track"><div class="bar-fill" style="width:52%"></div></div><div class="bar-val">260</div></div>
+  <div class="bar-row"><div class="bar-label">Subtitle creators</div><div class="bar-track"><div class="bar-fill" style="width:34%"></div></div><div class="bar-val">171</div></div>
+  <div class="bar-row"><div class="bar-label">Translators</div><div class="bar-track"><div class="bar-fill" style="width:6%"></div></div><div class="bar-val">32</div></div>
+  <div class="bar-row"><div class="bar-label">Utility / multi-tool</div><div class="bar-track"><div class="bar-fill" style="width:2%"></div></div><div class="bar-val">9</div></div>
+
+  <h3>What each segment is probably made of, and why</h3>
+  <p><b>Transcript extractors (51.4%, the largest segment by far).</b> They upload a video or paste a YouTube link and want text back — no captions, no burned-in styling. Average source file for this workflow is ~149&nbsp;MB, consistent with full-length recordings (lectures, interviews, meetings, long videos) rather than short social clips. 35 of these users used the YouTube-URL path specifically — extracting someone <i>else's</i> video as text, which is a research/reference behavior, not a "caption my own content" behavior. Best-fit real-world identities: researchers, students, journalists pulling quotes, note-takers, content repurposers — not the classic "YouTuber" persona.</p>
+  <p><b>Subtitle fixers (26.7%).</b> Average uploaded file is <b>187&nbsp;KB</b> — a subtitle file, not a video. These users are not generating captions in VideoText; they're bringing an SRT/VTT they already have (auto-captions from YouTube itself, Zoom, another tool) and using VideoText purely as a cleanup/correction utility. This is a standalone workflow the product wasn't necessarily built to be used as.</p>
+  <p><b>Subtitle creators (17.6%).</b> The segment closest to the assumed ICP — upload video, get burned-in or exportable captions. Source files average ~153&nbsp;MB, statistically indistinguishable in size from the transcript segment, so file length doesn't separate "creator" from "researcher" — tool choice does.</p>
+  <p><b>Translators (3.3%).</b> Average input ~6&nbsp;MB — again a subtitle file, not a video. Like the fixers, these users skip VideoText's own subtitle-generation step and only touch it for translation of subtitles produced elsewhere. Likely multilingual creators or small localization operators working across several source tools.</p>
+
+  <h2 id="compare"><span class="num">2</span>Comparing the segments head-to-head</h2>
+
+  <div class="chips">
+    <div class="chip">Highest retention (&gt;1 active day)<b>Transcript — 8.2%</b></div>
+    <div class="chip">Highest paid conversion<b>Transcript — 2.6%</b></div>
+    <div class="chip">Highest engagement LTV (jobs × lifetime)<b>Transcript</b></div>
+    <div class="chip">Fastest-growing (last 6 wks)<b>Fixers &amp; Creators</b></div>
+    <div class="chip">Most underserved</div>
+  </div>
+
+  <p><b>Retention and paid conversion both point the same direction, and it's not the assumed one.</b> Transcript extractors are the only segment with a non-trivial retention rate (8.2% return on a second day vs. 4–6% everywhere else) and the only segment with meaningful paid conversion (2.6%, vs. 0.0–0.4% for fixers, creators, and translators). Of the 10 paying accounts that also appear in the job-activity data, <b>9 are transcript-dominant</b>. Every <span class="mono">pro</span>-plan account in the top-15 most active users is transcript-dominant except one fixer. Subtitle creators — the segment that looks most like "the target audience" — has <b>zero</b> paid conversions in this dataset.</p>
+
+  <p><b>Lifetime engagement value concentrates in a tiny group.</b> Only 24 users (2.5% of active users) reached 5+ jobs; only 8 reached 10+. Among the highest-volume repeat users, transcript-family users dominate (7 of the top 15), including the two longest-lifespan accounts (48 and 108 days between first and last job). Without dollar revenue, "LTV" here means sustained engagement — and by that measure, transcript extraction is the only segment showing real compounding usage.</p>
+
+  <h3>Growth: weekly new users by segment (last 6 weeks of data)</h3>
+  <div class="tablewrap">
+  <table>
+    <tr><th>Segment</th><th class="num">Wk of Jun 21</th><th class="num">Jun 28</th><th class="num">Jul 5</th><th class="num">Jul 12</th><th class="num">Jul 19</th><th class="num">Trend</th></tr>
+    <tr><td>Video → Subtitles</td><td class="num">16</td><td class="num">18</td><td class="num">36</td><td class="num">29</td><td class="num">29</td><td><span class="pill good">+81% vs 6 wks ago</span></td></tr>
+    <tr><td>Fix-subtitles</td><td class="num">12</td><td class="num">26</td><td class="num">12</td><td class="num">20</td><td class="num">36</td><td><span class="pill good">+200% vs 6 wks ago</span></td></tr>
+    <tr><td>Video → Transcript</td><td class="num">23</td><td class="num">27</td><td class="num">28</td><td class="num">19</td><td class="num">32</td><td><span class="pill warn">flat, largest base</span></td></tr>
+    <tr><td>Translate-subtitles</td><td class="num">5</td><td class="num">3</td><td class="num">6</td><td class="num">5</td><td class="num">7</td><td><span class="pill good">growing off small base</span></td></tr>
+  </table>
+  </div>
+  <p>Transcript extraction is the largest segment cumulatively but its week-over-week new-user count has been essentially flat since March. <b>Subtitle creation and subtitle fixing are the fastest-growing segments right now</b>, both roughly doubling or tripling their weekly new-user volume since late May. If that trend holds, the product's user mix is shifting toward captioning use cases even though today's paying customers overwhelmingly come from the transcript segment.</p>
+
+  <h3>Most underserved segment</h3>
+  <p><b>Subtitle creators.</b> They're the second-largest segment (171 users), growing the fastest of any tool, and structurally the closest match to a "content creator" ICP — yet they convert to paid at <b>0%</b> and retain barely above one-and-done (4.1%, lowest of any segment with volume). That combination — high growth, zero monetization — is the clearest sign of an underserved segment: people want the subtitle workflow enough to keep showing up in growing numbers, but something in the free→paid path or the output quality isn't giving them a reason to convert or come back. Translators show the same pattern at smaller scale (0% paid, 6.2% retained).</p>
+
+  <h2 id="unexpected"><span class="num">3</span>Yes — usage looks meaningfully different from the assumed product</h2>
+  <p>If VideoText was built around "upload your video, get subtitles," the assumed core loop is <span class="mono">video-to-subtitles</span>. That workflow accounts for only <b>17.6%</b> of active users. Three clear "off-label" patterns show up in the data:</p>
+
+  <div class="qa">
+    <div class="q"><span>①</span>Transcription used as a standalone note-taking/research tool, not a subtitle input</div>
+    <p><b>Size: 500 users, 51.4% of the active base — the single largest pattern in the product.</b> These users never touch subtitle generation; they take a transcript and leave (avg 0.18 downloads, 0.06 transcript copies per user — most don't even copy or download, suggesting they read it in-page and move on). 35 of them use the dedicated YouTube-URL path, meaning they're extracting text from someone else's video, not their own footage — a research/reference behavior, structurally incompatible with a "caption your video" persona.</p>
+    <p><b>Why they'd prefer this:</b> turning spoken content into searchable, quotable, copy-pasteable text is a faster way to extract information than watching or re-watching a video — useful for research, studying, journalism, or repurposing someone else's content into notes or an article.</p>
+    <p><b>Recommendation: market to them directly.</b> This is not a side effect to tolerate — it's the majority workflow and the only one with above-floor retention and paid conversion. A "YouTube/video → text" positioning aimed at researchers, students, and content-repurposers deserves at least equal billing with subtitle-focused messaging, not a footnote.</p>
+  </div>
+
+  <div class="qa">
+    <div class="q"><span>②</span>Subtitle fixing as a standalone workflow, disconnected from subtitle generation</div>
+    <p><b>Size: 260 users, 26.7% of the active base.</b> Average uploaded file for this tool is 187&nbsp;KB — a subtitle file, not video. These users generated captions somewhere else (YouTube auto-captions, Zoom, another editor) and only came to VideoText to clean up errors.</p>
+    <p><b>Why they'd prefer this:</b> auto-caption tools everywhere produce serviceable-but-flawed subtitles; a fast, dedicated fixer is a lower-friction ask than re-generating from scratch, especially if their video lives elsewhere and re-uploading it is undesirable or impossible.</p>
+    <p><b>Recommendation: don't over-invest yet.</b> It's the second-largest cluster and growing fast, but it converts at 0.4% paid and barely retains (4.6%). It looks like a genuine utility need, but today it behaves like a single-use tool, not a monetizable workflow — worth a lightweight, separately-branded "fix my captions" entry point to capture the traffic, without diverting core roadmap investment until conversion data says otherwise.</p>
+  </div>
+
+  <div class="qa">
+    <div class="q"><span>③</span>Translation used without ever generating subtitles in VideoText</div>
+    <p><b>Size: 32 users, 3.3% of the active base — small, but a real, repeatable pattern.</b> Average input file ~6&nbsp;MB, again pointing to subtitle files rather than raw video.</p>
+    <p><b>Why they'd prefer this:</b> multilingual creators and small localization operators often already have captions from a platform's native tools or a different vendor and only need one specific step — translation — rather than the full pipeline.</p>
+    <p><b>Recommendation: instrument before deciding.</b> Too small a sample (32 users, 0 paid) to justify a dedicated go-to-market push today, but the standalone-translation behavior is a legitimate signal for a "localization" product surface later if it keeps growing.</p>
+  </div>
+
+  <h2 id="answers"><span class="num">4</span>Direct answers</h2>
+
+  <div class="qa">
+    <div class="q"><span>1</span>Who is VideoText actually built for today?</div>
+    <p>By behavior, not by design intent: a video/audio-to-text extraction tool used mostly by people who want the words out of a recording — their own or someone else's — rather than a captioning tool used by video creators. Half the active base never generates a subtitle at all.</p>
+  </div>
+  <div class="qa">
+    <div class="q"><span>2</span>Who receives the most value?</div>
+    <p>Transcript extractors — they're the only segment with retention meaningfully above "used it once and left" (8.2% vs. 4–6%) and the only one with real repeat/power users among the top-15 most active accounts.</p>
+  </div>
+  <div class="qa">
+    <div class="q"><span>3</span>Who is most willing to pay?</div>
+    <p>Transcript extractors, decisively: 2.6% paid conversion vs. 0.0–0.4% everywhere else, and 9 of the 10 paying accounts traceable in job data are transcript-dominant.</p>
+  </div>
+  <div class="qa">
+    <div class="q"><span>4</span>Which segment should become the primary ICP?</div>
+    <p>Transcript extraction, reframed as a product for people who need text from spoken content — researchers, students, journalists, note-takers, content repurposers pulling from their own or others' (including YouTube) video. It's the largest segment, the only one retaining, and the only one converting to paid. The YouTube-URL sub-pattern (35 users) is worth its own landing page.</p>
+  </div>
+  <div class="qa">
+    <div class="q"><span>5</span>Which segment should we stop actively targeting?</div>
+    <p>Not "stop targeting" outright — none show negative signal, just weak monetization — but <b>subtitle fixing</b> and <b>translation</b> should stop being roadmap priorities until conversion improves. They're standalone, single-session utility behaviors (0.4% and 0.0% paid) that read as "nice to have available," not segments to build features or messaging around right now.</p>
+  </div>
+  <div class="qa">
+    <div class="q"><span>6</span>How should homepage, pricing, onboarding, messaging, and roadmap change?</div>
+    <p><b>Homepage:</b> lead with "turn any video into text" (transcript-first), with YouTube-link input as a first-class entry point alongside file upload — not buried under a subtitles-first hero. <b>Pricing:</b> the paywall is currently reached by 145 users (14.9% of active users saw <code>paywall_shown</code>) but only 11 upgraded — instrument <i>which</i> segment hits the paywall and tune the free-tier job/minute limits around transcript users' actual usage pattern (short bursts, ~1–2 jobs per visit) rather than a one-size limit. <b>Onboarding:</b> add a single explicit "what are you trying to do?" question at signup — it's the cheapest fix for the biggest blind spot in this entire analysis, since right now no field distinguishes a researcher from a caption-buyer. <b>Messaging:</b> speak to extraction and note-taking ("get the transcript," "search inside your videos," "quote it, don't rewatch it") as the primary hook, with subtitle/caption generation as a secondary, still-important use case. <b>Feature prioritization:</b> invest in what transcript users actually do with output (search, copy, export to notes tools) over further subtitle-styling polish, since styling serves the smallest, least-monetizing segment.</p>
+  </div>
+
+  <h2 id="instrument"><span class="num">5</span>What to instrument to answer this with confidence next time</h2>
+  <div class="callout">
+    <p>• A <b>self-reported use-case field at signup</b> ("What will you use VideoText for?") — the single highest-leverage addition; every label in this report is currently inferred, not confirmed.</p>
+    <p>• <b>Revenue amount and currency on <code>payment_completed</code></b>, plus a working <code>$virt_revenue</code>/<code>$virt_mrr</code> pipeline — without this, no segment's dollar LTV can be computed, only engagement proxies.</p>
+    <p>• <b>Identity resolution across anonymous → signed-up state.</b> 8 of 18 paying accounts have no matching <code>job_created</code> event in this window, meaning their pre-signup activity (if any) is on a different, unmerged person profile. Fix the identify-call timing so job history survives signup.</p>
+    <p>• <b>Company/team or seat-count property</b> — there is currently zero evidence for or against "marketing agencies" or "enterprise," because no field distinguishes an individual from an organizational account. Add it before making any enterprise-tier decisions.</p>
+    <p>• <b>Video duration or source-language/target-language properties</b> on jobs — file size is a rough proxy for content length and says nothing about spoken language, which matters directly for the localization/translator segment.</p>
+    <p>• <b>A distinct-download/export-destination property</b> on <code>result_downloaded</code> (e.g., SRT vs. TXT vs. "copied to clipboard") to tell subtitle-bound exports apart from note-taking-bound exports with certainty, instead of inferring it from tool choice.</p>
+  </div>
+
+  <footer>
+    Source: PostHog project "Default project" (VideoText.io), events table, Feb 11 – Jul 26 2026. Segment stats exclude one suspected internal/testing account. n=972 active users analyzed (≥1 <code>job_created</code> event); 122 of these carry identified person properties (plan, email, geography).
+  </footer>
+
+</div>
+</body>
+</html>
