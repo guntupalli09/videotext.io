@@ -45,3 +45,14 @@ export const MRR_EXTRACTION_V2_SHADOW = isFlagEnabled(process.env.MRR_EXTRACTION
  * Rollback is this flag alone — no code change required.
  */
 export const MRR_EXTRACTION_V2_WRITE = isFlagEnabled(process.env.MRR_EXTRACTION_V2_WRITE)
+
+/**
+ * Analytics Sprint 3: enables the scheduled Stripe-vs-Postgres MRR/active-
+ * subscriber reconciliation job (see services/stripeReconciliation.ts and
+ * docs/analytics/STRIPE_RECONCILIATION_PLAN.md). Read-only against both
+ * systems except for inserting its own result into MrrReconciliationRun.
+ * Ships disabled — with this flag off, the scheduled job is a no-op; the
+ * standalone CLI script (scripts/stripe-reconciliation-report.ts) can still
+ * be run manually regardless of this flag, for on-demand checks.
+ */
+export const STRIPE_RECONCILIATION_ENABLED = isFlagEnabled(process.env.STRIPE_RECONCILIATION_ENABLED)

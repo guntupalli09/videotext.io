@@ -197,6 +197,38 @@ model SubscriptionCurrentState {
   @@index([status])
 }
 
+// Analytics Sprint 3: permanent history of nightly (or manually-triggered)
+// Stripe-vs-Postgres MRR/active-subscriber reconciliation runs. Additive
+// only; nothing reads or writes this table except the reconciliation
+// job/script itself. See docs/analytics/STRIPE_RECONCILIATION_PLAN.md and
+// docs/analytics/SPRINT_PLAN.md (Sprint 3).
+model MrrReconciliationRun {
+  id                    String   @id @default(cuid())
+  runAt                 DateTime @default(now())
+
+  // Snapshot of whether the Sprint 1 write path was enabled at run time --
+  // required context, since SubscriptionCurrentState is expected to be
+  // empty (and therefore diverge from Stripe by design, not by defect)
+  // whenever this is false.
+  writePathEnabled      Boolean
+
+  postgresMrrCents      Int
+  stripeMrrCents        Int
+  deltaCents            Int
+  deltaPct              Float?
+
+  postgresActiveCount   Int
+  stripeActiveCount     Int
+
+  severity              String   // info | ok | warn | critical
+  notes                 String?  @db.Text
+
+  createdAt             DateTime @default(now())
+
+  @@index([runAt])
+  @@index([severity])
+}
+
 model DailyMetrics {
   date                DateTime @id // truncated to midnight UTC
 

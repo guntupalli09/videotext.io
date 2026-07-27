@@ -8,11 +8,13 @@ This file is the resumable state for the analytics-migration program
 
 ## Current sprint
 
-**Sprint 0 — complete. Sprint 1 — complete (closed 2026-07-27). Sprint 2 —
-complete (2026-07-27).** Currently paused before Sprint 3, per the operator's
-"continue automatically to Sprint 2" instruction having been fulfilled — next
-action requires a fresh instruction to proceed to Sprint 3 (Stripe
-Reconciliation Job).
+**Sprint 0 — complete. Sprint 1 — complete. Sprint 2 — complete (accepted by
+operator 2026-07-27). Sprint 3 — complete (2026-07-27).** Currently paused
+before Sprint 4, pending a fresh instruction to continue.
+
+The `Subscription.current_period_start/end` finding was formally tracked as
+`docs/analytics/BACKLOG.md` WI-001 per operator instruction, explicitly not
+addressed this session.
 
 Sprint 1 close-out: Option A approved (contractual MRR is canonical,
 collected cash is a separate metric); `SubscriptionCurrentState` migration
@@ -349,52 +351,84 @@ Not done in this sprint (intentionally deferred, per the sprint's own
 "nothing reads them yet" scope): no application code reads/writes these new
 columns; `models/User.ts`'s `rowToUser`/`userToDb` mapping is unchanged.
 
+## Sprint 3 — Stripe Reconciliation Job — COMPLETE, 2026-07-27
+
+Files changed:
+- `server/prisma/schema.prisma` + migration
+  `20260727140000_add_mrr_reconciliation_run` (new `MrrReconciliationRun`
+  table, additive)
+- `server/src/services/stripeReconciliation.ts` (new)
+- `server/src/scripts/stripe-reconciliation-report.ts` (new, CLI)
+- `server/tests/stripeReconciliation.test.ts` (new, 7 unit tests)
+- `server/src/utils/featureFlags.ts` (+`STRIPE_RECONCILIATION_ENABLED`,
+  default false)
+- `server/src/index.ts` (nightly cron wired in at 3 AM UTC, gated by the
+  flag — **written, not live**; the running production container has not
+  been rebuilt/restarted)
+
+**Documented adaptation from the original plan:** no staging/test-mode
+Stripe account exists in this environment (only the live key) — the plan's
+"introduce a known-bad scenario in staging" validation step was replaced
+with 7 synthetic unit tests against the extracted pure `classify()`
+function, covering the same boundary cases (MRR divergence, count mismatch,
+write-path-disabled, first-vs-second-consecutive-breach escalation). Recorded
+here as a deliberate, reasoned substitution, not a silent scope change.
+
+Migration applied and validated: schema up to date; existing row counts
+unchanged (`User`=409, `Job`=1383, `SubscriptionSnapshot`=21,
+`SubscriptionCurrentState`=0); new table structure verified against schema.
+
+Live validation (real Stripe + Postgres, 2026-07-27): dry run correctly
+computed `stripeMrrCents=6000` ($60.00/mo) from all 3 real active
+subscriptions ($40 + $10 + $120/year÷12), `postgresMrrCents=0` (expected,
+write path off), `severity='info'` (correctly non-alarming). Live run
+persisted one identical row to `MrrReconciliationRun`; confirmed via direct
+SQL; confirmed zero other tables affected.
+
+Tests: `tsc --noEmit` clean, build clean, full suite 21/21 pass (14 prior + 7
+new), lint delta +6 (`no-console` in the new CLI script only, already-
+accepted convention).
+
+**No production assumption was invalidated during this sprint.**
+
 ## Unresolved issues
 
-1. **[Separate from all analytics-sprint work, not fixed]**
-   `Subscription.current_period_start/end` restructuring — fully documented
-   in `STRIPE_API_COMPATIBILITY_AUDIT.md` with a required-fix list; needs its
-   own decision/sprint, affects `User.billingPeriodStart/End` and
-   subscription-lifecycle grace-period logic.
-2. `MRR_EXTRACTION_V2_WRITE` remains off — Sprint 1's write path (actually
-   persisting corrected values to `SubscriptionSnapshot`/
-   `SubscriptionCurrentState`) was never a blocking requirement for closing
-   Sprint 1 or proceeding to Sprint 2, but turning it on is still a distinct,
-   not-yet-made decision whenever the operator wants live writes to start.
+1. **[Tracked as `docs/analytics/BACKLOG.md` WI-001, not fixed]**
+   `Subscription.current_period_start/end` restructuring — full detail in
+   `STRIPE_API_COMPATIBILITY_AUDIT.md`; needs its own decision/sprint,
+   affects `User.billingPeriodStart/End` and subscription-lifecycle
+   grace-period logic. Explicitly deferred per operator instruction.
+2. `MRR_EXTRACTION_V2_WRITE` and `STRIPE_RECONCILIATION_ENABLED` both remain
+   off — neither has been a blocking requirement for any sprint closed so
+   far, but turning either on (and redeploying so the nightly cron actually
+   runs) are both still distinct, not-yet-made operational decisions.
 3. Founder-identification inconsistency noted (audit-adjacent, not fixed):
    `founderAccount.ts`'s `FOUNDER_ACCOUNT_EMAIL` env var vs. three admin
    route files (`adminSupport.ts`, `feedbackSystem.ts`, `adminDashboard.ts`)
    that hardcode the same email literal directly instead of importing from
    it. Also, `User.role` column exists but is never checked at runtime
    anywhere in `server/src` despite a comment implying it should be.
-4. No unit tests yet for the new `stripeMrr.ts` V2 functions,
+4. No unit tests yet for the `stripeMrr.ts` V2 extraction functions,
    `analytics-baseline.ts`'s flag logic, or `backfill-user-taxonomy.ts`'s
-   classification logic (loose ends, non-blocking — all are validated via
-   live runs against real production data instead, which is a stronger
-   correctness signal than a synthetic unit test would be, but unit tests
-   would still be good regression-protection hygiene going forward).
+   classification logic (loose ends, non-blocking — all three are validated
+   via live runs against real production data instead).
 
 ## Latest commit hash
 
-`3deb69d` — `analytics-sprint-1: close out — Option A (contractual MRR),
-apply+validate migration, compatibility audit` (local only, not pushed). A
-further commit for this session's Sprint 2 implementation follows
-immediately after this file is saved — see git log.
+`4b1ef90` — `analytics-sprint-2: user taxonomy columns + classification
+backfill (applied, validated)` (local only, not pushed). A further commit
+for this session's Sprint 3 implementation follows immediately after this
+file is saved — see git log.
 
 ## Exact next step
 
-Sprint 3 (Stripe Reconciliation Job, per `docs/analytics/SPRINT_PLAN.md`) has
-**not** been started. Per the operator's instruction, Sprint 2 completion
-was the natural stopping point for this session's continuous "continue
-automatically" authorization (that instruction was scoped to "continue
-automatically to Sprint 2," not indefinitely). Resume by:
+Sprint 4 (`business_users`/`business_jobs` canonical views, per
+`docs/analytics/SPRINT_PLAN.md`) has **not** been started. Resume by:
 1. Reading this file and every doc in `docs/analytics/` (already current as
    of this update).
-2. Confirming with the operator whether to proceed to Sprint 3, or to first
-   address the `Subscription.current_period_start/end` finding, or something
-   else.
-3. If proceeding to Sprint 3: build the nightly Stripe-vs-Postgres
-   reconciliation job per `docs/analytics/SPRINT_PLAN.md` Sprint 3 and
-   `docs/analytics/STRIPE_RECONCILIATION_PLAN.md`, starting in a
-   staging/log-only mode before any alert can page anyone, exactly as those
-   documents specify.
+2. Confirming with the operator whether to proceed to Sprint 4, address
+   WI-001 (`docs/analytics/BACKLOG.md`), or something else.
+3. If proceeding to Sprint 4: build `business_users`/`business_jobs` as SQL
+   **views** (not physical tables) per `docs/analytics/SPRINT_PLAN.md`
+   Sprint 4 and `docs/analytics/DATABASE_MIGRATION_PLAN.md` — lowest-risk way
+   to introduce the canonical layer, trivially reversible (`DROP VIEW`).

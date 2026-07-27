@@ -299,6 +299,72 @@ for a future cleanup.
   fires correctly on the staged test case, zero false positives for 5
   consecutive nights in production before promotion to paging severity.
 
+### Implementation status — COMPLETE, 2026-07-27
+
+**Adaptation from the original plan (documented, not silent):** this
+environment has no separate staging/test-mode Stripe account — only the
+single live `sk_live_...` key. "Intentionally introduce a known-bad test
+scenario in a staging Stripe test-mode account" was therefore not literally
+possible without creating fake data in the real production Stripe account,
+which was judged out of scope for a read-only reconciliation job. Instead,
+the comparison/classification logic was extracted into a pure function
+(`classify()`, `server/src/services/stripeReconciliation.ts`) and validated
+with **7 synthetic unit tests**
+(`server/tests/stripeReconciliation.test.ts`) covering exactly the scenarios
+the plan's staged test case was meant to prove: a known-bad MRR divergence
+correctly produces `warn` on first occurrence and escalates to `critical` on
+a second consecutive occurrence; an active-subscriber-count mismatch
+(the exact Phase-1 demo-account-inflation failure shape) is `critical`
+regardless of MRR agreement (zero tolerance, per the plan); the
+write-path-disabled state correctly downgrades everything to informational
+rather than a false alarm. This is arguably a *stronger* test of the
+alerting logic than a single staged live scenario would have been (it
+enumerates the boundary cases explicitly rather than relying on one
+example), but it is a deliberate substitution and is recorded as such here.
+
+Shipped:
+- `server/prisma/schema.prisma` + migration
+  `20260727140000_add_mrr_reconciliation_run`: new `MrrReconciliationRun`
+  table (additive), applied and validated against production.
+- `server/src/services/stripeReconciliation.ts`: `computeStripeMrr()`
+  (paginated, read-only `subscriptions.list`), `computePostgresMrr()`,
+  `classify()` (pure, unit-tested), `runReconciliation()` (orchestrates all
+  three, persists one row).
+- `server/src/scripts/stripe-reconciliation-report.ts`: on-demand CLI,
+  `--dry-run` supported, always available regardless of the scheduled job's
+  flag.
+- `server/src/utils/featureFlags.ts`: `STRIPE_RECONCILIATION_ENABLED`,
+  default false.
+- `server/src/index.ts`: nightly cron wired in at 3 AM UTC (offset from the
+  existing 2 AM metrics-recompute cron), gated by the flag — **written but
+  not live**, since the running production `videotools-api` container will
+  not pick up this code until it is next rebuilt/redeployed, which was not
+  done as part of this sprint (no service restart performed).
+
+**Validated against live production data, 2026-07-27:**
+- Dry run: `postgresMrrCents=0` (expected — `SubscriptionCurrentState` is
+  still empty since `MRR_EXTRACTION_V2_WRITE` is off), `stripeMrrCents=6000`
+  ($60.00/mo), correctly summed live across all 3 real active subscriptions
+  ($40 Pro monthly + $10 Founding Plan monthly + $120/year annual ÷ 12 =
+  $10/month), `stripeActiveCount=3`, `severity='info'` (correctly
+  recognized as diagnostic-only, not a false alarm, given the write path is
+  off) — this independently cross-validates the annual-price ÷12
+  normalization logic against real data for the first time (Sprint 1's
+  validation had no live annual *invoice* example; this run confirms the
+  *subscription-level* annual computation is correct).
+- Live (persisting) run: one row written to `MrrReconciliationRun` with
+  identical values; confirmed via direct SQL; confirmed zero other tables
+  were affected (`User`=409, `SubscriptionCurrentState`=0, unchanged).
+
+Tests: `tsc --noEmit` clean, build clean, full suite 21/21 pass (14 prior +
+7 new), lint delta +6 (all `no-console` in the new CLI script, matching the
+already-accepted convention) — zero new issues of any other kind.
+
+**No production assumption was invalidated during this sprint** — the job's
+behavior matched expectations exactly at every step, including correctly
+self-identifying the expected write-path-disabled divergence as
+informational rather than alarming.
+
 ## Sprint 4 — Canonical Views: `business_users`, `business_jobs`
 
 - **Objective:** Stand up the first two canonical models as **SQL views**

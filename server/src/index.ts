@@ -43,6 +43,9 @@ import { attachLiveTranscription } from './routes/liveTranscription'
 import { maybeRunYoutubeCanary } from './services/youtubeCanary'
 import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
+import { runReconciliation } from './services/stripeReconciliation'
+import { stripe } from './services/stripe'
+import { STRIPE_RECONCILIATION_ENABLED } from './utils/featureFlags'
 import { generateUnsubscribeToken } from './routes/newsletter'
 import guidelinesRoutes from './routes/guidelines'
 import { guidelineQueue, startGuidelineWorker } from './workers/guidelineProcessor'
@@ -325,6 +328,25 @@ const server = app.listen(PORT, () => {
     purgeOldStripeEvents()
       .then(() => log.info({ msg: 'Nightly stripe event log purge done' }))
       .catch((err) => log.warn({ msg: 'Stripe event log purge failed', error: (err as Error)?.message }))
+  }, 60 * 1000)
+
+  // Analytics Sprint 3: nightly Stripe-vs-Postgres MRR/active-subscriber
+  // reconciliation, once per day at 3 AM UTC (offset from the 2 AM recompute
+  // above to avoid load collision). Ships disabled — STRIPE_RECONCILIATION_ENABLED
+  // defaults false, so this is a no-op until explicitly turned on. Read-only
+  // against Stripe/Postgres except for its own row in MrrReconciliationRun.
+  // See docs/analytics/STRIPE_RECONCILIATION_PLAN.md.
+  let lastReconciliationDate = ''
+  setInterval(() => {
+    if (!STRIPE_RECONCILIATION_ENABLED) return
+    const now = new Date()
+    if (now.getUTCHours() !== 3) return
+    const todayKey = now.toISOString().slice(0, 10)
+    if (lastReconciliationDate === todayKey) return
+    lastReconciliationDate = todayKey
+    runReconciliation(stripe)
+      .then((result) => log.info({ msg: 'Nightly Stripe reconciliation done', severity: result.severity }))
+      .catch((err) => log.warn({ msg: 'Nightly Stripe reconciliation failed', error: (err as Error)?.message }))
   }, 60 * 1000)
 
   // API credits: refresh OpenAI balance + Resend usage every 3 hours
