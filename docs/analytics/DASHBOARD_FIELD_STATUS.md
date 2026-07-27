@@ -1,110 +1,119 @@
 # DASHBOARD_FIELD_STATUS.md — VideoText
 
-Status: complete field-by-field status of the real `GET /api/admin/dashboard`
-response, regenerated 2026-07-27 per Sprint 7 objective 11. Read directly
-from `server/src/routes/adminDashboard.ts`'s actual response object (not
-from any prior report's summary), so this supersedes Sprint 5/6's partial
-field inventories as the single up-to-date reference. **Every flag governing
-any of this is off in every environment right now** — this document
-describes migration *readiness*, not what is currently rendered; see the
-"Currently served" column, which is `Legacy` for literally every field,
-every row, with no exception.
+Status: final field-by-field classification, regenerated 2026-07-27 at the
+close of Sprint 8 (supersedes the Sprint 7 version of this document).
+Read directly from `server/src/routes/adminDashboard.ts`'s actual response
+object. **Every flag governing any of this is off in every environment
+right now** — this document describes migration readiness per field, not
+what is currently rendered. Every field's "Currently served" value is
+`Legacy`, without exception, because every governing flag
+(`DASHBOARD_SHADOW_COMPUTE`, `DASHBOARD_CANONICAL_CUTOVER`,
+`ROLLUP_CANONICAL_SOURCE`) is off everywhere.
 
-## Status definitions (precedence, lowest to highest readiness)
+## Classification scheme (per operator requirement, Sprint 8)
 
-1. **Deferred** — no canonical model exists yet for this field at all
-   (needs `business_subscriptions`/`business_conversion`/`fact_event`/a
-   cost fact table, or the data has no `User`/`Job` dimension to filter by
-   in the first place, e.g. Redis-derived operational metrics).
-2. **Legacy** — a canonical model (`business_users`/`business_jobs`) could
-   answer this field, but it has never been shadow-validated against the
-   legacy value at the granularity actually served.
-3. **Verified** — shadow-validated (Sprint 4/5) at the granularity actually
-   served, or explicitly acknowledged as validated only at a *coarser*
-   granularity than served (Sprint 6 §2's exclusion list) — either way, no
-   cutover code has been written for it yet.
-4. **Canonical** — cutover code exists and is validated end-to-end (Sprint
-   6's 9 dashboard fields; Sprint 7's rollup-layer-redirectable fields).
-   Gated behind a feature flag that is off everywhere; "Canonical" here
-   means *capability shipped*, not *currently rendered*.
+Each field gets exactly one of five tags:
+
+1. **Canonical and production-ready** — cutover code is written, unit-
+   tested, and live-validated end-to-end; the only remaining step is
+   `FINAL_DEPLOYMENT_PLAN.md` Gate 5 approval + burn-in. No further
+   engineering is required for this field.
+2. **Canonical but awaiting rollout** — the canonical *computation*
+   capability exists and is validated, but this specific field's dashboard
+   value is sourced from a rollup table (`DailyMetrics`/`MonthlyMetrics`)
+   that must itself be redirected first (`FINAL_DEPLOYMENT_PLAN.md` Gate 3)
+   — there is no separate dashboard-level cutover code for these fields to
+   write, because the dashboard already just reads whatever the rollup
+   table holds.
+3. **Intentionally operational/non-business** — by explicit design
+   (`DASHBOARD_MIGRATION_PLAN.md`), this field is not a KPI and is not
+   meant to be filtered by business taxonomy at all. No migration is
+   planned or needed, ever.
+4. **Deferred with a documented dependency** — a specific, named canonical
+   model or schema addition doesn't exist yet, and building it is out of
+   this program's approved 8-sprint scope (second-wave work) or was
+   explicitly scoped out of this session (see
+   `SPRINT_8_RECONCILIATION_REPORT.md` §0).
+5. **Legacy and blocked** — the *legacy* computation is known to be
+   incorrect or unreliable (not just "unmigrated"), and moving to
+   Canonical requires both a business/burn-in decision already in
+   progress (Gates 2/6/7) **and** a canonical model that doesn't exist yet.
 
 ## snapshot
 
-| Field | Status | Currently served | Notes |
-|---|---|---|---|
-| `totalUsers` | Canonical | Legacy | Sprint 7: rollup capability shipped (`ROLLUP_CANONICAL_SOURCE`, off). Sourced from `DailyMetrics`, not a live query — Sprint 6 §0 finding. |
-| `newUsers` | Canonical | Legacy | Same as `totalUsers`. |
-| `activeUsers` | Canonical | Legacy | Sprint 7 bonus field (same rollup function as the 5 required fields). |
-| `jobsCreated` | Canonical | Legacy | Sprint 7. |
-| `jobsCompleted` | Canonical | Legacy | Sprint 7. |
-| `jobsFailed` | Canonical | Legacy | Sprint 7. |
-| `mrrCents` | Deferred | Legacy | No `business_subscriptions` model yet (`DATABASE_MIGRATION_PLAN.md` Part 6, second-wave). Real-time override reads `SubscriptionSnapshot` directly, known-broken per Sprint 1 root cause until `MRR_EXTRACTION_V2_WRITE` is enabled (separate, still-off decision). |
-| `arpuCents` | Deferred | Legacy | Derived from `mrrCents` (deferred) ÷ paid user count (canonical-capable) — bottlenecked by its weaker input. |
-| `newPaidUsers` | Deferred | Legacy | Subscription-derived, same as `mrrCents`. |
-| `churnedUsers` | Deferred | Legacy | Subscription-derived, same as `mrrCents`. |
+| Field | Status | Notes |
+|---|---|---|
+| `totalUsers` | Canonical but awaiting rollout | Sprint 7 rollup capability shipped; needs Gate 3 (enable `ROLLUP_CANONICAL_SOURCE`) + a recompute |
+| `newUsers` | Canonical but awaiting rollout | Same |
+| `activeUsers` | Canonical but awaiting rollout | Same (Sprint 7 bonus field) |
+| `jobsCreated` | Canonical but awaiting rollout | Same |
+| `jobsCompleted` | Canonical but awaiting rollout | Same |
+| `jobsFailed` | Canonical but awaiting rollout | Same |
+| `mrrCents` | Legacy and blocked | Legacy `SubscriptionSnapshot`-sourced value is known-wrong (Sprint 1 root cause: extraction never populated `priceMonthly` correctly pre-fix); the fix (`stripeMrr.ts` V2) is shadow-validated (Gate 2) but writing it live is Gate 7, and even once live there is still no canonical **rollup/dashboard** model (`business_subscriptions`) to source this field from — blocked on both the burn-in decision and a second-wave schema build |
+| `arpuCents` | Legacy and blocked | Derived from `mrrCents` ÷ paid-user-count; inherits `mrrCents`'s blocker |
+| `newPaidUsers` | Legacy and blocked | Subscription-derived, same lineage as `mrrCents` |
+| `churnedUsers` | Legacy and blocked | Same |
 
 ## revenue
 
-| Field | Status | Currently served | Notes |
-|---|---|---|---|
-| `mrrTrend` | Deferred | Legacy | `MonthlyMetrics.mrrCents`, subscription-derived. |
-| `newMrrTrend` | Deferred | Legacy | Same. |
-| `churnedMrrTrend` | Deferred | Legacy | Same. |
-| `churnRateTrend` | Deferred | Legacy | Same. |
+| Field | Status | Notes |
+|---|---|---|
+| `mrrTrend` | Legacy and blocked | Same lineage as `snapshot.mrrCents` |
+| `newMrrTrend` | Legacy and blocked | Same |
+| `churnedMrrTrend` | Legacy and blocked | Same |
+| `churnRateTrend` | Legacy and blocked | Same |
 
 ## usage
 
-| Field | Status | Currently served | Notes |
-|---|---|---|---|
-| `topUsersByJobCount` | Verified | Legacy | Sprint 5 validated the email list only; actual served shape (`userId`,`email`,`plan`,`jobCount`) not fully validated — Sprint 6 §2 explicit exclusion. |
-| `jobsByToolType` | Canonical | Legacy | Sprint 6 cutover shipped (`DASHBOARD_CANONICAL_CUTOVER`, off). |
+| Field | Status | Notes |
+|---|---|---|
+| `topUsersByJobCount` | **Canonical and production-ready** | Sprint 8: full row (`userId`/`email`/`plan`/`jobCount`) comparison + cutover shipped |
+| `jobsByToolType` | Canonical and production-ready | Sprint 6 |
 
 ## performance
 
-| Field | Status | Currently served | Notes |
-|---|---|---|---|
-| `avgProcessingMs` | Canonical | Legacy | Sprint 6 (dashboard-level, 30d live query) + Sprint 7 (rollup-level, per calendar day). Non-monotonic — validated divergence can go either direction, by design. |
-| `p95ProcessingMs` | Canonical | Legacy | Same as `avgProcessingMs`. |
-| `failureRate` | Canonical | Legacy | Sprint 6. |
+| Field | Status | Notes |
+|---|---|---|
+| `avgProcessingMs` | Canonical and production-ready | Sprint 6 (dashboard-level, 30d) — non-monotonic divergence is expected by design |
+| `p95ProcessingMs` | Canonical and production-ready | Sprint 6 |
+| `failureRate` | Canonical and production-ready | Sprint 6 |
 
 ## retention
 
-| Field | Status | Currently served | Notes |
-|---|---|---|---|
-| `activeUsersLast7Days` | Canonical | Legacy | Sprint 6. |
-| `activeUsersLast30Days` | Canonical | Legacy | Sprint 6. |
+| Field | Status | Notes |
+|---|---|---|
+| `activeUsersLast7Days` | Canonical and production-ready | Sprint 6 |
+| `activeUsersLast30Days` | Canonical and production-ready | Sprint 6 |
 
 ## Top-level arrays / objects
 
-| Field | Status | Currently served | Notes |
-|---|---|---|---|
-| `feedback` | Verified | Legacy | Sprint 5 validated an aggregate proxy ("total starred feedback count") that doesn't correspond to the actual served per-row shape — Sprint 6 §2 exclusion. |
-| `users` (all users, ≤500 rows) | Legacy | Legacy | Never validated in any prior sprint — Sprint 6 §2 explicit statement. Canonical-capable (`business_users`) but nobody has shadow-compared this specific row shape yet. |
-| `daily` (31-day `DailyMetrics` trend) | Legacy (mixed) | Legacy | Composite of 10 sub-fields per day. 7 of them (`totalUsers`,`newUsers`,`activeUsers`,`jobsCreated`,`jobsCompleted`,`jobsFailed`,`avgProcessingMs`) now have Sprint 7 canonical rollup capability — same status as `snapshot`'s equivalents. The remaining 3 (`mrrCents`,`churnedUsers`,`newPaidUsers`) are Deferred (subscription-derived). Tagged `Legacy` overall because the array as a served unit has never itself been shadow-compared end-to-end, only its individual sub-fields addressed piecemeal across Sprints 5–7. |
-| `planDistribution` | Canonical | Legacy | Sprint 6. |
-| `recentJobs` | Deferred | Legacy | Intentionally, permanently out of scope — operational visibility feed, not a KPI (`DASHBOARD_MIGRATION_PLAN.md`: shows everything including guest/demo activity by design). |
-| `utmBreakdown` | Canonical | Legacy | Sprint 6. |
-| `failureReasons` | Canonical | Legacy | Sprint 6. |
-| `feedbackByTool` | Verified | Legacy | Sprint 5 aggregate-proxy-only validation, same as `feedback` — Sprint 6 §2 exclusion. |
-| `starDistribution` | Verified | Legacy | Same as `feedback`/`feedbackByTool`. |
-| `toolPerf` | Verified | Legacy | Sprint 5 validated `count` per tool only; `avgMs`/`p95Ms`/`avgFileSizeMb`/`avgDurationSec`/`totalMinutes` not validated — Sprint 6 §2 exclusion. |
-| `costMetrics` | Verified | Legacy | Sprint 5 validated `jobCount`/`totalWhisperCostUsd` aggregate; `avgWhisperCostUsd`/`avgDurationSec` not validated — Sprint 6 §2 exclusion. |
-| `youtubeResolution` | Deferred | Legacy | Ad hoc Redis hashes, no `User`/`Job` foreign key at all — needs a second-wave cost fact table before any taxonomy filter is even structurally applicable. |
-| `funnelByCohort` | Deferred | Legacy | Needs `business_conversion`/`fact_event` (Sprint 8). `EventLog` itself currently drops pre-signup events (Phase 1 finding, not yet fixed), so even a canonical join today would inherit that gap. |
-
-## Summary counts
-
-34 fields total, counted as individual rows in the tables above.
-
-| Status | Field count | Fields |
+| Field | Status | Notes |
 |---|---|---|
-| Canonical | 15 | `snapshot.totalUsers/newUsers/activeUsers/jobsCreated/jobsCompleted/jobsFailed` (6), `usage.jobsByToolType`, `performance.avgProcessingMs/p95ProcessingMs/failureRate` (3), `retention.activeUsersLast7Days/activeUsersLast30Days` (2), `planDistribution`, `utmBreakdown`, `failureReasons` |
-| Verified | 6 | `usage.topUsersByJobCount`, `feedback`, `feedbackByTool`, `starDistribution`, `toolPerf`, `costMetrics` |
-| Legacy | 2 | `users`, `daily` (mixed — see note above) |
-| Deferred | 11 | `snapshot.mrrCents/arpuCents/newPaidUsers/churnedUsers` (4), `revenue.mrrTrend/newMrrTrend/churnedMrrTrend/churnRateTrend` (4), `recentJobs`, `youtubeResolution`, `funnelByCohort` |
+| `feedback` | **Canonical and production-ready** | Sprint 8: actual served LIMIT-20 feed (id-list + full-row cutover, incl. email enrichment) |
+| `users` (allUsers, ≤500 rows) | **Deferred with a documented dependency** | Sprint 8 finding: `business_users` doesn't expose `name`/`lastActiveAt`; needs a small additive view migration, not written this sprint (see `SPRINT_8_RECONCILIATION_REPORT.md` §0) |
+| `daily` (31-day `DailyMetrics` trend) | **Canonical but awaiting rollout** (7/10 sub-fields) / **Legacy and blocked** (3/10) | Mixed, mirrors `snapshot`: `totalUsers`/`newUsers`/`activeUsers`/`jobsCreated`/`jobsCompleted`/`jobsFailed`/`avgProcessingMs` await Gate 3; `mrrCents`/`churnedUsers`/`newPaidUsers` are Legacy and blocked, same as `snapshot`'s equivalents. The array itself has no independent query to cut over — it's a straight passthrough of `DailyMetrics` rows. |
+| `planDistribution` | Canonical and production-ready | Sprint 6 |
+| `recentJobs` | **Intentionally operational/non-business** | `DASHBOARD_MIGRATION_PLAN.md`: explicitly shows everything including guest/demo activity by design, not a KPI |
+| `utmBreakdown` | Canonical and production-ready | Sprint 6 |
+| `failureReasons` | Canonical and production-ready | Sprint 6 |
+| `feedbackByTool` | **Canonical and production-ready** | Sprint 8: real per-tool `avgStars`/`count` comparison + cutover (previously not actually computed despite an older comment implying it was) |
+| `starDistribution` | **Canonical and production-ready** | Sprint 8: real per-star `count` comparison + cutover |
+| `toolPerf` | **Canonical and production-ready** | Sprint 8: all 6 fields (not just `count`) comparison + cutover |
+| `costMetrics` | **Canonical and production-ready** | Sprint 8: all 4 fields (not just `jobCount`/`totalWhisperCostUsd`) comparison + cutover |
+| `youtubeResolution` | **Deferred with a documented dependency** | Redis-derived, no `User`/`Job` foreign key; needs a second-wave cost fact table (`DATABASE_MIGRATION_PLAN.md`) |
+| `funnelByCohort` | **Deferred with a documented dependency** | Needs `business_conversion`/`fact_event` (original Sprint 8 scope, explicitly deferred this session — see `SPRINT_8_RECONCILIATION_REPORT.md` §0); `EventLog` itself currently drops pre-signup events regardless |
 
-No field in this dashboard is currently served from anything other than its
-legacy path — every `Currently served` cell reads `Legacy` because every
-governing flag (`DASHBOARD_SHADOW_COMPUTE`, `DASHBOARD_CANONICAL_CUTOVER`,
-`ROLLUP_CANONICAL_SOURCE`) is off in every environment, exactly as required
-by Sprint 6/7's operator instructions.
+## Summary counts (34 fields total)
+
+| Status | Count | Fields |
+|---|---|---|
+| **Canonical and production-ready** | 15 | `usage.topUsersByJobCount`/`jobsByToolType`, `performance.avgProcessingMs`/`p95ProcessingMs`/`failureRate`, `retention.activeUsersLast7Days`/`activeUsersLast30Days`, `planDistribution`, `utmBreakdown`, `failureReasons`, `feedback`, `feedbackByTool`, `starDistribution`, `toolPerf`, `costMetrics` |
+| **Canonical but awaiting rollout** | 7 | `snapshot.totalUsers`/`newUsers`/`activeUsers`/`jobsCreated`/`jobsCompleted`/`jobsFailed` (6), `daily` (1, mixed) |
+| **Intentionally operational/non-business** | 1 | `recentJobs` |
+| **Deferred with a documented dependency** | 3 | `users`, `youtubeResolution`, `funnelByCohort` |
+| **Legacy and blocked** | 8 | `snapshot.mrrCents`/`arpuCents`/`newPaidUsers`/`churnedUsers` (4), `revenue.mrrTrend`/`newMrrTrend`/`churnedMrrTrend`/`churnRateTrend` (4) |
+
+**22 of 34 fields (65%) are code-complete and validated, awaiting only a
+deployment gate.** The remaining 12 need either a schema build outside
+this program's approved scope (11) or a small, separately-approvable view
+fix (1, `users`).

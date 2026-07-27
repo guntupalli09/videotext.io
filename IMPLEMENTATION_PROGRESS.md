@@ -11,10 +11,17 @@ This file is the resumable state for the analytics-migration program
 **Sprint 0 — complete. Sprint 1 — complete. Sprint 2 — complete. Sprint 3 —
 complete. Sprint 4 — complete. Sprint 5 — complete (accepted by operator
 2026-07-27). Sprint 6 — code complete, tested, committed locally; NOT
-deployed, flag NOT enabled (2026-07-27). Sprint 7 — rollup-layer scope only
-(per operator's Sprint 7 kickoff instructions), code complete, live-
-validated read-only, committed locally; NOT deployed, flag NOT enabled
-(2026-07-27).**
+deployed, flag NOT enabled (2026-07-27, accepted by operator). Sprint 7 —
+rollup-layer scope only (per operator's Sprint 7 kickoff instructions),
+code complete, live-validated read-only, committed locally; NOT deployed,
+flag NOT enabled (2026-07-27, accepted by operator). Sprint 8 —
+finalization/consolidation sprint (per operator's Sprint 8 kickoff
+instructions, narrower than SPRINT_PLAN.md's original PostHog/funnel-fix
+Sprint 8 text — see scope note below), code complete, live-validated
+read-only, committed locally; NOT deployed, no flag enabled (2026-07-27).
+This is the last sprint before a production deployment gate — see
+`docs/analytics/FINAL_DEPLOYMENT_PLAN.md` for the 7-gate rollout, awaiting
+Gate 1 approval.**
 
 **STOP POINT: awaiting explicit operator approval before (a) enabling
 `DASHBOARD_CANONICAL_CUTOVER` in any environment, or (b) rebuilding/
@@ -644,6 +651,87 @@ dashboard today is unchanged — `adminDashboard.ts` still reads whatever is
 currently stored in `DailyMetrics`/`MonthlyMetrics`, written by the
 unmodified legacy path (the flag is off), exactly as before this sprint.
 
+## Sprint 8 — Finalization/Consolidation — CODE COMPLETE, NOT DEPLOYED, 2026-07-27
+
+**Scope, per the operator's explicit Sprint 8 kickoff instructions:**
+complete the remaining canonical dashboard work reachable from existing
+models (`business_users`/`business_jobs`), resolve or formally defer every
+remaining Legacy/Deferred dashboard field, produce a final canonical field
+mapping, a permanent data dictionary, a full cross-system reconciliation,
+and one coordinated deployment/rollback plan covering Sprints 6+7.
+**Explicitly out of scope this session** (documented, not silently
+dropped): `SPRINT_PLAN.md`'s original Sprint 8 text — the PostHog
+funnel-capture fix (`fact_event`, relaxed `EventLog` constraint) and
+governance-process adoption — neither was requested by this session's
+objectives and both require a schema change + live event-capture code
+change, a different kind of work than "complete work reachable from
+existing models." Full reasoning: `docs/analytics/SPRINT_8_
+RECONCILIATION_REPORT.md` §0.
+
+Files changed:
+- `server/src/services/canonicalDashboard.ts` (extended: full-granularity
+  comparisons for `topUsersByJobCount`, `toolPerf`, `costMetrics`,
+  `feedback`, `feedbackByTool`, `starDistribution`; `users`/allUsers added
+  as `NOT_YET_COMPARABLE` with the new view-gap finding as the reason)
+- `server/src/services/canonicalDashboardCutover.ts` (extended: 6 new
+  canonical compute functions + 6 new structural validators, wired into
+  the **same, existing** `DASHBOARD_CANONICAL_CUTOVER` flag — no new flag.
+  The flag now governs 15 fields total, still off everywhere)
+- `server/tests/canonicalDashboardCutover.test.ts` (+9 tests for the new
+  validators)
+- `docs/analytics/SPRINT_8_RECONCILIATION_REPORT.md`,
+  `docs/analytics/FINAL_ANALYTICS_READINESS_REPORT.md`,
+  `docs/analytics/CANONICAL_DATA_DICTIONARY.md`,
+  `docs/analytics/FINAL_DEPLOYMENT_PLAN.md`,
+  `docs/analytics/FINAL_ROLLBACK_PLAN.md` (all new)
+- `docs/analytics/DASHBOARD_FIELD_STATUS.md`, this file (updated)
+
+**Migration/schema changes: none.** A gap was found this sprint
+(`business_users` doesn't expose `"User".name`/`"User".lastActiveAt`,
+needed to fully canonicalize the `users` dashboard field) but the fix (an
+additive `CREATE OR REPLACE VIEW`) was deliberately **not written**, since
+it wasn't part of this session's requested scope — documented as a
+dependency instead, per the operator's own "do not silently expand scope"
+instruction.
+
+**Live validation, read-only throughout, 2026-07-27:**
+- `applyCanonicalCutover()` re-run against a synthetic placeholder
+  response (Sprint 6's technique): all 15 fields (9 carried over + 6 new)
+  match `compareDashboardMetrics()`'s independent computation. Three
+  apparent mismatches on first pass (`toolPerf`, `feedbackByTool`,
+  `starDistribution`) were a validation-script artifact (array ordering +
+  MB-vs-bytes unit difference), not a data defect — caught and corrected
+  before finalizing, same discipline as Sprint 4's self-correction.
+- Fresh Stripe dry-run (`stripe-reconciliation-report.ts --dry-run`):
+  `stripeMrrCents=5000` ($50/mo), `stripeActiveCount=2` — moved since
+  Sprint 3's `$60/mo`/3 (real subscription churn on a live system between
+  same-day runs, not a defect), `severity='info'` (correctly
+  non-alarming).
+- Postgres counts: `User`=417, `Job`=1,394, `business_users`=417,
+  `business_jobs`=1,394 (all matching exactly), `SubscriptionCurrentState`=0
+  (expected), `MrrReconciliationRun`=1 (unchanged — dry run did not
+  persist).
+- PostHog (behavior-only, explicitly not a strict reconciliation): 2,740
+  distinct persons vs. 417 registered Postgres users (consistent with the
+  known guest/pre-signup gap); 444 `job_created` events (30d) sits between
+  the legacy (475) and canonical (309) Postgres job counts for the same
+  window — directionally sensible, no unexplained divergence.
+- New finding, not previously surfaced: of 12 Postgres accounts with
+  `plan <> 'free'`, only 2 have a live, Stripe-verified active
+  subscription — the other 10 are manually-granted/legacy plan values
+  (demo account, founder, `founding_workflow` grants, etc.), further
+  confirming the value of the Sprint 2 taxonomy exclusions.
+
+Tests: `tsc --noEmit` clean, full build clean, full suite **56/56** pass
+(47 prior + 9 new). Lint: **361 → 361, delta 0** — every new comparison/
+cutover function landed in already-linted files with zero new issues of
+any kind (no new CLI script was added this sprint, so not even the usual
+`no-console` bump).
+
+**No feature flag was enabled. No container was rebuilt, restarted, or
+redeployed. No production recompute was run.** This sprint is entirely
+additive code + read-only validation + documentation.
+
 ## Unresolved issues
 
 1. **[Tracked as `docs/analytics/BACKLOG.md` WI-001, not fixed]**
@@ -674,44 +762,62 @@ unmodified legacy path (the flag is off), exactly as before this sprint.
    `GET /api/metrics/:name`) was not attempted this session — the
    operator's Sprint 7 kickoff instructions scoped this session to the
    rollup-generation-layer redirect only. Not dropped, just not started.
+7. `business_users` doesn't expose `"User".name`/`"User".lastActiveAt` —
+   Sprint 8 finding, blocks full canonicalization of the `users` (allUsers)
+   dashboard field. Fix is a small additive view migration, not written
+   this sprint (out of the session's requested scope). Tracked in
+   `docs/analytics/DASHBOARD_FIELD_STATUS.md` and `SPRINT_8_
+   RECONCILIATION_REPORT.md` §0.
+8. `business_subscriptions` (canonical MRR/revenue model) does not exist —
+   not scoped into this 8-sprint program at all (explicitly "second-wave"
+   per `DATABASE_MIGRATION_PLAN.md` Part 6). Blocks 8 dashboard fields
+   from ever reaching "Canonical" status without a separate, future
+   program of work.
+9. The PostHog funnel-capture fix (`fact_event`) and governance-process
+   adoption — `SPRINT_PLAN.md`'s original Sprint 8 scope — were not
+   attempted this session (see item 6's precedent). `funnelByCohort`
+   remains Deferred.
 
 ## Latest commit hash
 
-`97343f3` — `analytics-sprint-6: controlled dashboard cutover for 9
-approved fields (flag off, not deployed)` (local only, not pushed). A
-further commit for this session's Sprint 7 implementation follows
-immediately after this file is saved — see git log.
+`44c0aa9` — `analytics-sprint-7: canonical rollup redirect for
+DailyMetrics/MonthlyMetrics (flag off, not deployed)` (local only, not
+pushed). A further commit for this session's Sprint 8 implementation
+follows immediately after this file is saved — see git log.
 
 ## Exact next step
 
-**Two independent decisions are pending, neither made this session:**
+**Sprint 8 closes the code/documentation phase of this program.** The
+single coordinated rollout plan is `docs/analytics/FINAL_DEPLOYMENT_
+PLAN.md` — 7 gates, each requiring its own separate, explicit operator
+approval, none of which has been executed:
 
-1. **Sprint 6 production rollout** — do not enable
-   `DASHBOARD_CANONICAL_CUTOVER` and do not rebuild/restart/redeploy the
-   production `videotools-api` container without a fresh, explicit
-   operator instruction. See `SPRINT_6_RECONCILIATION_REPORT.md` §7
-   (deployment steps) / §8 (rollback).
-2. **Sprint 7 production rollout** — do not enable
-   `ROLLUP_CANONICAL_SOURCE` without a fresh, explicit operator
-   instruction. Unlike Sprint 6, enabling this flag alone does not change
-   anything a founder sees (it only changes what the *next* rollup write
-   computes) — the dashboard would only reflect it once `DailyMetrics`/
-   `MonthlyMetrics` rows are next recomputed with the flag on, i.e. after
-   both a redeploy and a recompute run.
+1. Gate 1 — deploy code, all flags off (zero behavior change).
+2. Gate 2 — enable shadow flags (`MRR_EXTRACTION_V2_SHADOW`,
+   `DASHBOARD_SHADOW_COMPUTE`), log-only.
+3. Gate 3 — enable `ROLLUP_CANONICAL_SOURCE` + controlled recompute.
+4. Gate 4 — validate rollups against fresh canonical live queries.
+5. Gate 5 — enable `DASHBOARD_CANONICAL_CUTOVER` (15 fields).
+6. Gate 6 — enable `STRIPE_RECONCILIATION_ENABLED` (nightly, log-only
+   initially).
+7. Gate 7 — enable `MRR_EXTRACTION_V2_WRITE` (requires Finance/founder
+   sign-off specifically, per `DASHBOARD_MIGRATION_PLAN.md`'s own warning
+   about this being the largest visible change in the whole program).
 
 Resume by:
-1. Reading this file and every doc in `docs/analytics/` (already current as
-   of this update), especially `SPRINT_6_RECONCILIATION_REPORT.md` and
-   `SPRINT_7_RECONCILIATION_REPORT.md`.
-2. If Sprint 6 is to proceed: present §7's deployment steps and get
-   explicit, separate approval for (a) the container rebuild/redeploy and
-   (b) the flag enablement.
-3. If Sprint 7 is to proceed: present `SPRINT_7_RECONCILIATION_REPORT.md`
-   §9 (rollback) and get explicit approval for (a) enabling
-   `ROLLUP_CANONICAL_SOURCE`, (b) any redeploy needed to pick it up, and
-   (c) re-running `recompute` so canonical values actually populate
-   `DailyMetrics`/`MonthlyMetrics`.
-4. Separately, whenever convenient: the rest of Sprint 7's original scope
-   (`metric_version`/`computed_at`, `GET /api/metrics/:name`) or Sprint 8
-   (PostHog Cleanup/Funnel Fix/Governance) are both available as the next
-   *code* sprint — neither depends on the two pending decisions above.
+1. Reading this file and every doc in `docs/analytics/` (all current as of
+   this update), especially `FINAL_ANALYTICS_READINESS_REPORT.md` (overall
+   verdict), `FINAL_DEPLOYMENT_PLAN.md` (the 7 gates in full detail —
+   prerequisites/commands/validation/monitoring/rollback/stop-conditions
+   each), and `FINAL_ROLLBACK_PLAN.md` (companion reference).
+2. Presenting Gate 1 to the operator and getting explicit approval before
+   any commit is pushed or any container is touched — per this session's
+   explicit instruction, this agent stops here and does not proceed past
+   Gate 1 approval on its own.
+3. Each subsequent gate requires its own separate approval — approving
+   Gate 1 is not approval for Gate 2, etc.
+4. Separately, whenever convenient and not gated by the above: the
+   deferred items in "Unresolved issues" (`business_users` view fix,
+   `business_subscriptions` second-wave build, PostHog funnel-capture
+   fix + governance adoption, WI-001) are all available as future,
+   independent sprints.

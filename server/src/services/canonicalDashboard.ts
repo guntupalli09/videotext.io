@@ -194,35 +194,41 @@ export async function compareDashboardMetrics(): Promise<MetricComparison[]> {
   })
 
   // ── Usage: topUsersByJobCount ─────────────────────────────────────────
+  // Sprint 8: upgraded from an email-list-only comparison (Sprint 5) to the
+  // full served row shape (userId, email, plan, jobCount) -- Sprint 6 §2
+  // explicitly excluded this field because only the coarser email-list
+  // check had been done.
   const [topUsersLegacy, topUsersCanonical] = await Promise.all([
-    prisma.$queryRaw<{ userId: string; email: string; jobCount: bigint }[]>`
-      SELECT j."userId", u.email, COUNT(*)::bigint as "jobCount"
+    prisma.$queryRaw<{ userId: string; email: string; plan: string; jobCount: bigint }[]>`
+      SELECT j."userId", u.email, u.plan, COUNT(*)::bigint as "jobCount"
       FROM "Job" j JOIN "User" u ON u.id = j."userId"
       WHERE j."createdAt" >= ${thirtyDaysAgo}
-      GROUP BY j."userId", u.email ORDER BY "jobCount" DESC LIMIT 10
+      GROUP BY j."userId", u.email, u.plan ORDER BY "jobCount" DESC LIMIT 10
     `,
-    prisma.$queryRaw<{ userId: string; email: string; jobCount: bigint }[]>`
-      SELECT bj."userId", bu.email, COUNT(*)::bigint as "jobCount"
+    prisma.$queryRaw<{ userId: string; email: string; plan: string; jobCount: bigint }[]>`
+      SELECT bj."userId", bu.email, bu.plan, COUNT(*)::bigint as "jobCount"
       FROM business_jobs bj JOIN business_users bu ON bu.id = bj."userId"
       WHERE bj."createdAt" >= ${thirtyDaysAgo} AND bj."includeInBusinessMetrics"
-      GROUP BY bj."userId", bu.email ORDER BY "jobCount" DESC LIMIT 10
+      GROUP BY bj."userId", bu.email, bu.plan ORDER BY "jobCount" DESC LIMIT 10
     `,
   ])
-  const legacyTop10 = topUsersLegacy.map((r) => r.email)
-  const canonicalTop10 = topUsersCanonical.map((r) => r.email)
-  const listsIdentical = JSON.stringify(legacyTop10) === JSON.stringify(canonicalTop10)
+  const legacyTop10Full = topUsersLegacy.map((r) => ({ userId: r.userId, email: r.email, plan: r.plan, jobCount: Number(r.jobCount) }))
+  const canonicalTop10Full = topUsersCanonical.map((r) => ({ userId: r.userId, email: r.email, plan: r.plan, jobCount: Number(r.jobCount) }))
+  const legacyTop10 = legacyTop10Full.map((r) => r.email)
+  const canonicalTop10 = canonicalTop10Full.map((r) => r.email)
+  const listsIdentical = JSON.stringify(legacyTop10Full) === JSON.stringify(canonicalTop10Full)
   const founderInLegacy = legacyTop10.includes('santhoshguntupalli06@gmail.com')
   comparisons.push({
     card: 'usage',
-    metric: 'topUsersByJobCount (top 10, 30d)',
+    metric: 'topUsersByJobCount (top 10, 30d, full row: userId/email/plan/jobCount)',
     source: '"Job" INNER JOIN "User" (legacy) vs business_jobs INNER JOIN business_users WHERE includeInBusinessMetrics (canonical)',
-    legacyValue: legacyTop10,
-    canonicalValue: canonicalTop10,
+    legacyValue: legacyTop10Full,
+    canonicalValue: canonicalTop10Full,
     absoluteDiff: null,
     percentDiff: null,
     classification: listsIdentical ? 'IDENTICAL' : founderInLegacy ? 'EXPECTED_DIVERGENCE' : 'UNEXPLAINED',
     explanation: listsIdentical
-      ? 'Lists are identical for this 30-day window (none of the 4 excluded accounts placed in the top 10 either way).'
+      ? 'Full rows (not just emails) are identical for this 30-day window (none of the 4 excluded accounts placed in the top 10 either way).'
       : 'Legacy list includes the founder/an internal account in the top 10 (crowding out a real customer); canonical structurally excludes them.',
   })
 
@@ -366,6 +372,47 @@ export async function compareDashboardMetrics(): Promise<MetricComparison[]> {
     EXCLUDED_ACCOUNTS_NOTE + ' (all-time, dominated by the founder\'s 144 all-time jobs)'
   )
 
+  // ── toolPerf full shape (Sprint 8: avgMs/p95Ms/avgFileSizeMb/avgDurationSec/totalMinutes -- ──
+  // Sprint 6 §2 excluded this field because only `count` had been validated;
+  // the actual served response also returns these five additional per-tool
+  // aggregates, none of which had been compared until now. ──
+  const [toolPerfFullLegacy, toolPerfFullCanonical] = await Promise.all([
+    prisma.$queryRaw<{ toolType: string; avgMs: number | null; p95Ms: number | null; avgFileSizeBytes: number | null; avgDurationSec: number | null; totalMinutes: number | null }[]>`
+      SELECT "toolType",
+        AVG("processingMs") FILTER (WHERE "processingMs" IS NOT NULL)::double precision as "avgMs",
+        percentile_cont(0.95) WITHIN GROUP (ORDER BY "processingMs") FILTER (WHERE "processingMs" IS NOT NULL)::double precision as "p95Ms",
+        AVG("fileSizeBytes"::double precision)::double precision as "avgFileSizeBytes",
+        AVG("videoDurationSec")::double precision as "avgDurationSec",
+        SUM("videoDurationSec"::double precision / 60.0)::double precision as "totalMinutes"
+      FROM "Job" WHERE status = 'completed' GROUP BY "toolType"
+    `,
+    prisma.$queryRaw<{ toolType: string; avgMs: number | null; p95Ms: number | null; avgFileSizeBytes: number | null; avgDurationSec: number | null; totalMinutes: number | null }[]>`
+      SELECT "toolType",
+        AVG("processingMs") FILTER (WHERE "processingMs" IS NOT NULL)::double precision as "avgMs",
+        percentile_cont(0.95) WITHIN GROUP (ORDER BY "processingMs") FILTER (WHERE "processingMs" IS NOT NULL)::double precision as "p95Ms",
+        AVG("fileSizeBytes"::double precision)::double precision as "avgFileSizeBytes",
+        AVG("videoDurationSec")::double precision as "avgDurationSec",
+        SUM("videoDurationSec"::double precision / 60.0)::double precision as "totalMinutes"
+      FROM business_jobs WHERE status = 'completed' AND "includeInBusinessMetrics" GROUP BY "toolType"
+    `,
+  ])
+  comparisons.push({
+    card: 'toolPerf',
+    metric: 'per-tool avgMs/p95Ms/avgFileSizeMb/avgDurationSec/totalMinutes (all-time)',
+    source: '"Job" (legacy) vs business_jobs (canonical)',
+    legacyValue: toolPerfFullLegacy,
+    canonicalValue: toolPerfFullCanonical,
+    absoluteDiff: null,
+    percentDiff: null,
+    classification: 'EXPECTED_DIVERGENCE',
+    explanation:
+      'Averages/percentiles/sums over a changed population -- not subset-monotonic like a count. Every tool ' +
+      'present in canonical is also present in legacy (canonical never adds a tool legacy lacks); values ' +
+      'expected to shift by whatever amount the 4 excluded accounts + guest jobs contributed, in either direction ' +
+      'for the non-additive aggregates (avgMs/p95Ms/avgFileSizeMb/avgDurationSec) and only downward for the ' +
+      'additive one (totalMinutes, a sum).',
+  })
+
   // ── Cost Metrics (30d completed jobs with cost data) ─────────────────
   const [costLegacy, costCanonical] = await Promise.all([
     prisma.$queryRaw<[{ jobCount: bigint; totalWhisperMicros: bigint | null }]>`
@@ -391,7 +438,43 @@ export async function compareDashboardMetrics(): Promise<MetricComparison[]> {
     'transcription cost that should not be attributed to "customer" unit economics.'
   )
 
-  // ── Feedback: starDistribution / feedbackByTool (join to business_users where userId is set) ──
+  // ── costMetrics full shape (Sprint 8: avgWhisperCostUsd/avgDurationSec) ──
+  // Sprint 6 §2 excluded this field as a whole because the served response
+  // also returns avgWhisperCostUsd and avgDurationSec, neither validated.
+  const [costFullLegacy, costFullCanonical] = await Promise.all([
+    prisma.$queryRaw<[{ avgWhisperMicros: number | null; avgDurationSec: number | null }]>`
+      SELECT AVG("whisperCostMicros")::double precision as "avgWhisperMicros", AVG("videoDurationSec")::double precision as "avgDurationSec"
+      FROM "Job" WHERE status='completed' AND "completedAt" >= ${thirtyDaysAgo} AND "whisperCostMicros" IS NOT NULL
+    `,
+    prisma.$queryRaw<[{ avgWhisperMicros: number | null; avgDurationSec: number | null }]>`
+      SELECT AVG("whisperCostMicros")::double precision as "avgWhisperMicros", AVG("videoDurationSec")::double precision as "avgDurationSec"
+      FROM business_jobs WHERE status='completed' AND "completedAt" >= ${thirtyDaysAgo} AND "whisperCostMicros" IS NOT NULL AND "includeInBusinessMetrics"
+    `,
+  ])
+  const avgWhisperLegacyUsd = costFullLegacy[0]?.avgWhisperMicros !== null && costFullLegacy[0]?.avgWhisperMicros !== undefined ? costFullLegacy[0].avgWhisperMicros / 1_000_000 : 0
+  const avgWhisperCanonicalUsd = costFullCanonical[0]?.avgWhisperMicros !== null && costFullCanonical[0]?.avgWhisperMicros !== undefined ? costFullCanonical[0].avgWhisperMicros / 1_000_000 : 0
+  comparisons.push({
+    card: 'costMetrics', metric: 'avgWhisperCostUsd (30d)',
+    source: '"Job" (legacy) vs business_jobs (canonical)',
+    legacyValue: avgWhisperLegacyUsd, canonicalValue: avgWhisperCanonicalUsd,
+    absoluteDiff: avgWhisperLegacyUsd - avgWhisperCanonicalUsd,
+    percentDiff: avgWhisperLegacyUsd !== 0 ? (Math.abs(avgWhisperLegacyUsd - avgWhisperCanonicalUsd) / avgWhisperLegacyUsd) * 100 : null,
+    classification: 'EXPECTED_DIVERGENCE',
+    explanation: 'A per-job average, not subset-monotonic -- same reasoning as avgProcessingMs.',
+  })
+  const avgDurLegacy = costFullLegacy[0]?.avgDurationSec ?? 0
+  const avgDurCanonical = costFullCanonical[0]?.avgDurationSec ?? 0
+  comparisons.push({
+    card: 'costMetrics', metric: 'avgDurationSec (30d)',
+    source: '"Job" (legacy) vs business_jobs (canonical)',
+    legacyValue: avgDurLegacy, canonicalValue: avgDurCanonical,
+    absoluteDiff: avgDurLegacy - avgDurCanonical,
+    percentDiff: avgDurLegacy !== 0 ? (Math.abs(avgDurLegacy - avgDurCanonical) / avgDurLegacy) * 100 : null,
+    classification: 'EXPECTED_DIVERGENCE',
+    explanation: 'A per-job average, not subset-monotonic -- same reasoning as avgProcessingMs.',
+  })
+
+  // ── Feedback: aggregate count (Sprint 5) ──────────────────────────────
   const [feedbackLegacy, feedbackCanonical] = await Promise.all([
     prisma.$queryRaw<[{ count: bigint }]>`SELECT COUNT(*)::bigint as count FROM "Feedback" WHERE stars IS NOT NULL`,
     prisma.$queryRaw<[{ count: bigint }]>`
@@ -401,12 +484,88 @@ export async function compareDashboardMetrics(): Promise<MetricComparison[]> {
     `,
   ])
   pushScalar(
-    'feedback', 'starDistribution total count (all-time)',
+    'feedback', 'starred feedback total count (all-time)',
     '"Feedback" (legacy) vs "Feedback" LEFT JOIN business_users, excluding rows from founder/internal/demo (canonical)',
     Number(feedbackLegacy[0].count), Number(feedbackCanonical[0].count),
     'Anonymous feedback (userId IS NULL, e.g. public /survey submissions) is always included on both sides -- ' +
     'only feedback explicitly attributed to one of the 4 excluded accounts would differ.'
   )
+
+  // ── Feedback: actual served shape (Sprint 8) -- LIMIT 20, ORDER BY createdAt DESC, id-list comparison ──
+  // Sprint 6 §2 excluded `feedback` because only the aggregate count above
+  // had been validated, not the actual served (most-recent-20) row set.
+  const [feedbackRowsLegacy, feedbackRowsCanonical] = await Promise.all([
+    prisma.$queryRaw<{ id: string }[]>`SELECT id FROM "Feedback" ORDER BY "createdAt" DESC LIMIT 20`,
+    prisma.$queryRaw<{ id: string }[]>`
+      SELECT f.id FROM "Feedback" f
+      LEFT JOIN business_users bu ON bu.id = f."userId"
+      WHERE f."userId" IS NULL OR bu."includeInBusinessMetrics"
+      ORDER BY f."createdAt" DESC LIMIT 20
+    `,
+  ])
+  const feedbackIdsLegacy = feedbackRowsLegacy.map((r) => r.id)
+  const feedbackIdsCanonical = feedbackRowsCanonical.map((r) => r.id)
+  const feedbackIdsIdentical = JSON.stringify(feedbackIdsLegacy) === JSON.stringify(feedbackIdsCanonical)
+  comparisons.push({
+    card: 'feedback', metric: 'served feed (LIMIT 20, id list)',
+    source: '"Feedback" (legacy) vs "Feedback" LEFT JOIN business_users, excluding founder/internal/demo submitters (canonical)',
+    legacyValue: feedbackIdsLegacy, canonicalValue: feedbackIdsCanonical,
+    absoluteDiff: null, percentDiff: null,
+    classification: feedbackIdsIdentical ? 'IDENTICAL' : 'EXPECTED_DIVERGENCE',
+    explanation: feedbackIdsIdentical
+      ? 'The most recent 20 feedback rows are identical -- none of the last 20 submissions came from an excluded account.'
+      : 'One or more of the most recent 20 submissions came from an excluded account (founder/internal/demo) and is present in legacy but not canonical; every canonical id is still a subset of the legacy id set.',
+  })
+
+  // ── feedbackByTool: per-tool avgStars/count (Sprint 8) ────────────────
+  const [feedbackByToolLegacy, feedbackByToolCanonical] = await Promise.all([
+    prisma.$queryRaw<{ toolId: string; avgStars: number; count: bigint }[]>`
+      SELECT COALESCE("toolId",'unknown') as "toolId", AVG(stars)::double precision as "avgStars", COUNT(*)::bigint as count
+      FROM "Feedback" WHERE stars IS NOT NULL GROUP BY "toolId"
+    `,
+    prisma.$queryRaw<{ toolId: string; avgStars: number; count: bigint }[]>`
+      SELECT COALESCE(f."toolId",'unknown') as "toolId", AVG(f.stars)::double precision as "avgStars", COUNT(*)::bigint as count
+      FROM "Feedback" f LEFT JOIN business_users bu ON bu.id = f."userId"
+      WHERE f.stars IS NOT NULL AND (f."userId" IS NULL OR bu."includeInBusinessMetrics")
+      GROUP BY f."toolId"
+    `,
+  ])
+  comparisons.push({
+    card: 'feedbackByTool', metric: 'avgStars/count per tool (all-time)',
+    source: '"Feedback" (legacy) vs "Feedback" LEFT JOIN business_users (canonical)',
+    legacyValue: feedbackByToolLegacy.map((r) => ({ toolId: r.toolId, avgStars: Number(r.avgStars), count: Number(r.count) })),
+    canonicalValue: feedbackByToolCanonical.map((r) => ({ toolId: r.toolId, avgStars: Number(r.avgStars), count: Number(r.count) })),
+    absoluteDiff: null, percentDiff: null,
+    classification: 'EXPECTED_DIVERGENCE',
+    explanation: 'count is subset-monotonic (excluded-account feedback removed); avgStars is not (an average can move either direction) -- both expected to differ only if an excluded account left feedback for that tool.',
+  })
+
+  // ── starDistribution: per-star count (Sprint 8) ───────────────────────
+  const [starDistLegacy, starDistCanonical] = await Promise.all([
+    prisma.$queryRaw<{ stars: number; count: bigint }[]>`SELECT stars, COUNT(*)::bigint as count FROM "Feedback" WHERE stars IS NOT NULL GROUP BY stars`,
+    prisma.$queryRaw<{ stars: number; count: bigint }[]>`
+      SELECT f.stars, COUNT(*)::bigint as count FROM "Feedback" f LEFT JOIN business_users bu ON bu.id = f."userId"
+      WHERE f.stars IS NOT NULL AND (f."userId" IS NULL OR bu."includeInBusinessMetrics")
+      GROUP BY f.stars
+    `,
+  ])
+  pushDistribution(
+    'starDistribution', 'count per star rating (all-time)', '"Feedback" (legacy) vs "Feedback" LEFT JOIN business_users (canonical)',
+    Object.fromEntries(starDistLegacy.map((r) => [String(r.stars), Number(r.count)])),
+    Object.fromEntries(starDistCanonical.map((r) => [String(r.stars), Number(r.count)])),
+    'Delta attributable to feedback submitted by one of the 4 excluded accounts, if any, per star rating.'
+  )
+
+  // ── Not-yet-comparable: users (allUsers, Sprint 8 finding) ────────────
+  comparisons.push({
+    card: 'users', metric: 'allUsers (LIMIT 500, full row)', source: '"User" LEFT JOIN "Job" (legacy) vs business_users (canonical)',
+    legacyValue: 'n/a', canonicalValue: 'n/a', absoluteDiff: null, percentDiff: null,
+    classification: 'NOT_YET_COMPARABLE',
+    explanation: 'Sprint 8 finding: the served row includes "name" and "lastActiveAt", neither of which business_users ' +
+      'exposes (the Sprint 4 view is an explicit column list that omits them). Comparable only after an additive ' +
+      'view migration adds these two passthrough columns -- not written this sprint, to avoid an unrequested schema ' +
+      'change; tracked as a documented dependency in DASHBOARD_FIELD_STATUS.md.',
+  })
 
   // ── Not-yet-comparable: recentJobs (operational feed, not an aggregate KPI) ──
   comparisons.push({

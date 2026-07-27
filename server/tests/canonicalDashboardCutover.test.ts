@@ -6,6 +6,12 @@ import {
   isFiniteNonNegativeNumber,
   isFiniteRate,
   isCountArray,
+  isFiniteNonNegativeNumberOrNull,
+  isTopUsersArray,
+  isToolPerfArray,
+  isCostMetricsShape,
+  isFeedbackArray,
+  isFeedbackByToolArray,
 } from '../src/services/canonicalDashboardCutover'
 
 // ── Validators ──────────────────────────────────────────────────────────
@@ -49,6 +55,75 @@ test('isCountArray: rejects non-arrays, missing key field, negative/non-numeric 
   assert.equal(isCountArray([{ toolType: 'a', count: -1 }], 'toolType'), false) // negative count
   assert.equal(isCountArray([{ toolType: 'a', count: '3' }], 'toolType'), false) // count not a number
   assert.equal(isCountArray(null, 'toolType'), false)
+})
+
+// ── Sprint 8 validators ─────────────────────────────────────────────────
+
+test('isFiniteNonNegativeNumberOrNull: accepts null and finite non-negative numbers', () => {
+  assert.equal(isFiniteNonNegativeNumberOrNull(null), true)
+  assert.equal(isFiniteNonNegativeNumberOrNull(0), true)
+  assert.equal(isFiniteNonNegativeNumberOrNull(42.5), true)
+})
+
+test('isFiniteNonNegativeNumberOrNull: rejects negative/NaN/undefined/non-numbers', () => {
+  assert.equal(isFiniteNonNegativeNumberOrNull(-1), false)
+  assert.equal(isFiniteNonNegativeNumberOrNull(NaN), false)
+  assert.equal(isFiniteNonNegativeNumberOrNull(undefined), false)
+  assert.equal(isFiniteNonNegativeNumberOrNull('5'), false)
+})
+
+test('isTopUsersArray: accepts well-formed rows, rejects missing/wrong-typed fields', () => {
+  assert.equal(isTopUsersArray([{ userId: 'u1', email: 'a@b.com', plan: 'pro', jobCount: 5 }]), true)
+  assert.equal(isTopUsersArray([]), true)
+  assert.equal(isTopUsersArray([{ userId: 'u1', email: 'a@b.com', plan: 'pro' }]), false) // missing jobCount
+  assert.equal(isTopUsersArray([{ userId: 'u1', email: 'a@b.com', plan: 'pro', jobCount: -1 }]), false) // negative
+  assert.equal(isTopUsersArray('not an array'), false)
+})
+
+test('isToolPerfArray: accepts required count + nullable aggregates, rejects missing count or negative aggregate', () => {
+  assert.equal(
+    isToolPerfArray([{ toolType: 'transcribe', count: 10, avgMs: 100, p95Ms: 200, avgFileSizeMb: 1.5, avgDurationSec: 60, totalMinutes: 10 }]),
+    true
+  )
+  assert.equal(
+    isToolPerfArray([{ toolType: 'transcribe', count: 0, avgMs: null, p95Ms: null, avgFileSizeMb: null, avgDurationSec: null, totalMinutes: null }]),
+    true
+  ) // all-null aggregates valid (zero qualifying rows)
+  assert.equal(isToolPerfArray([{ toolType: 'transcribe', avgMs: 100 }]), false) // missing count
+  assert.equal(
+    isToolPerfArray([{ toolType: 'transcribe', count: 10, avgMs: -5, p95Ms: null, avgFileSizeMb: null, avgDurationSec: null, totalMinutes: null }]),
+    false
+  ) // negative avgMs
+})
+
+test('isCostMetricsShape: accepts null (no cost data) and a well-formed object', () => {
+  assert.equal(isCostMetricsShape(null), true)
+  assert.equal(isCostMetricsShape({ jobsWithCost: 5, avgWhisperCostUsd: 0.01, totalWhisperCostUsd: 0.05, avgDurationSec: 120 }), true)
+  assert.equal(isCostMetricsShape({ jobsWithCost: 0, avgWhisperCostUsd: null, totalWhisperCostUsd: null, avgDurationSec: null }), true)
+})
+
+test('isCostMetricsShape: rejects missing jobsWithCost or negative values', () => {
+  assert.equal(isCostMetricsShape({ avgWhisperCostUsd: 0.01 }), false)
+  assert.equal(isCostMetricsShape({ jobsWithCost: -1, avgWhisperCostUsd: null, totalWhisperCostUsd: null, avgDurationSec: null }), false)
+  assert.equal(isCostMetricsShape('not an object'), false)
+})
+
+test('isFeedbackArray: accepts well-formed rows (light validation: id/stars/createdAt)', () => {
+  assert.equal(isFeedbackArray([{ id: 'f1', stars: 5, createdAt: '2026-07-27T00:00:00.000Z' }]), true)
+  assert.equal(isFeedbackArray([{ id: 'f1', stars: null, createdAt: '2026-07-27T00:00:00.000Z' }]), true)
+  assert.equal(isFeedbackArray([]), true)
+})
+
+test('isFeedbackArray: rejects missing id/createdAt or wrong-typed stars', () => {
+  assert.equal(isFeedbackArray([{ stars: 5, createdAt: '2026-07-27T00:00:00.000Z' }]), false)
+  assert.equal(isFeedbackArray([{ id: 'f1', stars: '5', createdAt: '2026-07-27T00:00:00.000Z' }]), false)
+  assert.equal(isFeedbackArray([{ id: 'f1', stars: 5 }]), false)
+})
+
+test('isFeedbackByToolArray: accepts well-formed rows, rejects missing/negative count', () => {
+  assert.equal(isFeedbackByToolArray([{ toolId: 'transcribe', avgStars: 4.5, count: 3 }]), true)
+  assert.equal(isFeedbackByToolArray([{ toolId: 'transcribe', avgStars: 4.5, count: -1 }]), false)
+  assert.equal(isFeedbackByToolArray([{ toolId: 'transcribe', count: 3 }]), false) // missing avgStars
 })
 
 // ── tryCutoverField: fallback/timeout/validation behavior ──────────────
