@@ -119,13 +119,21 @@ own comparison logic was corrected before this result was recorded.
 | Reconciliation job | `severity` | `info` (correctly non-alarming — write path off) |
 
 **Note on the Stripe numbers moving since Sprint 3** (then: $60.00/mo, 3
-active subscriptions): this reflects real subscription churn between
-2026-07-27's Sprint 3 run and this sprint's run, both on the same day —
-Stripe is a live external system and subscriptions can change state at any
-time; this is expected behavior of a live reconciliation job, not a defect.
-It is exactly the kind of drift `STRIPE_RECONCILIATION_ENABLED` (Gate 6)
-exists to track automatically going forward instead of relying on manual
-re-runs.
+active subscriptions): initially attributed to "real subscription churn"
+without verification. Per operator instruction, this was followed up with
+a dedicated, read-only (GET-only) Stripe investigation identifying the
+**exact** subscriptions involved and their cancellation reasons — see
+`FINAL_DEPLOYMENT_PLAN.md`'s "Pre-Gate-1 frozen baseline" section for the
+full, verified breakdown. Summary: two subscriptions ($40/mo Pro, $10/mo
+Founding Plan) were explicitly canceled by their customers
+(`cancellation_requested`, not `payment_failed`) within the ~24 hours
+spanning Sprint 3's and this sprint's runs, offset by one new $40/mo
+signup from a different customer — net $60→$50/mo. Confirmed not
+attributable to the Sprint 1 extraction bug (which affects reading price
+data off invoice lines, not a subscription's `status` field). This is
+exactly the kind of drift `STRIPE_RECONCILIATION_ENABLED` (Gate 6) exists
+to track automatically going forward instead of relying on manual
+re-investigation.
 
 ### 2c. PostHog — behavior-only comparison (not a strict reconciliation)
 

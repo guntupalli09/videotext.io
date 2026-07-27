@@ -29,6 +29,52 @@ any gate below sets more than that gate's own flag(s).**
 
 ---
 
+## Pre-Gate-1 frozen baseline — Stripe subscription drift, root-caused
+
+Per operator instruction: any observed drift in the reconciliation
+baseline must be explained, not assumed, before Gate 1 proceeds, so the
+frozen starting point is real rather than silently stale. This section is
+that explanation, and is the number every subsequent gate's Stripe
+comparisons should be measured against.
+
+**Observed:** Sprint 3 (2026-07-27, earlier this same day) recorded 3
+active Stripe subscriptions / $60.00 MRR. Sprint 8's dry-run (2026-07-27,
+later the same day) recorded 2 active subscriptions / $50.00 MRR.
+`SPRINT_8_RECONCILIATION_REPORT.md` §2b originally attributed this to
+"real subscription churn... not a defect" without verifying which
+subscription changed or why. That attribution is now verified, read-only
+(GET-only Stripe `subscriptions.list(status=all)`, no object created,
+updated, canceled, or deleted), against the account's full subscription
+history (22 subscriptions, all statuses):
+
+| Subscription | Price | Event | When | Reason |
+|---|---|---|---|---|
+| `sub_1TbFmF2QqK3pYun3TuN01mGI` | $40.00/mo (Pro) | **Canceled** — this is the same subscription used as the worked example throughout Sprint 1's root-cause investigation | 2026-07-26T15:48:12Z | `cancellation_details.reason = "cancellation_requested"` (customer-initiated, not a payment failure) |
+| `sub_1TNhQK2QqK3pYun3JXvoGydy` | $10.00/mo (Founding Plan) | **Canceled** — the Founding Plan subscription from the Sprint 3 baseline | 2026-07-27T05:52:19Z (same calendar day, early morning) | `cancellation_details.reason = "cancellation_requested"` |
+| `sub_1Tx2sQ2QqK3pYun3BfE4Jvwh` | $40.00/mo (Pro) | **New**, different customer (`cus_UwwhfXjJ7yFKc3`) | Created 2026-07-25T10:32:16Z, currently `active` | — |
+| `sub_1TOeAa2QqK3pYun3obM0R04W` | $120.00/yr | Unchanged, `active` throughout | — | — |
+
+Net: $60.00 (`$40 + $10 + $120/12`) → $50.00 (`$40 [new sub] + $120/12`).
+**Both departures are explicit, customer-initiated cancellations
+(`cancellation_requested`), each with a Stripe-side timestamp — not
+`payment_failed`, not a duplicate-counting artifact, and not attributable
+to the known Sprint 1 extraction bug** (that bug affected reading
+`priceMonthly`/`stripeSubscriptionId` off invoice line items; it has no
+bearing on whether a subscription's `status` field itself is `active` or
+`canceled`, which is what `stripe-reconciliation-report.ts`'s
+`stripeActiveCount`/`stripeMrrCents` are computed from). One new signup
+landed in the same window, which is why the net subscriber count only
+dropped by one instead of two.
+
+**Frozen baseline for Gate 1 onward:** 2 active subscriptions, $50.00/mo
+Stripe-side MRR, as of 2026-07-27. Any future drift from *this* number
+(once Gate 6's nightly reconciliation is live) will have its own
+`MrrReconciliationRun` row with a timestamp, rather than requiring a
+manual investigation like this one — that automation is precisely what
+Gate 6 exists to provide going forward.
+
+---
+
 ## Gate 1 — Deploy code with every new flag disabled
 
 **Objective:** Get Sprints 6/7/8's code onto the running `videotools-api`
