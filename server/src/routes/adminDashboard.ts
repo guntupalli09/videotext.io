@@ -14,6 +14,8 @@ import { runRecompute } from '../services/recomputeMetrics'
 import { readLogRing } from '../lib/logRing'
 import { getLogger } from '../lib/logger'
 import { getApiCredits, refreshApiCredits } from '../lib/apiCreditsCache'
+import { compareDashboardMetrics } from '../services/canonicalDashboard'
+import { DASHBOARD_SHADOW_COMPUTE } from '../utils/featureFlags'
 
 const log = getLogger('api')
 const adminDashboardRouter = express.Router()
@@ -866,12 +868,67 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
     cacheTimestamp = Date.now()
 
     log.info({ msg: 'Founder dashboard computed', ms: Date.now() - startMs })
-    return res.json(response)
+    res.json(response)
+
+    // Analytics Sprint 5: shadow-compute canonical metrics AFTER the legacy
+    // response has already been sent. Never awaited by the request/response
+    // cycle, wrapped in its own timeout, and any failure is caught and
+    // logged, never thrown -- this can never slow down, change, or fail the
+    // response actually served to the dashboard UI. See
+    // docs/analytics/SPRINT_5_RECONCILIATION_REPORT.md for the standalone,
+    // full-detail version of this same comparison.
+    if (DASHBOARD_SHADOW_COMPUTE) {
+      shadowCompareDashboard().catch((err) => {
+        log.warn({ msg: 'dashboard_shadow_compare_failed', error: (err as Error)?.message })
+      })
+    }
+
+    return res as Response
   } catch (err) {
     log.error({ msg: '[admin/dashboard]', error: String(err) })
     return res.status(500).json({ message: 'Internal server error' })
   }
 })
+
+const SHADOW_COMPUTE_TIMEOUT_MS = 15_000
+
+async function shadowCompareDashboard(): Promise<void> {
+  const comparisons = await Promise.race([
+    compareDashboardMetrics(),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('dashboard shadow compute timed out')), SHADOW_COMPUTE_TIMEOUT_MS)
+    ),
+  ])
+
+  for (const c of comparisons) {
+    log.info({
+      msg: 'dashboard_shadow_compare',
+      card: c.card,
+      metric: c.metric,
+      source: c.source,
+      legacyValue: c.legacyValue,
+      canonicalValue: c.canonicalValue,
+      absoluteDiff: c.absoluteDiff,
+      percentDiff: c.percentDiff,
+      classification: c.classification,
+      explanation: c.explanation,
+    })
+  }
+
+  const unexplained = comparisons.filter((c) => c.classification === 'UNEXPLAINED')
+  log.info({
+    msg: 'dashboard_shadow_compare_summary',
+    totalMetrics: comparisons.length,
+    unexplainedCount: unexplained.length,
+    unexplainedMetrics: unexplained.map((c) => `${c.card}.${c.metric}`),
+  })
+  if (unexplained.length > 0) {
+    log.error({
+      msg: 'dashboard_shadow_compare_UNEXPLAINED_DISCREPANCY',
+      unexplainedMetrics: unexplained.map((c) => ({ card: c.card, metric: c.metric, legacy: c.legacyValue, canonical: c.canonicalValue })),
+    })
+  }
+}
 
 /**
  * GET /api/admin/logs — Tail the Redis log ring buffer.

@@ -9,8 +9,9 @@ This file is the resumable state for the analytics-migration program
 ## Current sprint
 
 **Sprint 0 — complete. Sprint 1 — complete. Sprint 2 — complete. Sprint 3 —
-complete (accepted by operator 2026-07-27). Sprint 4 — complete (2026-07-27).**
-Currently paused before Sprint 5, pending a fresh instruction to continue.
+complete. Sprint 4 — complete (accepted by operator 2026-07-27). Sprint 5 —
+complete (2026-07-27).** Currently paused before Sprint 6, pending a fresh
+instruction to continue.
 
 The `Subscription.current_period_start/end` finding was formally tracked as
 `docs/analytics/BACKLOG.md` WI-001 per operator instruction, explicitly not
@@ -443,6 +444,54 @@ Tests: `tsc --noEmit` clean, build clean, full suite 21/21 pass (unchanged —
 no new business logic requiring unit tests this sprint), lint delta +16, all
 `no-console` in the new report script, already-accepted convention.
 
+## Sprint 5 — Dashboard Shadow-Read — COMPLETE, 2026-07-27
+
+Files changed:
+- `server/src/services/canonicalDashboard.ts` (new — `compareDashboardMetrics()`)
+- `server/src/utils/featureFlags.ts` (+`DASHBOARD_SHADOW_COMPUTE`, default false)
+- `server/src/routes/adminDashboard.ts` (**first sprint to modify this
+  file**: `res.json(response)` called with the unchanged legacy response
+  first; flag-gated, timeout-guarded, `.catch()`-protected shadow comparison
+  added strictly after)
+- `server/src/scripts/sprint5-dashboard-reconciliation-report.ts` (new,
+  standalone CLI, non-zero exit on any `UNEXPLAINED` result)
+- `docs/analytics/SPRINT_5_RECONCILIATION_REPORT.md` (new — frozen record)
+
+**Result: 25 dashboard fields evaluated — 2 IDENTICAL, 13
+EXPECTED_DIVERGENCE, 5 NOT_YET_COMPARABLE (explicit, reasoned — depends on
+models not built yet: `business_subscriptions`/`business_revenue` for
+Sprint 7+, `business_conversion`/`fact_event` for Sprint 8), 0 UNEXPLAINED.**
+Every one of the 20 dashboard-response fields the canonical layer can
+currently answer was covered, not a sample — the operator's requirement 4
+("compare every dashboard card, every aggregate, every KPI") was read
+literally: every field in the `/dashboard` response is either compared or
+explicitly, individually justified as not-yet-comparable.
+
+Notable: `avgProcessingMs` is the only metric in the set that isn't
+subset-monotonic (a time average can move either direction when rows are
+removed, unlike a count) — flagged explicitly as a different kind of
+"expected" than the others, not silently treated the same way.
+`costMetrics.totalWhisperCostUsd` produced the first live number for
+`docs/analytics/METRICS.md`'s "AI cost with vs. without internal usage"
+design: $2.35 of $9.64 in 30-day spend (24%) is the founder's own testing.
+
+**Dashboard behavior is unchanged.** `DASHBOARD_SHADOW_COMPUTE` defaults
+false; with it off, none of the new code in `adminDashboard.ts` executes.
+Verified by re-running the full existing test suite (21/21, unchanged).
+
+**Explicitly not attempted, per "no production deployment":** exercising
+the live HTTP route with the flag on against the running production
+`videotools-api` container — that container has not been rebuilt or
+restarted and will not run this new code until it is. Confidence in the
+wired-in route logic rests on it being a thin wrapper around the exact
+`compareDashboardMetrics()` function already validated directly via the
+standalone script's live run, plus a clean full-file type-check.
+
+Tests: `tsc --noEmit` clean, build clean, full suite 21/21 pass. Lint:
+`canonicalDashboard.ts` + the `adminDashboard.ts` wiring added zero new
+issues (checked before adding the report script); the report script then
+added exactly +17, all `no-console`, matching the established convention.
+
 ## Unresolved issues
 
 1. **[Tracked as `docs/analytics/BACKLOG.md` WI-001, not fixed]**
@@ -467,22 +516,27 @@ no new business logic requiring unit tests this sprint), lint delta +16, all
 
 ## Latest commit hash
 
-`ebf3e89` — `analytics-sprint-3: Stripe-vs-Postgres reconciliation job
-(applied, validated, disabled by default)` (local only, not pushed). A
-further commit for this session's Sprint 4 implementation follows
-immediately after this file is saved — see git log.
+`017ed59` — `analytics-sprint-4: canonical business_users/business_jobs
+views + dashboard shadow-comparison` (local only, not pushed). A further
+commit for this session's Sprint 5 implementation follows immediately after
+this file is saved — see git log.
 
 ## Exact next step
 
-Sprint 5 (Dashboard Shadow-Read — wiring an actual shadow-compute call into
-the live `adminDashboard.ts` endpoint, still serving only the old values to
-the UI) has **not** been started. Resume by:
+Sprint 6 (Dashboard Cutover, Card by Card — actually switching served
+values to the canonical source, per-card, feature-flagged) has **not** been
+started. Resume by:
 1. Reading this file and every doc in `docs/analytics/` (already current as
-   of this update), especially `SPRINT_4_RECONCILIATION_REPORT.md`.
-2. Confirming with the operator whether to proceed to Sprint 5, address
-   WI-001 (`docs/analytics/BACKLOG.md`), or something else.
-3. If proceeding to Sprint 5: per `docs/analytics/SPRINT_PLAN.md` Sprint 5,
-   modify `adminDashboard.ts` to compute values from both the old path and
-   the new `business_*` views, log divergence, **serve only the old values**
-   to the UI (feature-flagged, shadow-only, no visible dashboard change yet)
-   — this is the first sprint that touches `adminDashboard.ts` itself.
+   of this update), especially `SPRINT_5_RECONCILIATION_REPORT.md`.
+2. Confirming with the operator whether to proceed to Sprint 6, enable
+   `DASHBOARD_SHADOW_COMPUTE` in a real deployment first to accumulate
+   multi-day evidence toward the original "5 consecutive business days"
+   criterion, address WI-001, or something else.
+3. If proceeding to Sprint 6: per `docs/analytics/SPRINT_PLAN.md` Sprint 6
+   and `docs/analytics/DASHBOARD_MIGRATION_PLAN.md`, cut cards over
+   lowest-risk-first (Plan Distribution, Total/New Users) with individual
+   feature flags per card, MRR/ARR last and only once
+   `MRR_EXTRACTION_V2_WRITE` + Stripe reconciliation have real elapsed-time
+   evidence behind them — this is the first sprint where the dashboard's
+   *served* output would actually change, so it warrants the most caution
+   of any sprint so far.

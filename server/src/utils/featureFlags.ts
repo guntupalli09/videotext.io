@@ -56,3 +56,14 @@ export const MRR_EXTRACTION_V2_WRITE = isFlagEnabled(process.env.MRR_EXTRACTION_
  * be run manually regardless of this flag, for on-demand checks.
  */
 export const STRIPE_RECONCILIATION_ENABLED = isFlagEnabled(process.env.STRIPE_RECONCILIATION_ENABLED)
+
+/**
+ * Analytics Sprint 5: shadow-compute canonical (business_users/business_jobs
+ * view-based) dashboard metrics alongside the existing, unchanged legacy
+ * queries on every GET /api/admin/dashboard request. Log-only — the served
+ * response is always built from the legacy computation regardless of this
+ * flag; enabling it can never change what the dashboard UI shows. Shadow
+ * computation runs AFTER the response has already been sent, so a slow or
+ * failing shadow query can never affect response time or reliability.
+ */
+export const DASHBOARD_SHADOW_COMPUTE = isFlagEnabled(process.env.DASHBOARD_SHADOW_COMPUTE)

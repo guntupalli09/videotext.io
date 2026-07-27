@@ -468,6 +468,63 @@ opened for editing at any point this sprint.
 - **Success criteria:** Divergence between old and new paths is zero (or
   fully explained) for at least 5 consecutive business days.
 
+### Implementation status — COMPLETE (code + one-shot validation), 2026-07-27
+
+**Note on "5 consecutive business days" success criteria:** that specific
+criterion requires the *live, deployed* shadow computation running in
+production over real elapsed time — not achievable within a single session
+regardless of code quality (see `IMPLEMENTATION_PROGRESS.md`'s recurring note
+about calendar-time-gated criteria). What **was** completed and validated
+this session is everything within a single agent session's control: the
+code is written, type-checked, tested, and the exact same comparison logic
+was run once, directly, against live production data via a standalone
+script — producing the "zero unexplained divergence" result the 5-day
+criterion is ultimately checking for, just not yet observed over 5 separate
+days.
+
+Shipped (all additive, flag defaults off, dashboard response unchanged):
+- `server/src/services/canonicalDashboard.ts`: `compareDashboardMetrics()` —
+  computes 25 dashboard-field comparisons (20 with a real canonical
+  equivalent today via `business_users`/`business_jobs`, 5 explicitly
+  `NOT_YET_COMPARABLE` with a stated reason each, covering literally every
+  field the dashboard's `/dashboard` response returns).
+- `server/src/utils/featureFlags.ts`: `DASHBOARD_SHADOW_COMPUTE`, default
+  false.
+- `server/src/routes/adminDashboard.ts`: **first sprint to modify this
+  file**. `res.json(response)` is called with the unchanged legacy response
+  first; only after that does the flag-gated shadow comparison run
+  (15-second timeout, `.catch()`-guarded, structured per-metric logging plus
+  a summary log and an elevated `dashboard_shadow_compare_UNEXPLAINED_DISCREPANCY`
+  error-level log reserved for if an unexplained result is ever found).
+- `server/src/scripts/sprint5-dashboard-reconciliation-report.ts`: standalone
+  CLI running the identical comparison, human-readable output, non-zero exit
+  code if any `UNEXPLAINED` result appears.
+- `docs/analytics/SPRINT_5_RECONCILIATION_REPORT.md`: the frozen record of
+  the one-shot validation run.
+
+**Result: 25 fields evaluated — 2 IDENTICAL, 13 EXPECTED_DIVERGENCE, 5
+NOT_YET_COMPARABLE, 0 UNEXPLAINED.** Full table and per-finding notes in the
+reconciliation report. The operator's stop condition (requirement 8: "if any
+unexplained difference appears, stop immediately") was evaluated explicitly
+by the script and not triggered.
+
+**Not done, and explicitly not attempted:** exercising the live HTTP route
+itself (`GET /api/admin/dashboard` with the flag on) against the running
+production `videotools-api` container — that would require rebuilding/
+redeploying the container, which is out of scope ("no production
+deployment"). Confidence in the wired-in route code comes from (a) it being
+a thin timeout/logging wrapper around the exact `compareDashboardMetrics()`
+function already validated directly, and (b) `tsc --noEmit` type-checking
+the whole file including the new imports/wiring cleanly.
+
+Tests: `tsc --noEmit` clean, build clean, full suite 21/21 pass (unchanged —
+no new business logic requiring its own unit tests this sprint, comparison
+logic validated via the live run instead). Lint delta: `canonicalDashboard.ts`
+and the `adminDashboard.ts` wiring introduced **zero** new issues (verified
+before adding the report script); the standalone report script then added
+exactly +17, all `no-console`, matching the already-accepted script
+convention — net delta for the sprint is +17, zero of any other kind.
+
 ## Sprint 6 — Dashboard Cutover, Card by Card
 
 - **Objective:** Flip cards over to canonical sources one at a time, lowest
