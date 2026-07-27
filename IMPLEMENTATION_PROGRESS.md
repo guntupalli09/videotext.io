@@ -39,11 +39,23 @@ proceeded — full forensic detail in `GATE_1_DEPLOYMENT_REPORT.md` §0.
 `videotools-worker` was separately found to be ~1 month behind `main` at
 that same point (now corrected — see below).
 
-**STOP POINT: awaiting explicit operator approval before Gate 2** (enabling
-`MRR_EXTRACTION_V2_SHADOW`/`DASHBOARD_SHADOW_COMPUTE`, the next step in
-`FINAL_DEPLOYMENT_PLAN.md`). Do not proceed without a fresh, explicit
-instruction — this is a hard stop per the operator's own Gate 1
-instructions, not a discretionary pause.
+**Gate 2 is EXECUTED (2026-07-27) — `MRR_EXTRACTION_V2_SHADOW` and
+`DASHBOARD_SHADOW_COMPUTE` are both `true` in production; every write/
+cutover/reconciliation flag remains `false`, confirmed inside the running
+container.** See `docs/analytics/GATE_2_REPORT.md` for full detail:
+3 dashboard shadow-compute executions observed (93 metric comparisons, 0
+unexplained, 0 timeouts, 0 fallbacks, 0 DB writes, 0 latency regression,
+dashboard response checksum-identical to Gate 1); `MRR_EXTRACTION_V2_SHADOW`
+has had 0 real executions yet (depends on a real Stripe invoice webhook,
+none arrived in this ~15-minute observation window). **Recommendation:
+do not proceed to Gate 3 yet** — `FINAL_DEPLOYMENT_PLAN.md`'s own
+prerequisite is a multi-day observation period (5 business days for the
+MRR shadow specifically), not achievable within one session; leave the
+shadow flags running and check back once real elapsed time and at least
+one real invoice event have occurred.
+
+**STOP POINT: awaiting explicit operator approval before Gate 3.** Do not
+proceed without a fresh, explicit instruction.
 
 The `Subscription.current_period_start/end` finding was formally tracked as
 `docs/analytics/BACKLOG.md` WI-001 per operator instruction, explicitly not
