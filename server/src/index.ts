@@ -51,6 +51,7 @@ import guidelinesRoutes from './routes/guidelines'
 import { guidelineQueue, startGuidelineWorker } from './workers/guidelineProcessor'
 import publicStatsRoutes from './routes/publicStats'
 import newsletterRoutes from './routes/newsletter'
+import foundingTeamRoutes from './routes/foundingTeam'
 
 const log = getLogger('api')
 
@@ -167,6 +168,15 @@ const corsOptions: cors.CorsOptions = {
 app.use(cors(corsOptions))
 app.options('*', cors(corsOptions))
 
+// Agent discovery: Link response headers (RFC 8288)
+app.use((_req, res, next) => {
+  res.setHeader('Link', [
+    '</.well-known/api-catalog>; rel="api-catalog"',
+    '</llms.txt>; rel="service-doc"',
+  ].join(', '))
+  next()
+})
+
 // CORS debug instrumentation (do not alter behavior)
 app.use((req, res, next) => {
   const origin = req.get('origin') ?? 'undefined'
@@ -258,6 +268,7 @@ app.use('/api/admin', adminDashboardRoutes)
 app.use('/api/admin', adminSupportRoutes)
 app.use('/api/stats', publicStatsRoutes)
 app.use('/api/newsletter', newsletterRoutes)
+app.use('/api/founding-team', foundingTeamRoutes)
 
 // Health and ops (no /api prefix)
 app.use(healthRoutes)
@@ -276,7 +287,17 @@ const clientDist = process.env.CLIENT_DIST || path.join(__dirname, '../../dist')
 if (fs.existsSync(clientDist)) {
   app.use(express.static(clientDist, { index: false }))
   // SPA fallback: any GET not served by static (e.g. /video-to-transcript) returns index.html
+  // Markdown for Agents: serve markdown when Accept: text/markdown on homepage
   app.get('*', (req, res) => {
+    if (req.path === '/' && (req.headers.accept || '').includes('text/markdown')) {
+      const mdPath = path.join(clientDist, 'llms.txt')
+      if (fs.existsSync(mdPath)) {
+        const content = fs.readFileSync(mdPath, 'utf-8')
+        res.setHeader('Content-Type', 'text/markdown; charset=utf-8')
+        res.setHeader('x-markdown-tokens', String(content.split(/\s+/).length))
+        return res.send(content)
+      }
+    }
     res.setHeader('Cache-Control', 'no-cache')
     res.sendFile(path.join(clientDist, 'index.html'))
   })
@@ -440,7 +461,6 @@ const server = app.listen(PORT, () => {
           const magicToken = await createMagicLinkToken(u.id)
           const openLink = `${baseUrl}/magic-login?token=${magicToken}&next=/video-to-transcript`
           const unsubToken = generateUnsubscribeToken(u.email)
-          const unsubLink = `${baseUrl}/unsubscribe?email=${encodeURIComponent(u.email)}&token=${unsubToken}`
           const apiUnsubLink = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(u.email)}&token=${unsubToken}`
           const html = `
 <!DOCTYPE html>
@@ -468,7 +488,7 @@ const server = app.listen(PORT, () => {
           <td style="padding:24px 40px;border-top:1px solid #2d2d4e;text-align:center">
             <p style="margin:0 0 8px;color:#606080;font-size:12px">Want unlimited transcriptions with no watermark?</p>
             <a href="${baseUrl}/pricing" style="color:#2563EB;font-size:12px;text-decoration:none;font-weight:600">Upgrade to Pro → $40/mo</a>
-            <p style="margin:16px 0 0;color:#404060;font-size:11px">VideoText.io · <a href="${unsubLink}" style="color:#404060">unsubscribe</a></p>
+            <p style="margin:16px 0 0;color:#404060;font-size:11px">VideoText.io · <a href="${apiUnsubLink}" style="color:#404060">unsubscribe</a></p>
           </td>
         </tr>
       </table>

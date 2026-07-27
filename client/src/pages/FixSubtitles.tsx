@@ -73,7 +73,6 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
-  const [showAuthGate, setShowAuthGate] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
   const pendingDownloadRef = useRef<(() => void) | null>(null)
@@ -104,7 +103,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
   useEffect(() => {
     if (status === 'completed' && !isLoggedIn()) {
-      setShowAuthGate(true)
+      setShowAuthModal(true)
     }
   }, [status])
 
@@ -442,7 +441,6 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     setResult(null)
     setSubtitleRows([])
     setOriginalRows([])
-    setShowAuthGate(false)
     setShowAuthModal(false)
   }
 
@@ -1064,7 +1062,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           </div>
         )}
 
-        {status === 'completed' && result && showAuthGate && !isLoggedIn() && (
+        {status === 'completed' && result && !isLoggedIn() && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1094,7 +1092,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           </motion.div>
         )}
 
-        {status === 'completed' && result && (!showAuthGate || isLoggedIn()) && (
+        {status === 'completed' && result && isLoggedIn() && (
           <div className="space-y-6">
             <TranslateResult
               title="Subtitles fixed!"
@@ -1286,9 +1284,13 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           const jobId = getPersistedJobId(location.pathname)
           const jobToken = getPersistedJobToken(location.pathname)
           if (jobId && jobToken) {
-            try { await claimGuestJob(jobId, jobToken) } catch { /* non-blocking */ }
+            try {
+              await claimGuestJob(jobId, jobToken)
+            } catch (err) {
+              console.error('Failed to claim guest job:', err)
+              toast.error('Could not link this job to your account. Please try again.')
+            }
           }
-          setShowAuthGate(false)
           setShowAuthModal(false)
           if (pendingDownloadRef.current) {
             const action = pendingDownloadRef.current
@@ -1296,8 +1298,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             action()
           } else if (result) {
             // Result is already in memory — just close the modal.
-            // The download panel (line: status==='completed' && result && isLoggedIn()) will
-            // become visible on the next render since isLoggedIn() is now true.
+            // The download panel becomes visible on the next render since isLoggedIn() is now true.
           } else {
             window.location.reload()
           }

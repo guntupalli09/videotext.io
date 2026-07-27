@@ -1,0 +1,12 @@
+{
+  "issuer": "https://videotext.io",
+  "authorization_endpoint": "https://videotext.io/login",
+  "token_endpoint": "https://videotext.io/api/auth/login",
+  "registration_endpoint": "https://videotext.io/signup",
+  "grant_types_supported": ["password"],
+  "token_endpoint_auth_methods_supported": ["none"],
+  "response_types_supported": ["token"],
+  "service_documentation": "https://videotext.io/llms.txt",
+  "op_policy_uri": "https://videotext.io/privacy",
+  "op_tos_uri": "https://videotext.io/terms"
+}

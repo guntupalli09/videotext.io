@@ -1,0 +1,13 @@
+{
+  "resource": "https://videotext.io/api",
+  "authorization_servers": ["https://videotext.io"],
+  "scopes_supported": [
+    "transcribe",
+    "subtitle",
+    "translate",
+    "batch",
+    "download"
+  ],
+  "bearer_methods_supported": ["header"],
+  "resource_documentation": "https://videotext.io/llms.txt"
+}

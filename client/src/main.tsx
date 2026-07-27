@@ -5,11 +5,13 @@ import { HelmetProvider } from 'react-helmet-async'
 import { ThemeProvider } from './lib/theme'
 import { identifyUser } from './lib/analytics'
 import { initSentry } from './lib/sentry'
+import { initWebMCP } from './lib/webmcp'
 import { PostHogProvider } from '@posthog/react'
 import App from './App.tsx'
 import './index.css'
 
 initSentry()
+initWebMCP()
 
 // Expose release for debugging (correlation with API/worker logs)
 const release = import.meta.env.VITE_RELEASE ?? 'dev'
@@ -17,8 +19,14 @@ if (typeof window !== 'undefined') {
   (window as unknown as { __RELEASE__?: string }).__RELEASE__ = release
 }
 
-const userId = typeof localStorage !== 'undefined' ? localStorage.getItem('userId') : null
-const plan = typeof localStorage !== 'undefined' ? localStorage.getItem('plan') : null
+let userId: string | null = null
+let plan: string | null = null
+try {
+  userId = localStorage.getItem('userId')
+  plan = localStorage.getItem('plan')
+} catch {
+  // localStorage unavailable (e.g. blocked storage, privacy mode)
+}
 if (userId && userId !== 'demo-user') {
   identifyUser(userId, { plan: plan ?? undefined })
 }

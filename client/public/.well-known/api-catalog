@@ -1,0 +1,24 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://videotext.io/",
+      "service-desc": [
+        {
+          "href": "https://videotext.io/llms-full.txt",
+          "type": "text/plain"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://videotext.io/llms.txt",
+          "type": "text/plain"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://videotext.io/api/health"
+        }
+      ]
+    }
+  ]
+}

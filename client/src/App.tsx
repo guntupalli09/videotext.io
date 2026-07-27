@@ -91,6 +91,7 @@ const PodcastTranscriptionTool = lazy(() => import('./pages/PodcastTranscription
 const InterviewTranscriptionTool = lazy(() => import('./pages/InterviewTranscriptionTool'))
 const YoutubeTranscriptGenerator = lazy(() => import('./pages/YoutubeTranscriptGenerator'))
 const Unsubscribe = lazy(() => import('./pages/Unsubscribe'))
+const JoinFoundingTeam = lazy(() => import('./pages/JoinFoundingTeam'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const Status = lazy(() => import('./pages/Status'))
 const ShareTranscript = lazy(() => import('./pages/ShareTranscript'))
@@ -513,6 +514,7 @@ function App() {
             <Route path="/faq" element={<Faq />} />
             <Route path="/feedback" element={<FeedbackView />} />
             <Route path="/survey" element={<SurveyPage />} />
+            <Route path="/join" element={<JoinFoundingTeam />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/founder" element={<FounderDashboard />} />
             <Route path="/guide" element={<Guide />} />

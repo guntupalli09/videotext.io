@@ -6,8 +6,12 @@ const STORAGE_KEY = 'videotext-theme'
 
 function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'light'
-  const stored = localStorage.getItem(STORAGE_KEY) as Theme | null
-  if (stored === 'light' || stored === 'dark') return stored
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null
+    if (stored === 'light' || stored === 'dark') return stored
+  } catch {
+    // localStorage unavailable (e.g. blocked storage, privacy mode)
+  }
   if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) return 'dark'
   return 'light'
 }
@@ -38,7 +42,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     applyTheme(theme)
-    if (mounted) localStorage.setItem(STORAGE_KEY, theme)
+    if (mounted) {
+      try {
+        localStorage.setItem(STORAGE_KEY, theme)
+      } catch {
+        // localStorage unavailable (e.g. blocked storage, privacy mode)
+      }
+    }
   }, [theme, mounted])
 
   const setTheme = (next: Theme) => setThemeState(next)

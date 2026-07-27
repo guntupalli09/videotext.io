@@ -344,6 +344,38 @@ model UserMetrics {
   @@index([userScore])
 }
 
+model FoundingTeamApplication {
+  id                    String   @id @default(cuid())
+  fullName              String
+  email                 String
+  phone                 String?
+  linkedIn              String
+  portfolio             String?
+  resumeUrl             String?
+  resumeFileName        String?
+  currentCompany        String?
+  currentPosition       String?
+  yearsOfExperience     String?
+  industry              String?
+  areasOfHelp           Json     @default("[]")
+  impactDescription     String   @db.Text
+  hasSaasExperience     Boolean  @default(false)
+  saasDetails           String?  @db.Text
+  whyVideoText          String   @db.Text
+  opportunities         String   @db.Text
+  first90Days           String   @db.Text
+  hoursPerWeek          String
+  preferredCollaboration String
+  location              String?
+  anythingElse          String?  @db.Text
+  consentGiven          Boolean  @default(true)
+  status                String   @default("new")
+  createdAt             DateTime @default(now())
+
+  @@index([email])
+  @@index([createdAt])
+}
+
 // User feedback from Tex panel (post-job completion) or public survey link. No auth required to submit.
 // Async guideline formatting job (OpenAI + diff); polled from /api/guidelines/jobs/:id
 model FormattingJob {
