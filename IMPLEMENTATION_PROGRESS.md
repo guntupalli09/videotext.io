@@ -9,9 +9,16 @@ This file is the resumable state for the analytics-migration program
 ## Current sprint
 
 **Sprint 0 — complete. Sprint 1 — complete. Sprint 2 — complete. Sprint 3 —
-complete. Sprint 4 — complete (accepted by operator 2026-07-27). Sprint 5 —
-complete (2026-07-27).** Currently paused before Sprint 6, pending a fresh
-instruction to continue.
+complete. Sprint 4 — complete. Sprint 5 — complete (accepted by operator
+2026-07-27). Sprint 6 — code complete, tested, committed locally; NOT
+deployed, flag NOT enabled (2026-07-27).**
+
+**STOP POINT: awaiting explicit operator approval before (a) enabling
+`DASHBOARD_CANONICAL_CUTOVER` in any environment, or (b) rebuilding/
+restarting/redeploying the production `videotools-api` container.** Neither
+has been done. Do not proceed with either without a fresh, explicit
+instruction — this is a hard stop per the operator's own Sprint 6
+instructions (#9, #10), not a discretionary pause.
 
 The `Subscription.current_period_start/end` finding was formally tracked as
 `docs/analytics/BACKLOG.md` WI-001 per operator instruction, explicitly not
@@ -492,6 +499,66 @@ Tests: `tsc --noEmit` clean, build clean, full suite 21/21 pass. Lint:
 issues (checked before adding the report script); the report script then
 added exactly +17, all `no-console`, matching the established convention.
 
+## Sprint 6 — Dashboard Cutover — CODE COMPLETE, NOT DEPLOYED, 2026-07-27
+
+Files changed:
+- `server/src/services/canonicalDashboard.ts` (extended: added
+  `p95ProcessingMs`, `failureRate`, `retention.activeUsersLast7Days/30Days`
+  comparisons — gaps found while preparing the field-by-field mapping)
+- `server/src/services/canonicalDashboardCutover.ts` (new)
+- `server/src/utils/featureFlags.ts` (+`DASHBOARD_CANONICAL_CUTOVER`,
+  default false; `isFlagEnabled` exported for direct testing)
+- `server/src/routes/adminDashboard.ts` (cutover call wired in immediately
+  before `res.json(response)`)
+- `server/tests/canonicalDashboardCutover.test.ts` (new, 11 tests)
+- `server/tests/featureFlags.test.ts` (new, 5 tests)
+- `docs/analytics/SPRINT_6_RECONCILIATION_REPORT.md` (new)
+- `docs/analytics/SPRINT_PLAN.md`, this file (documentation)
+
+**Critical scope-narrowing finding (full detail in the reconciliation
+report §0):** `snapshot.totalUsers/newUsers/jobsCreated/jobsCompleted/
+jobsFailed` are sourced from the `DailyMetrics` rollup table, not live
+queries as the Sprint 4/5 reports had implicitly assumed via a live-query
+proxy. Migrating them requires Sprint 7's rollup-redirection work. **All 5
+excluded from Sprint 6.** Also excluded: `usage.topUsersByJobCount`,
+`toolPerf`, `costMetrics`, `feedback`/`starDistribution`/`feedbackByTool` —
+each validated by Sprint 5 only at a coarser granularity than actually
+served. **Final migrated set: 9 fields**, all confirmed live raw queries,
+all validated at exact served granularity: `usage.jobsByToolType`,
+`performance.{avgProcessingMs,p95ProcessingMs,failureRate}`,
+`retention.{activeUsersLast7Days,activeUsersLast30Days}`, `planDistribution`,
+`utmBreakdown`, `failureReasons`.
+
+Implementation: per-field canonical computation + structural validator
+(`isFiniteNonNegativeNumber`/`isFiniteRate`/`isCountArray`) + 8s timeout +
+try/catch, orchestrated by `tryCutoverField()`/`applyCanonicalCutover()`.
+Any single field's failure (throw, timeout, invalid shape) falls back to
+that field's already-computed legacy value alone and logs
+`dashboard_canonical_cutover_FALLBACK` at error level — never affects other
+fields or the response's success. Dedicated `DASHBOARD_CANONICAL_CUTOVER`
+flag, separate from `DASHBOARD_SHADOW_COMPUTE` (shadow-mode observation
+continues to run independently after cutover, re-deriving both sides from
+scratch regardless of what was served — satisfies "preserve shadow
+comparison after cutover" by construction, no special-casing needed).
+
+**End-to-end validated against live production data** (not just unit
+tests): ran `applyCanonicalCutover()` directly against a synthetic response
+object seeded with obviously-wrong placeholder legacy values
+(`PLACEHOLDER_LEGACY`, `-999`, `-1`); every field was correctly overwritten
+with a canonical value, and every resulting value matches the independent
+`sprint5-dashboard-reconciliation-report.ts` script's canonical column
+exactly (two different code paths, same numbers).
+
+Tests: `tsc --noEmit` clean, build clean, full suite **37/37** pass (21
+prior + 16 new). Lint: zero net new issues (343 before/after — 3 `eqeqeq`
+issues introduced in the new cutover file were found and fixed before this
+count was taken).
+
+**`DASHBOARD_CANONICAL_CUTOVER` is NOT enabled anywhere. The production
+`videotools-api` container has NOT been rebuilt, restarted, or redeployed.**
+Per explicit operator instruction (#9, #10), this is a hard stop — do not
+do either without a fresh, explicit approval.
+
 ## Unresolved issues
 
 1. **[Tracked as `docs/analytics/BACKLOG.md` WI-001, not fixed]**
@@ -516,27 +583,30 @@ added exactly +17, all `no-console`, matching the established convention.
 
 ## Latest commit hash
 
-`017ed59` — `analytics-sprint-4: canonical business_users/business_jobs
-views + dashboard shadow-comparison` (local only, not pushed). A further
-commit for this session's Sprint 5 implementation follows immediately after
-this file is saved — see git log.
+`bb3b95c` — `analytics-sprint-5: dashboard shadow-compute behind flag,
+serving only legacy values` (local only, not pushed). A further commit for
+this session's Sprint 6 implementation follows immediately after this file
+is saved — see git log.
 
 ## Exact next step
 
-Sprint 6 (Dashboard Cutover, Card by Card — actually switching served
-values to the canonical source, per-card, feature-flagged) has **not** been
-started. Resume by:
+**Do not enable `DASHBOARD_CANONICAL_CUTOVER` and do not rebuild/restart/
+redeploy the production `videotools-api` container without a fresh,
+explicit operator instruction to do so.** Sprint 6's code is complete,
+tested, and committed; it has zero effect on production as deployed right
+now, since the flag is unset and the running container doesn't have this
+code at all yet. Resume by:
 1. Reading this file and every doc in `docs/analytics/` (already current as
-   of this update), especially `SPRINT_5_RECONCILIATION_REPORT.md`.
-2. Confirming with the operator whether to proceed to Sprint 6, enable
-   `DASHBOARD_SHADOW_COMPUTE` in a real deployment first to accumulate
-   multi-day evidence toward the original "5 consecutive business days"
-   criterion, address WI-001, or something else.
-3. If proceeding to Sprint 6: per `docs/analytics/SPRINT_PLAN.md` Sprint 6
-   and `docs/analytics/DASHBOARD_MIGRATION_PLAN.md`, cut cards over
-   lowest-risk-first (Plan Distribution, Total/New Users) with individual
-   feature flags per card, MRR/ARR last and only once
-   `MRR_EXTRACTION_V2_WRITE` + Stripe reconciliation have real elapsed-time
-   evidence behind them — this is the first sprint where the dashboard's
-   *served* output would actually change, so it warrants the most caution
-   of any sprint so far.
+   of this update), especially `SPRINT_6_RECONCILIATION_REPORT.md` (full
+   field mapping, deployment steps §7, rollback steps §8).
+2. Presenting §7's deployment steps to the operator and getting explicit,
+   separate approval for (a) the container rebuild/redeploy and (b) the
+   flag enablement — these are two distinct approvals per the operator's
+   own instructions (#9 and #10 were listed separately).
+3. If/when approved: follow §7 exactly, in order, monitoring
+   `dashboard_canonical_cutover_FALLBACK` and the Sprint 5 shadow-compare
+   logs for at least one full business day before considering Sprint 6's
+   production rollout complete.
+4. Separately, whenever convenient: Sprint 7 (Rollups Redesign) is now the
+   natural next *code* sprint, since it's what would unblock migrating the
+   5 `snapshot.*` fields this sprint had to exclude.

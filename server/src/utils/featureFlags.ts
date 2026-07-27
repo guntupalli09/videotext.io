@@ -3,7 +3,8 @@
  * All default to FALSE. Set env to "true" | "1" | "yes" (case-insensitive) to enable.
  * When all flags are false, system behavior is unchanged from baseline.
  */
-function isFlagEnabled(value: string | undefined): boolean {
+/** Exported for direct unit testing (tests/featureFlags.test.ts) — the parsing rule itself is what matters, not module-load-order-dependent env state. */
+export function isFlagEnabled(value: string | undefined): boolean {
   if (value == null || typeof value !== 'string') return false
   return /^(1|true|yes)$/i.test(value.trim())
 }
@@ -67,3 +68,17 @@ export const STRIPE_RECONCILIATION_ENABLED = isFlagEnabled(process.env.STRIPE_RE
  * failing shadow query can never affect response time or reliability.
  */
 export const DASHBOARD_SHADOW_COMPUTE = isFlagEnabled(process.env.DASHBOARD_SHADOW_COMPUTE)
+
+/**
+ * Analytics Sprint 6: enables the controlled cutover of exactly 9 approved
+ * dashboard fields (see docs/analytics/SPRINT_6_RECONCILIATION_REPORT.md)
+ * to their canonical (business_users/business_jobs) sources. Dedicated flag,
+ * separate from DASHBOARD_SHADOW_COMPUTE, so shadow-mode observation and
+ * the actual served-value cutover can be toggled independently. Per-field
+ * fallback: any canonical field that throws, times out, or returns
+ * structurally invalid data falls back to the already-computed legacy value
+ * for that field only (see services/canonicalDashboardCutover.ts) — a
+ * single field's failure never affects the others or the response's
+ * success. Rollback is exactly this flag alone.
+ */
+export const DASHBOARD_CANONICAL_CUTOVER = isFlagEnabled(process.env.DASHBOARD_CANONICAL_CUTOVER)

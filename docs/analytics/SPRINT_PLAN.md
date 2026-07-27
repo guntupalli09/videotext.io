@@ -552,6 +552,58 @@ convention — net delta for the sprint is +17, zero of any other kind.
   consistent across API instances; zero reconciliation alerts during the
   cutover window.
 
+### Implementation status — CODE COMPLETE, NOT DEPLOYED, 2026-07-27
+
+**Scope correction found during field-mapping prep (full detail in
+`docs/analytics/SPRINT_6_RECONCILIATION_REPORT.md` §0):** `snapshot.
+totalUsers/newUsers/jobsCreated/jobsCompleted/jobsFailed` turned out to be
+sourced from the `DailyMetrics` rollup table, not live queries — migrating
+them requires Sprint 7's rollup-redirection work first, not a simple filter
+addition. **All 5 were excluded from this sprint.** The originally-planned
+"Plan Distribution → Total/New Users → Jobs Created/Completed/Failed →
+Active Users" sequencing is revised: **Plan Distribution and Active Users
+migrated; Total/New Users and Jobs Created/Completed/Failed (the
+`snapshot.*` versions) deferred to Sprint 7.** The equivalent Job-count data
+*is* migrated via `usage.jobsByToolType` and `failureReasons`, which are
+genuine live queries, just not the `snapshot` card's own aggregate fields.
+
+Actually migrated (9 fields, all live-query-based, all validated at the
+exact served granularity): `usage.jobsByToolType`,
+`performance.{avgProcessingMs,p95ProcessingMs,failureRate}`,
+`retention.{activeUsersLast7Days,activeUsersLast30Days}`, `planDistribution`,
+`utmBreakdown`, `failureReasons`.
+
+Also deferred (validated only at a coarser granularity than actually
+served, per the operator's precision requirement): `usage.
+topUsersByJobCount`, `toolPerf`, `costMetrics`, `feedback`/`starDistribution`/
+`feedbackByTool`. Also not done this sprint: the shared-Redis-cache-layer
+work mentioned in this sprint's original file-affected list — deferred
+alongside the above, not silently dropped.
+
+Implementation: `server/src/services/canonicalDashboardCutover.ts` (per-field
+canonical computation + structural validator + timeout + fallback),
+`DASHBOARD_CANONICAL_CUTOVER` feature flag (dedicated, separate from
+`DASHBOARD_SHADOW_COMPUTE`, default false), wired into `adminDashboard.ts`
+immediately before `res.json(response)`. Rollback is the flag alone.
+
+**Validated end-to-end against live production data** (not just unit
+tests): `applyCanonicalCutover()` run directly against a synthetic response
+object with placeholder legacy values, confirming every field is correctly
+overwritten with a canonical value matching the independent Sprint 5 report
+script's computation exactly.
+
+Tests: `tsc --noEmit` clean, build clean, full suite **37/37** pass (21
+prior + 16 new — validator tests, fallback-mechanism tests covering
+success/throw/timeout/invalid-data, feature-flag tests). Lint: zero net new
+issues (343 before and after; 3 `eqeqeq` issues introduced then fixed before
+finalizing).
+
+**`DASHBOARD_CANONICAL_CUTOVER` has NOT been enabled. The production
+container has NOT been rebuilt, restarted, or redeployed.** Per operator
+instruction, this sprint stops here for explicit approval before either of
+those happens — see `docs/analytics/SPRINT_6_RECONCILIATION_REPORT.md` §7–8
+for the exact deployment and rollback steps.
+
 ## Sprint 7 — Rollups Redesign + Metrics API v1
 
 - **Objective:** Redirect `DailyMetrics`/`MonthlyMetrics` computation to read

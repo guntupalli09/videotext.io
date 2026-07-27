@@ -15,7 +15,8 @@ import { readLogRing } from '../lib/logRing'
 import { getLogger } from '../lib/logger'
 import { getApiCredits, refreshApiCredits } from '../lib/apiCreditsCache'
 import { compareDashboardMetrics } from '../services/canonicalDashboard'
-import { DASHBOARD_SHADOW_COMPUTE } from '../utils/featureFlags'
+import { applyCanonicalCutover, type CutoverableResponse } from '../services/canonicalDashboardCutover'
+import { DASHBOARD_SHADOW_COMPUTE, DASHBOARD_CANONICAL_CUTOVER } from '../utils/featureFlags'
 
 const log = getLogger('api')
 const adminDashboardRouter = express.Router()
@@ -864,10 +865,23 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
         paymentCompleted: Number(row.paymentCompleted),
       })),
     }
+    // Analytics Sprint 6: controlled cutover of exactly 9 approved fields
+    // (see docs/analytics/SPRINT_6_RECONCILIATION_REPORT.md) to their
+    // canonical sources. Must run BEFORE the response is sent (an HTTP
+    // response can't be edited after res.json()). `response` already has
+    // every field computed via the unchanged legacy queries above; this
+    // call only overwrites the approved fields, and only when the canonical
+    // computation succeeds and passes structural validation -- any failure
+    // leaves that field's already-computed legacy value untouched and logs
+    // a critical diagnostic event (see canonicalDashboardCutover.ts).
+    if (DASHBOARD_CANONICAL_CUTOVER) {
+      await applyCanonicalCutover(response as unknown as CutoverableResponse)
+    }
+
     cachedDashboard = response
     cacheTimestamp = Date.now()
 
-    log.info({ msg: 'Founder dashboard computed', ms: Date.now() - startMs })
+    log.info({ msg: 'Founder dashboard computed', ms: Date.now() - startMs, canonicalCutover: DASHBOARD_CANONICAL_CUTOVER })
     res.json(response)
 
     // Analytics Sprint 5: shadow-compute canonical metrics AFTER the legacy

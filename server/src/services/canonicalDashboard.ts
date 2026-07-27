@@ -267,6 +267,57 @@ export async function compareDashboardMetrics(): Promise<MetricComparison[]> {
       'known exclusions.',
   })
 
+  // ── Performance: p95ProcessingMs, failureRate (gap found during Sprint 6 prep) ──
+  const p95L = perfLegacy[0]?.p95Processing ?? 0
+  const p95C = perfCanonical[0]?.p95Processing ?? 0
+  comparisons.push({
+    card: 'performance', metric: 'p95ProcessingMs (30d)',
+    source: '"Job" (legacy) vs business_jobs (canonical)',
+    legacyValue: p95L, canonicalValue: p95C,
+    absoluteDiff: p95L - p95C, percentDiff: p95L !== 0 ? (Math.abs(p95L - p95C) / p95L) * 100 : null,
+    classification: 'EXPECTED_DIVERGENCE',
+    explanation: 'Same non-subset-monotonic reasoning as avgProcessingMs -- a percentile is not guaranteed to move in a fixed direction when rows are removed.',
+  })
+
+  const [failRateLegacy, failRateCanonical] = await Promise.all([
+    prisma.$queryRaw<[{ failureRate: number | null }]>`
+      SELECT (COUNT(*) FILTER (WHERE status='failed')::float / NULLIF(COUNT(*)::float,0)) as "failureRate"
+      FROM "Job" WHERE "createdAt" >= ${thirtyDaysAgo}
+    `,
+    prisma.$queryRaw<[{ failureRate: number | null }]>`
+      SELECT (COUNT(*) FILTER (WHERE status='failed')::float / NULLIF(COUNT(*)::float,0)) as "failureRate"
+      FROM business_jobs WHERE "createdAt" >= ${thirtyDaysAgo} AND "includeInBusinessMetrics"
+    `,
+  ])
+  const frL = failRateLegacy[0]?.failureRate ?? 0
+  const frC = failRateCanonical[0]?.failureRate ?? 0
+  comparisons.push({
+    card: 'performance', metric: 'failureRate (30d)',
+    source: '"Job" (legacy) vs business_jobs (canonical)',
+    legacyValue: frL, canonicalValue: frC,
+    absoluteDiff: frL - frC, percentDiff: frL !== 0 ? (Math.abs(frL - frC) / frL) * 100 : null,
+    classification: 'EXPECTED_DIVERGENCE',
+    explanation: 'A RATE (failed/total) is not subset-monotonic either -- excluding rows changes both numerator and denominator. Expected to move given the population change is fully explained by the same known exclusions; not independently alarming.',
+  })
+
+  // ── Retention: Active Users Last 7/30 Days (gap found during Sprint 6 prep -- ──
+  // validated once already in the Sprint 4 report but dropped when this file was
+  // rewritten for Sprint 5; restored here before any cutover is built on it) ──
+  for (const [metricName, since] of [
+    ['activeUsersLast7Days', sevenDaysAgo],
+    ['activeUsersLast30Days', thirtyDaysAgo],
+  ] as const) {
+    const [rL, rC] = await Promise.all([
+      prisma.$queryRaw<[{ count: bigint }]>`SELECT COUNT(DISTINCT "userId")::bigint AS count FROM "Job" WHERE "createdAt" >= ${since}`,
+      prisma.$queryRaw<[{ count: bigint }]>`SELECT COUNT(DISTINCT "userId")::bigint AS count FROM business_jobs WHERE "createdAt" >= ${since} AND "includeInBusinessMetrics"`,
+    ])
+    pushScalar(
+      'retention', metricName, '"Job" (legacy, incl. guests+excluded accounts) vs business_jobs (canonical)',
+      Number(rL[0].count), Number(rC[0].count),
+      'Delta attributable to guest jobs (no matching User row) PLUS the 4 Sprint 2 excluded accounts\' own activity.'
+    )
+  }
+
   // ── Plan Distribution ────────────────────────────────────────────────
   const [planLegacy, planCanonical] = await Promise.all([
     prisma.$queryRaw<{ plan: string; count: bigint }[]>`SELECT plan, COUNT(*)::bigint as count FROM "User" GROUP BY plan`,
