@@ -18,18 +18,11 @@
 import 'dotenv/config'
 import Stripe from 'stripe'
 import { prisma } from '../db'
+import { KNOWN_TEST_EMAILS } from '../utils/knownTestAccounts'
 
 const DRY_RUN = process.argv.includes('--dry-run')
 
-const EMAILS_TO_DELETE = [
-  'santhosh.guntupalli09@gmail.com',
-  'rachakatlavishnupriya@gmail.com',
-  'vishnupriyarachakatla07@gmail.com',
-  'gvksg999@gmail.com',
-  'vishnrach2000@gmail.com',
-  'santhosh.guntupalli09@outlook.com',
-  'santoshgfall2022@gmail.com',
-]
+const EMAILS_TO_DELETE = KNOWN_TEST_EMAILS
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 if (!stripeSecretKey) {

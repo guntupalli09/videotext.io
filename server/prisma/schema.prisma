@@ -40,9 +40,28 @@ model User {
   createdAt                DateTime
   updatedAt                DateTime
 
+  // Analytics Sprint 2: canonical user taxonomy (docs/analytics/USER_TAXONOMY.md).
+  // Additive only. Existing rows are backfilled to these defaults by the
+  // migration itself (Postgres ADD COLUMN ... DEFAULT is metadata-only and
+  // applies the default to every existing row); only rows that deviate from
+  // "a normal registered user" (demo/founder/internal/etc.) are explicitly
+  // updated by server/src/scripts/backfill-user-taxonomy.ts. Nothing reads
+  // these columns yet — application code changes are a later, separate sprint.
+  userClass                String   @default("registered") // registered | demo | founder | internal | developer | qa | bot
+  isFounder                Boolean  @default(false)
+  isInternal               Boolean  @default(false)
+  isDeveloper              Boolean  @default(false)
+  isQa                     Boolean  @default(false)
+  isDemo                   Boolean  @default(false)
+  isBot                    Boolean  @default(false)
+  isDeleted                Boolean  @default(false) // reserved for a future soft-delete path; current deletion is hard-delete (see delete-test-users.ts / adminSupport.ts) and does not set this yet
+  includeInBusinessMetrics Boolean  @default(true)  // NOT (isFounder OR isInternal OR isDeveloper OR isQa OR isDemo OR isBot OR isDeleted); computed by the backfill script for existing rows, not a DB-generated column
+
   upgradeIntents           UpgradeIntent[]
 
   @@index([createdAt])
+  @@index([userClass])
+  @@index([includeInBusinessMetrics])
 }
 
 

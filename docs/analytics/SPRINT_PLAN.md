@@ -229,6 +229,52 @@ MRR. Not fixed here; flagged for its own sprint/decision.
   flagged; `include_in_business_metrics` is `false` for exactly that set and
   `true` for everyone else, verified against Sprint 0's baseline counts.
 
+### Implementation status — COMPLETE, 2026-07-27
+
+Shipped and validated against production:
+- `server/prisma/schema.prisma`: `User` gains `userClass`, `isFounder`,
+  `isInternal`, `isDeveloper`, `isQa`, `isDemo`, `isBot`, `isDeleted`,
+  `includeInBusinessMetrics`, plus `@@index([userClass])` and
+  `@@index([includeInBusinessMetrics])`. Migration
+  `20260727130000_add_user_taxonomy`, additive only.
+- `server/src/utils/knownTestAccounts.ts`: new, shared, side-effect-free
+  module holding the known-test-email list (extracted from
+  `delete-test-users.ts`, which previously hardcoded it inline) so it can be
+  reused by the new backfill script without pulling in that script's
+  unrelated Stripe-client-construction side effect on import.
+- `server/src/scripts/backfill-user-taxonomy.ts`: classifies the 4 known
+  non-default rows (1 demo, 1 founder, 2 internal/test); dry-run supported
+  and run first.
+
+**Migration validated:** `prisma migrate status` → "Database schema is up to
+date!"; existing table row counts unchanged before/after (`User`=409,
+`Job`=1383, `SubscriptionSnapshot`=21); all 409 pre-existing rows correctly
+auto-backfilled to `userClass='registered', includeInBusinessMetrics=true`
+by the `ADD COLUMN ... DEFAULT` itself (confirmed via direct SQL, not just
+the Prisma migration tool's own report).
+
+**Backfill validated:** dry-run matched exactly 4 rows (1 demo, 1 founder, 2
+internal) with zero unexpected matches; live run updated exactly those 4;
+independent post-hoc SQL query confirms the final distribution
+(`registered`: 405, `internal`: 2, `demo`: 1, `founder`: 1 — sums to 409) and
+that every flag combination is internally consistent (e.g. every `founder`
+row has `isFounder=true` and all other flags false).
+
+Full test suite (14/14), type-check, and build all clean after the schema
+change and Prisma client regeneration; lint delta is exactly the
+already-accepted `no-console` script convention (+10, all in the new
+backfill script), zero new issues of any other kind.
+
+**Not done in this sprint (explicitly deferred, matches the sprint's own
+"nothing reads them yet" scope):** no application code (routes, dashboard,
+`models/User.ts`'s `rowToUser`/`userToDb` mapping) reads or writes these new
+columns yet — that begins with the canonical `business_users` model
+(Sprint 4 onward). Also noted but out of scope: founder-identification is
+already inconsistent across the codebase (`founderAccount.ts`'s
+env-var-driven `FOUNDER_ACCOUNT_EMAIL` vs. three admin route files that
+hardcode the same email literal directly instead) — not fixed here, flagged
+for a future cleanup.
+
 ## Sprint 3 — Stripe Reconciliation Job
 
 - **Objective:** Build the permanent safety net: nightly comparison of

@@ -8,15 +8,32 @@ This file is the resumable state for the analytics-migration program
 
 ## Current sprint
 
-**Sprint 0 — complete.** **Sprint 1 — implemented and validated in shadow-mode
-form; not yet fully closed.** The corrected extraction is proven correct
-against 10 real production invoices (see "Sprint 1 validation results"
-below). Both new feature flags (`MRR_EXTRACTION_V2_SHADOW`,
-`MRR_EXTRACTION_V2_WRITE`) default OFF — **zero production behavior has
-changed**. Do not enable `MRR_EXTRACTION_V2_WRITE` and do not run
-`prisma migrate deploy` for the new `SubscriptionCurrentState` table until
-the "New open question" below is resolved and the operator explicitly
-approves both. Do not start Sprint 2 until that happens.
+**Sprint 0 — complete. Sprint 1 — complete (closed 2026-07-27). Sprint 2 —
+complete (2026-07-27).** Currently paused before Sprint 3, per the operator's
+"continue automatically to Sprint 2" instruction having been fulfilled — next
+action requires a fresh instruction to proceed to Sprint 3 (Stripe
+Reconciliation Job).
+
+Sprint 1 close-out: Option A approved (contractual MRR is canonical,
+collected cash is a separate metric); `SubscriptionCurrentState` migration
+applied and validated; `STRIPE_API_COMPATIBILITY_AUDIT.md` written (found
+the `Subscription.current_period_start/end` issue is real but explicitly
+deferred, no new billing-correctness defect found, so did not block Sprint 2
+per operator instruction).
+
+Sprint 2: `User` taxonomy columns added and validated; 4 known non-default
+accounts (1 demo, 1 founder, 2 internal/test) classified via a dry-run-first
+backfill script. **Note:** one of the 2 "internal/test" accounts classified
+is `gvksg999@gmail.com` — this is the current session operator's own email
+address, already present in the pre-existing `delete-test-users.ts` script's
+hardcoded test-account list (not something newly discovered or judged by
+this session; the classification simply formalizes what that already-authored
+script already treats as a non-customer account).
+
+Both `MRR_EXTRACTION_V2_SHADOW`/`MRR_EXTRACTION_V2_WRITE` flags remain OFF —
+zero production request-path behavior has changed from any of this sprint's
+work; every change so far is additive schema + shadow-mode logging + a
+one-off classification backfill.
 
 ## Environment (confirmed this session)
 
@@ -269,56 +286,115 @@ detail). Summary:
   function).
 - Trial subscriptions: none exist live currently; not applicable.
 
-**New open question (surfaced by validation, not a defect):** 4 of the 10
-sampled invoices had a 100%-off promo/discount applied
-(`billing_reason: subscription_create`, real Stripe discount object present,
-`amount_paid: 0`). The corrected extraction reports the **contractual**
-price ($40/$10/$24.99), matching `stripeMrr.ts`'s own pre-existing documented
-intent to ignore `invoice.amount_paid` — but this means MRR will show the
-committed run-rate, not the $0 actually collected during an active 100%-off
-promo period. **This is a business decision, not a bug**, and needs an
-explicit answer before `MRR_EXTRACTION_V2_WRITE` is turned on:
-- Option A: MRR = contractual/list price (current implementation's behavior;
-  matches the pre-existing code's stated design intent).
-- Option B: MRR = actual amount collectible this period (would need to net
-  out active discounts — not implemented).
+**Open question — RESOLVED 2026-07-27 (Option A approved):** 4 of the 10
+sampled invoices had a 100%-off promo/discount applied. Operator approved
+**Option A**: MRR = contractual/list price, independent of temporary
+discounts (the implementation's existing behavior); collected cash tracked
+separately (`SubscriptionCurrentState.lastInvoiceAmountPaidCents`, logged per
+invoice as `collectedCashCents`). See `docs/analytics/METRICS.md` MRR/
+Collected Cash rows for the canonical definition, and the `analytics-sprint-1`
+close-out commit for the code changes.
+
+**`SubscriptionCurrentState` migration — APPLIED AND VALIDATED 2026-07-27.**
+`prisma migrate deploy` run; `prisma migrate status` confirms "Database
+schema is up to date!"; existing table row counts unchanged
+(`User`=409, `Job`=1383, `SubscriptionSnapshot`=21); new table structure
+verified column-for-column against `schema.prisma`; new table empty (0 rows,
+nothing writes to it yet — `MRR_EXTRACTION_V2_WRITE` still off).
+
+**`Subscription.current_period_start/end` finding — audited, not fixed.**
+Operator instruction: exclude from Sprint 1, create a dedicated
+`docs/analytics/STRIPE_API_COMPATIBILITY_AUDIT.md` instead (done — full
+parser-by-parser audit of every Stripe object read in the codebase against
+the `2026-01-28.clover` API version). No *new* billing-correctness defect was
+found in that audit beyond what was already known, so per operator
+instruction it did not block Sprint 2.
+
+## Sprint 2 — User Taxonomy Foundation — COMPLETE, 2026-07-27
+
+Files changed:
+- `server/prisma/schema.prisma` (`User` model: 9 new columns + 2 indexes,
+  additive)
+- `server/prisma/migrations/20260727130000_add_user_taxonomy/migration.sql`
+  (new)
+- `server/src/utils/knownTestAccounts.ts` (new — shared, side-effect-free
+  email list, extracted out of `delete-test-users.ts`)
+- `server/src/scripts/delete-test-users.ts` (modified: now imports the list
+  from `knownTestAccounts.ts` instead of hardcoding it inline; behavior
+  unchanged)
+- `server/src/scripts/backfill-user-taxonomy.ts` (new)
+
+Migration applied and validated: `prisma migrate status` → up to date;
+existing row counts unchanged (`User`=409 before and after, `Job`=1383,
+`SubscriptionSnapshot`=21); all 409 pre-existing rows auto-backfilled by
+`ADD COLUMN ... DEFAULT` to `userClass='registered',
+includeInBusinessMetrics=true` (confirmed via direct SQL — not just trusting
+the migration tool's own report).
+
+Backfill applied and validated: dry-run and live run both matched exactly 4
+rows (1 demo, 1 founder, 2 internal/test) with zero unexpected matches;
+independent post-hoc SQL confirms final distribution sums to 409
+(`registered`=405, `internal`=2, `demo`=1, `founder`=1) with fully consistent
+flag combinations per row. **Note:** one of the 2 "internal" accounts is
+`gvksg999@gmail.com` — the current session operator's own email, already
+present in the pre-existing `delete-test-users.ts` list (not a new
+determination made by this session).
+
+Tests: `tsc --noEmit` clean, `tsc` build clean (exit 0), full existing suite
+14/14 pass, lint delta +10 (all `no-console` in the new backfill script,
+matching the already-accepted convention — zero new issues of any other
+kind).
+
+Not done in this sprint (intentionally deferred, per the sprint's own
+"nothing reads them yet" scope): no application code reads/writes these new
+columns; `models/User.ts`'s `rowToUser`/`userToDb` mapping is unchanged.
 
 ## Unresolved issues
 
-1. **[Blocks `MRR_EXTRACTION_V2_WRITE` and the `SubscriptionCurrentState`
-   migration apply — awaiting operator decision]** The contractual-vs-collected
-   MRR question above. Shadow mode itself is NOT blocked by this (it's pure
-   read/log, no behavior change) and can be enabled at any time.
-2. **[Separate, not part of Sprint 1]** `Subscription.current_period_start/end`
-   restructuring — likely breaks `User.billingPeriodStart/End` tracking.
-   Needs its own investigation before any decision or fix.
-3. The `SubscriptionCurrentState` migration file exists but has **not** been
-   applied (`prisma migrate deploy` not run) — pending explicit go-ahead,
-   per the operator's database safety rules (treated as its own approval
-   gate even though it's purely additive).
-4. No unit test exists yet for the new `stripeMrr.ts` V2 functions or
-   `analytics-baseline.ts`'s flag logic (loose ends, non-blocking — the
-   functions are validated via the live validation report instead, which is
-   arguably stronger evidence than a synthetic unit test, but a unit test
-   would still be good hygiene for regression protection going forward).
+1. **[Separate from all analytics-sprint work, not fixed]**
+   `Subscription.current_period_start/end` restructuring — fully documented
+   in `STRIPE_API_COMPATIBILITY_AUDIT.md` with a required-fix list; needs its
+   own decision/sprint, affects `User.billingPeriodStart/End` and
+   subscription-lifecycle grace-period logic.
+2. `MRR_EXTRACTION_V2_WRITE` remains off — Sprint 1's write path (actually
+   persisting corrected values to `SubscriptionSnapshot`/
+   `SubscriptionCurrentState`) was never a blocking requirement for closing
+   Sprint 1 or proceeding to Sprint 2, but turning it on is still a distinct,
+   not-yet-made decision whenever the operator wants live writes to start.
+3. Founder-identification inconsistency noted (audit-adjacent, not fixed):
+   `founderAccount.ts`'s `FOUNDER_ACCOUNT_EMAIL` env var vs. three admin
+   route files (`adminSupport.ts`, `feedbackSystem.ts`, `adminDashboard.ts`)
+   that hardcode the same email literal directly instead of importing from
+   it. Also, `User.role` column exists but is never checked at runtime
+   anywhere in `server/src` despite a comment implying it should be.
+4. No unit tests yet for the new `stripeMrr.ts` V2 functions,
+   `analytics-baseline.ts`'s flag logic, or `backfill-user-taxonomy.ts`'s
+   classification logic (loose ends, non-blocking — all are validated via
+   live runs against real production data instead, which is a stronger
+   correctness signal than a synthetic unit test would be, but unit tests
+   would still be good regression-protection hygiene going forward).
 
 ## Latest commit hash
 
-`eeb429b` — `analytics-plan-revision: correct Sprint 1 root cause via
-read-only Stripe investigation` (local only, not pushed). A further commit
-for this session's Sprint 1 implementation + validation follows immediately
-after this file is saved — see git log.
+`3deb69d` — `analytics-sprint-1: close out — Option A (contractual MRR),
+apply+validate migration, compatibility audit` (local only, not pushed). A
+further commit for this session's Sprint 2 implementation follows
+immediately after this file is saved — see git log.
 
 ## Exact next step
 
-1. **Present the contractual-vs-collected MRR question to the operator** and
-   get an explicit answer before enabling `MRR_EXTRACTION_V2_WRITE`.
-2. If/when approved: run `prisma migrate deploy` for
-   `20260727120000_add_subscription_current_state` (additive, low risk, but
-   its own explicit go-ahead per the database safety rules) and wire
-   `SubscriptionCurrentState` writes into the webhook handler.
-3. Separately: decide whether/when to investigate the
-   `Subscription.current_period_end` finding — not blocking Sprint 1, but a
-   real, live, billing-adjacent defect worth a decision.
-4. Do not start Sprint 2 until 1–2 above are resolved and Sprint 1 is
-   explicitly confirmed complete by the operator.
+Sprint 3 (Stripe Reconciliation Job, per `docs/analytics/SPRINT_PLAN.md`) has
+**not** been started. Per the operator's instruction, Sprint 2 completion
+was the natural stopping point for this session's continuous "continue
+automatically" authorization (that instruction was scoped to "continue
+automatically to Sprint 2," not indefinitely). Resume by:
+1. Reading this file and every doc in `docs/analytics/` (already current as
+   of this update).
+2. Confirming with the operator whether to proceed to Sprint 3, or to first
+   address the `Subscription.current_period_start/end` finding, or something
+   else.
+3. If proceeding to Sprint 3: build the nightly Stripe-vs-Postgres
+   reconciliation job per `docs/analytics/SPRINT_PLAN.md` Sprint 3 and
+   `docs/analytics/STRIPE_RECONCILIATION_PLAN.md`, starting in a
+   staging/log-only mode before any alert can page anyone, exactly as those
+   documents specify.
