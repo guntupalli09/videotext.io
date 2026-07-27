@@ -1,11 +1,29 @@
 # METRICS.md — VideoText Canonical Metric Definitions
 
-Status: design only. Every metric below assumes the `dim_user.user_class` /
+Status: mostly design, **partially implemented as of Sprint 4 (2026-07-27)**.
+Every metric below assumes the `dim_user.user_class` /
 `include_in_business_metrics` model from USER_TAXONOMY.md and the layered tables
 from ANALYTICS_ARCHITECTURE.md (`business_users`, `business_subscriptions`,
 `business_revenue`, `business_jobs`, `business_growth`, `business_retention`,
-`business_conversion`). Names like `business_*` are proposed canonical models, not
-existing tables — this is a target-state specification.
+`business_conversion`). Names like `business_*` are proposed canonical models;
+most are still target-state only, **except**:
+
+- **`business_users` and `business_jobs` now exist as real Postgres SQL
+  views** (`server/prisma/migrations/20260727150000_add_business_views`).
+  The real column names are **camelCase** (`userClass`,
+  `includeInBusinessMetrics`, `isGuest`, etc.), matching this codebase's
+  actual Prisma/Postgres convention, not the `snake_case` names used
+  illustratively throughout this document (`user_class`,
+  `include_in_business_metrics`) — treat every `snake_case` column name
+  below as the *conceptual* name; the *actual* queryable name in this
+  database is the camelCase equivalent. See
+  `docs/analytics/SPRINT_4_RECONCILIATION_REPORT.md` for the validation that
+  these views produce byte-for-byte correct results against the raw tables.
+  Nothing in the application (dashboard included) reads these views yet —
+  that begins in Sprint 6.
+- `SubscriptionCurrentState` (Sprint 1) and `MrrReconciliationRun`
+  (Sprint 3) also exist as real tables, though not yet named exactly
+  `business_subscriptions` in this document's terminology.
 
 ## Global conventions (apply to every metric unless explicitly overridden)
 

@@ -8,9 +8,9 @@ This file is the resumable state for the analytics-migration program
 
 ## Current sprint
 
-**Sprint 0 — complete. Sprint 1 — complete. Sprint 2 — complete (accepted by
-operator 2026-07-27). Sprint 3 — complete (2026-07-27).** Currently paused
-before Sprint 4, pending a fresh instruction to continue.
+**Sprint 0 — complete. Sprint 1 — complete. Sprint 2 — complete. Sprint 3 —
+complete (accepted by operator 2026-07-27). Sprint 4 — complete (2026-07-27).**
+Currently paused before Sprint 5, pending a fresh instruction to continue.
 
 The `Subscription.current_period_start/end` finding was formally tracked as
 `docs/analytics/BACKLOG.md` WI-001 per operator instruction, explicitly not
@@ -391,6 +391,58 @@ accepted convention).
 
 **No production assumption was invalidated during this sprint.**
 
+## Sprint 4 — Canonical Views — COMPLETE, 2026-07-27
+
+Files changed:
+- `server/prisma/migrations/20260727150000_add_business_views/migration.sql`
+  (new — `CREATE VIEW business_users`, `CREATE VIEW business_jobs`, no
+  corresponding `schema.prisma` model since nothing reads them via Prisma
+  Client yet)
+- `server/src/scripts/sprint4-shadow-comparison-report.ts` (new)
+- `docs/analytics/SPRINT_4_RECONCILIATION_REPORT.md` (new — the frozen
+  comparison record)
+- `docs/analytics/METRICS.md` (updated: notes the two views now exist for
+  real, with real camelCase column names, distinct from the document's
+  illustrative snake_case naming)
+
+**Scope note:** the operator's instruction pulled forward part of Sprint 5's
+intent (dashboard-metric shadow-comparison) into this sprint's validation.
+Both the originally-scoped "spot-check views against raw tables" and the
+added "shadow-read every taxonomy-dependent dashboard metric" were done.
+`adminDashboard.ts` was not opened for editing — dashboard behavior is
+unchanged, exactly as instructed.
+
+Migration applied and validated: schema up to date; row counts identical to
+underlying tables (`business_users`=409, `business_jobs`=1383); view output
+confirmed byte-for-byte identical to the equivalent raw queries with no view
+involved (both for `business_users`'s taxonomy distribution and
+`business_jobs`'s guest tagging).
+
+**Dashboard shadow-comparison result: 8 metrics compared, 0 unexplained
+discrepancies** (full table in `SPRINT_4_RECONCILIATION_REPORT.md`). Every
+divergence found is fully explained by the Sprint 2 taxonomy exclusions (4
+known accounts: 1 demo, 1 founder, 2 internal) and/or the pre-existing Phase
+1 guest-inclusion finding. The operator's stop condition
+("if any canonical view produces numbers that differ materially... stop")
+was evaluated and **not triggered** — every difference, including the
+largest one (All-time Total Jobs, 1383→583, an 800-job / 58% gap), was
+anticipated by name before the script ran and confirmed to match exactly
+once it did.
+
+**Self-correction during this sprint:** the comparison script's own
+classification logic initially mislabeled one row ("Top Users by Job Count")
+as a divergence when the two lists were actually identical (the founder's
+144 all-time jobs don't happen to place them in *this specific* 30-day
+window's top 10, in either the old or new query). Caught by inspecting the
+raw output before finalizing the report, not by any external check — fixed
+in the script before it was committed. Recorded transparently in both the
+script's own comments and the reconciliation report, since a report about
+data-integrity discrepancies should not itself contain an uncorrected one.
+
+Tests: `tsc --noEmit` clean, build clean, full suite 21/21 pass (unchanged —
+no new business logic requiring unit tests this sprint), lint delta +16, all
+`no-console` in the new report script, already-accepted convention.
+
 ## Unresolved issues
 
 1. **[Tracked as `docs/analytics/BACKLOG.md` WI-001, not fixed]**
@@ -415,20 +467,22 @@ accepted convention).
 
 ## Latest commit hash
 
-`4b1ef90` — `analytics-sprint-2: user taxonomy columns + classification
-backfill (applied, validated)` (local only, not pushed). A further commit
-for this session's Sprint 3 implementation follows immediately after this
-file is saved — see git log.
+`ebf3e89` — `analytics-sprint-3: Stripe-vs-Postgres reconciliation job
+(applied, validated, disabled by default)` (local only, not pushed). A
+further commit for this session's Sprint 4 implementation follows
+immediately after this file is saved — see git log.
 
 ## Exact next step
 
-Sprint 4 (`business_users`/`business_jobs` canonical views, per
-`docs/analytics/SPRINT_PLAN.md`) has **not** been started. Resume by:
+Sprint 5 (Dashboard Shadow-Read — wiring an actual shadow-compute call into
+the live `adminDashboard.ts` endpoint, still serving only the old values to
+the UI) has **not** been started. Resume by:
 1. Reading this file and every doc in `docs/analytics/` (already current as
-   of this update).
-2. Confirming with the operator whether to proceed to Sprint 4, address
+   of this update), especially `SPRINT_4_RECONCILIATION_REPORT.md`.
+2. Confirming with the operator whether to proceed to Sprint 5, address
    WI-001 (`docs/analytics/BACKLOG.md`), or something else.
-3. If proceeding to Sprint 4: build `business_users`/`business_jobs` as SQL
-   **views** (not physical tables) per `docs/analytics/SPRINT_PLAN.md`
-   Sprint 4 and `docs/analytics/DATABASE_MIGRATION_PLAN.md` — lowest-risk way
-   to introduce the canonical layer, trivially reversible (`DROP VIEW`).
+3. If proceeding to Sprint 5: per `docs/analytics/SPRINT_PLAN.md` Sprint 5,
+   modify `adminDashboard.ts` to compute values from both the old path and
+   the new `business_*` views, log divergence, **serve only the old values**
+   to the UI (feature-flagged, shadow-only, no visible dashboard change yet)
+   — this is the first sprint that touches `adminDashboard.ts` itself.

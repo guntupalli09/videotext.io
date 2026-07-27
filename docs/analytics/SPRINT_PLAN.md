@@ -387,6 +387,65 @@ informational rather than alarming.
 - **Success criteria:** Views exist, are documented in METRICS.md, and
   independently spot-checked against raw-table counts.
 
+### Implementation status — COMPLETE, 2026-07-27
+
+**Scope note:** the operator's instruction for this sprint additionally
+requested pulling forward part of Sprint 5's intent (shadow-reading the
+*dashboard's actual current metrics* against the canonical views and
+documenting every discrepancy) as this sprint's own validation, rather than
+just the narrower "spot-check against raw-table counts" originally
+specified. Both were done. Sprint 5 itself (wiring an actual shadow-compute
+call into the live `adminDashboard.ts` endpoint) has **not** been started —
+this sprint's comparison was performed via a standalone script, with zero
+changes to `adminDashboard.ts` or any other application code, per the
+operator's explicit "do not change dashboard behavior yet."
+
+Shipped:
+- `server/prisma/migrations/20260727150000_add_business_views`: `CREATE VIEW
+  business_users`, `CREATE VIEW business_jobs` (additive, applied to
+  production, validated).
+- `server/src/scripts/sprint4-shadow-comparison-report.ts`: read-only
+  comparison tool, re-runnable at any time.
+- `docs/analytics/SPRINT_4_RECONCILIATION_REPORT.md`: the frozen record of
+  the comparison run and every discrepancy's classification/explanation.
+- `docs/analytics/METRICS.md`: updated to note the views now exist as real
+  camelCase Postgres views (not yet the document's illustrative snake_case
+  names).
+
+**View-mechanics validation (row-for-row, per this sprint's original
+success criteria):** `business_users`'s `userClass`/`includeInBusinessMetrics`
+distribution is byte-for-byte identical to the raw `User` table query.
+`business_jobs`'s guest tagging (641 distinct guest ids, 653 job rows) is
+byte-for-byte identical to the raw `LEFT JOIN` with no view involved. Row
+counts match the underlying tables exactly (`business_users`=409,
+`business_jobs`=1383) — a view cannot desynchronize from its source table by
+construction, but this was verified directly rather than assumed.
+
+**Dashboard shadow-comparison (8 taxonomy-dependent metrics, full detail in
+`SPRINT_4_RECONCILIATION_REPORT.md`):** Total Users (409→405), New Users 30d
+(190→190), Plan Distribution (`free`/`pro` shift by exactly the 4 known
+accounts), Active Users 7d/30d (104→54, 338→166), Jobs by Tool Type 30d
+(481→309), Top Users by Job Count top-10 list (identical in this window),
+All-time Total Jobs (1383→583, the "All Jobs vs. Customer Jobs" dual-report
+design). **All 8 are `EXPECTED_DIVERGENCE` or `IDENTICAL` — zero
+`UNEXPLAINED` results, so the operator's stop condition was not triggered.**
+
+One self-correction during this sprint: the comparison script's own
+classification logic initially mislabeled the "Top Users" row as
+`EXPECTED_DIVERGENCE` when the two lists were actually identical (founder
+didn't place in the top 10 in *either* version for this specific 30-day
+window); caught and fixed before finalizing the report — see
+`IMPLEMENTATION_PROGRESS.md`.
+
+Tests: `tsc --noEmit` clean, build clean, full suite 21/21 pass (unchanged —
+this sprint added no new business logic requiring its own unit tests, only
+view definitions and a read-only reporting script), lint delta +16, all
+`no-console` in the new report script matching the already-accepted
+convention.
+
+**Dashboard behavior is completely unchanged** — `adminDashboard.ts` was not
+opened for editing at any point this sprint.
+
 ## Sprint 5 — Dashboard Shadow-Read
 
 - **Objective:** Make the dashboard endpoint compute values from both the old
