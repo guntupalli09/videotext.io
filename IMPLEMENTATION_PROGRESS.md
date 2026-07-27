@@ -10,25 +10,40 @@ This file is the resumable state for the analytics-migration program
 
 **Sprint 0 — complete. Sprint 1 — complete. Sprint 2 — complete. Sprint 3 —
 complete. Sprint 4 — complete. Sprint 5 — complete (accepted by operator
-2026-07-27). Sprint 6 — code complete, tested, committed locally; NOT
-deployed, flag NOT enabled (2026-07-27, accepted by operator). Sprint 7 —
-rollup-layer scope only (per operator's Sprint 7 kickoff instructions),
-code complete, live-validated read-only, committed locally; NOT deployed,
-flag NOT enabled (2026-07-27, accepted by operator). Sprint 8 —
-finalization/consolidation sprint (per operator's Sprint 8 kickoff
-instructions, narrower than SPRINT_PLAN.md's original PostHog/funnel-fix
-Sprint 8 text — see scope note below), code complete, live-validated
-read-only, committed locally; NOT deployed, no flag enabled (2026-07-27).
-This is the last sprint before a production deployment gate — see
-`docs/analytics/FINAL_DEPLOYMENT_PLAN.md` for the 7-gate rollout, awaiting
-Gate 1 approval.**
+2026-07-27). Sprint 6 — code complete, tested, committed locally. Sprint
+7 — rollup-layer scope only (per operator's Sprint 7 kickoff
+instructions), code complete, live-validated read-only, committed
+locally. Sprint 8 — finalization/consolidation sprint (per operator's
+Sprint 8 kickoff instructions, narrower than SPRINT_PLAN.md's original
+PostHog/funnel-fix Sprint 8 text — see scope note below), code complete,
+live-validated read-only, committed locally.**
 
-**STOP POINT: awaiting explicit operator approval before (a) enabling
-`DASHBOARD_CANONICAL_CUTOVER` in any environment, or (b) rebuilding/
-restarting/redeploying the production `videotools-api` container.** Neither
-has been done. Do not proceed with either without a fresh, explicit
-instruction — this is a hard stop per the operator's own Sprint 6
-instructions (#9, #10), not a discretionary pause.
+**Gate 1 of `docs/analytics/FINAL_DEPLOYMENT_PLAN.md` is EXECUTED
+(2026-07-27) — see `docs/analytics/GATE_1_DEPLOYMENT_REPORT.md` for full
+detail.** `videotools-api` and `videotools-worker` are now running commit
+`c6e89ae` (Sprint 6+7+8's code). **Every governing flag remains `false`,
+confirmed inside the running containers post-deploy** — zero user-visible
+behavior change, verified by an exact byte-for-byte dashboard-response
+match before/after. Postgres and Redis were never touched.
+
+**Correction to this file's prior claim:** earlier revisions of this
+document (and `SPRINT_6_RECONCILIATION_REPORT.md`) stated the production
+`api` container had "NOT been rebuilt, restarted, or redeployed." Gate 1's
+pre-deployment check discovered that claim was already false — `api` had
+been running Sprint 6's code since `2026-07-27T02:39:53Z` (5 minutes after
+the Sprint 6 commit), most likely deployed by the operator directly or an
+earlier session not reflected in this conversation's transcript, done with
+correct rollback-tagging discipline and flags correctly left off (so
+harmless in effect). Investigated and confirmed benign before Gate 1
+proceeded — full forensic detail in `GATE_1_DEPLOYMENT_REPORT.md` §0.
+`videotools-worker` was separately found to be ~1 month behind `main` at
+that same point (now corrected — see below).
+
+**STOP POINT: awaiting explicit operator approval before Gate 2** (enabling
+`MRR_EXTRACTION_V2_SHADOW`/`DASHBOARD_SHADOW_COMPUTE`, the next step in
+`FINAL_DEPLOYMENT_PLAN.md`). Do not proceed without a fresh, explicit
+instruction — this is a hard stop per the operator's own Gate 1
+instructions, not a discretionary pause.
 
 The `Subscription.current_period_start/end` finding was formally tracked as
 `docs/analytics/BACKLOG.md` WI-001 per operator instruction, explicitly not
@@ -564,10 +579,15 @@ prior + 16 new). Lint: zero net new issues (343 before/after — 3 `eqeqeq`
 issues introduced in the new cutover file were found and fixed before this
 count was taken).
 
-**`DASHBOARD_CANONICAL_CUTOVER` is NOT enabled anywhere. The production
-`videotools-api` container has NOT been rebuilt, restarted, or redeployed.**
-Per explicit operator instruction (#9, #10), this is a hard stop — do not
-do either without a fresh, explicit approval.
+**`DASHBOARD_CANONICAL_CUTOVER` is NOT enabled anywhere** (confirmed
+false inside the running container as of the Gate 1 deploy). **[Superseded
+2026-07-27 — see `GATE_1_DEPLOYMENT_REPORT.md` §0]:** this section
+originally also stated the production container had not been rebuilt;
+Gate 1's pre-deployment check found that was already inaccurate at the
+time it was written — `api` had in fact been redeployed with this
+sprint's code shortly after the commit above, flags correctly left off.
+The container has since been redeployed again as part of Gate 1 itself
+(now running Sprint 6+7+8 together), still with every flag off.
 
 ## Sprint 7 — Rollups Redesign (rollup-layer scope only) — CODE COMPLETE, NOT DEPLOYED, 2026-07-27
 
@@ -645,11 +665,13 @@ modified files and linting them alone; the 3 `eqeqeq` hits still reported
 against `recomputeMetrics.ts`/`featureFlags.ts` are on lines this sprint
 did not touch (pre-existing on `main` before this session).
 
-**`ROLLUP_CANONICAL_SOURCE` is NOT enabled anywhere. No container has been
-rebuilt, restarted, or redeployed.** Everything a founder sees on the
-dashboard today is unchanged — `adminDashboard.ts` still reads whatever is
-currently stored in `DailyMetrics`/`MonthlyMetrics`, written by the
-unmodified legacy path (the flag is off), exactly as before this sprint.
+**`ROLLUP_CANONICAL_SOURCE` is NOT enabled anywhere** (confirmed false
+inside the running container as of the Gate 1 deploy, which now includes
+this sprint's code). Everything a founder sees on the dashboard remains
+unchanged — `adminDashboard.ts` still reads whatever is currently stored
+in `DailyMetrics`/`MonthlyMetrics`, written by the unmodified legacy path
+(the flag is off) — verified by an exact dashboard-response checksum match
+across the Gate 1 deploy, see `GATE_1_DEPLOYMENT_REPORT.md` §4.
 
 ## Sprint 8 — Finalization/Consolidation — CODE COMPLETE, NOT DEPLOYED, 2026-07-27
 
@@ -780,21 +802,24 @@ additive code + read-only validation + documentation.
 
 ## Latest commit hash
 
-`44c0aa9` — `analytics-sprint-7: canonical rollup redirect for
-DailyMetrics/MonthlyMetrics (flag off, not deployed)` (local only, not
-pushed). A further commit for this session's Sprint 8 implementation
-follows immediately after this file is saved — see git log.
+`c6e89ae` — `analytics-sprint-8: verify and document root cause of Stripe
+subscription drift before Gate 1` (local only, not pushed) — **this is the
+exact commit now running in production** (both `api` and `worker`, as of
+the Gate 1 deploy, 2026-07-27). A further commit adding
+`GATE_1_DEPLOYMENT_REPORT.md` and this update follows immediately — see
+git log.
 
 ## Exact next step
 
-**Sprint 8 closes the code/documentation phase of this program.** The
-single coordinated rollout plan is `docs/analytics/FINAL_DEPLOYMENT_
-PLAN.md` — 7 gates, each requiring its own separate, explicit operator
-approval, none of which has been executed:
+**Gate 1 of `docs/analytics/FINAL_DEPLOYMENT_PLAN.md` is complete** — see
+`docs/analytics/GATE_1_DEPLOYMENT_REPORT.md` for full detail (pre-
+deployment baseline, the Sprint-6-already-deployed discovery and its
+resolution, deployment actions, post-deployment validation, exact
+rollback path). 6 gates remain, each requiring its own separate, explicit
+operator approval:
 
-1. Gate 1 — deploy code, all flags off (zero behavior change).
 2. Gate 2 — enable shadow flags (`MRR_EXTRACTION_V2_SHADOW`,
-   `DASHBOARD_SHADOW_COMPUTE`), log-only.
+   `DASHBOARD_SHADOW_COMPUTE`), log-only. **Not yet approved.**
 3. Gate 3 — enable `ROLLUP_CANONICAL_SOURCE` + controlled recompute.
 4. Gate 4 — validate rollups against fresh canonical live queries.
 5. Gate 5 — enable `DASHBOARD_CANONICAL_CUTOVER` (15 fields).
@@ -805,17 +830,16 @@ approval, none of which has been executed:
    about this being the largest visible change in the whole program).
 
 Resume by:
-1. Reading this file and every doc in `docs/analytics/` (all current as of
-   this update), especially `FINAL_ANALYTICS_READINESS_REPORT.md` (overall
-   verdict), `FINAL_DEPLOYMENT_PLAN.md` (the 7 gates in full detail —
-   prerequisites/commands/validation/monitoring/rollback/stop-conditions
-   each), and `FINAL_ROLLBACK_PLAN.md` (companion reference).
-2. Presenting Gate 1 to the operator and getting explicit approval before
-   any commit is pushed or any container is touched — per this session's
-   explicit instruction, this agent stops here and does not proceed past
-   Gate 1 approval on its own.
-3. Each subsequent gate requires its own separate approval — approving
-   Gate 1 is not approval for Gate 2, etc.
+1. Reading this file and every doc in `docs/analytics/` (all current as
+   of this update), especially `GATE_1_DEPLOYMENT_REPORT.md` (what
+   actually happened) and `FINAL_DEPLOYMENT_PLAN.md` (Gates 2–7 in full
+   detail — prerequisites/commands/validation/monitoring/rollback/stop-
+   conditions each).
+2. Presenting Gate 2 to the operator and getting explicit approval before
+   enabling any flag — per this program's own discipline, this agent
+   stops after each gate and does not proceed to the next on its own.
+3. Each gate requires its own separate approval — approving Gate 1 was
+   not approval for Gate 2, and so on through Gate 7.
 4. Separately, whenever convenient and not gated by the above: the
    deferred items in "Unresolved issues" (`business_users` view fix,
    `business_subscriptions` second-wave build, PostHog funnel-capture
