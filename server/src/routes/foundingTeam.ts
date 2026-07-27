@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit'
 import { prisma } from '../db'
 import { getLogger } from '../lib/logger'
 
-const log = getLogger('founding-team')
+const log = getLogger('api')
 const router = express.Router()
 
 const submitLimit = rateLimit({
