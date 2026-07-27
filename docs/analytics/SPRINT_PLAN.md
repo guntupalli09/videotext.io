@@ -111,10 +111,22 @@ line item shape instead of the pre-restructure shape it was written against:
   discovery work is done, but the fix now includes an extra Stripe API call
   per webhook event, an additional flag gate, and the
   `getPlanFromSubscriptionItems()` follow-up check.
-- **Approval status:** Revised scope approved 2026-07-27. Implementation
-  complete and validated in shadow-mode form; write-path (`MRR_EXTRACTION_V2_WRITE`)
-  remains OFF pending resolution of one new open question surfaced by live
-  validation (see below) — **Sprint 1 is not yet fully closed.**
+- **Approval status:** Revised scope approved 2026-07-27. **Contractual-vs-
+  collected-cash question resolved same day: Option A approved** — MRR is
+  canonically the subscription's contractual value, independent of temporary
+  discounts; collected cash is tracked as a separate, non-substitutable
+  metric (`SubscriptionCurrentState.lastInvoiceAmountPaidCents`, logged per
+  invoice as `collectedCashCents`). `SubscriptionCurrentState` migration
+  applied and validated against production (schema-up-to-date, existing
+  table row counts unchanged, new table structure matches exactly). **Sprint
+  1 is now closed.** `MRR_EXTRACTION_V2_WRITE` (turning on actual
+  `SubscriptionSnapshot`/`SubscriptionCurrentState` writes) remains a
+  separate, later decision — not required to close this sprint, since the
+  sprint's deliverable was the corrected, validated extraction logic and the
+  dedup/current-state schema, both of which are now in place. The
+  `Subscription.current_period_start/end` finding was explicitly excluded
+  from this sprint's scope by the operator and is fully documented instead in
+  the standalone `STRIPE_API_COMPATIBILITY_AUDIT.md`.
 
 ### Implementation status (2026-07-27)
 

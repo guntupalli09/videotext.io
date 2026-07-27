@@ -150,11 +150,23 @@ model SubscriptionCurrentState {
   status                String   // active | canceled | past_due | trialing | incomplete
   plan                  String
 
+  // Canonical MRR (operator decision 2026-07-27, Sprint 1): the subscription's
+  // CONTRACTUAL recurring value, independent of any temporary invoice-level
+  // discount/promo code. This is the number "MRR" means everywhere in this
+  // codebase and in docs/analytics/METRICS.md.
   normalizedMonthlyCents Int     // MRR-normalized cents (annual / 12); single-currency assumption, same as SubscriptionSnapshot
   currency              String
   stripePriceId         String?
   billingInterval       String?  // month | year
   intervalCount         Int?
+
+  // Collected cash is intentionally a SEPARATE metric from MRR above, not a
+  // substitute for it — this is the actual amount_paid on the most recent
+  // invoice for this subscription (can be less than normalizedMonthlyCents
+  // during an active 100%-off/partial promo period; equal to it once the
+  // promo lapses). Never summed into or confused with MRR in reporting.
+  lastInvoiceId              String?
+  lastInvoiceAmountPaidCents Int?
 
   periodStart           DateTime?
   periodEnd             DateTime?

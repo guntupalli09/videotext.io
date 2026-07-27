@@ -18,6 +18,8 @@ CREATE TABLE "SubscriptionCurrentState" (
     "stripePriceId" TEXT,
     "billingInterval" TEXT,
     "intervalCount" INTEGER,
+    "lastInvoiceId" TEXT,
+    "lastInvoiceAmountPaidCents" INTEGER,
     "periodStart" TIMESTAMP(3),
     "periodEnd" TIMESTAMP(3),
     "updatedAt" TIMESTAMP(3) NOT NULL,

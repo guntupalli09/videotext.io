@@ -379,12 +379,19 @@ async function handleInvoicePaymentSucceeded(
         const matches =
           mrrV2.normalizedMonthlyCents === mrr.normalizedMonthlyCents &&
           mrrV2.stripeSubscriptionId === mrr.stripeSubscriptionId
+        // Operator decision 2026-07-27 (Sprint 1, Option A): MRR is the
+        // subscription's CONTRACTUAL value (mrrV2.normalizedMonthlyCents),
+        // independent of any temporary invoice discount. `collectedCashCents`
+        // is logged here as a distinct, separate figure (invoice.amount_paid)
+        // — it must never be summed into or substituted for MRR anywhere.
         log.info({
           msg: 'mrr_extraction_shadow_compare',
           eventId,
           invoiceId: invoice.id,
           legacy: mrr,
           corrected: mrrV2,
+          collectedCashCents: invoice.amount_paid,
+          isDiscounted: invoice.amount_paid !== mrrV2.normalizedMonthlyCents && mrrV2.normalizedMonthlyCents > 0,
           matches,
         })
         if (MRR_EXTRACTION_V2_WRITE) {
