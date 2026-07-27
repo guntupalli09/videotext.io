@@ -28,26 +28,91 @@ sprint depends on a future sprint to be "safe" in isolation.
   double-count magnitude, demo-account count, duplicate-subscription count,
   guest-vs-total-user gap, and job-count drift (Bull vs. Postgres).
 
-## Sprint 1 — MRR Fix (Critical, isolated)
+## Sprint 1 — MRR Extraction Fix (REVISED 2026-07-27 after live root-cause investigation — Critical)
 
-- **Objective:** Stop double/multi-counting MRR without touching subscription
-  storage yet — fix the *read*, not the schema.
-- **Files affected:** the dashboard's MRR-computing query path only.
-- **Services affected:** API (dashboard endpoint) only; no worker, no webhook
-  change.
-- **Database changes:** none — this is a query-shape fix (dedup by
-  `stripe_subscription_id`, take latest period per subscription), not a schema
-  change.
-- **Risk:** Low — isolated, read-only query change; high scrutiny because it's
-  revenue-facing.
-- **Rollback:** Feature flag reverting to the old query; instant.
-- **Validation:** Shadow-compute both old and new MRR for 3–5 days, log
-  divergence, require Finance sign-off that the new number matches manual
-  spot-checks against Stripe before flipping the flag.
-- **Deployment strategy:** Feature-flagged dark launch → burn-in → cutover.
-- **Business impact:** Critical — the single highest-value fix in the entire
-  program.
-- **Engineering effort:** 5 points.
+> **This sprint's scope changed from the original plan.** Sprint 0's baseline,
+> run against live production data, showed `SubscriptionSnapshot.priceMonthly`
+> is `0` and `stripeSubscriptionId` is `NULL` for all 21 rows ever written —
+> not the "overcounted via duplicate active rows" theory this sprint was
+> originally scoped to fix (there is nothing to deduplicate; the field has
+> never once been populated). A read-only investigation against the live
+> Stripe account (approved and scoped to GET-only calls: one recent paid
+> invoice, its subscription, its price) confirmed the actual root cause:
+> **Stripe's Invoice/Invoice Line Item object shape changed in this account's
+> pinned API version (`2026-01-28.clover`)**, and
+> `server/src/utils/stripeMrr.ts` was written against the older shape. See
+> `IMPLEMENTATION_PROGRESS.md` for the full root-cause writeup and raw
+> evidence. The original dedup-only Sprint 1 below is preserved struck
+> through for audit history; the revised scope follows it.
+
+- ~~**Objective:** Stop double/multi-counting MRR without touching
+  subscription storage yet — fix the *read*, not the schema.~~
+- ~~**Database changes:** none — this is a query-shape fix (dedup by
+  `stripe_subscription_id`, take latest period per subscription), not a
+  schema change.~~
+- ~~**Validation:** Shadow-compute both old and new MRR for 3–5 days...~~
+
+### Revised objective
+
+Fix `getPriceRecurring()` / `computeNormalizedMonthlyCentsFromLines()`
+(`server/src/utils/stripeMrr.ts`) to read the account's **actual** invoice
+line item shape instead of the pre-restructure shape it was written against:
+
+| Was read from (no longer populated) | Must read from instead |
+|---|---|
+| `line.type === 'subscription'` | `line.parent?.type === 'subscription_item_details'` (or equivalently, `line.parent?.subscription_item_details != null`) |
+| `line.price` (expected an expandable `Stripe.Price` object) | `line.pricing?.price_details?.price` — a bare string price ID; the recurring interval/unit amount are **not** inline on the line at all in this API version and must be resolved separately |
+| `line.subscription` / `invoice.subscription` | `line.parent?.subscription_item_details?.subscription` (and `invoice.parent?.subscription_details?.subscription` at the invoice level) |
+
+- **Files affected:** `server/src/utils/stripeMrr.ts` (extraction logic),
+  `server/src/routes/stripeWebhook.ts` (may need to pass more context or make
+  one additional read-only `stripe.prices.retrieve()` call per
+  `invoice.payment_succeeded` event to resolve `recurring.interval`/
+  `unit_amount`, since the line item no longer carries them inline).
+- **Services affected:** API (webhook handler) — this now touches **webhook
+  parsing of real revenue events**, a materially higher-risk surface than the
+  originally-scoped dashboard-query-only change.
+- **Database changes:** none required for the extraction fix itself. The
+  dedup/current-state model (`business_subscriptions`, originally scoped for
+  Sprint 4 / migration M4) is pulled forward and shipped **together with**
+  this fix rather than as a separate later sprint, since dedup logic has no
+  observable effect until extraction actually starts producing non-null
+  subscription IDs to deduplicate.
+- **Risk:** Medium (upgraded from the original Low) — this is now a change to
+  webhook parsing of live revenue events, not a read-only dashboard query.
+- **Rollback:** Feature flag reverting to the old (currently-inert) extraction
+  path; instant. The webhook handler's *write* behavior (still writing a
+  `SubscriptionSnapshot` row every time, just with correct values once fixed)
+  must also be flag-gated so a bad deploy can't start writing incorrect
+  non-zero values instead of the current, at-least-consistent zeros.
+- **Validation (revised, more conservative than originally planned):**
+  1. Shadow-log the corrected extraction (subscription id, price id,
+     normalized monthly cents) for every real incoming
+     `invoice.payment_succeeded` webhook **without writing to
+     `SubscriptionSnapshot` yet** — log-only.
+  2. Manually cross-check a handful of shadow-logged results against the
+     Stripe Dashboard's own invoice/subscription view (human, one-by-one,
+     for the first several real invoices).
+  3. Only after that manual cross-check confirms correctness, cut the
+     webhook handler over to actually writing the corrected values, flagged,
+     with the same divergence-monitoring pattern as any other cutover.
+  4. **Before considering this sprint complete**, verify whether
+     `getPlanFromSubscriptionItems()` (reads `sub.items.data[].price]` from
+     the `Subscription` resource, used in `customer.subscription.updated`/
+     `created` handlers) is affected by the same restructuring — this was
+     **not** checked in the approved read-only investigation (scope was
+     invoices only) and is a plausible second instance of the same bug class.
+- **Deployment strategy:** Feature-flagged, log-only shadow mode first
+  (no write-path change at all), then a separately-flagged write cutover —
+  two gates, not one, given the higher stakes.
+- **Business impact:** Critical, unchanged — still the single highest-value
+  fix in the program; the fix itself is now different, not less important.
+- **Engineering effort:** Re-estimated at 8 points (up from 5) — schema-shape
+  discovery work is done, but the fix now includes an extra Stripe API call
+  per webhook event, an additional flag gate, and the
+  `getPlanFromSubscriptionItems()` follow-up check.
+- **Approval status:** revised scope pending explicit operator approval
+  before any implementation code is written (per operator instruction).
 - **Success criteria:** New MRR query matches a manual Stripe spot-check within
   rounding tolerance; old query removed only after Sprint 3's reconciliation
   job has run clean for 5+ consecutive days.

@@ -112,77 +112,103 @@ Confirms, with real production data:
 - Phase 1 Issue #1 (MRR): **partially contradicted by live data — see Blocking
   finding below.**
 
-## Blocking finding — STOP before Sprint 1
+## Blocking finding — ROOT-CAUSED 2026-07-27, revised Sprint 1 pending approval
 
-**The approved plan's MRR root-cause assumption does not match production
-data.** `IMPLEMENTATION_MASTER_PLAN.md` Issue #1 and `SPRINT_PLAN.md` Sprint 1
-assume the defect is *overcounting*: multiple `SubscriptionSnapshot` rows per
-subscription (one per renewal invoice) being summed together without
-deduplication. **Live data shows the opposite: every `SubscriptionSnapshot`
-row ever written (all 21, spanning the table's entire ~3.5-month history) has
-`priceMonthly = 0`, and all 13 currently-`active` rows have
-`stripeSubscriptionId IS NULL`.** Meanwhile the live `User` table has 3
-accounts on `pro` and 3 on `founding_workflow` — real paid plans exist, but
-none of their revenue has ever been captured into `SubscriptionSnapshot`.
+**Confirmed root cause** (read-only Stripe investigation, approved and scoped
+by the operator to GET-only calls: one recent paid invoice, its subscription,
+its price; no object created/updated/canceled/deleted; nothing written to the
+database). Full methodology: a throwaway Node script
+(`scratchpad/stripe-investigate.mjs`, not committed — diagnostic only) made
+three `GET` requests directly to `https://api.stripe.com/v1/...` using the
+existing `STRIPE_SECRET_KEY` (confirmed live: `sk_live_...` prefix), pinned to
+`Stripe-Version: 2026-01-28.clover` to match `server/src/services/stripe.ts`'s
+configured API version exactly.
 
-**Practical implication:** MRR computed from `SubscriptionSnapshot` today is
-$0, not inflated. The Sprint 1 fix as designed (deduplicate by
-`stripeSubscriptionId`) would deduplicate a column that is already always
-null in every active row — it would not fix anything, because it targets the
-wrong root cause.
+**Result:** Stripe restructured the Invoice / Invoice Line Item object in
+this API version. Every field `computeNormalizedMonthlyCentsFromLines()`/
+`getPriceRecurring()` (`server/src/utils/stripeMrr.ts`) reads has moved:
 
-**Likely actual root cause (not yet confirmed — would require inspecting a
-real Stripe invoice object, which this session has not done):**
-`computeNormalizedMonthlyCentsFromInvoice`/`getPriceRecurring`
-(`server/src/utils/stripeMrr.ts`) appears to be silently failing to extract a
-recurring price and subscription id from real Stripe invoice line items on
-every `invoice.payment_succeeded` webhook — possibly because the invoice's
-line-item `price` field isn't expanded to a full `Stripe.Price` object as the
-function expects (it treats a plain string price ID as "not recurring" and
-returns `null`, per `stripeMrr.ts`'s `getPriceRecurring()`), or because of a
-mismatch with the `2026-01-28.clover` Stripe API version's actual invoice
-line-item shape referenced in a comment in `stripeWebhook.ts`.
+| Field the code reads | Expected (old shape) | Actual (confirmed live, this API version) |
+|---|---|---|
+| Line classification | `line.type === 'subscription'` | `line.type` does not exist at all; now `line.parent.type === 'subscription_item_details'` |
+| Recurring price | `line.price` (expandable `Stripe.Price` object) | `line.price` is always `null`; real value at `line.pricing.price_details.price` — a bare **string** ID, never an object, no `recurring`/`unit_amount` inline |
+| Subscription ID | `line.subscription` / `invoice.subscription` | Both always `null`; real value at `line.parent.subscription_item_details.subscription` (and `invoice.parent.subscription_details.subscription`) |
 
-**Why this stops here rather than continuing into a fix:** this is exactly
-the operator's own STOP CONDITION — *"live production data violates
-assumptions required by the plan"* — and *"implementation would change
-billing behavior"* once a real fix is written. Sprint 1's approved design
-(query-level dedup, no schema change) cannot be executed as written because
-there's nothing to deduplicate; writing a *different* fix (root-causing and
-patching the Stripe invoice price-extraction logic) would be an unplanned
-change to revenue-critical webhook code, which itself needs a human decision
-before proceeding, not a unilateral architecture deviation.
+`computeNormalizedMonthlyCentsFromLines()`'s first statement,
+`if (line.type !== 'subscription') continue`, evaluates `undefined !==
+'subscription'` → `true` on every line of every invoice, so the function's
+body never executes at all — not even reaching `getPriceRecurring()`.
+
+**Verified against a real object, not inferred:** invoice
+`in_1TxMqp2QqK3pYun3DNA394SO`, $40.00 paid, description `"1 × Pro_40 (at
+$40.00 / month)"`, subscription `sub_1TbFmF2QqK3pYun3TuN01mGI`, price
+`price_1TXPYD2QqK3pYun35ykAZXhr` (`recurring.interval: month`,
+`unit_amount: 4000`) — all correctly configured on the Stripe side. **This is
+purely a data-extraction bug**, present since the very first webhook this
+code ever processed (matches all 21 `SubscriptionSnapshot` rows, spanning the
+table's entire history, showing the identical pattern — not a regression).
+
+**Not yet checked (out of the approved scope, flagged as a follow-up):**
+whether `getPlanFromSubscriptionItems()` (reads `sub.items.data[].price`
+from the `Subscription` resource in `customer.subscription.updated`/
+`created` handlers) is affected by a parallel restructuring — only Invoice
+objects were inspected.
+
+**Documents revised to reflect this** (docs-only, no application code
+changed):
+- `docs/analytics/SPRINT_PLAN.md` — Sprint 1 fully revised: original
+  dedup-only scope struck through and preserved for audit history; new scope
+  targets the actual extraction bug, ships the dedup/current-state view
+  alongside it, adds a two-gate (shadow-log-only, then flagged-write) rollout
+  given the higher risk of touching webhook revenue parsing, and adds the
+  `getPlanFromSubscriptionItems()` check as an exit criterion. Risk raised
+  Low→Medium, effort raised Small→8pts.
+- `docs/analytics/IMPLEMENTATION_MASTER_PLAN.md` — Issue #1 row rewritten
+  with the confirmed root cause in place of the original theory.
 
 ## Unresolved issues
 
-1. **[Blocking]** MRR capture defect — see above. Needs either (a) approval to
-   inspect a live Stripe invoice object (read-only `stripe.invoices.retrieve`
-   call) to confirm the exact shape mismatch, or (b) a decision from the
-   operator on how to proceed given this changes Sprint 1's actual scope.
-2. `server/` has no installed `node_modules` in this environment — the new
-   baseline script has not been executed via `tsx` itself (only its embedded
-   SQL, validated directly). Not blocking, but noted so a future session
-   doesn't assume the script has been end-to-end tested.
-3. No unit test exists yet for `analytics-baseline.ts`'s flag logic (loose
+1. **[Blocking — awaiting operator approval]** Revised Sprint 1 scope
+   (extraction fix, not dedup) is documented but **no implementation code has
+   been written**, per explicit operator instruction ("do not implement the
+   fix until the revised Sprint 1 is approved"). Do not write code against
+   `stripeMrr.ts`/`stripeWebhook.ts` until that approval is given.
+2. Whether Stripe supports expanding `line.pricing.price_details.price` into
+   a full object on the invoice fetch itself (avoiding an extra
+   `stripe.prices.retrieve()` call per webhook) has not been checked — a
+   quick read-only follow-up once the fix is approved, not blocking the
+   approval decision itself.
+3. `getPlanFromSubscriptionItems()` / `Subscription.items` shape not yet
+   inspected (see above) — should be checked before Sprint 1 is called done,
+   not necessarily before it starts.
+4. `server/` has no installed `node_modules` in this environment — the
+   Sprint 0 baseline script (`server/src/scripts/analytics-baseline.ts`) has
+   not been executed via `tsx` itself (only its embedded SQL, validated
+   directly via `psql`). Not blocking.
+5. No unit test exists yet for `analytics-baseline.ts`'s flag logic (loose
    end, non-blocking).
 
 ## Latest commit hash
 
-Pending — see "Exact next step."
+`9887a6a` — `analytics-sprint-0: baseline instrumentation, planning docs
+committed, MRR root-cause finding` (local only, not pushed).
+
+A second, docs-only commit for the Sprint 1 plan revision follows this update
+(see git log after this file is saved) — labeled distinctly from the
+`analytics-sprint-N` implementation-commit convention since it's a planning
+correction, not a sprint's completed implementation.
 
 ## Exact next step
 
-1. Commit Sprint 0's work now (docs + baseline script + this progress file)
-   as `analytics-sprint-0: <summary>` — additive-only, zero production risk,
-   safe to commit without further confirmation.
-2. **Stop and present the blocking finding to the operator.** Do not write or
-   commit any Sprint 1 code until they decide how to proceed (e.g., approve a
-   read-only Stripe invoice inspection to confirm the root cause; or provide
-   the actual root cause directly; or explicitly accept a revised Sprint 1
-   scope that fixes price extraction instead of/in addition to deduplication).
-3. Sprints 2–8 are unaffected by this finding and could in principle proceed
-   in code-writing form (schema migrations as unapplied files, dashboard
-   shadow-read logic defaulted off, etc.) — but per the operator's own rule
-   ("do not redesign the architecture unless implementation reveals a
-   genuinely blocking defect" / STOP CONDITIONS), the right move is to
-   surface this now rather than silently reordering the roadmap around it.
+1. **Await explicit operator approval of the revised Sprint 1 scope** (see
+   `docs/analytics/SPRINT_PLAN.md` Sprint 1, revised). Do not write or commit
+   any code touching `stripeMrr.ts`, `stripeWebhook.ts`, or
+   `SubscriptionSnapshot` until that approval is given.
+2. Once approved: implement the extraction fix behind a feature flag,
+   log-only shadow mode first (per the revised validation plan) — do **not**
+   start by writing to `SubscriptionSnapshot` with corrected values; confirm
+   correctness via logs + manual Stripe Dashboard cross-check first.
+3. Before declaring Sprint 1 complete: check `getPlanFromSubscriptionItems()`
+   / `Subscription.items` for the same restructuring pattern.
+4. Sprints 2–8 are otherwise unaffected by this finding and remain available
+   to resume once Sprint 1 is unblocked.
