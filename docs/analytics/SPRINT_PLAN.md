@@ -111,8 +111,82 @@ line item shape instead of the pre-restructure shape it was written against:
   discovery work is done, but the fix now includes an extra Stripe API call
   per webhook event, an additional flag gate, and the
   `getPlanFromSubscriptionItems()` follow-up check.
-- **Approval status:** revised scope pending explicit operator approval
-  before any implementation code is written (per operator instruction).
+- **Approval status:** Revised scope approved 2026-07-27. Implementation
+  complete and validated in shadow-mode form; write-path (`MRR_EXTRACTION_V2_WRITE`)
+  remains OFF pending resolution of one new open question surfaced by live
+  validation (see below) — **Sprint 1 is not yet fully closed.**
+
+### Implementation status (2026-07-27)
+
+Shipped (all additive, both new flags default OFF, zero behavior change to
+production as deployed):
+- `server/src/utils/stripeMrr.ts` — new `computeNormalizedMonthlyCentsFromInvoiceV2`/
+  `computeNormalizedMonthlyCentsFromLinesV2`/`resolvePriceV2` functions reading
+  the corrected field paths, with a cached-`prices.retrieve()` fallback if an
+  invoice's price ever comes back unexpanded. Legacy functions untouched.
+- `server/src/utils/featureFlags.ts` — `MRR_EXTRACTION_V2_SHADOW`,
+  `MRR_EXTRACTION_V2_WRITE`, both default false.
+- `server/src/routes/stripeWebhook.ts` — shadow-compare wired into
+  `handleInvoicePaymentSucceeded`; logs `mrr_extraction_shadow_compare` per
+  invoice when the shadow flag is on; `SubscriptionSnapshot` writes remain
+  the legacy values unless the write flag is *also* on.
+- `server/prisma/schema.prisma` + hand-written migration
+  `20260727120000_add_subscription_current_state` — new `SubscriptionCurrentState`
+  table (current-state/dedup model). **Schema change written, NOT yet applied
+  to the live database** — pending a separate, explicit go-ahead for
+  `prisma migrate deploy` (additive-only, but treated as its own approval
+  gate per the operator's database safety rules).
+- `server/src/scripts/mrr-extraction-validation-report.ts` — read-only
+  comparison report against real Stripe data (GET calls only).
+
+Validated (real, live, read-only, 2026-07-27):
+- **10 real paid invoices** (Pro $40/mo, Founding Plan $10/mo, founding_pro
+  $24.99/mo): legacy extraction produced `0` for **10/10** (100% failure,
+  confirming the diagnosed bug exactly); corrected extraction matched the
+  invoice line's contractual amount for **10/10**.
+- **Active subscriptions** (3 sampled): all resolved correctly, including
+  one genuine **annual** subscriber found live (`interval: year`,
+  $120/year) that the initial investigation had incorrectly assumed didn't
+  exist (no `STRIPE_PRICE_*_ANNUAL` env var is configured, but a
+  grandfathered annual subscription is still active in Stripe) — annual
+  *subscription* resolution is validated; annual *invoice* extraction
+  (the ÷12 branch) had no live invoice example in this sample and remains
+  analytically-but-not-live validated.
+- **`getPlanFromSubscriptionItems()`** (separately approved check): confirmed
+  NOT affected — `Subscription.items.data[].price` is still a full object in
+  this API version.
+- **Cancellations**: confirmed unaffected/out of scope — that code path
+  hardcodes `priceMonthly=0` and never calls the buggy function.
+- **Upgrades/downgrades**: no live proration line in the sample; analytically
+  covered (proration is a boolean flag inside the same `subscription_item_details`
+  parent type, not a different classification), not live-confirmed.
+- **Trial subscriptions**: none exist live in this account currently; not
+  applicable, documented gap.
+
+**New open question surfaced by live validation (not a defect in this fix,
+but a business decision needed before enabling writes):** 4 of the 10
+sampled invoices had a 100%-off promo/discount applied
+(`billing_reason: subscription_create`, `amount_paid: 0`, contractual line
+amount fully discounted). The corrected extraction reports the
+**contractual** price ($40, $10, $24.99 — matching `stripeMrr.ts`'s own
+documented design intent of ignoring `invoice.amount_paid`), not the
+**actual amount collected** ($0 for that invoice). This is a pre-existing
+design choice in the original code, made operational for the first time by
+this fix — not something introduced by it — but it is a real business
+question (should MRR reflect committed run-rate or actual near-term
+collectible cash during a promo period?) that should be answered explicitly
+before `MRR_EXTRACTION_V2_WRITE` is ever turned on. See
+`IMPLEMENTATION_PROGRESS.md` for the full writeup.
+
+**Separately flagged, not part of this sprint's scope, needs its own
+decision:** the same live investigation found `Subscription.current_period_start`/
+`current_period_end` have moved from the top level to `items.data[0].current_period_end`
+in this API version. Code in `stripeWebhook.ts` and `services/stripe.ts`
+(`getSubscriptionPeriodEnd`) reads the top-level fields directly, meaning
+`User.billingPeriodStart/End` is likely also silently broken for any
+subscription event since this API version took effect — a third instance of
+the same underlying bug class, affecting grace-period/reset-date logic, not
+MRR. Not fixed here; flagged for its own sprint/decision.
 - **Success criteria:** New MRR query matches a manual Stripe spot-check within
   rounding tolerance; old query removed only after Sprint 3's reconciliation
   job has run clean for 5+ consecutive days.

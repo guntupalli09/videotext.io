@@ -8,9 +8,15 @@ This file is the resumable state for the analytics-migration program
 
 ## Current sprint
 
-**Sprint 0 — complete.** Execution is **paused before Sprint 1** pending human
-decision — see "Blocking finding" below. Do not proceed to writing a Sprint 1
-fix until this is resolved.
+**Sprint 0 — complete.** **Sprint 1 — implemented and validated in shadow-mode
+form; not yet fully closed.** The corrected extraction is proven correct
+against 10 real production invoices (see "Sprint 1 validation results"
+below). Both new feature flags (`MRR_EXTRACTION_V2_SHADOW`,
+`MRR_EXTRACTION_V2_WRITE`) default OFF — **zero production behavior has
+changed**. Do not enable `MRR_EXTRACTION_V2_WRITE` and do not run
+`prisma migrate deploy` for the new `SubscriptionCurrentState` table until
+the "New open question" below is resolved and the operator explicitly
+approves both. Do not start Sprint 2 until that happens.
 
 ## Environment (confirmed this session)
 
@@ -112,7 +118,39 @@ Confirms, with real production data:
 - Phase 1 Issue #1 (MRR): **partially contradicted by live data — see Blocking
   finding below.**
 
-## Blocking finding — ROOT-CAUSED 2026-07-27, revised Sprint 1 pending approval
+## Files changed / migrations created (Sprint 1)
+
+Files changed:
+- `server/src/utils/stripeMrr.ts` (additive: new V2 functions + price cache)
+- `server/src/utils/featureFlags.ts` (additive: 2 new flags, both default off)
+- `server/src/routes/stripeWebhook.ts` (modified: shadow-compare wired into
+  `handleInvoicePaymentSucceeded`; behavior unchanged when both flags are off)
+- `server/prisma/schema.prisma` (additive: new `SubscriptionCurrentState` model)
+- `server/src/scripts/mrr-extraction-validation-report.ts` (new file)
+- `docs/analytics/SPRINT_PLAN.md`, `docs/analytics/IMPLEMENTATION_MASTER_PLAN.md`
+  (documentation updates)
+
+Migrations created: `20260727120000_add_subscription_current_state` — written,
+**not applied** to the live database (pending explicit go-ahead).
+
+Tests run this sprint: `npx tsc --noEmit` (clean), `npm run lint` (0 new
+errors beyond the pre-existing repo-wide `no-console` pattern in
+`src/scripts/*`, itself already present on `main` before this session — see
+delta analysis below), `npx tsc --outDir <tmp>` build (exit 0), full existing
+test suite `tests/*.test.ts` (14/14 pass, once `DATABASE_URL` is set in the
+shell — the one observed failure before setting it was purely a missing
+env var in my shell, not a code defect; proven by re-running with the var set
+and getting a clean pass), and the live validation report (10 real invoices,
+3 active subscriptions) described below.
+
+Lint delta: 283 problems on `main` before this session's Sprint 1 changes →
+296 after first draft (2 genuine `eqeqeq` issues I introduced, now fixed) →
+**294** final, i.e. +11 vs. baseline, all 11 being the same pre-existing-
+pattern `no-console` statements as the already-uncorrected
+`delete-test-users.ts` (19 of which already exist on `main`). Net new lint
+errors attributable to this sprint's actual logic: 0.
+
+## Root cause — CONFIRMED 2026-07-27, Sprint 1 revised and APPROVED, implemented
 
 **Confirmed root cause** (read-only Stripe investigation, approved and scoped
 by the operator to GET-only calls: one recent paid invoice, its subscription,
@@ -166,49 +204,121 @@ changed):
 - `docs/analytics/IMPLEMENTATION_MASTER_PLAN.md` — Issue #1 row rewritten
   with the confirmed root cause in place of the original theory.
 
+This was approved by the operator on 2026-07-27, with the additional approval
+to also inspect `getPlanFromSubscriptionItems()`. Both investigations and the
+resulting implementation are complete — see below.
+
+## `getPlanFromSubscriptionItems()` investigation — CONFIRMED NOT AFFECTED
+
+Fetched the real subscription `sub_1TbFmF2QqK3pYun3TuN01mGI` (read-only GET).
+`Subscription.items.data[].price` is still returned as a **full expanded
+`Price` object** in this API version (unlike `Invoice.lines.data[].price`,
+which is always `null`). `getPlanFromSubscriptionItems()` in
+`stripeWebhook.ts` reads `item.price?.id`, which works correctly against
+this shape. **No fix needed for this function.**
+
+**New, separate finding from the same investigation (not requested, not
+fixed, flagged for its own decision):** the same real `Subscription` object
+has `current_period_start`/`current_period_end` as `undefined` at the top
+level — they moved to `items.data[0].current_period_end`. `stripeWebhook.ts`
+(`handleCustomerSubscriptionCreated`/`Updated`) and `services/stripe.ts`
+(`getSubscriptionPeriodEnd`) read the top-level fields directly via a type
+cast, so `User.billingPeriodStart/End` is very likely also silently unset or
+stale for any subscription event since this API version took effect. This
+feeds `enforceSubscriptionState()`'s grace-period logic
+(`subscriptionGuard.ts`) — i.e., subscription downgrade-at-period-end
+behavior may not be working correctly right now. **Not part of Sprint 1's
+approved scope; not fixed; needs its own investigation/decision.**
+
+## Sprint 1 implementation and validation — 2026-07-27
+
+Implemented exactly per the approved revised scope (see
+`docs/analytics/SPRINT_PLAN.md` Sprint 1 "Implementation status" for full
+detail). Summary:
+
+- `stripeMrr.ts`: new V2 extraction functions using `line.parent.type`,
+  `line.pricing.price_details.price` (resolved via `invoices.retrieve(...,
+  {expand: ['lines.data.pricing.price_details.price']})` as the primary,
+  zero-extra-call-on-the-hot-path path — confirmed live that this expand
+  works and returns a full `Price` object inline — with a cached
+  `prices.retrieve()` fallback for resilience). Legacy functions untouched.
+- `featureFlags.ts`: `MRR_EXTRACTION_V2_SHADOW`, `MRR_EXTRACTION_V2_WRITE`,
+  both default `false`.
+- `stripeWebhook.ts`: shadow-compare wired into
+  `handleInvoicePaymentSucceeded`, logs both results, `SubscriptionSnapshot`
+  write stays on the legacy path unless the write flag is also on.
+- `schema.prisma` + migration `20260727120000_add_subscription_current_state`:
+  new `SubscriptionCurrentState` table (dedup/current-state model).
+  **Written, NOT applied to the live database.**
+- `server/src/scripts/mrr-extraction-validation-report.ts`: read-only
+  comparison report (GET-only Stripe calls).
+
+**Validation run against real production data (2026-07-27):**
+- 10 real paid invoices: legacy extraction wrong on **10/10** (always `0`,
+  confirming the bug exactly as diagnosed); corrected extraction right on
+  **10/10** (matches each invoice line's contractual amount).
+- 3 active subscriptions, including one live **annual** subscriber
+  (previously assumed not to exist — corrected: it does, just not exposed
+  via a currently-configured `STRIPE_PRICE_*_ANNUAL` env var) — subscription-
+  level annual resolution confirmed; invoice-level ÷12 branch has no live
+  example yet (documented gap, not a failure).
+- Upgrades/downgrades: no live proration example in sample; analytically
+  covered (same `parent.type`, `proration` is just a boolean flag) —
+  documented as not live-confirmed.
+- Cancellations: confirmed unaffected (that code path never calls the buggy
+  function).
+- Trial subscriptions: none exist live currently; not applicable.
+
+**New open question (surfaced by validation, not a defect):** 4 of the 10
+sampled invoices had a 100%-off promo/discount applied
+(`billing_reason: subscription_create`, real Stripe discount object present,
+`amount_paid: 0`). The corrected extraction reports the **contractual**
+price ($40/$10/$24.99), matching `stripeMrr.ts`'s own pre-existing documented
+intent to ignore `invoice.amount_paid` — but this means MRR will show the
+committed run-rate, not the $0 actually collected during an active 100%-off
+promo period. **This is a business decision, not a bug**, and needs an
+explicit answer before `MRR_EXTRACTION_V2_WRITE` is turned on:
+- Option A: MRR = contractual/list price (current implementation's behavior;
+  matches the pre-existing code's stated design intent).
+- Option B: MRR = actual amount collectible this period (would need to net
+  out active discounts — not implemented).
+
 ## Unresolved issues
 
-1. **[Blocking — awaiting operator approval]** Revised Sprint 1 scope
-   (extraction fix, not dedup) is documented but **no implementation code has
-   been written**, per explicit operator instruction ("do not implement the
-   fix until the revised Sprint 1 is approved"). Do not write code against
-   `stripeMrr.ts`/`stripeWebhook.ts` until that approval is given.
-2. Whether Stripe supports expanding `line.pricing.price_details.price` into
-   a full object on the invoice fetch itself (avoiding an extra
-   `stripe.prices.retrieve()` call per webhook) has not been checked — a
-   quick read-only follow-up once the fix is approved, not blocking the
-   approval decision itself.
-3. `getPlanFromSubscriptionItems()` / `Subscription.items` shape not yet
-   inspected (see above) — should be checked before Sprint 1 is called done,
-   not necessarily before it starts.
-4. `server/` has no installed `node_modules` in this environment — the
-   Sprint 0 baseline script (`server/src/scripts/analytics-baseline.ts`) has
-   not been executed via `tsx` itself (only its embedded SQL, validated
-   directly via `psql`). Not blocking.
-5. No unit test exists yet for `analytics-baseline.ts`'s flag logic (loose
-   end, non-blocking).
+1. **[Blocks `MRR_EXTRACTION_V2_WRITE` and the `SubscriptionCurrentState`
+   migration apply — awaiting operator decision]** The contractual-vs-collected
+   MRR question above. Shadow mode itself is NOT blocked by this (it's pure
+   read/log, no behavior change) and can be enabled at any time.
+2. **[Separate, not part of Sprint 1]** `Subscription.current_period_start/end`
+   restructuring — likely breaks `User.billingPeriodStart/End` tracking.
+   Needs its own investigation before any decision or fix.
+3. The `SubscriptionCurrentState` migration file exists but has **not** been
+   applied (`prisma migrate deploy` not run) — pending explicit go-ahead,
+   per the operator's database safety rules (treated as its own approval
+   gate even though it's purely additive).
+4. No unit test exists yet for the new `stripeMrr.ts` V2 functions or
+   `analytics-baseline.ts`'s flag logic (loose ends, non-blocking — the
+   functions are validated via the live validation report instead, which is
+   arguably stronger evidence than a synthetic unit test, but a unit test
+   would still be good hygiene for regression protection going forward).
 
 ## Latest commit hash
 
-`9887a6a` — `analytics-sprint-0: baseline instrumentation, planning docs
-committed, MRR root-cause finding` (local only, not pushed).
-
-A second, docs-only commit for the Sprint 1 plan revision follows this update
-(see git log after this file is saved) — labeled distinctly from the
-`analytics-sprint-N` implementation-commit convention since it's a planning
-correction, not a sprint's completed implementation.
+`eeb429b` — `analytics-plan-revision: correct Sprint 1 root cause via
+read-only Stripe investigation` (local only, not pushed). A further commit
+for this session's Sprint 1 implementation + validation follows immediately
+after this file is saved — see git log.
 
 ## Exact next step
 
-1. **Await explicit operator approval of the revised Sprint 1 scope** (see
-   `docs/analytics/SPRINT_PLAN.md` Sprint 1, revised). Do not write or commit
-   any code touching `stripeMrr.ts`, `stripeWebhook.ts`, or
-   `SubscriptionSnapshot` until that approval is given.
-2. Once approved: implement the extraction fix behind a feature flag,
-   log-only shadow mode first (per the revised validation plan) — do **not**
-   start by writing to `SubscriptionSnapshot` with corrected values; confirm
-   correctness via logs + manual Stripe Dashboard cross-check first.
-3. Before declaring Sprint 1 complete: check `getPlanFromSubscriptionItems()`
-   / `Subscription.items` for the same restructuring pattern.
-4. Sprints 2–8 are otherwise unaffected by this finding and remain available
-   to resume once Sprint 1 is unblocked.
+1. **Present the contractual-vs-collected MRR question to the operator** and
+   get an explicit answer before enabling `MRR_EXTRACTION_V2_WRITE`.
+2. If/when approved: run `prisma migrate deploy` for
+   `20260727120000_add_subscription_current_state` (additive, low risk, but
+   its own explicit go-ahead per the database safety rules) and wire
+   `SubscriptionCurrentState` writes into the webhook handler.
+3. Separately: decide whether/when to investigate the
+   `Subscription.current_period_end` finding — not blocking Sprint 1, but a
+   real, live, billing-adjacent defect worth a decision.
+4. Do not start Sprint 2 until 1–2 above are resolved and Sprint 1 is
+   explicitly confirmed complete by the operator.

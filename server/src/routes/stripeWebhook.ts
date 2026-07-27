@@ -11,10 +11,11 @@ import {
 } from '../models/User'
 import { prisma } from '../db'
 import { getPlanLimits } from '../utils/limits'
-import { computeNormalizedMonthlyCentsFromInvoice } from '../utils/stripeMrr'
+import { computeNormalizedMonthlyCentsFromInvoice, computeNormalizedMonthlyCentsFromInvoiceV2 } from '../utils/stripeMrr'
 import { generatePasswordSetupToken } from '../utils/auth'
 import { claimStripeEvent } from '../models/StripeEventLog'
 import { enforceSubscriptionState } from '../utils/subscriptionGuard'
+import { MRR_EXTRACTION_V2_SHADOW, MRR_EXTRACTION_V2_WRITE } from '../utils/featureFlags'
 import { getLogger } from '../lib/logger'
 import {
   trackSubscriptionCancelled,
@@ -366,20 +367,55 @@ async function handleInvoicePaymentSucceeded(
   // ── Create MRR snapshot (non-fatal on failure) ────────────────────────────
   try {
     const mrr = computeNormalizedMonthlyCentsFromInvoice(invoice)
+
+    // Analytics Sprint 1 (revised): shadow-compute the corrected (V2)
+    // extraction alongside the legacy one. `mrrForSnapshot` defaults to the
+    // legacy result — with both flags off this block is skipped entirely and
+    // behavior is byte-for-byte unchanged from before this sprint.
+    let mrrForSnapshot = mrr
+    if (MRR_EXTRACTION_V2_SHADOW || MRR_EXTRACTION_V2_WRITE) {
+      try {
+        const mrrV2 = await computeNormalizedMonthlyCentsFromInvoiceV2(stripe, invoice.id)
+        const matches =
+          mrrV2.normalizedMonthlyCents === mrr.normalizedMonthlyCents &&
+          mrrV2.stripeSubscriptionId === mrr.stripeSubscriptionId
+        log.info({
+          msg: 'mrr_extraction_shadow_compare',
+          eventId,
+          invoiceId: invoice.id,
+          legacy: mrr,
+          corrected: mrrV2,
+          matches,
+        })
+        if (MRR_EXTRACTION_V2_WRITE) {
+          mrrForSnapshot = mrrV2
+        }
+      } catch (shadowErr) {
+        // Shadow-mode failures must never affect the write path or throw —
+        // fall back to the legacy (already-computed) result unconditionally.
+        log.warn({
+          msg: 'mrr_extraction_shadow_compare_failed',
+          eventId,
+          invoiceId: invoice.id,
+          error: (shadowErr as Error).message,
+        })
+      }
+    }
+
     const currency = (invoice.currency ?? 'usd').toLowerCase()
     await prisma.subscriptionSnapshot.create({
       data: {
         userId: user.id,
         plan: activePlan ?? user.plan,
-        priceMonthly: mrr.normalizedMonthlyCents,
+        priceMonthly: mrrForSnapshot.normalizedMonthlyCents,
         currency,
         periodStart: startDate,
         periodEnd: endDate,
         status: 'active',
-        stripeSubscriptionId: mrr.stripeSubscriptionId,
-        stripePriceId: mrr.stripePriceId,
-        billingInterval: mrr.billingInterval,
-        intervalCount: mrr.intervalCount,
+        stripeSubscriptionId: mrrForSnapshot.stripeSubscriptionId,
+        stripePriceId: mrrForSnapshot.stripePriceId,
+        billingInterval: mrrForSnapshot.billingInterval,
+        intervalCount: mrrForSnapshot.intervalCount,
       },
     })
   } catch (err) {

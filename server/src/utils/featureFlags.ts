@@ -25,3 +25,23 @@ export const WORKER_CONCURRENCY_V2 = isFlagEnabled(process.env.WORKER_CONCURRENC
 
 /** Phase 8: Separate queues for YouTube pipeline so captions never wait behind Whisper (YOUTUBE_QUEUE_SEPARATION) */
 export const YOUTUBE_QUEUE_SEPARATION = isFlagEnabled(process.env.YOUTUBE_QUEUE_SEPARATION)
+
+/**
+ * Analytics Sprint 1 (revised): shadow-compute the corrected Stripe MRR
+ * extraction (2026-01-28.clover object shape — see stripeMrr.ts V2 functions)
+ * alongside the existing, currently-inert legacy extraction on every
+ * invoice.payment_succeeded webhook. Log-only — does not change what gets
+ * written to SubscriptionSnapshot. Safe to enable at any time; adds one
+ * extra Stripe API call (invoices.retrieve with expand) per webhook event.
+ */
+export const MRR_EXTRACTION_V2_SHADOW = isFlagEnabled(process.env.MRR_EXTRACTION_V2_SHADOW)
+
+/**
+ * Analytics Sprint 1 (revised): once MRR_EXTRACTION_V2_SHADOW's comparison
+ * report has been validated (see docs/analytics/SPRINT_PLAN.md Sprint 1),
+ * enabling this flag switches SubscriptionSnapshot writes to use the
+ * corrected (V2) extraction result instead of the legacy one. Must not be
+ * enabled without MRR_EXTRACTION_V2_SHADOW also enabled and validated first.
+ * Rollback is this flag alone — no code change required.
+ */
+export const MRR_EXTRACTION_V2_WRITE = isFlagEnabled(process.env.MRR_EXTRACTION_V2_WRITE)
