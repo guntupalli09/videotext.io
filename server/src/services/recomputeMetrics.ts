@@ -6,6 +6,8 @@
 
 import { prisma } from '../db'
 import { getLogger } from '../lib/logger'
+import { ROLLUP_CANONICAL_SOURCE } from '../utils/featureFlags'
+import { computeCanonicalDayFields, computeCanonicalMonthFields } from './recomputeMetricsCanonical'
 
 const log = getLogger('worker')
 
@@ -38,11 +40,28 @@ function scalarInt(row: { count?: bigint | number; [k: string]: unknown } | null
   return typeof v === 'bigint' ? Number(v) : Math.round(Number(v))
 }
 
-async function recomputeDay(dateMidnight: Date): Promise<void> {
-  const dayStart = dateMidnight
-  const dayEnd = addDays(dayStart, 1)
-  const endOfDay = new Date(dayEnd.getTime() - 1)
+export interface LegacyDayFields {
+  totalUsers: number
+  newUsers: number
+  activeUsers: number
+  jobsCreated: number
+  jobsCompleted: number
+  jobsFailed: number
+  avgProcessingMs: number | null
+  p95ProcessingMs: number | null
+  mrrCents: number
+  churnedUsers: number
+  newPaidUsers: number
+}
 
+/**
+ * Pure compute, no writes -- the exact query set this rollup has always used
+ * (raw "User"/"Job"/"SubscriptionSnapshot", no taxonomy filter). Kept as its
+ * own function so recomputeDay() can request it independently of the
+ * upsert, and so the Sprint 7 reconciliation script can call it directly
+ * without touching the database.
+ */
+export async function computeLegacyDayFields(dayStart: Date, dayEnd: Date, endOfDay: Date): Promise<LegacyDayFields> {
   const [totalUsersRow, newUsersRow, activeUsersRow, jobsCreatedRow, jobsCompletedRow, jobsFailedRow] =
     await Promise.all([
       prisma.$queryRaw<[{ count: bigint }]>`
@@ -115,6 +134,34 @@ async function recomputeDay(dateMidnight: Date): Promise<void> {
   const churnedUsers = scalarInt(churnedRow?.[0] ?? null)
   const newPaidUsers = scalarInt(newPaidRow?.[0] ?? null)
 
+  return {
+    totalUsers, newUsers, activeUsers, jobsCreated, jobsCompleted, jobsFailed,
+    avgProcessingMs, p95ProcessingMs, mrrCents, churnedUsers, newPaidUsers,
+  }
+}
+
+async function recomputeDay(dateMidnight: Date): Promise<void> {
+  const dayStart = dateMidnight
+  const dayEnd = addDays(dayStart, 1)
+  const endOfDay = new Date(dayEnd.getTime() - 1)
+
+  const legacy = await computeLegacyDayFields(dayStart, dayEnd, endOfDay)
+
+  // Analytics Sprint 7: when enabled, redirect exactly the fields that have
+  // a canonical (business_users/business_jobs) equivalent. mrrCents/
+  // churnedUsers/newPaidUsers have no canonical subscription model yet and
+  // always come from the legacy computation above, flag or no flag. With
+  // the flag off (default), `fields` is `legacy` unchanged -- byte-for-byte
+  // identical to this rollup's pre-Sprint-7 behavior.
+  const fields = ROLLUP_CANONICAL_SOURCE
+    ? { ...legacy, ...(await computeCanonicalDayFields(dayStart, dayEnd)) }
+    : legacy
+
+  const {
+    totalUsers, newUsers, activeUsers, jobsCreated, jobsCompleted, jobsFailed,
+    avgProcessingMs, p95ProcessingMs, mrrCents, churnedUsers, newPaidUsers,
+  } = fields
+
   const now = new Date()
   await prisma.dailyMetrics.upsert({
     where: { date: dayStart },
@@ -150,10 +197,18 @@ async function recomputeDay(dateMidnight: Date): Promise<void> {
   })
 }
 
-async function recomputeMonth(monthStart: Date): Promise<void> {
-  const monthEnd = addMonths(monthStart, 1)
-  const endOfMonth = new Date(monthEnd.getTime() - 1)
+export interface LegacyMonthFields {
+  totalUsers: number
+  newUsers: number
+  activeUsers: number
+  mrrCents: number
+  newMrrCents: number
+  churnedMrrCents: number
+  churnRatePercent: number | null
+}
 
+/** Pure compute, no writes -- see computeLegacyDayFields' equivalent note above. */
+export async function computeLegacyMonthFields(monthStart: Date, monthEnd: Date, endOfMonth: Date): Promise<LegacyMonthFields> {
   const [totalUsersRow, newUsersRow, activeUsersRow] = await Promise.all([
     prisma.$queryRaw<[{ count: bigint }]>`
       SELECT COUNT(*)::bigint as count FROM "User" WHERE "createdAt" < ${monthEnd}
@@ -209,6 +264,27 @@ async function recomputeMonth(monthStart: Date): Promise<void> {
     activePaidUsersAtMonthStart > 0
       ? (churnedUsersInMonth / activePaidUsersAtMonthStart) * 100
       : null
+
+  return { totalUsers, newUsers, activeUsers, mrrCents, newMrrCents, churnedMrrCents, churnRatePercent }
+}
+
+async function recomputeMonth(monthStart: Date): Promise<void> {
+  const monthEnd = addMonths(monthStart, 1)
+  const endOfMonth = new Date(monthEnd.getTime() - 1)
+
+  const legacy = await computeLegacyMonthFields(monthStart, monthEnd, endOfMonth)
+
+  // Analytics Sprint 7: same redirect rule as recomputeDay -- only
+  // totalUsers/newUsers/activeUsers have a canonical equivalent at month
+  // granularity; mrrCents/newMrrCents/churnedMrrCents/churnRatePercent stay
+  // on SubscriptionSnapshot regardless of this flag (no canonical
+  // subscription model exists yet). Flag off (default) => `fields` is
+  // `legacy` unchanged.
+  const fields = ROLLUP_CANONICAL_SOURCE
+    ? { ...legacy, ...(await computeCanonicalMonthFields(monthStart, monthEnd)) }
+    : legacy
+
+  const { totalUsers, newUsers, activeUsers, mrrCents, newMrrCents, churnedMrrCents, churnRatePercent } = fields
 
   const now = new Date()
   await prisma.monthlyMetrics.upsert({

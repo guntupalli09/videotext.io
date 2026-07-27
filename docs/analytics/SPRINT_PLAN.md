@@ -627,6 +627,69 @@ for the exact deployment and rollback steps.
   Metrics API serves the dashboard successfully with no regression in
   response time.
 
+### Implementation status — PARTIAL, rollup-layer-only, CODE COMPLETE, NOT DEPLOYED, 2026-07-27
+
+**Scope narrowing (operator-directed, this session):** the operator's
+Sprint 7 kickoff instructions scoped this session to objectives 1–2
+("redirect `DailyMetrics`/`MonthlyMetrics` to canonical views, migrate only
+the rollup generation layer") plus validation/reporting (objectives 5–8,
+11) and explicit exclusions (objectives 3/4/9/10: no dashboard change, no
+`DASHBOARD_CANONICAL_CUTOVER`, no deploy, local commits only). The rest of
+this section's original framing (`metric_version`/`computed_at` columns,
+`GET /api/metrics/:name`) was **not** in scope this session — not started,
+not dropped, available as a follow-up.
+
+Shipped (additive, new flag default off, zero behavior change to
+production as deployed):
+- `server/src/utils/featureFlags.ts`: new `ROLLUP_CANONICAL_SOURCE` flag,
+  default `false`. Governs exactly `totalUsers`/`newUsers`/`activeUsers`/
+  `jobsCreated`/`jobsCompleted`/`jobsFailed`/`avgProcessingMs`/
+  `p95ProcessingMs` (day) and `totalUsers`/`newUsers`/`activeUsers` (month).
+  MRR/churn-derived fields are never affected by this flag — no canonical
+  `business_subscriptions` model exists yet.
+- `server/src/services/recomputeMetricsCanonical.ts` (new): pure, read-only
+  canonical day/month field computation against `business_users`/
+  `business_jobs`.
+- `server/src/services/recomputeMetrics.ts` (modified): `recomputeDay`/
+  `recomputeMonth` split into an exported pure-compute step + the existing
+  upsert; when the flag is on, canonical values overlay the legacy ones for
+  the fields listed above; off (the only state exercised anywhere), output
+  is byte-for-byte the pre-Sprint-7 legacy behavior — proven, not just
+  asserted, via a direct comparison against currently-stored production
+  `DailyMetrics` rows (14/14 match).
+- `server/src/services/rollupReconciliation.ts` (new): pure classification
+  helpers for the reconciliation report, unit-tested without a live
+  database.
+- `server/src/scripts/sprint7-rollup-reconciliation-report.ts` (new,
+  read-only CLI): validates legacy-vs-canonical rollups, an independent
+  live-query cross-check, and a legacy-path regression check; non-zero
+  exit on any unexplained result.
+- `docs/analytics/SPRINT_7_RECONCILIATION_REPORT.md`,
+  `docs/analytics/DASHBOARD_FIELD_STATUS.md` (new — full field-by-field
+  status of every real dashboard response field).
+
+**Live validation against production Postgres, read-only throughout,
+2026-07-27:** 121 field comparisons (14 days × 8 daily fields + 3 months ×
+3 monthly fields) — **0 UNEXPLAINED.** Independent live-query cross-check:
+2/2 match. Legacy-path regression check (fresh legacy recompute vs.
+currently-stored production `DailyMetrics` rows): 14/14 match exactly — the
+refactor changed no legacy behavior. Full detail, including the
+`avgProcessingMs`/`p95ProcessingMs` non-monotonic-divergence findings and
+the April-2026 `newUsers` exception (the one month the 4 Sprint-2-excluded
+accounts' actual signup dates fall inside), is in
+`SPRINT_7_RECONCILIATION_REPORT.md`. Stop condition (objective 7) was
+evaluated explicitly by the reconciliation script and **not triggered**.
+
+Tests: `tsc --noEmit` clean, full suite **47/47** pass (37 prior + 10 new).
+Lint delta +18 vs. the 343-problem baseline, all `no-console` in the new
+report script, matching the already-accepted convention — zero net new
+issues of any other kind.
+
+**`ROLLUP_CANONICAL_SOURCE` has NOT been enabled anywhere.** No container
+has been rebuilt, restarted, or redeployed. `DASHBOARD_CANONICAL_CUTOVER`
+was not touched, evaluated, or enabled — `adminDashboard.ts` was not opened
+for editing this sprint. Everything a founder sees today is unchanged.
+
 ## Sprint 8 — PostHog Cleanup, Funnel Fix, Governance Adoption
 
 - **Objective:** Fix `captureFunnelEvent()` to not silently drop pre-signup

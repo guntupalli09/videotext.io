@@ -82,3 +82,20 @@ export const DASHBOARD_SHADOW_COMPUTE = isFlagEnabled(process.env.DASHBOARD_SHAD
  * success. Rollback is exactly this flag alone.
  */
 export const DASHBOARD_CANONICAL_CUTOVER = isFlagEnabled(process.env.DASHBOARD_CANONICAL_CUTOVER)
+
+/**
+ * Analytics Sprint 7: redirects the DailyMetrics/MonthlyMetrics rollup
+ * generator (services/recomputeMetrics.ts) to source
+ * totalUsers/newUsers/activeUsers/jobsCreated/jobsCompleted/jobsFailed/
+ * avgProcessingMs/p95ProcessingMs from the Sprint 4 canonical views
+ * (business_users/business_jobs, filtered by includeInBusinessMetrics)
+ * instead of the raw "User"/"Job" tables. MRR/churnedUsers/newPaidUsers/
+ * newMrrCents/churnedMrrCents/churnRatePercent are NOT affected by this flag
+ * at all -- no canonical subscription model (business_subscriptions) exists
+ * yet, so those fields always continue reading SubscriptionSnapshot
+ * regardless of this flag's value. With this flag off (the default), every
+ * rollup field is computed exactly as before -- zero behavior change.
+ * Rollback is this flag alone; recompute is idempotent and re-runnable at
+ * any time either way. See docs/analytics/SPRINT_7_RECONCILIATION_REPORT.md.
+ */
+export const ROLLUP_CANONICAL_SOURCE = isFlagEnabled(process.env.ROLLUP_CANONICAL_SOURCE)

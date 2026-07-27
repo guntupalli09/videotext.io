@@ -8,6 +8,7 @@ import {
   MRR_EXTRACTION_V2_SHADOW,
   MRR_EXTRACTION_V2_WRITE,
   STRIPE_RECONCILIATION_ENABLED,
+  ROLLUP_CANONICAL_SOURCE,
 } from '../src/utils/featureFlags'
 
 // ── Flag-parsing rule (the logic every exported flag is built from) ───────
@@ -51,4 +52,8 @@ test('Sprint 1/3 MRR and reconciliation flags default to false in this environme
   assert.equal(MRR_EXTRACTION_V2_SHADOW, false)
   assert.equal(MRR_EXTRACTION_V2_WRITE, false)
   assert.equal(STRIPE_RECONCILIATION_ENABLED, false)
+})
+
+test('Sprint 7 rollup canonical-source flag defaults to false in this environment', () => {
+  assert.equal(ROLLUP_CANONICAL_SOURCE, false)
 })

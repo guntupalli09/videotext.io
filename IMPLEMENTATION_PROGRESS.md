@@ -11,7 +11,10 @@ This file is the resumable state for the analytics-migration program
 **Sprint 0 — complete. Sprint 1 — complete. Sprint 2 — complete. Sprint 3 —
 complete. Sprint 4 — complete. Sprint 5 — complete (accepted by operator
 2026-07-27). Sprint 6 — code complete, tested, committed locally; NOT
-deployed, flag NOT enabled (2026-07-27).**
+deployed, flag NOT enabled (2026-07-27). Sprint 7 — rollup-layer scope only
+(per operator's Sprint 7 kickoff instructions), code complete, live-
+validated read-only, committed locally; NOT deployed, flag NOT enabled
+(2026-07-27).**
 
 **STOP POINT: awaiting explicit operator approval before (a) enabling
 `DASHBOARD_CANONICAL_CUTOVER` in any environment, or (b) rebuilding/
@@ -559,6 +562,88 @@ count was taken).
 Per explicit operator instruction (#9, #10), this is a hard stop — do not
 do either without a fresh, explicit approval.
 
+## Sprint 7 — Rollups Redesign (rollup-layer scope only) — CODE COMPLETE, NOT DEPLOYED, 2026-07-27
+
+**Scope, per the operator's explicit Sprint 7 kickoff instructions (11
+numbered objectives):** redirect only the `DailyMetrics`/`MonthlyMetrics`
+rollup *generator* (`server/src/services/recomputeMetrics.ts`) to source
+`totalUsers`/`newUsers`/`activeUsers`/`jobsCreated`/`jobsCompleted`/
+`jobsFailed`/`avgProcessingMs`/`p95ProcessingMs` (day) and `totalUsers`/
+`newUsers`/`activeUsers` (month) from `business_users`/`business_jobs`,
+behind a new, default-off flag. Explicitly did NOT touch
+`adminDashboard.ts`, did NOT evaluate or enable `DASHBOARD_CANONICAL_
+CUTOVER`, did NOT rebuild/restart/redeploy any container, and did NOT
+enable the new flag anywhere — matching this session's objectives 3/4/9/10
+exactly. The original `SPRINT_PLAN.md` Sprint 7 framing also included
+`metric_version`/`computed_at` columns and a `GET /api/metrics/:name` API;
+neither was in this session's scope (not started, not dropped).
+
+Files changed:
+- `server/src/utils/featureFlags.ts` (+`ROLLUP_CANONICAL_SOURCE`, default
+  false)
+- `server/src/services/recomputeMetricsCanonical.ts` (new): pure read-only
+  canonical day/month compute functions
+- `server/src/services/recomputeMetrics.ts` (modified): split
+  `recomputeDay`/`recomputeMonth` into exported pure-compute steps + the
+  existing upsert; flag-gated overlay of canonical values onto exactly the
+  fields listed above; MRR/churn/newPaidUsers fields always stay on
+  `SubscriptionSnapshot` (no canonical subscription model exists yet)
+- `server/src/services/rollupReconciliation.ts` (new): pure classification
+  helpers (`classifyMonotonicCount`, `classifyNonMonotonic`), unit-tested
+- `server/src/scripts/sprint7-rollup-reconciliation-report.ts` (new,
+  read-only CLI)
+- `server/tests/rollupReconciliation.test.ts` (new, 9 tests),
+  `server/tests/featureFlags.test.ts` (+1 test)
+- `docs/analytics/SPRINT_7_RECONCILIATION_REPORT.md` (new),
+  `docs/analytics/DASHBOARD_FIELD_STATUS.md` (new — full current-state
+  inventory of every real `/api/admin/dashboard` response field, tagged
+  Canonical/Verified/Legacy/Deferred)
+- `docs/analytics/SPRINT_PLAN.md`, this file (documentation)
+
+**Migration/schema changes: none.** This sprint changes only which query a
+rollup field is computed from, not the table shape — no
+`prisma migrate` step was needed or run.
+
+**Live validation against production Postgres, read-only throughout,
+2026-07-27:**
+- 121 field comparisons (14 full UTC days × 8 daily fields + 3 full UTC
+  months × 3 monthly fields): **0 UNEXPLAINED.** Every divergence is
+  explained by the same, already-established root cause (guest jobs + the
+  4 Sprint-2-classified demo/founder/internal accounts excluded from the
+  canonical side). `avgProcessingMs`/`p95ProcessingMs` diverge in *both*
+  directions across different days, correctly classified
+  `EXPECTED_DIVERGENCE` per their known non-monotonic nature (Sprint 5/6
+  precedent), not treated as suspicious.
+- Independent live-query cross-check (most recent full day, 2026-07-26,
+  hand-written ad hoc SQL not reusing the shared canonical function):
+  2/2 fields match exactly.
+- Legacy-path regression check: freshly recomputed legacy values for all
+  14 days match the **currently-stored production `DailyMetrics` rows**
+  exactly, 14/14 — proves this sprint's compute/write refactor did not
+  change the legacy path's behavior at all.
+- Full detail, including the one interesting exception (April 2026's
+  `newUsers` is the sole month where `newUsers` also diverges — because
+  that's the month the 4 excluded accounts actually signed up), is in
+  `docs/analytics/SPRINT_7_RECONCILIATION_REPORT.md`.
+
+**Stop condition (operator instruction #7) — evaluated explicitly by the
+reconciliation script's own exit code, NOT triggered.**
+
+Tests: `tsc --noEmit` clean, build clean, full suite **47/47** pass (37
+prior + 10 new). Lint: baseline 343 (pre-Sprint-7 `main`) → 361 after,
+delta **+18**, all `no-console` in the new report script (the same
+already-accepted convention every prior sprint's standalone script has
+used) — confirmed zero issues of any other kind by isolating the new/
+modified files and linting them alone; the 3 `eqeqeq` hits still reported
+against `recomputeMetrics.ts`/`featureFlags.ts` are on lines this sprint
+did not touch (pre-existing on `main` before this session).
+
+**`ROLLUP_CANONICAL_SOURCE` is NOT enabled anywhere. No container has been
+rebuilt, restarted, or redeployed.** Everything a founder sees on the
+dashboard today is unchanged — `adminDashboard.ts` still reads whatever is
+currently stored in `DailyMetrics`/`MonthlyMetrics`, written by the
+unmodified legacy path (the flag is off), exactly as before this sprint.
+
 ## Unresolved issues
 
 1. **[Tracked as `docs/analytics/BACKLOG.md` WI-001, not fixed]**
@@ -580,33 +665,53 @@ do either without a fresh, explicit approval.
    `analytics-baseline.ts`'s flag logic, or `backfill-user-taxonomy.ts`'s
    classification logic (loose ends, non-blocking — all three are validated
    via live runs against real production data instead).
+5. `ROLLUP_CANONICAL_SOURCE` remains off — not a blocking requirement for
+   Sprint 7 to be considered code-complete, but enabling it (and
+   redeploying so the recompute cron/CLI actually picks up canonical
+   values) is a distinct, not-yet-made operational decision, same pattern
+   as item 2 above.
+6. Sprint 7's original full scope (`metric_version`/`computed_at` columns,
+   `GET /api/metrics/:name`) was not attempted this session — the
+   operator's Sprint 7 kickoff instructions scoped this session to the
+   rollup-generation-layer redirect only. Not dropped, just not started.
 
 ## Latest commit hash
 
-`bb3b95c` — `analytics-sprint-5: dashboard shadow-compute behind flag,
-serving only legacy values` (local only, not pushed). A further commit for
-this session's Sprint 6 implementation follows immediately after this file
-is saved — see git log.
+`97343f3` — `analytics-sprint-6: controlled dashboard cutover for 9
+approved fields (flag off, not deployed)` (local only, not pushed). A
+further commit for this session's Sprint 7 implementation follows
+immediately after this file is saved — see git log.
 
 ## Exact next step
 
-**Do not enable `DASHBOARD_CANONICAL_CUTOVER` and do not rebuild/restart/
-redeploy the production `videotools-api` container without a fresh,
-explicit operator instruction to do so.** Sprint 6's code is complete,
-tested, and committed; it has zero effect on production as deployed right
-now, since the flag is unset and the running container doesn't have this
-code at all yet. Resume by:
+**Two independent decisions are pending, neither made this session:**
+
+1. **Sprint 6 production rollout** — do not enable
+   `DASHBOARD_CANONICAL_CUTOVER` and do not rebuild/restart/redeploy the
+   production `videotools-api` container without a fresh, explicit
+   operator instruction. See `SPRINT_6_RECONCILIATION_REPORT.md` §7
+   (deployment steps) / §8 (rollback).
+2. **Sprint 7 production rollout** — do not enable
+   `ROLLUP_CANONICAL_SOURCE` without a fresh, explicit operator
+   instruction. Unlike Sprint 6, enabling this flag alone does not change
+   anything a founder sees (it only changes what the *next* rollup write
+   computes) — the dashboard would only reflect it once `DailyMetrics`/
+   `MonthlyMetrics` rows are next recomputed with the flag on, i.e. after
+   both a redeploy and a recompute run.
+
+Resume by:
 1. Reading this file and every doc in `docs/analytics/` (already current as
-   of this update), especially `SPRINT_6_RECONCILIATION_REPORT.md` (full
-   field mapping, deployment steps §7, rollback steps §8).
-2. Presenting §7's deployment steps to the operator and getting explicit,
-   separate approval for (a) the container rebuild/redeploy and (b) the
-   flag enablement — these are two distinct approvals per the operator's
-   own instructions (#9 and #10 were listed separately).
-3. If/when approved: follow §7 exactly, in order, monitoring
-   `dashboard_canonical_cutover_FALLBACK` and the Sprint 5 shadow-compare
-   logs for at least one full business day before considering Sprint 6's
-   production rollout complete.
-4. Separately, whenever convenient: Sprint 7 (Rollups Redesign) is now the
-   natural next *code* sprint, since it's what would unblock migrating the
-   5 `snapshot.*` fields this sprint had to exclude.
+   of this update), especially `SPRINT_6_RECONCILIATION_REPORT.md` and
+   `SPRINT_7_RECONCILIATION_REPORT.md`.
+2. If Sprint 6 is to proceed: present §7's deployment steps and get
+   explicit, separate approval for (a) the container rebuild/redeploy and
+   (b) the flag enablement.
+3. If Sprint 7 is to proceed: present `SPRINT_7_RECONCILIATION_REPORT.md`
+   §9 (rollback) and get explicit approval for (a) enabling
+   `ROLLUP_CANONICAL_SOURCE`, (b) any redeploy needed to pick it up, and
+   (c) re-running `recompute` so canonical values actually populate
+   `DailyMetrics`/`MonthlyMetrics`.
+4. Separately, whenever convenient: the rest of Sprint 7's original scope
+   (`metric_version`/`computed_at`, `GET /api/metrics/:name`) or Sprint 8
+   (PostHog Cleanup/Funnel Fix/Governance) are both available as the next
+   *code* sprint — neither depends on the two pending decisions above.
