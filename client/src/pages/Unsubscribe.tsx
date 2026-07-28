@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { api } from '../lib/api'
 
 type Status = 'loading' | 'success' | 'invalid' | 'error'
 
@@ -18,7 +19,7 @@ export default function Unsubscribe() {
 
     const controller = new AbortController()
 
-    fetch('/api/newsletter/unsubscribe', {
+    api('/api/newsletter/unsubscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, token }),
