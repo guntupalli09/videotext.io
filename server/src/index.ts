@@ -403,6 +403,7 @@ const server = app.listen(PORT, () => {
       const resendKey = process.env.RESEND_API_KEY
       const fromEmail = process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>'
       const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
+      const apiBaseUrl = (process.env.API_BASE_URL || 'https://api.videotext.io').replace(/\/$/, '')
 
       if (!resendKey) {
         log.info({ msg: 'Daily email skipped — RESEND_API_KEY not set' })
@@ -461,7 +462,7 @@ const server = app.listen(PORT, () => {
           const magicToken = await createMagicLinkToken(u.id)
           const openLink = `${baseUrl}/magic-login?token=${magicToken}&next=/video-to-transcript`
           const unsubToken = generateUnsubscribeToken(u.email)
-          const apiUnsubLink = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(u.email)}&token=${unsubToken}`
+          const apiUnsubLink = `${apiBaseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(u.email)}&token=${unsubToken}`
           const html = `
 <!DOCTYPE html>
 <html>

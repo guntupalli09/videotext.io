@@ -98,6 +98,7 @@ export async function runOnboardingEmailSequence(): Promise<void> {
   if (!resendKey) return
 
   const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
+  const apiBaseUrl = (process.env.API_BASE_URL || 'https://api.videotext.io').replace(/\/$/, '')
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>'
   const debugOnboarding = process.env.DEBUG_ONBOARDING === 'true'
   const now = Date.now()
@@ -154,7 +155,7 @@ export async function runOnboardingEmailSequence(): Promise<void> {
     const token = await createMagicLinkToken(user.id)
     const ctaUrl = `${baseUrl}/magic-login?token=${encodeURIComponent(token)}&next=/video-to-transcript`
     const unsubToken = generateUnsubscribeToken(user.email)
-    const apiUnsubLink = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`
+    const apiUnsubLink = `${apiBaseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`
     const html = onboardingHtml(stage, ctaUrl, apiUnsubLink)
     const subject = STAGE_CONFIG[stage].subject
 
