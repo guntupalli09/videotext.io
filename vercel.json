@@ -32,6 +32,11 @@
   ],
   "routes": [
     {
+      "src": "/translation",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
       "src": "/podcast-transcript",
       "dest": "/podcast-transcription",
       "status": 301

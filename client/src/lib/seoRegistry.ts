@@ -1598,9 +1598,30 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'youtube-subtitle-generator',
     defaultInputMode: 'youtube',
+    deepContent: {
+      proofPoints: [
+        'YouTube\'s auto-generated captions run on-platform after upload and cannot be downloaded as a standalone file without a workaround (Studio\'s transcript export or third-party scraping) — pasting the URL here produces a downloadable SRT/VTT directly, which auto-captions alone do not.',
+        'Auto-caption accuracy on YouTube degrades noticeably with background music, cross-talk, or accented speech; a dedicated Whisper pass on the source audio generally produces fewer misheard words than YouTube\'s live captioning model.',
+        'Uploading a corrected SRT file to YouTube Studio (rather than relying on auto-captions) also improves searchability and accessibility scoring, since YouTube treats creator-uploaded caption files as higher-confidence text for indexing.',
+      ],
+      workflowSteps: [
+        { title: '1. Paste the YouTube URL', detail: 'No download step needed — the video is pulled directly from the link, including Shorts URLs.' },
+        { title: '2. Generate SRT or VTT', detail: 'Get accurately timed captions rather than relying on YouTube\'s automatic captioning, which is more error-prone on music, accents, or overlapping speech.' },
+        { title: '3. Upload to YouTube Studio', detail: 'Replace or add the caption track under Subtitles in YouTube Studio — this also improves the video\'s indexability for search.' },
+      ],
+      outputExamples: [
+        { title: 'YouTube-ready SRT file', body: 'Correctly timed subtitle file formatted for direct upload to YouTube Studio\'s Subtitles panel.' },
+        { title: 'Shorts-compatible captions', body: 'Same subtitle generation works for YouTube Shorts URLs, sized appropriately for short-form vertical video.' },
+      ],
+      useCases: [
+        { title: 'Creators fixing inaccurate auto-captions', body: 'Replace YouTube\'s automatic captions with a more accurate SRT for videos with music, accents, or technical vocabulary.' },
+        { title: 'Channels optimizing for search', body: 'Upload accurate caption files to improve YouTube\'s ability to index and surface video content in search.' },
+      ],
+    },
     faq: [
       { q: 'How do I generate subtitles for a YouTube video?', a: 'Paste the YouTube URL and choose SRT. Download the file and upload to YouTube Studio as captions.' },
       { q: 'Can I use this for YouTube Shorts?', a: 'Yes. Shorts URLs are supported. Same process.' },
+      { q: 'Is this different from YouTube\'s auto-generated captions?', a: 'Yes. YouTube\'s auto-captions are generated on-platform and are not downloadable as a standalone file without extra steps. This tool produces a downloadable SRT/VTT directly from the URL, typically with fewer errors on music, accents, or overlapping speech.' },
     ],
   },
   {
@@ -2370,6 +2391,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/screen-recording-transcript', '/zoom-meeting-transcript', '/meeting-transcription', '/video-to-transcript'],
     indexable: true,
     intentKey: 'loom-transcription',
+    deepContent: {
+      proofPoints: [
+        'Loom has no native export-to-text for free-tier users — its built-in transcription sits behind a paid plan, which is why teams on the free Loom tier download the MP4 and transcribe it elsewhere instead of upgrading Loom just for text.',
+        'Async video updates (the core Loom use case) lose most of their value if a recipient has to watch the full clip to get the point — a summary branch extracting decisions and action items turns a 6-minute Loom into a 20-second read.',
+        'Loom downloads are already MP4, so there is no conversion step between "download from Loom" and "upload here" — the workflow is a straight two-step handoff.',
+      ],
+      workflowSteps: [
+        { title: '1. Download the Loom video as MP4', detail: 'Open the Loom, use the three-dot menu → Download, and save the MP4 locally.' },
+        { title: '2. Upload and transcribe', detail: 'Upload the MP4 here. Most Loom recordings — typically 2–15 minutes — finish transcribing in under a minute.' },
+        { title: '3. Pull the summary or full transcript', detail: 'Use Summary for a quick recap recipients can skim instead of watching, or the full transcript for searchable async documentation.' },
+      ],
+      outputExamples: [
+        { title: 'Loom summary', body: 'Key decisions and action items extracted from an async video update, readable in seconds instead of watching the full clip.' },
+        { title: 'Speaker-labeled walkthrough transcript', body: 'Multi-person Loom recordings segmented by speaker for meeting notes or documentation.' },
+      ],
+      useCases: [
+        { title: 'Product and engineering teams', body: 'Turn Loom code-review or demo walkthroughs into searchable text for documentation without re-watching the recording.' },
+        { title: 'Async-first remote teams', body: 'Convert Loom updates into summaries so teammates in other time zones can skim instead of watching every video.' },
+      ],
+    },
     faq: [
       { q: 'How do I transcribe a Loom video?', a: 'Open the Loom video, click the download button (three-dot menu → Download), and save the MP4 to your computer. Upload the MP4 here and our AI transcribes the spoken content. Most Loom videos process in under a minute.' },
       { q: "Does Loom have built-in transcription?", a: "Yes, Loom offers auto-transcription on paid plans. However, VideoText gives you additional outputs — speaker labels, summary, chapters, keyword index, and export to SRT/VTT/TXT/JSON. If you want to repurpose Loom content as text, copy to Notion, or generate subtitles, VideoText provides more flexibility." },
@@ -2473,6 +2514,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/google-meet-transcript', '/zoom-meeting-transcript', '/meeting-transcription', '/speaker-diarization'],
     indexable: true,
     intentKey: 'teams-meeting-transcript',
+    deepContent: {
+      proofPoints: [
+        'Teams\' built-in transcription requires a Microsoft 365 Business Basic license or above and an admin to enable it — many teams on lower-tier plans or with locked-down admin settings have recordings but no transcript access inside Teams itself.',
+        'A Teams-native transcript lives only inside Teams and is tied to that meeting instance — pulling it into a Confluence page, Outlook summary, or external doc still means copy-pasting and reformatting.',
+        'Standard Teams recordings are stereo MP4, not multi-track — speaker separation has to come from the audio itself rather than per-participant channels, which is why diarization quality depends on the recording, not the export format.',
+      ],
+      workflowSteps: [
+        { title: '1. Download the recording from Teams or SharePoint', detail: 'Find it in the meeting chat, the Recordings tab, or the channel Files in SharePoint, and download as MP4.' },
+        { title: '2. Upload for transcription', detail: 'No admin setup or license tier required — works from any MP4 download regardless of your Microsoft 365 plan.' },
+        { title: '3. Pull speaker-labeled text or a meeting-notes summary', detail: 'Use Speakers for per-participant breakdown, or Summary for action items and decisions ready to paste into Outlook or Teams chat.' },
+      ],
+      outputExamples: [
+        { title: 'Speaker-labeled Teams transcript', body: 'Meeting broken into per-speaker turns, useful for attributing decisions and follow-ups to the right participant.' },
+        { title: 'Action-item summary', body: 'Key decisions and next steps pulled from the recording, formatted for a direct paste into meeting-notes documentation.' },
+      ],
+      useCases: [
+        { title: 'Teams without Business Basic+ licensing', body: 'Get a transcript from any recording download without needing an admin to enable native Teams transcription.' },
+        { title: 'Cross-tool documentation workflows', body: 'Move Teams meeting content into Confluence, Notion, or email without re-typing from the in-app transcript.' },
+      ],
+    },
     faq: [
       { q: 'How do I transcribe a Microsoft Teams recording?', a: 'In Teams, go to the meeting chat or the Recordings tab and download the recording as MP4. Alternatively, find it in SharePoint under the channel Files. Upload the MP4 here and our AI produces a full transcript. Most meetings transcribe in 5–10 minutes.' },
       { q: "Does Teams have built-in transcription?", a: "Yes, Microsoft Teams offers meeting transcription on Microsoft 365 Business Basic plans and above. However, Teams transcription is limited to supported languages, requires the feature to be enabled by an admin, and the transcript lives only inside Teams. VideoText works from any recording download, requires no admin setup, and exports to TXT, SRT, VTT, and JSON." },
@@ -2591,6 +2652,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/translate-subtitles', '/subtitle-generator', '/spanish-transcription', '/video-to-transcript'],
     indexable: true,
     intentKey: 'portuguese-transcription',
+    deepContent: {
+      proofPoints: [
+        'European and Brazilian Portuguese differ enough in vocabulary, verb conjugation (você vs tu forms), and pronunciation that generic multilingual tools trained mostly on Brazilian data mis-transcribe Portugal-based speech at noticeably higher rates.',
+        'Whisper distinguishes PT-BR from PT-PT automatically from audio, but setting the language explicitly to Portuguese before upload avoids misdetection against Spanish, which shares enough phonetic overlap to confuse auto-detection on short clips.',
+        'Brazilian creator content often mixes English loanwords (live, feed, story) mid-sentence — code-switched terms transcribe more reliably when the base language is locked to Portuguese rather than left on auto-detect.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload Portuguese audio or video', detail: 'Works with Brazilian YouTube uploads, Portugal-based podcasts, or corporate training recorded in either variant. Set the language to Portuguese rather than relying on auto-detect for short files.' },
+        { title: '2. Review regional terms and proper nouns', detail: 'Brand names, Brazilian slang, and European Portuguese idioms are the most common correction points — check these before export rather than the general sentence structure, which Whisper handles well.' },
+        { title: '3. Export or translate', detail: 'Download TXT, SRT, or VTT, or translate the Portuguese transcript to English while keeping the original alongside it for bilingual review.' },
+      ],
+      outputExamples: [
+        { title: 'Bilingual PT/EN transcript', body: 'Keep the Portuguese source and English translation side by side for teams reviewing Brazilian market content without a native Portuguese speaker on hand.' },
+        { title: 'Brazilian YouTube subtitles', body: 'SRT/VTT export sized for YouTube Portuguese-language channels, including proper handling of Brazilian punctuation and quotation conventions.' },
+      ],
+      useCases: [
+        { title: 'Brazilian content creators', body: 'Transcribe vlogs and tutorials for SEO-friendly captions and repurposed blog content without manual retyping.' },
+        { title: 'Cross-border teams', body: 'Portugal or Brazil-based training and support calls transcribed for compliance records or knowledge-base articles in English.' },
+      ],
+    },
     faq: [
       { q: 'Does it support Brazilian Portuguese?', a: 'Yes. Whisper supports both European Portuguese (PT-PT) and Brazilian Portuguese (PT-BR). For best accuracy, you can specify "Portuguese" as the language — Whisper will auto-detect the regional variant from the audio.' },
       { q: 'What are the main use cases for Portuguese transcription?', a: 'Brazilian YouTube creators transcribing videos for SEO and subtitles, corporate training content in Portuguese, podcast shows targeting Brazil or Portugal, academic interviews, and customer service call recordings from Portuguese-speaking regions.' },
@@ -2609,6 +2690,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/translate-subtitles', '/subtitle-generator', '/video-to-transcript', '/arabic-transcription'],
     indexable: true,
     intentKey: 'hindi-transcription',
+    deepContent: {
+      proofPoints: [
+        'Hinglish (Hindi-English code-switching) is the single biggest accuracy variable in Indian-market video: a sentence that flips language mid-clause degrades word-error rate more than accent or background noise does, so setting the language explicitly to Hindi before upload matters more than audio cleanup.',
+        'Devanagari output needs a proofing pass on proper nouns and English loanwords — brand names and technical terms are the most common transcription miss, not the surrounding Hindi grammar, which Whisper handles reliably.',
+        'Regional Indian languages (Tamil, Telugu, Marathi, Bengali, Gujarati) are separate language settings, not Hindi dialects — selecting the wrong one before upload silently lowers accuracy rather than throwing an error.',
+      ],
+      workflowSteps: [
+        { title: '1. Set language to Hindi before upload', detail: 'Auto-detect works on clean single-language audio but underperforms on Hinglish or noisy recordings — locking the language setting avoids the most common accuracy loss.' },
+        { title: '2. Transcribe Bollywood, corporate, or podcast audio', detail: 'Works across scripted film dialogue, unscripted corporate training, and conversational podcast formats without separate configuration per source type.' },
+        { title: '3. Export Devanagari text or Hindi subtitles', detail: 'Download TXT for text reuse or SRT/VTT for YouTube captions, then translate to English if the transcript needs to go to a non-Hindi-speaking reviewer.' },
+      ],
+      outputExamples: [
+        { title: 'Devanagari transcript', body: 'Full Hindi-script transcript with English loanwords and proper nouns preserved in their original form rather than transliterated.' },
+        { title: 'Hindi YouTube captions', body: 'SRT/VTT timed to Hindi-language video for Indian-audience YouTube channels, ready to upload directly to YouTube Studio.' },
+      ],
+      useCases: [
+        { title: 'Indian YouTube creators', body: 'Caption Hindi-language content for Indian audiences and improve discoverability with searchable Devanagari transcript text.' },
+        { title: 'Corporate training teams', body: 'Transcribe Hindi-language onboarding and training sessions for compliance records and searchable knowledge bases.' },
+      ],
+    },
     faq: [
       { q: 'How accurate is Hindi transcription?', a: 'Whisper achieves strong accuracy on Hindi audio — WER is around 10–15% for clear speech. Accuracy is best on standard Hindi (Khariboli). Code-switched Hindi-English (Hinglish) may have slightly higher error rates. Always set the language to Hindi before processing.' },
       { q: 'What are common uses for Hindi video transcription?', a: 'YouTube content creators publishing to Indian audiences, Bollywood film subtitles, corporate training content for Indian teams, online education platforms, podcast transcription for Hindi-language shows, and news/interview recordings in Hindi.' },
@@ -2647,6 +2748,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/translate-subtitles', '/subtitle-generator', '/hindi-transcription', '/video-to-transcript'],
     indexable: true,
     intentKey: 'arabic-transcription',
+    deepContent: {
+      proofPoints: [
+        'Modern Standard Arabic (MSA) and spoken dialects (Egyptian, Gulf, Levantine, Maghrebi) diverge enough in vocabulary and phonology that dialect choice affects accuracy more than audio quality — Egyptian dialect transcribes most reliably since it dominates Whisper\'s Arabic training data.',
+        'Arabic script is right-to-left, so exported TXT and SRT files need RTL-aware viewers and editors; VideoText outputs render correctly in RTL contexts without manual reformatting.',
+        'Diacritics (tashkeel) are rarely present in transcribed output since most spoken Arabic recognition targets undiacritized text — this matches standard written Arabic conventions and is expected, not a transcription error.',
+      ],
+      workflowSteps: [
+        { title: '1. Set language to Arabic before upload', detail: 'Explicit language selection avoids misdetection against other Semitic-adjacent audio and improves dialect handling versus auto-detect.' },
+        { title: '2. Transcribe MSA or dialectal audio', detail: 'Broadcast news and formal content in MSA transcribes with the highest accuracy; dialectal podcasts and interviews need a closer proofing pass, particularly for regional slang.' },
+        { title: '3. Export or translate to English', detail: 'Download the Arabic transcript as TXT or SRT, or translate to English for teams that need an English-language working copy alongside the original.' },
+      ],
+      outputExamples: [
+        { title: 'RTL Arabic transcript', body: 'Right-to-left formatted transcript text that displays correctly in Arabic-language document workflows without manual reflow.' },
+        { title: 'Arabic-to-English translation pair', body: 'Original Arabic transcript alongside an English translation for review by non-Arabic-speaking stakeholders.' },
+      ],
+      useCases: [
+        { title: 'Broadcast and news teams', body: 'Transcribe MSA news segments and interviews for searchable archives and subtitle production.' },
+        { title: 'Regional content creators', body: 'Caption dialectal YouTube and podcast content for Gulf, Levantine, or Egyptian audiences.' },
+      ],
+    },
     faq: [
       { q: 'How accurate is Arabic transcription with Whisper?', a: 'Whisper achieves around 10–15% WER on Modern Standard Arabic. Dialects (Egyptian, Gulf, Levantine, Maghrebi) have higher error rates as they differ significantly from MSA in vocabulary and phonology. For best accuracy, set the language to Arabic before processing.' },
       { q: 'Does it support different Arabic dialects?', a: 'Whisper transcribes all Arabic dialects to some degree, with best results on Modern Standard Arabic and Egyptian Arabic (the most widely understood dialect). For formal or broadcast Arabic content, accuracy is highest.' },
@@ -3366,6 +3487,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     ],
     indexable: true,
     intentKey: 'academic-transcription',
+    deepContent: {
+      proofPoints: [
+        'Lecture recordings run 45–90 minutes and often include whiteboard references ("as I showed here") that plain transcripts lose context on — chapter markers matter more for lecture content than for short-form video because students navigate by topic, not by re-watching linearly.',
+        'Speaker-labeled output is required, not optional, for thesis defenses, focus groups, and oral history interviews — multi-speaker academic audio without diarization produces a transcript that\'s technically accurate but unusable for coding or citation.',
+        'Section 508/ADA compliance for lecture accessibility requires captions or a transcript, not just one or the other — SRT for the video platform and TXT for the standalone document are both commonly required by university accessibility offices.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the lecture, interview, or fieldwork recording', detail: 'Works directly from Zoom, Panopto, or Echo360 exports without reformatting, and from voice-recorder MP3/M4A files for field interviews.' },
+        { title: '2. Use chapters and keywords to navigate long recordings', detail: 'Chapter markers split a 90-minute lecture into topic sections; keyword indexing lets you jump to every mention of a specific term without scrubbing the audio.' },
+        { title: '3. Export for the right downstream use', detail: 'TXT for note-taking apps and citation, SRT for accessible video captions, speaker-labeled output for qualitative coding software.' },
+      ],
+      outputExamples: [
+        { title: 'Chapter-indexed lecture transcript', body: 'Full lecture text split into navigable topic sections, useful for exam review without re-watching the recording.' },
+        { title: 'Speaker-labeled interview transcript', body: 'Research interviews and focus groups segmented by speaker turn, ready for qualitative coding or direct quotation.' },
+      ],
+      useCases: [
+        { title: 'Graduate researchers', body: 'Transcribe interviews and fieldwork audio into citation-ready, searchable text for thesis and dissertation work.' },
+        { title: 'Accessibility offices', body: 'Produce compliant captions and transcripts for lecture video required under Section 508 and ADA.' },
+      ],
+    },
     faq: [
       {
         q: 'What academic recordings can I transcribe?',
@@ -3742,10 +3883,31 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/macwhisper-alternative', '/whisper-online', '/buzz-alternative', '/audio-to-text'],
     indexable: true,
     intentKey: 'superwhisper-alternative',
+    deepContent: {
+      proofPoints: [
+        'Superwhisper is a native Mac/iOS app tied to Apple hardware — it has no path to transcribing a recording someone sends you or a file recorded on Windows or Android; VideoText runs in any browser regardless of OS.',
+        'Dictation apps like Superwhisper transcribe live speech as you talk, which means they cannot process a recording that already exists — a past interview, a downloaded lecture, or a colleague\'s meeting recording needs a file-upload tool instead.',
+        'Speaker separation is a structural gap in single-user dictation apps: they are built for one voice speaking to the app, not for multi-speaker recordings that need per-speaker attribution.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the existing recording', detail: 'Works with interview audio, lecture MP4s, or meeting recordings — files that already exist, not live speech.' },
+        { title: '2. Transcribe with speaker separation', detail: 'Multi-speaker recordings get per-speaker labels, which single-user dictation apps are not built to produce.' },
+        { title: '3. Export or summarize', detail: 'Download the full transcript, or pull a summary and chapters for long recordings without re-listening.' },
+      ],
+      outputExamples: [
+        { title: 'Multi-speaker transcript', body: 'Interview or meeting recording split by speaker turn — something dictation apps built for a single live voice cannot produce.' },
+        { title: 'Cross-platform transcript', body: 'Transcription that works the same whether the source file came from a Mac, Windows PC, Android phone, or web download.' },
+      ],
+      useCases: [
+        { title: 'Windows and Android users', body: 'Transcribe recordings without needing a Mac or iOS device, unlike dictation apps locked to Apple hardware.' },
+        { title: 'Journalists and researchers with existing recordings', body: 'Transcribe past interviews and archived audio that a live-dictation app was never able to process.' },
+      ],
+    },
     faq: [
       { q: 'What is Superwhisper used for vs VideoText?', a: 'Superwhisper is for real-time voice dictation — speak into your microphone and it types for you. VideoText transcribes pre-recorded files (interview recordings, lecture videos, meeting recordings). Different use cases.' },
       { q: 'Can VideoText replace Whisper Notes and Gravity Notes too?', a: 'Yes, for the file transcription use case. Whisper Notes and Gravity Notes are also primarily dictation/memo apps. VideoText handles file-based transcription (existing recordings) on any device.' },
       { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
+      { q: 'Does VideoText work on Windows, unlike Superwhisper?', a: 'Yes. VideoText is browser-based and works on Windows, Mac, Linux, or Chromebook. Superwhisper is Mac/iOS only.' },
     ],
   },
   {
@@ -3863,10 +4025,31 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/subtitle-generator', '/srt-generator', '/translate-subtitles', '/capcut-alternative'],
     indexable: true,
     intentKey: 'vizard-alternative',
+    deepContent: {
+      proofPoints: [
+        'Vizard\'s core value is AI clip selection — finding the "best moments" in long video for repurposing — which means its transcription is a means to an end, not the deliverable; the raw transcript and SRT quality are secondary to the clipping feature.',
+        'Repurposing tools like Vizard are priced and built around output volume (clips per month), which is the wrong pricing model for someone who just needs one accurate transcript or subtitle file without the editing layer.',
+        'A transcription-first tool skips the clip-selection step entirely, so turnaround on getting a usable SRT or transcript is faster when clipping isn\'t part of the workflow you actually need.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload video or paste a URL', detail: 'No clip-length or editing setup required — the full video is transcribed directly.' },
+        { title: '2. Get transcript and SRT/VTT together', detail: 'Speaker-labeled transcript and standard subtitle files generated from the same upload, without a repurposing/clipping step in between.' },
+        { title: '3. Translate or export', detail: 'Translate captions to 70+ languages or export directly for YouTube, Vimeo, or any platform that accepts standard SRT/VTT.' },
+      ],
+      outputExamples: [
+        { title: 'Standalone SRT/VTT export', body: 'Subtitle files usable on any platform, without being tied to a specific clip-editing workflow.' },
+        { title: 'Full-length transcript', body: 'Complete transcript text for the entire video, not just the segments an AI clipping tool selected as highlights.' },
+      ],
+      useCases: [
+        { title: 'Teams that only need accurate captions', body: 'Get transcript and subtitle output without paying for or navigating a video-repurposing feature set.' },
+        { title: 'Long-form creators', body: 'Transcribe full webinars, podcasts, and interviews where the whole recording matters, not just extractable short clips.' },
+      ],
+    },
     faq: [
       { q: 'What is the difference between Vizard and VideoText?', a: 'Vizard is a video repurposing platform — it clips long videos into short segments and adds styled captions for social media. VideoText is a transcription and subtitle tool — it gives you the raw transcript text and SRT files for use anywhere.' },
       { q: 'Does VideoText export SRT files like Vizard?', a: 'Yes. VideoText exports SRT and VTT subtitle files with accurate timestamps. These files work on YouTube, Vimeo, and any video platform.' },
       { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
+      { q: 'Do I need clip-editing features like Vizard has?', a: 'Only if you\'re repurposing long video into short social clips. If you just need an accurate transcript or subtitle file, VideoText gets you there without the clipping workflow.' },
     ],
   },
   {
@@ -4169,10 +4352,31 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/video-to-transcript', '/mp4-to-text', '/subtitle-generator', '/movavi-alternative'],
     indexable: true,
     intentKey: 'videoproc-alternative',
+    deepContent: {
+      proofPoints: [
+        'VideoProc Converter AI is primarily a video conversion and compression suite — transcription is a secondary feature bolted onto a tool built for format conversion, not for text output as the end product.',
+        'Desktop installation on Windows or Mac means the file has to leave your workflow (download, install, open the app) before you get text — a browser tool skips the install step entirely for a one-off transcription task.',
+        'Speaker diarization and chapter generation are transcription-specific features that a video-conversion suite generally does not prioritize, since its primary users are optimizing file size and format, not extracting structured text.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload video directly in the browser', detail: 'No desktop software to install — works the same on Windows, Mac, or Chromebook.' },
+        { title: '2. Get a purpose-built transcript', detail: 'Speaker labels, chapters, and keyword indexing designed specifically for transcription, not a secondary feature of a conversion tool.' },
+        { title: '3. Export SRT or translate', detail: 'Download subtitle files or translate the transcript to 70+ languages directly from the same output.' },
+      ],
+      outputExamples: [
+        { title: 'Speaker-labeled transcript', body: 'Multi-speaker recordings segmented by speaker turn, a feature general-purpose video converters typically do not offer.' },
+        { title: 'Chapter-indexed output', body: 'Long recordings split into navigable chapters, useful for review without re-watching the source video.' },
+      ],
+      useCases: [
+        { title: 'Users who only need text output', body: 'Skip installing a full video conversion suite when the goal is just an accurate transcript or subtitle file.' },
+        { title: 'Cross-platform teams', body: 'Get consistent transcription results without worrying about desktop app compatibility across Windows, Mac, and Chromebook.' },
+      ],
+    },
     faq: [
       { q: 'Does VideoProc Converter do transcription?', a: 'VideoProc includes a basic speech-to-text feature but it is not its primary function. VideoText is purpose-built for transcription with speaker diarization, chapters, keyword index, and multi-language export.' },
       { q: 'Is VideoText browser-based unlike VideoProc?', a: 'Yes. VideoText runs in the browser on any OS. VideoProc requires a desktop installation on Windows or Mac.' },
       { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
+      { q: 'Do I need to install anything to transcribe with VideoText?', a: 'No. VideoText runs entirely in the browser. There is no desktop installation step, unlike VideoProc Converter.' },
     ],
   },
   {
@@ -4462,9 +4666,30 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/voice-to-text', '/speech-to-text', '/audio-to-text', '/online-voice-recorder'],
     indexable: true,
     intentKey: 'voice-to-text-converter',
+    deepContent: {
+      proofPoints: [
+        'Live-dictation converters (built into most phone keyboards) prioritize speed over accuracy and lose context after a few seconds of silence — a file-based converter processing the full recording at once catches context that streaming dictation misses, like technical terms clarified later in the same sentence.',
+        'Background noise handling is the real differentiator between converters: dictation tools built for quiet office use degrade sharply in cars, cafes, or outdoor recordings, while a converter trained on diverse noisy audio holds accuracy better.',
+        'Long recordings expose a common converter limitation — many phone-based voice-to-text tools cap input at a few minutes; file-based conversion has no such practical limit for a single upload.',
+      ],
+      workflowSteps: [
+        { title: '1. Record or upload audio', detail: 'Use a live microphone recording or upload an existing audio file — voice memo, call recording, or dictated note.' },
+        { title: '2. Convert with Whisper AI', detail: 'Full-file processing catches context that real-time streaming dictation tools miss, particularly on longer or noisier recordings.' },
+        { title: '3. Download or copy the text', detail: 'Export as TXT for notes and documents, or SRT/VTT if the source was a video recording that also needs captions.' },
+      ],
+      outputExamples: [
+        { title: 'Plain-text voice note', body: 'Spoken voice memo converted to clean, punctuated text ready to paste into notes, emails, or documents.' },
+        { title: 'Long-form dictation transcript', body: 'Multi-minute recordings converted in one pass, avoiding the length caps common in phone-based dictation tools.' },
+      ],
+      useCases: [
+        { title: 'Note-takers and journalers', body: 'Convert spoken voice memos into searchable, editable text without typing them out manually.' },
+        { title: 'Field recordings in noisy environments', body: 'Convert audio captured outside quiet office conditions — cars, outdoor interviews, event floors — more reliably than streaming dictation tools.' },
+      ],
+    },
     faq: [
       { q: 'What is a voice to text converter?', a: 'A voice to text converter is a tool that converts spoken audio into written text. VideoText uses Whisper AI — one of the best speech recognition models available — to convert voice recordings and live microphone input to accurate text.' },
       { q: 'What file formats does the converter accept?', a: 'VideoText accepts MP4, MOV, AVI, WebM, MKV, MP3, WAV, M4A, AAC, OGG, and FLAC files for transcription.' },
+      { q: 'How is this different from phone keyboard dictation?', a: 'Phone dictation streams audio in real time and loses accuracy after pauses or background noise. This converter processes the full recording at once, which generally holds up better on longer or noisier audio.' },
     ],
   },
 
@@ -4902,10 +5127,31 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'caption-maker',
     canonicalGroup: 'caption-generator',
+    deepContent: {
+      proofPoints: [
+        'Caption files (SRT/VTT) and burned-in captions serve different needs: CapCut and TikTok exports usually need burned-in text, while YouTube and Vimeo need the SRT/VTT file kept separate — mixing these up is the most common caption workflow mistake.',
+        'CapCut\'s own caption export produces an SRT that often needs cleanup before reuse elsewhere — timing offsets and line breaks generated inside CapCut don\'t always match standard SRT conventions used by other platforms.',
+        'Auto-generated captions without a CPS (characters-per-second) check frequently produce lines that display too briefly to read — a caption maker that doesn\'t validate reading speed just moves the problem from "no captions" to "unreadable captions."',
+      ],
+      workflowSteps: [
+        { title: '1. Upload video or paste a YouTube URL', detail: 'Works from a direct file upload or a public YouTube link — no separate export step from the source platform needed.' },
+        { title: '2. Generate SRT or VTT captions', detail: 'Get broadcast-ready caption files with checked timing, not just raw auto-generated text.' },
+        { title: '3. Export for the target platform', detail: 'Download SRT/VTT for YouTube and Vimeo, or burn captions directly into the video for CapCut-style vertical/social formats.' },
+      ],
+      outputExamples: [
+        { title: 'SRT caption file', body: 'Standard subtitle file for YouTube, Vimeo, and most video platforms — imports directly into CapCut, Premiere, and other editors.' },
+        { title: 'Burned-in captions for social', body: 'Permanently embedded captions for TikTok, Reels, and Shorts, where autoplay-without-sound makes on-video text the only reliable caption method.' },
+      ],
+      useCases: [
+        { title: 'Social video editors', body: 'Generate clean caption files or burned-in text for CapCut, TikTok, and Reels workflows without manual timing.' },
+        { title: 'YouTube and Vimeo creators', body: 'Produce standard SRT/VTT caption files ready for platform upload without burning text into the source video.' },
+      ],
+    },
     faq: [
       { q: 'How do I make captions for my video?', a: 'Upload your video to VideoText and click Generate. Our AI captions your video automatically — producing SRT and VTT files in seconds. Download and add them to any platform.' },
       { q: 'Is the caption maker free?', a: 'Yes. Free tier includes 3 uploads per day, no credit card required. All features including SRT/VTT export are available on the free tier.' },
       { q: 'What is the difference between captions and subtitles?', a: 'Captions include all audio cues (speech, sounds, speaker labels) for deaf and hard-of-hearing viewers. Subtitles transcribe or translate speech for viewers who can hear. Both use the same SRT and VTT file formats.' },
+      { q: 'Can I export a caption file compatible with CapCut?', a: 'Yes. The SRT export is standard-format and imports cleanly into CapCut, along with Premiere, Final Cut, and most other editors.' },
     ],
   },
   {

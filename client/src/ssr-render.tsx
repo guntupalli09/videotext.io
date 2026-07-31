@@ -186,6 +186,224 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
       { path: '/fastest-transcription-tool', title: 'Fastest Transcription Tool' },
     ],
   },
+  '/batch-process': {
+    h1: 'Batch Video to Subtitles — Multiple Videos at Once',
+    intro: 'Upload a folder of videos and get one ZIP with a correctly named SRT file for every clip — built for creators and agencies processing a week of content in one session instead of babysitting uploads one at a time.',
+    primaryCta: { text: 'Process multiple videos in one batch', path: '/batch-process' },
+    deepContent: {
+      proofPoints: [
+        'Uploading videos one at a time to a single-file tool means re-configuring language, format, and export settings on every upload — batch processing applies the same settings across the whole set in one pass.',
+        'A ZIP of correctly named SRT files (matching each source filename) removes the manual step of matching subtitle files back to the right video before uploading to a platform.',
+        'Parallel processing means a set of 20 short clips finishes closer to the time of the single longest file, not the sum of all of them — sequential single-file tools scale linearly instead.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload multiple videos at once', detail: 'Drag and drop 10–100+ files. MP4, MOV, and WebM are all supported in the same batch.' },
+        { title: '2. Set format and language once', detail: 'SRT or VTT, single or multi-language — applied uniformly across every file in the batch instead of per-upload.' },
+        { title: '3. Download one ZIP', detail: 'Each subtitle file is named to match its source video, ready to upload without manual renaming.' },
+      ],
+      outputExamples: [
+        { title: 'Matched SRT ZIP archive', body: 'One subtitle file per source video, named to match, packaged in a single downloadable ZIP.' },
+        { title: 'Multi-language batch export', body: 'The same batch of videos exported in more than one target language without re-uploading each file per language.' },
+      ],
+      useCases: [
+        { title: 'Content agencies', body: 'Caption a client\'s full week of video content in one session instead of processing each file individually.' },
+        { title: 'Course creators', body: 'Generate subtitles for an entire course module — dozens of lecture videos — in a single upload.' },
+      ],
+      ctaText: 'Process a batch of videos now',
+      ctaPath: '/batch-process',
+    },
+    faq: [
+      { q: 'How many videos can I batch process at once?', a: 'Upload 10–100+ videos in a single batch on Pro and Agency plans. There is no per-file limit within a batch.' },
+      { q: 'Are the output filenames matched to my source videos?', a: 'Yes. Each SRT or VTT file in the downloaded ZIP is named to match its corresponding source video, so there is no manual matching step before uploading captions.' },
+      { q: 'Can I use different languages for different videos in the same batch?', a: 'The batch applies the same language and format settings across the set. For mixed-language sets, run separate batches per language.' },
+    ],
+    related: [
+      { path: '/video-to-subtitles', title: 'Video to Subtitles' },
+      { path: '/video-to-transcript', title: 'Video to Transcript' },
+      { path: '/translate-subtitles', title: 'Translate Subtitles' },
+      { path: '/tools', title: 'Free Transcript and Subtitle Tools' },
+    ],
+  },
+  '/subtitle-validator': {
+    h1: 'Subtitle Validator — Check SRT & VTT Files Free',
+    intro: 'Paste or upload an SRT or VTT file to catch overlapping timestamps, empty cues, and malformed blocks before they get rejected by a platform or a client QA pass.',
+    primaryCta: { text: 'Validate a subtitle file now', path: '/tools/subtitle-validator' },
+    deepContent: {
+      proofPoints: [
+        'Overlapping timestamps — where one cue starts before the previous one ends — are the single most common cause of subtitle files getting bounced by client QA, and they are easy to miss scrolling through a file by eye.',
+        'Empty or whitespace-only cues pass silently through most manual reviews but fail strict platform ingestion checks, since the block exists structurally but has no renderable text.',
+        'A malformed timestamp separator (period instead of comma in SRT, or the reverse in VTT) is a one-character error that breaks the entire file for some players, even though the rest of the block is otherwise valid.',
+      ],
+      workflowSteps: [
+        { title: '1. Paste or upload the SRT/VTT file', detail: 'No account or upload limit — validation runs immediately on the pasted or uploaded content.' },
+        { title: '2. Review flagged issues', detail: 'Overlapping timestamps, empty cues, malformed separators, and excessively long lines are flagged individually with their block number.' },
+        { title: '3. Fix and re-validate', detail: 'Correct the flagged blocks and re-run validation before uploading to a platform or submitting for client QA.' },
+      ],
+      outputExamples: [
+        { title: 'Validation report', body: 'A per-block list of timing overlaps, empty cues, and formatting errors, referenced by subtitle number for quick lookup.' },
+        { title: 'Pass/fail summary', body: 'A quick top-line pass/fail status before a deeper block-by-block review is needed.' },
+      ],
+      useCases: [
+        { title: 'Freelance transcriptionists', body: 'Catch formatting issues before submitting a file for client QA, reducing revision requests.' },
+        { title: 'Platform upload prep', body: 'Verify a subtitle file will pass strict ingestion checks before uploading to YouTube, a course platform, or a broadcast delivery spec.' },
+      ],
+    },
+    faq: [
+      { q: 'What does the subtitle validator check for?', a: 'Overlapping timestamps, empty or whitespace-only cues, malformed timestamp separators, and excessively long lines that risk failing reading-speed guidelines.' },
+      { q: 'Does it work with both SRT and VTT files?', a: 'Yes. Both formats are supported and validated for their respective timestamp syntax.' },
+      { q: 'Is the validator free?', a: 'Yes. It runs entirely in your browser, free, with no account required.' },
+    ],
+    related: [
+      { path: '/tools/subtitle-reading-speed', title: 'Reading Speed Checker' },
+      { path: '/tools/subtitle-character-checker', title: 'Character Limit Checker' },
+      { path: '/subtitle-tools', title: 'Subtitle Tools' },
+      { path: '/fix-subtitles', title: 'Fix Subtitles' },
+    ],
+  },
+  '/subtitle-character-checker': {
+    h1: 'Subtitle Character Limit Checker — Netflix, YouTube & BBC',
+    intro: 'Check every subtitle line against Netflix (42 characters), YouTube (80 characters), and BBC (37 characters) line-length limits before delivery, so lines that read fine in isolation don\'t fail a platform\'s hard cap.',
+    primaryCta: { text: 'Check subtitle character limits', path: '/tools/subtitle-character-checker' },
+    deepContent: {
+      proofPoints: [
+        'Character limits differ by platform for a reason tied to screen real estate and font size at streaming resolution — a line that fits comfortably under YouTube\'s 80-character cap can still fail Netflix\'s stricter 42-character delivery spec.',
+        'Two-line subtitle blocks need per-line checking, not a combined count — a block can pass on total character count while one individual line still exceeds the platform\'s per-line limit.',
+        'Character-limit failures are one of the more common rejection reasons in professional subtitle delivery specs, since they are easy to overlook when a line reads naturally but simply runs long.',
+      ],
+      workflowSteps: [
+        { title: '1. Paste or upload the subtitle file', detail: 'Works with SRT or VTT files, checked line by line against the selected platform standard.' },
+        { title: '2. Select the target platform limit', detail: 'Choose Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) — or check against all three at once.' },
+        { title: '3. Fix flagged lines', detail: 'Split or shorten any line exceeding the limit, then re-check before final delivery.' },
+      ],
+      outputExamples: [
+        { title: 'Per-line pass/fail report', body: 'Every subtitle line checked individually against the chosen character limit, with failing lines flagged by block number.' },
+        { title: 'Multi-standard comparison', body: 'The same file checked against Netflix, YouTube, and BBC limits simultaneously for delivery specs that need to satisfy more than one platform.' },
+      ],
+      useCases: [
+        { title: 'Streaming delivery QA', body: 'Verify subtitle files meet Netflix or broadcast character-limit specs before final delivery.' },
+        { title: 'Multi-platform publishers', body: 'Check the same subtitle file against several platform standards at once before distributing across YouTube, streaming, and broadcast.' },
+      ],
+    },
+    faq: [
+      { q: 'What character limits does the checker support?', a: 'Netflix (42 characters per line), YouTube (80 characters per line), and BBC (37 characters per line).' },
+      { q: 'Does it check each line or the whole block?', a: 'Each line individually. A two-line block is checked per line, since a platform can reject one long line even if the combined block total looks reasonable.' },
+      { q: 'Is this tool free?', a: 'Yes. It runs in your browser with no upload or account required.' },
+    ],
+    related: [
+      { path: '/tools/subtitle-reading-speed', title: 'Reading Speed Checker' },
+      { path: '/tools/subtitle-validator', title: 'Subtitle Validator' },
+      { path: '/subtitle-resources', title: 'Subtitle Resources' },
+      { path: '/subtitle-tools', title: 'Subtitle Tools' },
+    ],
+  },
+  '/subtitle-word-counter': {
+    h1: 'Subtitle Word Counter — Count Words in SRT & VTT Files',
+    intro: 'Get word count, character count, and speaking-rate stats (WPM, CPS) from an SRT or VTT file — useful for estimating read-aloud time, translation cost, or whether a subtitle track matches a target reading pace.',
+    primaryCta: { text: 'Count words in a subtitle file', path: '/tools/subtitle-word-counter' },
+    deepContent: {
+      proofPoints: [
+        'Translation vendors typically quote per word, not per file — an accurate word count from the source subtitle file avoids under- or over-estimating localization cost before sending a file out for quote.',
+        'Words-per-minute derived from subtitle timing (not just word count) reveals whether a caption track is paced for casual reading or dense technical content, which affects whether cues need to be split for readability.',
+        'A raw word count from a text editor over-counts subtitle files because it includes timestamp lines and block numbers — a subtitle-aware counter reads only the caption text.',
+      ],
+      workflowSteps: [
+        { title: '1. Paste or upload the subtitle file', detail: 'Works with SRT or VTT — only the caption text is counted, timestamps and block numbers are excluded automatically.' },
+        { title: '2. Review word, character, and speaking-rate stats', detail: 'Get total word count, character count, and derived WPM/CPS based on the file\'s actual timing.' },
+        { title: '3. Use the numbers for quoting or pacing checks', detail: 'Estimate translation cost from word count, or check whether the speaking rate matches the target audience\'s reading comfort.' },
+      ],
+      outputExamples: [
+        { title: 'Word and character totals', body: 'Total word and character counts extracted from caption text only, excluding timestamps and sequence numbers.' },
+        { title: 'Speaking-rate summary', body: 'Words-per-minute and characters-per-second derived from the file\'s actual cue timing, not just an estimate.' },
+      ],
+      useCases: [
+        { title: 'Localization project managers', body: 'Get an accurate word count for translation vendor quotes before sending a subtitle file out.' },
+        { title: 'Content pacing review', body: 'Check whether a subtitle track\'s speaking rate matches the target audience before publishing.' },
+      ],
+    },
+    faq: [
+      { q: 'Does the word counter include timestamps in the count?', a: 'No. Only the caption text is counted — timestamp lines and block sequence numbers are excluded automatically.' },
+      { q: 'Can I use this to estimate translation cost?', a: 'Yes. Most translation vendors quote per word, so an accurate word count from the source file gives a reliable cost estimate before sending it out.' },
+      { q: 'Is this tool free?', a: 'Yes. It runs in your browser with no upload or account required.' },
+    ],
+    related: [
+      { path: '/tools/subtitle-reading-speed', title: 'Reading Speed Checker' },
+      { path: '/tools/subtitle-character-checker', title: 'Character Limit Checker' },
+      { path: '/translate-subtitles', title: 'Translate Subtitles' },
+      { path: '/subtitle-tools', title: 'Subtitle Tools' },
+    ],
+  },
+  '/subtitle-reading-speed': {
+    h1: 'Subtitle Reading Speed Checker — CPS Analyzer',
+    intro: 'Check every subtitle cue\'s characters-per-second (CPS) against Netflix (17 CPS), BBC (17 CPS), and EBU (21 CPS) broadcast standards — the metric that determines whether a viewer can actually finish reading a line before it disappears.',
+    primaryCta: { text: 'Check subtitle reading speed', path: '/tools/subtitle-reading-speed' },
+    deepContent: {
+      proofPoints: [
+        'CPS, not character count alone, determines readability — a 40-character line displayed for 3 seconds reads comfortably, but the same line displayed for 1 second is unreadable even though the text itself is identical.',
+        'Broadcast standards vary in strictness: Netflix and BBC both target roughly 17 CPS for adult content, while EBU\'s 21 CPS allowance is looser — a file built to one standard can still fail delivery to a platform using the stricter figure.',
+        'Reading-speed failures cluster around fast dialogue and dense exposition, where a translator or captioner tries to preserve full meaning in a cue that\'s too short for the resulting text — the fix is usually trimming meaning, not just the character count.',
+      ],
+      workflowSteps: [
+        { title: '1. Paste or upload the subtitle file', detail: 'Every cue\'s character count and display duration are read directly from the SRT/VTT timestamps.' },
+        { title: '2. Select the target broadcast standard', detail: 'Check against Netflix/BBC (17 CPS) or EBU (21 CPS), or compare against both at once.' },
+        { title: '3. Fix flagged cues', detail: 'Extend the cue duration, shorten the line, or split it across two cues, then re-check before delivery.' },
+      ],
+      outputExamples: [
+        { title: 'Per-cue CPS report', body: 'Every subtitle cue\'s calculated characters-per-second, with cues exceeding the standard flagged by block number.' },
+        { title: 'Standard comparison', body: 'The same file checked against Netflix/BBC and EBU CPS thresholds side by side.' },
+      ],
+      useCases: [
+        { title: 'Streaming delivery QA', body: 'Verify a subtitle file meets Netflix or BBC reading-speed requirements before final delivery.' },
+        { title: 'Accessibility compliance', body: 'Confirm captions meet reading-speed guidelines that support comprehension for deaf and hard-of-hearing viewers.' },
+      ],
+    },
+    faq: [
+      { q: 'What is CPS in subtitles?', a: 'Characters per second — the number of characters in a cue divided by how long it displays. It measures whether a viewer has enough time to read the line before it disappears.' },
+      { q: 'What CPS standards does the checker support?', a: 'Netflix and BBC (17 CPS) and EBU (21 CPS), covering the most common broadcast and streaming delivery specs.' },
+      { q: 'Is this tool free?', a: 'Yes. It runs in your browser with no upload or account required.' },
+    ],
+    related: [
+      { path: '/tools/subtitle-character-checker', title: 'Character Limit Checker' },
+      { path: '/tools/subtitle-validator', title: 'Subtitle Validator' },
+      { path: '/subtitle-resources', title: 'Subtitle Resources' },
+      { path: '/fix-subtitles', title: 'Fix Subtitles' },
+    ],
+  },
+  '/video-interview-transcription': {
+    h1: 'Video Interview Transcription — Speaker-Labeled Transcripts',
+    intro: 'Upload a recorded video interview and get a speaker-labeled transcript with timestamps — built for journalists, researchers, and hiring teams who need to pull exact quotes without re-watching the recording.',
+    primaryCta: { text: 'Transcribe a video interview', path: '/video-to-transcript' },
+    deepContent: {
+      proofPoints: [
+        'Two-person interviews need speaker separation to be usable for quoting — a transcript that runs interviewer and subject together as one text block forces a manual re-listen to attribute every line correctly.',
+        'Timestamped output matters more for interviews than for monologue content, since finding "the exact moment they said that" is the most common reason someone returns to an interview transcript after the first read.',
+        'Cross-talk and interruptions — common in unscripted interviews — are the main source of transcription errors; a transcript that flags overlapping speech clearly is more useful than one that silently guesses at it.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the interview recording', detail: 'Works with video files, audio-only recordings, or a Zoom/Teams/Meet export of the interview call.' },
+        { title: '2. Separate speakers automatically', detail: 'Interviewer and subject are split by speaker turn, so quotes can be attributed correctly without manual review.' },
+        { title: '3. Export quotes or the full transcript', detail: 'Pull exact, timestamped quotes for an article or report, or export the full transcript for archival and fact-checking.' },
+      ],
+      outputExamples: [
+        { title: 'Speaker-labeled interview transcript', body: 'Interviewer and subject separated by speaker turn with timestamps, ready for direct quotation.' },
+        { title: 'Searchable quote archive', body: 'Full transcript text searchable by keyword, useful for locating a specific statement across a long interview.' },
+      ],
+      useCases: [
+        { title: 'Journalists', body: 'Pull exact, attributable quotes from recorded interviews for articles without re-watching footage.' },
+        { title: 'Researchers and hiring teams', body: 'Transcribe structured interviews for qualitative coding or candidate review with accurate speaker attribution.' },
+      ],
+    },
+    faq: [
+      { q: 'Does this separate the interviewer from the interview subject?', a: 'Yes. Speaker labels split the transcript by speaker turn, so each person\'s statements are clearly attributed.' },
+      { q: 'Can I search the transcript for a specific quote?', a: 'Yes. The full transcript text is searchable, and timestamps let you jump back to the exact moment in the recording.' },
+      { q: 'Is video interview transcription free?', a: 'Yes. Free tier includes 3 uploads per day, no credit card required.' },
+    ],
+    related: [
+      { path: '/video-to-transcript', title: 'Video to Transcript' },
+      { path: '/interview-transcription-tool', title: 'Interview Transcription Tool' },
+      { path: '/research-interview-transcription', title: 'Research Interview Transcription' },
+      { path: '/academic-transcription', title: 'Academic Transcription' },
+    ],
+  },
 }
 
 function titleToH1(title: string): string {
