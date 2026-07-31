@@ -305,31 +305,11 @@ const STATIC_META: RouteMeta[] = [
       { stat: 'Free', desc: '3 videos/month included' },
     ],
   },
-  {
-    path: '/batch-process',
-    title: `Batch Video to Subtitles — Multiple Videos at Once | ${SITE_NAME}`,
-    description:
-      'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans.',
-    h1: 'Batch Video to Subtitles',
-    valueProposition: 'Process 10-100+ videos at once. Upload a folder of videos, get a ZIP with perfectly timed SRT/VTT subtitles for each. Save 10+ hours per week. Perfect for creators, agencies, studios, and content teams. No per-file limits on Pro+.',
-    keywords: ['batch video processing', 'bulk video transcription', 'batch subtitles', 'batch process videos', 'process multiple videos', 'batch export subtitles', 'bulk subtitle generation', 'batch transcription tool', 'process videos in batch', 'batch SRT generation', 'batch VTT conversion', 'bulk video subtitles'],
-    comparison: [
-      { tool: 'Manual uploads one-by-one', vs: '5-10 min per video = 50-100+ hours/month' },
-      { tool: 'Descript batch mode', vs: '$24/mo + wait times, no SRT export focus' },
-      { tool: 'Rev bulk API', vs: '$0.25/min per video, slow turnaround, expensive' },
-    ],
-    howToUse: [
-      { step: 1, title: 'Upload Multiple Videos', detail: 'Drag & drop 10-100+ files at once. MP4, MOV, WebM supported.' },
-      { step: 2, title: 'Choose Format & Language', detail: 'SRT or VTT. Single or multi-language. All files use same settings.' },
-      { step: 3, title: 'Download ZIP of Subtitles', detail: 'One ZIP file with all subtitles properly named. Ready to upload to each video.' },
-    ],
-    socialProof: [
-      { stat: '100+ videos', desc: 'Process at once' },
-      { stat: '99%', desc: 'Time saved vs manual' },
-      { stat: 'Parallel processing', desc: 'All files done simultaneously' },
-      { stat: 'Pro+ only', desc: 'Unlimited batch processing' },
-    ],
-  },
+  // NOTE: /batch-process intentionally removed. Batch upload is a mode inside
+  // /video-to-transcript (drop 2+ files), not a separate page — see App.tsx and
+  // BatchProcess.tsx. /batch-process now 301s there (vercel.json). Its former
+  // keyword targets (batch video processing, bulk video transcription, etc.)
+  // are covered by /video-to-transcript's own content instead.
   // ── Comparison & alternative pages ──────────────────────────────────────────
   {
     path: '/compare',

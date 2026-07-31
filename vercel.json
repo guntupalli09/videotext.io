@@ -37,6 +37,11 @@
       "status": 301
     },
     {
+      "src": "/batch-process",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
       "src": "/podcast-transcript",
       "dest": "/podcast-transcription",
       "status": 301

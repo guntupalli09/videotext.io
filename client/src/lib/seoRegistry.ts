@@ -2918,6 +2918,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/subtitle-generator', '/kapwing-alternative', '/submagic-alternative', '/video-to-srt'],
     indexable: true,
     intentKey: 'zubtitle-alternative',
+    deepContent: {
+      proofPoints: [
+        'Per-video or per-minute pricing punishes exactly the creators who benefit most from subtitling — the ones publishing frequently — since cost scales directly with output volume instead of flattening out on a plan.',
+        'A tool built purely for burned-in social captions has no reason to also produce a clean transcript, but that transcript is what turns one video into a blog post, show notes, or a searchable archive without extra work.',
+        'Speaker labels are a common gap in social-caption-focused tools, since single-speaker talking-head content dominates their use case — multi-speaker interviews or panel content need diarization that pure caption tools often skip.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload video', detail: 'No per-video charge to plan around — process as many videos as your plan allows.' },
+        { title: '2. Get subtitles plus transcript', detail: 'SRT, VTT, or burned-in captions generated alongside a full text transcript from the same upload.' },
+        { title: '3. Translate or export', detail: 'Translate captions to 50+ languages or export the transcript separately for repurposing.' },
+      ],
+      outputExamples: [
+        { title: 'Flat-rate subtitle output', body: 'SRT/VTT or burned captions generated without a per-video cost calculation.' },
+        { title: 'Transcript alongside captions', body: 'A full text transcript generated in the same pass as the subtitle file, ready for repurposing into other content.' },
+      ],
+      useCases: [
+        { title: 'High-volume creators', body: 'Caption a large publishing volume without cost scaling per video.' },
+        { title: 'Multi-speaker content producers', body: 'Get speaker-labeled transcripts alongside captions for interviews and panel-format videos.' },
+      ],
+    },
     faq: [
       { q: 'How does VideoText compare to Zubtitle?', a: 'Zubtitle charges per video or per minute of video processed. VideoText uses a flat monthly subscription — process as many videos as your plan allows for one price. VideoText also adds transcript, speaker labels, and summary features that Zubtitle does not include.' },
       { q: 'Why do people look for Zubtitle alternatives?', a: 'Common reasons: per-video pricing becomes expensive for high-volume creators, users want a full transcript alongside subtitles, or users need SRT files rather than burned-in captions only.' },
@@ -2990,6 +3010,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/whisper-online', '/ai-transcription', '/otter-alternative', '/video-to-transcript'],
     indexable: true,
     intentKey: 'assembly-ai-alternative',
+    deepContent: {
+      proofPoints: [
+        'AssemblyAI is built for developers embedding speech-to-text into their own product — it returns JSON over a REST API, not a webpage, so someone who just needs one transcript has to write integration code for a one-off task.',
+        'API-first tools charge per audio hour processed with no free browser interface — a non-technical user (a journalist, a student, a marketer) has no path to using AssemblyAI directly without a developer building a front end for them.',
+        'Speaker diarization in AssemblyAI\'s API requires configuring speaker count and parsing structured output; a browser tool that auto-detects speakers and displays them visually removes that setup step entirely.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload directly in the browser', detail: 'No API key, no code, no developer setup — the file uploads and processes the same way any consumer tool works.' },
+        { title: '2. Get results with automatic speaker detection', detail: 'Speaker turns are grouped automatically without pre-configuring expected speaker count.' },
+        { title: '3. Export or continue in-browser', detail: 'Download transcript, SRT/VTT, or continue into translation and formatting tools without writing integration code.' },
+      ],
+      outputExamples: [
+        { title: 'No-code transcript', body: 'Full transcript delivered through a web interface, no API response parsing required.' },
+        { title: 'Auto-detected speaker labels', body: 'Speaker-separated transcript without manually specifying speaker count beforehand.' },
+      ],
+      useCases: [
+        { title: 'Non-technical users', body: 'Get transcription results without writing code or setting up API authentication.' },
+        { title: 'One-off transcription tasks', body: 'Transcribe a single file quickly without building a developer integration for infrequent use.' },
+      ],
+    },
     faq: [
       { q: 'How does VideoText compare to AssemblyAI?', a: 'AssemblyAI is a developer API for speech-to-text — you integrate it into your application via REST API. VideoText is a consumer web app — upload a file in the browser and get results with no code. If you need a browser tool for individual transcription tasks rather than programmatic integration, VideoText is a faster choice.' },
       { q: 'Why do people look for AssemblyAI alternatives?', a: 'Common reasons: teams need a non-developer UI for non-technical users, individual users who do not want to write code, projects that need a quick one-off transcription without API setup, or users who want richer output features (chapters, keyword indexing, translation) in a single interface.' },
@@ -3048,6 +3088,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/mp3-to-text', '/audio-to-text', '/m4a-to-text', '/video-to-transcript'],
     indexable: true,
     intentKey: 'wav-to-text',
+    deepContent: {
+      proofPoints: [
+        'WAV is uncompressed PCM audio, so unlike MP3 or AAC there is no lossy compression to strip subtle speech detail before transcription — this is why studio, broadcast, and field-recording workflows default to WAV when accuracy matters more than file size.',
+        'A 60-minute WAV recording at 48kHz/24-bit runs 500MB+, versus roughly 55MB for the same duration in MP3 — worth knowing before uploading over a slow connection, even though it does not affect transcription accuracy.',
+        'Multi-channel WAV files (4+ mic field recordings, multi-track podcast sessions) need channel handling before transcription — a true stereo interview recording transcribes cleanly, but a raw multi-track session may need to be mixed down first.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the WAV file', detail: 'Any standard sample rate (16kHz–96kHz) and bit depth (16/24/32-bit) works without pre-conversion.' },
+        { title: '2. Transcribe with full audio fidelity', detail: 'No compression artifacts to work around — WAV\'s lossless format gives Whisper the cleanest possible signal.' },
+        { title: '3. Export text or subtitle files', detail: 'Download TXT for text reuse or SRT/VTT for timed captions if the source is being paired with video.' },
+      ],
+      outputExamples: [
+        { title: 'High-fidelity transcript', body: 'Text output from uncompressed audio, useful when transcription accuracy on difficult speech (accents, technical terms, overlapping speakers) matters most.' },
+        { title: 'Studio and field-recording transcript', body: 'Transcripts from interview, field, or studio session WAV recordings, ready for editorial or archival use.' },
+      ],
+      useCases: [
+        { title: 'Broadcast and audio production teams', body: 'Transcribe studio-quality WAV recordings without any format conversion step before or after.' },
+        { title: 'Field researchers', body: 'Convert uncompressed field-recorder WAV files directly to searchable text.' },
+      ],
+    },
     faq: [
       { q: 'Can I transcribe a WAV file to text?', a: 'Yes. Upload your WAV file and our AI transcribes the speech to text. WAV is an uncompressed format that provides excellent audio quality for transcription — often better accuracy than compressed formats at equivalent content.' },
       { q: 'What WAV sample rates and bit depths are supported?', a: 'All standard WAV configurations are supported: 16kHz, 22kHz, 44.1kHz, 48kHz, 96kHz sample rates and 16-bit/24-bit/32-bit depths. Both PCM and IEEE float WAV files work. Mono and stereo are both supported.' },
@@ -3067,6 +3127,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/mp3-to-text', '/wav-to-text', '/audio-to-text', '/video-to-transcript'],
     indexable: true,
     intentKey: 'm4a-to-text',
+    deepContent: {
+      proofPoints: [
+        'M4A is the default recording format for iPhone Voice Memos, which makes it the single most common audio format landing on this page — most uploads are unedited voice memos, not produced podcast files.',
+        'M4A wraps AAC audio in an MPEG-4 container — the same codec family as many streaming platforms use — so accuracy at a given bitrate generally matches or slightly beats MP3, since AAC is a more efficient codec.',
+        'iPhone Voice Memos default to 128kbps AAC mono, which is plenty for clear speech but shows accuracy degradation faster than higher-bitrate recordings when there is significant background noise.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the M4A file', detail: 'Works directly from iPhone Voice Memos exports, GarageBand recordings, or any AAC-encoded M4A — no conversion needed.' },
+        { title: '2. Transcribe with Whisper', detail: 'AAC audio decodes natively; no quality loss from an intermediate conversion step.' },
+        { title: '3. Export text or subtitles', detail: 'Download TXT for notes and documents, or SRT/VTT if the recording will be paired with video.' },
+      ],
+      outputExamples: [
+        { title: 'Voice memo transcript', body: 'Clean text from an iPhone Voice Memos recording, ready for notes, articles, or follow-up documentation.' },
+        { title: 'Podcast episode transcript', body: 'Full transcript from an M4A podcast export, useful for show notes and searchable archives.' },
+      ],
+      useCases: [
+        { title: 'iPhone users transcribing voice memos', body: 'Convert Voice Memos recordings directly to text without any file conversion step.' },
+        { title: 'Podcasters using M4A exports', body: 'Transcribe podcast episodes exported from GarageBand or similar tools without re-encoding.' },
+      ],
+    },
     faq: [
       { q: 'Can I transcribe an M4A file to text?', a: 'Yes. M4A is a fully supported audio format. Upload your M4A and get a full text transcript. M4A is the default format for iPhone Voice Memos and many mobile recording apps.' },
       { q: 'Where do M4A files come from?', a: 'M4A files are most common from: iPhone/iPad Voice Memos, GarageBand, iTunes podcast downloads, Android voice recorders, and many professional audio interfaces that export AAC audio.' },
@@ -3085,6 +3165,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/m4a-to-text', '/mp3-to-text', '/audio-to-text', '/video-to-transcript'],
     indexable: true,
     intentKey: 'aac-to-text',
+    deepContent: {
+      proofPoints: [
+        'A raw .aac file (audio without a container) is less common than M4A in everyday use — most .aac uploads come from extracted streaming audio, screen-recording exports, or apps that write the codec directly rather than wrapping it in M4A.',
+        'AAC decodes identically whether it arrives as a bare .aac stream or wrapped in an M4A container — there is no accuracy difference, only a difference in which metadata (chapter markers, cover art) survives.',
+        'AAC is used across iOS, Android, and most streaming platforms as the default lossy codec, so a raw .aac file usually traces back to a platform export or an extraction tool rather than a native recording app.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the .aac file', detail: 'Works directly, whether it is a bare AAC stream or came from an app that exports raw AAC instead of M4A.' },
+        { title: '2. Transcribe with Whisper', detail: 'AAC decodes natively — no conversion to WAV or MP3 is needed first.' },
+        { title: '3. Export text or subtitle files', detail: 'Download TXT, SRT, or VTT depending on whether the source needs to be paired with video.' },
+      ],
+      outputExamples: [
+        { title: 'Extracted-audio transcript', body: 'Text from AAC audio extracted from a video or streaming source, without needing to re-encode to another format first.' },
+        { title: 'Cross-platform transcript', body: 'Consistent transcription results whether the AAC file originated on iOS, Android, or a streaming export.' },
+      ],
+      useCases: [
+        { title: 'Users with extracted AAC audio', body: 'Transcribe raw AAC streams pulled from video or streaming sources without a conversion step.' },
+        { title: 'Developers and technical users', body: 'Transcribe AAC output from custom recording or extraction tools that do not wrap audio in M4A.' },
+      ],
+    },
     faq: [
       { q: 'Can I transcribe an AAC audio file?', a: 'Yes. AAC is supported directly. Upload your .aac file and get a full transcript. AAC is the underlying codec in M4A containers and is used by iOS, Android, and many streaming platforms.' },
       { q: 'What is the difference between AAC and M4A?', a: 'AAC (Advanced Audio Coding) is the audio codec. M4A is a container format that typically contains AAC audio. An .aac file is raw AAC without the M4A container. Both are supported by VideoText without any conversion.' },
@@ -3102,6 +3202,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/avi-to-text', '/mp4-to-text', '/webm-to-text', '/video-to-transcript'],
     indexable: true,
     intentKey: 'mkv-to-text',
+    deepContent: {
+      proofPoints: [
+        'MKV is an open container format that can hold almost any video/audio codec combination — H.264, H.265, VP9 video with AAC, AC3, DTS, or FLAC audio — which is why MKV files are more variable in what they contain than MP4.',
+        'OBS Studio defaults to MKV for recordings because the format tolerates an unexpected crash or power loss without corrupting the file — this is why so many screen and gameplay recordings arrive as MKV rather than a more restrictive format.',
+        'MKV can embed multiple audio tracks (commentary, original audio, dubbed language) and multiple subtitle tracks in one file — transcription runs on the primary audio track unless a specific track is selected.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the MKV file', detail: 'Works with H.264/H.265 video and AAC/AC3 audio combinations without pre-conversion.' },
+        { title: '2. Transcribe the primary audio track', detail: 'The default audio track is used automatically — useful for straightforward recordings with a single audio stream.' },
+        { title: '3. Export transcript or SRT', detail: 'Download plain text, or generate an SRT/VTT file that can be remuxed back into the MKV or used separately.' },
+      ],
+      outputExamples: [
+        { title: 'OBS recording transcript', body: 'Full transcript from a screen or gameplay recording captured in OBS Studio\'s default MKV output.' },
+        { title: 'Remuxable SRT file', body: 'Subtitle file generated from the MKV\'s audio, ready to be added back into the container or used on another platform.' },
+      ],
+      useCases: [
+        { title: 'Streamers and OBS users', body: 'Transcribe screen and gameplay recordings straight from OBS\'s default MKV output.' },
+        { title: 'Archivists and media server users', body: 'Transcribe MKV files from personal media archives without converting the container first.' },
+      ],
+    },
     faq: [
       { q: 'Can I transcribe an MKV file to text?', a: 'Yes. MKV (Matroska Video) is supported. Upload your MKV file and get a full transcript. Most MKV files contain H.264 or H.265 video with AAC or AC3 audio — all handled automatically.' },
       { q: 'Where do MKV files come from?', a: 'MKV files are common for: OBS Studio screen and game recordings, downloaded video content, anime and subtitled video files, and video archives from media servers like Plex.' },
@@ -3120,6 +3240,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/mkv-to-text', '/mp4-to-text', '/mov-to-text', '/video-to-transcript'],
     indexable: true,
     intentKey: 'avi-to-text',
+    deepContent: {
+      proofPoints: [
+        'AVI predates modern container formats and has no native support for many current codecs — files are typically DivX, Xvid, or MPEG-4 video with MP3 or PCM audio rather than the H.264/H.265 common in newer formats.',
+        'AVI files most often surface today from digitized archives — old camcorder tapes, early-2000s screen recordings, and legacy Windows Movie Maker projects — rather than active new recordings.',
+        'Transcription accuracy on AVI depends entirely on the underlying audio codec and bitrate, not the container itself — an AVI with clean PCM audio transcribes as well as any modern format.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the AVI file', detail: 'Works with DivX, Xvid, and MPEG-4 video containing MP3 or PCM audio without pre-conversion.' },
+        { title: '2. Transcribe the audio track', detail: 'Whisper reads the embedded audio directly regardless of the legacy video codec.' },
+        { title: '3. Export transcript or subtitles', detail: 'Download TXT for archival documentation or SRT/VTT if the digitized footage needs captions.' },
+      ],
+      outputExamples: [
+        { title: 'Digitized archive transcript', body: 'Text from an old camcorder or archival AVI recording, useful for cataloging or repurposing legacy footage.' },
+        { title: 'Legacy screen recording transcript', body: 'Transcript from an early-2000s screen recording or Windows Movie Maker project export.' },
+      ],
+      useCases: [
+        { title: 'Archivists digitizing old footage', body: 'Transcribe legacy AVI recordings from camcorders or old software without a format conversion step.' },
+        { title: 'Researchers using archival video', body: 'Extract searchable text from older AVI-format interview or field recordings.' },
+      ],
+    },
     faq: [
       { q: 'Can I transcribe an AVI file to text?', a: 'Yes. AVI is supported. Upload your AVI file and get a full transcript. AVI files commonly contain DivX, Xvid, or MPEG-4 video with MP3 or PCM audio.' },
       { q: 'Where do AVI files come from?', a: 'AVI is common for: older camcorder recordings, legacy Windows Movie Maker projects, older screen recording software, and archived video files from the early 2000s–2010s.' },
@@ -3138,6 +3278,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/mp3-to-text', '/wav-to-text', '/audio-to-text', '/video-to-transcript'],
     indexable: true,
     intentKey: 'ogg-to-text',
+    deepContent: {
+      proofPoints: [
+        'OGG Vorbis is an open, patent-free codec, which is why it shows up in open-source tools (Audacity, Ardour), Linux-based recording software, and game audio assets rather than mainstream consumer recording apps.',
+        'Vorbis compression at a given bitrate is generally comparable to or slightly better than MP3 for speech content, so OGG files transcribe with accuracy similar to other common lossy formats at the same file size.',
+        'Game audio and open-source project exports are the two most common non-podcast sources of OGG files reaching this page — worth knowing since the workflow (upload, transcribe, export) is identical regardless of source.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the OGG file', detail: 'Works with Ogg Vorbis audio directly, no conversion to MP3 or WAV needed first.' },
+        { title: '2. Transcribe with Whisper', detail: 'Vorbis decodes natively for accurate transcription at typical podcast and voice-recording bitrates.' },
+        { title: '3. Export text or subtitles', detail: 'Download TXT for text reuse or SRT/VTT if the audio is paired with video content.' },
+      ],
+      outputExamples: [
+        { title: 'Open-source project transcript', body: 'Text from an Audacity or Ardour OGG export, useful for podcast show notes or documentation.' },
+        { title: 'Game audio transcript', body: 'Transcript from OGG-format game dialogue or voice assets.' },
+      ],
+      useCases: [
+        { title: 'Open-source podcast producers', body: 'Transcribe OGG exports from Audacity, Ardour, or other open-source recording tools.' },
+        { title: 'Game developers', body: 'Transcribe OGG-format dialogue or voiceover assets for scripts, localization, or QA review.' },
+      ],
+    },
     faq: [
       { q: 'Can I transcribe an OGG file to text?', a: 'Yes. OGG (Ogg Vorbis) is supported. Upload your .ogg file and get a full text transcript.' },
       { q: 'Where do OGG files come from?', a: 'OGG files are common for: open-source audio exports (Audacity, Ardour), game audio assets, Linux-based recording software, and some podcast platforms that use open formats.' },
@@ -3445,6 +3605,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     ],
     indexable: true,
     intentKey: 'journalism-transcription',
+    deepContent: {
+      proofPoints: [
+        'A deadline changes the acceptable error-correction workflow — a journalist pulling a quote 20 minutes before publish needs speaker-labeled, timestamped text they can scan and verify fast, not a wall of undifferentiated text.',
+        'Field audio (press conferences, doorstep interviews, phone recordings) is noisier and lower-fidelity than studio audio — accuracy on this kind of source depends more on getting language and speaker count right upfront than on any post-processing.',
+        'Files deleted immediately after processing matters specifically for journalism source protection — unlike general transcription use, source audio can carry legal or safety sensitivity that makes zero-retention a requirement, not a nice-to-have.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the interview or field recording', detail: 'MP3, M4A, MP4, WAV, AAC, and FLAC are all supported directly from whatever device recorded the audio.' },
+        { title: '2. Get speaker-labeled, timestamped text', detail: 'Quickly locate and verify a specific quote by speaker and timestamp instead of scanning a continuous text block.' },
+        { title: '3. Pull the quote and move on', detail: 'Files are deleted immediately after processing — no retained copy of source audio to manage or worry about.' },
+      ],
+      outputExamples: [
+        { title: 'Deadline-ready quote extraction', body: 'Speaker-labeled, timestamped transcript that supports fast quote verification under time pressure.' },
+        { title: 'Press conference transcript', body: 'Multi-speaker Q&A transcribed with speaker turns clearly separated for accurate attribution.' },
+      ],
+      useCases: [
+        { title: 'Reporters on deadline', body: 'Get a fast, accurate, speaker-labeled transcript to pull verified quotes before publish.' },
+        { title: 'Investigative journalists', body: 'Transcribe sensitive source recordings with immediate file deletion after processing.' },
+      ],
+    },
     faq: [
       {
         q: 'What journalism recording formats does VideoText support?',
@@ -3543,6 +3723,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/wav-to-text', '/mp3-to-text', '/audio-to-text', '/video-to-transcript'],
     indexable: true,
     intentKey: 'flac-to-text',
+    deepContent: {
+      proofPoints: [
+        'FLAC compresses losslessly — unlike MP3 or AAC, decompressing a FLAC file returns bit-identical audio to the original, so there is no compression artifact that could ever degrade transcription accuracy, only the recording quality itself.',
+        'Audiophile and archival music/audio collections are the main source of FLAC files reaching this page, distinct from WAV\'s more common studio/broadcast-production origin — both are lossless, but FLAC adds compression to reduce file size without quality loss.',
+        'The accuracy gap between FLAC and a well-encoded MP3 is negligible for clear speech, but widens for quiet, accented, or high-frequency-detail speech where MP3\'s lossy compression has already discarded information FLAC preserves.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the FLAC file', detail: 'Works directly with lossless FLAC audio, no conversion to WAV or MP3 needed.' },
+        { title: '2. Transcribe with full lossless fidelity', detail: 'Useful for archival or difficult-to-hear source material where every bit of the original signal matters.' },
+        { title: '3. Export text or subtitles', detail: 'Download TXT for text reuse or SRT/VTT if the audio needs to be paired with video.' },
+      ],
+      outputExamples: [
+        { title: 'Archival audio transcript', body: 'Text from lossless FLAC archival recordings, useful when source material quality is critical to accuracy.' },
+        { title: 'High-fidelity interview transcript', body: 'Transcript from a FLAC-recorded interview or podcast master file before any lossy export.' },
+      ],
+      useCases: [
+        { title: 'Audio archivists', body: 'Transcribe lossless FLAC recordings from archival or preservation collections without any quality-reducing conversion.' },
+        { title: 'Podcast producers working from master files', body: 'Transcribe the lossless FLAC master before it gets compressed for distribution, capturing maximum accuracy.' },
+      ],
+    },
     faq: [
       { q: 'Can I transcribe a FLAC file to text?', a: 'Yes. FLAC is supported. Upload your .flac file and get a full transcript. FLAC is a lossless format that preserves all audio fidelity, which can improve transcription accuracy for recordings with subtle speech details.' },
       { q: 'Does lossless FLAC give better transcription accuracy than MP3?', a: 'For clearly recorded speech, MP3 at 128kbps and FLAC give similar accuracy. FLAC may give measurably better results for: low-quality source recordings where compression artifacts in MP3 degrade speech, high-frequency details in accented or quiet speech, and archival audio from older recordings.' },
@@ -3644,6 +3844,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/webex-transcription', '/zoom-alternative', '/microsoft-teams-alternative', '/meeting-transcription'],
     indexable: true,
     intentKey: 'webex-alternative',
+    deepContent: {
+      proofPoints: [
+        'WebEx transcription is gated behind enterprise-tier plans — a team on a standard WebEx license has recordings but no built-in path to text without upgrading the whole organization\'s subscription.',
+        'WebEx-native transcripts stay in the WebEx cloud tied to that specific meeting instance — pulling the content into an external doc, wiki, or email still means manual copy-paste and reformatting.',
+        'Downloaded WebEx recordings are standard MP4, so there is no format conversion step between "download from WebEx" and "get a transcript" — a two-step handoff regardless of your WebEx plan tier.',
+      ],
+      workflowSteps: [
+        { title: '1. Download the recording from WebEx', detail: 'webex.com → Recordings → Download, saved as a standard MP4 file.' },
+        { title: '2. Upload for transcription', detail: 'No enterprise WebEx plan or account required — works from any downloaded MP4.' },
+        { title: '3. Get speaker-labeled transcript and summary', detail: 'Full text with speaker separation, keyword search, and a summary for quick review.' },
+      ],
+      outputExamples: [
+        { title: 'Speaker-labeled meeting transcript', body: 'WebEx recording broken into per-speaker turns, independent of WebEx cloud storage or plan tier.' },
+        { title: 'Portable meeting summary', body: 'Key points and decisions extracted and ready to paste into external documentation, unlike a transcript locked inside WebEx.' },
+      ],
+      useCases: [
+        { title: 'Teams without enterprise WebEx plans', body: 'Get transcripts from WebEx recordings without needing an upgraded organizational license.' },
+        { title: 'Cross-platform documentation', body: 'Move WebEx meeting content into external docs, wikis, or email without manual retyping.' },
+      ],
+    },
     faq: [
       { q: 'How do I transcribe a WebEx meeting recording?', a: 'Download the WebEx recording as MP4 from the WebEx site (webex.com → Recordings → Download). Upload the MP4 to VideoText for a full transcript with speaker labels.' },
       { q: 'Does WebEx have built-in transcription?', a: 'Yes, WebEx Meetings offers AI-generated transcription on certain enterprise plans. It is limited to recordings stored in the WebEx cloud and requires a Webex subscription. VideoText works on any downloaded WebEx MP4 without a Webex account.' },
@@ -3683,6 +3903,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/otter-alternative', '/fireflies-alternative', '/meeting-transcription-tool', '/meeting-recording-to-transcript'],
     indexable: true,
     intentKey: 'notta-alternative',
+    deepContent: {
+      proofPoints: [
+        'Notta\'s free-tier 3-minute-per-file cap makes it structurally unsuited for anything beyond short clips — a 45-minute recorded interview or webinar simply cannot be processed on the free plan regardless of subject matter.',
+        'Live meeting-note tools optimize for real-time capture during the call, which is a different product than post-recording processing — a bot joining your meeting is unnecessary friction if all you have is a recording file after the fact.',
+        'Chapter and keyword extraction are post-processing features that live-notes tools rarely prioritize, since their core value is the real-time capture, not the structured document that comes after.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload the recorded meeting file', detail: 'Download the Zoom, Teams, or Meet recording as MP4, no live bot or calendar integration needed.' },
+        { title: '2. Process the full recording', detail: 'No 3-minute cap — full-length meetings, interviews, or webinars process in one pass.' },
+        { title: '3. Get structured outputs', detail: 'Transcript, summary, chapters, and keyword index generated together, ready for export or search.' },
+      ],
+      outputExamples: [
+        { title: 'Full-length meeting transcript', body: 'Complete transcript from a long recording, not limited by a per-file duration cap.' },
+        { title: 'Chapter and keyword index', body: 'Structured navigation for long recordings, letting you jump to a specific topic without live note-taking during the call.' },
+      ],
+      useCases: [
+        { title: 'Teams with long recorded meetings', body: 'Process full-length recordings without hitting a short per-file duration limit.' },
+        { title: 'Post-meeting documentation', body: 'Turn a recording into structured, searchable output after the fact without needing a live-capture bot.' },
+      ],
+    },
     faq: [
       { q: 'What are Notta\'s limitations compared to VideoText?', a: 'Notta free tier: 3 minutes max per transcription, 120 minutes/month total. VideoText free tier: 3 full-length imports per month with no per-file duration cap. VideoText also gives chapters, keywords, and SRT export on the free tier.' },
       { q: 'Does VideoText support the same file types as Notta?', a: 'Yes. VideoText supports MP4, MOV, AVI, WebM, MKV (video) and MP3, WAV, M4A, AAC, OGG, FLAC (audio) — all the formats Notta supports, plus more.' },
@@ -4226,11 +4466,31 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/video-to-transcript', '/subtitle-generator', '/turboscribe-alternative', '/notta-alternative'],
     indexable: true,
     intentKey: 'genio-alternative',
+    deepContent: {
+      proofPoints: [
+        'Whisper large-v3 is an open-source model with published benchmark accuracy — a transcription tool built on it inherits accuracy that can be independently verified, rather than relying on a vendor\'s own unverifiable claims.',
+        '90+ supported source languages means the same tool handles multilingual teams and international content without switching to a language-specific service.',
+        'Files deleted after processing is a structural privacy choice, not a settings toggle a user has to remember to enable — the retention policy is the default behavior, not an opt-in.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload video or audio', detail: 'MP4, MOV, WebM video or MP3, WAV, M4A audio — all supported directly.' },
+        { title: '2. Transcribe with Whisper large-v3', detail: 'Speaker labels, summary, and keyword index generated in the same pass.' },
+        { title: '3. Export or translate', detail: 'SRT/VTT/TXT export, or translate the transcript to 70+ languages.' },
+      ],
+      outputExamples: [
+        { title: 'Multilingual transcript', body: 'Accurate transcription across 90+ source languages from the same tool, no separate language-specific service needed.' },
+        { title: 'Structured summary and chapters', body: 'Key points and navigable chapters generated alongside the full transcript.' },
+      ],
+      useCases: [
+        { title: 'Multilingual teams', body: 'Transcribe content across many source languages without switching tools per language.' },
+        { title: 'Privacy-conscious users', body: 'Get transcription with files deleted after processing by default, not as an opt-in setting.' },
+      ],
+    },
     faq: [
       { q: 'What does VideoText offer as a Genio alternative?', a: 'Whisper large-v3 accuracy, speaker labels, summary, chapters, keyword index, SRT/VTT/TXT export, YouTube URL input, translate to 70+ languages, and files deleted after processing.' },
       { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
       { q: 'How accurate is VideoText compared to Genio?', a: 'VideoText uses Whisper large-v3 which achieves ~98.5% word accuracy on clear speech — the highest accuracy open-source model available. It supports 90+ source languages.' },
-      { q: 'Does VideoText support batch processing like Genio?', a: 'Yes. The Batch Process tool lets you upload multiple files at once and process them in parallel. Download all transcripts as a ZIP archive.' },
+      { q: 'Does VideoText support processing multiple files like Genio?', a: 'Yes. Drop 2 or more files into the Video to Transcript uploader to switch into batch mode (Pro/Agency) and process them in parallel, downloading results as a ZIP archive.' },
       { q: 'How long does VideoText take to transcribe a file?', a: 'Typically 30–90 seconds for files under 10 minutes, and 5–8 minutes for a 60-minute recording. Results are delivered as soon as processing completes.' },
     ],
   },
@@ -4329,11 +4589,31 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/video-to-transcript', '/turboscribe-alternative', '/easyscribe-alternative', '/audio-to-text'],
     indexable: true,
     intentKey: 'allscribe-alternative',
+    deepContent: {
+      proofPoints: [
+        'Export format range matters more than most transcription tools admit — a transcript stuck in one proprietary format means manual reformatting every time it needs to move into an editor, a subtitle track, or a document.',
+        'Keyword indexing turns a long transcript from something you scroll through into something you jump directly into — a small feature that saves the most time on the longest recordings.',
+        'Dedicated GPU processing infrastructure is what keeps a 60-minute file finishing in minutes rather than tens of minutes — the processing backend matters as much as model accuracy for anyone working against a deadline.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload video or audio', detail: 'Whisper large-v3 accuracy on any supported file, no format restrictions.' },
+        { title: '2. Get structured output', detail: 'Speaker labels, summary, chapters, and keyword index generated together from the same upload.' },
+        { title: '3. Export in the format you need', detail: 'TXT, SRT, or VTT — pick the format for the destination rather than reformatting after the fact.' },
+      ],
+      outputExamples: [
+        { title: 'Multi-format export', body: 'The same transcript available as TXT, SRT, or VTT without a separate conversion step.' },
+        { title: 'Keyword-indexed long transcript', body: 'Long recordings indexed by keyword for fast navigation to a specific topic or mention.' },
+      ],
+      useCases: [
+        { title: 'Users needing flexible export', body: 'Get transcript output in the exact format needed for the next step, without manual reformatting.' },
+        { title: 'Long-recording reviewers', body: 'Navigate hour-long recordings by keyword instead of scrolling through the full transcript.' },
+      ],
+    },
     faq: [
       { q: 'What does VideoText offer over Allscribe?', a: 'Speaker diarization, auto-generated summary, chapter navigation, keyword indexing, SRT/VTT subtitle export, translation to 70+ languages, YouTube URL input, and instant file deletion after processing.' },
       { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
       { q: 'How accurate is VideoText compared to Allscribe?', a: 'VideoText uses Whisper large-v3 (~98.5% WER on clear speech). This is comparable to the best available AI transcription engines and significantly more accurate than older Whisper variants.' },
-      { q: 'Does VideoText support batch transcription like Allscribe?', a: 'Yes. The Batch Process tool lets you upload and process multiple files simultaneously. All transcripts download as a ZIP archive.' },
+      { q: 'Does VideoText support processing multiple files like Allscribe?', a: 'Yes. Drop 2 or more files into the Video to Transcript uploader to switch into batch mode (Pro/Agency) and process them in parallel, downloading results as a ZIP archive.' },
       { q: 'How quickly does VideoText process files?', a: 'Typically 30–90 seconds for short files and 5–8 minutes for hour-long recordings. Files are processed on dedicated GPU infrastructure.' },
     ],
   },
@@ -4411,6 +4691,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/video-to-transcript', '/turboscribe-alternative', '/notta-alternative', '/audio-to-text'],
     indexable: true,
     intentKey: 'vocallab-alternative',
+    deepContent: {
+      proofPoints: [
+        'YouTube URL input without a separate download step removes an entire manual stage from the workflow — paste the link and process directly, rather than downloading, converting, and re-uploading.',
+        'Speaker diarization included on all plans (not gated to a higher tier) matters specifically for interview and multi-person recordings, where a single undifferentiated text block is much harder to use than speaker-attributed turns.',
+        'Immediate file deletion after transcript generation means there is no dashboard of stored files to manage or worry about later — the privacy posture is structural, not something to configure.',
+      ],
+      workflowSteps: [
+        { title: '1. Upload or paste a YouTube URL', detail: 'Video files, audio files, or a direct YouTube link — no download/re-upload step for YouTube sources.' },
+        { title: '2. Transcribe with speaker separation', detail: 'Speaker diarization is included on every plan, not reserved for a higher tier.' },
+        { title: '3. Export and the file is gone', detail: 'Download the transcript — the source file is deleted immediately, nothing persists on the server.' },
+      ],
+      outputExamples: [
+        { title: 'Direct YouTube transcript', body: 'Transcript generated directly from a pasted YouTube URL, no download step in between.' },
+        { title: 'Speaker-separated multi-person transcript', body: 'Interview or panel recordings split by speaker turn on any plan, including free.' },
+      ],
+      useCases: [
+        { title: 'YouTube-based researchers and creators', body: 'Transcribe YouTube content directly from the URL without a manual download step.' },
+        { title: 'Interview and panel transcribers', body: 'Get speaker-separated transcripts without needing a higher-tier plan for diarization.' },
+      ],
+    },
     faq: [
       { q: 'Is VideoText better than Vocallab.io?', a: 'VideoText offers Whisper large-v3 transcription, speaker diarization, auto-summary, chapter navigation, keyword indexing, SRT/VTT/TXT export, translation to 70+ languages, and YouTube URL input. Files are deleted immediately after processing.' },
       { q: 'Is VideoText free?', a: 'Yes. 3 uploads per day, no credit card.' },
@@ -4790,6 +5090,26 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     relatedSlugs: ['/voice-to-text', '/dictation-tool', '/superwhisper-alternative', '/macwhisper-alternative', '/whisper-notes-alternative'],
     indexable: true,
     intentKey: 'whispertype-alternative',
+    deepContent: {
+      proofPoints: [
+        'WhisperType requires bringing your own OpenAI API key, which means a per-usage cost that scales with dictation volume — a flat free tier removes that variable cost entirely for casual or moderate use.',
+        'A desktop dictation app is tied to whichever machine it is installed on — a browser-based tool works the same on a work laptop, a personal machine, or a borrowed computer without reinstalling anything.',
+        'Live dictation apps process speech as you speak, which works well for typing but cannot process a recording that already exists — a fundamentally different use case from transcribing a pre-recorded file.',
+      ],
+      workflowSteps: [
+        { title: '1. Open in any browser', detail: 'No installation on Windows, Mac, or Linux — works the same regardless of device.' },
+        { title: '2. Upload or record audio', detail: 'Works with existing audio files, not just live dictation, unlike a real-time desktop dictation app.' },
+        { title: '3. Get text without API costs', detail: 'No OpenAI API key or per-usage billing to manage — free tier covers moderate use directly.' },
+      ],
+      outputExamples: [
+        { title: 'Cross-device transcript', body: 'Text output that works the same whether accessed from a work machine, personal laptop, or shared computer.' },
+        { title: 'No-API-key transcription', body: 'Transcription without configuring or paying for a separate OpenAI API key.' },
+      ],
+      useCases: [
+        { title: 'Multi-device users', body: 'Transcribe from any browser without reinstalling a desktop app on each machine.' },
+        { title: 'Users avoiding API key setup and cost', body: 'Get Whisper-quality transcription without configuring or paying for API usage directly.' },
+      ],
+    },
     faq: [
       { q: 'How does VideoText compare to WhisperType?', a: 'WhisperType is a desktop dictation app that runs Whisper AI locally on macOS or Windows. VideoText is browser-based — no installation, no API key, works on any OS. Both use Whisper for accuracy.' },
       { q: 'Is there a free WhisperType alternative?', a: 'Yes. VideoText offers a free tier with 3 transcriptions per month. WhisperType requires API key costs from OpenAI.' },

@@ -163,11 +163,12 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
       useCases: [
         { title: 'Creators and marketers', body: 'Repurpose webinars, podcasts, tutorials, and launches into articles, social captions, newsletters, searchable show notes, and clip briefs.' },
         { title: 'Researchers and journalists', body: 'Search interviews, lectures, focus groups, and source footage for exact quotes, themes, timestamps, and supporting evidence.' },
-        { title: 'Agencies and teams', body: 'Standardize transcript, subtitle, summary, and client handoff outputs across many recordings and collaborators.' },
+        { title: 'Agencies and teams processing many videos', body: 'Drop 2 or more files into the same uploader to switch into batch mode (Pro/Agency) — process 10-100+ videos in parallel and download one ZIP with a correctly named SRT/VTT file per clip instead of uploading one at a time.' },
       ],
       comparisonRows: [
         { feature: 'Outputs from one upload', videotext: 'Transcript, SRT/VTT, summary, chapters, JSON, DOCX, PDF, and share links', alternatives: 'Usually transcript-only or requires multiple tools' },
         { feature: 'Long recording workflow', videotext: 'Designed for long-video processing, structured outputs, and teammate review', alternatives: 'Often requires separate tools for captions, summaries, chapters, or review handoff' },
+        { feature: 'Multiple videos at once', videotext: 'Drop 2+ files to batch process in parallel, one ZIP output', alternatives: 'Usually one file at a time, or a separate paid batch product' },
         { feature: 'Privacy posture', videotext: 'Files deleted after processing', alternatives: 'Uploads may remain in project libraries' },
       ],
       ctaText: 'Turn long video into structured transcript outputs',
@@ -177,6 +178,7 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
       { q: 'How do I convert a video to a transcript?', a: 'Upload a video file or paste a supported URL, choose your options, and start transcription. VideoText returns transcript text plus optional subtitle, summary, and chapter outputs.' },
       { q: 'Does VideoText generate subtitles too?', a: 'Yes. The same flow can produce SRT and VTT files in addition to the transcript, which makes the page useful for captioning and publishing workflows.' },
       { q: 'Can I use VideoText for long videos?', a: 'Yes. VideoText is designed for long-video processing with transcript text, subtitle files, summaries, chapters, and flexible exports from the same upload.' },
+      { q: 'Can I process multiple videos at once?', a: 'Yes. Drop 2 or more files into the same uploader to switch into batch mode (Pro and Agency plans) — files process in parallel and you download one ZIP containing a correctly named SRT/VTT file for each source video.' },
     ],
     related: [
       { path: '/youtube-transcript-generator', title: 'YouTube Transcript Generator' },
@@ -184,44 +186,6 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
       { path: '/translate-subtitles', title: 'Translate Subtitles' },
       { path: '/guideline-format', title: 'Transcript Style Guide Formatter' },
       { path: '/fastest-transcription-tool', title: 'Fastest Transcription Tool' },
-    ],
-  },
-  '/batch-process': {
-    h1: 'Batch Video to Subtitles — Multiple Videos at Once',
-    intro: 'Upload a folder of videos and get one ZIP with a correctly named SRT file for every clip — built for creators and agencies processing a week of content in one session instead of babysitting uploads one at a time.',
-    primaryCta: { text: 'Process multiple videos in one batch', path: '/batch-process' },
-    deepContent: {
-      proofPoints: [
-        'Uploading videos one at a time to a single-file tool means re-configuring language, format, and export settings on every upload — batch processing applies the same settings across the whole set in one pass.',
-        'A ZIP of correctly named SRT files (matching each source filename) removes the manual step of matching subtitle files back to the right video before uploading to a platform.',
-        'Parallel processing means a set of 20 short clips finishes closer to the time of the single longest file, not the sum of all of them — sequential single-file tools scale linearly instead.',
-      ],
-      workflowSteps: [
-        { title: '1. Upload multiple videos at once', detail: 'Drag and drop 10–100+ files. MP4, MOV, and WebM are all supported in the same batch.' },
-        { title: '2. Set format and language once', detail: 'SRT or VTT, single or multi-language — applied uniformly across every file in the batch instead of per-upload.' },
-        { title: '3. Download one ZIP', detail: 'Each subtitle file is named to match its source video, ready to upload without manual renaming.' },
-      ],
-      outputExamples: [
-        { title: 'Matched SRT ZIP archive', body: 'One subtitle file per source video, named to match, packaged in a single downloadable ZIP.' },
-        { title: 'Multi-language batch export', body: 'The same batch of videos exported in more than one target language without re-uploading each file per language.' },
-      ],
-      useCases: [
-        { title: 'Content agencies', body: 'Caption a client\'s full week of video content in one session instead of processing each file individually.' },
-        { title: 'Course creators', body: 'Generate subtitles for an entire course module — dozens of lecture videos — in a single upload.' },
-      ],
-      ctaText: 'Process a batch of videos now',
-      ctaPath: '/batch-process',
-    },
-    faq: [
-      { q: 'How many videos can I batch process at once?', a: 'Upload 10–100+ videos in a single batch on Pro and Agency plans. There is no per-file limit within a batch.' },
-      { q: 'Are the output filenames matched to my source videos?', a: 'Yes. Each SRT or VTT file in the downloaded ZIP is named to match its corresponding source video, so there is no manual matching step before uploading captions.' },
-      { q: 'Can I use different languages for different videos in the same batch?', a: 'The batch applies the same language and format settings across the set. For mixed-language sets, run separate batches per language.' },
-    ],
-    related: [
-      { path: '/video-to-subtitles', title: 'Video to Subtitles' },
-      { path: '/video-to-transcript', title: 'Video to Transcript' },
-      { path: '/translate-subtitles', title: 'Translate Subtitles' },
-      { path: '/tools', title: 'Free Transcript and Subtitle Tools' },
     ],
   },
   '/subtitle-validator': {
