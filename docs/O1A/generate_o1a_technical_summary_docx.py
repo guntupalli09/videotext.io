@@ -302,7 +302,27 @@ def build_document(script_dir: Path | None = None) -> Document:
         "redefine the core subtitle or transcript payload that customers treat as authoritative for "
         "editing, compliance-style review, or downstream automation. Purely rule-based product logic "
         "(for example, in-app guidance triggers) is implemented without AI, mirroring the paper’s "
-        "emphasis on traceable, reproducible decision paths where human operators expect stability."
+        "emphasis on traceable, reproducible decision paths where human operators expect stability. "
+        "On raw throughput, the same production pipeline processes long-form video at roughly "
+        "47× realtime on a representative nearly-two-hour file — a reproducible, code-instrumented "
+        "benchmark (server-side timing logs, not a marketing estimate) that is competitive with or "
+        "faster than single-node commercial transcription throughput reported elsewhere in the "
+        "industry, evidence that the deterministic engineering discipline below did not come at the "
+        "cost of production performance."
+    )
+
+    es2b = doc.add_paragraph()
+    es2b.add_run(
+        "The applicant has independently applied the same discipline — a single deterministic source "
+        "of truth, explicit boundaries around any judgment-dependent or probabilistic layer, and "
+        "continuous automated reconciliation rather than one-time manual audit — to a second, unrelated "
+        "system: VideoText.io’s internal business-analytics platform. That program defines a canonical, "
+        "governed metric layer (one definition, one source, one code path per KPI), separates a "
+        "deterministic system of record (Postgres/Stripe) from a probabilistic, explicitly-labeled "
+        "layer (browser-based session analytics), and requires every reconciliation check to pass with "
+        "zero unexplained discrepancies before a metric is allowed to go live. This is not the same "
+        "artifact as the ICCS paper, but it is the same underlying engineering judgment restated in a "
+        "second domain — evidence of a repeatable methodology rather than a single result."
     )
 
     es3 = doc.add_paragraph()
@@ -365,6 +385,80 @@ def build_document(script_dir: Path | None = None) -> Document:
     ]
     add_table(doc, mapping_headers, mapping_rows, col_widths_inches=[1.35, 1.85, 3.0])
 
+    # --- Second independent application ---
+    add_heading(
+        doc,
+        "A second, independent application of the same engineering discipline",
+        level=1,
+    )
+    sa1 = doc.add_paragraph()
+    sa1.add_run(
+        "Criterion 3 is strengthened when the same original methodology recurs in an independent "
+        "setting, because that shows a transferable engineering judgment rather than a single "
+        "publication-shaped result. VideoText.io provides that recurrence internally: separate from "
+        "the media-processing pipeline mapped above, the applicant designed and is deploying a "
+        "canonical business-analytics architecture governing how every product and revenue metric is "
+        "defined, computed, and served."
+    )
+    sa2 = doc.add_paragraph()
+    add_runs(
+        sa2,
+        [
+            ("Same core pattern, different domain. ", True, False),
+            (
+                "The analytics architecture separates a single deterministic system of record "
+                "(Postgres for identity and product usage, Stripe for money) from a probabilistic, "
+                "explicitly-labeled layer (browser-based session analytics), and requires every metric "
+                "to resolve to exactly one canonical definition, one source, and one code path — the "
+                "same structural move as the paper’s separation of a deterministic execution boundary "
+                "from a non-authoritative stochastic layer.",
+                False,
+                False,
+            ),
+        ],
+    )
+    sa3 = doc.add_paragraph()
+    add_runs(
+        sa3,
+        [
+            ("Independently measured, not just designed. ", True, False),
+            (
+                "The canonical layer was validated field-by-field against the raw system of record "
+                "before any dashboard was allowed to read from it, with every reconciled field passing "
+                "with zero unexplained discrepancies — an empirical traceability check in the same "
+                "spirit as the paper’s measured 100% traceability result, applied here to a live "
+                "commercial system rather than a benchmark corpus.",
+                False,
+                False,
+            ),
+        ],
+    )
+    sa4 = doc.add_paragraph()
+    add_runs(
+        sa4,
+        [
+            ("Governed, not one-time. ", True, False),
+            (
+                "New metrics require a documented definition, a declared source, an owner, and an "
+                "automated validation rule before they ship, and any metric that depends on judgment "
+                "(for example, model-derived lifetime value or cost-allocation-dependent margin) is "
+                "explicitly labeled at reduced confidence rather than presented with false precision — "
+                "the same intellectual honesty about the boundary of deterministic guarantees that the "
+                "paper itself insists on.",
+                False,
+                False,
+            ),
+        ],
+    )
+    sa5 = doc.add_paragraph()
+    sa5.add_run(
+        "For adjudication purposes, this second application is offered as corroborating evidence of "
+        "originality and consistent engineering judgment, not as a second scholarly contribution. It "
+        "shows the applicant applying the peer-reviewed framework’s central idea — a governed "
+        "deterministic core with clearly bounded, non-authoritative probabilistic layers — a second "
+        "time, on a different system, at his own initiative, in production."
+    )
+
     # --- Criterion 3 ---
     add_heading(doc, "Why this supports “major significance” under Criterion 3", level=1)
 
@@ -382,10 +476,16 @@ def build_document(script_dir: Path | None = None) -> Document:
         "VideoText.io converts that research mindset into shipping software with subscriptions and usage "
         "metering, proving the applicant can operationalize hybrid AI systems beyond a lab benchmark — a "
         "relatively rare combination in O-1A filings that often show either publications or a product, not "
-        "a coherent bridge between the two. Independent distribution and review channels reinforce field "
-        "recognition: the product is featured on IndieHunt, carries a Fazier badge or listing, and is "
-        "published on G2 and Capterra, which are widely used by buyers to evaluate software — evidence that "
-        "the contribution sits in the commercial marketplace, not only in a private deployment."
+        "a coherent bridge between the two. That the applicant then independently re-applied the same "
+        "governed-determinism methodology to a second, unrelated system (the analytics architecture "
+        "described above) — reaching a measured zero-unexplained-discrepancy reconciliation result without "
+        "being asked to — indicates a repeatable engineering judgment rather than a one-off result, and the "
+        "production pipeline’s own throughput (approximately 47× realtime on long-form video, measured, not "
+        "estimated) shows the discipline was applied without sacrificing commercial performance. Independent "
+        "distribution and review channels reinforce field recognition: the product is featured on IndieHunt, "
+        "carries a Fazier badge or listing, and is published on G2 and Capterra, which are widely used by "
+        "buyers to evaluate software — evidence that the contribution sits in the commercial marketplace, "
+        "not only in a private deployment."
     )
 
     o3 = doc.add_paragraph()
@@ -475,9 +575,12 @@ def build_document(script_dir: Path | None = None) -> Document:
     doc.add_paragraph()
     closing = doc.add_paragraph()
     cr = closing.add_run(
-        "Prepared as a technical exhibit for immigration counsel. Attach the camera-ready ICCS PDF to the "
-        "petition as the primary scholarly exhibit. Add redacted revenue, customer counts, or testimonials "
-        "only as separate exhibits if counsel approves."
+        "Prepared as a technical exhibit for immigration counsel; last regenerated 2026-08-08. Attach the "
+        "camera-ready ICCS PDF to the petition as the primary scholarly exhibit. Add redacted revenue, "
+        "customer counts, subscriber counts, and testimonials only as separate exhibits if counsel "
+        "approves — this memorandum intentionally states production evidence qualitatively (measured "
+        "reconciliation results, measured throughput) rather than citing point-in-time headcounts that "
+        "would need continual updating and are better sourced fresh from Stripe/Postgres at filing time."
     )
     cr.italic = True
     cr.font.size = Pt(10)
