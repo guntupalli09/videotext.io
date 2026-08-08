@@ -19,6 +19,25 @@ The Word file includes an **appendix** that auto-lists all posts under `content/
 
 ---
 
+## Current production snapshot (field-level significance)
+
+Figures below are drawn directly from VideoText.io's internal operations dashboard (sourced from the canonical Postgres `business_users` / `business_jobs` views described in the analytics-architecture section below) as of **2026-08-08**. Operational/quality metrics only — no revenue or subscriber-count figures — offered as direct evidence that the deterministic-core engineering choices translate into fast, reliable, well-received service under real usage.
+
+| Metric | Value | Window |
+|---|---|---|
+| Registered users | **489** | cumulative, as of snapshot date |
+| New signups | **201** (+67% week-over-week) | trailing 30 days |
+| Jobs completed across all tools | **≈1,480** | trailing 30 days |
+| Average job processing time | **24.5 s** | trailing 30 days, completed jobs |
+| P95 job processing time | **116.5 s** | trailing 30 days, completed jobs |
+| Job failure rate | **5.1%** | trailing 30 days |
+| Average customer rating | **4.6 / 5** (38 ratings) | cumulative |
+| Top tool by volume | Video → Subtitles (153 jobs) | trailing 30 days |
+
+*Counsel: attach a dated screenshot of the dashboard view as a labeled exhibit; refresh these figures immediately before filing since they change daily.*
+
+---
+
 ## Executive summary
 
 The ICCS paper contributes a **computational framework** for hybrid pipelines: a **deterministic execution layer** (normalized input, ordered logic, versioned configuration) that owns all state transitions and primary outputs, while **stochastic models are confined to non-authoritative post-hoc layers** that cannot alter deterministic findings. The paper validates this design with **100% execution determinism and 100% traceability** on a structured-text corpus, contrasted with **0% determinism** for pure LLM and schema-constrained LLM baselines, and reports **verifiable execution traces**, **O(n)** rule scaling, and explicit **security boundaries** (e.g., prompt injection treated as data in the symbolic core).
@@ -79,4 +98,4 @@ Use this block when assembling Criterion 3 evidence; keep URLs current on the ex
 
 ---
 
-*Prepared as a concise technical exhibit for counsel; last regenerated 2026-08-08. Attach the camera-ready PDF and, if needed, redacted customer or revenue evidence separately — this memorandum intentionally states production evidence qualitatively (measured reconciliation results, measured throughput) rather than point-in-time headcounts that would need continual updating; source those fresh from Stripe/Postgres at filing time.*
+*Prepared as a concise technical exhibit for counsel; last regenerated 2026-08-08. Attach the camera-ready PDF. The operational snapshot above is current as of the regeneration date — refresh it from the live dashboard immediately before filing. Add redacted revenue and subscriber-count figures only as a separate exhibit if counsel approves.*

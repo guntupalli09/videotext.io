@@ -274,6 +274,43 @@ def build_document(script_dir: Path | None = None) -> Document:
     nr.italic = True
     nr.font.size = Pt(10)
 
+    # --- Current production snapshot ---
+    add_heading(doc, "Current production snapshot (field-level significance)", level=2)
+    snap_intro = doc.add_paragraph()
+    snap_intro.add_run(
+        "The following figures are drawn directly from VideoText.io’s internal operations "
+        "dashboard (sourced from the canonical Postgres business_users / business_jobs views "
+        "described in the analytics-architecture section below) as of 2026-08-08. They are "
+        "offered as direct evidence that the applicant’s engineering choices — deterministic, "
+        "non-LLM stages for the core pipeline; explicit tier-aware orchestration; result caching — "
+        "translate into fast, reliable, well-received service under real usage, not only "
+        "theoretical design."
+    )
+
+    snap_headers = ["Metric", "Value", "Window"]
+    snap_rows = [
+        ["Registered users", "489", "cumulative, as of snapshot date"],
+        ["New signups", "201 (+67% week-over-week)", "trailing 30 days"],
+        ["Jobs completed across all tools", "≈1,480", "trailing 30 days"],
+        ["Average job processing time", "24.5 s", "trailing 30 days, completed jobs"],
+        ["P95 job processing time", "116.5 s", "trailing 30 days, completed jobs"],
+        ["Job failure rate", "5.1%", "trailing 30 days"],
+        ["Average customer rating", "4.6 / 5 (38 ratings)", "cumulative"],
+        ["Top tool by volume", "Video → Subtitles (153 jobs)", "trailing 30 days"],
+    ]
+    add_table(doc, snap_headers, snap_rows, col_widths_inches=[2.3, 2.3, 1.9])
+
+    snap_note = doc.add_paragraph()
+    snap_note.paragraph_format.space_before = Pt(6)
+    snr = snap_note.add_run(
+        "These are operational and product-quality metrics (throughput, reliability, customer "
+        "satisfaction, and growth), not revenue or subscriber-count figures — counsel may attach a "
+        "dated screenshot of this dashboard view as a labeled exhibit, and should refresh the figures "
+        "immediately before filing since they change daily."
+    )
+    snr.italic = True
+    snr.font.size = Pt(10)
+
     # --- Executive summary ---
     add_heading(doc, "Executive summary", level=1)
 
@@ -576,11 +613,12 @@ def build_document(script_dir: Path | None = None) -> Document:
     closing = doc.add_paragraph()
     cr = closing.add_run(
         "Prepared as a technical exhibit for immigration counsel; last regenerated 2026-08-08. Attach the "
-        "camera-ready ICCS PDF to the petition as the primary scholarly exhibit. Add redacted revenue, "
-        "customer counts, subscriber counts, and testimonials only as separate exhibits if counsel "
-        "approves — this memorandum intentionally states production evidence qualitatively (measured "
-        "reconciliation results, measured throughput) rather than citing point-in-time headcounts that "
-        "would need continual updating and are better sourced fresh from Stripe/Postgres at filing time."
+        "camera-ready ICCS PDF to the petition as the primary scholarly exhibit. The operational snapshot "
+        "above is current as of the regeneration date; refresh it from the live dashboard immediately "
+        "before filing. Add redacted revenue and subscriber-count figures only as a separate exhibit if "
+        "counsel approves — this memorandum otherwise cites operational/quality metrics (throughput, "
+        "reliability, ratings, growth) rather than revenue, which is more time-sensitive and commercially "
+        "sensitive."
     )
     cr.italic = True
     cr.font.size = Pt(10)
