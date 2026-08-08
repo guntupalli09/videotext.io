@@ -246,7 +246,10 @@ def build_document(script_dir: Path | None = None) -> Document:
     bullets = [
         (
             "IndieHunt",
-            "VideoText.io is featured on IndieHunt (independent product discovery).",
+            "VideoText.io won 1st place (Winner status, 8 votes) in its weekly IndieHunt launch "
+            "cohort, week of 2026-06-29 — an independent, judged/voted product ranking, not merely "
+            "a directory listing. IndieHunt confirmed the placement and issued a winner badge and "
+            "a dofollow backlink upgrade (email confirmations dated 2026-06-29 and 2026-07-05).",
         ),
         (
             "Fazier",
@@ -260,6 +263,11 @@ def build_document(script_dir: Path | None = None) -> Document:
             "Capterra",
             "A product profile is published on Capterra (https://www.capterra.com/) — software discovery and reviews.",
         ),
+        (
+            "LinkedIn",
+            "VideoText.io maintains a company presence on LinkedIn with 155 followers, used for "
+            "product updates and professional-audience distribution.",
+        ),
     ]
     for title, body in bullets:
         bp = doc.add_paragraph(style="List Bullet")
@@ -269,7 +277,8 @@ def build_document(script_dir: Path | None = None) -> Document:
     note.paragraph_format.left_indent = Pt(18)
     nr = note.add_run(
         "Immigration packet: include direct links to each listing and/or dated PDF screenshots "
-        "as labeled exhibits (e.g., Exhibit C-3a through C-3d)."
+        "as labeled exhibits (e.g., Exhibit C-3a through C-3d), including the IndieHunt winner "
+        "confirmation emails and the LinkedIn company page."
     )
     nr.italic = True
     nr.font.size = Pt(10)
@@ -519,10 +528,10 @@ def build_document(script_dir: Path | None = None) -> Document:
         "being asked to — indicates a repeatable engineering judgment rather than a one-off result, and the "
         "production pipeline’s own throughput (approximately 47× realtime on long-form video, measured, not "
         "estimated) shows the discipline was applied without sacrificing commercial performance. Independent "
-        "distribution and review channels reinforce field recognition: the product is featured on IndieHunt, "
-        "carries a Fazier badge or listing, and is published on G2 and Capterra, which are widely used by "
-        "buyers to evaluate software — evidence that the contribution sits in the commercial marketplace, "
-        "not only in a private deployment."
+        "distribution and review channels reinforce field recognition: the product placed 1st (Winner, judged "
+        "and voted, 8 votes) in its IndieHunt weekly launch cohort, carries a Fazier badge or listing, is "
+        "published on G2 and Capterra, and maintains a public LinkedIn company presence — evidence that the "
+        "contribution sits in the commercial marketplace, not only in a private deployment."
     )
 
     o3 = doc.add_paragraph()
@@ -546,8 +555,10 @@ def build_document(script_dir: Path | None = None) -> Document:
     ex_rows = [
         [
             "IndieHunt",
-            "Featured listing or feature placement for VideoText.io",
-            "Screenshot or permalink to the IndieHunt feature page",
+            "1st place / Winner, weekly launch cohort, 8 votes, week of 2026-06-29 (judged/voted "
+            "ranking, not a directory listing)",
+            "IndieHunt winner confirmation emails (dated 2026-06-29, 2026-07-05) plus permalink/"
+            "screenshot of the result page",
         ],
         [
             "Fazier",
@@ -564,8 +575,13 @@ def build_document(script_dir: Path | None = None) -> Document:
             "Published product profile",
             "Capterra product page URL plus dated screenshot",
         ],
+        [
+            "LinkedIn",
+            "Company page, 155 followers",
+            "LinkedIn company page URL plus dated screenshot",
+        ],
     ]
-    add_table(doc, ex_headers, ex_rows, col_widths_inches=[1.1, 2.2, 2.9])
+    add_table(doc, ex_headers, ex_rows, col_widths_inches=[1.1, 2.4, 2.7])
 
     # --- Appendix: public writing (blogs, Medium, etc.) ---
     add_heading(doc, "Appendix: Public writing supporting VideoText.io", level=1)

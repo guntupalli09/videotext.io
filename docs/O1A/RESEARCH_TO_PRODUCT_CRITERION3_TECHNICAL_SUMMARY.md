@@ -10,12 +10,13 @@ The Word file includes an **appendix** that auto-lists all posts under `content/
 
 **Third-party product presence (published listings / features):**
 
-- **IndieHunt** — VideoText.io is **featured** on IndieHunt (independent product discovery).
+- **IndieHunt** — VideoText.io **won 1st place (Winner status, 8 votes)** in its weekly IndieHunt launch cohort, week of 2026-06-29 — an independent, judged/voted product ranking, not merely a directory listing. IndieHunt confirmed the placement and issued a winner badge and a dofollow backlink upgrade (email confirmations dated 2026-06-29 and 2026-07-05).
 - **Fazier** — Product carries the **Fazier** badge / listing on the Fazier platform.
 - **G2** — Product profile **published** on [G2](https://www.g2.com/) (business software reviews and comparison).
 - **Capterra** — Product profile **published** on [Capterra](https://www.capterra.com/) (software discovery and reviews).
+- **LinkedIn** — Company page with **155 followers**, used for product updates and professional-audience distribution.
 
-*For the immigration packet: add direct URLs or PDF screenshots of each listing as exhibits.*
+*For the immigration packet: add direct URLs or PDF screenshots of each listing as exhibits, including the IndieHunt winner confirmation emails and the LinkedIn company page.*
 
 ---
 
@@ -79,7 +80,7 @@ This second application is offered as **corroborating evidence of originality an
 
 1. **Originality (research):** The ICCS work is not a prompt tweak; it is a **reproducibility-first execution model** with **empirical measurement** of determinism, traceability, variance, and cost, including **negative results** for “structured output” LLM baselines that still fail execution invariance.
 
-2. **Significance (industry):** VideoText.io converts that research mindset into **shipping software** with **subscriptions and usage metering**, proving the applicant can operationalize hybrid AI systems **beyond a lab benchmark** — a relatively rare combination in O-1A filings that often show **either** publications **or** a product, **not** a coherent bridge between the two. That the applicant then **independently re-applied** the same governed-determinism methodology to a second, unrelated system — reaching a measured zero-unexplained-discrepancy reconciliation result without being asked to — indicates repeatable engineering judgment, and the production pipeline’s own throughput (**~47× realtime**, measured) shows the discipline was applied without sacrificing commercial performance. **Independent distribution and review channels reinforce field recognition:** the product is **featured on IndieHunt**, carries a **Fazier** badge / listing, and is **published on G2 and Capterra**, which are widely used by buyers to evaluate software—evidence that the contribution sits in the **commercial marketplace**, not only in a private deployment.
+2. **Significance (industry):** VideoText.io converts that research mindset into **shipping software** with **subscriptions and usage metering**, proving the applicant can operationalize hybrid AI systems **beyond a lab benchmark** — a relatively rare combination in O-1A filings that often show **either** publications **or** a product, **not** a coherent bridge between the two. That the applicant then **independently re-applied** the same governed-determinism methodology to a second, unrelated system — reaching a measured zero-unexplained-discrepancy reconciliation result without being asked to — indicates repeatable engineering judgment, and the production pipeline’s own throughput (**~47× realtime**, measured) shows the discipline was applied without sacrificing commercial performance. **Independent distribution and review channels reinforce field recognition:** the product **placed 1st (Winner, judged and voted, 8 votes)** in its IndieHunt weekly launch cohort, carries a **Fazier** badge / listing, is **published on G2 and Capterra**, and maintains a public **LinkedIn** company presence — evidence that the contribution sits in the **commercial marketplace**, not only in a private deployment.
 
 3. **Integrity for adjudication:** The strongest argument is **architectural and professional continuity** (deterministic cores where feasible, explicit boundaries for generative layers, traceable artifacts, production hardening), **plus** the paper’s **quantitative guarantees in its evaluated domain**. Claiming VideoText reproduces the paper’s **100% determinism** for **speech transcription** would be inaccurate and should **not** be asserted; the accurate claim is **controlled hybrid design and commercial proof of impact** grounded in the same research-led engineering philosophy.
 
@@ -91,10 +92,11 @@ Use this block when assembling Criterion 3 evidence; keep URLs current on the ex
 
 | Channel | Claim in this document | Suggested exhibit |
 |--------|-------------------------|-------------------|
-| IndieHunt | Featured listing / feature placement for VideoText.io | Screenshot or link to the IndieHunt feature page |
+| IndieHunt | 1st place / Winner, weekly launch cohort, 8 votes, week of 2026-06-29 (judged/voted ranking) | Winner confirmation emails (2026-06-29, 2026-07-05) + permalink/screenshot of result page |
 | Fazier | Fazier badge or product page | Screenshot of badge on site and/or Fazier product URL |
 | G2 | Published product profile | G2 product page URL + screenshot |
 | Capterra | Published product profile | Capterra product page URL + screenshot |
+| LinkedIn | Company page, 155 followers | LinkedIn company page URL + dated screenshot |
 
 ---
 
