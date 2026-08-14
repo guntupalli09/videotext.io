@@ -518,7 +518,8 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
       `,
       prisma.feedback.findMany({
         orderBy: { createdAt: 'desc' },
-        take: 20,
+        // Keep a deep history available in the founder feedback table and CSV export.
+        take: 15_000,
         select: { id: true, toolId: true, stars: true, comment: true, planAtSubmit: true, createdAt: true, userId: true, userNameOrEmail: true, email: true, topTool: true, topToolReason: true, featureRequest: true, otherFeedback: true, source: true },
       }),
       prisma.$queryRaw<[{ mrrCents: bigint | null }]>`

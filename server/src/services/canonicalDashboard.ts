@@ -491,30 +491,30 @@ export async function compareDashboardMetrics(): Promise<MetricComparison[]> {
     'only feedback explicitly attributed to one of the 4 excluded accounts would differ.'
   )
 
-  // ── Feedback: actual served shape (Sprint 8) -- LIMIT 20, ORDER BY createdAt DESC, id-list comparison ──
+  // ── Feedback: actual served shape (Sprint 8) -- LIMIT 15000, ORDER BY createdAt DESC, id-list comparison ──
   // Sprint 6 §2 excluded `feedback` because only the aggregate count above
-  // had been validated, not the actual served (most-recent-20) row set.
+  // had been validated, not the actual served feedback row set.
   const [feedbackRowsLegacy, feedbackRowsCanonical] = await Promise.all([
-    prisma.$queryRaw<{ id: string }[]>`SELECT id FROM "Feedback" ORDER BY "createdAt" DESC LIMIT 20`,
+    prisma.$queryRaw<{ id: string }[]>`SELECT id FROM "Feedback" ORDER BY "createdAt" DESC LIMIT 15000`,
     prisma.$queryRaw<{ id: string }[]>`
       SELECT f.id FROM "Feedback" f
       LEFT JOIN business_users bu ON bu.id = f."userId"
       WHERE f."userId" IS NULL OR bu."includeInBusinessMetrics"
-      ORDER BY f."createdAt" DESC LIMIT 20
+      ORDER BY f."createdAt" DESC LIMIT 15000
     `,
   ])
   const feedbackIdsLegacy = feedbackRowsLegacy.map((r) => r.id)
   const feedbackIdsCanonical = feedbackRowsCanonical.map((r) => r.id)
   const feedbackIdsIdentical = JSON.stringify(feedbackIdsLegacy) === JSON.stringify(feedbackIdsCanonical)
   comparisons.push({
-    card: 'feedback', metric: 'served feed (LIMIT 20, id list)',
+    card: 'feedback', metric: 'served feed (LIMIT 15000, id list)',
     source: '"Feedback" (legacy) vs "Feedback" LEFT JOIN business_users, excluding founder/internal/demo submitters (canonical)',
     legacyValue: feedbackIdsLegacy, canonicalValue: feedbackIdsCanonical,
     absoluteDiff: null, percentDiff: null,
     classification: feedbackIdsIdentical ? 'IDENTICAL' : 'EXPECTED_DIVERGENCE',
     explanation: feedbackIdsIdentical
-      ? 'The most recent 20 feedback rows are identical -- none of the last 20 submissions came from an excluded account.'
-      : 'One or more of the most recent 20 submissions came from an excluded account (founder/internal/demo) and is present in legacy but not canonical; every canonical id is still a subset of the legacy id set.',
+      ? 'The most recent 15000 feedback rows are identical -- none of those submissions came from an excluded account.'
+      : 'One or more of the most recent 15000 submissions came from an excluded account (founder/internal/demo) and is present in legacy but not canonical; every canonical id is still a subset of the legacy id set.',
   })
 
   // ── feedbackByTool: per-tool avgStars/count (Sprint 8) ────────────────

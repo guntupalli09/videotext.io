@@ -9,7 +9,7 @@
  * (Sprint 6 §2): `usage.topUsersByJobCount` (full row, not just email),
  * `toolPerf` (all 6 fields, not just `count`), `costMetrics` (all 4 fields,
  * not just `jobCount`/`totalWhisperCostUsd`), `feedback` (actual served
- * LIMIT-20 feed, not just an aggregate count), `feedbackByTool`,
+ * LIMIT-15000 feed, not just an aggregate count), `feedbackByTool`,
  * `starDistribution` — all still gated by the same `DASHBOARD_CANONICAL_
  * CUTOVER` flag (still default off; this sprint does not add a new flag).
  *
@@ -285,7 +285,7 @@ async function canonicalFeedback(): Promise<{
       f.email, f."topTool", f."topToolReason", f."featureRequest", f."otherFeedback", f.source
     FROM "Feedback" f LEFT JOIN business_users bu ON bu.id = f."userId"
     WHERE f."userId" IS NULL OR bu."includeInBusinessMetrics"
-    ORDER BY f."createdAt" DESC LIMIT 20
+    ORDER BY f."createdAt" DESC LIMIT 15000
   `
   const userIds = rows.map((f) => f.userId).filter((id): id is string => id !== null)
   const users = userIds.length > 0

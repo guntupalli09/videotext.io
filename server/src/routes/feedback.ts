@@ -91,7 +91,7 @@ router.get('/', async (req: Request, res: Response) => {
   try {
     const list = await prisma.feedback.findMany({
       orderBy: { createdAt: 'desc' },
-      take: 500,
+      take: 15_000,
     })
     return res.json(list)
   } catch (e) {
