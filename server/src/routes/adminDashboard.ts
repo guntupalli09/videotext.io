@@ -526,20 +526,26 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
         FROM "SubscriptionSnapshot"
         WHERE status = 'active'
       `,
-      // All users with total and 30d job counts
+      // Every user with total and 30d job counts. Keep this query unbounded so
+      // older accounts remain available in the founder table and CSV export.
       prisma.$queryRaw<{
         id: string; email: string; name: string | null; plan: string; createdAt: Date; lastActiveAt: Date | null;
         utmSource: string | null; firstReferrer: string | null;
         totalJobs: bigint; jobCount30d: bigint;
       }[]>`
+        WITH job_counts AS (
+          SELECT "userId",
+            COUNT(*)::bigint AS "totalJobs",
+            COUNT(*) FILTER (WHERE "createdAt" >= ${thirtyDaysAgo})::bigint AS "jobCount30d"
+          FROM "Job"
+          GROUP BY "userId"
+        )
         SELECT u.id, u.email, u.name, u.plan, u."createdAt", u."lastActiveAt", u."utmSource", u."firstReferrer",
-          COUNT(j.id)::bigint as "totalJobs",
-          COUNT(j.id) FILTER (WHERE j."createdAt" >= ${thirtyDaysAgo})::bigint as "jobCount30d"
+          COALESCE(jc."totalJobs", 0)::bigint AS "totalJobs",
+          COALESCE(jc."jobCount30d", 0)::bigint AS "jobCount30d"
         FROM "User" u
-        LEFT JOIN "Job" j ON j."userId" = u.id
-        GROUP BY u.id, u.email, u.name, u.plan, u."createdAt", u."lastActiveAt", u."utmSource", u."firstReferrer"
+        LEFT JOIN job_counts jc ON jc."userId" = u.id
         ORDER BY u."createdAt" DESC
-        LIMIT 500
       `,
       // Daily metrics trend last 31 days — includes totalUsers for growth chart
       prisma.dailyMetrics.findMany({
