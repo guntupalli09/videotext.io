@@ -89,7 +89,7 @@ const BestDescriptAlternatives = lazy(() => import('./pages/BestDescriptAlternat
 const AiTranscriptionWorkflow = lazy(() => import('./pages/AiTranscriptionWorkflow'))
 const PodcastTranscriptionTool = lazy(() => import('./pages/PodcastTranscriptionTool'))
 const InterviewTranscriptionTool = lazy(() => import('./pages/InterviewTranscriptionTool'))
-const YoutubeTranscriptGenerator = lazy(() => import('./pages/YoutubeTranscriptGenerator'))
+// const YoutubeTranscriptGenerator = lazy(() => import('./pages/YoutubeTranscriptGenerator'))
 const Unsubscribe = lazy(() => import('./pages/Unsubscribe'))
 const JoinFoundingTeam = lazy(() => import('./pages/JoinFoundingTeam'))
 const NotFound = lazy(() => import('./pages/NotFound'))
@@ -563,7 +563,7 @@ function App() {
             <Route path="/ai-transcription-workflow" element={<AiTranscriptionWorkflow />} />
             <Route path="/podcast-transcription-tool" element={<PodcastTranscriptionTool />} />
             <Route path="/interview-transcription-tool" element={<InterviewTranscriptionTool />} />
-            <Route path="/youtube-transcript-generator" element={<YoutubeTranscriptGenerator />} />
+            {/* <Route path="/youtube-transcript-generator" element={<YoutubeTranscriptGenerator />} /> */}
             <Route path="/youtube-url-to-transcription" element={<Navigate to="/youtube-transcript-generator" replace />} />
             <Route path="/youtube-to-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
             <Route path="/youtube-video-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
