@@ -558,7 +558,7 @@ export async function compareDashboardMetrics(): Promise<MetricComparison[]> {
 
   // ── Not-yet-comparable: users (allUsers, Sprint 8 finding) ────────────
   comparisons.push({
-    card: 'users', metric: 'allUsers (LIMIT 500, full row)', source: '"User" LEFT JOIN "Job" (legacy) vs business_users (canonical)',
+    card: 'users', metric: 'allUsers (unbounded, full row)', source: '"User" LEFT JOIN aggregated "Job" counts (legacy) vs business_users (canonical)',
     legacyValue: 'n/a', canonicalValue: 'n/a', absoluteDiff: null, percentDiff: null,
     classification: 'NOT_YET_COMPARABLE',
     explanation: 'Sprint 8 finding: the served row includes "name" and "lastActiveAt", neither of which business_users ' +
