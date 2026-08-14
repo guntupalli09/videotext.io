@@ -1,6 +1,5 @@
-import { useRef, useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ClipboardCheck, Upload, ChevronRight, X, Check } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { ImageWithFallback } from "./ImageWithFallback";
 import TrustBadge from "../TrustBadge";
 
@@ -12,218 +11,33 @@ const CREATOR_AVATARS = [
   "https://i.pravatar.cc/80?img=56",
 ];
 
-const ACCEPTED = [
-  "video/mp4",
-  "video/quicktime",
-  "video/webm",
-  "video/x-matroska",
-  "video/x-msvideo",
-  "video/mpeg",
-  "video/ogg",
-  "video/3gpp",
-  "audio/mpeg",
-  "audio/wav",
-  "audio/ogg",
-  "audio/webm",
-  "audio/mp4",
-  "audio/flac",
-  "audio/aac",
-];
-
-function HeroDropzone() {
-  const navigate = useNavigate();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [dragging, setDragging] = useState(false);
-
-  const handleFile = useCallback(
-    (file: File) => {
-      (
-        window as Window & { __videotextPendingFile?: File }
-      ).__videotextPendingFile = file;
-      navigate("/video-to-transcript");
-    },
-    [navigate],
-  );
-
-  const onDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setDragging(false);
-      const file = e.dataTransfer.files?.[0];
-      if (file) handleFile(file);
-    },
-    [handleFile],
-  );
-
-  const onDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragging(true);
-  };
-  const onDragLeave = () => setDragging(false);
-
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleFile(file);
-  };
-
+function HeroActions() {
   return (
-    <div className="w-full max-w-xl mx-auto">
-      <input
-        ref={inputRef}
-        type="file"
-        accept={ACCEPTED.join(",")}
-        className="hidden"
-        onChange={onInputChange}
-      />
-
-      {/* PRIMARY: Apply Formatting Guidelines */}
-      <Link
-        to="/guideline-format"
-        className="group block rounded-2xl border border-blue-400/35 bg-gradient-to-br from-blue-600/20 via-blue-500/12 to-blue-400/8 shadow-[0_0_0_1px_rgba(139,92,246,0.28),0_20px_60px_rgba(48,21,114,0.55)] hover:border-blue-400/65 hover:from-blue-600/28 hover:to-blue-400/14 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.55),0_4px_60px_rgba(139,92,246,0.32)] transition-all duration-200 px-5 py-5"
-      >
-        <div className="flex items-start gap-3.5 mb-3.5">
-          <div className="w-10 h-10 rounded-xl bg-blue-600/22 border border-blue-400/20 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600/32 transition-colors">
-            <ClipboardCheck className="w-5 h-5 text-blue-300" />
-          </div>
-          <div className="flex-1">
-            <p className="text-white font-bold text-[15px] leading-tight mb-1">
-              Apply Formatting Guidelines
-            </p>
-            <p className="text-white/50 text-[12px] leading-snug">
-              Validate against Rev, GoTranscript &amp; custom client rules.
-              Get a pass/fail summary with exact fixes — QA-ready in seconds.
-            </p>
-          </div>
-          <ChevronRight className="w-4 h-4 text-blue-400/50 group-hover:text-blue-300 group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-0.5" />
-        </div>
-
-        {/* Operational benefit chips */}
-        <div className="flex flex-wrap gap-1.5 mb-3.5">
-          {[
-            "45 min → 8 min cleanup",
-            "Auto-apply client rules",
-            "QA-ready on first pass",
-          ].map((chip) => (
-            <span
-              key={chip}
-              className="inline-flex items-center text-[10px] font-semibold text-blue-300/80 bg-blue-600/15 border border-blue-500/25 rounded-full px-2.5 py-0.5"
-            >
-              {chip}
-            </span>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-1 text-[13px] font-bold text-orange-400 group-hover:gap-2 transition-all drop-shadow-[0_0_10px_rgba(251,146,60,0.6)]">
-          Generate client-ready transcript{" "}
-          <ChevronRight className="w-3.5 h-3.5" />
-        </div>
-      </Link>
-
-      {/* BEFORE → AFTER transformation */}
-      <div className="mt-2.5 rounded-xl border border-white/[0.06] bg-white/[0.015] overflow-hidden">
-        <div className="flex">
-          <div className="flex-1 p-3 border-r border-white/[0.06]">
-            <p className="text-[9px] font-bold uppercase tracking-widest text-red-400/65 mb-2">
-              Before
-            </p>
-            <ul className="space-y-1">
-              {[
-                "Inconsistent speaker labels",
-                "Timestamp clutter",
-                "Formatting violations",
-                "Broken segmentation",
-                "Manual QA cleanup",
-              ].map((item) => (
-                <li
-                  key={item}
-                  className="flex items-start gap-1.5 text-[10.5px] text-white/30"
-                >
-                  <X className="w-2.5 h-2.5 text-red-400/50 flex-shrink-0 mt-0.5" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="flex items-center justify-center w-8 flex-shrink-0">
-            <span className="text-white/20 text-base">→</span>
-          </div>
-
-          <div className="flex-1 p-3">
-            <p className="text-[9px] font-bold uppercase tracking-widest text-emerald-400/70 mb-2">
-              After
-            </p>
-            <ul className="space-y-1">
-              {[
-                "Rev-compliant transcript",
-                "Clean speaker formatting",
-                "QA-ready structure",
-                "Export-ready output",
-              ].map((item) => (
-                <li
-                  key={item}
-                  className="flex items-start gap-1.5 text-[10.5px] text-white/55"
-                >
-                  <Check className="w-2.5 h-2.5 text-emerald-400/70 flex-shrink-0 mt-0.5" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Divider */}
-      <div className="flex items-center gap-3 my-4">
-        <div className="flex-1 h-px bg-white/[0.07]" />
-        <span className="text-[10px] text-white/20 font-medium tracking-wider uppercase">
-          or transcribe a new file
-        </span>
-        <div className="flex-1 h-px bg-white/[0.07]" />
-      </div>
-
-      {/* SECONDARY: Upload zone */}
-      <div
-        role="button"
-        tabIndex={0}
-        aria-label="Drop a video or audio file here, or click to browse"
-        onClick={() => inputRef.current?.click()}
-        onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
-        onDrop={onDrop}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        className={`
-          relative cursor-pointer rounded-xl border border-dashed px-4 py-3
-          flex items-center gap-3 transition-all duration-200 select-none
-          ${
-            dragging
-              ? "border-orange-400 bg-orange-500/10 shadow-[0_0_0_1px_rgba(251,146,60,0.4),0_0_18px_rgba(251,146,60,0.15)] scale-[1.01]"
-              : "border-orange-400/50 bg-orange-500/[0.04] hover:border-orange-400/70 hover:bg-orange-500/[0.07] shadow-[0_0_12px_rgba(251,146,60,0.1)]"
-          }
-        `}
-      >
-        <div
-          className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
-            dragging ? "bg-orange-500/20" : "bg-orange-500/[0.08]"
-          }`}
+    <div className="flex flex-col items-center">
+      <div className="flex w-full max-w-3xl flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+        <Link
+          to="/video-to-transcript"
+          className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-bold text-gray-950 shadow-[0_12px_35px_rgba(249,115,22,0.28)] transition hover:bg-orange-400 hover:shadow-[0_14px_40px_rgba(249,115,22,0.4)]"
         >
-          {dragging ? (
-            <Upload className="w-5 h-5 text-orange-400" />
-          ) : (
-            <span className="text-2xl" aria-hidden>
-              🎬
-            </span>
-          )}
-        </div>
-        <div>
-          <p className="font-bold text-[13px] leading-snug text-orange-300 drop-shadow-[0_0_8px_rgba(251,146,60,0.45)]">
-            {dragging ? "Release to start transcribing" : "Upload video or audio"}
-          </p>
-          <p className="text-white/40 text-[11px]">
-            MP4, MOV, MKV · MP3, WAV, M4A — results in minutes
-          </p>
-        </div>
+          Transcribe a Video/Audio
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+        </Link>
+        <Link
+          to="/video-to-subtitles"
+          className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/20 bg-white/[0.07] px-6 py-3 text-sm font-semibold text-white transition hover:border-white/35 hover:bg-white/[0.12]"
+        >
+          Create Subtitles
+        </Link>
+        <Link
+          to="/fix-subtitles"
+          className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/10 px-6 py-3 text-sm font-semibold text-white/75 transition hover:border-white/25 hover:bg-white/[0.06] hover:text-white"
+        >
+          Fix an SRT
+        </Link>
       </div>
+      <p className="mt-3 text-center text-xs font-medium text-white/45">
+        No signup required <span aria-hidden>·</span> Results in minutes
+      </p>
     </div>
   );
 }
@@ -254,28 +68,19 @@ export function Hero() {
 
         {/* H1 */}
         <h1
-          className="text-center font-display font-medium tracking-tight leading-[1.08] mb-2 whitespace-nowrap"
-          style={{ fontSize: "clamp(1.35rem, 3.4vw, 2.75rem)" }}
+          className="mx-auto mb-3 max-w-4xl text-center font-display font-medium tracking-tight leading-[1.08]"
+          style={{ fontSize: "clamp(2rem, 4.6vw, 3.75rem)" }}
         >
-          <span className="text-white">
-            Deliver Client-Ready Transcripts &amp; Subtitles —{" "}
-          </span>
-          <span className="bg-gradient-to-r from-fuchsia-300 via-blue-300 to-blue-300 bg-clip-text text-transparent">
-            Fast.
-          </span>
+          <span className="text-white">Turn Any Video Into a Clean Transcript or Perfect Subtitles — </span>
+          <span className="bg-gradient-to-r from-fuchsia-300 via-blue-300 to-blue-300 bg-clip-text text-transparent">Fast.</span>
         </h1>
 
         {/* Sub-headline */}
-        <p className="text-center text-[15px] sm:text-[16px] text-white/55 max-w-md mx-auto leading-relaxed mb-4">
-          Transcribe, subtitle, translate, and format audio/video into
-          delivery-ready files with built-in QA and export workflows —{" "}
-          <span className="text-fuchsia-300 font-medium">
-            all in one place.
-          </span>
+        <p className="mx-auto mb-6 max-w-2xl text-center text-[15px] leading-relaxed text-white/60 sm:text-[17px]">
+          Transcribe videos, generate subtitles, or fix broken SRT files in minutes with accurate timing, clean formatting, and export-ready results.
         </p>
 
-        {/* Dropzone + Formatter */}
-        <HeroDropzone />
+        <HeroActions />
 
         {/* Unified proof + trust block */}
         <div className="mt-6 w-full max-w-xl mx-auto flex flex-col items-center gap-4">
