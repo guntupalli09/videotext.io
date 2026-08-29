@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: '$0.25/minute (AI) or $1.99/min (human)' },
-  { label: 'Unlimited monthly plan available', videotext: true, competitor: false },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$0.25/minute (AI) or $1.99/min (human)' },
+  { label: 'Flat-rate monthly plan available', videotext: true, competitor: false },
   { label: 'Processing time (1-hour video)', videotext: '~2 min', competitor: '~5 min (AI) / 12+ hrs (human)' },
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'Files deleted after processing', videotext: true, competitor: false },
@@ -23,7 +23,7 @@ const COMPARE_ROWS = [
 const FAQ = [
   {
     q: 'What is the best free Rev alternative for AI transcription?',
-    a: 'VideoText is the most cost-effective alternative for AI transcription. Rev AI charges $0.25/minute — a 60-minute video costs $15. VideoText Pro is $40/month flat with no per-minute charges. Free tier included with 3 uploads/day, no card needed.',
+    a: 'VideoText is the most cost-effective alternative for AI transcription. Rev AI charges $0.25/minute — a 60-minute video costs $15. VideoText Pro is $7.99/month flat with no per-minute charges. Free tier included with 3 uploads/day, no card needed.',
   },
   {
     q: 'Is VideoText as accurate as Rev AI?',
@@ -35,7 +35,7 @@ const FAQ = [
   },
   {
     q: 'Why is Rev so expensive compared to VideoText?',
-    a: 'Rev\'s AI service charges per minute of audio ($0.25/min). A 10-hour course would cost $150 on Rev AI vs $40/month on VideoText Pro (unlimited). Rev\'s human transcription adds human reviewers, which justifies the $1.99/min premium for high-stakes content.',
+    a: 'Rev\'s AI service charges per minute of audio ($0.25/min). A 10-hour course would cost $150 on Rev AI vs $7.99/month on VideoText Pro. Rev\'s human transcription adds human reviewers, which justifies the $1.99/min premium for high-stakes content.',
   },
   {
     q: 'Can I import my existing Rev transcripts into VideoText?',
@@ -113,9 +113,9 @@ export default function RevAlternativePage() {
           <h2 className="text-lg font-medium text-amber-800 dark:text-amber-300 mb-3">Cost comparison: Rev AI vs VideoText</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
             {[
-              { label: '1 hour of video', rev: '$15.00', us: 'Free (3 imports/month)' },
-              { label: '10 hours/month', rev: '$150.00', us: '$40/month (Pro, unlimited)' },
-              { label: '20 hours/month', rev: '$300.00', us: '$40/month (Pro, unlimited)' },
+              { label: '1 hour of video', rev: '$15.00', us: 'Free (3 imports/day)' },
+              { label: '10 hours/month', rev: '$150.00', us: '$7.99/month (Pro)' },
+              { label: '20 hours/month', rev: '$300.00', us: '$7.99/month (Pro)' },
             ].map(({ label, rev, us }) => (
               <div key={label} className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-amber-100 dark:border-amber-500/10">
                 <div className="font-medium text-gray-700 dark:text-white/60 mb-2">{label}</div>
@@ -172,7 +172,7 @@ export default function RevAlternativePage() {
         {/* Key advantages */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
-            { icon: DollarSign, title: 'Flat-rate pricing', body: 'No per-minute billing. Pro is $40/month — unlimited processing, predictable costs for teams.' },
+            { icon: DollarSign, title: 'Flat-rate pricing', body: 'No per-minute billing. Pro is $7.99/month — continued processing, predictable costs for teams.' },
             { icon: Zap, title: 'Subtitle tools included', body: 'Rev AI charges separately for captions. VideoText includes SRT/VTT export, subtitle translation, timing fix, and burn in every plan.' },
             { icon: Shield, title: 'YouTube URL support', body: 'Rev requires a file upload. VideoText lets you paste any YouTube URL and processes it directly — no download step.' },
           ].map(({ icon: Icon, title, body }) => (

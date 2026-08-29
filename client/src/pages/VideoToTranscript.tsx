@@ -26,8 +26,10 @@ import SamplesModule from "../components/SamplesModule";
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from "../components/PaywallModal";
 import UpgradeBanner from "../components/UpgradeBanner";
+import FreePlanNudge from "../components/FreePlanNudge";
 import JobAuthGateModal from "../components/JobAuthGateModal";
 import { isLoggedIn } from "../lib/auth";
+import { isPaidPlan as hasPaidPlan } from "../lib/plans";
 import { ToolLayout } from "../components/figma/ToolLayout";
 import { UploadZone } from "../components/figma/UploadZone";
 import { ProcessingInterface } from "../components/figma/ProcessingInterface";
@@ -215,8 +217,6 @@ export type VideoToTranscriptSeoProps = {
 export default function VideoToTranscript(
   props: VideoToTranscriptSeoProps = {},
 ) {
-  const POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY =
-    "vt_post_success_monetization_panel_date";
   const {
     seoIntro,
     faq = [],
@@ -361,16 +361,12 @@ export default function VideoToTranscript(
   /** Timestamp of the last successful localStorage save — drives the "Saved" indicator. */
   const [editsSavedAt, setEditsSavedAt] = useState<number | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
-  const [showPostSuccessUpgrade, setShowPostSuccessUpgrade] = useState(false);
   const [showAuthGate, setShowAuthGate] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<"signup-combo" | "login">(
     "signup-combo",
   );
   const [availableMinutes, setAvailableMinutes] = useState<number | null>(null);
-  const [freeImportsRemaining, setFreeImportsRemaining] = useState<
-    number | null
-  >(null);
   const [hasCompletedJobs, setHasCompletedJobs] = useState<boolean | null>(
     null,
   );
@@ -424,10 +420,6 @@ export default function VideoToTranscript(
   const [audioVolume, setAudioVolume] = useState(1);
   const [audioMuted, setAudioMuted] = useState(false);
   const [audioSpeed, setAudioSpeed] = useState(1);
-  const [
-    showPostSuccessMonetizationPanel,
-    setShowPostSuccessMonetizationPanel,
-  ] = useState(false);
   const uploadCompletedAtRef = useRef<number | null>(null);
   const autoStartTriggeredForFileRef = useRef<string | null>(null);
   const shouldAutoStartNextFileRef = useRef(false);
@@ -652,17 +644,13 @@ export default function VideoToTranscript(
     getCurrentUsage({ skipCache: true })
       .then((data) => {
         if (data.quotaType !== "imports") {
-          setFreeImportsRemaining(null);
           setHasCompletedJobs(false);
           return;
         }
-        const limit = data.limit ?? 3;
         const used = data.used ?? data.usage?.importCount ?? 0;
         setHasCompletedJobs(used > 0);
-        setFreeImportsRemaining(Math.max(0, limit - used));
       })
       .catch(() => {
-        setFreeImportsRemaining(null);
         setHasCompletedJobs(null);
       });
   }, []);
@@ -1422,7 +1410,6 @@ export default function VideoToTranscript(
         : totalAvailable > 0 && used >= totalAvailable;
       if (atOrOverLimit) {
         setShowPaywall(true);
-        trackEvent("paywall_shown", { tool: "video-to-transcript" });
         trackEvent("upgrade_prompt_seen", getFunnelProps("quota_gate"));
         return;
       }
@@ -1462,10 +1449,6 @@ export default function VideoToTranscript(
         } else {
           toast.error(preflight.reason ?? "Video exceeds plan limits.");
         }
-        trackEvent("paywall_shown", {
-          tool: "video-to-transcript",
-          reason: "preflight",
-        });
         trackEvent("upgrade_prompt_seen", {
           ...getFunnelProps("preflight"),
           reason: preflight.reason ?? "plan_limit",
@@ -1931,10 +1914,6 @@ export default function VideoToTranscript(
         : totalAvailable > 0 && used >= totalAvailable;
       if (atOrOverLimit) {
         setShowPaywall(true);
-        trackEvent("paywall_shown", {
-          tool: "video-to-transcript",
-          source: "youtube",
-        });
         trackEvent("upgrade_prompt_seen", getFunnelProps("youtube_paywall"));
         return;
       }
@@ -2341,7 +2320,6 @@ export default function VideoToTranscript(
     setTranslationLanguage(null);
     setTranslatedCache({});
     setTranscriptView("original");
-    setShowPostSuccessUpgrade(false);
     hasTrackedFirstOutputRef.current = false;
     setBatchTranslateLanguage("");
     setBatchSpeakerDiarization(false);
@@ -2685,29 +2663,7 @@ export default function VideoToTranscript(
 
   const isPaidPlan =
     typeof window !== "undefined" &&
-    (localStorage.getItem("plan") || "free").toLowerCase() !== "free";
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (status !== "completed" || !result || isPaidPlan) {
-      setShowPostSuccessMonetizationPanel(false);
-      return;
-    }
-    const today = new Date().toISOString().slice(0, 10);
-    const lastShownDate = localStorage.getItem(
-      POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY,
-    );
-    if (lastShownDate === today) {
-      setShowPostSuccessMonetizationPanel(false);
-      return;
-    }
-    setShowPostSuccessMonetizationPanel(true);
-    try {
-      localStorage.setItem(POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY, today);
-    } catch {
-      /* localStorage unavailable; non-blocking */
-    }
-  }, [status, result, isPaidPlan, POST_SUCCESS_MONETIZATION_PANEL_DATE_KEY]);
+    hasPaidPlan(localStorage.getItem("plan"));
 
   // Track when the AI summary teaser is shown to a free user (fires once per completed job)
   useEffect(() => {
@@ -2728,7 +2684,7 @@ export default function VideoToTranscript(
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
       toast(
-        "You've used your 2 free exports. Upgrade for unlimited downloads.",
+        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
       );
       return;
     }
@@ -2788,7 +2744,7 @@ export default function VideoToTranscript(
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
       toast(
-        "You've used your 2 free exports. Upgrade for unlimited downloads.",
+        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
       );
       return;
     }
@@ -2844,7 +2800,7 @@ export default function VideoToTranscript(
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
       toast(
-        "You've used your 2 free exports. Upgrade for unlimited downloads.",
+        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
       );
       return;
     }
@@ -2904,7 +2860,7 @@ export default function VideoToTranscript(
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
       toast(
-        "You've used your 2 free exports. Upgrade for unlimited downloads.",
+        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
       );
       return;
     }
@@ -2968,7 +2924,7 @@ export default function VideoToTranscript(
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
       toast(
-        "You've used your 2 free exports. Upgrade for unlimited downloads.",
+        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
       );
       return;
     }
@@ -3030,7 +2986,7 @@ export default function VideoToTranscript(
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
       toast(
-        "You've used your 2 free exports. Upgrade for unlimited downloads.",
+        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
       );
       return;
     }
@@ -3302,26 +3258,7 @@ export default function VideoToTranscript(
   return (
     <>
       <ToolLayout {...layoutProps}>
-        <UpgradeBanner variant="video-length" />
-        {freeImportsRemaining != null && freeImportsRemaining <= 1 && (
-          <div className="mb-4 rounded-xl border border-amber-300/70 bg-amber-50/80 dark:border-amber-700/60 dark:bg-amber-950/25 px-4 py-3">
-            <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">
-              {freeImportsRemaining === 0
-                ? "No free imports left today."
-                : "1 free import left today."}
-            </p>
-            <p className="mt-1 text-xs text-amber-800 dark:text-amber-200/90">
-              Upgrade to Pro to keep processing without daily stops and remove
-              export watermarks.{" "}
-              <Link
-                to="/pricing"
-                className="font-semibold underline underline-offset-2 hover:opacity-90"
-              >
-                View Pro
-              </Link>
-            </p>
-          </div>
-        )}
+        <UpgradeBanner variant="video-length" tool="video-to-transcript" />
         {status === "idle" && !selectedFile && !isBatchMode && (
           <div className="space-y-4">
             {/* YouTube URL tab temporarily hidden — feature under development */}
@@ -4423,39 +4360,6 @@ export default function VideoToTranscript(
 
         {!isBatchMode && status === "completed" && result && (
           <>
-            {showPostSuccessUpgrade && !isPaidPlan && (
-              <div className="mb-4 rounded-xl border border-blue-300/70 bg-blue-50/80 dark:border-blue-700/60 dark:bg-blue-950/25 px-4 py-3">
-                <p className="text-sm font-semibold text-blue-900 dark:text-blue-300">
-                  First output complete 🎉 Next step: unlock faster repeats.
-                </p>
-                <p className="mt-1 text-xs text-blue-800 dark:text-blue-200/90">
-                  Upgrade CTR target for activated users is at least 20%.{" "}
-                  <Link
-                    to="/pricing"
-                    className="font-semibold underline underline-offset-2 hover:opacity-90"
-                    onClick={() => {
-                      trackAppEvent("upgrade_clicked", {
-                        source: "post_success_upgrade_panel",
-                        plan: "pro",
-                      });
-                      trackEvent("upgrade_clicked", {
-                        source: "post_success_upgrade_panel",
-                        plan: "pro",
-                      });
-                    }}
-                  >
-                    Compare plans
-                  </Link>
-                  <button
-                    type="button"
-                    className="ml-2 text-xs text-blue-700 dark:text-blue-300 underline"
-                    onClick={() => setShowPostSuccessUpgrade(false)}
-                  >
-                    Dismiss
-                  </button>
-                </p>
-              </div>
-            )}
             {/* ── Teaser preview card (non-logged-in) — first 10% of real content ── */}
             {showAuthGate &&
               !isLoggedIn() &&
@@ -4597,32 +4501,7 @@ export default function VideoToTranscript(
               className={`space-y-6 ${audioObjectUrl ? "pb-24 sm:pb-28" : ""}`}
               hidden={showAuthGate && !isLoggedIn()}
             >
-              {showPostSuccessMonetizationPanel && (
-                <div className="rounded-xl border border-blue-200/90 dark:border-blue-900/50 bg-blue-50/70 dark:bg-blue-950/20 px-5 py-4">
-                  <p className="text-sm sm:text-[15px] font-semibold text-blue-900 dark:text-blue-100">
-                    You just generated transcript + subtitles + summary. Upgrade
-                    to keep this workflow uninterrupted.
-                  </p>
-                  <div className="mt-3 flex items-center gap-3">
-                    <Link
-                      to="/pricing"
-                      onClick={() => {
-                        trackEvent("upgrade_clicked", {
-                          source: "post_first_success_panel",
-                          tool: "video-to-transcript",
-                        });
-                        setShowPostSuccessMonetizationPanel(false);
-                      }}
-                      className="inline-flex items-center rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
-                    >
-                      Upgrade now
-                    </Link>
-                    <p className="text-xs text-blue-700/90 dark:text-blue-300/90">
-                      Free plan includes watermark + daily cap.
-                    </p>
-                  </div>
-                </div>
-              )}
+              <FreePlanNudge tool="transcript" resultKey={currentJobId || result.downloadUrl} />
               {/* ── Transcript stats pills ── */}
               {(() => {
                 const text =
@@ -5416,7 +5295,7 @@ export default function VideoToTranscript(
                                         }
                                         if (!freeCanDownload || freeUsedAll) {
                                           toast(
-                                            "You've used your 2 free exports. Upgrade for unlimited downloads.",
+                                            "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
                                           );
                                           return;
                                         }
@@ -5535,7 +5414,7 @@ export default function VideoToTranscript(
                                         }
                                         if (freeUsedAll) {
                                           toast(
-                                            "You've used your 2 free exports. Upgrade for unlimited downloads.",
+                                            "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
                                           );
                                           return;
                                         }
@@ -5660,7 +5539,7 @@ export default function VideoToTranscript(
                                                 );
                                       if (freeUsedAll) {
                                         toast(
-                                          "You've used your 2 free exports. Upgrade for unlimited downloads.",
+                                          "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
                                         );
                                         return;
                                       }
@@ -6079,6 +5958,7 @@ export default function VideoToTranscript(
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
         reason={paywallReason}
+        tool="video-to-transcript"
       />
 
       <JobAuthGateModal

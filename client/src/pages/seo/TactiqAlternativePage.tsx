@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: 'Free / $8/mo' },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: 'Free / $8/mo' },
   { label: 'Transcribes uploaded recording files', videotext: true, competitor: false },
   { label: 'Works on past recordings you already have', videotext: true, competitor: false },
   { label: 'Browser extension required', videotext: false, competitor: true },
@@ -47,7 +47,7 @@ const FAQ = [
   },
   {
     q: 'Is VideoText free like Tactiq?',
-    a: 'Yes. VideoText free tier: 3 imports/month, no credit card, no browser extension install. Tactiq free tier: 5 meeting transcriptions/month, but only if you run the extension during the live call.',
+    a: 'Yes. VideoText free tier: 3 imports/day, no credit card, no browser extension install. Tactiq free tier: 5 meeting transcriptions/month, but only if you run the extension during the live call.',
   },
 ]
 

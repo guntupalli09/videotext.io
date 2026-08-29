@@ -1,53 +1,61 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Loader2, Zap } from 'lucide-react'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { trackEvent } from '../lib/analytics'
-import { createCheckoutSession } from '../lib/billing'
+import { createCheckoutSession, rememberCheckoutAttribution } from '../lib/billing'
+import { getCurrentUsage } from '../lib/api'
+import { isPaidPlan } from '../lib/plans'
 
 export type UpgradeBannerVariant =
-  | 'video-length'   // "Unlock full-length videos — upgrade to Pro"
+  | 'video-length'   // longer-video Pro value
   | 'watermark'      // "Remove watermark from all exports"
   | 'queue'          // "Process faster with priority queue"
   | 'ai-features'    // "Unlock AI chapters, keywords & summaries"
   | 'batch'          // "Process 20 videos at once with batch"
-  | 'voice'          // "Remove watermark & unlock full-length recordings"
+  | 'voice'          // voice export Pro value
 
 const MESSAGES: Record<UpgradeBannerVariant, { text: string; cta: string }> = {
   'video-length': {
     text: 'Free plan: 30 min max.',
-    cta: 'Unlock full-length videos (up to 2 hrs) — upgrade to Pro',
+    cta: 'Process videos up to 2 hours with Pro — $7.99/mo',
   },
   'watermark': {
     text: 'Your exports include a watermark.',
-    cta: 'Remove watermark — upgrade to Pro',
+    cta: 'Remove watermark — $7.99/mo',
   },
   'queue': {
     text: 'Free plan uses the standard queue.',
-    cta: 'Process faster with priority queue — upgrade to Pro',
+    cta: 'Unlock Pro — $7.99/mo',
   },
   'ai-features': {
     text: 'AI features are Pro-only.',
-    cta: 'Unlock AI chapters, keywords & summaries — upgrade to Pro',
+    cta: 'Unlock AI outputs — $7.99/mo',
   },
   'batch': {
     text: 'Batch processing is Pro-only.',
-    cta: 'Process 20 videos at once — upgrade to Pro',
+    cta: 'Process up to 20 videos — $7.99/mo',
   },
   'voice': {
     text: 'Voice recordings export with a watermark.',
-    cta: 'Remove watermark & unlock full-length recordings — upgrade to Pro',
+    cta: 'Unlock Pro — $7.99/mo',
   },
 }
 
 interface UpgradeBannerProps {
   variant?: UpgradeBannerVariant
+  tool?: string
 }
 
-export default function UpgradeBanner({ variant = 'video-length' }: UpgradeBannerProps) {
+export default function UpgradeBanner({ variant = 'video-length', tool }: UpgradeBannerProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const plan = typeof window !== 'undefined' ? (localStorage.getItem('plan') || 'free').toLowerCase() : 'free'
-  if (plan !== 'free') return null
+  const [plan, setPlan] = useState<string | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    getCurrentUsage().then(data => { if (!cancelled) setPlan(data.plan) }).catch(() => {})
+    return () => { cancelled = true }
+  }, [])
+  if (!plan || isPaidPlan(plan)) return null
 
   const { text, cta } = MESSAGES[variant]
 
@@ -56,16 +64,17 @@ export default function UpgradeBanner({ variant = 'video-length' }: UpgradeBanne
     setError(null)
     setLoading(true)
     try {
-      trackAppEvent('upgrade_clicked', { source: `upgrade_banner:${variant}`, plan: 'pro' })
-      trackEvent('upgrade_clicked', { source: `upgrade_banner:${variant}`, plan: 'pro' })
+      const attribution = { source: 'upgrade_banner', tool, variant, plan: 'free', billing_interval: 'monthly', displayed_price: 7.99 }
+      try { trackAppEvent('upgrade_clicked', attribution); trackEvent('upgrade_clicked', attribution) } catch { /* non-blocking */ }
       const { url } = await createCheckoutSession({
         mode: 'subscription',
         plan: 'pro',
+        billingInterval: 'monthly',
         returnToPath: '/pricing',
         frontendOrigin: window.location.origin,
       })
-      trackEvent('checkout_session_created', { source: `upgrade_banner:${variant}`, plan: 'pro' })
-      trackEvent('stripe_redirect', { source: `upgrade_banner:${variant}`, plan: 'pro' })
+      rememberCheckoutAttribution(attribution)
+      try { trackEvent('checkout_session_created', attribution); trackEvent('stripe_redirect', attribution) } catch { /* non-blocking */ }
       window.location.assign(url)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to start checkout. Please try again.'

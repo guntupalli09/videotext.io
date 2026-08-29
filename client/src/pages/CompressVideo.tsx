@@ -8,6 +8,8 @@ import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
+import FreePlanNudge from '../components/FreePlanNudge'
+import { isPaidPlan } from '../lib/plans'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
@@ -84,6 +86,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const processingStartedAtRef = useRef<number | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
+  const hasPaidPlan = isPaidPlan(plan)
 
   const fallbackCompressedName = useMemo(
     () => joinExportFilename(exportFileStem(selectedFile?.name, 'video'), 'video_compressed', '.mp4'),
@@ -419,9 +422,9 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
               title="Video compressed!"
               fileName={result.fileName ?? fallbackCompressedName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
-              downloadLabel={plan === 'free' ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download (2 free)') : 'Download Video'}
+              downloadLabel={!hasPaidPlan ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download (2 free)') : 'Download Video'}
               onDownload={
-                plan === 'free'
+                !hasPaidPlan
                   ? async () => {
                       if (freeExportsUsed >= 2) {
                         toast('You\'ve used your 2 free downloads. Upgrade for more.')
@@ -459,6 +462,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
               ]}
             />
             )}{/* end gate-hidden result */}
+            <FreePlanNudge tool="compress-video" resultKey={result.downloadUrl} />
             <div className="mt-2 min-h-[2.75rem]">
             {/* <WorkflowChainSuggestion
               pathname={location.pathname}
@@ -507,9 +511,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
-        onUpgrade={() => {
-          window.location.href = '/pricing'
-        }}
+        tool="compress-video"
       />
 
       <JobAuthGateModal

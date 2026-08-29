@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: '$80/month' },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$80/month' },
   { label: 'No credit card to start', videotext: true, competitor: false },
   { label: 'Processing time (1-hour video)', videotext: '~2 min', competitor: '8–15 min' },
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
@@ -23,7 +23,7 @@ const COMPARE_ROWS = [
 const FAQ = [
   {
     q: 'What is a cheaper Trint alternative?',
-    a: 'VideoText is the most direct budget alternative to Trint for pure transcription and subtitle workflows. Trint starts at $80/month for individuals; VideoText starts free and Pro is $40/month. Both use AI transcription, but VideoText also includes subtitle burning, video compression, and batch processing.',
+    a: 'VideoText is the most direct budget alternative to Trint for pure transcription and subtitle workflows. Trint starts at $80/month for individuals; VideoText starts free and Pro is $7.99/month. Both use AI transcription, but VideoText also includes subtitle burning, video compression, and batch processing.',
   },
   {
     q: 'Is VideoText as accurate as Trint?',
@@ -168,7 +168,7 @@ export default function TrintAlternativePage() {
         {/* Key advantages */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
-            { icon: DollarSign, title: '50% cheaper', body: 'Trint\'s minimum is $80/month. VideoText Pro is $40/month flat, unlimited — and starts free with no credit card.' },
+            { icon: DollarSign, title: 'About 90% cheaper', body: 'Trint\'s minimum is $80/month. VideoText Pro is $7.99/month flat rate — and starts free with no credit card.' },
             { icon: Zap, title: 'No enterprise sales process', body: 'Trint requires contacting sales for team plans. VideoText is self-serve — sign up, upgrade instantly, no calls.' },
             { icon: Shield, title: 'Complete file deletion', body: 'VideoText deletes your files after processing. Trint stores everything in their cloud by default.' },
           ].map(({ icon: Icon, title, body }) => (

@@ -4,9 +4,10 @@ import { Languages, Copy, Check, Download, ArrowRight, Bold, Italic, AlignLeft, 
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
-import PaywallModal from '../components/PaywallModal'
+import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import UpgradeBanner from '../components/UpgradeBanner'
+import FreePlanNudge from '../components/FreePlanNudge'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingInterface } from '../components/figma/ProcessingInterface'
@@ -18,6 +19,7 @@ const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
 import { incrementUsage } from '../lib/usage'
 import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, getAuthToken } from '../lib/api'
 import { isLoggedIn } from '../lib/auth'
+import { isPaidPlan as hasPaidPlan } from '../lib/plans'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
@@ -205,6 +207,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [targetLanguage, setTargetLanguage] = useState<string>('Spanish')
   const [copied, setCopied] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [paywallReason, setPaywallReason] = useState<PaywallReason>('FREE_DAILY_LIMIT_REACHED')
   const [showAuthGate, setShowAuthGate] = useState(false)
   const pendingDownloadRef = useRef<(() => void) | null>(null)
 
@@ -241,8 +244,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [docLoading, setDocLoading] = useState(false)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
-  const isPaidPlan = !['free', ''].includes(plan)
-  const canEdit = ['basic', 'pro', 'agency'].includes(plan)
+  const isPaidPlan = hasPaidPlan(plan)
+  const canEdit = hasPaidPlan(plan)
 
   /** Paste / .txt upload → .txt; file upload → .srt (or .vtt from server). */
   const translateFallbackExt: '.srt' | '.txt' =
@@ -322,7 +325,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     if (!isPaidPlan) {
       const today = new Date().toISOString().slice(0, 10)
       const used = parseInt(localStorage.getItem(`docTranslateUsed_${today}`) ?? '0', 10)
-      if (used >= 3) { setShowPaywall(true); return }
+      if (used >= 3) { setPaywallReason('DOCUMENT_TRANSLATION_LIMIT'); setShowPaywall(true); return }
     }
     try {
       setDocLoading(true)
@@ -337,7 +340,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     } catch (e: unknown) {
       const err = e as Error
       if (err.message === 'auth') toast.error('Sign in to translate')
-      else if (err.message === 'paywall') setShowPaywall(true)
+      else if (err.message === 'paywall') { setPaywallReason('DOCUMENT_TRANSLATION_LIMIT'); setShowPaywall(true) }
       else toast.error('Translation failed. Please try again.')
     } finally {
       setDocLoading(false)
@@ -397,6 +400,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       const used = isImports ? (usageData.used ?? usageData.usage?.importCount ?? 0) : usageData.usage.totalMinutes
       const atOrOverLimit = isImports ? used >= (usageData.limit ?? 3) : (totalAvailable > 0 && used >= totalAvailable)
       if (atOrOverLimit) {
+        setPaywallReason('FREE_DAILY_LIMIT_REACHED')
         setShowPaywall(true)
         return
       }
@@ -704,7 +708,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   return (
     <>
       <ToolLayout {...layoutProps}>
-        <UpgradeBanner variant="video-length" />
+        <UpgradeBanner variant="video-length" tool="translate-subtitles" />
 
         {kindSelector}
 
@@ -746,7 +750,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                   {!isPaidPlan && (
                     <p className="text-xs text-gray-400 dark:text-gray-500">
                       Free plan: 3 translations per day ·{' '}
-                      <Link to="/pricing" className="text-blue-600 hover:underline">Upgrade for unlimited</Link>
+                      <Link to="/pricing" className="text-blue-600 hover:underline">Unlock Pro — $7.99/mo</Link>
                     </p>
                   )}
                 </div>
@@ -766,7 +770,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 {!isPaidPlan && (
                   <p className="text-xs text-gray-400 dark:text-gray-500">
                     Free plan: 3 translations per day ·{' '}
-                    <Link to="/pricing" className="text-blue-600 hover:underline">Upgrade for unlimited</Link>
+                    <Link to="/pricing" className="text-blue-600 hover:underline">Unlock Pro — $7.99/mo</Link>
                   </p>
                 )}
                 <button
@@ -849,6 +853,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                     { path: '/video-to-subtitles', name: 'Video → Subtitles', description: 'Generate SRT/VTT from video' },
                   ]}
                 />
+                {inputKind === 'subtitles' && <FreePlanNudge tool="translation" resultKey={result.downloadUrl} />}
 
                 {/* Plain text result */}
                 {plainTextResult && (
@@ -965,7 +970,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 {!isPaidPlan && (
                   <p className="text-xs text-gray-400 dark:text-gray-500">
                     Free plan: 3 translations per day ·{' '}
-                    <Link to="/pricing" className="text-blue-600 hover:underline">Upgrade for unlimited</Link>
+                    <Link to="/pricing" className="text-blue-600 hover:underline">Unlock Pro — $7.99/mo</Link>
                   </p>
                 )}
                 <button
@@ -992,7 +997,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 {!isPaidPlan && (
                   <p className="text-xs text-gray-400 dark:text-gray-500">
                     Free plan: 3 translations per day ·{' '}
-                    <Link to="/pricing" className="text-blue-600 hover:underline">Upgrade for unlimited</Link>
+                    <Link to="/pricing" className="text-blue-600 hover:underline">Unlock Pro — $7.99/mo</Link>
                   </p>
                 )}
                 <button
@@ -1115,7 +1120,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
-        onUpgrade={() => { window.location.href = '/pricing' }}
+        reason={paywallReason}
+        tool="translate-subtitles"
       />
 
       {faq.length > 0 && (

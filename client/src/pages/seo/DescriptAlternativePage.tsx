@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: '$24/month' },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$24/month' },
   { label: 'No credit card to start', videotext: true, competitor: false },
   { label: 'Processing time (1-hour video)', videotext: '~2 min', competitor: '8–12 min' },
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
@@ -23,7 +23,7 @@ const COMPARE_ROWS = [
 const FAQ = [
   {
     q: 'What is the best free Descript alternative?',
-    a: 'VideoText is the most direct free alternative for pure transcription and subtitle workflows. Descript is a full video editor — if you only need transcripts, SRT files, or subtitle translation, VideoText is faster and cheaper. The free tier gives you 3 imports/month with no credit card.',
+    a: 'VideoText is the most direct free alternative for pure transcription and subtitle workflows. Descript is a full video editor — if you only need transcripts, SRT files, or subtitle translation, VideoText is faster and cheaper. The free tier gives you 3 imports/day with no credit card.',
   },
   {
     q: 'Can VideoText do everything Descript does?',
@@ -143,7 +143,7 @@ export default function DescriptAlternativePage() {
           {[
             { icon: Zap, title: '6× faster', body: 'VideoText processes a 2-hour video in ~3 minutes vs 15–20 minutes in Descript. No waiting on a cloud render.' },
             { icon: Shield, title: 'Files deleted instantly', body: 'Descript stores your project in their cloud. VideoText deletes your file the moment the job completes — nothing retained.' },
-            { icon: DollarSign, title: 'Free tier + Pro at $40/mo', body: 'Descript\'s cheapest paid plan is $24/month with limited features. VideoText starts free — 3 uploads/day, no card needed. Pro is $40/month.' },
+            { icon: DollarSign, title: 'Free tier + Pro at $7.99/mo', body: 'Descript\'s cheapest paid plan is $24/month with limited features. VideoText starts free — 3 uploads/day, no card needed. Pro is $7.99/month.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-3">

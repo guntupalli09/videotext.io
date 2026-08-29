@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: 'Free ($200 credits) / pay-per-use' },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: 'Free ($200 credits) / pay-per-use' },
   { label: 'Web UI — no code needed', videotext: true, competitor: false },
   { label: 'API key required', videotext: false, competitor: true },
   { label: 'Programming knowledge required', videotext: false, competitor: true },
@@ -47,7 +47,7 @@ const FAQ = [
   },
   {
     q: 'Is VideoText free unlike Deepgram?',
-    a: 'VideoText free tier: 3 full imports/month, no credit card, no API key setup. Deepgram offers $200 in free credits (~45 hours of audio) but requires account creation, API key setup, and code to make any transcription request.',
+    a: 'VideoText free tier: 3 imports/day, no credit card, no API key setup. Deepgram offers $200 in free credits (~45 hours of audio) but requires account creation, API key setup, and code to make any transcription request.',
   },
 ]
 

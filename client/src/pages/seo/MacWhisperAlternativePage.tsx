@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: 'Free / $29 one-time (Pro)' },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: 'Free / $29 one-time (Pro)' },
   { label: 'Works on Windows and Linux', videotext: true, competitor: false },
   { label: 'Works on Mac', videotext: true, competitor: true },
   { label: 'Browser-based — no install needed', videotext: true, competitor: false },
@@ -47,7 +47,7 @@ const FAQ = [
   },
   {
     q: 'Is VideoText free like MacWhisper?',
-    a: 'VideoText free tier: 3 uploads/day, no credit card. MacWhisper has a free tier but limits features — Pro is a one-time $29 purchase. VideoText Pro is $40/month for unlimited processing.',
+    a: 'VideoText free tier: 3 uploads/day, no credit card. MacWhisper has a free tier but limits features — Pro is a one-time $29 purchase. VideoText Pro is $7.99/month for continued processing.',
   },
 ]
 

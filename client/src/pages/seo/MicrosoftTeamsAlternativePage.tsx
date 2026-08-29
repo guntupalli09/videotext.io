@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: '$30/user/mo (Copilot add-on)' },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$30/user/mo (Copilot add-on)' },
   { label: 'Works without Microsoft 365 Copilot', videotext: true, competitor: false },
   { label: 'Works on any Microsoft 365 plan', videotext: true, competitor: false },
   { label: 'Works on downloaded MP4 offline', videotext: true, competitor: false },

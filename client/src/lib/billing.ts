@@ -1,18 +1,24 @@
 import { api } from './api'
 
 export type BillingPlan = 'basic' | 'pro' | 'agency' | 'founding_workflow' | 'business'
+export type BillingInterval = 'monthly' | 'annual'
 
 export interface CheckoutParams {
   mode: 'subscription' | 'payment'
   plan?: BillingPlan
   annual?: boolean
+  billingInterval?: BillingInterval
   returnToPath?: string
   email?: string
   frontendOrigin?: string
-  /** Promo code for early testers (e.g. EARLY30, EARLY50, EARLY70, EARLY100). Applied for Pro and Founding Pro. */
+  /** Optional promotion code for eligible plans. */
   promotionCode?: string
   /** From POST /api/auth/verify-otp; required for subscription checkout. */
   emailVerificationToken?: string
+}
+
+export function rememberCheckoutAttribution(attribution: Record<string, unknown>): void {
+  try { localStorage.setItem('videotext:checkout_attribution', JSON.stringify(attribution)) } catch { /* non-blocking */ }
 }
 
 function isNetworkError(e: unknown): boolean {

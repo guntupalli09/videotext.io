@@ -81,7 +81,7 @@ export default function UsageDisplay({ refreshTrigger }: { refreshTrigger?: stri
       {showWarning && (
         <div className="rounded-md bg-amber-50 dark:bg-amber-900/30 px-3 py-1 text-[11px] text-amber-800 dark:text-amber-200">
           You&apos;ve used over 80% of your available quota for this billing cycle.
-          New jobs may be blocked soon unless you upgrade to Pro for unlimited processing.
+          New jobs may be blocked soon unless you upgrade to Pro for continued processing.
         </div>
       )}
     </div>

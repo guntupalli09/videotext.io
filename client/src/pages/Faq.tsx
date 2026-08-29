@@ -34,7 +34,7 @@ const FAQ_ITEMS = [
     category: "General",
     icon: HelpCircle,
     q: "Do I need to sign up?",
-    a: "Sign up for a free account to try. No credit card required. You get 3 free imports per month. Upgrade when you need more imports, languages, or batch processing.",
+    a: "Sign up for a free account to try. No credit card required. You get 3 free imports per day. Upgrade when you need more imports, languages, or batch processing.",
   },
   {
     category: "General",
@@ -181,7 +181,7 @@ const FAQ_ITEMS = [
     category: "Billing",
     icon: CreditCard,
     q: "What does Pro include that Free doesn't?",
-    a: "Pro unlocks: AI Summary, AI Chapters, Speaker diarization, Transcript translation (70+ languages), Batch processing (up to 20 videos), longer videos (2 hours vs 30 min), more languages, and no watermark on exports. Pro is $40/month.",
+    a: "Pro unlocks: AI Summary, AI Chapters, Speaker diarization, Transcript translation (70+ languages), Batch processing (up to 20 videos), longer videos (2 hours vs 30 min), more languages, and no watermark on exports. Pro is $7.99/month.",
   },
   {
     category: "Billing",

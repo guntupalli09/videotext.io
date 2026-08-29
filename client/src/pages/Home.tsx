@@ -34,20 +34,12 @@ const PLANS = [
   },
   {
     name: 'Pro',
-    price: '$40',
+    price: '$7.99',
     period: '/mo',
     detail: 'Full transcription and delivery workflows',
-    cta: 'Start Pro',
-    highlight: false,
-  },
-  {
-    name: 'Founding Pro',
-    price: '$24.99',
-    period: '/mo',
-    detail: 'Everything in Pro · lifetime founding price',
-    cta: 'Claim Founding Pro',
+    cta: 'Unlock Pro — $7.99/mo',
     highlight: true,
-    badge: '20 Spots Only',
+    badge: 'Most Popular',
   },
 ];
 
@@ -81,7 +73,7 @@ function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto"
         >
           {PLANS.map((plan) => (
             <Link
@@ -89,14 +81,14 @@ function PricingSection() {
               to="/pricing"
               className={`group relative rounded-xl p-6 text-left transition-all duration-200 ${
                 plan.highlight
-                  ? 'bg-gray-900 text-white shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/60'
+                  ? 'bg-gray-900 text-white shadow-2xl shadow-blue-500/20 ring-2 ring-blue-400/60'
                   : 'bg-white/[0.04] text-white hover:bg-white/[0.07] border border-white/[0.08] hover:border-white/[0.15]'
               }`}
             >
               {plan.highlight && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="text-[10px] font-bold text-gray-950 bg-amber-500 px-3 py-1 rounded-full shadow-lg">
-                    ⚡ {plan.badge}
+                  <span className="text-[10px] font-bold text-white bg-blue-600 px-3 py-1 rounded-full shadow-lg uppercase tracking-wide">
+                    {plan.badge}
                   </span>
                 </div>
               )}
@@ -108,14 +100,14 @@ function PricingSection() {
                   <span className="text-sm font-normal opacity-60">{plan.period}</span>
                 )}
               </p>
-              <p className={`text-[13px] mb-4 ${plan.highlight ? 'text-amber-100/80' : 'text-white/45'}`}>
+              <p className={`text-[13px] mb-4 ${plan.highlight ? 'text-blue-100/80' : 'text-white/45'}`}>
                 {plan.detail}
               </p>
 
               {plan.cta ? (
                 <div
                   className={`inline-flex items-center gap-1.5 text-sm font-bold group-hover:gap-2.5 transition-all ${
-                    plan.highlight ? 'text-amber-300' : 'text-blue-400 group-hover:text-blue-300'
+                    plan.highlight ? 'text-blue-300' : 'text-blue-400 group-hover:text-blue-300'
                   }`}
                 >
                   {plan.cta}

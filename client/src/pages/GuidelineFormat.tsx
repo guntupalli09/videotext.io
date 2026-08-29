@@ -18,6 +18,7 @@ import {
   cuesToVtt,
 } from "../lib/subtitleUtils";
 import JobAuthGateModal from "../components/JobAuthGateModal";
+import ProResultNudge from "../components/ProResultNudge";
 import { isLoggedIn } from "../lib/auth";
 import {
   PRESET_DATA,
@@ -1769,6 +1770,12 @@ export default function GuidelineFormat() {
                   </div>
                 ) : (
                   <div className="space-y-6">
+                    <ProResultNudge
+                      tool="guideline-format"
+                      resultKey={jobId}
+                      title="Make every transcript client-ready"
+                      body="Unlock Pro for continued guideline formatting, QA, and professional delivery workflows."
+                    />
                     {jobStatus.validationReport?.summary && (
                       <div className="rounded-xl border border-gray-200 bg-white/80 p-2.5 shadow-sm dark:border-gray-700 dark:bg-gray-900/50">
                         <div className="flex flex-wrap items-start justify-between gap-2.5">

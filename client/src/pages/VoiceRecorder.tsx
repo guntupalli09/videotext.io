@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import UpgradeBanner from '../components/UpgradeBanner'
+import FreePlanNudge from '../components/FreePlanNudge'
+import { isPaidPlan as hasPaidPlan } from '../lib/plans'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mic,
@@ -675,7 +677,7 @@ export default function VoiceRecorder() {
     const baseText = useTranslated ? translatedText! : transcript
     const WM_SEP   = '=================================================================================='
     const WM_LINE1 = 'Fast AI transcription by VideoText.io — Free Plan'
-    const WM_LINE2 = '⚠  Remove this watermark: videotext.io/pricing  |  Upgrade to Pro'
+    const WM_LINE2 = '⚠  Remove this watermark with Pro: videotext.io/pricing  |  $7.99/mo'
     const content = isPaidPlan
       ? baseText
       : `${WM_SEP}\n${WM_LINE1}\n${WM_LINE2}\n${WM_SEP}\n\n${baseText}\n\n${WM_SEP}\n${WM_LINE1}\n${WM_LINE2}\n${WM_SEP}`
@@ -733,7 +735,7 @@ export default function VoiceRecorder() {
 
   const isPaidPlan =
     typeof window !== 'undefined' &&
-    (localStorage.getItem('plan') || 'free').toLowerCase() !== 'free'
+    hasPaidPlan(localStorage.getItem('plan'))
 
   const wordCount = transcript.trim().split(/\s+/).filter(Boolean).length
   const showCanvas = phase === 'idle' || phase === 'requesting' || phase === 'recording'
@@ -748,7 +750,7 @@ export default function VoiceRecorder() {
       tags={['Free', '99 Languages', 'Live Transcription', 'Translation']}
     >
       <div className={`max-w-2xl mx-auto space-y-5 ${audioObjectUrl ? 'pb-24 sm:pb-28' : 'pb-16'}`}>
-        <UpgradeBanner variant="voice" />
+        <UpgradeBanner variant="voice" tool="voice-recorder" />
 
         {/* ── Main recorder card ──────────────────────────────────────────── */}
         <motion.div
@@ -1283,12 +1285,13 @@ export default function VoiceRecorder() {
                       to="/pricing"
                       className="block text-center text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                     >
-                      Upgrade to Pro — remove watermark &amp; unlock all features →
+                      Unlock Pro — $7.99/mo →
                     </Link>
                   </div>
                 )}
 
                 </>)}{/* end gate-hidden result */}
+                {voiceJobId && <FreePlanNudge tool="voice" resultKey={voiceJobId} />}
 
                 {/* Record again */}
                 <button

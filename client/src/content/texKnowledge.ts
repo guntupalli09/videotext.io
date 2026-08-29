@@ -41,7 +41,7 @@ export const TEX_ENTRIES: TexEntry[] = [
     keywords: ['signup', 'sign up', 'account', 'register', 'free signup', 'free trial', 'try free'],
     question: 'Do I need to sign up?',
     answer:
-      "Sign up to try free (3 uploads/day, no credit card). When you're ready for unlimited processing or more features (batch, multi-language, no watermark), subscribe from Pricing.",
+      "Sign up to try free (3 uploads/day, no credit card). When you're ready for continued processing or more features (batch, multi-language, no watermark), subscribe from Pricing.",
     link: { path: '/pricing', label: 'See plans' },
   },
   // —— Tools ——
@@ -107,15 +107,15 @@ export const TEX_ENTRIES: TexEntry[] = [
     keywords: ['free', 'free plan', 'free tier', '3 imports', 'free limit', 'imports'],
     question: 'What’s included in the free plan?',
     answer:
-      'Free: 3 uploads per day, up to 30 min per video. Video → Transcript and Video → Subtitles, one language. No batch. Upgrade for unlimited processing and features.',
+      'Free: 3 uploads per day, up to 30 min per video. Video → Transcript and Video → Subtitles, one language. No batch. Upgrade for continued processing and features.',
     link: { path: '/pricing', label: 'See pricing' },
   },
   {
     id: "plan-pro",
-    keywords: ["pro", "pro plan", "$40", "40", "batch", "unlimited"],
+    keywords: ["pro", "pro plan", "$7.99", "batch", "workflow"],
     question: "What's in the Pro plan?",
     answer:
-      "Pro ($40/mo): unlimited processing, up to 2-hour videos. Batch processing (20 videos), 70+ languages, watermark-free exports, AI summary, chapters, speaker labels, priority queue.",
+      "Pro ($7.99/mo): continued processing, up to 2-hour videos. Batch processing (20 videos), 70+ languages, watermark-free exports, AI summary, chapters, speaker labels, priority queue.",
     link: { path: "/pricing", label: "See Pro" },
   },
   {
@@ -123,7 +123,7 @@ export const TEX_ENTRIES: TexEntry[] = [
     keywords: ["upgrade", "need more", "limit", "run out", "pro", "pay"],
     question: "How do I upgrade to Pro?",
     answer:
-      "Go to Pricing, pick Pro or Founding Pro, and enter your email. We'll send a verification code, then you complete checkout. You can cancel anytime from the same page.",
+      "Go to Pricing, choose Pro, and complete checkout. You can cancel anytime from the same page.",
     link: { path: '/pricing', label: 'Go to pricing' },
   },
   // —— Privacy & data ——

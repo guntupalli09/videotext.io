@@ -197,7 +197,7 @@ export default function JobAuthGateModal({
                 <ul className="space-y-2">
                   {[
                     { icon: Download, text: 'Download full result (TXT, PDF, SRT)' },
-                    { icon: Zap, text: '2 more free jobs this month' },
+                    { icon: Zap, text: '2 free imports left today' },
                     { icon: Lock, text: 'Files deleted after processing — always' },
                   ].map(({ icon: Icon, text }) => (
                     <li key={text} className="flex items-center gap-2.5 text-sm text-blue-800 dark:text-blue-300">
