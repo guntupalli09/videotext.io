@@ -4,14 +4,14 @@ import { Youtube, Mic, Building2 } from 'lucide-react'
 import { createCheckoutSession, createBillingPortalSession } from '../lib/billing'
 import { trackEvent } from '../lib/analytics'
 import type { BillingPlan } from '../lib/billing'
+import type { BillingInterval } from '../lib/billing'
 import { getCurrentUsage } from '../lib/api'
 import { logout } from '../lib/auth'
-import { Link } from 'react-router-dom'
 
-function Check({ gold = false }: { gold?: boolean }) {
+function Check() {
   return (
     <svg
-      className={`w-4 h-4 shrink-0 mt-0.5 ${gold ? 'text-amber-500' : 'text-blue-600'}`}
+      className="w-4 h-4 shrink-0 mt-0.5 text-blue-600"
       fill="currentColor" viewBox="0 0 20 20" aria-hidden
     >
       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -33,6 +33,7 @@ export default function Pricing() {
   const [subscriptionCancelingAt, setSubscriptionCancelingAt] = useState<string | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
   const [checkoutLoading, setCheckoutLoading] = useState<BillingPlan | null>(null)
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly')
 
   const refreshCurrentPlan = useCallback(() => {
     getCurrentUsage({ skipCache: true })
@@ -48,6 +49,10 @@ export default function Pricing() {
   }, [])
 
   useEffect(() => { refreshCurrentPlan() }, [refreshCurrentPlan])
+
+  useEffect(() => {
+    try { trackEvent('pricing_page_view', { source: 'pricing_page' }) } catch { /* non-blocking */ }
+  }, [])
 
   useEffect(() => {
     const onPlanUpdated = () => refreshCurrentPlan()
@@ -78,44 +83,50 @@ export default function Pricing() {
     }
   }
 
+  function changeBillingInterval(interval: BillingInterval) {
+    setBillingInterval(interval)
+    try { trackEvent('pricing_billing_interval_changed', { billing_interval: interval }) } catch { /* non-blocking */ }
+  }
+
   async function handleSubscribe(plan: BillingPlan) {
     try { trackEvent('plan_clicked', { plan }) } catch { /* non-blocking */ }
+    if (plan === 'pro') {
+      try { trackEvent('pro_cta_clicked', { source: 'pricing_page', billing_interval: billingInterval }) } catch { /* non-blocking */ }
+    }
 
     setCheckoutLoading(plan)
     try {
       trackEvent('upgrade_clicked', {
         plan,
         source: 'pricing_page',
+        billing_interval: billingInterval,
         job_count: jobCount,
         ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
       })
       trackEvent('checkout_started', {
         plan,
         source: 'pricing_page',
+        billing_interval: billingInterval,
         job_count: jobCount,
         ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
       })
       const { url } = await createCheckoutSession({
-        mode: 'subscription', plan,
+        mode: 'subscription', plan, billingInterval,
         returnToPath: '/pricing', frontendOrigin: window.location.origin,
       })
       trackEvent('checkout_session_created', {
         plan,
         source: 'pricing_page',
+        billing_interval: billingInterval,
         job_count: jobCount,
         ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
       })
       trackEvent('stripe_redirect', {
         plan,
         source: 'pricing_page',
+        billing_interval: billingInterval,
       })
-      trackEvent('payment_completed', {
-        type: 'subscription_checkout_started',
-        plan,
-        source: 'pricing_page',
-        job_count: jobCount,
-        ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
-      })
+      try { localStorage.setItem('videotext:checkout_billing_interval', billingInterval) } catch { /* non-blocking */ }
       window.location.href = url
     } catch (e: any) {
       const msg: string = e.message || ''
@@ -136,10 +147,10 @@ export default function Pricing() {
         <div className="text-center mb-14">
           <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-3 tracking-wide uppercase">Pricing</p>
           <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white tracking-tight">
-            The complete transcription workflow
+            One plan. Your complete audio &amp; video workflow.
           </h1>
           <p className="mt-4 text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-            Transcript · Formatting · QA · Subtitles · AI Chapters · Speaker Labels — one tool, start to delivery.
+            Transcribe · Subtitle · Translate · Format · QA · Process · Deliver
           </p>
 
           {isPaidPlan && (
@@ -168,8 +179,30 @@ export default function Pricing() {
           )}
         </div>
 
-        {/* Pricing cards — 3 columns */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
+        <div className="mb-10 flex justify-center">
+          <div className="inline-flex max-w-full rounded-xl border border-gray-700 bg-gray-900 p-1 shadow-sm" role="group" aria-label="Pro billing interval">
+            <button
+              type="button"
+              aria-pressed={billingInterval === 'monthly'}
+              onClick={() => changeBillingInterval('monthly')}
+              className={`min-h-11 rounded-lg px-4 sm:px-6 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 ${billingInterval === 'monthly' ? 'bg-blue-600 text-white shadow' : 'text-gray-300 hover:text-white'}`}
+            >
+              Monthly
+            </button>
+            <button
+              type="button"
+              aria-pressed={billingInterval === 'annual'}
+              onClick={() => changeBillingInterval('annual')}
+              className={`min-h-11 rounded-lg px-3 sm:px-5 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 ${billingInterval === 'annual' ? 'bg-blue-600 text-white shadow' : 'text-gray-300 hover:text-white'}`}
+            >
+              <span>Annual</span>
+              <span className="ml-2 inline-flex rounded-full bg-emerald-400 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-emerald-950 shadow-sm">Save 27%</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Pricing cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch max-w-4xl mx-auto">
 
           {/* FREE */}
           <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('free') ? 'border-blue-300 dark:border-blue-600 ring-2 ring-blue-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
@@ -196,7 +229,7 @@ export default function Pricing() {
                 { label: 'Transcript & subtitle exports', ok: true },
                 { label: 'AI summaries & chapters', ok: true },
                 { label: 'Speaker labels', ok: true },
-                { label: 'Watermarked exports', ok: false },
+                { label: 'Watermark-free exports', ok: false },
                 { label: 'Formatting & QA workflows', ok: false },
                 { label: 'Client-ready delivery', ok: false },
               ].map(({ label, ok }) => (
@@ -218,36 +251,44 @@ export default function Pricing() {
           </div>
 
           {/* PRO */}
-          <div className={`relative flex flex-col bg-white dark:bg-gray-800 rounded-xl border p-7 transition-shadow hover:shadow-md ${isCurrentPlan('pro') ? 'border-blue-400 dark:border-blue-500 ring-2 ring-blue-500/20' : 'border-gray-200 dark:border-gray-700'}`}>
-            {isCurrentPlan('pro') && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
-                Current Plan
-              </span>
-            )}
+          <div className="relative flex flex-col bg-gray-950 dark:bg-gray-900 rounded-xl border border-blue-400/70 p-7 shadow-2xl shadow-blue-900/20 ring-2 ring-blue-500/40">
+            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow">
+              {isCurrentPlan('pro') ? 'Current Plan' : billingInterval === 'annual' ? 'Best Value' : 'Most Popular'}
+            </span>
 
             <div className="mb-6">
               <h3 className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Pro</h3>
               <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-gray-900 dark:text-white">$40</span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">/ mo</span>
+                <span className="text-5xl font-bold text-white">{billingInterval === 'annual' ? '$5.83' : '$7.99'}</span>
+                <span className="text-sm text-gray-400">/mo</span>
               </div>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-snug">
-                For professionals handling full transcription and delivery workflows.
+              <div className="min-h-[44px] pt-1 text-sm" aria-live="polite">
+                {billingInterval === 'annual' ? (
+                  <>
+                    <p className="font-medium text-gray-200">$69.99 billed annually</p>
+                    <p className="text-emerald-400">Save $25.89/year</p>
+                  </>
+                ) : <span className="sr-only">Billed monthly</span>}
+              </div>
+              <p className="mt-2 text-base font-semibold text-white">Your complete audio &amp; video workflow.</p>
+              <p className="mt-2 text-sm text-gray-300 leading-relaxed">
+                Transcribe, subtitle, translate, format, process, and deliver — all in one place.
               </p>
             </div>
 
             <ul className="space-y-3 flex-1 mb-8">
               {[
-                'Longer file uploads',
-                'Faster processing & priority queue',
-                'Advanced formatting workflows',
-                'Client-ready export delivery',
+                'Longer audio & video uploads',
+                'Transcription + speaker detection',
+                'Subtitles + automatic SRT fixing',
                 'Translation in 70+ languages',
-                'Batch processing',
+                'AI summaries & chapters',
+                'Client-ready formatting & QA',
+                'Batch processing for multiple files',
+                'Burn subtitles & compress video',
                 'Watermark-free exports',
-                'Full workflow automation tools',
               ].map((f) => (
-                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300">
+                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-200">
                   <Check />
                   <span>{f}</span>
                 </li>
@@ -257,79 +298,16 @@ export default function Pricing() {
             <button
               onClick={() => isCurrentPlan('pro') ? handleManageSubscription() : handleSubscribe('pro')}
               disabled={(isCurrentPlan('pro') && portalLoading) || checkoutLoading !== null}
-              className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-600 text-white font-semibold text-sm shadow-lg shadow-blue-900/20 transition-colors disabled:opacity-60"
+              className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-900/20 transition-colors disabled:opacity-60"
             >
               {isCurrentPlan('pro')
                 ? (portalLoading ? 'Opening…' : 'Manage subscription')
                 : checkoutLoading === 'pro' ? 'Redirecting…'
-                : 'Start Pro — $40/mo'}
+                : billingInterval === 'annual' ? 'Unlock Pro — $69.99/year' : 'Unlock Pro — $7.99/mo'}
             </button>
+            <p className="mt-3 text-center text-xs text-gray-400">Cancel anytime · All Pro tools included</p>
           </div>
 
-          {/* FOUNDING PRO */}
-          <div className="relative flex flex-col bg-gray-950 dark:bg-gray-900 rounded-xl p-7 shadow-2xl shadow-amber-500/10 ring-2 ring-amber-400/60">
-            {/* Badges */}
-            <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-amber-500 text-gray-950 text-[11px] font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
-              {isCurrentPlan('founding_workflow') ? 'Current Plan' : '⚡ 20 Spots Only'}
-            </span>
-
-            <div className="mb-6">
-              <h3 className="text-xs font-medium text-amber-400 uppercase tracking-widest">Founding Pro</h3>
-              <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-white">$24.99</span>
-                <span className="text-sm text-gray-400">/ mo</span>
-              </div>
-              <p className="mt-1 text-xs text-amber-400/80 font-medium">
-                vs $40/mo after founding closes — locked forever
-              </p>
-              <p className="mt-2 text-sm text-gray-300 leading-snug">
-                Everything in Pro. Your feedback shapes what gets built next.
-              </p>
-            </div>
-
-            <ul className="space-y-3 flex-1 mb-8">
-              {[
-                'Everything in Pro',
-                'Lifetime founding price — never increases',
-                'Early access to new workflow features',
-                'Direct roadmap influence',
-                'Priority founder support',
-                'Personalized workflow onboarding',
-                'Private founding-member community',
-              ].map((f, i) => (
-                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-100">
-                  <Check gold={i > 0} />
-                  <span className={i === 0 ? 'font-semibold' : ''}>{f}</span>
-                </li>
-              ))}
-            </ul>
-
-            <button
-              onClick={() => isCurrentPlan('founding_workflow') ? handleManageSubscription() : handleSubscribe('founding_workflow')}
-              disabled={(isCurrentPlan('founding_workflow') && portalLoading) || checkoutLoading !== null}
-              className="w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-sm shadow-lg shadow-amber-900/40 transition-colors disabled:opacity-60"
-            >
-              {isCurrentPlan('founding_workflow')
-                ? (portalLoading ? 'Opening…' : 'Manage subscription')
-                : checkoutLoading === 'founding_workflow' ? 'Redirecting…'
-                : 'Claim Founding Pro — $24.99/mo'}
-            </button>
-
-            <p className="mt-3 text-center text-xs text-gray-500">
-              Limited to 20 founding members · cancel any time
-            </p>
-          </div>
-
-        </div>
-
-        {/* Value callout below cards */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Founding Pro is{' '}
-            <span className="font-semibold text-amber-600 dark:text-amber-400">38% less than Pro</span>
-            {' '}— and that price locks in for life.{' '}
-            <span className="text-gray-400 dark:text-gray-500">No price hikes. Ever.</span>
-          </p>
         </div>
 
         {/* Testimonials */}
@@ -398,15 +376,12 @@ export default function Pricing() {
         </div>
 
         <p className="mt-10 text-center text-sm text-gray-600 dark:text-gray-300 max-w-xl mx-auto leading-relaxed">
-          Transcriptionists matching Rev-, GoTranscript-, or similar PDFs can{' '}
-          <Link to="/guideline-format" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-            format your transcript to a client style guide →
-          </Link>
+          One subscription brings transcription, subtitles, translation, formatting, QA, processing, and client-ready delivery together.
         </p>
 
         {/* Trust signals */}
         <div className="mt-10 flex flex-wrap justify-center gap-6 text-sm text-gray-400 dark:text-gray-500">
-          {['7-day money-back guarantee', 'Cancel any time', 'We don\'t store your files'].map((s) => (
+          {['Cancel any time', 'We don\'t store your files'].map((s) => (
             <span key={s} className="flex items-center gap-1.5">
               <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />

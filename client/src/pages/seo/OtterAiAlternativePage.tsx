@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: 'Free (300 min/mo) / $16.99/mo Pro' },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: 'Free (300 min/mo) / $16.99/mo Pro' },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: false },
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },

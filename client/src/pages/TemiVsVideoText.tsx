@@ -113,9 +113,9 @@ export default function TemiVsVideoText() {
           <AnswerBlock
             question="Should I use Temi, Rev, or VideoText for transcription?"
             shortAnswer="VideoText wins for nearly every workflow — it is 6× cheaper than Temi or Rev AI, supports 90+ languages, and produces transcript + subtitles + summary + chapters in one upload."
-            expanded="Temi and Rev AI both charge $0.25/minute and produce a transcript only. VideoText Pro is $40/month flat, unlimited, supports 90+ languages via OpenAI Whisper large-v3, and in a single processing job produces a timestamped transcript, broadcast-safe SRT and VTT subtitle files, an AI-generated summary, and chapter markers with timestamps. Files are deleted immediately — zero data retention. The only case where Temi or Rev still makes sense: a one-off file with no commitment (Temi) or mandatory human-reviewed output for legal/medical compliance (Rev Human)."
+            expanded="Temi and Rev AI both charge $0.25/minute and produce a transcript only. VideoText Pro is $7.99/month flat, unlimited, supports 90+ languages via OpenAI Whisper large-v3, and in a single processing job produces a timestamped transcript, broadcast-safe SRT and VTT subtitle files, an AI-generated summary, and chapter markers with timestamps. Files are deleted immediately — zero data retention. The only case where Temi or Rev still makes sense: a one-off file with no commitment (Temi) or mandatory human-reviewed output for legal/medical compliance (Rev Human)."
             bullets={[
-              'VideoText Pro: $40/month flat, unlimited — Temi/Rev AI: $0.25/min always (per-minute billing)',
+              'VideoText Pro: $7.99/month flat, unlimited — Temi/Rev AI: $0.25/min always (per-minute billing)',
               'VideoText: 90+ languages — Temi: English only — Rev AI: 36 languages',
               'VideoText outputs: transcript + SRT + VTT + summary + chapters — Temi/Rev: transcript only',
               'VideoText processes a 1-hour video in 3–5 min — Temi takes ~60 min (near real-time)',
@@ -174,17 +174,17 @@ export default function TemiVsVideoText() {
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
                     <th scope="col" className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Usage Scenario</th>
                     <th scope="col" className="px-5 py-3 text-left font-semibold text-red-600">Temi / Rev AI ($0.25/min)</th>
-                    <th scope="col" className="px-5 py-3 text-left font-semibold text-blue-700 dark:text-blue-400">VideoText Pro ($40/mo)</th>
+                    <th scope="col" className="px-5 py-3 text-left font-semibold text-blue-700 dark:text-blue-400">VideoText Pro ($7.99/mo)</th>
                     <th scope="col" className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">You Save</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                   {[
                     ['1 hr video/month', '$15.00', 'FREE (free tier)', '$15+/mo'],
-                    ['2 hrs/week (≈8 hrs/mo)', '$120.00', '$40.00 flat (Pro)', '$80/mo'],
-                    ['Daily 30-min podcast (≈13 hrs/mo)', '$195.00', '$40.00 flat (Pro)', '$155/mo'],
-                    ['25 hrs/month', '$375.00', '$40.00 flat (Pro, unlimited)', '$335/mo'],
-                    ['High volume', '$2,250.00', '$40.00 flat (Pro, unlimited)', '$2,210/mo'],
+                    ['2 hrs/week (≈8 hrs/mo)', '$120.00', '$7.99 flat (Pro)', '$80/mo'],
+                    ['Daily 30-min podcast (≈13 hrs/mo)', '$195.00', '$7.99 flat (Pro)', '$155/mo'],
+                    ['25 hrs/month', '$375.00', '$7.99 flat (Pro, unlimited)', '$335/mo'],
+                    ['High volume', '$2,250.00', '$7.99 flat (Pro, unlimited)', '$2,210/mo'],
                   ].map(([scenario, temi, vt, save]) => (
                     <tr key={scenario} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
                       <td className="px-5 py-3 text-gray-700 dark:text-gray-300">{scenario}</td>
@@ -216,8 +216,8 @@ export default function TemiVsVideoText() {
                 {
                   tool: 'VideoText Pro',
                   model: 'Flat monthly subscription',
-                  rate: '$40/month flat, unlimited',
-                  monthly: '$40 flat — includes transcript + subtitles + summary + chapters',
+                  rate: '$7.99/month flat, unlimited',
+                  monthly: '$7.99 flat — includes transcript + subtitles + summary + chapters',
                   badge: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
                 },
               ].map(({ tool, model, rate, monthly, badge }) => (
@@ -627,7 +627,7 @@ export default function TemiVsVideoText() {
                     ['Legal / medical requiring human review', 'Rev Human', 'When a human-verified output is a strict compliance requirement', null],
                     ['Single one-off English file, no subscription', 'Temi', 'Pay-per-minute with no commitment for truly one-off use', null],
                     ['Multilingual content', 'VideoText', 'Temi is English-only — VideoText is the only option for 90+ languages', '/video-to-transcript'],
-                    ['Agency / high-volume batch', 'VideoText', 'Batch processing, Pro plan $40/mo flat vs $375+ on Temi', '/pricing'],
+                    ['Agency / high-volume batch', 'VideoText', 'Batch processing, Pro plan $7.99/mo flat vs $375+ on Temi', '/pricing'],
                     ['Social media short clips', 'VideoText', 'Burn-in subtitles, SRT/VTT, fast turnaround', '/burn-subtitles'],
                     ['Academic research', 'VideoText', 'JSON export, citation-ready DOCX, zero retention', '/video-to-transcript'],
                     ['Corporate training videos', 'VideoText', 'Privacy + batch + multiple formats', '/pricing'],
@@ -693,7 +693,7 @@ export default function TemiVsVideoText() {
                 <ul className="space-y-3">
                   {[
                     { issue: 'English only', detail: 'Temi only supports English. Non-English audio produces unreliable output or fails silently. There is no language selection.' },
-                    { issue: 'Pay-per-minute forever', detail: 'No subscription path. Every file costs $0.25/min regardless of volume. At 8 hrs/month, that\'s $120 — vs VideoText Pro\'s $40 flat, unlimited.' },
+                    { issue: 'Pay-per-minute forever', detail: 'No subscription path. Every file costs $0.25/min regardless of volume. At 8 hrs/month, that\'s $120 — vs VideoText Pro\'s $7.99 flat, unlimited.' },
                     { issue: 'Raw SRT with no line formatting', detail: 'Temi\'s SRT output ignores broadcast-safe line lengths and reading speed. Manual editing is required before using on any platform.' },
                     { issue: 'No YouTube URL input', detail: 'You must download video files manually before uploading. VideoText accepts YouTube URLs directly.' },
                     { issue: 'No summaries, chapters, or structured outputs', detail: 'You get a transcript document only. Content repurposing requires additional paid tools.' },
@@ -714,7 +714,7 @@ export default function TemiVsVideoText() {
                 <ul className="space-y-3">
                   {[
                     { issue: 'Same $0.25/min AI pricing as Temi', detail: 'Rev AI is priced identically to Temi. No flat subscription at competitive rates.' },
-                    { issue: 'Human tier is prohibitively expensive', detail: 'Rev Human at $1.50+/min means a 2-hour video costs $180. VideoText Pro handles the same volume for $40/month flat.' },
+                    { issue: 'Human tier is prohibitively expensive', detail: 'Rev Human at $1.50+/min means a 2-hour video costs $180. VideoText Pro handles the same volume for $7.99/month flat.' },
                     { issue: '30-day data retention', detail: 'Rev retains your uploaded files for 30 days. Human transcriptionists actively listen to your audio.' },
                     { issue: 'No summaries or chapters', detail: 'Neither AI nor Human Rev tiers produce summaries, chapter markers, or structured content.' },
                     { issue: 'No subtitle burn-in tool', detail: 'Rev exports subtitle files; burning them into video requires a separate tool.' },
@@ -767,7 +767,7 @@ export default function TemiVsVideoText() {
               {[
                 {
                   q: 'Is VideoText cheaper than Temi?',
-                  a: 'Yes. Temi charges $0.25/minute for every file, always. VideoText Pro is $40/month flat, unlimited — far cheaper for any regular workload. VideoText also has a free tier with 3 uploads per day at no cost.',
+                  a: 'Yes. Temi charges $0.25/minute for every file, always. VideoText Pro is $7.99/month flat, unlimited — far cheaper for any regular workload. VideoText also has a free tier with 3 uploads per day at no cost.',
                 },
                 {
                   q: 'Does Temi support languages other than English?',
@@ -779,7 +779,7 @@ export default function TemiVsVideoText() {
                 },
                 {
                   q: 'How does Rev compare to VideoText for pricing?',
-                  a: 'Rev AI and Temi both charge $0.25/min. VideoText Pro is $40/month flat, unlimited — far cheaper for any regular workload. Rev Human at $1.50+/min is even more dramatic: a 2-hour video costs $180 on Rev Human vs $40/month flat on VideoText Pro.',
+                  a: 'Rev AI and Temi both charge $0.25/min. VideoText Pro is $7.99/month flat, unlimited — far cheaper for any regular workload. Rev Human at $1.50+/min is even more dramatic: a 2-hour video costs $180 on Rev Human vs $7.99/month flat on VideoText Pro.',
                 },
                 {
                   q: 'How fast is VideoText compared to Temi?',

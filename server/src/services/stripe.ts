@@ -6,7 +6,8 @@ const log = getLogger('api')
 const REQUIRED_STRIPE_VARS = [
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
-  'STRIPE_PRICE_PRO',
+  'STRIPE_PRO_MONTHLY_PRICE_ID',
+  'STRIPE_PRO_ANNUAL_PRICE_ID',
 ] as const
 
 /**
@@ -35,11 +36,13 @@ export const stripe = new Stripe(stripeSecretKey!, {
 })
 
 export type BillingPlan = 'basic' | 'pro' | 'agency' | 'founding_workflow' | 'business'
+export type ProBillingInterval = 'monthly' | 'annual'
 
 export interface StripePriceConfig {
-  proPriceId: string
+  proMonthlyPriceId: string
+  proAnnualPriceId: string
+  legacyProPriceIds: string[]
   businessPriceId?: string
-  proAnnualPriceId?: string
   // Grandfathered plan price IDs (optional — only needed for webhook handling of old subscribers)
   basicPriceId?: string
   agencyPriceId?: string
@@ -49,15 +52,17 @@ export interface StripePriceConfig {
 }
 
 export function getStripePriceConfig(): StripePriceConfig {
-  const proPriceId = process.env.STRIPE_PRICE_PRO
-  if (!proPriceId) {
-    throw new Error('Stripe price IDs are not fully configured. Expected STRIPE_PRICE_PRO.')
+  const proMonthlyPriceId = process.env.STRIPE_PRO_MONTHLY_PRICE_ID
+  const proAnnualPriceId = process.env.STRIPE_PRO_ANNUAL_PRICE_ID
+  if (!proMonthlyPriceId || !proAnnualPriceId) {
+    throw new Error('Stripe Pro prices are not fully configured. Expected STRIPE_PRO_MONTHLY_PRICE_ID and STRIPE_PRO_ANNUAL_PRICE_ID.')
   }
 
   return {
-    proPriceId,
+    proMonthlyPriceId,
+    proAnnualPriceId,
+    legacyProPriceIds: (process.env.STRIPE_PRICE_PRO_LEGACY || '').split(',').map(id => id.trim()).filter(Boolean),
     businessPriceId: process.env.STRIPE_PRICE_BUSINESS || undefined,
-    proAnnualPriceId: process.env.STRIPE_PRICE_PRO_ANNUAL || undefined,
     // Grandfathered
     basicPriceId: process.env.STRIPE_PRICE_BASIC || undefined,
     agencyPriceId: process.env.STRIPE_PRICE_AGENCY || undefined,
@@ -70,7 +75,7 @@ export function getStripePriceConfig(): StripePriceConfig {
 export function getPlanFromPriceId(priceId: string): BillingPlan | null {
   try {
     const config = getStripePriceConfig()
-    if (priceId === config.proPriceId || (config.proAnnualPriceId && priceId === config.proAnnualPriceId)) return 'pro'
+    if (priceId === config.proMonthlyPriceId || priceId === config.proAnnualPriceId || config.legacyProPriceIds.includes(priceId)) return 'pro'
     if (config.businessPriceId && priceId === config.businessPriceId) return 'business'
     // Grandfathered plans
     if (config.basicPriceId && (priceId === config.basicPriceId || priceId === config.basicAnnualPriceId)) return 'basic'
@@ -80,6 +85,32 @@ export function getPlanFromPriceId(priceId: string): BillingPlan | null {
   } catch {
     return null
   }
+}
+
+/** Map the browser's constrained interval selection to a server-owned Stripe Price ID. */
+export function selectProPriceId(config: StripePriceConfig, billingInterval: ProBillingInterval): string {
+  return billingInterval === 'annual' ? config.proAnnualPriceId : config.proMonthlyPriceId
+}
+
+/** Ensure neither configured public Pro offer can drift from its advertised price. */
+export function assertProPrice(
+  price: Pick<Stripe.Price, 'active' | 'currency' | 'unit_amount' | 'recurring'>,
+  billingInterval: ProBillingInterval
+): void {
+  const expected = billingInterval === 'annual'
+    ? { amount: 6999, interval: 'year' as const }
+    : { amount: 799, interval: 'month' as const }
+  const valid = price.active && price.currency.toLowerCase() === 'usd' && price.unit_amount === expected.amount &&
+    price.recurring?.interval === expected.interval && price.recurring.interval_count === 1
+  if (!valid) {
+    const description = billingInterval === 'annual' ? 'USD $69.99 yearly' : 'USD $7.99 monthly'
+    throw new Error(`Configured Pro Price must reference an active recurring ${description} Price with interval_count 1.`)
+  }
+}
+
+export async function verifyProPrice(priceId: string, billingInterval: ProBillingInterval): Promise<void> {
+  const price = await stripe.prices.retrieve(priceId)
+  assertProPrice(price, billingInterval)
 }
 
 /**
@@ -160,4 +191,3 @@ export async function getSubscriptionPeriodEnd(
     return null
   }
 }
-

@@ -192,7 +192,7 @@ In `server/.env` (or Docker env). Use `server/.env.example` as template.
 | Area | Variables |
 |------|-----------|
 | **API** | `PORT` (default 3001), `NODE_ENV`, `CORS_ORIGINS` (comma-separated) |
-| **Stripe** | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_BASIC`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_AGENCY`, `STRIPE_PRICE_OVERAGE`; optional `STRIPE_PRICE_*_ANNUAL`. For promo codes: `STRIPE_PROMO_EARLY30`, `STRIPE_PROMO_EARLY50`, `STRIPE_PROMO_EARLY70`, `STRIPE_PROMO_EARLY100` (Stripe promotion code IDs). See [§5 Promo codes](#promo-codes-early-testers) to create them. |
+| **Stripe** | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRO_MONTHLY_PRICE_ID` (active recurring USD $7.99/month), and `STRIPE_PRO_ANNUAL_PRICE_ID` (active recurring USD $69.99/year). Checkout retrieves and validates the selected server-owned Price. Preserve the former $40 Pro Price ID in `STRIPE_PRICE_PRO_LEGACY` (comma-separated if needed) so existing subscriptions continue mapping to Pro. `STRIPE_PRICE_PRO` is obsolete and is no longer read; other `STRIPE_PRICE_*` variables are optional legacy configuration. For promo codes: `STRIPE_PROMO_EARLY30`, `STRIPE_PROMO_EARLY50`, `STRIPE_PROMO_EARLY70`, `STRIPE_PROMO_EARLY100` (Stripe promotion code IDs). See [§5 Promo codes](#promo-codes-early-testers) to create them. |
 | **Redirects** | `BASE_URL` (frontend URL for Stripe success/cancel) |
 | **Redis** | `REDIS_URL` (e.g. `redis://redis:6379` or Upstash `rediss://...`) |
 | **Database** | `DATABASE_URL` (PostgreSQL connection string, e.g. `postgresql://videotools:videotools@postgres:5432/videotext` for Docker). Required for user/auth storage. With Docker, the API runs `prisma migrate deploy` on startup so tables are created/updated automatically. |

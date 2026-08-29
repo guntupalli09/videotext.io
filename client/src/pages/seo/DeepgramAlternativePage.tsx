@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: 'Free ($200 credits) / pay-per-use' },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: 'Free ($200 credits) / pay-per-use' },
   { label: 'Web UI — no code needed', videotext: true, competitor: false },
   { label: 'API key required', videotext: false, competitor: true },
   { label: 'Programming knowledge required', videotext: false, competitor: true },

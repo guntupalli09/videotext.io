@@ -21,8 +21,8 @@ const tools = [
 const comparisons = [
   { competitor: 'Otter.ai', difference: 'Otter.ai does not support video file uploads or SRT/VTT export. VideoText does both, plus YouTube URL input.' },
   { competitor: 'Descript', difference: 'VideoText is 6× faster, starts free ($0 vs $24/month), and requires no desktop app download.' },
-  { competitor: 'Trint', difference: 'Trint starts at $80/month. VideoText starts free ($0) — same Whisper AI accuracy with no usage caps on Pro ($40/month).' },
-  { competitor: 'Rev', difference: 'Rev AI charges $0.25/minute. VideoText Pro is $40/month flat, unlimited — no per-minute billing.' },
+  { competitor: 'Trint', difference: 'Trint starts at $80/month. VideoText starts free ($0) — same Whisper AI accuracy with no usage caps on Pro ($7.99/month).' },
+  { competitor: 'Rev', difference: 'Rev AI charges $0.25/minute. VideoText Pro is $7.99/month flat, unlimited — no per-minute billing.' },
   { competitor: 'HappyScribe', difference: 'HappyScribe has no free tier and starts at $17/month. VideoText is free to start with no credit card.' },
   { competitor: 'Notta', difference: 'Notta is focused on meeting transcription. VideoText supports any video file, YouTube URLs, and subtitle burning.' },
 ]
@@ -131,7 +131,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { plan: 'Free', price: '$0/mo', features: '3 uploads/day, no credit card required' },
-            { plan: 'Pro', price: '$40/mo', features: 'Unlimited processing, AI features, watermark-free exports, batch' },
+            { plan: 'Pro', price: '$7.99/mo', features: 'Unlimited processing, AI features, watermark-free exports, batch' },
           ].map(({ plan, price, features }) => (
             <div key={plan} className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5">
               <div className="font-bold text-gray-900 dark:text-white text-lg">{plan}</div>
