@@ -38,7 +38,7 @@ const ENTRIES: ChangelogEntry[] = [
     version: 'v1.12',
     tag: 'new',
     items: [
-      'Pricing redesign: clear Free vs Pro tiers. Free = 3 imports/month, transcript + subtitles, watermark. Pro = all AI features, batch, translation, no watermark.',
+      'Pricing redesign: clear Free vs Pro tiers. Free = 3 imports/day, transcript + subtitles, watermark. Pro = all AI features, batch, translation, no watermark.',
       'AI Summary (Pro): auto-generated bullet-point key takeaways and action items from every transcript.',
       'AI Chapters (Pro): auto-generated timestamped section headings — navigate long recordings like YouTube chapters.',
       'Speaker diarization gated to Pro with named speaker labels (who said what, timestamped).',

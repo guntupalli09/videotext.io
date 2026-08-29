@@ -23,7 +23,7 @@ const COMPARE_ROWS = [
 const FAQ = [
   {
     q: 'What is the best free Descript alternative?',
-    a: 'VideoText is the most direct free alternative for pure transcription and subtitle workflows. Descript is a full video editor — if you only need transcripts, SRT files, or subtitle translation, VideoText is faster and cheaper. The free tier gives you 3 imports/month with no credit card.',
+    a: 'VideoText is the most direct free alternative for pure transcription and subtitle workflows. Descript is a full video editor — if you only need transcripts, SRT files, or subtitle translation, VideoText is faster and cheaper. The free tier gives you 3 imports/day with no credit card.',
   },
   {
     q: 'Can VideoText do everything Descript does?',

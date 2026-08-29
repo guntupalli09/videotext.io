@@ -177,7 +177,7 @@ export default function Signup() {
 
   const PERKS = fromGuestJob
     ? [
-        { icon: CheckCircle2, text: '2 free imports left this month', highlight: true },
+        { icon: CheckCircle2, text: '2 free imports left today', highlight: true },
         { icon: FileText, text: 'Download your transcript now' },
         { icon: Shield, text: 'Files deleted after processing' },
       ]

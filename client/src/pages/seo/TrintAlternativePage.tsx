@@ -168,7 +168,7 @@ export default function TrintAlternativePage() {
         {/* Key advantages */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
-            { icon: DollarSign, title: 'About 90% cheaper', body: 'Trint\'s minimum is $80/month. VideoText Pro is $7.99/month flat, unlimited — and starts free with no credit card.' },
+            { icon: DollarSign, title: 'About 90% cheaper', body: 'Trint\'s minimum is $80/month. VideoText Pro is $7.99/month flat rate — and starts free with no credit card.' },
             { icon: Zap, title: 'No enterprise sales process', body: 'Trint requires contacting sales for team plans. VideoText is self-serve — sign up, upgrade instantly, no calls.' },
             { icon: Shield, title: 'Complete file deletion', body: 'VideoText deletes your files after processing. Trint stores everything in their cloud by default.' },
           ].map(({ icon: Icon, title, body }) => (

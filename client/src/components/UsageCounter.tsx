@@ -67,7 +67,7 @@ function useUsage(refreshTrigger?: string | number) {
 
 /**
  * Usage bar for the tool page header.
- * - Free: shows "X of 3 daily imports used" with progress dots and Go Unlimited CTA.
+ * - Free: shows "X of 3 daily imports used" with progress dots and View plans CTA.
  * - Pro (not degraded): returns null (no bar).
  * - Pro (soft cap active): shows quiet inline upgrade banner.
  * - Business: returns null.
@@ -100,7 +100,7 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
 
   const { quotaType, remaining, used, limit, usedPercent } = usage
 
-  // Pro/Business unlimited — no bar unless degraded
+  // Pro/Business without a daily import cap — no bar unless degraded
   if (quotaType === 'unlimited') {
     if (!usage.softCapActive || softCapDismissed) return null
     return (
@@ -208,7 +208,7 @@ export default function UsageCounter({ refreshTrigger }: { refreshTrigger?: stri
       >
         <Zap className="w-3.5 h-3.5 text-white" />
         <span className="text-sm font-bold text-white tracking-wide uppercase">
-          Go Unlimited
+          View plans
         </span>
       </Link>
     </div>

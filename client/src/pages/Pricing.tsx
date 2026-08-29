@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Youtube, Mic, Building2 } from 'lucide-react'
-import { createCheckoutSession, createBillingPortalSession } from '../lib/billing'
+import { createCheckoutSession, createBillingPortalSession, rememberCheckoutAttribution } from '../lib/billing'
 import { trackEvent } from '../lib/analytics'
 import type { BillingPlan } from '../lib/billing'
 import type { BillingInterval } from '../lib/billing'
@@ -127,6 +127,7 @@ export default function Pricing() {
         billing_interval: billingInterval,
       })
       try { localStorage.setItem('videotext:checkout_billing_interval', billingInterval) } catch { /* non-blocking */ }
+      rememberCheckoutAttribution({ source: 'pricing_page', billing_interval: billingInterval })
       window.location.href = url
     } catch (e: any) {
       const msg: string = e.message || ''

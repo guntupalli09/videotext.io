@@ -4,6 +4,7 @@ import { Menu, X, Sun, Moon, CreditCard, Mail, Gift, MessageCircle } from 'lucid
 import { prefetchRoute } from '../lib/prefetch'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getCurrentUsage } from '../lib/api'
+import { isPaidPlan } from '../lib/plans'
 import { createBillingPortalSession } from '../lib/billing'
 import { useTheme } from '../lib/theme'
 import { isLoggedIn, logout, isDemo } from '../lib/auth'
@@ -68,10 +69,10 @@ export default function UserMenu() {
     }
   }, [refreshUsage])
 
-  const isPaidPlan = usage?.plan === 'basic' || usage?.plan === 'pro' || usage?.plan === 'agency' || usage?.plan === 'founding_workflow'
+  const hasPaidPlan = isPaidPlan(usage?.plan)
 
   async function handleManageSubscription() {
-    if (!isPaidPlan) return
+    if (!hasPaidPlan) return
     setPortalLoading(true)
     try {
       const { url } = await createBillingPortalSession(
@@ -147,7 +148,7 @@ export default function UserMenu() {
                     </div>
                     <p className="mt-2 text-base text-gray-900 dark:text-white">
                       {usage.quotaType === 'unlimited'
-                        ? <span>Unlimited <span className="font-normal text-gray-600 dark:text-gray-300">uploads</span></span>
+                        ? <span>No daily cap <span className="font-normal text-gray-600 dark:text-gray-300">on imports</span></span>
                         : usage.quotaType === 'imports'
                         ? <span className="font-normal">3 free imports included. Upgrade for more.</span>
                         : <span className="font-normal">Minutes-based plan active</span>}
@@ -163,7 +164,7 @@ export default function UserMenu() {
                 {/* Subscription management / upgrade — hidden for demo sessions */}
                 {!isDemo() && (
                 <div>
-                  {isPaidPlan ? (
+                  {hasPaidPlan ? (
                     <button
                       type="button"
                       onClick={handleManageSubscription}

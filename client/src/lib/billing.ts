@@ -17,6 +17,10 @@ export interface CheckoutParams {
   emailVerificationToken?: string
 }
 
+export function rememberCheckoutAttribution(attribution: Record<string, unknown>): void {
+  try { localStorage.setItem('videotext:checkout_attribution', JSON.stringify(attribution)) } catch { /* non-blocking */ }
+}
+
 function isNetworkError(e: unknown): boolean {
   if (e instanceof TypeError && (e.message === 'Failed to fetch' || e.message === 'Load failed')) return true
   if (e instanceof Error && e.name === 'AbortError') return true

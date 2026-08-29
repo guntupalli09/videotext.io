@@ -41,7 +41,7 @@ export default function OverageModal({
             className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-left text-sm text-blue-900 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="font-semibold">Upgrade your plan</div>
-            <div className="text-xs text-gray-600">Unlimited processing — no caps</div>
+            <div className="text-xs text-gray-600">Continued processing with Pro plan limits</div>
           </button>
         </div>
         <p className="mb-4 text-xs text-gray-500">

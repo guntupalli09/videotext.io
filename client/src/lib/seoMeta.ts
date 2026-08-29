@@ -217,7 +217,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/notta-alternative': {
     title: 'Best Free Notta Alternative for Video Files & Subtitles | VideoText',
     description:
-      "Notta's free plan caps files at 3 minutes. VideoText has no per-file limit — transcribe full-length videos, export SRT/VTT, translate to 70+ languages, and burn subtitles. Free tier available.",
+      "Notta's free plan caps files at 3 minutes. VideoText supports files up to the plan duration — transcribe longer videos, export SRT/VTT, translate to 70+ languages, and burn subtitles. Free tier available.",
   },
   '/about': {
     title: 'About VideoText — AI Transcription Built for Speed & Privacy',
@@ -614,7 +614,7 @@ export const ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
 const FAQ_SCHEMA_ITEMS = [
   { q: 'Do you store my videos or files?', a: "No. We process your files and then delete them immediately after the job completes. We don't keep your uploads, transcripts, or generated outputs. Your content stays yours." },
   { q: 'Is my content used for AI training?', a: "No. Your content is used only to deliver the service you requested. We do not use it for training AI models or any other secondary purpose." },
-  { q: 'Do I need to sign up?', a: "Sign up for a free account to try. No credit card required. You get 3 free imports per month. Upgrade when you need more imports, languages, or batch processing." },
+  { q: 'Do I need to sign up?', a: "Sign up for a free account to try. No credit card required. You get 3 free imports per day. Upgrade when you need more imports, languages, or batch processing." },
   { q: 'Can I transcribe a YouTube video without downloading it?', a: "YouTube URL support is coming soon. Currently, download the video first (MP4) and upload it to the Video to Transcript tool." },
   { q: 'What file formats are supported?', a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. YouTube URL support is coming soon." },
   { q: 'How accurate is VideoText transcription?', a: "VideoText uses OpenAI Whisper large-v3. On clear speech with minimal background noise, accuracy is approximately 98.5% word accuracy. Setting the spoken language manually improves results for non-English content." },
@@ -822,7 +822,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Is video transcription free?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. The free tier includes 3 uploads per day with no credit card required. All outputs (transcript, subtitles, summary, chapters) are included in the free tier. Pro plan is $7.99/month with no usage limits.',
+            text: 'Yes. The free tier includes 3 uploads per day with no credit card required. All outputs (transcript, subtitles, summary, chapters) are included in the free tier. Pro plan is $7.99/month with expanded workflow access.',
           },
         },
         {
@@ -1280,7 +1280,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       applicationCategory: 'MultimediaApplication',
       operatingSystem: 'Web Browser',
       url: 'https://videotext.io/youtube-transcript-generator',
-      featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 uploads/day (no credit card), Pro tier: unlimited transcription ($7.99/month), Zero data retention (files deleted after processing), Batch processing (Pro/Agency)',
+      featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 uploads/day (no credit card), Pro tier: continued transcription ($7.99/month), Zero data retention (files deleted after processing), Batch processing (Pro/Agency)',
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: '4.9',
@@ -1301,7 +1301,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
             '@type': 'Offer',
             price: '9.99',
             priceCurrency: 'USD',
-            description: 'Pro: unlimited transcription, batch processing, priority support',
+            description: 'Pro: continued transcription, batch processing, priority support',
             url: 'https://videotext.io/pricing',
           },
         ],
@@ -1326,7 +1326,7 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   '/video-to-transcript': {
     name: 'Video to Transcript — Free AI Transcription, 98.5% Accurate',
     description: 'Convert any video to a clean transcript in minutes. 98.5% word accuracy using OpenAI Whisper large-v3. Outputs: full timestamped transcript, AI summary, auto-generated chapters, SRT/VTT subtitle files, and speaker labels — all in one pass. Zero data retention: files deleted immediately after processing. Free tier included.',
-    featureList: 'AI transcription (2-hour video in ~5 min), 98.5% word accuracy (OpenAI Whisper large-v3), Full timestamped transcript, AI-generated summary with key points, Auto-generated chapter markers, Speaker diarization (auto-labeling), SRT subtitle export, VTT subtitle export, TXT / PDF / DOCX / JSON / CSV export, Three-column transcript export, 90+ language support, YouTube URL input (no download), Batch processing (Pro/Agency), Zero data retention, Free tier: 3 imports/month',
+    featureList: 'AI transcription (2-hour video in ~5 min), 98.5% word accuracy (OpenAI Whisper large-v3), Full timestamped transcript, AI-generated summary with key points, Auto-generated chapter markers, Speaker diarization (auto-labeling), SRT subtitle export, VTT subtitle export, TXT / PDF / DOCX / JSON / CSV export, Three-column transcript export, 90+ language support, YouTube URL input (no download), Batch processing (Pro/Agency), Zero data retention, Free tier: 3 imports/day',
   },
   '/guideline-format': {
     name: 'Transcript Style Guide Formatter — Rev, GoTranscript, TranscribeMe, Scribie',
@@ -1336,7 +1336,7 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   '/youtube-transcript-generator': {
     name: 'Free YouTube Transcript Generator — No Download, Instant Results',
     description: 'Free YouTube transcript generator. Paste any video URL — get complete transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in 2-3 minutes. No downloading required. 98.5% accurate. 50,000+ creators use VideoText.',
-    featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 uploads/day (no credit card), Pro tier: unlimited transcription ($7.99/month), Zero data retention (files deleted after processing)',
+    featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 uploads/day (no credit card), Pro tier: continued transcription ($7.99/month), Zero data retention (files deleted after processing)',
   },
   '/video-to-subtitles': {
     name: 'Video to Subtitles — SRT & VTT Generator',

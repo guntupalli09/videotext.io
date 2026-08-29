@@ -341,7 +341,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'meeting-transcript',
     faq: [
-      { q: 'Is meeting transcription free?', a: 'Yes. The free tier includes 3 uploads per day — sign up for free to try. Create a free account to track usage across browser sessions. Pro plan is $7.99/month for unlimited processing.' },
+      { q: 'Is meeting transcription free?', a: 'Yes. The free tier includes 3 uploads per day — sign up for free to try. Create a free account to track usage across browser sessions. Pro plan is $7.99/month for continued processing.' },
       { q: 'Does this work for Zoom, Teams, and Google Meet recordings?', a: 'Yes. Upload any meeting recording in MP4 or MOV format — Zoom cloud recordings, Teams downloads, and Google Meet exports all work. Use the Speakers branch after transcribing to see who said what, organized by speaker turn rather than continuous paragraphs.' },
       { q: 'Do timestamps stay accurate in meeting transcripts?', a: 'Yes. The transcript preserves paragraph structure aligned to the original audio timing. The Chapters branch breaks the meeting into navigable sections so you can jump to specific topics. Keywords indexes repeated terms and links each to where it first appears in the transcript.' },
       { q: 'Can I get the meeting transcript in another language?', a: 'Yes. Click Translate after transcribing and pick from English, Hindi, Telugu, Spanish, Chinese, or Russian. The translated view appears alongside the original. This is useful for global teams where meeting notes need to reach colleagues in different countries.' },
@@ -609,7 +609,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'hardcoded-captions',
     faq: [
       { q: 'What are hardcoded captions?', a: 'Hardcoded captions (also called burned-in or open captions) are subtitles permanently embedded into the video frame so they are always visible without the viewer toggling anything. Upload your video and an SRT or VTT file, and we produce a single MP4 with captions baked in — ready for Instagram, TikTok, or silent autoplay environments.' },
-      { q: 'Are hardcoded captions free to create?', a: 'Yes. The free tier includes 3 uploads per day — no credit card required. Upload your video and subtitle file, choose your font size, position, and opacity, and download the output video. Upgrade to Pro for unlimited processing and larger video files.' },
+      { q: 'Are hardcoded captions free to create?', a: 'Yes. The free tier includes 3 uploads per day — no credit card required. Upload your video and subtitle file, choose your font size, position, and opacity, and download the output video. Upgrade to Pro for continued processing and larger video files.' },
       { q: 'Can I choose font size and position for hardcoded captions?', a: 'Yes. Before processing, set font size (small, medium, or large), vertical position (bottom or middle of screen), and background opacity (transparent to solid black box). These options let you match the caption style to your brand without needing a video editing tool.' },
     ],
   },
@@ -628,7 +628,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'video-with-subtitles',
     faq: [
       { q: 'How do I add subtitles to a video permanently?', a: 'Upload your video (MP4, MOV, AVI, WebM, or MKV) and your SRT or VTT subtitle file. Our tool burns the captions into the video frames so they are always visible, and you download a single MP4 with subtitles permanently embedded. No video editing software or timeline work required.' },
-      { q: 'Is adding subtitles to video free?', a: 'Yes. Free tier is available after signing up for free. Upload your video and subtitle file and download the output with captions burned in at no cost within the daily free limit. Pro plan is $7.99/month for unlimited processing.' },
+      { q: 'Is adding subtitles to video free?', a: 'Yes. Free tier is available after signing up for free. Upload your video and subtitle file and download the output with captions burned in at no cost within the daily free limit. Pro plan is $7.99/month for continued processing.' },
       { q: 'What video formats are supported for adding subtitles?', a: 'MP4, MOV, AVI, WebM, and MKV are all accepted. The output file is an MP4, which is compatible with YouTube, Vimeo, Instagram, TikTok, and every major platform and device. If your original file is MOV or AVI, the output MP4 is ready for direct upload anywhere.' },
     ],
   },
@@ -794,7 +794,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: false,
     intentKey: 'transcribe-video',
     faq: [
-      { q: 'Is it free to transcribe a video online?', a: 'Yes. The free tier includes 3 uploads per day after signing up for free — just upload and go. Create a free account to track usage across browser sessions. Pro plan is $7.99/month for unlimited processing.' },
+      { q: 'Is it free to transcribe a video online?', a: 'Yes. The free tier includes 3 uploads per day after signing up for free — just upload and go. Create a free account to track usage across browser sessions. Pro plan is $7.99/month for continued processing.' },
       { q: 'What video formats can I transcribe?', a: 'MP4, MOV, AVI, WebM, and MKV are all supported. Upload your file and our AI extracts the speech track and converts it to plain text. If your file is in another format, export it to MP4 first using any video editor — most cameras and screen recorders produce MP4 or MOV natively.' },
       { q: 'How accurate is online video transcription?', a: 'Accuracy is high for clear audio with minimal background noise. We use AI speech recognition trained on diverse speakers, accents, and subjects. For best results, set the spoken language manually rather than relying on auto-detect, and trim the video to remove long silent sections before uploading.' },
       { q: 'Can I get the video transcript in another language?', a: 'Yes. After transcribing, click Translate and choose from English, Hindi, Telugu, Spanish, Chinese, or Russian. The translated view appears alongside the original transcript. You can switch between all six languages instantly without re-uploading, which is useful for creating meeting notes in multiple languages.' },
@@ -824,10 +824,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/free-transcription',
     title: 'Free Transcription Online – Sign Up to Try | VideoText',
     description:
-      'Free video transcription. Sign up for free to try. Upload video and get a text transcript in seconds. 3 imports/month free tier (resets on the 1st). AI-powered. MP4, MOV, AVI, WebM supported.',
+      'Free video transcription. Sign up for free to try. Upload video and get a text transcript in seconds. 3 imports/day free tier (resets daily). AI-powered. MP4, MOV, AVI, WebM supported.',
     h1: 'Free Transcription Online',
     intro:
-      'Get a free transcript from any video — sign up for free. Upload an MP4, MOV, AVI, or WebM, and our AI transcribes the speech into text in seconds. The free tier gives you 3 uploads per day with no credit card required. Upgrade to Pro for unlimited processing or multi-language output.',
+      'Get a free transcript from any video — sign up for free. Upload an MP4, MOV, AVI, or WebM, and our AI transcribes the speech into text in seconds. The free tier gives you 3 uploads per day with no credit card required. Upgrade to Pro for continued processing or multi-language output.',
     breadcrumbLabel: 'Free Transcription',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/transcribe-video', '/video-to-text', '/ai-transcription'],
@@ -836,7 +836,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Is transcription really free?', a: 'Yes. You get 3 uploads per day after signing up for free. No credit card needed to try.' },
       { q: 'What formats are supported for free?', a: 'MP4, MOV, AVI, WebM, and MKV. All formats are available on the free tier.' },
-      { q: 'What is the free tier limit?', a: '3 uploads per day, single language output. Upgrade to Pro for unlimited processing and multi-language support.' },
+      { q: 'What is the free tier limit?', a: '3 uploads per day, single language output. Upgrade to Pro for continued processing and multi-language support.' },
       { q: 'Do I need to install anything?', a: 'No. The tool runs in your browser. Upload your file and get a transcript — no installation required.' },
     ],
   },
@@ -918,7 +918,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Do I get speaker labels in a podcast transcript?', a: 'Yes. After transcribing, open the Speakers branch to see the transcript organized by speaker (Speaker 1, Speaker 2, etc.). For a two-host podcast, this cleanly separates each host\'s contributions. For interview formats, it labels the interviewer and guest without any manual tagging.' },
       { q: 'How do I use podcast transcripts for SEO?', a: 'Add the full transcript to your episode show notes page as body text (not a PDF). Search engines index text, not audio, so a full transcript makes every word you said searchable. This dramatically improves long-tail keyword discovery for each episode — listeners searching for topics you covered can find your episode via Google.' },
       { q: 'Can I generate podcast show notes automatically?', a: 'Yes. After transcribing, open the Summary branch. It extracts key topics, main points, and decisions automatically. Copy the summary output directly into your podcast platform as show notes. Most podcasters find this covers 80% of their show notes writing with one click.' },
-      { q: 'Is podcast transcription free?', a: 'Yes. Free tier includes 3 uploads per day after signing up for free. Pro plan is $7.99/month, suitable for podcasters transcribing every episode at unlimited volume.' },
+      { q: 'Is podcast transcription free?', a: 'Yes. Free tier includes 3 uploads per day after signing up for free. Pro plan is $7.99/month, suitable for podcasters transcribing every episode through regular production workflows.' },
       { q: 'Can I compare Descript vs VideoText for podcast transcription?', a: 'Descript combines recording, editing, and transcription in one video editor. VideoText is a dedicated transcription tool — faster to use for transcription-only tasks, lower cost for teams who do not need video editing, and produces richer metadata outputs (chapters, keywords, keyword index). If you already record and edit elsewhere, VideoText adds transcription without a second subscription to a full editor.' },
       { q: 'Can I transcribe a podcast and get SRT subtitles?', a: 'Yes. After generating the transcript, use the Video to Subtitles tool with the same file to produce an SRT or VTT subtitle file. Useful for publishing podcast clips to YouTube or social media with captions.' },
     ],
@@ -980,7 +980,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How do I download a Zoom cloud recording as MP4?', a: 'Log into your Zoom account at zoom.us → Recordings → Cloud Recordings. Find the meeting and click the download icon next to the MP4 entry. If the recording is on your local machine, find it in Documents/Zoom on Mac or C:\\Users\\[name]\\Documents\\Zoom on Windows.' },
       { q: 'Does it work without Zoom\'s built-in transcription feature?', a: 'Yes. Zoom\'s built-in transcription requires a Business or Enterprise account and must be enabled before the meeting. VideoText works from any Zoom MP4 recording regardless of your Zoom plan — upload the file and get a transcript immediately.' },
       { q: 'Can I compare Zoom vs Google Meet vs Teams recordings?', a: 'All three recording formats (Zoom MP4, Google Meet MP4, Teams MP4) are supported equally. The transcript quality is the same across platforms — it depends on audio quality of the recording, not the source platform.' },
-      { q: 'Is Zoom recording transcription free?', a: 'Yes. Free tier includes 3 uploads per day after signing up for free. A typical 30–60 minute Zoom call fits within this limit. Pro plan is $7.99/month for unlimited processing.' },
+      { q: 'Is Zoom recording transcription free?', a: 'Yes. Free tier includes 3 uploads per day after signing up for free. A typical 30–60 minute Zoom call fits within this limit. Pro plan is $7.99/month for continued processing.' },
     ],
   },
   {
@@ -1148,7 +1148,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'caption-generator',
     faq: [
       { q: 'What is a caption generator and how does it work?', a: 'A caption generator uses AI speech recognition to transcribe speech in a video and align each word to its timestamp, producing timed caption files in SRT or VTT format. You upload a video file, wait 30–90 seconds, and download captions ready to upload to YouTube, Vimeo, or any platform.' },
-      { q: 'Is the caption generator free?', a: 'Yes. Sign up for free to try. You get 3 uploads per day. Pro plan is $7.99/month for unlimited processing.' },
+      { q: 'Is the caption generator free?', a: 'Yes. Sign up for free to try. You get 3 uploads per day. Pro plan is $7.99/month for continued processing.' },
       { q: 'What caption formats does the generator output?', a: 'SRT and VTT, both generated from the same upload at no extra cost. SRT is the best choice for YouTube, Vimeo, LinkedIn, Facebook Video, and most video platforms. VTT is the standard for HTML5 web video players. You choose the format at the point of download — no re-processing needed.' },
       { q: 'Can I burn the generated captions into the video?', a: 'Yes. After generating captions and downloading the SRT or VTT file, upload both the video and the caption file to our Burn Subtitles tool. It hardcodes the captions permanently into the video frames — no software installation required. The output is an MP4 ready for Instagram, TikTok, or any platform.' },
     ],
@@ -1289,7 +1289,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     defaultInputMode: 'youtube',
     faq: [
       { q: 'How do I get a transcript from a YouTube video?', a: 'Paste the video URL into our tool (youtube.com or youtu.be links work). Click Transcribe. Get full transcript + subtitles + summary in 2-3 minutes. No login required.' },
-      { q: 'Is the YouTube transcript generator free?', a: 'Yes. Free tier gives you 3 uploads per day, no credit card required. Pro plan is $7.99/month for unlimited transcription.' },
+      { q: 'Is the YouTube transcript generator free?', a: 'Yes. Free tier gives you 3 uploads per day, no credit card required. Pro plan is $7.99/month for continued transcription.' },
       { q: 'Do I need to download the YouTube video first?', a: 'No. That\'s the main advantage of VideoText. Paste the URL directly — we stream the audio from YouTube servers. No download step, no software install. Just copy, paste, and click Generate.' },
       { q: 'Can I download YouTube video subtitles with this tool?', a: 'Yes. Export transcript as SRT and VTT subtitle files. Upload directly to YouTube, Vimeo, or any video platform. Perfect for re-uploading and improving video SEO.' },
       { q: 'Why is VideoText faster than YouTube auto-captions?', a: 'YouTube captions are generated at 70-80% accuracy in real-time with basic formatting. VideoText generates: 98.5% accurate transcript, speaker labels, AI summary, chapter markers, and subtitle files. All in one pass.' },
@@ -1385,7 +1385,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         { feature: 'Speaker labels', videotext: 'Auto-detected (voice fingerprinting)', alternatives: 'YouTube: generic [SPEAKER 1] only | Rev: manual | Descript: requires setup' },
         { feature: 'Summary generation', videotext: 'AI-generated in 1 pass', alternatives: 'YouTube: none | Rev: none | Descript: you edit manually' },
         { feature: 'Chapter auto-generation', videotext: 'AI-generated, editable', alternatives: 'YouTube: manual only | Rev: none | Descript: requires video editing' },
-        { feature: 'Cost for YouTube creator (100 videos/year)', videotext: 'Free (3 uploads/day) or Pro $7.99/mo unlimited', alternatives: 'YouTube captions: free but low quality | Rev: $125+ per video | Professional: $1000+/month' },
+        { feature: 'Cost for YouTube creator (100 videos/year)', videotext: 'Free (3 uploads/day) or Pro $7.99/mo flat rate', alternatives: 'YouTube captions: free but low quality | Rev: $125+ per video | Professional: $1000+/month' },
         { feature: 'Use case', videotext: 'Fast repurposing, SEO, accessibility', alternatives: 'YouTube captions: basic backup only | Rev: high-stakes professional | Descript: video editing' },
       ],
       useCases: [
@@ -1650,13 +1650,13 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       proofPoints: [
         'Descript processed the same 60-minute podcast in ~18 minutes. VideoText finished in 3 minutes 21 seconds — 6× faster.',
         'Descript requires a desktop app download and account setup. VideoText runs in any browser — open URL, upload, done.',
-        'Descript starts at $24/month with no free tier for video. VideoText is $0 to start — 3 full imports/month, no credit card.',
+        'Descript starts at $24/month with no free tier for video. VideoText is $0 to start — 3 imports/day, no credit card.',
         'Descript cannot transcribe YouTube URLs. Paste any public YouTube URL into VideoText — no download needed.',
         'Descript retains your project files in their cloud. VideoText deletes your file the moment processing ends.',
       ],
       comparisonRows: [
         { feature: 'Processing time (60-min file)', videotext: '~3 minutes', alternatives: 'Descript: ~18 minutes' },
-        { feature: 'Starting price', videotext: '$0 — 3 free imports/month', alternatives: 'Descript: $24/month minimum' },
+        { feature: 'Starting price', videotext: '$0 — 3 free imports/day', alternatives: 'Descript: $24/month minimum' },
         { feature: 'Browser-based (no install)', videotext: 'Yes — open and use instantly', alternatives: 'Descript: Desktop app required' },
         { feature: 'YouTube URL input', videotext: 'Yes — paste URL, no download', alternatives: 'Descript: No' },
         { feature: 'SRT / VTT subtitle export', videotext: 'Yes — one step', alternatives: 'Descript: Yes, but buried in workflow' },
@@ -1704,7 +1704,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         'Otter.ai does not accept video file uploads (MP4, MOV, AVI, WebM). VideoText processes all of them.',
         'Otter.ai does not generate SRT or VTT subtitle files. VideoText exports broadcast-ready SRT in one step — free tier.',
         'Otter.ai cannot transcribe YouTube URLs. VideoText transcribes any public YouTube URL directly — no download needed.',
-        'Otter.ai free tier is meeting-only (Zoom/Meet/Teams). VideoText free tier includes video file uploads — 3 per month, no credit card.',
+        'Otter.ai free tier is meeting-only (Zoom/Meet/Teams). VideoText free tier includes video file uploads — 3 per day, no credit card.',
         'Otter.ai stores your meeting recordings in their cloud. VideoText deletes your file the moment processing ends.',
         'Otter.ai does not translate subtitles. VideoText translates SRT/VTT to 70+ languages with timestamps preserved.',
       ],
@@ -1717,7 +1717,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         { feature: 'Auto-chapters + timestamps', videotext: 'Yes', alternatives: 'Otter.ai: No' },
         { feature: 'Live meeting transcription (Zoom/Meet)', videotext: 'No', alternatives: 'Otter.ai: Yes (this is its strength)' },
         { feature: 'File deletion after processing', videotext: 'Immediate — nothing stored', alternatives: 'Otter.ai: Files stored permanently' },
-        { feature: 'Starting price for video', videotext: '$0 — 3 video imports/month free', alternatives: 'Otter.ai: Free tier does not support video files' },
+        { feature: 'Starting price for video', videotext: '$0 — 3 video imports/day free', alternatives: 'Otter.ai: Free tier does not support video files' },
       ],
       outputExamples: [
         { title: 'What happens when you upload a video to Otter.ai', body: 'Otter.ai does not accept video file uploads. You must either connect it to a live Zoom/Meet/Teams session or import audio-only from their mobile app. There is no "upload an MP4" workflow.' },
@@ -1738,7 +1738,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can Otter.ai generate SRT subtitle files?', a: 'No. Otter.ai outputs meeting notes and transcripts, but not SRT or VTT subtitle files. VideoText generates broadcast-ready SRT and VTT from any video upload or YouTube URL — included in the free tier.' },
       { q: 'Can Otter.ai transcribe YouTube videos?', a: 'No. Otter.ai cannot transcribe YouTube URLs. VideoText accepts any public YouTube URL directly — paste it and get a full transcript, SRT, summary, and chapters. No download needed.' },
       { q: 'Does VideoText support live meeting transcription like Otter.ai?', a: 'No. VideoText transcribes recorded files — upload an MP4 or paste a YouTube URL. For real-time live meeting transcription during active calls, Otter.ai is the better choice.' },
-      { q: 'Is VideoText free for video files unlike Otter.ai?', a: 'Yes. VideoText offers 3 video imports per month on the free tier, no credit card required. Otter.ai\'s free tier is meeting-only and does not support video file uploads.' },
+      { q: 'Is VideoText free for video files unlike Otter.ai?', a: 'Yes. VideoText offers 3 video imports per day on the free tier, no credit card required. Otter.ai\'s free tier is meeting-only and does not support video file uploads.' },
       { q: 'Does Otter.ai delete your recordings?', a: 'No. Otter.ai stores your meeting recordings in their cloud until you manually delete them. VideoText removes your file immediately after processing completes.' },
     ],
   },
@@ -1755,7 +1755,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'rev-alternative',
     deepContent: {
       proofPoints: [
-        'Rev charges $0.25/minute. A 60-minute recording costs $15. VideoText Pro is $7.99/month flat, unlimited — no per-minute fees.',
+        'Rev charges $0.25/minute. A 60-minute recording costs $15. VideoText Pro is $7.99/month flat rate — no per-minute fees.',
         'Rev human review turnaround: 12–24 hours standard. VideoText AI: under 5 minutes for a 60-minute file.',
         'Rev AI (automated) accuracy: ~90–95%. VideoText uses Whisper large-v3: 98.5%+ on clear audio — comparable to Rev human review for clean recordings.',
         'Rev does not transcribe YouTube URLs. VideoText accepts any public YouTube URL — no download needed.',
@@ -1764,7 +1764,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       ],
       comparisonRows: [
         { feature: 'Turnaround time (60-min file)', videotext: 'Under 5 minutes', alternatives: 'Rev AI: ~5 min | Rev Human: 12–24 hours' },
-        { feature: 'Cost model', videotext: '$7.99/mo flat, unlimited — $0 free tier', alternatives: 'Rev: $0.25/min AI, $1.99/min human' },
+        { feature: 'Cost model', videotext: '$7.99/mo flat rate — $0 free tier', alternatives: 'Rev: $0.25/min AI, $1.99/min human' },
         { feature: 'Accuracy (clear audio)', videotext: '98.5%+ (Whisper large-v3)', alternatives: 'Rev AI: ~90–95% | Rev Human: 99%+' },
         { feature: 'YouTube URL input', videotext: 'Yes — paste and transcribe', alternatives: 'Rev: No' },
         { feature: 'SRT / VTT subtitle export', videotext: 'Yes — free tier', alternatives: 'Rev: AI tier does not include SRT' },
@@ -1787,7 +1787,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     },
     faq: [
       { q: 'How accurate is VideoText compared to Rev?', a: 'VideoText uses Whisper large-v3 at 98.5%+ word accuracy on clear audio. Rev human review achieves 99%+. For most podcast, video, and business content on clear audio, the difference is negligible. For legal or medical content requiring absolute accuracy, Rev human review is safer.' },
-      { q: 'How much cheaper is VideoText than Rev?', a: 'Rev charges $0.25/minute. A 60-minute recording costs $15. VideoText has a free tier (3 uploads/day) and Pro at $7.99/month, unlimited. For high-volume work, VideoText is far cheaper.' },
+      { q: 'How much cheaper is VideoText than Rev?', a: 'Rev charges $0.25/minute. A 60-minute recording costs $15. VideoText has a free tier (3 uploads/day) and Pro at $7.99/month. For high-volume work, VideoText is far cheaper.' },
       { q: 'How much faster is VideoText than Rev?', a: 'VideoText returns results in under 5 minutes for a 60-minute file. Rev AI is similar in speed, but Rev human review takes 12–24 hours (standard) or 5 hours (rush, at higher cost).' },
       { q: 'Can VideoText transcribe YouTube videos like Rev cannot?', a: 'Yes. Paste any public YouTube URL into VideoText — no download needed. Rev does not support direct YouTube URL input.' },
       { q: 'Does VideoText generate SRT files unlike Rev AI?', a: 'Yes. VideoText generates SRT and VTT subtitle files from any upload in one step. Rev\'s automated AI tier does not include subtitle export.' },
@@ -1806,14 +1806,14 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'trint-alternative',
     deepContent: {
       proofPoints: [
-        'Trint starts at $80/month. VideoText starts at $0 — 3 full imports/month, no credit card required.',
+        'Trint starts at $80/month. VideoText starts at $0 — 3 imports/day, no credit card required.',
         'Trint does not accept YouTube URLs. VideoText transcribes any public YouTube URL directly — no download needed.',
         'Trint processing: ~6 minutes for a 60-minute file. VideoText: under 5 minutes (typically 3 minutes).',
         'Trint stores your files in their cloud. VideoText deletes them immediately after the job finishes.',
         'VideoText outputs AI summary, chapters, and SRT in the same workflow. Trint requires separate export steps for each.',
       ],
       comparisonRows: [
-        { feature: 'Starting price', videotext: '$0 — 3 imports/month free', alternatives: 'Trint: $80/month' },
+        { feature: 'Starting price', videotext: '$0 — 3 imports/day free', alternatives: 'Trint: $80/month' },
         { feature: 'Processing time (60-min file)', videotext: 'Under 5 minutes (~3 min)', alternatives: 'Trint: ~6 minutes' },
         { feature: 'YouTube URL input', videotext: 'Yes — paste URL, no download', alternatives: 'Trint: No' },
         { feature: 'SRT / VTT subtitle export', videotext: 'Yes — one step, free tier', alternatives: 'Trint: Yes, but requires additional steps' },
@@ -1872,7 +1872,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         { feature: 'YouTube URL input', videotext: 'Yes — paste URL, no download', alternatives: 'TurboScribe: No — must download and re-upload' },
         { feature: 'AI summary + chapters', videotext: 'Auto-generated with transcript', alternatives: 'TurboScribe: Not available' },
         { feature: 'Subtitle translation (70+ languages)', videotext: 'Yes', alternatives: 'TurboScribe: No' },
-        { feature: 'Starting price', videotext: '$0 — 3 free imports/month', alternatives: 'TurboScribe: $10/month minimum' },
+        { feature: 'Starting price', videotext: '$0 — 3 free imports/day', alternatives: 'TurboScribe: $10/month minimum' },
         { feature: 'File deletion after processing', videotext: 'Immediate — nothing stored', alternatives: 'TurboScribe: Files retained in cloud' },
       ],
       outputExamples: [
@@ -1914,18 +1914,18 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         'HappyScribe has no free tier — only a 10-minute one-time trial. VideoText has 3 uploads per day free, no credit card.',
         'HappyScribe cannot transcribe YouTube URLs. VideoText accepts any public YouTube URL directly — no download needed.',
         'HappyScribe does not burn subtitles into video. VideoText includes a free burn-subtitles tool in the same platform.',
-        'HappyScribe starts at $17/month for 120 minutes. VideoText Pro is $7.99/month for unlimited processing — no per-minute caps.',
+        'HappyScribe starts at $17/month for 120 minutes. VideoText Pro is $7.99/month for continued processing — no per-minute caps.',
         'HappyScribe stores your media files until you manually delete them. VideoText deletes your file immediately after processing.',
       ],
       comparisonRows: [
-        { feature: 'Free tier', videotext: 'Yes — 3 full imports/month, no credit card', alternatives: 'HappyScribe: No free tier (10-min one-time trial only)' },
-        { feature: 'Starting price', videotext: '$0 to start, $7.99/mo Pro unlimited', alternatives: 'HappyScribe: $17/mo for 120 min' },
+        { feature: 'Free tier', videotext: 'Yes — 3 imports/day, no credit card', alternatives: 'HappyScribe: No free tier (10-min one-time trial only)' },
+        { feature: 'Starting price', videotext: '$0 to start, $7.99/mo Pro', alternatives: 'HappyScribe: $17/mo for 120 min' },
         { feature: 'YouTube URL input', videotext: 'Yes — paste URL, no download needed', alternatives: 'HappyScribe: No — must download and re-upload' },
         { feature: 'SRT / VTT subtitle export', videotext: 'Yes — one step', alternatives: 'HappyScribe: Yes' },
         { feature: 'Subtitle translation (70+ languages)', videotext: 'Yes', alternatives: 'HappyScribe: Yes (fewer languages)' },
         { feature: 'Burn subtitles into video', videotext: 'Yes — free built-in tool', alternatives: 'HappyScribe: No — requires separate tool' },
         { feature: 'AI summary + chapters', videotext: 'Yes', alternatives: 'HappyScribe: No' },
-        { feature: 'Value', videotext: 'Unlimited at $7.99/mo flat', alternatives: 'HappyScribe: ~7 min/$1 (pay-as-you-go)' },
+        { feature: 'Value', videotext: 'Flat-rate Pro at $7.99/mo', alternatives: 'HappyScribe: ~7 min/$1 (pay-as-you-go)' },
         { feature: 'File deletion after processing', videotext: 'Immediate — nothing stored', alternatives: 'HappyScribe: Files stored until manual deletion' },
       ],
       outputExamples: [
@@ -1946,7 +1946,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can VideoText transcribe YouTube videos like HappyScribe cannot?', a: 'Yes, and it is easier. Paste any YouTube URL — no download needed. HappyScribe requires you to download and upload the file manually.' },
       { q: 'Does VideoText burn subtitles into video unlike HappyScribe?', a: 'Yes. VideoText includes a free burn-subtitles tool. HappyScribe only exports SRT — you need a separate tool to hard-code captions.' },
       { q: 'Does HappyScribe delete my files after processing?', a: 'No. HappyScribe stores your media until you manually delete it. VideoText removes your file immediately after the job finishes.' },
-      { q: 'How does VideoText pricing compare to HappyScribe?', a: 'HappyScribe starts at $17/month for 120 minutes (~$0.14/min). VideoText Pro is $7.99/month flat, unlimited processing — and starts free with no credit card required.' },
+      { q: 'How does VideoText pricing compare to HappyScribe?', a: 'HappyScribe starts at $17/month for 120 minutes (~$0.14/min). VideoText Pro is $7.99/month flat, continued processing — and starts free with no credit card required.' },
     ],
   },
   {
@@ -2306,7 +2306,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   {
     path: '/free-video-transcription-tool',
     title: 'Free Video Transcription Tool – No Credit Card | VideoText',
-    description: 'Free video transcription tool. 3 imports/month. SRT, TXT export. AI-powered. We don\'t store your data. Sign up for free.',
+    description: 'Free video transcription tool. 3 imports/day. SRT, TXT export. AI-powered. We don\'t store your data. Sign up for free.',
     h1: 'Free Video Transcription Tool',
     intro: 'VideoText offers a free video transcription tool. 3 uploads per day, no credit card. Transcribe video, get SRT or TXT. We process and delete your files. Sign up for free.',
     breadcrumbLabel: 'Free Video Transcription Tool',
@@ -2337,7 +2337,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: "Why are TikTok's built-in captions not enough?", a: "TikTok auto-captions are display-only — you can't export them as a file, they don't support all languages, and they have no timestamps you can repurpose. VideoText gives you a full transcript file (TXT, SRT, VTT) you can reuse as YouTube captions, blog content, or subtitles for your reposted video." },
       { q: 'How do I get the TikTok video file to upload?', a: 'On mobile, use TikTok\'s built-in save feature to download the video to your camera roll, then upload it here. On desktop, several browser extensions allow downloading TikTok videos. Once you have the MP4, upload it directly.' },
       { q: 'Can I use the TikTok transcript for SEO?', a: 'Yes. TikTok videos are not indexed by Google, but if you republish the content as a blog post or YouTube video and include the transcript, you make that content searchable. Repurposing the transcript is one of the fastest ways to generate text content from your existing video library.' },
-      { q: 'Is TikTok transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $7.99/month with no usage limits.' },
+      { q: 'Is TikTok transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $7.99/month with expanded workflow access.' },
     ],
   },
   {
@@ -2375,7 +2375,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: "Does Loom have built-in transcription?", a: "Yes, Loom offers auto-transcription on paid plans. However, VideoText gives you additional outputs — speaker labels, summary, chapters, keyword index, and export to SRT/VTT/TXT/JSON. If you want to repurpose Loom content as text, copy to Notion, or generate subtitles, VideoText provides more flexibility." },
       { q: 'Can I get a summary of a Loom video?', a: 'Yes. After transcribing, open the Summary branch to see key decisions, action items, and main points extracted automatically. Useful for async video updates where recipients want the TL;DR without watching the full recording.' },
       { q: 'Does it work for Loom recordings with multiple speakers?', a: 'Yes. Upload the Loom MP4 and after transcribing, open the Speakers branch. Speech turns are grouped by speaker (Speaker 1, Speaker 2, etc.) for easy navigation.' },
-      { q: 'Is Loom transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $7.99/month with no usage limits.' },
+      { q: 'Is Loom transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $7.99/month with expanded workflow access.' },
     ],
   },
   {
@@ -2535,7 +2535,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What screen recording formats are supported?', a: 'MP4, WebM, MOV, MKV, and AVI are all supported. Most screen recording tools export to one of these formats — Loom (MP4), OBS (MP4/MKV), QuickTime (MOV), Zoom (MP4), and Screenflow (MP4). Upload directly without converting.' },
       { q: 'Does it transcribe voiceover narration in screen recordings?', a: 'Yes. The AI transcribes all spoken audio in the recording — voiceover narration, system audio with speech, and microphone input. For best results, ensure the audio track has clear speech without excessive background noise.' },
       { q: 'Can I transcribe a tutorial or course video?', a: 'Yes. Screen recording transcripts are widely used for online course creators who want searchable text, accessibility captions, or article content repurposed from tutorial videos. Upload the video and get SRT for captions or TXT for blog posts.' },
-      { q: 'Is screen recording transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $7.99/month with no usage limits.' },
+      { q: 'Is screen recording transcription free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $7.99/month with expanded workflow access.' },
       { q: 'Can I generate subtitles from a screen recording?', a: 'Yes. Use the Video to Subtitles tool with your screen recording file to generate SRT or VTT captions. These can be burned into the video using the Burn Subtitles tool or uploaded to YouTube as a caption track.' },
     ],
   },
@@ -2747,7 +2747,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does VideoText support speaker labels like Fireflies?', a: 'Yes. After transcribing, open the Speakers branch to see each participant\'s contributions grouped by speaker turn. VideoText identifies speakers from audio cues rather than calendar identities, so names appear as Speaker 1, Speaker 2, etc.' },
       { q: 'Can I get meeting action items like Fireflies?', a: 'Yes. The Summary branch automatically extracts action items, decisions, and key points from any meeting transcript. This covers the core use case of Fireflies without requiring a bot or calendar integration.' },
       { q: 'Does VideoText work without installing anything?', a: 'Yes. VideoText is fully browser-based. No app, no extension, no bot. Upload the recording file and get results. Works on any device with a browser.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Pro plan is $7.99/month with no usage limits.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Pro plan is $7.99/month with expanded workflow access.' },
     ],
   },
   {
@@ -2765,7 +2765,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How does VideoText compare to Riverside for transcription?', a: 'Riverside.fm is a recording platform with built-in transcription on paid plans. VideoText is a dedicated transcription tool that works from any recording source. If you record on Riverside but want more transcription features — keyword indexing, SRT export, multi-language translation — VideoText adds those on top of your existing Riverside workflow.' },
       { q: 'Why do people look for Riverside transcription alternatives?', a: 'Common reasons: Riverside transcription is only available on paid plans, users want to transcribe older recordings made before using Riverside, teams want SRT/VTT subtitle output rather than just text, or users need multi-language translation of the transcript.' },
       { q: 'Can I transcribe a Riverside recording in VideoText?', a: 'Yes. Export your Riverside recording as MP4, upload it here, and get a full transcript with speaker labels and summary show notes.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Pro plan is $7.99/month with no usage limits.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Pro plan is $7.99/month with expanded workflow access.' },
     ],
   },
   {
@@ -2800,7 +2800,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How does VideoText compare to Zubtitle?', a: 'Zubtitle charges per video or per minute of video processed. VideoText uses a flat monthly subscription — process as many videos as your plan allows for one price. VideoText also adds transcript, speaker labels, and summary features that Zubtitle does not include.' },
       { q: 'Why do people look for Zubtitle alternatives?', a: 'Common reasons: per-video pricing becomes expensive for high-volume creators, users want a full transcript alongside subtitles, or users need SRT files rather than burned-in captions only.' },
-      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Pro plan is $7.99/month with no usage limits.' },
+      { q: 'Is VideoText free?', a: 'Yes. Free tier includes 3 uploads per day. Pro plan is $7.99/month with expanded workflow access.' },
     ],
   },
   {
@@ -2913,7 +2913,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Can I convert an MP3 podcast to text for show notes?', a: 'Yes. This is one of the most common uses. Upload your MP3 episode, get the transcript, then use the Summary branch to generate show notes automatically. The summary extracts key topics, main points, and timestamps.' },
       { q: 'Can I get SRT subtitles from an MP3 file?', a: 'Yes. VideoText can generate a timed SRT file from any MP3. This is useful for creating captions for a video that uses audio-only source material, or for syncing text to audio in a media player.' },
       { q: 'What languages does MP3 transcription support?', a: 'Whisper supports 90+ languages. Upload an MP3 in any language and set the source language before processing for best accuracy. Transcription works for English, Spanish, French, German, Hindi, Arabic, Chinese, Japanese, Korean, and many others.' },
-      { q: 'Is MP3 to text conversion free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $7.99/month with no usage limits.' },
+      { q: 'Is MP3 to text conversion free?', a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $7.99/month with expanded workflow access.' },
     ],
   },
   {
@@ -3153,7 +3153,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       },
       {
         q: 'Is VideoText free for journalists?',
-        a: 'Yes. Free tier includes 3 uploads per day with no credit card. Pro plan is $7.99/month with no usage limits.',
+        a: 'Yes. Free tier includes 3 uploads per day with no credit card. Pro plan is $7.99/month with expanded workflow access.',
       },
     ],
   },
@@ -3223,7 +3223,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       },
       {
         q: 'Is press conference transcription free?',
-        a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $7.99/month with no usage limits.',
+        a: 'Yes. Free tier includes 3 uploads per day. Sign up for free to try. Pro plan is $7.99/month with expanded workflow access.',
       },
     ],
   },
@@ -3301,7 +3301,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       },
       {
         q: 'Is VideoText free for academic research?',
-        a: 'Yes. Free tier includes 3 uploads per day with no credit card. For intensive fieldwork, the Pro plan ($7.99/month) provides unlimited processing with no per-minute fees.',
+        a: 'Yes. Free tier includes 3 uploads per day with no credit card. For intensive fieldwork, the Pro plan ($7.99/month) provides continued processing with no per-minute fees.',
       },
     ],
   },
@@ -3428,7 +3428,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Does VideoText give better transcription than Zoom?', a: 'VideoText uses Whisper large-v3 (~97–99% word accuracy on clear speech). Zoom\'s accuracy is comparable but its output is less structured — VideoText adds speaker labels, summary, chapters, and keyword index on top of the raw transcript.' },
       { q: 'How do I get my Zoom recording to transcribe?', a: 'Cloud recordings: zoom.us → Recordings → Download the MP4. Local recordings: Documents/Zoom folder on your computer. Upload the MP4 to VideoText and get a transcript in 5–8 minutes for a 60-minute call.' },
       { q: 'Does VideoText store my Zoom recordings?', a: 'No. Your file is deleted immediately after transcription. Zoom stores cloud recordings until you manually delete them — VideoText has zero retention.' },
-      { q: 'Is VideoText free for Zoom transcription?', a: 'Yes. Free tier includes 3 uploads per day. No credit card. Pro plan is $7.99/month with no usage limits.' },
+      { q: 'Is VideoText free for Zoom transcription?', a: 'Yes. Free tier includes 3 uploads per day. No credit card. Pro plan is $7.99/month with expanded workflow access.' },
     ],
   },
   {
@@ -3543,7 +3543,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'notta-alternative',
     faq: [
-      { q: 'What are Notta\'s limitations compared to VideoText?', a: 'Notta free tier: 3 minutes max per transcription, 120 minutes/month total. VideoText free tier: 3 full-length imports per month with no per-file duration cap. VideoText also gives chapters, keywords, and SRT export on the free tier.' },
+      { q: 'What are Notta\'s limitations compared to VideoText?', a: 'Notta free tier: 3 minutes max per transcription, 120 minutes/month total. VideoText free tier: 3 daily imports for files up to 30 minutes. VideoText also gives chapters, keywords, and SRT export on the free tier.' },
       { q: 'Does VideoText support the same file types as Notta?', a: 'Yes. VideoText supports MP4, MOV, AVI, WebM, MKV (video) and MP3, WAV, M4A, AAC, OGG, FLAC (audio) — all the formats Notta supports, plus more.' },
       { q: 'Does VideoText transcribe live meetings like Notta?', a: 'VideoText transcribes uploaded files — it does not join live meetings. For recorded meetings (Zoom, Teams, Meet), download the MP4 and upload it. Results are typically ready in 5–8 minutes for a 60-minute call.' },
       { q: 'Is VideoText free like Notta?', a: 'Yes. Free tier includes 3 uploads per day with no credit card. Pro plan is $7.99/month.' },
@@ -3603,7 +3603,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Is VideoText available on Windows unlike Granola?', a: 'Yes. VideoText is browser-based and works on any OS. Granola is Mac-only.' },
       { q: 'Can I transcribe past meetings with VideoText if I didn\'t have Granola running?', a: 'Yes. Upload any past recording (Zoom MP4, Google Meet, Teams, any audio file) and VideoText produces the transcript. No need to have captured it live.' },
-      { q: 'Is VideoText free like Granola?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. Granola has a free tier for up to 25 meetings before requiring payment.' },
+      { q: 'Is VideoText free like Granola?', a: 'Yes. VideoText free tier: 3 imports/day, no credit card. Granola has a free tier for up to 25 meetings before requiring payment.' },
     ],
   },
   {
@@ -3682,7 +3682,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'glean-alternative',
     faq: [
       { q: 'Does VideoText replace Glean\'s meeting transcription?', a: 'For the transcription use case specifically — yes. VideoText transcribes any uploaded meeting recording with speaker labels, summary, and keyword search. For the enterprise-wide knowledge base and search features, Glean does more.' },
-      { q: 'Is VideoText free unlike Glean?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. Glean is enterprise-priced and requires organizational deployment.' },
+      { q: 'Is VideoText free unlike Glean?', a: 'Yes. VideoText free tier: 3 imports/day, no credit card. Glean is enterprise-priced and requires organizational deployment.' },
       { q: 'What is Glean used for?', a: 'Glean is an enterprise AI search platform that indexes company-wide content (Slack, Drive, email, meetings, wikis) and lets employees search across all of it. Its meeting transcription is one small feature. VideoText is purpose-built for transcribing individual recordings with speaker labels, summary, and SRT export.' },
       { q: 'Does VideoText integrate with Slack or Google Drive like Glean?', a: 'No. VideoText is a standalone file transcription tool — upload a file, get a transcript. It does not connect to company apps or index historical content. For individuals who need fast, accurate transcription of specific recordings without enterprise setup, VideoText is the right tool.' },
       { q: 'Can I search the transcript in VideoText?', a: 'Yes — the Keywords section indexes every significant term in the transcript with timestamps, making it easy to jump to any topic mentioned. For full-text search, download the TXT and search with any text editor.' },
@@ -3726,7 +3726,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What is the difference between MacWhisper and VideoText?', a: 'MacWhisper runs Whisper locally on your Mac — your audio never leaves your machine. VideoText processes in the cloud, deletes your file immediately after transcription, and works on any OS in a browser. MacWhisper is better for full local privacy; VideoText is better for convenience and cross-platform use.' },
       { q: 'Does VideoText use the same Whisper model as MacWhisper?', a: 'VideoText uses Whisper large-v3, which is the highest-accuracy Whisper model. MacWhisper lets you choose between small, medium, and large models — VideoText always uses large-v3.' },
       { q: 'Does VideoText work on Windows and Linux unlike MacWhisper?', a: 'Yes. VideoText is browser-based and works on any operating system. MacWhisper is Mac-only.' },
-      { q: 'Is VideoText free like MacWhisper?', a: 'VideoText free tier: 3 imports/month, no credit card. MacWhisper has a free tier and a one-time purchase for advanced features.' },
+      { q: 'Is VideoText free like MacWhisper?', a: 'VideoText free tier: 3 imports/day, no credit card. MacWhisper has a free tier and a one-time purchase for advanced features.' },
     ],
   },
   {
@@ -3803,7 +3803,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     },
     faq: [
       { q: 'Does VideoText work on Windows unlike Buzz?', a: 'Yes. VideoText is browser-based and works on Windows, Mac, and Linux. Buzz supports macOS and Linux only.' },
-      { q: 'Is VideoText free like Buzz?', a: 'Yes. VideoText free tier: 3 imports/month. Buzz is free and open-source but requires local setup and model downloads.' },
+      { q: 'Is VideoText free like Buzz?', a: 'Yes. VideoText free tier: 3 imports/day. Buzz is free and open-source but requires local setup and model downloads.' },
       { q: 'Does VideoText require downloading Whisper model files like Buzz does?', a: 'No. VideoText runs in the cloud — no model downloads, no local storage requirements, no GPU needed. Buzz requires downloading Whisper model files (~150MB–3GB depending on model size) to your local machine.' },
       { q: 'What extra features does VideoText have over Buzz?', a: 'VideoText adds speaker diarization, auto-generated summary, chapter navigation, keyword indexing, SRT/VTT subtitle export, subtitle translation to 70+ languages, and YouTube URL input. Buzz outputs raw transcript text only.' },
       { q: 'Is VideoText more accurate than Buzz?', a: 'Both tools can use Whisper large-v3, giving equivalent accuracy (~98.5% WER on clear speech). VideoText always uses large-v3; Buzz lets you choose smaller, faster models at lower accuracy if preferred.' },
@@ -3828,7 +3828,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'Why use VideoText instead of CapCut for captions?', a: 'CapCut captions are styled overlays — they cannot be exported as SRT or VTT files. VideoText gives you a proper SRT/VTT subtitle file with accurate timestamps that works on YouTube, Vimeo, Dailymotion, and any other platform.' },
       { q: 'Can VideoText translate captions like CapCut?', a: 'Yes. VideoText translates subtitles to 70+ languages — more than CapCut supports. The translated SRT preserves all original timestamps.' },
       { q: 'Can I burn captions into the video with VideoText?', a: 'Yes. Use the Burn Subtitles tool to permanently embed SRT captions into your video. Useful for platforms where external subtitles are not supported.' },
-      { q: 'Is VideoText free like CapCut?', a: 'Yes. Free tier: 3 imports/month, no credit card. Watermark on subtitle files in the free tier, removed on paid plans.' },
+      { q: 'Is VideoText free like CapCut?', a: 'Yes. Free tier: 3 imports/day, no credit card. Watermark on subtitle files in the free tier, removed on paid plans.' },
     ],
   },
   {
@@ -3847,7 +3847,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Can VideoText replace Subtitle Edit for generating subtitles?', a: 'For the generation step — yes. VideoText auto-generates accurate SRT/VTT files from any video. Subtitle Edit is a manual editor for fixing timing and text. Use VideoText to generate the initial SRT, then use Subtitle Edit for detailed edits if needed.' },
       { q: 'Does VideoText work on Mac and Linux unlike Subtitle Edit?', a: 'Yes. VideoText runs in the browser on any OS. Subtitle Edit is Windows-only (though it runs via Wine on Linux).' },
-      { q: 'Is VideoText free like Subtitle Edit?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. Subtitle Edit is free and open source but Windows-only.' },
+      { q: 'Is VideoText free like Subtitle Edit?', a: 'Yes. VideoText free tier: 3 imports/day, no credit card. Subtitle Edit is free and open source but Windows-only.' },
     ],
   },
   {
@@ -3884,7 +3884,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'invideo-alternative',
     faq: [
       { q: 'Can VideoText transcribe videos created in InVideo?', a: 'Yes. Export your InVideo video as MP4 and upload it to VideoText for a full transcript and SRT subtitle file.' },
-      { q: 'Is VideoText free unlike InVideo?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card.' },
+      { q: 'Is VideoText free unlike InVideo?', a: 'Yes. VideoText free tier: 3 imports/day, no credit card.' },
       { q: 'What is InVideo AI used for?', a: 'InVideo AI is a text-to-video and video creation platform — it generates videos from scripts, blog posts, or prompts. VideoText does the reverse: it converts existing videos to text transcripts and SRT subtitle files.' },
       { q: 'Can I get subtitle files from InVideo videos using VideoText?', a: 'Yes. Export your InVideo video as MP4, upload it to VideoText, and get an SRT or VTT subtitle file with accurate timestamps. Translate the SRT to 70+ languages for multi-language distribution.' },
       { q: 'Does VideoText support all video formats?', a: 'Yes. VideoText accepts MP4, MOV, AVI, WebM, MKV, and all major audio formats (MP3, WAV, M4A, FLAC, OGG).' },
@@ -3927,9 +3927,9 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'microsoft-word-transcription-alternative',
     faq: [
-      { q: 'What are the limitations of Word\'s Transcribe feature?', a: 'Word Transcribe requires Microsoft 365 (paid), only accepts audio files (not video), limits you to 5 hours of transcription per month, and only works inside Word online. VideoText accepts video and audio, has no per-file cap, and works in any browser.' },
+      { q: 'What are the limitations of Word\'s Transcribe feature?', a: 'Word Transcribe requires Microsoft 365 (paid), only accepts audio files (not video), limits you to 5 hours of transcription per month, and only works inside Word online. VideoText accepts video and audio, supports files up to the applicable plan duration, and works in any browser.' },
       { q: 'Is VideoText faster than Word\'s transcription?', a: 'Yes. VideoText typically delivers results in 30–90 seconds for short files. Word Transcribe uploads to Microsoft servers and can take longer, especially for longer recordings.' },
-      { q: 'Does VideoText require a Microsoft 365 subscription?', a: 'No. VideoText is independent of Microsoft. Free tier: 3 imports/month, no credit card.' },
+      { q: 'Does VideoText require a Microsoft 365 subscription?', a: 'No. VideoText is independent of Microsoft. Free tier: 3 imports/day, no credit card.' },
     ],
   },
   {
@@ -3948,7 +3948,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'Why can\'t I just play audio and use Google Docs voice typing?', a: 'Playing audio through speakers while Google Docs listens works poorly — it picks up room echo, background noise, and only captures audio your microphone hears. VideoText processes the file directly for much higher accuracy.' },
       { q: 'Does VideoText work with Google Drive files?', a: 'Yes — download the file from Google Drive, upload it to VideoText. Most Google Meet recordings are stored in Drive as MP4.' },
-      { q: 'Is VideoText free like Google Docs?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. No Google account required.' },
+      { q: 'Is VideoText free like Google Docs?', a: 'Yes. VideoText free tier: 3 imports/day, no credit card. No Google account required.' },
     ],
   },
   {
@@ -3988,7 +3988,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'deepgram-alternative',
     faq: [
       { q: 'What is the difference between Deepgram and VideoText?', a: 'Deepgram is a speech-to-text API for developers — you integrate it into your application with code. VideoText is a web app — upload a file, get a transcript, no code needed. VideoText uses Whisper large-v3 for transcription.' },
-      { q: 'Is VideoText free unlike Deepgram?', a: 'VideoText free tier: 3 imports/month, no credit card. Deepgram has a free tier of $200 in credits (~45 hours), but requires API key setup and developer knowledge to use.' },
+      { q: 'Is VideoText free unlike Deepgram?', a: 'VideoText free tier: 3 imports/day, no credit card. Deepgram has a free tier of $200 in credits (~45 hours), but requires API key setup and developer knowledge to use.' },
       { q: 'Can VideoText match Deepgram\'s accuracy?', a: 'VideoText uses Whisper large-v3 (~97–99% WER on clear speech). Deepgram Nova-2 is comparable. For non-English content, Whisper generally outperforms Deepgram on lower-resource languages.' },
     ],
   },
@@ -4007,7 +4007,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'speechmatics-alternative',
     faq: [
       { q: 'What does Speechmatics do that VideoText doesn\'t?', a: 'Speechmatics provides a real-time streaming API for custom integrations, enterprise SLAs, and dedicated deployments. VideoText is a file-based web tool — better for individuals, small teams, and one-off transcription jobs without enterprise infrastructure.' },
-      { q: 'Is VideoText free unlike Speechmatics?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. Speechmatics requires enterprise pricing and a contract for full access.' },
+      { q: 'Is VideoText free unlike Speechmatics?', a: 'Yes. VideoText free tier: 3 imports/day, no credit card. Speechmatics requires enterprise pricing and a contract for full access.' },
     ],
   },
   {
@@ -4025,7 +4025,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'elevenlabs-alternative',
     faq: [
       { q: 'Does ElevenLabs do transcription?', a: 'ElevenLabs added a Speech to Text API in 2024. It is primarily aimed at developers building AI pipelines. VideoText is the end-user alternative: upload a file, get a transcript with speakers, summary, chapters, and SRT export — no code.' },
-      { q: 'Is VideoText free unlike ElevenLabs?', a: 'Yes. VideoText free tier: 3 imports/month, no credit card. ElevenLabs requires an account and charges per character/minute for their API.' },
+      { q: 'Is VideoText free unlike ElevenLabs?', a: 'Yes. VideoText free tier: 3 imports/day, no credit card. ElevenLabs requires an account and charges per character/minute for their API.' },
     ],
   },
 
@@ -4272,7 +4272,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'voice-to-text',
     faq: [
       { q: 'How does voice to text work?', a: 'Click the microphone button and allow browser microphone access. Speak clearly for up to 5 minutes. When you stop recording, VideoText uploads the audio to our AI transcription engine powered by Whisper and delivers a clean text transcript within seconds.' },
-      { q: 'Is voice to text free?', a: 'Yes. The free tier includes 3 recordings per month with no credit card required. Pro plan is $7.99/month with no per-minute limits.' },
+      { q: 'Is voice to text free?', a: 'Yes. The free tier includes 3 recordings per day with no credit card required. Pro plan is $7.99/month with longer-file and professional workflow access.' },
       { q: 'What is the best voice to text tool?', a: 'VideoText offers browser-based voice recording with AI transcription powered by Whisper. Unlike Otter.ai or Dragon Dictate, VideoText works entirely in the browser with no app installation and no subscription required for basic use.' },
       { q: 'How accurate is voice to text?', a: 'VideoText uses Whisper large-v3, achieving 95–98% accuracy for clear English speech. Accuracy improves when speaking clearly in a quiet environment. For technical vocabulary, accents, or multiple speakers, accuracy remains high due to Whisper\'s large training corpus.' },
       { q: 'Can I use voice to text on my phone?', a: 'Yes. VideoText works in mobile browsers including Safari on iPhone and Chrome on Android. Open the site, tap the microphone, and speak. Your transcript downloads or copies directly to clipboard.' },
@@ -4329,7 +4329,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'online-voice-recorder',
     faq: [
       { q: 'How do I record voice online?', a: 'Go to VideoText, click the microphone button, allow browser microphone access, and speak. The recorder captures your voice for up to 5 minutes. Click stop and your transcript appears within seconds.' },
-      { q: 'Can I record voice online for free?', a: 'Yes. VideoText offers 3 free voice recordings per month with no credit card required.' },
+      { q: 'Can I record voice online for free?', a: 'Yes. VideoText offers 3 free voice recordings per day with no credit card required.' },
       { q: 'What happens to my recording after transcription?', a: 'VideoText processes your recording and deletes it after transcription. Your audio is not stored or used for any other purpose.' },
       { q: 'Can I download the recording?', a: 'VideoText focuses on the text transcript output, which you can copy or download as TXT. The audio recording itself is processed server-side and not returned as a download.' },
     ],
@@ -4355,14 +4355,14 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     title: 'Free Voice to Text – No Signup, No App | VideoText',
     description: 'Free voice to text online. Record from your browser. No subscription. No credit card. AI transcription powered by Whisper.',
     h1: 'Free Voice to Text',
-    intro: 'Get accurate voice-to-text transcription for free. Record from your browser microphone or upload an existing voice file. VideoText\'s free tier includes 3 recordings per month with no credit card. Powered by Whisper AI.',
+    intro: 'Get accurate voice-to-text transcription for free. Record from your browser microphone or upload an existing voice file. VideoText\'s free tier includes 3 recordings per day with no credit card. Powered by Whisper AI.',
     breadcrumbLabel: 'Free Voice to Text',
     toolKey: 'voice-to-text',
     relatedSlugs: ['/voice-to-text', '/voice-to-text-online', '/online-voice-recorder', '/speechnotes-alternative', '/speechtexter-alternative'],
     indexable: true,
     intentKey: 'free-voice-to-text',
     faq: [
-      { q: 'Is voice to text really free?', a: 'Yes. VideoText offers 3 free uploads per day with no credit card required. Create an account to track your usage. Pro plan is $7.99/month for unlimited processing.' },
+      { q: 'Is voice to text really free?', a: 'Yes. VideoText offers 3 free uploads per day with no credit card required. Create an account to track your usage. Pro plan is $7.99/month for continued processing.' },
       { q: 'What is the best free voice to text tool?', a: 'VideoText offers high-accuracy Whisper AI transcription for free, with no watermarks, no forced login, and no usage spying. Alternatives like Otter.ai, Speechnotes, and SpeechTexter offer free tiers but with lower accuracy or intrusive prompts.' },
       { q: 'Does free voice to text store my data?', a: 'VideoText processes and deletes your recordings. We do not store or sell your audio data.' },
     ],
@@ -4501,7 +4501,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'speechify-alternative',
     faq: [
       { q: 'What is the difference between Speechify and VideoText?', a: 'Speechify is a text-to-speech tool that reads documents aloud. VideoText is a speech-to-text tool that converts voice recordings to text. If you\'re looking to transcribe voice recordings, VideoText is the right tool.' },
-      { q: 'Does VideoText have a free plan like Speechify?', a: 'Yes. VideoText offers 3 free transcriptions per month with no credit card. Pro plan is $7.99/month with no usage limits.' },
+      { q: 'Does VideoText have a free plan like Speechify?', a: 'Yes. VideoText offers 3 free transcriptions per day with no credit card. Pro plan is $7.99/month with expanded workflow access.' },
       { q: 'Can I use VideoText to transcribe voice memos like Speechify?', a: 'Yes. Upload voice memos (M4A, MP3, WAV) or record directly in the browser. VideoText produces accurate text transcripts you can copy or download.' },
     ],
   },
@@ -4519,7 +4519,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How is VideoText different from Speechnotes?', a: 'Speechnotes relies on the Chrome Web Speech API for transcription, which uses Google\'s real-time recognition. VideoText records audio and processes it through Whisper large-v3, which is significantly more accurate — especially for accents, technical vocabulary, and non-English speech.' },
       { q: 'Does VideoText require a Chrome extension like Speechnotes?', a: 'No. VideoText is a web app that works natively in Chrome, Firefox, Safari, and Edge without any extension. Speechnotes\' Chrome extension approach limits it to Chrome and Chromium-based browsers.' },
-      { q: 'Is VideoText free like Speechnotes?', a: 'Yes. VideoText\'s free tier includes 3 transcriptions per month. Unlike Speechnotes, VideoText has no ads and no paywalls for core features.' },
+      { q: 'Is VideoText free like Speechnotes?', a: 'Yes. VideoText\'s free tier includes 3 transcriptions per day. Unlike Speechnotes, VideoText has no ads and no paywalls for core features.' },
     ],
   },
   {
@@ -4551,7 +4551,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'dictation-io-alternative',
     faq: [
       { q: 'What is dictation.io and how does VideoText compare?', a: 'Dictation.io is a free browser-based dictation tool using the Web Speech API. VideoText uses Whisper large-v3, achieving significantly higher accuracy — especially for non-English languages, accents, and technical vocabulary.' },
-      { q: 'Is VideoText free like dictation.io?', a: 'Yes. VideoText offers a free tier with 3 transcriptions per month, no credit card required.' },
+      { q: 'Is VideoText free like dictation.io?', a: 'Yes. VideoText offers a free tier with 3 transcriptions per day, no credit card required.' },
     ],
   },
   {
@@ -4567,7 +4567,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'whispertype-alternative',
     faq: [
       { q: 'How does VideoText compare to WhisperType?', a: 'WhisperType is a desktop dictation app that runs Whisper AI locally on macOS or Windows. VideoText is browser-based — no installation, no API key, works on any OS. Both use Whisper for accuracy.' },
-      { q: 'Is there a free WhisperType alternative?', a: 'Yes. VideoText offers a free tier with 3 transcriptions per month. WhisperType requires API key costs from OpenAI.' },
+      { q: 'Is there a free WhisperType alternative?', a: 'Yes. VideoText offers a free tier with 3 transcriptions per day. WhisperType requires API key costs from OpenAI.' },
     ],
   },
   {
@@ -4867,7 +4867,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How do I auto caption a video?', a: 'Upload your video to VideoText and click Generate Subtitles. Our AI automatically captions the video — detecting every word, aligning it to a timestamp, and producing an SRT or VTT file in seconds. Works for MP4, MOV, AVI, WebM, and YouTube URLs.' },
       { q: 'Are auto captions accurate?', a: 'VideoText auto captions use OpenAI Whisper large-v3 and achieve 98.5%+ word accuracy on clear audio — significantly better than YouTube auto-captions (~80%) or TikTok built-in captions. For best results, set the spoken language before processing.' },
       { q: 'Can I auto caption a YouTube video?', a: 'Yes. Paste any public YouTube URL into VideoText and get automatic captions as an SRT file. Download and upload to YouTube Studio for accurate captions on your video.' },
-      { q: 'Are auto captions free?', a: 'Yes. Free tier includes 3 video imports per month (no credit card required). Full features including SRT and VTT export.' },
+      { q: 'Are auto captions free?', a: 'Yes. Free tier includes 3 video imports per day (no credit card required). Full features including SRT and VTT export.' },
       { q: 'How is VideoText different from YouTube auto captions?', a: 'YouTube auto captions appear after upload, take time to generate, have lower accuracy (especially for accents and technical content), and cannot be downloaded as SRT. VideoText generates accurate SRT captions before you upload — ready to add to YouTube Studio immediately.' },
     ],
   },
@@ -4885,7 +4885,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     canonicalGroup: 'subtitle-generator',
     faq: [
       { q: 'How do I make subtitles for a video?', a: 'Upload your video to VideoText\'s subtitle maker. Our AI generates timed SRT and VTT subtitle files in seconds. Download the file and upload it to YouTube Studio, Vimeo, or any platform. No manual typing, no software installation.' },
-      { q: 'Is the subtitle maker free?', a: 'Yes. Free tier includes 3 uploads per day, no credit card required. Pro plan is $7.99/month with no usage limits.' },
+      { q: 'Is the subtitle maker free?', a: 'Yes. Free tier includes 3 uploads per day, no credit card required. Pro plan is $7.99/month with expanded workflow access.' },
       { q: 'What subtitle formats does the subtitle maker produce?', a: 'SRT and VTT — the two most widely supported subtitle formats. SRT works on YouTube, Vimeo, and most video platforms. VTT is standard for HTML5 web players.' },
       { q: 'Can I make subtitles for a YouTube video?', a: 'Yes. Paste any public YouTube URL into VideoText — no download needed. Get an SRT subtitle file ready to upload to YouTube Studio.' },
     ],
@@ -4922,7 +4922,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'What is the best transcription software?', a: 'For video transcription, VideoText is the fastest and most feature-rich: 60-min video in under 5 minutes, SRT/VTT export, AI summary, chapters, speaker labels, and 70+ language translation. No desktop install — runs entirely in the browser. Starts free.' },
       { q: 'Do I need to download transcription software?', a: 'No. VideoText runs completely in the browser. Upload your video file at videotext.io and get a transcript in minutes — no download, no install, no setup.' },
-      { q: 'What is the best free transcription software?', a: 'VideoText offers the best free transcription tier: 3 full video imports per month, no credit card required, full features including SRT export and multi-language. No other tool gives this level of capability for free.' },
+      { q: 'What is the best free transcription software?', a: 'VideoText offers the best free transcription tier: 3 video imports per day, no credit card required, full features including SRT export and multi-language. No other tool gives this level of capability for free.' },
       { q: 'How does VideoText compare to other transcription software?', a: 'VideoText is 6× faster than Descript, starts at $0 vs Descript\'s $24/month, and requires no software installation. Faster than Otter.ai, Rev, Trint, and HappyScribe. See full comparison: videotext.io/ai-transcription-tools' },
     ],
   },
@@ -5014,7 +5014,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How does AI video captioning work?', a: 'AI captioning works by analyzing the audio track of your video using speech recognition models. The AI detects spoken words, assigns accurate timestamps to each segment, and produces timed caption files (SRT or VTT) you can download and use on any platform.' },
       { q: 'How accurate is AI captioning?', a: 'VideoText uses OpenAI Whisper large-v3, achieving 98.5%+ word accuracy on clear audio. This is the highest-quality open-source speech recognition model available and produces results comparable to human transcription for clear recordings.' },
-      { q: 'Is AI captioning free?', a: 'Yes. VideoText free tier includes 3 video imports per month — no credit card required. Full AI captioning features including SRT and VTT export.' },
+      { q: 'Is AI captioning free?', a: 'Yes. VideoText free tier includes 3 video imports per day — no credit card required. Full AI captioning features including SRT and VTT export.' },
       { q: 'What is the best AI captioning tool?', a: 'VideoText is the best AI captioning tool for video files and YouTube URLs. It is the fastest (60-min video in under 5 minutes), most accurate (Whisper large-v3), and supports YouTube URL input with no download required.' },
     ],
   },
@@ -5051,7 +5051,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     canonicalGroup: 'speech-to-text',
     faq: [
       { q: 'Is speech to text really free?', a: 'Yes. VideoText\'s voice recorder is completely free — record from your microphone and get a transcript instantly with no account required. For video file transcription, the free tier includes 3 uploads per day (no credit card).' },
-      { q: 'What is the best free speech to text tool?', a: 'VideoText offers the most capable free speech-to-text tier: 3 full video imports per month plus unlimited voice recording. Powered by Whisper AI for 98.5%+ accuracy. No credit card required.' },
+      { q: 'What is the best free speech to text tool?', a: 'VideoText offers the most capable free speech-to-text tier: 3 video imports per day plus browser voice recording tools. Powered by Whisper AI for 98.5%+ accuracy. No credit card required.' },
       { q: 'How accurate is free speech to text?', a: 'VideoText uses Whisper large-v3 — 98.5%+ word accuracy on clear audio. This is the same model used on paid plans; accuracy is not reduced for free users.' },
       { q: 'Does free speech to text support multiple languages?', a: 'Yes. Whisper large-v3 supports 50+ languages. Set the spoken language before recording or uploading for best accuracy.' },
     ],
@@ -5070,7 +5070,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'What is an online transcription service?', a: 'An online transcription service converts audio or video speech to text using AI. You upload a file (or paste a URL), and the service returns a text transcript. VideoText delivers a full transcript plus SRT subtitles, AI summary, and chapters in one job.' },
       { q: 'Is VideoText a transcription service or transcription software?', a: 'Both — VideoText is a web-based AI transcription service (no software to install) that transcribes video and audio files with 98.5%+ accuracy. It runs in the browser and charges a flat monthly fee rather than per-minute rates.' },
-      { q: 'How much does an AI transcription service cost?', a: 'VideoText starts free (3 uploads/day, no credit card). Pro plan is $7.99/month — unlimited processing, no per-minute fees, no hidden charges.' },
+      { q: 'How much does an AI transcription service cost?', a: 'VideoText starts free (3 uploads/day, no credit card). Pro plan is $7.99/month — continued processing, no per-minute fees, no hidden charges.' },
       { q: 'Is the transcription service private?', a: 'Yes. VideoText deletes all uploaded files immediately after processing. No content is retained or used for AI training. See: videotext.io/privacy' },
     ],
   },
@@ -5279,7 +5279,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What are the most common errors in Rev AI transcripts?', a: 'Common Rev AI errors: (1) homophones (their/there/they\'re, to/too/two); (2) proper nouns and names misspelled; (3) technical or domain-specific terms incorrect; (4) punctuation errors; (5) speaker label mix-ups during crosstalk; (6) missing words in fast speech or overlapping dialogue.' },
       { q: 'How do I efficiently post-process a Rev AI transcript?', a: 'Best workflow: (1) Listen to the audio once while reading the AI transcript to spot obvious errors; (2) Fix proper nouns and names first; (3) Review homophones in context; (4) Check speaker labels at every speaker change; (5) Fix punctuation; (6) Verify technical terms against context. Use playback speed control to catch fast-speech errors.' },
       { q: 'Is Rev AI transcription cheaper than human transcription?', a: 'Yes. Rev AI transcription costs $0.25/minute vs. $1.99+/minute for human transcription. For content where 80–85% accuracy is acceptable (internal notes, rough drafts, searchable archives), AI is cost-effective. For legal, medical, or publishable content, human transcription is recommended.' },
-      { q: 'Can VideoText replace Rev AI transcription?', a: 'VideoText offers AI transcription using Whisper large-v3, which achieves similar or better accuracy than Rev AI on most content types, at a lower cost on monthly plans. VideoText starts free with 3 imports/month. For the same post-processing workflow, VideoText output can be edited using the Guideline Format tool to meet Rev\'s formatting standards.' },
+      { q: 'Can VideoText replace Rev AI transcription?', a: 'VideoText offers AI transcription using Whisper large-v3, which achieves similar or better accuracy than Rev AI on most content types, at a lower cost on monthly plans. VideoText starts free with 3 imports/day. For the same post-processing workflow, VideoText output can be edited using the Guideline Format tool to meet Rev\'s formatting standards.' },
     ],
   },
 

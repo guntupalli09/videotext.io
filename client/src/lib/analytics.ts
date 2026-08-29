@@ -112,6 +112,7 @@ export type AnalyticsEvent =
   | 'pro_cta_clicked'
   | 'checkout_completed'
   | 'pricing_billing_interval_changed'
+  | 'free_plan_nudge_seen'
   | 'tool_selected'
   | 'paywall_shown'
   | 'processing_started'

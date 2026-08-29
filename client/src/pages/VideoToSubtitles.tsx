@@ -4,9 +4,10 @@ import { MessageSquare, FileDown, Lock, CheckCircle2, Upload } from 'lucide-reac
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 import TranscriptSharePanel from '../components/TranscriptSharePanel'
-import PaywallModal from '../components/PaywallModal'
+import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import UpgradeBanner from '../components/UpgradeBanner'
+import FreePlanNudge from '../components/FreePlanNudge'
 import LanguageSelector from '../components/LanguageSelector'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
@@ -19,6 +20,7 @@ const SubtitleQAReview = lazy(() => import('../components/SubtitleQAReview'))
 import { incrementUsage } from '../lib/usage'
 import { uploadFile, uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob } from '../lib/api'
 import { isLoggedIn } from '../lib/auth'
+import { isPaidPlan as hasPaidPlan } from '../lib/plans'
 import { getFailureMessage } from '../lib/failureMessage'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
@@ -73,6 +75,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; warnings?: { type: string; message: string; line?: number }[] } | null>(null)
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
   const [showPaywall, setShowPaywall] = useState(false)
+  const [paywallReason, setPaywallReason] = useState<PaywallReason>('FREE_DAILY_LIMIT_REACHED')
   const [showAuthGate, setShowAuthGate] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
@@ -153,8 +156,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   }, [subtitleRows, translationLanguage]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
-  const canEdit = ['basic', 'pro', 'agency'].includes(plan)
-  const canMultiLanguage = plan === 'basic' || plan === 'pro' || plan === 'agency'
+  const canEdit = hasPaidPlan(plan)
+  const canMultiLanguage = hasPaidPlan(plan)
   const maxAdditionalLanguages = plan === 'agency' ? 9 : plan === 'pro' ? 4 : plan === 'basic' ? 1 : 0
 
   // Instant file preview (browser only); persists through upload + processing
@@ -506,8 +509,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       setAvailableMinutes(totalAvailable)
       const atOrOverLimit = isImports ? used >= (usageData.limit ?? 3) : (totalAvailable > 0 && used >= totalAvailable)
       if (atOrOverLimit) {
+        setPaywallReason('FREE_DAILY_LIMIT_REACHED')
         setShowPaywall(true)
-        trackEvent('paywall_shown', { tool: 'video-to-subtitles' })
         return
       }
     } catch {
@@ -536,8 +539,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       if (!preflight.allowed) {
         uploadAbortRef.current = null
         setStatus('idle')
-        toast.error(preflight.reason ?? 'Video exceeds plan limits.')
-        trackEvent('paywall_shown', { tool: 'video-to-subtitles', reason: 'preflight' })
+        setPaywallReason('VIDEO_TOO_LONG')
+        setShowPaywall(true)
         return
       }
     } catch {
@@ -840,7 +843,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   return (
     <>
       <ToolLayout {...layoutProps}>
-        <UpgradeBanner variant="watermark" />
+        <UpgradeBanner variant="watermark" tool="video-to-subtitles" />
         {status === 'idle' && !selectedFile && (
           <div className="space-y-4">
             <UploadZone
@@ -1110,9 +1113,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                       </Suspense>
                     )}
                     {!canEdit && subtitleRows.length > 0 && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 px-1">
-                        Upgrade to Basic to edit subtitle text. Click any cue to seek and play the video.
-                      </p>
+                      <button type="button" onClick={() => { setPaywallReason('INLINE_EDIT'); setShowPaywall(true) }} className="px-1 text-left text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
+                        Upgrade to Pro to edit subtitle text — $7.99/mo
+                      </button>
                     )}
                   </div>
 
@@ -1297,6 +1300,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                 </div>
               </div>
             )}
+            <FreePlanNudge tool="subtitles" resultKey={result.downloadUrl} />
           </div>
         )}
 
@@ -1314,10 +1318,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       <PaywallModal
           isOpen={showPaywall}
           onClose={() => setShowPaywall(false)}
-          onUpgrade={() => {
-            // Send the user to the pricing page where they can pick a plan
-            window.location.href = '/pricing'
-          }}
+          reason={paywallReason}
+          tool="video-to-subtitles"
         />
 
       <JobAuthGateModal

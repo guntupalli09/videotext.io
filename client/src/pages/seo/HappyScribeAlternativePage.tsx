@@ -27,7 +27,7 @@ const FAQ = [
   },
   {
     q: 'Is VideoText cheaper than HappyScribe?',
-    a: 'Yes. HappyScribe starts at $17/month for only 120 minutes of transcription. VideoText Pro is $7.99/month with unlimited processing. The free tier lets you try it with no payment details.',
+    a: 'Yes. HappyScribe starts at $17/month for only 120 minutes of transcription. VideoText Pro is $7.99/month with continued processing. The free tier lets you try it with no payment details.',
   },
   {
     q: 'Can VideoText transcribe YouTube videos like HappyScribe?',

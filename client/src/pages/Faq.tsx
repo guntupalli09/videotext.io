@@ -34,7 +34,7 @@ const FAQ_ITEMS = [
     category: "General",
     icon: HelpCircle,
     q: "Do I need to sign up?",
-    a: "Sign up for a free account to try. No credit card required. You get 3 free imports per month. Upgrade when you need more imports, languages, or batch processing.",
+    a: "Sign up for a free account to try. No credit card required. You get 3 free imports per day. Upgrade when you need more imports, languages, or batch processing.",
   },
   {
     category: "General",

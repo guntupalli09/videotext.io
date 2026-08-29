@@ -6,6 +6,8 @@ import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
+import FreePlanNudge from '../components/FreePlanNudge'
+import { isPaidPlan } from '../lib/plans'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingInterface } from '../components/figma/ProcessingInterface'
@@ -88,6 +90,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const processingStartedAtRef = useRef<number | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
+  const hasPaidPlan = isPaidPlan(plan)
 
   const fallbackBurnName = useMemo(
     () => joinExportFilename(exportFileStem(videoFile?.name, 'video'), 'video_with_subtitles_burned_in', '.mp4'),
@@ -429,9 +432,9 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
               title="Video with burned subtitles ready!"
               fileName={result.fileName ?? fallbackBurnName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
-              downloadLabel={plan === 'free' ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download (2 free)') : 'Download Video'}
+              downloadLabel={!hasPaidPlan ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download (2 free)') : 'Download Video'}
               onDownload={
-                plan === 'free'
+                !hasPaidPlan
                   ? async () => {
                       if (freeExportsUsed >= 2) {
                         toast('You\'ve used your 2 free downloads. Upgrade for more.')
@@ -467,6 +470,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                 { path: '/video-to-subtitles', name: 'Video → Subtitles', description: 'Generate SRT/VTT' },
               ]}
             />
+            <FreePlanNudge tool="burn-subtitles" resultKey={result.downloadUrl} />
 
             <CrossToolSuggestions
               workflowHint="Your last file is pre-filled on the next tool."
@@ -557,9 +561,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
-        onUpgrade={() => {
-          window.location.href = '/pricing'
-        }}
+        tool="burn-subtitles"
       />
 
       {(faq.length > 0 || location.pathname === '/burn-subtitles') && (

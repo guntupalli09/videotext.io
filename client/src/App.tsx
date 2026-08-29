@@ -302,16 +302,20 @@ function PostCheckoutHandler() {
         window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
         try {
           const checkoutBillingInterval = localStorage.getItem('videotext:checkout_billing_interval')
+          let checkoutAttribution: Record<string, unknown> = {}
+          try { checkoutAttribution = JSON.parse(localStorage.getItem('videotext:checkout_attribution') || '{}') } catch { /* ignore malformed attribution */ }
           identifyUser(data.userId, { plan: data.plan.toLowerCase(), email: data.email })
           trackEvent('plan_upgraded', { plan: data.plan.toLowerCase() })
           trackEvent('checkout_completed', {
             plan: data.plan.toLowerCase(),
             source: 'stripe_return',
+            ...checkoutAttribution,
             ...(checkoutBillingInterval === 'monthly' || checkoutBillingInterval === 'annual'
               ? { billing_interval: checkoutBillingInterval }
               : {}),
           })
           localStorage.removeItem('videotext:checkout_billing_interval')
+          localStorage.removeItem('videotext:checkout_attribution')
         } catch { /* non-blocking */ }
 
         // Secondary subscription-active verification — gives up gracefully after polling
@@ -600,7 +604,7 @@ function App() {
                 },
                 {
                   q: 'Can I transcribe video online for free?',
-                  a: 'Yes. The free tier includes 3 uploads per day with no credit card required. Free transcripts include full timestamped text, AI summary, auto-generated chapters, and SRT/VTT subtitle files. Pro plan is $7.99/month with no usage limits.',
+                  a: 'Yes. The free tier includes 3 uploads per day with no credit card required. Free transcripts include full timestamped text, AI summary, auto-generated chapters, and SRT/VTT subtitle files. Pro plan is $7.99/month with expanded workflow access.',
                 },
                 {
                   q: 'How long does it take to transcribe a video?',
@@ -767,7 +771,7 @@ function App() {
                   { feature: 'Subtitle file formats', videotext: 'SRT + VTT both generated, broadcast-safe line breaks', alternatives: 'Otter: SRT only | Descript: SRT only | Rev: SRT | TurboScribe: SRT | none auto-format line breaks' },
                   { feature: 'Batch processing', videotext: 'Pro/Agency: parallel batch, one ZIP output', alternatives: 'Otter: sequential only | Descript: one file at a time | Rev: batch portal (slow, expensive)' },
                   { feature: 'Export formats', videotext: 'TXT, PDF, DOCX, JSON, CSV, SRT, VTT, Notion, 3-column', alternatives: 'Otter: TXT, DOCX, PDF | Descript: TXT, DOCX | Rev: TXT, DOCX, SRT' },
-                  { feature: 'Cost per month', videotext: 'Pro: $7.99/month flat, unlimited', alternatives: 'Otter: $20/month (limited AI features) | Descript: $24/month | Rev AI: ~$56/month ($0.125/min)' },
+                  { feature: 'Cost per month', videotext: 'Pro: $7.99/month flat rate', alternatives: 'Otter: $20/month (limited AI features) | Descript: $24/month | Rev AI: ~$56/month ($0.125/min)' },
                 ],
                 useCases: [
                   {

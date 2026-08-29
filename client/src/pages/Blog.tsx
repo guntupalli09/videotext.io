@@ -352,7 +352,7 @@ Today we are covering subtitle formats.`}
         </p>
         <h3 className="text-base font-medium text-gray-900 dark:text-white mt-6">Is all of this free?</h3>
         <p>
-          Sign up for free to get 3 uploads per day across all tools. Pro plan is $7.99/month for unlimited processing.
+          Sign up for free to get 3 uploads per day across all tools. Pro plan is $7.99/month for continued processing.
         </p>
       </div>
     ),
@@ -897,7 +897,7 @@ Today we are covering subtitle formats.`}
           <strong>OpenAI Whisper (local)</strong>: The same model, run entirely on your machine. Free and private — but requires Python, a decent GPU, and setup time. Not practical for non-technical users. <strong>Otter.ai free tier</strong>: 300 minutes/month for live meeting recording. Does not accept audio file uploads on any plan. <strong>Google Docs voice typing</strong>: Real-time only, not for pre-recorded audio.
         </p>
         <p>
-          For most users, VideoText's free tier (3 imports/month) is the simplest path: no setup, no Python, no credit card.
+          For most users, VideoText's free tier (3 imports/day) is the simplest path: no setup, no Python, no credit card.
         </p>
       </div>
     ),
