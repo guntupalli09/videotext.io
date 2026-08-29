@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: '$17/month (120 min)' },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$17/month (120 min)' },
   { label: 'Free tier (no credit card)', videotext: true, competitor: false },
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: true },
@@ -27,7 +27,7 @@ const FAQ = [
   },
   {
     q: 'Is VideoText cheaper than HappyScribe?',
-    a: 'Yes. HappyScribe starts at $17/month for only 120 minutes of transcription. VideoText Pro is $40/month with unlimited processing. The free tier lets you try it with no payment details.',
+    a: 'Yes. HappyScribe starts at $17/month for only 120 minutes of transcription. VideoText Pro is $7.99/month with unlimited processing. The free tier lets you try it with no payment details.',
   },
   {
     q: 'Can VideoText transcribe YouTube videos like HappyScribe?',

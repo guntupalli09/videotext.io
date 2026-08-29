@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: '$20+/user/mo (Business+)' },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$20+/user/mo (Business+)' },
   { label: 'Works on any Zoom plan (incl. free)', videotext: true, competitor: false },
   { label: 'Works on downloaded MP4 offline', videotext: true, competitor: false },
   { label: 'Files deleted after processing', videotext: true, competitor: false },

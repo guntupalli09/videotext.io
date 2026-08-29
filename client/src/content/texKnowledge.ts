@@ -112,10 +112,10 @@ export const TEX_ENTRIES: TexEntry[] = [
   },
   {
     id: "plan-pro",
-    keywords: ["pro", "pro plan", "$40", "40", "batch", "unlimited"],
+    keywords: ["pro", "pro plan", "$7.99", "batch", "workflow"],
     question: "What's in the Pro plan?",
     answer:
-      "Pro ($40/mo): unlimited processing, up to 2-hour videos. Batch processing (20 videos), 70+ languages, watermark-free exports, AI summary, chapters, speaker labels, priority queue.",
+      "Pro ($7.99/mo): unlimited processing, up to 2-hour videos. Batch processing (20 videos), 70+ languages, watermark-free exports, AI summary, chapters, speaker labels, priority queue.",
     link: { path: "/pricing", label: "See Pro" },
   },
   {
@@ -123,7 +123,7 @@ export const TEX_ENTRIES: TexEntry[] = [
     keywords: ["upgrade", "need more", "limit", "run out", "pro", "pay"],
     question: "How do I upgrade to Pro?",
     answer:
-      "Go to Pricing, pick Pro or Founding Pro, and enter your email. We'll send a verification code, then you complete checkout. You can cancel anytime from the same page.",
+      "Go to Pricing, choose Pro, and complete checkout. You can cancel anytime from the same page.",
     link: { path: '/pricing', label: 'Go to pricing' },
   },
   // —— Privacy & data ——
