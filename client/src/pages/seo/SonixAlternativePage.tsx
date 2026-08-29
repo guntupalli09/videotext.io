@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $40/mo Pro', competitor: '$22/month or $10/hour' },
+  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$22/month or $10/hour' },
   { label: 'Free tier (no credit card)', videotext: true, competitor: false },
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: true },
@@ -27,7 +27,7 @@ const FAQ = [
   },
   {
     q: 'Is VideoText cheaper than Sonix?',
-    a: 'Yes. Sonix costs $22/month for the Standard plan (roughly 100 minutes included) and charges $0.10 per additional minute. VideoText Pro is $40/month flat. For most users — podcasters, YouTubers, course creators — VideoText is significantly cheaper with no per-minute billing surprises.',
+    a: 'Yes. Sonix costs $22/month for the Standard plan (roughly 100 minutes included) and charges $0.10 per additional minute. VideoText Pro is $7.99/month flat. For most users — podcasters, YouTubers, course creators — VideoText is significantly cheaper with no per-minute billing surprises.',
   },
   {
     q: 'How does VideoText accuracy compare to Sonix?',
@@ -146,7 +146,7 @@ export default function SonixAlternativePage() {
         {/* Key advantages */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
-            { icon: DollarSign, title: 'No per-minute billing', body: 'Sonix charges $0.10/minute over your plan. VideoText Pro is a flat $40/month — no surprise invoices for longer podcasts or webinars.' },
+            { icon: DollarSign, title: 'No per-minute billing', body: 'Sonix charges $0.10/minute over your plan. VideoText Pro is a flat $7.99/month — no surprise invoices for longer podcasts or webinars.' },
             { icon: Zap, title: 'YouTube URL in one click', body: 'Paste any YouTube link and VideoText transcribes it directly. Sonix requires you to download the file and upload it — an extra step for every YouTube video.' },
             { icon: Shield, title: 'Deleted after processing', body: 'VideoText removes your file the instant the job finishes. Sonix retains all media and transcripts in their cloud. Critical difference for legal, HR, or medical audio.' },
           ].map(({ icon: Icon, title, body }) => (

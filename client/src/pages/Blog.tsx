@@ -352,7 +352,7 @@ Today we are covering subtitle formats.`}
         </p>
         <h3 className="text-base font-medium text-gray-900 dark:text-white mt-6">Is all of this free?</h3>
         <p>
-          Sign up for free to get 3 uploads per day across all tools. Pro plan is $40/month for unlimited processing.
+          Sign up for free to get 3 uploads per day across all tools. Pro plan is $7.99/month for unlimited processing.
         </p>
       </div>
     ),
@@ -890,7 +890,7 @@ Today we are covering subtitle formats.`}
           VideoText processes recordings in streamed segments. A 60-minute audio recording transcribes in approximately 5–8 minutes. You see output appearing within the first 30 seconds — you do not wait for the full job to complete before reading.
         </p>
         <p>
-          For recordings longer than 2 hours, the free tier handles the file but the job may be queued behind paid-tier jobs during peak hours. Pro plan ($40/month) gives queue priority.
+          For recordings longer than 2 hours, the free tier handles the file but the job may be queued behind paid-tier jobs during peak hours. Pro plan ($7.99/month) gives queue priority.
         </p>
         <h3 className="text-base font-medium text-gray-900 dark:text-white mt-6">Free alternatives</h3>
         <p>
@@ -1014,7 +1014,7 @@ Today we are covering subtitle formats.`}
           What makes it good for journalism: files are deleted immediately after processing. No cloud retention, no storage of sensitive source recordings. Speaker labels separate interviewer and interviewee. Results stream in real time — a 60-minute interview transcribes in 5–8 minutes.
         </p>
         <p>
-          Free tier: 3 uploads per day. Pro plan is $40/month with no per-minute fees.
+          Free tier: 3 uploads per day. Pro plan is $7.99/month with no per-minute fees.
         </p>
         <h3 className="text-base font-medium text-gray-900 dark:text-white mt-6">2. Otter.ai — best for live recording in the field</h3>
         <p>
@@ -1298,7 +1298,7 @@ Today we are covering subtitle formats.`}
           The easiest option is to use a hosted service that runs Whisper on your behalf. <a href="/whisper-online" className="text-blue-600 dark:text-blue-400 hover:underline">VideoText's Whisper online tool</a> runs large-v3 on cloud GPUs. Paste a YouTube URL or upload a file, and you get a transcript in seconds — no Python, no GPU, no setup.
         </p>
         <p>
-          The <a href="/video-to-transcript" className="text-blue-600 dark:text-blue-400 hover:underline">video-to-transcript tool</a> accepts MP4, MOV, AVI, WebM, MKV, MP3, WAV, M4A, and most common formats. Free tier includes 3 uploads per day. Pro plan ($40/month) unlocks longer files, batch, and multi-language output.
+          The <a href="/video-to-transcript" className="text-blue-600 dark:text-blue-400 hover:underline">video-to-transcript tool</a> accepts MP4, MOV, AVI, WebM, MKV, MP3, WAV, M4A, and most common formats. Free tier includes 3 uploads per day. Pro plan ($7.99/month) unlocks longer files, batch, and multi-language output.
         </p>
         <h3 className="text-base font-medium text-gray-900 dark:text-white mt-6">How to Run Whisper Locally (If You Prefer)</h3>
         <p>
@@ -1569,7 +1569,7 @@ function PostView({ post }: { post: BlogPost }) {
       </div>
 
       <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 space-y-4">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Free accounts include 3 uploads per day; Pro plan ($40/month) unlocks longer files, batch, and guideline handoff from transcript results.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Free accounts include 3 uploads per day; Pro plan ($7.99/month) unlocks longer files, batch, and guideline handoff from transcript results.</p>
         <div className="flex flex-col sm:flex-row flex-wrap gap-3">
           <Link
             to="/video-to-transcript"

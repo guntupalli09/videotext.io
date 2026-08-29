@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
 import crypto from 'crypto'
-import { stripe, getStripePriceConfig, BillingPlan, findStripeCustomerIdByEmail } from '../services/stripe'
+import { stripe, getStripePriceConfig, BillingPlan, findStripeCustomerIdByEmail, verifyProPrice, selectProPriceId, ProBillingInterval } from '../services/stripe'
 import { getUser, getUserByStripeCustomerId, getUserByEmail, saveUser } from '../models/User'
 import { prisma } from '../db'
 import type { User, PlanType } from '../models/User'
@@ -17,12 +17,13 @@ const router = express.Router()
 interface CheckoutRequestBody {
   mode: 'subscription' | 'payment'
   plan?: BillingPlan
-  annual?: boolean // Phase 2.5: 20% off annual billing
+  annual?: boolean // Backward-compatible input; new clients use billingInterval.
+  billingInterval?: ProBillingInterval
   returnToPath?: string
   email?: string
   stripeCustomerId?: string
   frontendOrigin?: string
-  /** Promo code for early testers (e.g. EARLY30, EARLY50, EARLY70, EARLY100). Applied for Pro and Founding Pro. */
+  /** Optional promotion code for eligible plans. */
   promotionCode?: string
   /** JWT from POST /api/auth/verify-otp; required for subscription so we use verified email. */
   emailVerificationToken?: string
@@ -102,7 +103,13 @@ router.post('/checkout', async (req: Request, res: Response) => {
         })
       }
 
-      const annual = req.body.annual === true
+      if (req.body.billingInterval !== undefined && req.body.billingInterval !== 'monthly' && req.body.billingInterval !== 'annual') {
+        return res.status(400).json({ message: 'billingInterval must be monthly or annual.' })
+      }
+      // `annual` remains a compatibility input for older clients. New clients send
+      // the explicit constrained interval; no Stripe Price ID is accepted from the browser.
+      const billingInterval: ProBillingInterval = req.body.billingInterval || (req.body.annual === true ? 'annual' : 'monthly')
+      const annual = billingInterval === 'annual'
       let priceId: string
       if (plan === 'business') {
         if (!prices.businessPriceId) {
@@ -110,12 +117,9 @@ router.post('/checkout', async (req: Request, res: Response) => {
         }
         priceId = prices.businessPriceId
       } else if (plan === 'pro') {
-        priceId = annual && prices.proAnnualPriceId ? prices.proAnnualPriceId : prices.proPriceId
+        priceId = selectProPriceId(prices, billingInterval)
       } else if (plan === 'founding_workflow') {
-        if (!prices.foundingWorkflowPriceId) {
-          return res.status(400).json({ message: 'Founding Workflow plan is not available.' })
-        }
-        priceId = prices.foundingWorkflowPriceId
+        return res.status(410).json({ message: 'This legacy plan is no longer available. Choose Pro instead.' })
       } else if (plan === 'basic') {
         if (!prices.basicPriceId) {
           return res.status(400).json({ message: 'Basic plan is no longer available. Upgrade to Pro instead.' })
@@ -129,8 +133,12 @@ router.post('/checkout', async (req: Request, res: Response) => {
         priceId = annual && prices.agencyAnnualPriceId ? prices.agencyAnnualPriceId : prices.agencyPriceId
       }
 
-      // Promo codes for Pro and Founding Pro (30/50/70/100% off for early testers)
-      const planSupportsPromo = plan === 'basic' || plan === 'pro' || plan === 'founding_workflow'
+      // Validate the server-selected Stripe object before creating checkout so
+      // stale configuration can never silently charge a different amount/interval.
+      if (plan === 'pro') await verifyProPrice(priceId, billingInterval)
+
+      // Preserve existing promotion-code support for active offers.
+      const planSupportsPromo = plan === 'basic' || plan === 'pro'
       const promoId =
         planSupportsPromo && promotionCode
           ? getStripePromotionCodeId(promotionCode)
@@ -160,6 +168,7 @@ router.post('/checkout', async (req: Request, res: Response) => {
         metadata: {
           purchaseType: 'subscription',
           plan,
+          billingInterval,
           returnToPath: normalizedPath,
           ...(auth?.userId ? { userId: auth.userId } : {}),
           ...(checkoutEmail ? { email: checkoutEmail } : {}),
@@ -175,7 +184,7 @@ router.post('/checkout', async (req: Request, res: Response) => {
           userId: auth.userId,
           source: 'billing_checkout_route',
           plan,
-          metadata: { annual },
+          metadata: { annual, billingInterval },
         }).catch(() => {})
       }
 
