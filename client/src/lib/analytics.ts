@@ -149,6 +149,7 @@ export type AnalyticsEvent =
   | 'process_another_clicked'      // props: { tool }
   | 'recording_started'
   | 'recording_stopped'            // props: { duration_seconds }
+  | 'realtime_transcript_shown'    // Deepgram live transcript displayed client-side; NOT a confirmed quota-consuming completion; props: { tool, words }
   // Churn & billing lifecycle (server-fired; typed here for reference & client use)
   | 'subscription_cancelled'       // cancelled via portal; props: { plan, cancel_at }
   | 'subscription_deleted'         // subscription fully ended; props: { plan }

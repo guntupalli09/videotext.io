@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import UpgradeBanner from '../components/UpgradeBanner'
 import FreePlanNudge from '../components/FreePlanNudge'
+import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import { isPaidPlan as hasPaidPlan } from '../lib/plans'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -30,6 +31,8 @@ import {
   BACKEND_TOOL_TYPES,
   getAuthToken,
   claimGuestJob,
+  getCurrentUsage,
+  invalidateUsageCache,
 } from '../lib/api'
 import { isLoggedIn } from '../lib/auth'
 import { getAbsoluteDownloadUrl, getApiBase, API_ORIGIN, getWsBase } from '../lib/apiBase'
@@ -103,6 +106,9 @@ export default function VoiceRecorder() {
   /** Segments + audio URL from job result — enables pinned player + highlight sync (all plans). */
   const [voiceSegments, setVoiceSegments] = useState<Segment[] | null>(null)
   const [voiceAudioUrl, setVoiceAudioUrl] = useState<string | null>(null)
+  // Backend-authoritative Free daily-import paywall — mirrors the pattern used by every other quota-consuming tool.
+  const [showPaywall, setShowPaywall] = useState(false)
+  const [paywallReason, setPaywallReason] = useState<PaywallReason>('FREE_DAILY_LIMIT_REACHED')
 
   const audioRef = useRef<HTMLAudioElement>(null)
   const audioPlaybackTimeRef = useRef(0)
@@ -322,9 +328,44 @@ export default function VoiceRecorder() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // ── Quota preflight ───────────────────────────────────────────────────────
+  /**
+   * Server message for the shared Free daily-import cap (see server/src/routes/upload.ts).
+   * Matched to distinguish an entitlement rejection from any other upload failure —
+   * client preflight below is UX only; this match is what lets a race-condition
+   * rejection from the backend (e.g. a second tab) still open the canonical paywall
+   * instead of being silently swallowed.
+   */
+  function isFreeDailyLimitError(message: string | undefined | null): boolean {
+    return typeof message === 'string' && /free imports/i.test(message)
+  }
+
+  /**
+   * UX-only preflight against the authoritative usage API. Prevents starting a new
+   * quota-consuming recording when the Free daily cap is already known to be used.
+   * This is NOT the enforcement point — the backend upload/job-registration request
+   * remains authoritative and is checked again regardless (see handleUpload).
+   */
+  async function ensureVoiceQuotaAvailable(): Promise<boolean> {
+    if (!isLoggedIn()) return true
+    try {
+      const usage = await getCurrentUsage({ skipCache: true })
+      const remaining = usage.remaining ?? (usage.limit ?? 3) - (usage.used ?? usage.usage?.importCountToday ?? 0)
+      if (usage.plan === 'free' && usage.quotaType === 'imports' && remaining <= 0) {
+        setPaywallReason('FREE_DAILY_LIMIT_REACHED')
+        setShowPaywall(true)
+        return false
+      }
+    } catch {
+      // Usage lookup failure must not block recording — backend upload still enforces the cap.
+    }
+    return true
+  }
+
   // ── Recording ──────────────────────────────────────────────────────────────
   async function startRecording() {
     setErrMsg('')
+    if (!(await ensureVoiceQuotaAvailable())) return
     setPhase('requesting')
     try { trackEvent('recording_started') } catch { /* non-blocking */ }
 
@@ -533,19 +574,22 @@ export default function VoiceRecorder() {
       const segs = utterances
         .filter((u): u is { text: string; start: number; end: number } => u.start !== undefined)
         .map((u) => ({ start: u.start, end: u.end, text: u.text.trim() }))
+      const words = deepgramText.trim().split(/\s+/).filter(Boolean).length
 
-      // Local blob URL for immediate playback (no server round-trip needed)
+      // Local blob URL for immediate playback (no server round-trip needed). Showing the
+      // live-captioned transcript here is UX only — it is NOT yet a confirmed,
+      // quota-consuming success. That confirmation (and `processing_completed`) waits for
+      // the backend upload below, which is the authoritative entitlement check.
       setVoiceAudioUrl(URL.createObjectURL(blob))
       setTranscript(deepgramText)
       setVoiceSegments(segs.length ? segs : null)
       setPhase('result')
       toast.success('Transcript ready!')
-      trackEvent('processing_completed', {
-        tool: 'voice-recorder',
-        words: deepgramText.trim().split(/\s+/).filter(Boolean).length,
-      })
+      trackEvent('realtime_transcript_shown', { tool: 'voice-recorder', words })
 
-      // Upload audio silently in background — only needed for share link + guest claiming
+      // Register the job with the backend — this is what checks the shared Free daily
+      // quota and (on success) increments usage. Its outcome, not the live Deepgram
+      // preview, decides whether this recording counts as a completed quota-consuming job.
       try {
         const res = await uploadFileWithProgress(
           file,
@@ -560,8 +604,24 @@ export default function VoiceRecorder() {
         )
         setVoiceJobId(res.jobId)
         setVoiceJobToken(res.jobToken ?? null)
-      } catch {
-        // Silent failure — transcript already shown, download still works client-side
+        invalidateUsageCache()
+        trackEvent('processing_completed', { tool: 'voice-recorder', words })
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e)
+        if (isFreeDailyLimitError(message)) {
+          // Backend is authoritative: even though a preflight already ran before recording
+          // started, a race (e.g. a second tab) can still exhaust the quota in between.
+          // The live transcript stays visible — it was already rendered during recording
+          // and cannot be un-shown — but it is NOT registered as a completed job: no
+          // jobId/jobToken is set, FreePlanNudge never mounts (gated on voiceJobId), and
+          // processing_completed is never fired, so this never counts as, or is billed
+          // toward, a successful quota-consuming result.
+          setPaywallReason('FREE_DAILY_LIMIT_REACHED')
+          setShowPaywall(true)
+        }
+        // Non-entitlement failures (network hiccup, server error, etc.) are handled the
+        // same as before: the transcript the user already has stays usable; only the
+        // share link / guest-claim registration for this recording is unavailable.
       }
       return
     }
@@ -612,6 +672,7 @@ export default function VoiceRecorder() {
             }
             setTranscript(text)
             setPhase('result')
+            invalidateUsageCache()
             trackEvent('processing_completed', {
               tool: 'voice-recorder',
               words: text.trim().split(/\s+/).filter(Boolean).length,
@@ -627,6 +688,15 @@ export default function VoiceRecorder() {
     } catch (err: unknown) {
       if (abortRef.current?.signal.aborted) return
       const msg = err instanceof Error ? err.message : String(err)
+      if (isFreeDailyLimitError(msg)) {
+        // Authoritative backend rejection: no transcript exists yet on this path (Whisper
+        // fallback has no live Deepgram preview), so there is nothing to preserve — go
+        // straight to the canonical paywall instead of a generic error state.
+        setPhase('idle')
+        setPaywallReason('FREE_DAILY_LIMIT_REACHED')
+        setShowPaywall(true)
+        return
+      }
       setErrMsg(msg || 'Upload failed. Please try again.')
       setPhase('error')
     }
@@ -724,6 +794,7 @@ export default function VoiceRecorder() {
     setVoiceJobToken(null)
     setVoiceSegments(null)
     setVoiceAudioUrl(null)
+    setShowPaywall(false)
     setActiveSegIdx(-1)
     setAudioIsPlaying(false)
     audioPlaybackTimeRef.current = 0
@@ -1481,6 +1552,13 @@ export default function VoiceRecorder() {
           setShowAuthModal(false)
           window.location.reload()
         }}
+      />
+
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        reason={paywallReason}
+        tool="voice-recorder"
       />
     </ToolLayout>
   )

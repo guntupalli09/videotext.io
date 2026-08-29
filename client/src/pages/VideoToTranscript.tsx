@@ -388,6 +388,13 @@ export default function VideoToTranscript(
   >(undefined);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const [fileFromWorkflow, setFileFromWorkflow] = useState(false);
+  /**
+   * Authoritative account plan (from GET /api/usage/current), used for export/watermark/
+   * copy-lock entitlement — same source of truth as FreePlanNudge/UpgradeBanner. Not
+   * localStorage: localStorage can be stale or tampered with and must not gate paid
+   * features. Defaults to "not paid" until the first fetch resolves.
+   */
+  const [accountPlan, setAccountPlan] = useState<string | null>(null);
   const uploadAbortRef = useRef<AbortController | null>(null);
   /** Results workspace: main reading column (Transcript vs Speakers). Summary / chapters / exports live in the sidebar. */
   const [leftWorkspaceTab, setLeftWorkspaceTab] = useState<
@@ -2661,9 +2668,24 @@ export default function VideoToTranscript(
     }
   }, []);
 
-  const isPaidPlan =
-    typeof window !== "undefined" &&
-    hasPaidPlan(localStorage.getItem("plan"));
+  // Authoritative plan fetch — mirrors FreePlanNudge/UpgradeBanner (GET /api/usage/current),
+  // not localStorage. Runs on mount and again whenever a job completes, so a plan change
+  // (upgrade, downgrade, or a legacy/founding/business account) is reflected without reload.
+  useEffect(() => {
+    let cancelled = false;
+    getCurrentUsage({ skipCache: true })
+      .then((data) => {
+        if (!cancelled) setAccountPlan(data.plan);
+      })
+      .catch(() => {
+        /* leave accountPlan as-is; export locks stay defensive (not-paid) until resolved */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [status]);
+
+  const isPaidPlan = hasPaidPlan(accountPlan);
 
   // Track when the AI summary teaser is shown to a free user (fires once per completed job)
   useEffect(() => {

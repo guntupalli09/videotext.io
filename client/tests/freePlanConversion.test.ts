@@ -41,3 +41,37 @@ test('all legitimate current and legacy paid plans suppress Free conversion UI',
   assert.equal(isPaidPlan('free'), false)
   assert.equal(isPaidPlan(null), false)
 })
+
+// ── Transcript export/watermark/copy entitlement — authoritative plan, not localStorage ──
+test('15: VideoToTranscript export entitlement is not sourced from localStorage.plan', () => {
+  const source = readFileSync(resolve(process.cwd(), 'src/pages/VideoToTranscript.tsx'), 'utf8')
+  assert.doesNotMatch(source, /hasPaidPlan\(localStorage\.getItem\(["']plan["']\)\)/)
+  assert.doesNotMatch(source, /isPaidPlan\s*=\s*[\s\S]{0,80}localStorage\.getItem\(["']plan["']\)/)
+})
+
+test('VideoToTranscript derives isPaidPlan from the authoritative usage API, refreshed on job completion', () => {
+  const source = readFileSync(resolve(process.cwd(), 'src/pages/VideoToTranscript.tsx'), 'utf8')
+  assert.match(source, /const \[accountPlan, setAccountPlan\] = useState<string \| null>\(null\)/)
+  assert.match(source, /setAccountPlan\(data\.plan\)/)
+  assert.match(source, /getCurrentUsage\(\{ skipCache: true \}\)\s*\n\s*\.then\(\(data\) => \{\s*\n\s*if \(!cancelled\) setAccountPlan\(data\.plan\)/)
+  assert.match(source, /const isPaidPlan = hasPaidPlan\(accountPlan\)/)
+  // The authoritative-plan effect depends on `status`, so a newly completed job re-fetches
+  // plan state (covers upgrade/downgrade mid-session) rather than reading a stale value once.
+  const effectIdx = source.indexOf('const isPaidPlan = hasPaidPlan(accountPlan)')
+  const before = source.slice(Math.max(0, effectIdx - 700), effectIdx)
+  assert.match(before, /\}, \[status\]\);/)
+})
+
+test('16+17: authoritative plan alone decides export entitlement — tampered/stale localStorage cannot override it', () => {
+  // isPaidPlan(accountPlan) reads only the accountPlan state, which the effect above proves is
+  // set exclusively from getCurrentUsage(); localStorage is never read into it, so a Free
+  // account with a tampered localStorage "plan=pro" still resolves to isPaidPlan(false), and a
+  // Pro account with a stale localStorage "plan=free" still resolves to isPaidPlan(true).
+  assert.equal(isPaidPlan('free'), false)
+  assert.equal(isPaidPlan('pro'), true)
+})
+
+test('18+19: founding_workflow and business resolve to paid entitlement through the shared helper VideoToTranscript now uses', () => {
+  assert.equal(isPaidPlan('founding_workflow'), true)
+  assert.equal(isPaidPlan('business'), true)
+})
