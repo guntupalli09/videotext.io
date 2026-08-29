@@ -15,6 +15,7 @@ import { readLogRing } from '../lib/logRing'
 import { getLogger } from '../lib/logger'
 import { getApiCredits, refreshApiCredits } from '../lib/apiCreditsCache'
 import { compareDashboardMetrics } from '../services/canonicalDashboard'
+import { getCanonicalStarDistribution } from '../services/ratingAggregation'
 import { applyCanonicalCutover, type CutoverableResponse } from '../services/canonicalDashboardCutover'
 import { DASHBOARD_SHADOW_COMPUTE, DASHBOARD_CANONICAL_CUTOVER } from '../utils/featureFlags'
 
@@ -602,14 +603,9 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
         GROUP BY "toolId"
         ORDER BY count DESC
       `,
-      // Star distribution (all time)
-      prisma.$queryRaw<{ stars: number; count: bigint }[]>`
-        SELECT stars, COUNT(*)::bigint as count
-        FROM "Feedback"
-        WHERE stars IS NOT NULL
-        GROUP BY stars
-        ORDER BY stars DESC
-      `,
+      // Star distribution (all time) — canonical: excludes founder/internal/demo
+      // feedback so this matches the public rating endpoint exactly.
+      getCanonicalStarDistribution(),
       // Per-tool performance breakdown (all-time completed jobs)
       prisma.$queryRaw<{
         toolType: string

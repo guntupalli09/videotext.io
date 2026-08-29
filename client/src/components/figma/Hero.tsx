@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { ImageWithFallback } from "./ImageWithFallback";
@@ -10,6 +11,25 @@ const CREATOR_AVATARS = [
   "https://i.pravatar.cc/80?img=25",
   "https://i.pravatar.cc/80?img=56",
 ];
+
+function useAverageRating(): number | null {
+  const [rating, setRating] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/stats/public/rating")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { averageRating: number | null } | null) => {
+        if (!cancelled && data?.averageRating != null) setRating(data.averageRating);
+      })
+      .catch(() => {/* degrade silently — no rating shown */});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return rating;
+}
 
 function HeroActions() {
   return (
@@ -43,6 +63,8 @@ function HeroActions() {
 }
 
 export function Hero() {
+  const averageRating = useAverageRating();
+
   return (
     <section className="relative flex flex-col items-center overflow-hidden bg-gray-950">
       {/* Dot grid background */}
@@ -125,8 +147,11 @@ export function Hero() {
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
-                <span className="ml-1 font-semibold text-white/50">
-                  4.9 / 5
+                <span
+                  className="ml-1 font-semibold text-white/50 min-w-[3.5em] inline-block"
+                  aria-hidden={averageRating == null}
+                >
+                  {averageRating != null ? `${averageRating.toFixed(1)} / 5` : ""}
                 </span>
               </span>
               <span className="w-px h-3 bg-white/10" />
