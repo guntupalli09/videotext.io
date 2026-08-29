@@ -7,7 +7,6 @@ import type { BillingPlan } from '../lib/billing'
 import type { BillingInterval } from '../lib/billing'
 import { getCurrentUsage } from '../lib/api'
 import { logout } from '../lib/auth'
-import { Link } from 'react-router-dom'
 
 function Check() {
   return (
@@ -148,10 +147,10 @@ export default function Pricing() {
         <div className="text-center mb-14">
           <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-3 tracking-wide uppercase">Pricing</p>
           <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white tracking-tight">
-            The complete transcription workflow
+            One plan. Your complete audio &amp; video workflow.
           </h1>
           <p className="mt-4 text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-            Transcript · Formatting · QA · Subtitles · AI Chapters · Speaker Labels — one tool, start to delivery.
+            Transcribe · Subtitle · Translate · Format · QA · Process · Deliver
           </p>
 
           {isPaidPlan && (
@@ -197,7 +196,7 @@ export default function Pricing() {
               className={`min-h-11 rounded-lg px-3 sm:px-5 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 ${billingInterval === 'annual' ? 'bg-blue-600 text-white shadow' : 'text-gray-300 hover:text-white'}`}
             >
               <span>Annual</span>
-              <span className="ml-2 inline-flex rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-400">Save 27%</span>
+              <span className="ml-2 inline-flex rounded-full bg-emerald-400 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-emerald-950 shadow-sm">Save 27%</span>
             </button>
           </div>
         </div>
@@ -377,10 +376,7 @@ export default function Pricing() {
         </div>
 
         <p className="mt-10 text-center text-sm text-gray-600 dark:text-gray-300 max-w-xl mx-auto leading-relaxed">
-          Transcriptionists matching Rev-, GoTranscript-, or similar PDFs can{' '}
-          <Link to="/guideline-format" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-            format your transcript to a client style guide →
-          </Link>
+          One subscription brings transcription, subtitles, translation, formatting, QA, processing, and client-ready delivery together.
         </p>
 
         {/* Trust signals */}
