@@ -36,6 +36,16 @@ const VALID_EVENTS = new Set([
   'upgrade_clicked',
   'checkout_started',
   'payment_completed',
+  // Conversion Intent tracking (authenticated-only attribution; see
+  // server/src/routes/adminConversionIntent.ts). checkout_completed is
+  // intentionally NOT in this allowlist -- conversion must only ever be
+  // read from User.plan/subscriptionStatus (authoritative, Stripe-webhook
+  // driven), never trusted from a client-submitted event.
+  'pricing_page_view',
+  'checkout_session_created',
+  'stripe_redirect',
+  'paywall_shown',
+  'free_plan_nudge_seen',
 ])
 
 router.post('/', eventsLimit, async (req: Request, res: Response) => {

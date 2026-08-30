@@ -6,7 +6,8 @@ import { trackEvent } from '../lib/analytics'
 import type { BillingPlan } from '../lib/billing'
 import type { BillingInterval } from '../lib/billing'
 import { getCurrentUsage } from '../lib/api'
-import { logout } from '../lib/auth'
+import { logout, isLoggedIn } from '../lib/auth'
+import { trackAppEvent } from '../lib/feedbackEvents'
 
 function Check() {
   return (
@@ -51,7 +52,10 @@ export default function Pricing() {
   useEffect(() => { refreshCurrentPlan() }, [refreshCurrentPlan])
 
   useEffect(() => {
-    try { trackEvent('pricing_page_view', { source: 'pricing_page' }) } catch { /* non-blocking */ }
+    try {
+      trackEvent('pricing_page_view', { source: 'pricing_page' })
+      if (isLoggedIn()) trackAppEvent('pricing_page_view', { source: 'pricing_page' })
+    } catch { /* non-blocking */ }
   }, [])
 
   useEffect(() => {
@@ -126,6 +130,12 @@ export default function Pricing() {
         source: 'pricing_page',
         billing_interval: billingInterval,
       })
+      try {
+        if (isLoggedIn()) {
+          trackAppEvent('checkout_session_created', { plan, source: 'pricing_page', billing_interval: billingInterval, job_count: jobCount })
+          trackAppEvent('stripe_redirect', { plan, source: 'pricing_page', billing_interval: billingInterval })
+        }
+      } catch { /* non-blocking */ }
       try { localStorage.setItem('videotext:checkout_billing_interval', billingInterval) } catch { /* non-blocking */ }
       rememberCheckoutAttribution({ source: 'pricing_page', billing_interval: billingInterval })
       window.location.href = url

@@ -4,6 +4,7 @@ import { createCheckoutSession, rememberCheckoutAttribution } from '../lib/billi
 import { getCurrentUsage, type UsageData } from '../lib/api'
 import { isLoggedIn } from '../lib/auth'
 import { trackEvent } from '../lib/analytics'
+import { trackAppEvent } from '../lib/feedbackEvents'
 import { getFreePlanNudgeState } from '../lib/freePlanConversion'
 
 export type FreePlanNudgeTool = 'transcript' | 'subtitles' | 'translation' | 'fix-srt' | 'burn-subtitles' | 'compress-video' | 'voice'
@@ -49,7 +50,10 @@ export default function FreePlanNudge({ tool, resultKey, placement = 'result' }:
     const key = `${tool}:${placement}:${used}:${remaining}:${String(resultKey)}`
     if (impressionKey.current === key) return
     impressionKey.current = key
-    try { trackEvent('free_plan_nudge_seen', { tool, remaining_imports: remaining, used_imports: used, placement, plan }) } catch { /* non-blocking */ }
+    try {
+      trackEvent('free_plan_nudge_seen', { tool, remaining_imports: remaining, used_imports: used, placement, plan })
+      if (isLoggedIn()) trackAppEvent('free_plan_nudge_seen', { tool, remaining_imports: remaining, used_imports: used, placement, plan })
+    } catch { /* non-blocking */ }
   }, [placement, plan, remaining, resultKey, tool, used, visible])
 
   if (!visible) return null
@@ -70,7 +74,10 @@ export default function FreePlanNudge({ tool, resultKey, placement = 'result' }:
       try { trackEvent('upgrade_clicked', attribution) } catch { /* non-blocking */ }
       const { url } = await createCheckoutSession({ mode: 'subscription', plan: 'pro', billingInterval: 'monthly', returnToPath: window.location.pathname, frontendOrigin: window.location.origin })
       rememberCheckoutAttribution(attribution)
-      try { trackEvent('checkout_session_created', attribution); trackEvent('stripe_redirect', attribution) } catch { /* non-blocking */ }
+      try {
+        trackEvent('checkout_session_created', attribution); trackEvent('stripe_redirect', attribution)
+        if (isLoggedIn()) { trackAppEvent('checkout_session_created', attribution); trackAppEvent('stripe_redirect', attribution) }
+      } catch { /* non-blocking */ }
       window.location.assign(url)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not open checkout. Please try again.')
