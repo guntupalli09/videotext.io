@@ -2503,7 +2503,11 @@ async function processJob(job: import('bull').Job<JobData>) {
       // non-blocking
     }
     try {
-      await updateJobCompleted(String(jobId), totalJobMs)
+      const resultFilename =
+        result && typeof result === 'object' && typeof (result as { fileName?: unknown }).fileName === 'string'
+          ? (result as { fileName: string }).fileName
+          : undefined
+      await updateJobCompleted(String(jobId), totalJobMs, resultFilename)
       if (data.userId) {
         const user = await getUser(data.userId)
         if (user) {

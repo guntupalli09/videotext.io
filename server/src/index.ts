@@ -53,6 +53,8 @@ import { guidelineQueue, startGuidelineWorker } from './workers/guidelineProcess
 import publicStatsRoutes from './routes/publicStats'
 import newsletterRoutes from './routes/newsletter'
 import foundingTeamRoutes from './routes/foundingTeam'
+import apiKeysRoutes from './routes/apiKeys'
+import apiV1Routes from './routes/apiV1'
 
 const log = getLogger('api')
 
@@ -109,6 +111,8 @@ const corsHeaders = [
   'X-Plan',
   'X-Upload-Id',
   'X-Chunk-Index',
+  'X-Api-Key',
+  'X-Job-Token',
 ]
 
 function headerValue(value: string | string[] | undefined): string | undefined {
@@ -247,6 +251,9 @@ app.use('/api/batch', apiKeyAuth)
 app.use('/api/translate-transcript', apiKeyAuth)
 app.use('/api/translate-subtitles', apiKeyAuth)
 app.use('/api/guidelines', apiKeyAuth)
+// Download ownership (Phase 1 fix) now checks getEffectiveUserId(), so an
+// API-key-authenticated request must resolve an identity here too.
+app.use('/api/download', apiKeyAuth)
 
 // Routes
 app.use('/api/upload', uploadRoutes)
@@ -255,6 +262,10 @@ app.use('/api/download', downloadRoutes)
 app.use('/api/audio', audioRoutes)
 app.use('/api/usage', usageRoutes)
 app.use('/api/batch', batchRoutes)
+// API key management (Settings → Integrations → API Keys) — JWT/session-gated.
+app.use('/api/api-keys', apiKeysRoutes)
+// Stable external facade (private/beta) — see docs/API_PRIVATE_BETA.md.
+app.use('/api/v1', apiV1Routes)
 app.use('/api/billing', billingRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/translate-transcript', translateTranscriptRoutes)

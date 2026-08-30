@@ -14,6 +14,12 @@ export interface InsertJobParams {
   toolType: string
   planAtRun?: string
   fileSizeBytes?: number
+  /** Anonymous-access token mirrored from the Bull job (JobData.jobToken). */
+  jobToken?: string
+  /** Where the request originated — server-set only, never a client-supplied value. */
+  source?: 'web' | 'api' | 'zapier'
+  /** ApiKey.id that authenticated the request, when applicable. */
+  apiKeyId?: string
 }
 
 export async function insertJobRecord(params: InsertJobParams): Promise<void> {
@@ -28,6 +34,9 @@ export async function insertJobRecord(params: InsertJobParams): Promise<void> {
         status: 'queued',
         fileSizeBytes: params.fileSizeBytes != null ? BigInt(params.fileSizeBytes) : null,
         planAtRun: params.planAtRun ?? null,
+        jobToken: params.jobToken ?? null,
+        source: params.source ?? 'web',
+        apiKeyId: params.apiKeyId ?? null,
       },
     })
   } catch (err) {
@@ -51,7 +60,8 @@ export async function updateJobStarted(jobId: string): Promise<void> {
 
 export async function updateJobCompleted(
   jobId: string,
-  processingMs: number
+  processingMs: number,
+  resultFilename?: string
 ): Promise<void> {
   try {
     await prisma.job.updateMany({
@@ -60,11 +70,25 @@ export async function updateJobCompleted(
         status: 'completed',
         completedAt: new Date(),
         processingMs,
+        ...(resultFilename ? { resultFilename } : {}),
       },
     })
   } catch (err) {
     log.warn({ err, jobId, msg: 'job_analytics_update_completed_failed' })
   }
+}
+
+/** Looks up the Job row that owns a given output filename (for download ownership checks). */
+export async function findJobByResultFilename(filename: string): Promise<{
+  id: string
+  userId: string
+  jobToken: string | null
+} | null> {
+  const row = await prisma.job.findFirst({
+    where: { resultFilename: filename },
+    select: { id: true, userId: true, jobToken: true },
+  })
+  return row
 }
 
 export async function updateJobFailed(
