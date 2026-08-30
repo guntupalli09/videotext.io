@@ -26,6 +26,7 @@ import {
   trackPlanUpgraded,
 } from '../utils/analytics'
 import { captureFunnelEvent } from '../utils/funnelEvents'
+import { notifyFounderNewCustomer, notifyFounderActivationFailure } from '../utils/founderNotify'
 
 const log = getLogger('api')
 
@@ -249,10 +250,14 @@ async function handleInvoicePaymentSucceeded(
     stripeCustomerId,
     invoice.customer_email ?? undefined
   )
+  // Captured before any mutation below, purely for the founder notification
+  // (VIDEOTEXT STATUS: "Plan Before Payment") — never used for entitlement logic.
+  const planBeforePayment = user.plan
 
   // ── Resolve plan from invoice line items ──────────────────────────────────
   // Use the invoice's price details (Stripe 2026 API shape: pricing.price_details.price)
   let activePlan: PlanType | null = null
+  let resolvedPriceId: string | null = null
   for (const line of invoice.lines.data) {
     const priceDetails = (line as { pricing?: { price_details?: { price?: string | { id: string } } } }).pricing?.price_details
     const priceId = priceDetails
@@ -264,6 +269,7 @@ async function handleInvoicePaymentSucceeded(
     const plan = getPlanFromPriceId(priceId)
     if (plan) {
       activePlan = plan
+      resolvedPriceId = priceId
       break
     }
   }
@@ -286,152 +292,229 @@ async function handleInvoicePaymentSucceeded(
   }
 
   // ── Update plan, status, and billing period ───────────────────────────────
-  if (activePlan) {
-    user.plan = activePlan
-    user.limits = getPlanLimits(activePlan)
-  }
-
-  user.subscriptionStatus = 'active'
-  user.cancelAtPeriodEnd = false  // Recovering from past_due or completing a checkout clears this
-
-  const periodStart =
-    (invoice.lines.data[0]?.period?.start ??
-      invoice.period_start ??
-      Math.floor(Date.now() / 1000)) * 1000
-  const periodEnd =
-    (invoice.lines.data[0]?.period?.end ??
-      invoice.period_end ??
-      Math.floor(Date.now() / 1000)) * 1000
-
-  const startDate = new Date(periodStart)
-  const endDate = new Date(periodEnd)
-
-  user.billingPeriodStart = startDate
-  user.billingPeriodEnd = endDate
-
-  // ── Reset monthly usage for the new billing cycle ─────────────────────────
-  user.usageThisMonth = {
-    ...user.usageThisMonth,
-    totalMinutes: 0,
-    videoCount: 0,
-    batchCount: 0,
-    languageCount: 0,
-    translatedMinutes: 0,
-    importCount: user.usageThisMonth.importCount ?? 0,
-    resetDate: endDate,
-  }
-  user.overagesThisMonth = {
-    ...user.overagesThisMonth,
-    minutes: 0,
-    totalCharge: 0,
-  }
-
-  user.updatedAt = new Date()
-  await saveUser(user)
-  captureFunnelEvent({
-    eventName: 'payment_completed',
-    userId: user.id,
-    source: 'stripe_invoice_payment_succeeded',
-    plan: activePlan ?? user.plan,
-    metadata: { invoice_id: invoice.id },
-  }).catch(() => {})
-
-  log.info({
-    msg: 'stripe: invoice.payment_succeeded processed',
-    eventId,
-    userId: user.id,
-    stripeCustomerId,
-    invoiceId: invoice.id,
-    plan: activePlan ?? user.plan,
-    billingPeriodStart: startDate.toISOString(),
-    billingPeriodEnd: endDate.toISOString(),
-  })
-
-  if (activePlan) {
-    trackPlanUpgraded({
-      user_id: user.id,
-      plan: activePlan,
-      stripe_customer_id: stripeCustomerId,
-      email: user.email,
-    })
-
-    const mrrData = computeNormalizedMonthlyCentsFromInvoice(invoice)
-    trackSubscriptionRenewed({
-      user_id: user.id,
-      plan: activePlan,
-      mrr_cents: mrrData.normalizedMonthlyCents,
-      billing_interval: mrrData.billingInterval ?? undefined,
-    })
-  }
-
-  // ── Create MRR snapshot (non-fatal on failure) ────────────────────────────
+  // Wrapped so a failure here (e.g. a DB error on saveUser) is captured
+  // rather than aborting the function before the founder activation-failure
+  // alert can be sent. The error is re-thrown at the end of this function,
+  // unchanged from the original behavior (500 response, event already
+  // claimed in StripeEventLog so it will not be silently retried).
+  let entitlementError: Error | null = null
   try {
-    const mrr = computeNormalizedMonthlyCentsFromInvoice(invoice)
-
-    // Analytics Sprint 1 (revised): shadow-compute the corrected (V2)
-    // extraction alongside the legacy one. `mrrForSnapshot` defaults to the
-    // legacy result — with both flags off this block is skipped entirely and
-    // behavior is byte-for-byte unchanged from before this sprint.
-    let mrrForSnapshot = mrr
-    if (MRR_EXTRACTION_V2_SHADOW || MRR_EXTRACTION_V2_WRITE) {
-      try {
-        const mrrV2 = await computeNormalizedMonthlyCentsFromInvoiceV2(stripe, invoice.id)
-        const matches =
-          mrrV2.normalizedMonthlyCents === mrr.normalizedMonthlyCents &&
-          mrrV2.stripeSubscriptionId === mrr.stripeSubscriptionId
-        // Operator decision 2026-07-27 (Sprint 1, Option A): MRR is the
-        // subscription's CONTRACTUAL value (mrrV2.normalizedMonthlyCents),
-        // independent of any temporary invoice discount. `collectedCashCents`
-        // is logged here as a distinct, separate figure (invoice.amount_paid)
-        // — it must never be summed into or substituted for MRR anywhere.
-        log.info({
-          msg: 'mrr_extraction_shadow_compare',
-          eventId,
-          invoiceId: invoice.id,
-          legacy: mrr,
-          corrected: mrrV2,
-          collectedCashCents: invoice.amount_paid,
-          isDiscounted: invoice.amount_paid !== mrrV2.normalizedMonthlyCents && mrrV2.normalizedMonthlyCents > 0,
-          matches,
-        })
-        if (MRR_EXTRACTION_V2_WRITE) {
-          mrrForSnapshot = mrrV2
-        }
-      } catch (shadowErr) {
-        // Shadow-mode failures must never affect the write path or throw —
-        // fall back to the legacy (already-computed) result unconditionally.
-        log.warn({
-          msg: 'mrr_extraction_shadow_compare_failed',
-          eventId,
-          invoiceId: invoice.id,
-          error: (shadowErr as Error).message,
-        })
-      }
+    if (activePlan) {
+      user.plan = activePlan
+      user.limits = getPlanLimits(activePlan)
     }
 
-    const currency = (invoice.currency ?? 'usd').toLowerCase()
-    await prisma.subscriptionSnapshot.create({
-      data: {
-        userId: user.id,
-        plan: activePlan ?? user.plan,
-        priceMonthly: mrrForSnapshot.normalizedMonthlyCents,
-        currency,
-        periodStart: startDate,
-        periodEnd: endDate,
-        status: 'active',
-        stripeSubscriptionId: mrrForSnapshot.stripeSubscriptionId,
-        stripePriceId: mrrForSnapshot.stripePriceId,
-        billingInterval: mrrForSnapshot.billingInterval,
-        intervalCount: mrrForSnapshot.intervalCount,
-      },
-    })
-  } catch (err) {
-    log.error({
-      msg: 'stripe: SubscriptionSnapshot insert failed (invoice.payment_succeeded) — MRR data missing',
+    user.subscriptionStatus = 'active'
+    user.cancelAtPeriodEnd = false  // Recovering from past_due or completing a checkout clears this
+
+    const periodStart =
+      (invoice.lines.data[0]?.period?.start ??
+        invoice.period_start ??
+        Math.floor(Date.now() / 1000)) * 1000
+    const periodEnd =
+      (invoice.lines.data[0]?.period?.end ??
+        invoice.period_end ??
+        Math.floor(Date.now() / 1000)) * 1000
+
+    const startDate = new Date(periodStart)
+    const endDate = new Date(periodEnd)
+
+    user.billingPeriodStart = startDate
+    user.billingPeriodEnd = endDate
+
+    // ── Reset monthly usage for the new billing cycle ───────────────────────
+    user.usageThisMonth = {
+      ...user.usageThisMonth,
+      totalMinutes: 0,
+      videoCount: 0,
+      batchCount: 0,
+      languageCount: 0,
+      translatedMinutes: 0,
+      importCount: user.usageThisMonth.importCount ?? 0,
+      resetDate: endDate,
+    }
+    user.overagesThisMonth = {
+      ...user.overagesThisMonth,
+      minutes: 0,
+      totalCharge: 0,
+    }
+
+    user.updatedAt = new Date()
+    await saveUser(user)
+    captureFunnelEvent({
+      eventName: 'payment_completed',
+      userId: user.id,
+      source: 'stripe_invoice_payment_succeeded',
+      plan: activePlan ?? user.plan,
+      metadata: { invoice_id: invoice.id },
+    }).catch(() => {})
+
+    log.info({
+      msg: 'stripe: invoice.payment_succeeded processed',
       eventId,
       userId: user.id,
-      error: (err as Error).message,
+      stripeCustomerId,
+      invoiceId: invoice.id,
+      plan: activePlan ?? user.plan,
+      billingPeriodStart: startDate.toISOString(),
+      billingPeriodEnd: endDate.toISOString(),
     })
+
+    if (activePlan) {
+      trackPlanUpgraded({
+        user_id: user.id,
+        plan: activePlan,
+        stripe_customer_id: stripeCustomerId,
+        email: user.email,
+      })
+
+      const mrrData = computeNormalizedMonthlyCentsFromInvoice(invoice)
+      trackSubscriptionRenewed({
+        user_id: user.id,
+        plan: activePlan,
+        mrr_cents: mrrData.normalizedMonthlyCents,
+        billing_interval: mrrData.billingInterval ?? undefined,
+      })
+    }
+
+    // ── Create MRR snapshot (non-fatal on failure) ──────────────────────────
+    try {
+      const mrr = computeNormalizedMonthlyCentsFromInvoice(invoice)
+
+      // Analytics Sprint 1 (revised): shadow-compute the corrected (V2)
+      // extraction alongside the legacy one. `mrrForSnapshot` defaults to the
+      // legacy result — with both flags off this block is skipped entirely and
+      // behavior is byte-for-byte unchanged from before this sprint.
+      let mrrForSnapshot = mrr
+      if (MRR_EXTRACTION_V2_SHADOW || MRR_EXTRACTION_V2_WRITE) {
+        try {
+          const mrrV2 = await computeNormalizedMonthlyCentsFromInvoiceV2(stripe, invoice.id)
+          const matches =
+            mrrV2.normalizedMonthlyCents === mrr.normalizedMonthlyCents &&
+            mrrV2.stripeSubscriptionId === mrr.stripeSubscriptionId
+          // Operator decision 2026-07-27 (Sprint 1, Option A): MRR is the
+          // subscription's CONTRACTUAL value (mrrV2.normalizedMonthlyCents),
+          // independent of any temporary invoice discount. `collectedCashCents`
+          // is logged here as a distinct, separate figure (invoice.amount_paid)
+          // — it must never be summed into or substituted for MRR anywhere.
+          log.info({
+            msg: 'mrr_extraction_shadow_compare',
+            eventId,
+            invoiceId: invoice.id,
+            legacy: mrr,
+            corrected: mrrV2,
+            collectedCashCents: invoice.amount_paid,
+            isDiscounted: invoice.amount_paid !== mrrV2.normalizedMonthlyCents && mrrV2.normalizedMonthlyCents > 0,
+            matches,
+          })
+          if (MRR_EXTRACTION_V2_WRITE) {
+            mrrForSnapshot = mrrV2
+          }
+        } catch (shadowErr) {
+          // Shadow-mode failures must never affect the write path or throw —
+          // fall back to the legacy (already-computed) result unconditionally.
+          log.warn({
+            msg: 'mrr_extraction_shadow_compare_failed',
+            eventId,
+            invoiceId: invoice.id,
+            error: (shadowErr as Error).message,
+          })
+        }
+      }
+
+      const currency = (invoice.currency ?? 'usd').toLowerCase()
+      await prisma.subscriptionSnapshot.create({
+        data: {
+          userId: user.id,
+          plan: activePlan ?? user.plan,
+          priceMonthly: mrrForSnapshot.normalizedMonthlyCents,
+          currency,
+          periodStart: startDate,
+          periodEnd: endDate,
+          status: 'active',
+          stripeSubscriptionId: mrrForSnapshot.stripeSubscriptionId,
+          stripePriceId: mrrForSnapshot.stripePriceId,
+          billingInterval: mrrForSnapshot.billingInterval,
+          intervalCount: mrrForSnapshot.intervalCount,
+        },
+      })
+    } catch (err) {
+      log.error({
+        msg: 'stripe: SubscriptionSnapshot insert failed (invoice.payment_succeeded) — MRR data missing',
+        eventId,
+        userId: user.id,
+        error: (err as Error).message,
+      })
+    }
+  } catch (err) {
+    entitlementError = err as Error
+    log.error({
+      msg: 'stripe: invoice.payment_succeeded — entitlement update failed',
+      eventId,
+      userId: user.id,
+      stripeCustomerId,
+      invoiceId: invoice.id,
+      error: entitlementError.message,
+    })
+  }
+
+  // ── Founder billing notification (side effect only) ─────────────────────────
+  // Stripe payment is already confirmed (this handler only runs for
+  // invoice.payment_succeeded, the authoritative paid-invoice event) and the
+  // entitlement work above has already completed (success or failure) before
+  // we get here, so the "Activation: SUCCESS" claim in the email is only ever
+  // made when saveUser() actually committed the granted plan.
+  //
+  // Idempotency: this call happens inside a handler that only runs once per
+  // real Stripe event id (see claimStripeEvent in the main webhook handler
+  // below, which atomically claims the event BEFORE dispatch). A Stripe
+  // webhook retry reuses the same event id, so the retry short-circuits as a
+  // duplicate before ever reaching this code — no separate notification
+  // table is needed for dedupe.
+  //
+  // "New customer" vs "renewal" is decided by invoice.billing_reason, a
+  // Stripe-authoritative field: 'subscription_create' fires exactly once,
+  // on the first invoice of a new subscription; every renewal/cycle invoice
+  // carries 'subscription_cycle' (or similar) instead. This does not depend
+  // on any local DB state, so it can't be fooled by a partially-processed
+  // prior event.
+  const entitlementSucceeded = entitlementError === null && activePlan !== null
+  const isFirstSubscriptionPayment = invoice.billing_reason === 'subscription_create'
+
+  if (!entitlementSucceeded) {
+    await notifyFounderActivationFailure({
+      invoice,
+      user,
+      expectedPlan: activePlan,
+      error: entitlementError,
+    }).catch((notifyErr) => {
+      log.error({
+        msg: 'founder-notify: activation-failure alert threw unexpectedly (swallowed)',
+        eventId,
+        error: (notifyErr as Error).message,
+      })
+    })
+  } else if (isFirstSubscriptionPayment && activePlan) {
+    await notifyFounderNewCustomer({
+      invoice,
+      user,
+      activePlan,
+      planBeforePayment,
+      priceId: resolvedPriceId,
+    }).catch((notifyErr) => {
+      log.error({
+        msg: 'founder-notify: new-customer email threw unexpectedly (swallowed)',
+        eventId,
+        error: (notifyErr as Error).message,
+      })
+    })
+  }
+
+  if (entitlementError) {
+    // Preserve original behavior: surface the failure so it is loud in logs
+    // and Stripe sees a 500. The event is already claimed in StripeEventLog,
+    // so this will not cause a duplicate founder alert on Stripe's retry.
+    throw entitlementError
   }
 }
 
