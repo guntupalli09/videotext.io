@@ -21,6 +21,8 @@ import DescriptVsVideoText from './pages/DescriptVsVideoText'
 import VideoTextVsTurboScribe from './pages/VideoTextVsTurboScribe'
 import BestOtterAlternatives from './pages/BestOtterAlternatives'
 import BestDescriptAlternatives from './pages/BestDescriptAlternatives'
+import ApiDocs from './pages/ApiDocs'
+import ZapierIntegration from './pages/ZapierIntegration'
 import { ROUTE_SEO } from './lib/seoMeta'
 import { getAllSeoEntries, getPageLabel, getRelatedSuggestionsForEntry, getSeoEntry, type FaqItem, type SeoDeepContent, type SeoRegistryEntry, type SeoTutorialContent } from './lib/seoRegistry'
 import { getCanonicalPathForRoute, resolveInternalLinkPath } from './lib/primaryUrls'
@@ -60,6 +62,12 @@ const SSR_PAGES: Record<string, React.ComponentType> = {
   '/videotext-vs-turboscribe': VideoTextVsTurboScribe,
   '/best-otter-alternatives': BestOtterAlternatives,
   '/best-descript-alternatives': BestDescriptAlternatives,
+  // Hand-authored pages with substantive, page-specific content (no localStorage/
+  // window access at render time) — rendered directly rather than through the
+  // generic seo-document template, which is built for tool-landing pages and
+  // would duplicate/CTA-mismatch on a technical reference and an integration guide.
+  '/docs/api': ApiDocs,
+  '/integrations/zapier': ZapierIntegration,
 }
 
 const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'title' | 'description'>> = {

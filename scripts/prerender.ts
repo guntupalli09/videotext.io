@@ -146,6 +146,20 @@ const STATIC_META: RouteMeta[] = [
     h1: 'Complete VideoText Page Index',
     noindex: false,
   },
+  {
+    path: '/integrations/zapier',
+    title: `VideoText + Zapier — Automate Transcription & Subtitles | ${SITE_NAME}`,
+    description:
+      'Connect VideoText to Zapier to automatically transcribe audio/video, generate and translate subtitles, fix subtitle timing, burn captions into video, and compress video from apps like Google Drive, Gmail, and Slack.',
+    h1: 'VideoText + Zapier',
+  },
+  {
+    path: '/docs/api',
+    title: `API Documentation | ${SITE_NAME}`,
+    description:
+      'VideoText API reference: authentication, endpoints for transcription, subtitles, translation, subtitle repair, burning, and compression, job polling, errors, and rate limits.',
+    h1: 'VideoText API',
+  },
 
   {
     path: '/video-to-transcript',

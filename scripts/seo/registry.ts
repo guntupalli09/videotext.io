@@ -153,6 +153,8 @@ export const CORE_PATHS: string[] = [
   '/compare',
   '/open',
   '/changelog',
+  '/integrations/zapier',
+  '/docs/api',
   // Cluster I — Comparison / vs pages (fully SSR-prerendered)
   '/temi-vs-videotext',
   '/videotext-vs-rev',
