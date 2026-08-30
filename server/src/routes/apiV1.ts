@@ -123,6 +123,7 @@ router.post('/transcriptions', upload.single('file'), async (req: Request, res: 
   const result = await runTranscriptionIntake(req, {
     source: sourceFromClientType(auth.clientType),
     apiKeyId: auth.apiKeyId,
+    authenticatedUserId: auth.user.id,
   })
 
   if (!result.ok) {
