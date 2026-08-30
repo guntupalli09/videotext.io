@@ -1,0 +1,25 @@
+{
+  "name": "videotext-zapier",
+  "version": "1.0.0",
+  "description": "Private Zapier integration for VideoText.io (private beta).",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "jest --testTimeout 10000",
+    "validate": "zapier validate",
+    "push": "zapier push"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "form-data": "4.0.0",
+    "zapier-platform-core": "19.1.0"
+  },
+  "devDependencies": {
+    "jest": "^29.6.0",
+    "nock": "^13.5.0",
+    "zapier-platform-cli": "19.1.0"
+  }
+}
