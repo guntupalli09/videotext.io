@@ -507,6 +507,53 @@ test('12. discounted invoice reports the actual discounted amount paid, not list
   restoreFetch()
 })
 
+test('13. win-back resubscription (new subscription_create on an old customer) is labeled Returning, not New Customer', async (t) => {
+  if (!dbAvailable) return t.skip('DATABASE_URL not reachable')
+  installFetchMock()
+  process.env.FOUNDER_BILLING_ALERT_EMAIL = 'founder@example.com'
+  process.env.RESEND_API_KEY = 're_test_key'
+
+  const customerId = uniqueId('cus')
+  const email = `${customerId}@example.com`
+
+  // First-ever payment: a true first-time customer.
+  const firstInvoice = fakeInvoice({
+    invoiceId: uniqueId('in'),
+    customerId,
+    email,
+    priceId: MONTHLY_PRICE_ID,
+    amountPaidCents: 799,
+    billingReason: 'subscription_create',
+    subscriptionId: uniqueId('sub'),
+  })
+  await callWebhook(fakeEvent(uniqueId('evt'), firstInvoice))
+  assert.equal(capturedEmails.length, 1)
+  assert.match(capturedEmails[0].subject, /^New VideoText Customer — /)
+  assert.match(capturedEmails[0].html, /Customer Type: New$/m)
+
+  // Months later: same customer cancelled and started a brand-new
+  // subscription. Stripe fires 'subscription_create' again (it's scoped to
+  // the new subscription object, not the customer) — this must NOT be
+  // reported as a new customer.
+  const winBackInvoice = fakeInvoice({
+    invoiceId: uniqueId('in'),
+    customerId,
+    email,
+    priceId: MONTHLY_PRICE_ID,
+    amountPaidCents: 799,
+    billingReason: 'subscription_create',
+    subscriptionId: uniqueId('sub'),
+  })
+  await callWebhook(fakeEvent(uniqueId('evt'), winBackInvoice))
+
+  assert.equal(capturedEmails.length, 2)
+  assert.match(capturedEmails[1].subject, /^New Subscription \(Returning Customer\) — /)
+  assert.doesNotMatch(capturedEmails[1].subject, /^New VideoText Customer/)
+  assert.match(capturedEmails[1].html, /Customer Type: Returning/)
+
+  restoreFetch()
+})
+
 test('cleanup', async (t) => {
   if (!dbAvailable) return t.skip('DATABASE_URL not reachable')
   // Best-effort cleanup of rows created by this file's uniqueId()-prefixed fixtures.

@@ -166,7 +166,14 @@ function billingIntervalFromPriceId(priceId: string | null): 'month' | 'year' | 
 }
 
 /**
- * New paying customer — first successful subscription payment.
+ * First successful payment on a subscription — either a true first-time
+ * paying customer, or a returning customer who cancelled a previous
+ * subscription and has now started a new one (a "win-back"). Both are
+ * revenue events worth a founder email, but they are NOT the same thing:
+ * `isReturningCustomer` (derived by the caller from the SubscriptionSnapshot
+ * ledger, which predates this invoice) controls the subject/body wording so
+ * a win-back is never mislabeled as new customer acquisition.
+ *
  * Only call this once entitlement activation is confirmed to have succeeded.
  */
 export async function notifyFounderNewCustomer(params: {
@@ -175,8 +182,9 @@ export async function notifyFounderNewCustomer(params: {
   activePlan: PlanType
   planBeforePayment: PlanType
   priceId: string | null
+  isReturningCustomer: boolean
 }): Promise<void> {
-  const { invoice, user, activePlan, planBeforePayment, priceId } = params
+  const { invoice, user, activePlan, planBeforePayment, priceId, isReturningCustomer } = params
 
   const currency = (invoice.currency ?? 'usd').toUpperCase()
   // amount_paid is the actual cash collected on this invoice (reflects any
@@ -194,7 +202,8 @@ export async function notifyFounderNewCustomer(params: {
   // Subject uses the bare "$X.XX/mo" form (matches the spec's exact example);
   // the currency code is spelled out separately in the PURCHASE section below.
   const amountShort = `$${(invoice.amount_paid / 100).toFixed(2)}`
-  const subject = `New VideoText Customer — ${user.email} — ${amountShort}${billingSuffix(interval)}`
+  const subjectPrefix = isReturningCustomer ? 'New Subscription (Returning Customer)' : 'New VideoText Customer'
+  const subject = `${subjectPrefix} — ${user.email} — ${amountShort}${billingSuffix(interval)}`
 
   let conversionBlock = ''
   try {
@@ -222,9 +231,10 @@ export async function notifyFounderNewCustomer(params: {
   }
 
   const body = [
-    'NEW VIDEOTEXT CUSTOMER',
+    isReturningCustomer ? 'NEW SUBSCRIPTION (RETURNING CUSTOMER)' : 'NEW VIDEOTEXT CUSTOMER',
     '',
     'CUSTOMER',
+    `Customer Type: ${isReturningCustomer ? 'Returning (previously had a paid subscription)' : 'New'}`,
     `Name: ${user.name || 'Unknown'}`,
     `Email: ${user.email}`,
     `VideoText User ID: ${user.id}`,

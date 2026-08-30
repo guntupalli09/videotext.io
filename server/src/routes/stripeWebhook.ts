@@ -254,6 +254,20 @@ async function handleInvoicePaymentSucceeded(
   // (VIDEOTEXT STATUS: "Plan Before Payment") — never used for entitlement logic.
   const planBeforePayment = user.plan
 
+  // Captured BEFORE this invoice's own SubscriptionSnapshot row is inserted
+  // below. invoice.billing_reason === 'subscription_create' only tells us
+  // this is the first invoice of THIS Stripe subscription object — a
+  // customer who cancels and resubscribes months later gets a brand-new
+  // subscription id and therefore a fresh 'subscription_create' too, even
+  // though they are not a new customer. Checking for any prior
+  // SubscriptionSnapshot row for this user (an append-only ledger written
+  // on every past payment) lets us tell a true first-time payer apart from
+  // a win-back resubscription, purely for the founder-notification wording
+  // below — it has no effect on entitlement/plan logic.
+  const hasPriorPaidHistory = (await prisma.subscriptionSnapshot.count({
+    where: { userId: user.id },
+  })) > 0
+
   // ── Resolve plan from invoice line items ──────────────────────────────────
   // Use the invoice's price details (Stripe 2026 API shape: pricing.price_details.price)
   let activePlan: PlanType | null = null
@@ -472,12 +486,17 @@ async function handleInvoicePaymentSucceeded(
   // duplicate before ever reaching this code — no separate notification
   // table is needed for dedupe.
   //
-  // "New customer" vs "renewal" is decided by invoice.billing_reason, a
+  // "New subscription" vs "renewal" is decided by invoice.billing_reason, a
   // Stripe-authoritative field: 'subscription_create' fires exactly once,
-  // on the first invoice of a new subscription; every renewal/cycle invoice
-  // carries 'subscription_cycle' (or similar) instead. This does not depend
-  // on any local DB state, so it can't be fooled by a partially-processed
-  // prior event.
+  // on the first invoice of a *subscription object*; every renewal/cycle
+  // invoice on that same subscription carries 'subscription_cycle' instead.
+  // This is scoped to the subscription, not the customer: a customer who
+  // cancels and resubscribes months later gets a new subscription id and
+  // therefore another 'subscription_create'. hasPriorPaidHistory (computed
+  // above, from the SubscriptionSnapshot ledger) distinguishes that win-back
+  // case from an actual first-time payer for the email's wording only —
+  // it does not change whether a notification is sent, only whether it's
+  // labeled "New Customer" or "Returning Customer".
   const entitlementSucceeded = entitlementError === null && activePlan !== null
   const isFirstSubscriptionPayment = invoice.billing_reason === 'subscription_create'
 
@@ -501,6 +520,7 @@ async function handleInvoicePaymentSucceeded(
       activePlan,
       planBeforePayment,
       priceId: resolvedPriceId,
+      isReturningCustomer: hasPriorPaidHistory,
     }).catch((notifyErr) => {
       log.error({
         msg: 'founder-notify: new-customer email threw unexpectedly (swallowed)',
