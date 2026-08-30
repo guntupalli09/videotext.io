@@ -19,6 +19,16 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       "VideoText pricing: Free 3 uploads/day (no card needed), Pro $7.99/mo (AI features, watermark-free exports, batch processing). 7-day money-back guarantee. We don't store your data.",
   },
+  '/integrations/zapier': {
+    title: 'VideoText + Zapier — Automate Transcription & Subtitles | VideoText',
+    description:
+      'Connect VideoText to Zapier to automatically transcribe audio/video, generate and translate subtitles, fix subtitle timing, burn captions into video, and compress video from apps like Google Drive, Gmail, and Slack.',
+  },
+  '/docs/api': {
+    title: 'API Documentation | VideoText',
+    description:
+      'VideoText API reference: authentication, endpoints for transcription, subtitles, translation, subtitle repair, burning, and compression, job polling, errors, and rate limits.',
+  },
   '/privacy': {
     title: 'Privacy Policy — We Don\'t Store Your Data | VideoText',
     description:

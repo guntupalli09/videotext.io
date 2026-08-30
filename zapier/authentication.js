@@ -18,8 +18,10 @@ module.exports = {
       type: 'password',
       required: true,
       helpText:
-        'Paste your VideoText API key (starts with `vt_live_`). Create one from ' +
-        'VideoText → Settings → Integrations → API Keys. API keys are a Pro-plan feature.',
+        'Paste your VideoText API key (starts with `vt_live_`). Create one at ' +
+        '[videotext.io/settings/api-keys](https://videotext.io/settings/api-keys) — choose ' +
+        'client type "Zapier" and copy the key shown (it is only shown once). ' +
+        'API keys are a Pro-plan feature.',
     },
   ],
 

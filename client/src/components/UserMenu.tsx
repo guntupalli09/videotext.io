@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Menu, X, Sun, Moon, CreditCard, Mail, Gift, MessageCircle } from 'lucide-react'
+import { Menu, X, Sun, Moon, CreditCard, Mail, Gift, MessageCircle, KeyRound } from 'lucide-react'
 import { prefetchRoute } from '../lib/prefetch'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getCurrentUsage } from '../lib/api'
@@ -187,6 +187,19 @@ export default function UserMenu() {
                     </Link>
                   ) : null}
                 </div>
+                )}
+
+                {isLoggedIn() && !isDemo() && (
+                  <Link
+                    to="/settings/api-keys"
+                    onClick={() => setOpen(false)}
+                    onMouseEnter={() => prefetchRoute('/settings/api-keys')}
+                    onFocus={() => prefetchRoute('/settings/api-keys')}
+                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-gray-900 dark:text-gray-100 hover:bg-white/90 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <KeyRound className="w-5 h-5 shrink-0 text-gray-600 dark:text-gray-300" />
+                    <span>API Keys</span>
+                  </Link>
                 )}
 
                 {!loading && isFounder && (

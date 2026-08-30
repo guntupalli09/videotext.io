@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "cd client && npm ci && npm run build && node -e \"require('fs').cpSync('dist','../dist',{recursive:true})\" && npx tsx ../scripts/prerender.ts && cd .. && npm run seo:sitemap && npm run seo:content-audit",
+    "provision-zapier-reviewer": "cd server && npx tsx scripts/provision-zapier-reviewer.ts",
     "prerender": "cd client && npx tsx ../scripts/prerender.ts",
     "seo:weekly": "tsx scripts/seo/run-weekly.ts",
     "seo:fetch": "tsx scripts/seo/fetch-gsc.ts",
