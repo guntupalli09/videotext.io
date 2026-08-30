@@ -31,6 +31,7 @@ import eventsRoutes from './routes/events'
 import shareRoutes from './routes/share'
 import feedbackSystemRoutes from './routes/feedbackSystem'
 import adminDashboardRoutes, { clearDashboardCache } from './routes/adminDashboard'
+import adminConversionIntentRoutes from './routes/adminConversionIntent'
 import adminSupportRoutes, { runAlertChecks, maybeSendDailyDigest } from './routes/adminSupport'
 import { runRecompute } from './services/recomputeMetrics'
 import { pushLogEntry } from './lib/logRing'
@@ -265,6 +266,7 @@ app.use('/api/events', eventsRoutes)
 app.use('/api/feedback', feedbackSystemRoutes)
 app.use('/api/admin/feedback', feedbackSystemRoutes)
 app.use('/api/admin', adminDashboardRoutes)
+app.use('/api/admin', adminConversionIntentRoutes)
 app.use('/api/admin', adminSupportRoutes)
 app.use('/api/stats', publicStatsRoutes)
 app.use('/api/newsletter', newsletterRoutes)

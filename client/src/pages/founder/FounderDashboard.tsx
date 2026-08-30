@@ -23,6 +23,7 @@ import EmailUsagePanel from './EmailUsagePanel'
 import CostMetrics from './CostMetrics'
 import FeedbackSystemPanel from './FeedbackSystemPanel'
 import YoutubeResolutionPanel from './YoutubeResolutionPanel'
+import ConversionIntent from './ConversionIntent'
 
 const PLAN_COLORS: Record<string, string> = {
   free: 'text-zinc-400',
@@ -271,6 +272,12 @@ export default function FounderDashboard() {
             </div>
             <RevenueDetails revenue={data.revenue} snapshot={snapshot} />
           </div>
+        </section>
+
+        {/* Conversion Intent */}
+        <section>
+          <SectionTitle id="conversion-intent">Conversion Intent</SectionTitle>
+          <ConversionIntent />
         </section>
 
         {/* Acquisition */}

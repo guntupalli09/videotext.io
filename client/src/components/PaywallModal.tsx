@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { trackEvent } from '../lib/analytics'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { createCheckoutSession, rememberCheckoutAttribution } from '../lib/billing'
+import { isLoggedIn } from '../lib/auth'
 import { Link } from 'react-router-dom'
 
 export type PaywallReason =
@@ -101,7 +102,12 @@ export default function PaywallModal({ isOpen, onClose, reason, tool, remainingI
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   useEffect(() => {
-    if (isOpen) { try { trackEvent('paywall_shown', { reason, tool, remaining_imports: remainingImports, plan: 'free' }) } catch { /* non-blocking */ } }
+    if (isOpen) {
+      try {
+        trackEvent('paywall_shown', { reason, tool, remaining_imports: remainingImports, plan: 'free' })
+        if (isLoggedIn()) trackAppEvent('paywall_shown', { reason, tool, remaining_imports: remainingImports, plan: 'free' })
+      } catch { /* non-blocking */ }
+    }
   }, [isOpen, reason, remainingImports, tool])
 
   if (!isOpen) return null
@@ -124,7 +130,10 @@ export default function PaywallModal({ isOpen, onClose, reason, tool, remainingI
         frontendOrigin: window.location.origin,
       })
       rememberCheckoutAttribution(attribution)
-      try { trackEvent('checkout_session_created', attribution); trackEvent('stripe_redirect', attribution) } catch { /* non-blocking */ }
+      try {
+        trackEvent('checkout_session_created', attribution); trackEvent('stripe_redirect', attribution)
+        if (isLoggedIn()) { trackAppEvent('checkout_session_created', attribution); trackAppEvent('stripe_redirect', attribution) }
+      } catch { /* non-blocking */ }
       window.location.assign(url)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to start checkout. Please try again.'

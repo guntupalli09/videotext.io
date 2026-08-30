@@ -21,6 +21,14 @@ export type AppEventName =
   | 'first_output_seen'
   | 'upgrade_clicked'
   | 'activation_wizard_completed'
+  // Conversion Intent (server EventLog attribution; authenticated-only —
+  // callers must gate with isLoggedIn() before calling trackAppEvent for
+  // these). See server/src/routes/events.ts VALID_EVENTS.
+  | 'pricing_page_view'
+  | 'checkout_session_created'
+  | 'stripe_redirect'
+  | 'paywall_shown'
+  | 'free_plan_nudge_seen'
 
 export type TriggerType = 'result' | 'export' | 'dropoff' | 'pmf' | 'competitor'
 

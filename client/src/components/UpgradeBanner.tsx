@@ -5,6 +5,7 @@ import { trackEvent } from '../lib/analytics'
 import { createCheckoutSession, rememberCheckoutAttribution } from '../lib/billing'
 import { getCurrentUsage } from '../lib/api'
 import { isPaidPlan } from '../lib/plans'
+import { isLoggedIn } from '../lib/auth'
 
 export type UpgradeBannerVariant =
   | 'video-length'   // longer-video Pro value
@@ -74,7 +75,10 @@ export default function UpgradeBanner({ variant = 'video-length', tool }: Upgrad
         frontendOrigin: window.location.origin,
       })
       rememberCheckoutAttribution(attribution)
-      try { trackEvent('checkout_session_created', attribution); trackEvent('stripe_redirect', attribution) } catch { /* non-blocking */ }
+      try {
+        trackEvent('checkout_session_created', attribution); trackEvent('stripe_redirect', attribution)
+        if (isLoggedIn()) { trackAppEvent('checkout_session_created', attribution); trackAppEvent('stripe_redirect', attribution) }
+      } catch { /* non-blocking */ }
       window.location.assign(url)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to start checkout. Please try again.'
