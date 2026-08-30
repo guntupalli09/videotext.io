@@ -20,10 +20,20 @@ function absolutizeDownloadUrl(url) {
   return `${API_ORIGIN}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
-/** Applies absolutizeDownloadUrl to every known output-URL field on a job record. */
+/**
+ * Applies absolutizeDownloadUrl to every known output-URL field on a job
+ * record, and drops `tool_type` — an internal implementation detail
+ * (server/src/services/apiV1Format.ts's raw Job.toolType, e.g.
+ * "video-to-transcript") that duplicates the already-exposed, stable
+ * `operation` field and isn't declared in any create/trigger's outputFields
+ * or sample. Every Zapier action/trigger output must match its declared
+ * outputFields exactly — see zapier/README.md "Trigger implementation" and
+ * the field-parity checks in test/completedTranscription.test.js.
+ */
 function shapeJobOutput(job) {
   if (!job) return job;
   const shaped = { ...job };
+  delete shaped.tool_type;
   for (const field of ['txt_url', 'srt_url', 'vtt_url', 'download_url']) {
     if (shaped[field]) shaped[field] = absolutizeDownloadUrl(shaped[field]);
   }
