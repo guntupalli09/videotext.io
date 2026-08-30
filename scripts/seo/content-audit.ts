@@ -90,6 +90,7 @@ const NON_INDEXABLE_REACT_PATHS = new Set([
   '/survey',
   '/unsubscribe',
   '/founder',
+  '/settings/api-keys',
   '/join',
   '/status',
   '/pro-access',

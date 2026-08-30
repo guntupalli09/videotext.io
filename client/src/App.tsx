@@ -32,6 +32,9 @@ const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const MagicLogin = lazy(() => import('./pages/MagicLogin'))
 const Refer = lazy(() => import('./pages/Refer'))
+const ApiKeysSettings = lazy(() => import('./pages/ApiKeysSettings'))
+const ApiDocs = lazy(() => import('./pages/ApiDocs'))
+const ZapierIntegration = lazy(() => import('./pages/ZapierIntegration'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Faq = lazy(() => import('./pages/Faq'))
 const Guide = lazy(() => import('./pages/Guide'))
@@ -523,6 +526,9 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/magic-login" element={<MagicLogin />} />
             <Route path="/refer" element={<Refer />} />
+            <Route path="/settings/api-keys" element={<ApiKeysSettings />} />
+            <Route path="/docs/api" element={<ApiDocs />} />
+            <Route path="/integrations/zapier" element={<ZapierIntegration />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/faq" element={<Faq />} />
             <Route path="/feedback" element={<FeedbackView />} />

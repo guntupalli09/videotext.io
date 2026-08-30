@@ -14,7 +14,8 @@ this document or these endpoints externally.
 
 - **API access is a Pro feature.** Free-plan accounts get `UPGRADE_REQUIRED`
   on every `/api/v1` and `/api/api-keys` call.
-- API keys are created from Settings → Integrations → API Keys (or via
+- API keys are created at
+  [Settings → API Keys](https://videotext.io/settings/api-keys) (or via
   `POST /api/api-keys`, session-authenticated).
 
 ## Authentication
@@ -30,6 +31,13 @@ SHA-256 hash — a lost key cannot be recovered, only revoked and replaced.
 A revoked key stops working immediately (no caching/propagation delay).
 
 ## Creating an API key
+
+**Self-service (customers and reviewers):** sign in and go to
+[videotext.io/settings/api-keys](https://videotext.io/settings/api-keys) →
+New API key. Pick client type "Zapier" or "API", name it, and copy the
+secret — it is shown exactly once. No curl or DevTools required.
+
+The same endpoint is available directly for scripting/automation:
 
 ```
 curl -X POST https://videotext.io/api/api-keys \

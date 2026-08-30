@@ -43,8 +43,11 @@ environment links it themselves.
 Type: **API Key** (Zapier `type: 'custom'` auth — a single `api_key` field,
 masked in the UI).
 
-- The user pastes their `vt_live_...` key (VideoText → Settings →
-  Integrations → API Keys — Pro-only, per `docs/API_PRIVATE_BETA.md`).
+- The user pastes their `vt_live_...` key, created at
+  [videotext.io/settings/api-keys](https://videotext.io/settings/api-keys)
+  (client type "Zapier") — Pro-only, per `docs/API_PRIVATE_BETA.md`. The
+  auth field's `helpText` (`authentication.js`) links there directly so a
+  user never needs DevTools or a manual API call.
 - Every request to `${VIDEOTEXT_API_ORIGIN}/api/v1/...` gets
   `Authorization: Bearer <key>` attached by `middleware.js`'s `includeApiKey`
   — and **only** requests to that exact base URL; a file-download request to
