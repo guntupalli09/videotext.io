@@ -122,13 +122,26 @@ export async function getEffectivePlanFromToken(token: string | null): Promise<{
 /**
  * Returns true when the user currently has paid-plan access.
  * Does NOT enforce — call enforceSubscriptionState first if you need enforcement.
+ *
+ * Must mirror enforceSubscriptionState()'s notion of "not yet expired": that
+ * function only downgrades a paid plan to free once billingPeriodEnd has
+ * passed AND subscriptionId is gone, treating an unset billingPeriodEnd as
+ * "never expires" (used for founding_workflow-style permanent grants and for
+ * comped/manually-granted plans set via admin/support/set-plan or
+ * provision-zapier-reviewer.ts, neither of which carry a Stripe
+ * subscription). If this function required a subscriptionId or a future
+ * billingPeriodEnd, such an account would read as unpaid here while
+ * enforceSubscriptionState still considers it active Pro — exactly the kind
+ * of split-brain entitlement state this whole module exists to prevent.
  */
 export function hasPaidAccess(user: User, now: Date = new Date()): boolean {
   if (user.plan === 'free') return false
   if (user.plan === 'founding_workflow') return true
   // Active or past_due subscription (still within Stripe's retry window)
   if (user.subscriptionId) return true
-  // Subscription deleted but still within grace period
-  if (user.billingPeriodEnd && user.billingPeriodEnd >= now) return true
+  // No Stripe subscription on record: either a permanent, non-expiring grant
+  // (billingPeriodEnd never set) or a canceled subscription still within its
+  // grace period (billingPeriodEnd set and in the future).
+  if (user.billingPeriodEnd == null || user.billingPeriodEnd >= now) return true
   return false
 }

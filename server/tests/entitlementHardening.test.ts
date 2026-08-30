@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { resolveRequestPlan, hasPaidAccess } from '../src/utils/subscriptionGuard'
+import { resolveRequestPlan, hasPaidAccess, enforceSubscriptionState } from '../src/utils/subscriptionGuard'
 import { resolveEffectivePlan } from '../src/utils/founderAccount'
 import type { User } from '../src/models/User'
 
@@ -91,4 +91,42 @@ test('resolveRequestPlan: no DB user, no JWT → free', () => {
 test('resolveRequestPlan: founding_workflow user with free JWT stays founding_workflow', () => {
   const user = makeUser({ plan: 'founding_workflow' })
   assert.equal(resolveRequestPlan(user, 'free'), 'founding_workflow')
+})
+
+// Regression: comped/manually-granted Pro accounts (no Stripe subscription at
+// all — provision-zapier-reviewer.ts, admin/support/set-plan) must read as
+// paid. Previously hasPaidAccess() required a subscriptionId or a future
+// billingPeriodEnd, so a plan='pro' user with both unset (the exact state
+// enforceSubscriptionState() treats as "permanently active, never expires")
+// was wrongly reported as unpaid — this is what broke API key creation for
+// integration-testing@zapier.com.
+test('hasPaidAccess: pro user with no subscriptionId and no billingPeriodEnd (permanent grant) has paid access', () => {
+  const user = makeUser({ plan: 'pro', subscriptionId: undefined, billingPeriodEnd: undefined })
+  assert.equal(hasPaidAccess(user), true)
+})
+
+test('hasPaidAccess: agency user with no subscriptionId and no billingPeriodEnd has paid access', () => {
+  const user = makeUser({ plan: 'agency', subscriptionId: undefined, billingPeriodEnd: undefined })
+  assert.equal(hasPaidAccess(user), true)
+})
+
+test('hasPaidAccess: pro user with billingPeriodEnd in the future (grace period, no subscriptionId) has paid access', () => {
+  const future = new Date(Date.now() + 24 * 60 * 60 * 1000)
+  const user = makeUser({ plan: 'pro', subscriptionId: undefined, billingPeriodEnd: future })
+  assert.equal(hasPaidAccess(user), true)
+})
+
+test('hasPaidAccess: pro user with billingPeriodEnd in the past and no subscriptionId is unpaid', () => {
+  const past = new Date(Date.now() - 24 * 60 * 60 * 1000)
+  const user = makeUser({ plan: 'pro', subscriptionId: undefined, billingPeriodEnd: past })
+  assert.equal(hasPaidAccess(user), false)
+})
+
+// enforceSubscriptionState() and hasPaidAccess() must agree: a permanent
+// grant must neither be downgraded nor read as unpaid.
+test('enforceSubscriptionState + hasPaidAccess agree on a permanent (non-expiring) pro grant', async () => {
+  const user = makeUser({ plan: 'pro', subscriptionId: undefined, billingPeriodEnd: undefined })
+  const enforced = await enforceSubscriptionState(user)
+  assert.equal(enforced.plan, 'pro')
+  assert.equal(hasPaidAccess(enforced), true)
 })
