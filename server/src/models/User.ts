@@ -55,6 +55,7 @@ export interface User {
   billingPeriodEnd?: Date
   subscriptionStatus?: string   // active | past_due | canceled | trialing | incomplete
   cancelAtPeriodEnd?: boolean
+  lastSubscriptionEventAt?: Date
   passwordSetupToken?: string
   passwordSetupExpiresAt?: Date
   passwordSetupUsed?: boolean
@@ -93,6 +94,7 @@ function rowToUser(row: DbUser): User {
     billingPeriodEnd: row.billingPeriodEnd ?? undefined,
     subscriptionStatus: (row as { subscriptionStatus?: string | null }).subscriptionStatus ?? undefined,
     cancelAtPeriodEnd: (row as { cancelAtPeriodEnd?: boolean | null }).cancelAtPeriodEnd ?? false,
+    lastSubscriptionEventAt: (row as { lastSubscriptionEventAt?: Date | null }).lastSubscriptionEventAt ?? undefined,
     passwordSetupToken: row.passwordSetupToken ?? undefined,
     passwordSetupExpiresAt: row.passwordSetupExpiresAt ?? undefined,
     passwordSetupUsed: row.passwordSetupUsed ?? false,
@@ -148,6 +150,7 @@ function userToDb(user: User) {
     billingPeriodEnd: user.billingPeriodEnd ?? null,
     subscriptionStatus: user.subscriptionStatus ?? null,
     cancelAtPeriodEnd: user.cancelAtPeriodEnd ?? false,
+    lastSubscriptionEventAt: user.lastSubscriptionEventAt ?? null,
     passwordSetupToken: user.passwordSetupToken ?? null,
     passwordSetupExpiresAt: user.passwordSetupExpiresAt ?? null,
     passwordSetupUsed: user.passwordSetupUsed ?? false,

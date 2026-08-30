@@ -109,6 +109,32 @@ export function computeNormalizedMonthlyCentsFromInvoice(
   return computeNormalizedMonthlyCentsFromLines(data)
 }
 
+/**
+ * Compute normalized monthly cents directly from a Stripe Subscription's
+ * items (no invoice needed) — used to populate SubscriptionCurrentState from
+ * customer.subscription.created/updated/deleted, which carry a Subscription
+ * object, not an Invoice. Same normalization rule as the invoice-based
+ * functions above (annual / 12, divided by interval_count).
+ */
+export function normalizedMonthlyCentsFromSubscriptionItems(
+  items: Stripe.SubscriptionItem[]
+): number {
+  let normalizedMonthlyCents = 0
+  for (const item of items) {
+    const price = typeof item.price === 'string' ? null : item.price
+    const recurring = price?.recurring
+    if (!price || !recurring?.interval) continue
+    const intervalCount = Math.max(1, recurring.interval_count ?? 1)
+    const unitAmount = price.unit_amount ?? 0
+    const quantity = item.quantity ?? 1
+    const lineAmount = unitAmount * quantity
+    normalizedMonthlyCents += Math.round(
+      recurring.interval === 'year' ? lineAmount / 12 / intervalCount : lineAmount / intervalCount
+    )
+  }
+  return normalizedMonthlyCents
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // V2 extraction — corrected for the account's pinned Stripe API version
 // (2026-01-28.clover). The functions above (`computeNormalizedMonthlyCentsFromLines`

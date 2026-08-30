@@ -21,6 +21,15 @@ model User {
   billingPeriodEnd         DateTime?
   subscriptionStatus       String?   // active | past_due | canceled | trialing | incomplete
   cancelAtPeriodEnd        Boolean   @default(false)
+  // Stripe event `created` timestamp of the last subscription-mutating webhook
+  // (checkout.session.completed / invoice.payment_succeeded|failed /
+  // customer.subscription.created|updated|deleted) actually applied to this
+  // row. Stripe does not guarantee webhook delivery order; an event whose own
+  // `created` is older than this value is rejected before it can mutate
+  // plan/subscriptionStatus/billingPeriod* (see stripeWebhook.ts
+  // isStaleSubscriptionEvent). Null means no subscription event has been
+  // applied yet — nothing to compare against, so the first event always wins.
+  lastSubscriptionEventAt  DateTime?
   passwordSetupToken       String?
   passwordSetupExpiresAt   DateTime?
   passwordSetupUsed        Boolean  @default(false)
@@ -286,12 +295,34 @@ model BatchJobRecord {
 }
 
 // Processed Stripe webhook event IDs — prevents double-processing on server restarts or retries.
+// Retention: purged by purgeOldStripeEvents() (see models/StripeEventLog.ts) after
+// STRIPE_EVENT_LOG_RETENTION_DAYS (currently 180 days — extended from the original 30
+// specifically so a revenue/webhook audit has more than a few weeks of history to work
+// from; storage cost of this table is negligible relative to that value).
 model StripeEventLog {
   eventId     String   @id          // Stripe event ID (evt_xxx)
   eventType   String                // e.g. invoice.payment_succeeded
   processedAt DateTime @default(now())
 
   @@index([processedAt])
+}
+
+// Findings from the daily Stripe<->VideoText entitlement reconciliation
+// (services/stripeReconciliation.ts:runEntitlementReconciliation). Distinct
+// from MrrReconciliationRun (which tracks aggregate MRR/count drift) — this
+// table records specific per-customer/per-subscription anomalies so they can
+// be triaged individually instead of only seeing that "something" is off.
+model StripeReconciliationFinding {
+  id                   String   @id @default(cuid())
+  findingType          String   // STRIPE_ACTIVE_VIDEOTEXT_FREE | STRIPE_CANCELED_VIDEOTEXT_PAID | MISSING_VIDEOTEXT_USER | DUPLICATE_ACTIVE_SUBSCRIPTION | CUSTOMER_ID_MISMATCH
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  userId               String?
+  details              Json     // finding-specific context (statuses, ids involved, etc.)
+  createdAt            DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([findingType])
 }
 
 // ─── Behavioral event tracking for funnel analytics and feedback triggers ────

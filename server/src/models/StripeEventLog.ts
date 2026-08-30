@@ -34,8 +34,17 @@ export async function claimStripeEvent(event: { id: string; type: string }): Pro
   return affected === 1
 }
 
-/** Purge event log entries older than 30 days (called from nightly maintenance cron). */
+/**
+ * Retention window for StripeEventLog. Originally 30 days; extended to 180
+ * (2026-08 revenue-leakage audit) so a webhook-delivery investigation has
+ * more than a few weeks of history to work from — this table is small
+ * (one row per event id/type/timestamp), so the storage cost of 6x the
+ * retention is negligible.
+ */
+export const STRIPE_EVENT_LOG_RETENTION_DAYS = 180
+
+/** Purge event log entries older than STRIPE_EVENT_LOG_RETENTION_DAYS (called from nightly maintenance cron). */
 export async function purgeOldStripeEvents(): Promise<void> {
-  const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+  const cutoff = new Date(Date.now() - STRIPE_EVENT_LOG_RETENTION_DAYS * 24 * 60 * 60 * 1000)
   await prisma.stripeEventLog.deleteMany({ where: { processedAt: { lt: cutoff } } })
 }

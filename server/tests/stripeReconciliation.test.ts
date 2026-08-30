@@ -1,7 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import type Stripe from 'stripe'
 
-import { classify } from '../src/services/stripeReconciliation'
+import { classify, findEntitlementFindings } from '../src/services/stripeReconciliation'
 
 test('classify: write path disabled -> always info, regardless of divergence magnitude', () => {
   const result = classify({ mrrCents: 0, activeCount: 0 }, { mrrCents: 715000, activeCount: 5 }, false)
@@ -55,4 +56,69 @@ test('classify: write path enabled, zero MRR on both sides -> ok, no divide-by-z
   const result = classify({ mrrCents: 0, activeCount: 0 }, { mrrCents: 0, activeCount: 0 }, true)
   assert.equal(result.severity, 'ok')
   assert.equal(result.deltaPct, 0)
+})
+
+// ── Entitlement reconciliation (2026-08 revenue-leakage audit follow-up) ──
+
+function fakeSub(overrides: Partial<{ id: string; customer: string; status: string; created: number }>): Stripe.Subscription {
+  return {
+    id: overrides.id ?? 'sub_1',
+    customer: overrides.customer ?? 'cus_1',
+    status: overrides.status ?? 'active',
+    created: overrides.created ?? 1700000000,
+  } as unknown as Stripe.Subscription
+}
+
+test('findEntitlementFindings: Stripe active + VideoText free -> flagged', () => {
+  const subs = new Map([['cus_1', [fakeSub({ customer: 'cus_1', status: 'active' })]]])
+  const users = new Map([['cus_1', { id: 'user_1', plan: 'free', subscriptionStatus: null, subscriptionId: null }]])
+  const findings = findEntitlementFindings(subs, users)
+  assert.equal(findings.length, 1)
+  assert.equal(findings[0].findingType, 'STRIPE_ACTIVE_VIDEOTEXT_FREE')
+})
+
+test('findEntitlementFindings: Stripe canceled + VideoText still paid -> flagged', () => {
+  const subs = new Map([['cus_1', [fakeSub({ customer: 'cus_1', status: 'canceled' })]]])
+  const users = new Map([['cus_1', { id: 'user_1', plan: 'pro', subscriptionStatus: 'past_due', subscriptionId: null }]])
+  const findings = findEntitlementFindings(subs, users)
+  assert.equal(findings.length, 1)
+  assert.equal(findings[0].findingType, 'STRIPE_CANCELED_VIDEOTEXT_PAID')
+})
+
+test('findEntitlementFindings: founding_workflow plan is exempt from STRIPE_CANCELED_VIDEOTEXT_PAID by design', () => {
+  const subs = new Map([['cus_1', [fakeSub({ customer: 'cus_1', status: 'canceled' })]]])
+  const users = new Map([['cus_1', { id: 'user_1', plan: 'founding_workflow', subscriptionStatus: 'past_due', subscriptionId: null }]])
+  const findings = findEntitlementFindings(subs, users)
+  assert.equal(findings.length, 0)
+})
+
+test('findEntitlementFindings: no matching VideoText user -> MISSING_VIDEOTEXT_USER', () => {
+  const subs = new Map([['cus_orphan', [fakeSub({ customer: 'cus_orphan', status: 'canceled' })]]])
+  const users = new Map()
+  const findings = findEntitlementFindings(subs, users)
+  assert.equal(findings.length, 1)
+  assert.equal(findings[0].findingType, 'MISSING_VIDEOTEXT_USER')
+})
+
+test('findEntitlementFindings: two simultaneously active subscriptions for one customer -> DUPLICATE_ACTIVE_SUBSCRIPTION', () => {
+  const subs = new Map([
+    ['cus_1', [fakeSub({ id: 'sub_a', customer: 'cus_1', status: 'active' }), fakeSub({ id: 'sub_b', customer: 'cus_1', status: 'trialing' })]],
+  ])
+  const users = new Map([['cus_1', { id: 'user_1', plan: 'pro', subscriptionStatus: 'active', subscriptionId: 'sub_a' }]])
+  const findings = findEntitlementFindings(subs, users)
+  assert.ok(findings.some((f) => f.findingType === 'DUPLICATE_ACTIVE_SUBSCRIPTION'))
+})
+
+test('findEntitlementFindings: User.subscriptionId points at a subscription that is not this customer\'s -> CUSTOMER_ID_MISMATCH', () => {
+  const subs = new Map([['cus_1', [fakeSub({ id: 'sub_real', customer: 'cus_1', status: 'active' })]]])
+  const users = new Map([['cus_1', { id: 'user_1', plan: 'pro', subscriptionStatus: 'active', subscriptionId: 'sub_wrong' }]])
+  const findings = findEntitlementFindings(subs, users)
+  assert.ok(findings.some((f) => f.findingType === 'CUSTOMER_ID_MISMATCH'))
+})
+
+test('findEntitlementFindings: clean state -> no findings', () => {
+  const subs = new Map([['cus_1', [fakeSub({ id: 'sub_a', customer: 'cus_1', status: 'active' })]]])
+  const users = new Map([['cus_1', { id: 'user_1', plan: 'pro', subscriptionStatus: 'active', subscriptionId: 'sub_a' }]])
+  const findings = findEntitlementFindings(subs, users)
+  assert.equal(findings.length, 0)
 })

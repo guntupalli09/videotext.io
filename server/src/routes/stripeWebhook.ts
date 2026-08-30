@@ -11,8 +11,13 @@ import {
 } from '../models/User'
 import { prisma } from '../db'
 import { getPlanLimits } from '../utils/limits'
-import { computeNormalizedMonthlyCentsFromInvoice, computeNormalizedMonthlyCentsFromInvoiceV2 } from '../utils/stripeMrr'
+import {
+  computeNormalizedMonthlyCentsFromInvoice,
+  computeNormalizedMonthlyCentsFromInvoiceV2,
+  normalizedMonthlyCentsFromSubscriptionItems,
+} from '../utils/stripeMrr'
 import { generatePasswordSetupToken } from '../utils/auth'
+import { isStaleSubscriptionEvent as isStaleSubscriptionEventPure } from '../utils/subscriptionEventOrdering'
 import { claimStripeEvent } from '../models/StripeEventLog'
 import { enforceSubscriptionState } from '../utils/subscriptionGuard'
 import { MRR_EXTRACTION_V2_SHADOW, MRR_EXTRACTION_V2_WRITE } from '../utils/featureFlags'
@@ -124,6 +129,67 @@ function getPlanFromSubscriptionItems(items: Stripe.SubscriptionItem[]): PlanTyp
   return null
 }
 
+/**
+ * Every handler that mutates subscription-derived fields (subscriptionStatus,
+ * subscriptionId, billingPeriod*, plan-via-subscription-items) must check
+ * this before mutating, and must bump `lastSubscriptionEventAt` to the
+ * event's own `created` timestamp when it does apply the event. See
+ * utils/subscriptionEventOrdering.ts for why this guard exists.
+ */
+function isStaleSubscriptionEvent(user: User, event: Stripe.Event): boolean {
+  return isStaleSubscriptionEventPure(user.lastSubscriptionEventAt, event.created)
+}
+
+function logStaleEventSkipped(eventId: string, event: Stripe.Event, user: User): void {
+  log.warn({
+    msg: 'stripe: ignoring out-of-order subscription event — older than the last one already applied',
+    eventId,
+    eventType: event.type,
+    userId: user.id,
+    eventCreatedAt: new Date(event.created * 1000).toISOString(),
+    lastAppliedAt: user.lastSubscriptionEventAt?.toISOString(),
+  })
+}
+
+/**
+ * Upsert the one-row-per-subscription reconciliation table used by the daily
+ * Stripe<->VideoText entitlement reconciliation (services/stripeReconciliation.ts).
+ * Best-effort: a failure here must never affect the primary User write or
+ * make the webhook handler throw (Stripe would otherwise retry an event that
+ * already succeeded from the customer's perspective).
+ */
+async function upsertSubscriptionCurrentState(params: {
+  stripeSubscriptionId: string
+  userId: string
+  status: string
+  plan: string
+  normalizedMonthlyCents: number
+  currency: string
+  stripePriceId?: string | null
+  billingInterval?: string | null
+  intervalCount?: number | null
+  lastInvoiceId?: string | null
+  lastInvoiceAmountPaidCents?: number | null
+  periodStart?: Date | null
+  periodEnd?: Date | null
+}): Promise<void> {
+  const { stripeSubscriptionId, ...rest } = params
+  try {
+    await prisma.subscriptionCurrentState.upsert({
+      where: { stripeSubscriptionId },
+      create: { stripeSubscriptionId, ...rest },
+      update: rest,
+    })
+  } catch (err) {
+    log.error({
+      msg: 'stripe: SubscriptionCurrentState upsert failed (non-fatal, reconciliation data only)',
+      stripeSubscriptionId,
+      userId: params.userId,
+      error: (err as Error).message,
+    })
+  }
+}
+
 // ─── Event handlers ───────────────────────────────────────────────────────────
 
 /**
@@ -157,6 +223,12 @@ async function handleCheckoutSessionCompleted(
     (session.metadata?.email ?? null)
 
   const user = await ensureUserForStripeCustomer(stripeCustomerId, email)
+
+  if (isStaleSubscriptionEvent(user, event)) {
+    logStaleEventSkipped(eventId, event, user)
+    return
+  }
+
   const now = new Date()
 
   // Link the subscription and fetch its billing period
@@ -203,6 +275,7 @@ async function handleCheckoutSessionCompleted(
   }
 
   user.updatedAt = now
+  user.lastSubscriptionEventAt = new Date(event.created * 1000)
   await saveUser(user)
 
   log.info({
@@ -249,6 +322,11 @@ async function handleInvoicePaymentSucceeded(
     stripeCustomerId,
     invoice.customer_email ?? undefined
   )
+
+  if (isStaleSubscriptionEvent(user, event)) {
+    logStaleEventSkipped(eventId, event, user)
+    return
+  }
 
   // ── Resolve plan from invoice line items ──────────────────────────────────
   // Use the invoice's price details (Stripe 2026 API shape: pricing.price_details.price)
@@ -327,6 +405,7 @@ async function handleInvoicePaymentSucceeded(
   }
 
   user.updatedAt = new Date()
+  user.lastSubscriptionEventAt = new Date(event.created * 1000)
   await saveUser(user)
   captureFunnelEvent({
     eventName: 'payment_completed',
@@ -425,6 +504,24 @@ async function handleInvoicePaymentSucceeded(
         intervalCount: mrrForSnapshot.intervalCount,
       },
     })
+
+    if (mrrForSnapshot.stripeSubscriptionId) {
+      await upsertSubscriptionCurrentState({
+        stripeSubscriptionId: mrrForSnapshot.stripeSubscriptionId,
+        userId: user.id,
+        status: 'active',
+        plan: activePlan ?? user.plan,
+        normalizedMonthlyCents: mrrForSnapshot.normalizedMonthlyCents,
+        currency,
+        stripePriceId: mrrForSnapshot.stripePriceId,
+        billingInterval: mrrForSnapshot.billingInterval,
+        intervalCount: mrrForSnapshot.intervalCount,
+        lastInvoiceId: invoice.id,
+        lastInvoiceAmountPaidCents: invoice.amount_paid,
+        periodStart: startDate,
+        periodEnd: endDate,
+      })
+    }
   } catch (err) {
     log.error({
       msg: 'stripe: SubscriptionSnapshot insert failed (invoice.payment_succeeded) — MRR data missing',
@@ -472,8 +569,14 @@ async function handleInvoicePaymentFailed(
     return
   }
 
+  if (isStaleSubscriptionEvent(user, event)) {
+    logStaleEventSkipped(eventId, event, user)
+    return
+  }
+
   user.subscriptionStatus = 'past_due'
   user.updatedAt = new Date()
+  user.lastSubscriptionEventAt = new Date(event.created * 1000)
   await saveUser(user)
 
   const err = invoice.last_payment_error
@@ -532,6 +635,11 @@ async function handleCustomerSubscriptionCreated(
     return
   }
 
+  if (isStaleSubscriptionEvent(user, event)) {
+    logStaleEventSkipped(eventId, event, user)
+    return
+  }
+
   user.subscriptionId = sub.id
   user.subscriptionStatus = sub.status as string
   user.cancelAtPeriodEnd = sub.cancel_at_period_end ?? false
@@ -545,7 +653,20 @@ async function handleCustomerSubscriptionCreated(
   }
 
   user.updatedAt = new Date()
+  user.lastSubscriptionEventAt = new Date(event.created * 1000)
   await saveUser(user)
+
+  const planFromItems = getPlanFromSubscriptionItems(sub.items?.data ?? [])
+  await upsertSubscriptionCurrentState({
+    stripeSubscriptionId: sub.id,
+    userId: user.id,
+    status: sub.status,
+    plan: planFromItems ?? user.plan,
+    normalizedMonthlyCents: normalizedMonthlyCentsFromSubscriptionItems(sub.items?.data ?? []),
+    currency: sub.currency ?? 'usd',
+    periodStart: user.billingPeriodStart ?? null,
+    periodEnd: user.billingPeriodEnd ?? null,
+  })
 
   log.info({
     msg: 'stripe: customer.subscription.created processed',
@@ -593,6 +714,11 @@ async function handleCustomerSubscriptionUpdated(
     return
   }
 
+  if (isStaleSubscriptionEvent(user, event)) {
+    logStaleEventSkipped(eventId, event, user)
+    return
+  }
+
   const previousStatus = user.subscriptionStatus
   const previousPlan = user.plan
   const previousCancelAtPeriodEnd = user.cancelAtPeriodEnd
@@ -628,7 +754,19 @@ async function handleCustomerSubscriptionUpdated(
   }
 
   user.updatedAt = new Date()
+  user.lastSubscriptionEventAt = new Date(event.created * 1000)
   await saveUser(user)
+
+  await upsertSubscriptionCurrentState({
+    stripeSubscriptionId: sub.id,
+    userId: user.id,
+    status: sub.status,
+    plan: user.plan,
+    normalizedMonthlyCents: normalizedMonthlyCentsFromSubscriptionItems(sub.items?.data ?? []),
+    currency: sub.currency ?? 'usd',
+    periodStart: user.billingPeriodStart ?? null,
+    periodEnd: user.billingPeriodEnd ?? null,
+  })
 
   // Analytics: detect cancel / uncancel transitions
   if (user.cancelAtPeriodEnd && !previousCancelAtPeriodEnd) {
@@ -696,6 +834,11 @@ async function handleCustomerSubscriptionDeleted(
     return
   }
 
+  if (isStaleSubscriptionEvent(user, event)) {
+    logStaleEventSkipped(eventId, event, user)
+    return
+  }
+
   const periodEndUnix =
     sub.current_period_end ??
     sub.cancel_at ??
@@ -711,6 +854,7 @@ async function handleCustomerSubscriptionDeleted(
   user.billingPeriodEnd = periodEnd
 
   user.updatedAt = new Date()
+  user.lastSubscriptionEventAt = new Date(event.created * 1000)
   await saveUser(user)
 
   // Immediate downgrade if the billing period has already expired.
@@ -758,6 +902,17 @@ async function handleCustomerSubscriptionDeleted(
       error: (err as Error).message,
     })
   }
+
+  await upsertSubscriptionCurrentState({
+    stripeSubscriptionId: deletedSubscriptionId,
+    userId: user.id,
+    status: 'canceled',
+    plan: user.plan,
+    normalizedMonthlyCents: 0,
+    currency: 'usd',
+    periodStart,
+    periodEnd,
+  })
 }
 
 // ─── Main webhook handler ─────────────────────────────────────────────────────

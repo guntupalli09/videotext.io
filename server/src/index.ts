@@ -44,7 +44,7 @@ import { attachLiveTranscription } from './routes/liveTranscription'
 import { maybeRunYoutubeCanary } from './services/youtubeCanary'
 import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
-import { runReconciliation } from './services/stripeReconciliation'
+import { runReconciliation, runEntitlementReconciliation } from './services/stripeReconciliation'
 import { stripe } from './services/stripe'
 import { STRIPE_RECONCILIATION_ENABLED } from './utils/featureFlags'
 import { generateUnsubscribeToken } from './routes/newsletter'
@@ -370,6 +370,26 @@ const server = app.listen(PORT, () => {
     runReconciliation(stripe)
       .then((result) => log.info({ msg: 'Nightly Stripe reconciliation done', severity: result.severity }))
       .catch((err) => log.warn({ msg: 'Nightly Stripe reconciliation failed', error: (err as Error)?.message }))
+  }, 60 * 1000)
+
+  // 2026-08 revenue-leakage audit follow-up: daily per-customer entitlement
+  // reconciliation (Stripe active+VideoText free, Stripe canceled+VideoText
+  // paid, missing VideoText user, duplicate active subscriptions, mismatched
+  // subscription IDs). Distinct from the MRR-aggregate job above and NOT
+  // gated behind STRIPE_RECONCILIATION_ENABLED — this is the fix the audit's
+  // "activate reconciliation" recommendation asked for, so it runs by
+  // default. Read-only against Stripe/User; only writes its own findings
+  // rows. 3:15 AM UTC, offset from the two jobs above to avoid load overlap.
+  let lastEntitlementReconciliationDate = ''
+  setInterval(() => {
+    const now = new Date()
+    if (now.getUTCHours() !== 3 || now.getUTCMinutes() < 15) return
+    const todayKey = now.toISOString().slice(0, 10)
+    if (lastEntitlementReconciliationDate === todayKey) return
+    lastEntitlementReconciliationDate = todayKey
+    runEntitlementReconciliation(stripe)
+      .then((result) => log.info({ msg: 'Nightly Stripe entitlement reconciliation done', findingCount: result.findings.length }))
+      .catch((err) => log.warn({ msg: 'Nightly Stripe entitlement reconciliation failed', error: (err as Error)?.message }))
   }, 60 * 1000)
 
   // API credits: refresh OpenAI balance + Resend usage every 3 hours

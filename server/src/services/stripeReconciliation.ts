@@ -9,6 +9,7 @@
  * (tolerance thresholds, cadence, alerting) this implements.
  */
 
+import type { Prisma } from '@prisma/client'
 import type Stripe from 'stripe'
 import { prisma } from '../db'
 import { getLogger } from '../lib/logger'
@@ -210,4 +211,203 @@ export async function runReconciliation(
   }
 
   return result
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Per-customer entitlement reconciliation (2026-08 revenue-leakage audit).
+//
+// Distinct from the aggregate MRR/count comparison above: this walks every
+// Stripe subscription (any status, not just 'active') grouped by customer
+// and cross-checks it against the User table directly, so specific
+// individual anomalies can be triaged rather than only seeing that some
+// aggregate number is off. Read-only against Stripe and against User; the
+// only write is inserting rows into StripeReconciliationFinding.
+// ─────────────────────────────────────────────────────────────────────────
+
+export type EntitlementFindingType =
+  | 'STRIPE_ACTIVE_VIDEOTEXT_FREE'
+  | 'STRIPE_CANCELED_VIDEOTEXT_PAID'
+  | 'MISSING_VIDEOTEXT_USER'
+  | 'DUPLICATE_ACTIVE_SUBSCRIPTION'
+  | 'CUSTOMER_ID_MISMATCH'
+
+export interface EntitlementFinding {
+  findingType: EntitlementFindingType
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  userId?: string | null
+  details: Record<string, unknown>
+}
+
+const ACTIVE_LIKE_STATUSES = new Set(['active', 'trialing'])
+
+/**
+ * founding_workflow is an intentional, permanent grandfathered plan
+ * (subscriptionGuard.ts: "never auto-downgraded") — a user on it keeping
+ * paid-tier access after their Stripe subscription cancels is by design,
+ * not leakage, so it must not raise STRIPE_CANCELED_VIDEOTEXT_PAID.
+ */
+const DOWNGRADE_EXEMPT_PLANS = new Set(['founding_workflow'])
+
+/** Fetch every Stripe subscription (any status), grouped by customer id. Paginates. */
+async function fetchAllSubscriptionsByCustomer(
+  stripeClient: Pick<Stripe, 'subscriptions'>
+): Promise<Map<string, Stripe.Subscription[]>> {
+  const byCustomer = new Map<string, Stripe.Subscription[]>()
+  let startingAfter: string | undefined
+
+  for (;;) {
+    const page = await stripeClient.subscriptions.list({
+      status: 'all',
+      limit: 100,
+      ...(startingAfter ? { starting_after: startingAfter } : {}),
+    })
+
+    for (const sub of page.data) {
+      const custId = typeof sub.customer === 'string' ? sub.customer : sub.customer.id
+      const list = byCustomer.get(custId) ?? []
+      list.push(sub)
+      byCustomer.set(custId, list)
+    }
+
+    if (!page.has_more || page.data.length === 0) break
+    startingAfter = page.data[page.data.length - 1].id
+  }
+
+  return byCustomer
+}
+
+/**
+ * Pure comparison logic — no I/O — so it can be unit tested against
+ * hand-built Stripe/User fixtures without touching a real Stripe account.
+ */
+export function findEntitlementFindings(
+  subsByCustomer: Map<string, Stripe.Subscription[]>,
+  usersByStripeCustomerId: Map<
+    string,
+    { id: string; plan: string; subscriptionStatus: string | null; subscriptionId: string | null }
+  >
+): EntitlementFinding[] {
+  const findings: EntitlementFinding[] = []
+
+  for (const [custId, subs] of subsByCustomer.entries()) {
+    const user = usersByStripeCustomerId.get(custId)
+    const activeLike = subs.filter((s) => ACTIVE_LIKE_STATUSES.has(s.status))
+    const latest = [...subs].sort((a, b) => b.created - a.created)[0]
+
+    if (!user) {
+      findings.push({
+        findingType: 'MISSING_VIDEOTEXT_USER',
+        stripeCustomerId: custId,
+        stripeSubscriptionId: latest?.id ?? null,
+        details: { subscriptionCount: subs.length, latestStatus: latest?.status ?? null },
+      })
+      continue
+    }
+
+    if (activeLike.length > 1) {
+      findings.push({
+        findingType: 'DUPLICATE_ACTIVE_SUBSCRIPTION',
+        stripeCustomerId: custId,
+        userId: user.id,
+        details: { subscriptionIds: activeLike.map((s) => s.id), statuses: activeLike.map((s) => s.status) },
+      })
+    }
+
+    if (activeLike.length > 0 && user.plan === 'free') {
+      findings.push({
+        findingType: 'STRIPE_ACTIVE_VIDEOTEXT_FREE',
+        stripeCustomerId: custId,
+        userId: user.id,
+        stripeSubscriptionId: activeLike[0].id,
+        details: { userPlan: user.plan, stripeStatus: activeLike[0].status },
+      })
+    }
+
+    if (
+      activeLike.length === 0 &&
+      user.plan !== 'free' &&
+      !DOWNGRADE_EXEMPT_PLANS.has(user.plan) &&
+      latest &&
+      (latest.status === 'canceled' || latest.status === 'incomplete_expired')
+    ) {
+      findings.push({
+        findingType: 'STRIPE_CANCELED_VIDEOTEXT_PAID',
+        stripeCustomerId: custId,
+        userId: user.id,
+        stripeSubscriptionId: latest.id,
+        details: {
+          userPlan: user.plan,
+          userSubscriptionStatus: user.subscriptionStatus,
+          latestStripeStatus: latest.status,
+        },
+      })
+    }
+
+    if (user.subscriptionId && !subs.some((s) => s.id === user.subscriptionId)) {
+      findings.push({
+        findingType: 'CUSTOMER_ID_MISMATCH',
+        stripeCustomerId: custId,
+        userId: user.id,
+        stripeSubscriptionId: user.subscriptionId,
+        details: {
+          note: "User.subscriptionId does not match any of this Stripe customer's subscriptions",
+          knownSubscriptionIds: subs.map((s) => s.id),
+        },
+      })
+    }
+  }
+
+  return findings
+}
+
+/**
+ * Full run: pull every Stripe subscription, cross-check against every User
+ * with a stripeCustomerId, persist any findings, log a summary. Never
+ * throws — a failure is logged and the caller (the nightly cron) decides
+ * how to react; it must never take down the rest of that cron tick.
+ */
+export async function runEntitlementReconciliation(
+  stripeClient: Pick<Stripe, 'subscriptions'>
+): Promise<{ findings: EntitlementFinding[] }> {
+  const subsByCustomer = await fetchAllSubscriptionsByCustomer(stripeClient)
+
+  const customerIds = [...subsByCustomer.keys()]
+  const users = customerIds.length
+    ? await prisma.user.findMany({
+        where: { stripeCustomerId: { in: customerIds } },
+        select: { id: true, stripeCustomerId: true, plan: true, subscriptionStatus: true, subscriptionId: true },
+      })
+    : []
+  const usersByStripeCustomerId = new Map(
+    users
+      .filter((u) => u.stripeCustomerId != null)
+      .map((u) => [u.stripeCustomerId as string, u])
+  )
+
+  const findings = findEntitlementFindings(subsByCustomer, usersByStripeCustomerId)
+
+  log.info({
+    msg: 'stripe_entitlement_reconciliation_run',
+    customerCount: subsByCustomer.size,
+    findingCount: findings.length,
+    byType: findings.reduce<Record<string, number>>((acc, f) => {
+      acc[f.findingType] = (acc[f.findingType] ?? 0) + 1
+      return acc
+    }, {}),
+  })
+
+  if (findings.length > 0) {
+    await prisma.stripeReconciliationFinding.createMany({
+      data: findings.map((f) => ({
+        findingType: f.findingType,
+        stripeCustomerId: f.stripeCustomerId ?? null,
+        stripeSubscriptionId: f.stripeSubscriptionId ?? null,
+        userId: f.userId ?? null,
+        details: f.details as Prisma.InputJsonValue,
+      })),
+    })
+  }
+
+  return { findings }
 }
