@@ -25,6 +25,7 @@ import { isValidYoutubeUrl, getYoutubeMetadata, normalizeYoutubeUrl } from '../s
 import { checkAndRecordYoutubeJob } from '../utils/youtubeRateLimit'
 import { enforceSubscriptionState, resolveRequestPlan } from '../utils/subscriptionGuard'
 import { runTranscriptionIntake } from '../services/transcriptionIntake'
+import { runFixSubtitlesDualIntake, runBurnSubtitlesIntake } from '../services/dualFileIntake'
 
 const router = express.Router()
 const uploadLog = getLogger('api')
@@ -120,313 +121,42 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
   })
 })
 
-// Dual file upload (for burn-subtitles)
+// Dual file upload (for burn-subtitles / fix-subtitles with scene context).
+// The core validation/quota/enqueue logic for each lives in
+// services/dualFileIntake.ts (runFixSubtitlesDualIntake / runBurnSubtitlesIntake)
+// so the external /api/v1/subtitle-fixes and /api/v1/subtitle-burns routes
+// reuse exactly this pipeline instead of a second implementation. This
+// handler only maps the shared result back to the original web-app response
+// shape ({ message } on error, { jobId, status, jobToken } on success) —
+// unchanged from before the extraction.
 router.post('/dual', upload.fields([
   { name: 'video', maxCount: 1 },
   { name: 'subtitles', maxCount: 1 },
 ]), async (req: Request, res: Response) => {
-  try {
-    const userId = getEffectiveUserId(req) ?? `guest_${uuidv4()}`
+  const toolType = req.body?.toolType
+  const isBurnSubtitles = toolType === 'burn-subtitles'
+  const isFixSubtitles = toolType === 'fix-subtitles'
 
-    // Same guard as POST / — reject unauthenticated requests that carry a real x-user-id
-    if (userId.startsWith('guest_')) {
-      const xUserId = (req.headers['x-user-id'] as string | undefined)?.trim()
-      if (xUserId && !xUserId.startsWith('guest_') && xUserId !== 'demo-user') {
-        return res.status(401).json({ message: 'Session expired. Please log in again.' })
-      }
-    }
-
-    const { toolType, trimmedStart, trimmedEnd, burnFontSize, burnPosition, burnBackgroundOpacity } = req.body
-    const auth = getAuthFromRequest(req)
-    let burnUser = await getUser(userId)
-    const now = new Date()
-    if (burnUser) await enforceSubscriptionState(burnUser, now)
-    const plan = resolveRequestPlan(burnUser, auth?.plan)
-
-    // Guest IP daily cap
-    if (userId.startsWith('guest_')) {
-      const clientIp = extractClientIp(req)
-      if (!await checkAndRecordGuestIpImport(clientIp)) {
-        return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
-      }
-    }
-
-    if (!await checkAndRecordUpload(userId)) {
-      res.setHeader('Retry-After', '60')
-      return res.status(429).json({ message: 'Too many uploads. Please wait a minute before trying again.' })
-    }
-    const queueCount = await getTotalQueueCount()
-    if (isQueueAtHardLimit(queueCount)) {
-      res.setHeader('Retry-After', '30')
-      return res.status(503).json({ message: 'High demand right now. Please retry shortly.' })
-    }
-
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] }
-
-    const isBurnSubtitles = toolType === 'burn-subtitles'
-    const isFixSubtitles = toolType === 'fix-subtitles'
-
-    if (!toolType || (!isBurnSubtitles && !isFixSubtitles)) {
-      return res.status(400).json({ message: 'toolType must be burn-subtitles or fix-subtitles' })
-    }
-
-    // fix-subtitles: subtitle required, video optional
-    if (isFixSubtitles) {
-      if (!files.subtitles) {
-        if (files.video) fs.unlinkSync(files.video[0].path)
-        return res.status(400).json({ message: 'Subtitle file is required' })
-      }
-
-      // Enforce free plan daily import cap (same as other tools)
-      const fixLimits = getPlanLimits(plan)
-      let fixUser = await getUser(userId)
-      const fixNow = new Date()
-      if (fixUser) {
-        await enforceSubscriptionState(fixUser, fixNow)
-        if (resetUserUsageIfNeeded(fixUser, fixNow)) await saveUser(fixUser)
-        const dailyImportReset = resetDailyImportIfNeeded(fixUser, fixNow)
-        if (dailyImportReset) await atomicResetDailyImportIfNeeded(fixUser.id, fixNow, fixUser.usageThisMonth.importCountTodayResetDate!)
-      } else if (!userId.startsWith('guest_')) {
-        const resetDate = new Date(fixNow.getFullYear(), fixNow.getMonth() + 1, 1)
-        fixUser = {
-          id: userId,
-          email: `${userId}@example.com`,
-          passwordHash: '',
-          plan,
-          stripeCustomerId: undefined,
-          subscriptionId: undefined,
-          paymentMethodId: undefined,
-          usageThisMonth: {
-            totalMinutes: 0, videoCount: 0, batchCount: 0, languageCount: 0, translatedMinutes: 0, importCount: 0, resetDate,
-            importCountToday: 0,
-            importCountTodayResetDate: new Date(fixNow.getTime() + 24 * 60 * 60 * 1000),
-            dailyMinutesToday: 0,
-            dailyMinutesTodayResetDate: new Date(fixNow.getTime() + 24 * 60 * 60 * 1000),
-          },
-          limits: fixLimits,
-          overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
-          createdAt: fixNow,
-          updatedAt: fixNow,
-        }
-        await saveUser(fixUser)
-      }
-      const fixDailyCap = getMaxDailyImports(plan)
-      if (fixDailyCap !== null && fixUser && (fixUser.usageThisMonth.importCountToday ?? 0) >= fixDailyCap) {
-        fs.unlinkSync(files.subtitles[0].path)
-        if (files.video) fs.unlinkSync(files.video[0].path)
-        return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
-      }
-
-      const subtitleFileForFix = files.subtitles[0]
-      const videoFileForScenes = files.video?.[0]
-      const subValidation = await validateSubtitleFile(subtitleFileForFix.path)
-      if (subValidation.error) {
-        fs.unlinkSync(subtitleFileForFix.path)
-        if (videoFileForScenes) fs.unlinkSync(videoFileForScenes.path)
-        return res.status(400).json({ message: subValidation.error })
-      }
-      const fixJob = await addJobToQueue(plan, {
-        toolType: 'fix-subtitles',
-        filePath: subtitleFileForFix.path,
-        filePath2: videoFileForScenes?.path,
-        userId,
-        plan,
-        originalName: subtitleFileForFix.originalname,
-        fileSize: subtitleFileForFix.size,
-        requestId: (req as any).requestId,
-      })
-      try {
-        await insertJobRecord({
-          id: String(fixJob.id),
-          userId,
-          toolType: 'fix-subtitles',
-          planAtRun: plan,
-          fileSizeBytes: subtitleFileForFix.size,
-          jobToken: (fixJob.data as JobData)?.jobToken,
-        })
-      } catch { /* non-blocking */ }
-      return res.status(202).json({
-        jobId: fixJob.id,
-        status: 'queued',
-        jobToken: (fixJob.data as any)?.jobToken,
-      })
-    }
-
-    // burn-subtitles: both files required
-    if (!files.video || !files.subtitles) {
-      // Cleanup any uploaded files
-      if (files.video) fs.unlinkSync(files.video[0].path)
-      if (files.subtitles) fs.unlinkSync(files.subtitles[0].path)
-      return res.status(400).json({ message: 'Both video and subtitle files are required' })
-    }
-
-    const videoFile = files.video[0]
-    const subtitleFile = files.subtitles[0]
-
-    const burnLimits = getPlanLimits(plan)
-    if (!burnUser) {
-      const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
-      burnUser = {
-        id: userId,
-        email: `${userId}@example.com`,
-        passwordHash: '',
-        plan,
-        stripeCustomerId: undefined,
-        subscriptionId: undefined,
-        paymentMethodId: undefined,
-        usageThisMonth: {
-          totalMinutes: 0, videoCount: 0, batchCount: 0, languageCount: 0, translatedMinutes: 0, importCount: 0, resetDate,
-          importCountToday: 0,
-          importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
-          dailyMinutesToday: 0,
-          dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
-        },
-        limits: burnLimits,
-        overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
-        createdAt: now,
-        updatedAt: now,
-      }
-      // Guest users are ephemeral — skip DB write to avoid stripeCustomerId unique constraint issues
-      if (!userId.startsWith('guest_')) await saveUser(burnUser)
-    } else {
-      if (burnUser.plan !== plan) {
-        burnUser.plan = plan
-        burnUser.limits = getPlanLimits(plan)
-        burnUser.updatedAt = now
-        await saveUser(burnUser)
-      }
-      if (resetUserUsageIfNeeded(burnUser, now)) {
-        await saveUser(burnUser)
-      }
-      const dailyImportReset = resetDailyImportIfNeeded(burnUser, now)
-      const dailyMinutesReset = resetDailyMinutesIfNeeded(burnUser, now)
-      if (dailyImportReset) await atomicResetDailyImportIfNeeded(burnUser.id, now, burnUser.usageThisMonth.importCountTodayResetDate!)
-      if (dailyMinutesReset) await atomicResetDailyMinutesIfNeeded(burnUser.id, now, burnUser.usageThisMonth.dailyMinutesTodayResetDate!)
-    }
-
-    const burnDailyCap = getMaxDailyImports(burnUser.plan)
-    if (burnDailyCap !== null && (burnUser.usageThisMonth.importCountToday ?? 0) >= burnDailyCap) {
-      fs.unlinkSync(videoFile.path)
-      fs.unlinkSync(subtitleFile.path)
-      return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
-    }
-
-    const activeJobs = await fileQueue.getJobs(['active', 'waiting', 'delayed'])
-    const activeForUser = activeJobs.filter((j) => (j.data as JobData)?.userId === userId)
-    const burnPlanConcurrency = getDailySoftCapConcurrency(plan, burnUser?.usageThisMonth?.dailyMinutesToday ?? 0)
-    const burnEffectiveConcurrency = applySystemLoadGuard(burnPlanConcurrency, getSystemConcurrencyMultiplier(queueCount))
-    if (activeForUser.length >= burnEffectiveConcurrency) {
-      return res.status(429).json({ message: 'MAX_CONCURRENT_JOBS_REACHED' })
-    }
-
-    // Validate video file (plan-based size)
-    if (videoFile.size > burnLimits.maxFileSize) {
-      fs.unlinkSync(videoFile.path)
-      fs.unlinkSync(subtitleFile.path)
-      return res.status(400).json({ message: `File exceeds plan limit. Upgrade for larger files.` })
-    }
-
-    const videoTypeError = await validateFileType(videoFile.path, videoFile.originalname)
-    if (videoTypeError) {
-      fs.unlinkSync(videoFile.path)
-      fs.unlinkSync(subtitleFile.path)
-      return res.status(400).json({ message: videoTypeError })
-    }
-
-    // Validate subtitle file (content-based; no extension check)
-    const subResult = await validateSubtitleFile(subtitleFile.path)
-    uploadLog.info({ msg: '[upload] subtitle validation (dual)',
-      toolType: 'burn-subtitles',
-      originalname: subtitleFile.originalname,
-      detectedFormat: subResult.detectedFormat,
-      validationError: subResult.error ?? undefined,
-    })
-    if (subResult.error) {
-      fs.unlinkSync(videoFile.path)
-      fs.unlinkSync(subtitleFile.path)
-      return res.status(400).json({ message: subResult.error })
-    }
-
-    // Server-side minute limit for burn-subtitles (unknown duration: allow job; pre-check uses 0 minutes)
-    const probe = await probeVideoDurationResult(videoFile.path)
-    let durationSeconds = probe.known ? probe.seconds : 0
-    if (!probe.known) {
-      uploadLog.info({ msg: 'upload_duration_unknown_allowing_job', toolType: 'burn-subtitles', duration_source: probe.source })
-    }
-    if (trimmedStart != null && trimmedEnd != null) {
-      const start = parseFloat(String(trimmedStart))
-      const end = parseFloat(String(trimmedEnd))
-      durationSeconds = Math.max(0, end - start)
-    }
-    const requestedMinutes = Math.ceil(durationSeconds / 60)
-    if (burnUser.plan !== 'free') {
-      const limitCheck = await enforceUsageLimits(burnUser, requestedMinutes)
-      if (!limitCheck.allowed) {
-        fs.unlinkSync(videoFile.path)
-        fs.unlinkSync(subtitleFile.path)
-        return res.status(403).json({ message: 'Monthly minute limit reached. Upgrade or wait for reset.' })
-      }
-    }
-
-    const job = await addJobToQueue(plan, {
-      toolType: 'burn-subtitles',
-      filePath: videoFile.path,
-      filePath2: subtitleFile.path,
-      userId,
-      plan,
-      originalName: videoFile.originalname,
-      originalName2: subtitleFile.originalname,
-      fileSize: videoFile.size,
-      trimmedStart: trimmedStart != null ? parseFloat(String(trimmedStart)) : undefined,
-      trimmedEnd: trimmedEnd != null ? parseFloat(String(trimmedEnd)) : undefined,
-      options:
-        burnFontSize || burnPosition || burnBackgroundOpacity
-          ? {
-              burnFontSize: burnFontSize || undefined,
-              burnPosition: burnPosition || undefined,
-              burnBackgroundOpacity: burnBackgroundOpacity || undefined,
-            }
-          : undefined,
-      requestId: (req as RequestWithId).requestId,
-    })
-
-    try {
-      await insertJobRecord({
-        id: String(job.id),
-        userId,
-        toolType: 'burn-subtitles',
-        planAtRun: plan,
-        fileSizeBytes: videoFile.size,
-        jobToken: (job.data as JobData)?.jobToken,
-      })
-    } catch {
-      // non-blocking
-    }
-
-    res.status(202).json({
-      jobId: job.id,
-      status: 'queued',
-      jobToken: (job.data as JobData)?.jobToken,
-    })
-  } catch (error: any) {
-    uploadLog.error({ msg: 'Upload error', error: String(error) })
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] }
-    if (files.video) {
-      try {
-        fs.unlinkSync(files.video[0].path)
-      } catch (e) {
-        // Ignore cleanup errors
-      }
-    }
-    if (files.subtitles) {
-      try {
-        fs.unlinkSync(files.subtitles[0].path)
-      } catch (e) {
-        // Ignore cleanup errors
-      }
-    }
-    res.status(500).json({ message: error.message || 'Upload failed' })
+  if (!toolType || (!isBurnSubtitles && !isFixSubtitles)) {
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined
+    if (files?.video) try { fs.unlinkSync(files.video[0].path) } catch { /* ignore */ }
+    if (files?.subtitles) try { fs.unlinkSync(files.subtitles[0].path) } catch { /* ignore */ }
+    return res.status(400).json({ message: 'toolType must be burn-subtitles or fix-subtitles' })
   }
+
+  const result = isFixSubtitles
+    ? await runFixSubtitlesDualIntake(req, { source: 'web' })
+    : await runBurnSubtitlesIntake(req, { source: 'web' })
+
+  if (!result.ok) {
+    if (result.retryAfterSeconds) res.setHeader('Retry-After', String(result.retryAfterSeconds))
+    return res.status(result.httpStatus).json({ message: result.message })
+  }
+  res.status(202).json({
+    jobId: result.jobId,
+    status: 'queued',
+    jobToken: result.jobToken,
+  })
 })
 
 // Timeout for init (Redis/DB can hang; respond 503 instead of leaving client pending).
