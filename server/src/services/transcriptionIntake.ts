@@ -46,6 +46,7 @@ export type JobSource = 'web' | 'api' | 'zapier'
 export interface TranscriptionIntakeOptions {
   source: JobSource
   apiKeyId?: string
+  authenticatedUserId?: string
 }
 
 export interface TranscriptionIntakeSuccess {
@@ -83,7 +84,10 @@ export async function runTranscriptionIntake(
   opts: TranscriptionIntakeOptions
 ): Promise<TranscriptionIntakeResult> {
   try {
-    const userId = getEffectiveUserId(req) ?? `guest_${uuidv4()}`
+    const userId =
+      opts.authenticatedUserId ??
+      getEffectiveUserId(req) ??
+      `guest_${uuidv4()}`
 
     if (userId.startsWith('guest_')) {
       const xUserId = (req.headers['x-user-id'] as string | undefined)?.trim()
