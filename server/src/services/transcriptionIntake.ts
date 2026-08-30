@@ -33,6 +33,7 @@ import { getLogger } from '../lib/logger'
 import { enforceSubscriptionState, resolveRequestPlan } from '../utils/subscriptionGuard'
 import { normalizeLanguageCode } from '../utils/normalizeLanguage'
 import type { ApiErrorCode } from '../utils/apiErrors'
+import { resolveToolType } from './toolTypeResolution'
 
 function notNullish<T>(v: T | null | undefined): v is T {
   return v !== null && v !== undefined
@@ -47,6 +48,16 @@ export interface TranscriptionIntakeOptions {
   source: JobSource
   apiKeyId?: string
   authenticatedUserId?: string
+  /**
+   * When set, overrides whatever `toolType` the client sent in the request
+   * body. External API routes (POST /api/v1/transcriptions etc.) always set
+   * this to the exact internal tool type their endpoint represents — the
+   * route itself decides the operation, never client input. See
+   * services/apiOperations.ts for the authoritative public->internal
+   * mapping. The web upload route never sets this, so its behavior (client
+   * chooses toolType) is unchanged.
+   */
+  forcedToolType?: string
 }
 
 export interface TranscriptionIntakeSuccess {
@@ -73,6 +84,12 @@ function err(httpStatus: number, code: ApiErrorCode, message: string, retryAfter
   return { ok: false, httpStatus, code, message, retryAfterSeconds }
 }
 
+/** Exported so other server-derived-operation intake pipelines (e.g. services/dualFileIntake.ts)
+ *  can return the same discriminated result shape without duplicating it. */
+export const intakeError = err
+
+export { resolveToolType } from './toolTypeResolution'
+
 /**
  * Core "create a transcription job from an uploaded file" pipeline. Identical
  * behavior to the original inline `POST /api/upload` handler — validation
@@ -97,7 +114,8 @@ export async function runTranscriptionIntake(
       }
     }
 
-    const { toolType, url, webhookUrl, ...options } = req.body
+    const { toolType: clientToolType, url, webhookUrl, ...options } = req.body
+    const toolType = resolveToolType(clientToolType, opts.forcedToolType)
 
     if (url && (toolType === 'video-to-transcript' || toolType === 'video-to-subtitles')) {
       return err(400, 'VALIDATION_ERROR', 'URL downloads are temporarily disabled.')

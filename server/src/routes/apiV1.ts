@@ -4,10 +4,17 @@
  * Every route here is a thin wrapper: authentication resolves to the same
  * VideoText User the web app uses, entitlement is the same DB-authoritative
  * subscriptionGuard/limits logic, and job creation goes through the exact
- * same runTranscriptionIntake() pipeline as the web app's POST /api/upload.
- * There is no second transcription pipeline and no duplicated quota logic
- * here — only request/response translation and API-key-specific concerns
- * (auth, Pro gating, rate limiting, pagination).
+ * same production intake pipelines the web app's own upload routes use
+ * (services/transcriptionIntake.ts, services/dualFileIntake.ts,
+ * services/guidelineIntake.ts). There is no second processing pipeline and
+ * no duplicated quota logic here — only request/response translation and
+ * API-key-specific concerns (auth, Pro gating, rate limiting, pagination).
+ *
+ * Which internal operation each route runs is never taken from client
+ * input — every route looks it up in services/apiOperations.ts
+ * (PUBLIC_OPERATIONS) and forces it into the shared intake pipeline via
+ * `forcedToolType`. A client sending `toolType=burn-subtitles` to
+ * POST /api/v1/transcriptions cannot make burn-subtitles execute.
  */
 import express, { Request, Response, NextFunction } from 'express'
 import { prisma } from '../db'
@@ -18,13 +25,29 @@ import { enforceSubscriptionState, hasPaidAccess } from '../utils/subscriptionGu
 import { getPlanLimits, getJobPriority } from '../utils/limits'
 import { sendApiError } from '../utils/apiErrors'
 import { apiKeyRateLimitMiddleware } from '../utils/apiKeyRateLimit'
-import { runTranscriptionIntake, type JobSource } from '../services/transcriptionIntake'
-import { encodeCursor, decodeCursor, toExternalTranscription, type StableJobRow } from '../services/apiV1Format'
+import { runTranscriptionIntake, type JobSource, type TranscriptionIntakeResult } from '../services/transcriptionIntake'
+import { runFixSubtitlesDualIntake, runBurnSubtitlesIntake, type DualFileIntakeOptions } from '../services/dualFileIntake'
+import { runGuidelineFormatIntake } from '../services/guidelineIntake'
+import { PUBLIC_OPERATIONS, type PublicOperation } from '../services/apiOperations'
+import {
+  encodeCursor,
+  decodeCursor,
+  toExternalTranscription,
+  toolTypesForOperation,
+  type StableJobRow,
+} from '../services/apiV1Format'
 import { upload } from './upload'
 import { getLogger } from '../lib/logger'
 
 const log = getLogger('api').child({ module: 'api-v1' })
 const router = express.Router()
+
+// Reuses the exact same multer disk-storage config as the web app's
+// POST /api/upload/dual — see routes/upload.ts's `upload` export.
+const dualUpload = upload.fields([
+  { name: 'video', maxCount: 1 },
+  { name: 'subtitles', maxCount: 1 },
+])
 
 // ---------------------------------------------------------------------------
 // Authentication + Pro gating
@@ -114,18 +137,7 @@ function sourceFromClientType(clientType: ApiKeyClientType): JobSource {
   return clientType === 'zapier' ? 'zapier' : 'api'
 }
 
-// ---------------------------------------------------------------------------
-// POST /api/v1/transcriptions
-// ---------------------------------------------------------------------------
-
-router.post('/transcriptions', upload.single('file'), async (req: Request, res: Response) => {
-  const auth = req.apiV1Auth!
-  const result = await runTranscriptionIntake(req, {
-    source: sourceFromClientType(auth.clientType),
-    apiKeyId: auth.apiKeyId,
-    authenticatedUserId: auth.user.id,
-  })
-
+function respondFromIntake(req: Request, res: Response, operation: PublicOperation, result: TranscriptionIntakeResult, extra?: Record<string, unknown>): void {
   if (!result.ok) {
     sendApiError(res, result.code, result.message, {
       req,
@@ -134,135 +146,239 @@ router.post('/transcriptions', upload.single('file'), async (req: Request, res: 
     })
     return
   }
-
   res.status(202).json({
     id: result.jobId,
     status: 'queued',
+    operation,
     created_at: new Date().toISOString(),
+    ...extra,
   })
+}
+
+// ---------------------------------------------------------------------------
+// Single-file operations: transcriptions / subtitles / subtitle-translations
+// / video-compressions — all go through the same runTranscriptionIntake()
+// pipeline as POST /api/upload, just with a forced (never client-chosen)
+// internal toolType.
+// ---------------------------------------------------------------------------
+
+function mountSingleFileOperation(path: string, operation: PublicOperation, extraFromBody?: (req: Request) => Record<string, unknown> | undefined) {
+  const cfg = PUBLIC_OPERATIONS[operation]
+  if (cfg.kind !== 'single-file') throw new Error(`apiV1: ${operation} is not a single-file operation`)
+
+  router.post(path, upload.single('file'), async (req: Request, res: Response) => {
+    const auth = req.apiV1Auth!
+    const result = await runTranscriptionIntake(req, {
+      source: sourceFromClientType(auth.clientType),
+      apiKeyId: auth.apiKeyId,
+      authenticatedUserId: auth.user.id,
+      forcedToolType: cfg.internalToolType,
+    })
+    respondFromIntake(req, res, operation, result, extraFromBody?.(req))
+  })
+}
+
+mountSingleFileOperation('/transcriptions', 'video_to_transcript')
+mountSingleFileOperation('/subtitles', 'video_to_subtitles')
+mountSingleFileOperation('/subtitle-translations', 'subtitle_translation', (req) => {
+  // target_language is not persisted on the Job row today (no DB column — see
+  // docs/API_PRIVATE_BETA.md), so it can only be echoed back at creation time,
+  // from the value the request itself validated/used, not fabricated on GET.
+  const targetLanguage = typeof req.body?.targetLanguage === 'string' ? req.body.targetLanguage : undefined
+  return targetLanguage ? { target_language: targetLanguage } : undefined
+})
+mountSingleFileOperation('/video-compressions', 'video_compression')
+
+// ---------------------------------------------------------------------------
+// Dual-file operations: subtitle-fixes (subtitle required, video optional)
+// and subtitle-burns (video + subtitle both required) — go through the same
+// runFixSubtitlesDualIntake()/runBurnSubtitlesIntake() pipeline as
+// POST /api/upload/dual.
+// ---------------------------------------------------------------------------
+
+function mountDualFileOperation(
+  path: string,
+  operation: PublicOperation,
+  runner: (req: Request, opts: DualFileIntakeOptions) => Promise<TranscriptionIntakeResult>
+) {
+  router.post(path, dualUpload, async (req: Request, res: Response) => {
+    const auth = req.apiV1Auth!
+    const result = await runner(req, {
+      source: sourceFromClientType(auth.clientType),
+      apiKeyId: auth.apiKeyId,
+      authenticatedUserId: auth.user.id,
+    })
+    respondFromIntake(req, res, operation, result)
+  })
+}
+
+mountDualFileOperation('/subtitle-fixes', 'subtitle_fix', runFixSubtitlesDualIntake)
+mountDualFileOperation('/subtitle-burns', 'subtitle_burn', runBurnSubtitlesIntake)
+
+// ---------------------------------------------------------------------------
+// Guideline formatting ("Make it Client Ready") — does NOT go through
+// workers/videoProcessor.ts; reuses services/guidelineIntake.ts exactly as
+// POST /api/guidelines/format does. See services/apiOperations.ts.
+//
+// Note: production's `rules` schema is only ever assembled client-side today
+// (presets/custom-guide parsing live entirely in client/src/pages/GuidelineFormat.tsx —
+// there is no server-side presetId->rules registry). This endpoint therefore
+// requires the caller to already have a fully-formed `rules` array; it does
+// not invent a preset-resolution feature that doesn't exist in production.
+// ---------------------------------------------------------------------------
+
+router.post('/guideline-formats', async (req: Request, res: Response) => {
+  const auth = req.apiV1Auth!
+  const result = await runGuidelineFormatIntake(req, {
+    source: sourceFromClientType(auth.clientType),
+    apiKeyId: auth.apiKeyId,
+    authenticatedUserId: auth.user.id,
+  })
+  respondFromIntake(req, res, 'guideline_format', result)
 })
 
-// ---------------------------------------------------------------------------
-// GET /api/v1/transcriptions/:id  and  GET /api/v1/transcriptions
-// ---------------------------------------------------------------------------
-
-router.get('/transcriptions/:id', async (req: Request, res: Response) => {
+router.get('/guideline-formats/:id', async (req: Request, res: Response) => {
   const auth = req.apiV1Auth!
-  const row = await prisma.job.findUnique({
+  const row = await prisma.formattingJob.findUnique({
     where: { id: req.params.id },
     select: {
       id: true,
       userId: true,
       status: true,
-      toolType: true,
-      resultFilename: true,
-      jobToken: true,
-      videoDurationSec: true,
-      createdAt: true,
-      completedAt: true,
+      outputText: true,
       failureReason: true,
+      createdAt: true,
+      updatedAt: true,
     },
   })
-
-  if (!row) {
-    sendApiError(res, 'TRANSCRIPTION_NOT_FOUND', 'No transcription found with that id.', { req })
+  if (!row || row.userId !== auth.user.id) {
+    sendApiError(res, 'TRANSCRIPTION_NOT_FOUND', 'No guideline-format job found with that id.', { req })
     return
   }
-  // Ownership enforced here — an API key only ever sees its own user's jobs.
-  if (row.userId !== auth.user.id) {
-    sendApiError(res, 'TRANSCRIPTION_NOT_FOUND', 'No transcription found with that id.', { req })
-    return
-  }
-
-  res.json(toExternalTranscription(row))
+  res.json({
+    id: row.id,
+    status: row.status,
+    operation: 'guideline_format',
+    filename: null,
+    created_at: row.createdAt.toISOString(),
+    completed_at: row.status === 'completed' || row.status === 'failed' ? row.updatedAt.toISOString() : null,
+    failure_reason: row.failureReason,
+    // Guideline formatting produces inline text, not a downloadable file —
+    // there is no resultFilename/download_url for this operation in production.
+    formatted_text: row.status === 'completed' ? row.outputText : null,
+  })
 })
+
+// ---------------------------------------------------------------------------
+// GET status/list for the six Job-table-backed operations. Scoped by
+// toolTypesForOperation() so e.g. GET /api/v1/subtitle-burns/:id can never
+// surface a different operation's job.
+// ---------------------------------------------------------------------------
+
+const JOB_SELECT = {
+  id: true,
+  userId: true,
+  status: true,
+  toolType: true,
+  resultFilename: true,
+  jobToken: true,
+  videoDurationSec: true,
+  fileSizeBytes: true,
+  createdAt: true,
+  completedAt: true,
+  failureReason: true,
+} as const
 
 const DEFAULT_LIST_LIMIT = 25
 const MAX_LIST_LIMIT = 100
 
-/**
- * GET /api/v1/transcriptions?status=&since=&limit=&cursor=
- *
- * Backed entirely by the durable Prisma Job table (never Bull), scoped to
- * the authenticated user, with deterministic keyset pagination so equal-
- * timestamp jobs are never skipped or re-emitted across pages — required
- * for a Zapier polling trigger to dedupe correctly.
- *
- * Ordering/cursor field: completedAt when status=completed (or when a
- * caller filters by `since`, which is completedAt-based), else createdAt —
- * both are always non-null for their respective query shapes, and both are
- * paired with `id` as a tiebreaker for a fully deterministic order.
- */
-router.get('/transcriptions', async (req: Request, res: Response) => {
-  const auth = req.apiV1Auth!
-  const status = typeof req.query.status === 'string' ? req.query.status : undefined
-  const sinceRaw = typeof req.query.since === 'string' ? req.query.since : undefined
-  const cursorRaw = typeof req.query.cursor === 'string' ? req.query.cursor : undefined
-  const limitRaw = typeof req.query.limit === 'string' ? parseInt(req.query.limit, 10) : NaN
-  const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, MAX_LIST_LIMIT) : DEFAULT_LIST_LIMIT
+function mountJobResource(path: string, operation: PublicOperation) {
+  const toolTypes = toolTypesForOperation(operation)
 
-  let since: Date | undefined
-  if (sinceRaw) {
-    since = new Date(sinceRaw)
-    if (Number.isNaN(since.getTime())) {
-      sendApiError(res, 'VALIDATION_ERROR', 'since must be an ISO 8601 timestamp.', { req })
+  router.get(`${path}/:id`, async (req: Request, res: Response) => {
+    const auth = req.apiV1Auth!
+    const row = await prisma.job.findUnique({ where: { id: req.params.id }, select: JOB_SELECT })
+    if (!row || row.userId !== auth.user.id || !toolTypes.includes(row.toolType)) {
+      sendApiError(res, 'TRANSCRIPTION_NOT_FOUND', 'No job found with that id.', { req })
       return
     }
-  }
+    res.json(toExternalTranscription(row as StableJobRow))
+  })
 
-  const useCompletedAt = status === 'completed' || since !== undefined
-  const sortField = useCompletedAt ? 'completedAt' : 'createdAt'
+  /**
+   * GET <path>?status=&since=&limit=&cursor=
+   *
+   * Backed entirely by the durable Prisma Job table (never Bull), scoped to
+   * the authenticated user and this operation's toolType(s), with
+   * deterministic keyset pagination so equal-timestamp jobs are never
+   * skipped or re-emitted across pages — required for a Zapier polling
+   * trigger to dedupe correctly.
+   */
+  router.get(path, async (req: Request, res: Response) => {
+    const auth = req.apiV1Auth!
+    const status = typeof req.query.status === 'string' ? req.query.status : undefined
+    const sinceRaw = typeof req.query.since === 'string' ? req.query.since : undefined
+    const cursorRaw = typeof req.query.cursor === 'string' ? req.query.cursor : undefined
+    const limitRaw = typeof req.query.limit === 'string' ? parseInt(req.query.limit, 10) : NaN
+    const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, MAX_LIST_LIMIT) : DEFAULT_LIST_LIMIT
 
-  let cursor: { sortValue: Date; id: string } | null = null
-  if (cursorRaw) {
-    cursor = decodeCursor(cursorRaw)
-    if (!cursor) {
-      sendApiError(res, 'VALIDATION_ERROR', 'Invalid cursor.', { req })
-      return
+    let since: Date | undefined
+    if (sinceRaw) {
+      since = new Date(sinceRaw)
+      if (Number.isNaN(since.getTime())) {
+        sendApiError(res, 'VALIDATION_ERROR', 'since must be an ISO 8601 timestamp.', { req })
+        return
+      }
     }
-  }
 
-  const where: Record<string, unknown> = { userId: auth.user.id }
-  if (status) where.status = status
-  if (since) where[sortField] = { gte: since }
-  if (cursor) {
-    where.OR = [
-      { [sortField]: { gt: cursor.sortValue } },
-      { [sortField]: cursor.sortValue, id: { gt: cursor.id } },
-    ]
-  }
-  // Rows without the sort field (e.g. createdAt-sorted list, or a not-yet-completed
-  // job when sorting by completedAt) would break a NOT NULL keyset comparison.
-  if (useCompletedAt) where.completedAt = { ...(where.completedAt as object | undefined), not: null }
+    const useCompletedAt = status === 'completed' || since !== undefined
+    const sortField = useCompletedAt ? 'completedAt' : 'createdAt'
 
-  const rows = await prisma.job.findMany({
-    where,
-    orderBy: [{ [sortField]: 'asc' }, { id: 'asc' }],
-    take: limit + 1,
-    select: {
-      id: true,
-      userId: true,
-      status: true,
-      toolType: true,
-      resultFilename: true,
-      jobToken: true,
-      videoDurationSec: true,
-      createdAt: true,
-      completedAt: true,
-      failureReason: true,
-    },
+    let cursor: { sortValue: Date; id: string } | null = null
+    if (cursorRaw) {
+      cursor = decodeCursor(cursorRaw)
+      if (!cursor) {
+        sendApiError(res, 'VALIDATION_ERROR', 'Invalid cursor.', { req })
+        return
+      }
+    }
+
+    const where: Record<string, unknown> = { userId: auth.user.id, toolType: { in: toolTypes } }
+    if (status) where.status = status
+    if (since) where[sortField] = { gte: since }
+    if (cursor) {
+      where.OR = [
+        { [sortField]: { gt: cursor.sortValue } },
+        { [sortField]: cursor.sortValue, id: { gt: cursor.id } },
+      ]
+    }
+    if (useCompletedAt) where.completedAt = { ...(where.completedAt as object | undefined), not: null }
+
+    const rows = await prisma.job.findMany({
+      where,
+      orderBy: [{ [sortField]: 'asc' }, { id: 'asc' }],
+      take: limit + 1,
+      select: JOB_SELECT,
+    })
+
+    const hasMore = rows.length > limit
+    const page = hasMore ? rows.slice(0, limit) : rows
+    const last = page[page.length - 1]
+    const nextCursor = hasMore && last ? encodeCursor((last as any)[sortField] as Date, last.id) : null
+
+    res.json({
+      data: page.map((row) => toExternalTranscription(row as StableJobRow)),
+      pagination: { limit, next_cursor: nextCursor, has_more: hasMore },
+    })
   })
+}
 
-  const hasMore = rows.length > limit
-  const page = hasMore ? rows.slice(0, limit) : rows
-  const last = page[page.length - 1]
-  const nextCursor = hasMore && last ? encodeCursor((last as any)[sortField] as Date, last.id) : null
-
-  res.json({
-    data: page.map((row) => toExternalTranscription(row)),
-    pagination: { limit, next_cursor: nextCursor, has_more: hasMore },
-  })
-})
+mountJobResource('/transcriptions', 'video_to_transcript')
+mountJobResource('/subtitles', 'video_to_subtitles')
+mountJobResource('/subtitle-translations', 'subtitle_translation')
+mountJobResource('/subtitle-fixes', 'subtitle_fix')
+mountJobResource('/subtitle-burns', 'subtitle_burn')
+mountJobResource('/video-compressions', 'video_compression')
 
 // ---------------------------------------------------------------------------
 // GET /api/v1/me
