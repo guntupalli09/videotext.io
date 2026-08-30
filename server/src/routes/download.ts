@@ -83,12 +83,13 @@ export const BATCH_ZIP_PATTERN = /^batch-(.+)\.zip$/
  * primary output filename is recorded on that row on completion
  * (updateJobCompleted). This lets a plain filename be mapped back to its
  * owning job/user without needing Bull, matching the same ownership model
- * `GET /api/job/:jobId` already uses: access is granted to either the
- * matching authenticated user (JWT or Bearer API key, via
- * getEffectiveUserId) or the holder of the job's anonymous jobToken
- * (existing web-app guest-download behavior, unchanged) — same rule the
- * external API uses, since it resolves identity through the same
- * getEffectiveUserId() helper.
+ * `GET /api/job/:jobId` already uses.
+ *
+ * Authenticated requests are strictly ownership-bound. A job token cannot
+ * override authenticated user ownership.
+ *
+ * Anonymous/guest requests may access an output only with the matching
+ * jobToken, preserving the existing guest-download workflow.
  *
  * A filename with no matching Job or BatchJobRecord (e.g. output from
  * before this authorization model existed) is treated as not found rather
@@ -113,11 +114,32 @@ async function authorizeDownload(
   const job = await findJobByResultFilename(filename)
   if (!job) return { allowed: false, status: 404, message: 'File not found' }
 
-  const allowedByUser = requestingUserId != null && requestingUserId === job.userId
-  const allowedByToken = !!clientJobToken && !!job.jobToken && clientJobToken === job.jobToken
-  if (!allowedByUser && !allowedByToken) {
-    return { allowed: false, status: 403, message: 'Access denied' }
+  // Authenticated requests are always ownership-bound.
+  // A job token must never let one authenticated user access another user's file.
+  if (requestingUserId) {
+    if (requestingUserId !== job.userId) {
+      // Hide whether another user's file/job exists.
+      return { allowed: false, status: 404, message: 'File not found' }
+    }
+
+    return { allowed: true }
   }
+
+  // Preserve existing anonymous/guest download behavior.
+  // Anonymous callers must possess the exact job token.
+  const allowedByToken =
+    !!clientJobToken &&
+    !!job.jobToken &&
+    clientJobToken === job.jobToken
+
+  if (!allowedByToken) {
+    return {
+      allowed: false,
+      status: clientJobToken ? 403 : 401,
+      message: clientJobToken ? 'Access denied' : 'Authentication required.',
+    }
+  }
+
   return { allowed: true }
 }
 
