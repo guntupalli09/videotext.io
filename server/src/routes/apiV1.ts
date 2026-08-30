@@ -345,6 +345,9 @@ function mountJobResource(path: string, operation: PublicOperation) {
 
     const where: Record<string, unknown> = { userId: auth.user.id, toolType: { in: toolTypes } }
     if (status) where.status = status
+    if (status === 'completed') {
+      where.failureReason = null
+    }
     if (since) where[sortField] = { gte: since }
     if (cursor) {
       where.OR = [
