@@ -24,6 +24,7 @@ import { getLogger } from '../lib/logger'
 import { isValidYoutubeUrl, getYoutubeMetadata, normalizeYoutubeUrl } from '../services/youtube'
 import { checkAndRecordYoutubeJob } from '../utils/youtubeRateLimit'
 import { enforceSubscriptionState, resolveRequestPlan } from '../utils/subscriptionGuard'
+import { runTranscriptionIntake } from '../services/transcriptionIntake'
 
 const router = express.Router()
 const uploadLog = getLogger('api')
@@ -86,7 +87,10 @@ const storage = multer.diskStorage({
   },
 })
 
-const upload = multer({
+// Exported so other routes needing an identical single-file multipart upload
+// (e.g. the /api/v1 external facade) reuse this exact multer config instead
+// of duplicating it.
+export const upload = multer({
   storage,
   limits: {
     fileSize: 20 * 1024 * 1024 * 1024, // 20GB — max plan (Agency); plan enforcement after upload
@@ -97,405 +101,23 @@ async function getTotalQueueCount(): Promise<number> {
   return getQueueCountFromWorker()
 }
 
-// Single file upload
+// Single file upload — the core validation/quota/enqueue logic lives in
+// services/transcriptionIntake.ts (runTranscriptionIntake) so the external
+// /api/v1/transcriptions route reuses exactly this pipeline instead of a
+// second implementation. This handler only maps the shared result back to
+// the original web-app response shape ({ message } on error, { jobId,
+// status, jobToken } on success) — unchanged from before the extraction.
 router.post('/', upload.single('file'), async (req: Request, res: Response) => {
-  const uploadStartMs = Date.now()
-  try {
-    const userId = getEffectiveUserId(req) ?? `guest_${uuidv4()}`
-
-    // Detect authenticated users whose client sent the upload without a JWT (missing
-    // Authorization header). The x-user-id header is not trusted for identity, but
-    // when it contains a real (non-guest) userId and there is no valid JWT, the request
-    // almost certainly came from a logged-in client that forgot to attach its token.
-    // Return 401 so the client retries with proper auth rather than silently falling
-    // back to the guest quota, which allows free-plan users to exceed their daily limit.
-    if (userId.startsWith('guest_')) {
-      const xUserId = (req.headers['x-user-id'] as string | undefined)?.trim()
-      if (xUserId && !xUserId.startsWith('guest_') && xUserId !== 'demo-user') {
-        if (req.file) try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
-        return res.status(401).json({ message: 'Session expired. Please log in again.' })
-      }
-    }
-
-    const { toolType, url, webhookUrl, ...options } = req.body
-
-    if (url && (toolType === 'video-to-transcript' || toolType === 'video-to-subtitles')) {
-      return res.status(400).json({ message: 'URL downloads are temporarily disabled.' })
-    }
-
-    const auth = getAuthFromRequest(req)
-    const rateLimitKey = userId
-    let user = await getUser(userId)
-    const now = new Date()
-    if (user) await enforceSubscriptionState(user, now)
-    const plan = resolveRequestPlan(user, auth?.plan)
-
-    // Guest IP daily cap — prevents limit bypass via fresh guest UUIDs per request
-    if (userId.startsWith('guest_')) {
-      const clientIp = extractClientIp(req)
-      if (!await checkAndRecordGuestIpImport(clientIp)) {
-        if (req.file) try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
-        return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
-      }
-    }
-
-    if (!await checkAndRecordUpload(rateLimitKey)) {
-      res.setHeader('Retry-After', '60')
-      return res.status(429).json({ message: 'Too many uploads. Please wait a minute before trying again.' })
-    }
-
-    const queueCount = await getTotalQueueCount()
-    if (isQueueAtHardLimit(queueCount)) {
-      res.setHeader('Retry-After', '30')
-      return res.status(503).json({ message: 'High demand right now. Please retry shortly.' })
-    }
-    if (isQueueAtSoftLimit(queueCount) && plan === 'free') {
-      res.setHeader('Retry-After', '60')
-      return res.status(503).json({ message: 'High demand right now. Please retry shortly.' })
-    }
-
-    const limits = user?.limits ?? getPlanLimits(plan)
-    if (!user) {
-      const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
-      user = {
-        id: userId,
-        email: `${userId}@example.com`,
-        passwordHash: '',
-        plan,
-        stripeCustomerId: undefined,
-        subscriptionId: undefined,
-        paymentMethodId: undefined,
-        usageThisMonth: {
-          totalMinutes: 0,
-          videoCount: 0,
-          batchCount: 0,
-          languageCount: 0,
-          translatedMinutes: 0,
-          importCount: 0,
-          resetDate,
-          importCountToday: 0,
-          importCountTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
-          dailyMinutesToday: 0,
-          dailyMinutesTodayResetDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
-        },
-        limits,
-        overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
-        createdAt: now,
-        updatedAt: now,
-      }
-      // Guest users are ephemeral — skip DB write to avoid stripeCustomerId unique constraint issues
-      if (!userId.startsWith('guest_')) await saveUser(user)
-    } else {
-      if (user.plan !== plan) {
-        user.plan = plan
-        user.limits = getPlanLimits(plan)
-        user.updatedAt = now
-        await saveUser(user)
-      }
-      if (resetUserUsageIfNeeded(user, now)) {
-        await saveUser(user)
-      }
-      const dailyImportReset = resetDailyImportIfNeeded(user, now)
-      const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
-      if (dailyImportReset) await atomicResetDailyImportIfNeeded(user.id, now, user.usageThisMonth.importCountTodayResetDate!)
-      if (dailyMinutesReset) await atomicResetDailyMinutesIfNeeded(user.id, now, user.usageThisMonth.dailyMinutesTodayResetDate!)
-    }
-
-    // Free plan: 3 imports per day (resets at midnight UTC)
-    const dailyCap = getMaxDailyImports(user.plan)
-    if (dailyCap !== null && (user.usageThisMonth.importCountToday ?? 0) >= dailyCap) {
-      if (req.file) {
-        try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
-      }
-      return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
-    }
-
-    const activeJobs = await fileQueue.getJobs(['active', 'waiting', 'delayed'])
-    const activeForUser = activeJobs.filter((j) => (j.data as JobData)?.userId === userId)
-    // Enforce plan-aware soft-cap concurrency (e.g. Pro drops 4→2→1 after 90/180 daily min)
-    // then apply the global system load multiplier so spikes degrade gracefully.
-    const planConcurrency = getDailySoftCapConcurrency(plan, user?.usageThisMonth?.dailyMinutesToday ?? 0)
-    const effectiveConcurrency = applySystemLoadGuard(planConcurrency, getSystemConcurrencyMultiplier(queueCount))
-    if (activeForUser.length >= effectiveConcurrency) {
-      return res.status(429).json({ message: 'MAX_CONCURRENT_JOBS_REACHED' })
-    }
-
-    if (!toolType) {
-      return res.status(400).json({ message: 'toolType is required' })
-    }
-
-    // File-based input
-    if (!req.file) {
-      uploadLog.warn({ msg: '[upload] no file in request', toolType, bodyKeys: Object.keys(req.body) })
-      return res.status(400).json({ message: 'No file uploaded' })
-    }
-    const file = req.file
-
-    if (file.size > limits.maxFileSize) {
-      fs.unlinkSync(file.path)
-      return res.status(400).json({ message: `File exceeds plan limit. Upgrade for larger files.` })
-    }
-
-    // Audio-only upload (video-to-transcript / video-to-subtitles): client sent pre-extracted audio; skip server extraction
-    const allowedAudioExt = ['.mp3', '.webm', '.wav', '.m4a']
-    const looksLikeAudio =
-      (file.mimetype && file.mimetype.startsWith('audio/')) ||
-      allowedAudioExt.some((ext) => file.originalname.toLowerCase().endsWith(ext))
-    const isAudioOnlyUpload =
-      (toolType === 'video-to-transcript' || toolType === 'video-to-subtitles') &&
-      (req.body.uploadMode === 'audio-only' || looksLikeAudio)
-    const inputType: 'video' | 'audio' = isAudioOnlyUpload && looksLikeAudio ? 'audio' : 'video'
-    const originalNameForJob =
-      inputType === 'audio' && req.body.originalFileName
-        ? String(req.body.originalFileName)
-        : file.originalname
-
-    // Validate file type based on tool
-    let typeError: string | null = null
-    if (toolType === 'translate-subtitles' || toolType === 'fix-subtitles' || toolType === 'convert-subtitles') {
-      const isPlainText = file.originalname.toLowerCase().endsWith('.txt')
-      if (toolType === 'translate-subtitles' && isPlainText) {
-        // .txt files are valid for translation — no subtitle structure required
-        uploadLog.info({ msg: '[upload] txt translation file accepted', originalname: file.originalname })
-      } else {
-        const subResult = await validateSubtitleFile(file.path)
-        uploadLog.info({ msg: '[upload] subtitle validation',
-          toolType,
-          originalname: file.originalname,
-          detectedFormat: subResult.detectedFormat,
-          validationError: subResult.error ?? undefined,
-        })
-        if (subResult.error) {
-          typeError = subResult.error
-        }
-      }
-    } else if (toolType !== 'burn-subtitles' && inputType !== 'audio') {
-      // For video tools (and not audio-only), validate video type (extension fallback for AVI etc.)
-      typeError = await validateFileType(file.path, file.originalname)
-    }
-
-    if (typeError) {
-      fs.unlinkSync(file.path)
-      return res.status(400).json({ message: typeError })
-    }
-
-    // Cleanup (unlinkSync) runs only on error paths above; we never delete the file before enqueue.
-    // The worker needs the file on disk; fileCleanup cron removes old files later.
-
-    // Parse additional languages if provided
-    let additionalLanguages: string[] = []
-    if (options.additionalLanguages) {
-      try {
-        additionalLanguages = typeof options.additionalLanguages === 'string'
-          ? JSON.parse(options.additionalLanguages)
-          : options.additionalLanguages
-      } catch (e) {
-        // Ignore parse errors
-      }
-    }
-
-    // Create job in queue
-    let exportFormats: ('txt' | 'json' | 'docx' | 'pdf')[] | undefined
-    if (options.exportFormats) {
-      try {
-        const arr = typeof options.exportFormats === 'string' ? JSON.parse(options.exportFormats) : options.exportFormats
-        if (Array.isArray(arr)) exportFormats = arr.filter((f: string) => ['txt', 'json', 'docx', 'pdf'].includes(f))
-      } catch {
-        // ignore
-      }
-    }
-    const jobOptions: any = {
-      format: options.format,
-      language: normalizeLanguageCode(options.language),
-      targetLanguage: options.targetLanguage,
-      compressionLevel: options.compressionLevel,
-      targetFormat: options.targetFormat,
-      fixTiming: options.fixTiming,
-      timingOffsetMs: options.timingOffsetMs,
-      grammarFix: options.grammarFix,
-      lineBreakFix: options.lineBreakFix,
-      removeFillers: options.removeFillers === true || options.removeFillers === 'true',
-      compressProfile: options.compressProfile,
-      includeSummary: options.includeSummary === true || options.includeSummary === 'true',
-      includeChapters: options.includeChapters === true || options.includeChapters === 'true',
-      speakerDiarization: options.speakerDiarization === true || options.speakerDiarization === 'true',
-      numSpeakers: options.numSpeakers ? Number(options.numSpeakers) : undefined,
-      diarizationLanguage: typeof options.diarizationLanguage === 'string' && options.diarizationLanguage.trim() ? options.diarizationLanguage.trim() : undefined,
-      glossary: typeof options.glossary === 'string' && options.glossary.trim() ? options.glossary.trim() : undefined,
-      exportFormats,
-    }
-    if (additionalLanguages.length > 0) {
-      jobOptions.additionalLanguages = additionalLanguages
-    }
-
-    // Enforce multi-language limits (plan-based); requires authenticated user
-    if (user && toolType === 'video-to-subtitles' && additionalLanguages.length > 0) {
-      const langCheck = enforceLanguageLimits(user, additionalLanguages)
-      if (!langCheck.allowed) {
-        fs.unlinkSync(file.path)
-        return res.status(403).json({ message: langCheck.reason || 'MULTI_LANGUAGE_NOT_AVAILABLE' })
-      }
-    }
-
-    // Server-side duration & minute limits
-    const minuteChargingTools = ['video-to-transcript', 'video-to-subtitles', 'burn-subtitles', 'compress-video']
-    if (minuteChargingTools.includes(toolType)) {
-      const probe = await probeVideoDurationResult(file.path)
-      let durationSeconds = probe.known ? probe.seconds : 0
-      if (!probe.known) {
-        uploadLog.info({
-          msg: 'upload_duration_unknown',
-          toolType,
-          plan: user.plan,
-          duration_source: probe.source,
-        })
-      }
-      if (options.trimmedStart != null && options.trimmedEnd != null) {
-        const start = parseFloat(String(options.trimmedStart))
-        const end = parseFloat(String(options.trimmedEnd))
-        durationSeconds = Math.max(0, end - start)
-      }
-
-      // Enforce per-video max duration for ALL plans (free = 30 min, basic = 45 min, etc.)
-      const limits = getPlanLimits(user.plan)
-      if (probe.known && durationSeconds > limits.maxVideoDuration * 60) {
-        fs.unlinkSync(file.path)
-        const durationMin = Math.round(durationSeconds / 60)
-        return res.status(400).json({
-          message: `Video is ${durationMin} minutes — your plan allows up to ${limits.maxVideoDuration} minutes per video. Trim or upgrade.`,
-        })
-      }
-      // Free plan: reject unknown-duration files to prevent unbounded processing
-      if (!probe.known && user.plan === 'free') {
-        fs.unlinkSync(file.path)
-        return res.status(400).json({
-          message: 'Could not determine video length. Please re-encode the file or try a different format.',
-        })
-      }
-
-      // Paid plans: enforce monthly minute usage
-      if (user.plan !== 'free') {
-        const requestedMinutes = Math.ceil(durationSeconds / 60)
-        const limitCheck = await enforceUsageLimits(user, requestedMinutes)
-        if (!limitCheck.allowed) {
-          fs.unlinkSync(file.path)
-          return res.status(403).json({ message: 'Monthly minute limit reached. Upgrade or wait for reset.' })
-        }
-      }
-    }
-
-    // Cache lookup: same user + same file + same tool + same options → instant result (configurable TTL). Skip for audio-only (hash would be of audio, not video).
-    let videoHash: string | undefined
-    if (
-      userId &&
-      (toolType === 'video-to-transcript' || toolType === 'video-to-subtitles') &&
-      inputType !== 'audio'
-    ) {
-      try {
-        videoHash = await hashFile(file.path)
-        const cacheOptions = { ...jobOptions } as Record<string, unknown>
-        if (options.trimmedStart != null) cacheOptions.trimmedStart = parseFloat(String(options.trimmedStart))
-        if (options.trimmedEnd != null) cacheOptions.trimmedEnd = parseFloat(String(options.trimmedEnd))
-        const cached = await checkDuplicateProcessing(userId, videoHash, toolType, cacheOptions)
-        if (cached && fs.existsSync(cached.outputPath)) {
-          const cachedFileName = cached.fileName || path.basename(cached.outputPath)
-          const cachedJob = await addJobToQueue(plan, {
-            toolType: 'cached-result',
-            userId,
-            plan,
-            cachedResult: {
-              downloadUrl: `/api/download/${cachedFileName}`,
-              fileName: cachedFileName,
-            },
-            requestId: (req as RequestWithId).requestId,
-          })
-          try {
-            await insertJobRecord({
-              id: String(cachedJob.id),
-              userId,
-              toolType: 'cached-result',
-              planAtRun: plan,
-            })
-          } catch {
-            // non-blocking
-          }
-
-          return res.status(202).json({
-            jobId: cachedJob.id,
-            status: 'queued',
-            jobToken: (cachedJob.data as JobData)?.jobToken,
-          })
-        }
-      } catch {
-        // If hashing fails, fall back to normal processing
-      }
-    }
-
-    // If the client already has a Deepgram live transcript, skip Whisper
-    let parsedPrecomputedTranscript: JobData['precomputedTranscript'] | undefined
-    if (typeof options.precomputedTranscript === 'string' && options.precomputedTranscript.trim()) {
-      try {
-        parsedPrecomputedTranscript = JSON.parse(options.precomputedTranscript)
-      } catch {
-        // Ignore — fall back to normal Whisper transcription
-      }
-    }
-
-    const job = await addJobToQueue(plan, {
-      toolType,
-      filePath: file.path,
-      userId,
-      plan,
-      videoHash,
-      originalName: originalNameForJob,
-      fileSize: file.size,
-      trimmedStart: options.trimmedStart != null ? parseFloat(String(options.trimmedStart)) : undefined,
-      trimmedEnd: options.trimmedEnd != null ? parseFloat(String(options.trimmedEnd)) : undefined,
-      options: Object.keys(jobOptions).length > 0 ? jobOptions : undefined,
-      webhookUrl: typeof webhookUrl === 'string' && webhookUrl.trim() ? webhookUrl.trim() : undefined,
-      inputType: inputType === 'audio' ? 'audio' : undefined,
-      requestId: (req as RequestWithId).requestId,
-      ...(parsedPrecomputedTranscript && { precomputedTranscript: parsedPrecomputedTranscript }),
-    })
-    uploadLog.info({ msg: 'upload_end', jobId: job.id, durationMs: Date.now() - uploadStartMs })
-    try {
-      trackJobCreated({
-        job_id: String(job.id),
-        user_id: userId,
-        tool_type: toolType,
-        file_size_bytes: file.size,
-        plan,
-      })
-    } catch {
-      // non-blocking
-    }
-    try {
-      await insertJobRecord({
-        id: String(job.id),
-        userId,
-        toolType: inputType === 'audio' ? 'voice-to-transcript' : toolType,
-        planAtRun: plan,
-        fileSizeBytes: file.size,
-      })
-    } catch {
-      // non-blocking
-    }
-    res.status(202).json({
-      jobId: job.id,
-      status: 'queued',
-      jobToken: (job.data as JobData)?.jobToken,
-    })
-  } catch (error: any) {
-    uploadLog.error({ msg: 'Upload error', error: String(error) })
-    if (req.file) {
-      try {
-        fs.unlinkSync(req.file.path)
-      } catch (e) {
-        // Ignore cleanup errors
-      }
-    }
-    res.status(500).json({ message: error.message || 'Upload failed' })
+  const result = await runTranscriptionIntake(req, { source: 'web' })
+  if (!result.ok) {
+    if (result.retryAfterSeconds) res.setHeader('Retry-After', String(result.retryAfterSeconds))
+    return res.status(result.httpStatus).json({ message: result.message })
   }
+  res.status(202).json({
+    jobId: result.jobId,
+    status: 'queued',
+    jobToken: result.jobToken,
+  })
 })
 
 // Dual file upload (for burn-subtitles)
@@ -620,6 +242,7 @@ router.post('/dual', upload.fields([
           toolType: 'fix-subtitles',
           planAtRun: plan,
           fileSizeBytes: subtitleFileForFix.size,
+          jobToken: (fixJob.data as JobData)?.jobToken,
         })
       } catch { /* non-blocking */ }
       return res.status(202).json({
@@ -774,6 +397,7 @@ router.post('/dual', upload.fields([
         toolType: 'burn-subtitles',
         planAtRun: plan,
         fileSizeBytes: videoFile.size,
+        jobToken: (job.data as JobData)?.jobToken,
       })
     } catch {
       // non-blocking
@@ -1134,6 +758,7 @@ router.post('/complete', async (req: Request, res: Response) => {
           toolType: isChunkedAudioOnly ? 'voice-to-transcript' : meta.toolType,
           planAtRun: meta.plan,
           fileSizeBytes: fileSize,
+          jobToken: (job.data as JobData)?.jobToken,
         })
       } catch {
         // non-blocking
@@ -1518,6 +1143,7 @@ router.post('/youtube', async (req: Request, res: Response) => {
         toolType: 'youtube-to-transcript',
         planAtRun: plan,
         fileSizeBytes: 0,
+        jobToken: (job.data as JobData)?.jobToken,
       })
     } catch { /* non-blocking */ }
 

@@ -399,8 +399,16 @@ router.get('/:batchId/download', async (req: Request, res: Response) => {
     return res.status(404).json({ message: 'Batch not found' })
   }
 
-  // Ownership check: if both user and batch have a userId, they must match
-  if (batch.userId && requestingUserId && requestingUserId !== batch.userId) {
+  // Ownership check: /api/batch/upload requires authentication (see
+  // getOrCreateDemoUser above), so every batch always has a real owning
+  // userId — an unauthenticated request must never be treated as a match.
+  // (Previously this only rejected when BOTH sides were non-null and
+  // mismatched, so an unauthenticated request — requestingUserId === null —
+  // fell through and could download any user's batch.)
+  if (!requestingUserId) {
+    return res.status(401).json({ message: 'Authentication required.' })
+  }
+  if (requestingUserId !== batch.userId) {
     return res.status(403).json({ message: 'Not authorized to download this batch' })
   }
 

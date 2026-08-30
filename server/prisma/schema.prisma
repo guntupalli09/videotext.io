@@ -98,6 +98,31 @@ model Job {
   whisperCostMicros   Int?  // cost in micro-dollars ($1 = 1,000,000)
   totalAiCostMicros   Int?  // total AI cost (whisper + any LLM) in micro-dollars
 
+  // Zapier-readiness additions (additive only; analytics/authorization use only —
+  // never read for quota, entitlement, priority, or transcription behavior).
+  //
+  // jobToken: mirrors the Bull job's anonymous-access token (models/videoProcessor
+  // JobData.jobToken). Persisted here so GET /api/download/:filename can authorize
+  // by token even after the Bull/Redis record has been trimmed. Unique because it's
+  // also used as a direct lookup key.
+  jobToken         String?  @unique
+
+  // resultFilename: basename of the primary output file (as written under
+  // TEMP_FILE_PATH), set once the job completes. Lets /api/download/:filename map a
+  // requested filename back to its owning job for ownership enforcement.
+  resultFilename   String?
+
+  // source: where the job request originated. Server-set only — routes populate
+  // this from trusted context (which route/middleware handled the request; for API
+  // requests, the authenticated ApiKey's own clientType), never from a client-
+  // supplied field. Analytics only.
+  source           String   @default("web") // web | api | zapier
+
+  // apiKeyId: the ApiKey.id that authenticated this request, when created via
+  // /api/v1. Nullable; not a DB foreign key (consistent with the rest of this
+  // model), analytics/traceability only.
+  apiKeyId         String?
+
   createdAt        DateTime @default(now())
 
   @@index([userId])
@@ -105,6 +130,44 @@ model Job {
   @@index([status])
   @@index([createdAt])
   @@index([completedAt])
+  @@index([resultFilename])
+  @@index([source, createdAt])
+  @@index([userId, status, completedAt])
+}
+
+// Database-backed external API keys (Zapier / third-party integrations).
+// Replaces the env-var-only apiKeyAuth lookup for anything user-facing; the
+// legacy env-var keys (API_KEY / API_KEYS) remain supported for internal/ops
+// use as a documented backward-compatible fallback (see utils/apiKey.ts).
+model ApiKey {
+  id          String    @id @default(cuid())
+  userId      String
+
+  // SHA-256 hex digest of the full raw secret. The raw secret is shown to the
+  // user exactly once at creation and is never stored or logged.
+  keyHash     String    @unique
+
+  // First chars of the raw key (e.g. "vt_live_ab12cd34") shown alongside the
+  // key afterward so a user can recognize which key is which without ever
+  // re-displaying the secret.
+  keyPrefix   String
+
+  name        String
+
+  // User-declared purpose, chosen once at creation. Server-derived Job.source
+  // reads this field (never a per-request client value) when a request is
+  // authenticated by this key: 'generic' -> source "api", 'zapier' -> source
+  // "zapier". Analytics only; never affects entitlement or plan.
+  clientType  String    @default("generic") // generic | zapier
+
+  scopes      Json      @default("[]")
+
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+
+  @@index([userId])
+  @@index([userId, revokedAt])
 }
 
 // Pro (and team) — read-only public snapshot for sharing transcripts

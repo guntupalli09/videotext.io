@@ -2,6 +2,9 @@ import express, { Request, Response } from 'express'
 import path from 'path'
 import fs from 'fs'
 import { getEffectivePlan } from '../utils/subscriptionGuard'
+import { getEffectiveUserId } from '../utils/auth'
+import { findJobByResultFilename } from '../lib/jobAnalytics'
+import { getBatchById } from '../models/BatchJob'
 import { getLogger } from '../lib/logger'
 
 const log = getLogger('api')
@@ -69,6 +72,55 @@ function applyWatermark(content: string, ext: string): string {
   }
 }
 
+/** Per-video batch zip, written by workers/videoProcessor.ts generateBatchZip() as `batch-<batchId>.zip`. */
+export const BATCH_ZIP_PATTERN = /^batch-(.+)\.zip$/
+
+/**
+ * Ownership check for a requested output filename.
+ *
+ * Every job (including guest jobs) gets a persisted Job row with a userId
+ * and jobToken (see lib/jobAnalytics.ts insertJobRecord), and every job's
+ * primary output filename is recorded on that row on completion
+ * (updateJobCompleted). This lets a plain filename be mapped back to its
+ * owning job/user without needing Bull, matching the same ownership model
+ * `GET /api/job/:jobId` already uses: access is granted to either the
+ * matching authenticated user (JWT or Bearer API key, via
+ * getEffectiveUserId) or the holder of the job's anonymous jobToken
+ * (existing web-app guest-download behavior, unchanged) — same rule the
+ * external API uses, since it resolves identity through the same
+ * getEffectiveUserId() helper.
+ *
+ * A filename with no matching Job or BatchJobRecord (e.g. output from
+ * before this authorization model existed) is treated as not found rather
+ * than served — see docs/API_PRIVATE_BETA.md for the rollout note.
+ */
+async function authorizeDownload(
+  req: Request,
+  filename: string
+): Promise<{ allowed: true } | { allowed: false; status: 404 | 401 | 403; message: string }> {
+  const requestingUserId = getEffectiveUserId(req)
+  const clientJobToken = (req.query.jobToken as string | undefined)?.trim() || (req.headers['x-job-token'] as string | undefined)?.trim()
+
+  const batchMatch = filename.match(BATCH_ZIP_PATTERN)
+  if (batchMatch) {
+    const batch = await getBatchById(batchMatch[1])
+    if (!batch) return { allowed: false, status: 404, message: 'File not found' }
+    if (!requestingUserId) return { allowed: false, status: 401, message: 'Authentication required.' }
+    if (requestingUserId !== batch.userId) return { allowed: false, status: 403, message: 'Access denied' }
+    return { allowed: true }
+  }
+
+  const job = await findJobByResultFilename(filename)
+  if (!job) return { allowed: false, status: 404, message: 'File not found' }
+
+  const allowedByUser = requestingUserId != null && requestingUserId === job.userId
+  const allowedByToken = !!clientJobToken && !!job.jobToken && clientJobToken === job.jobToken
+  if (!allowedByUser && !allowedByToken) {
+    return { allowed: false, status: 403, message: 'Access denied' }
+  }
+  return { allowed: true }
+}
+
 router.get('/:filename', async (req: Request, res: Response) => {
   try {
     const { filename } = req.params
@@ -84,6 +136,11 @@ router.get('/:filename', async (req: Request, res: Response) => {
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ message: 'File not found' })
+    }
+
+    const authz = await authorizeDownload(req, filename)
+    if (!authz.allowed) {
+      return res.status(authz.status).json({ message: authz.message })
     }
 
     // Safe filename for Content-Disposition: no CR/LF/control chars, escape quotes
