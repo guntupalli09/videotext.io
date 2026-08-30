@@ -65,11 +65,15 @@ export async function updateJobCompleted(
 ): Promise<void> {
   try {
     await prisma.job.updateMany({
-      where: { id: jobId },
+      where: {
+        id: jobId,
+        status: { in: ['queued', 'processing'] },
+      },
       data: {
         status: 'completed',
         completedAt: new Date(),
         processingMs,
+        failureReason: null,
         ...(resultFilename ? { resultFilename } : {}),
       },
     })
