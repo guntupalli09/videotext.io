@@ -497,6 +497,10 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description:
       'One-page freelancer cheatsheet aligning GoTranscript, Scribie, and custom PDF client briefs to editable presets so QA matches invoice-ready deliverables.',
   },
+  '/blog/how-to-transcribe-interview': {
+    title: "How to Transcribe an Interview: Fast, Accurate, Free | VideoText",
+    description: "How to transcribe an interview fast using AI. Multi-speaker labels, overlapping speech tips, and export options for journalists, researchers, and HR teams.",
+  },
 }
 
 /** Static breadcrumb items (non-SEO-registry routes). */
