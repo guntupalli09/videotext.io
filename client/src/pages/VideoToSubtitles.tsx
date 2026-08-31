@@ -50,6 +50,56 @@ export type VideoToSubtitlesSeoProps = {
   }
 }
 
+function parseSubtitlesToRows(text: string): SubtitleRow[] {
+  const blocks = text
+    .replace(/\r/g, '')
+    .trim()
+    .split('\n\n')
+    .filter(Boolean)
+
+  const rows: SubtitleRow[] = []
+  for (const block of blocks) {
+    const lines = block.split('\n').filter((l) => l.trim().length > 0)
+    const timeLineIdx = lines.findIndex((l) => l.includes('-->'))
+    if (timeLineIdx === -1) continue
+
+    const timeLine = lines[timeLineIdx]
+    const [start, end] = timeLine.split('-->').map((s) => s.trim())
+    const textLines = lines.slice(timeLineIdx + 1)
+    rows.push({
+      index: rows.length + 1,
+      startTime: start,
+      endTime: end,
+      text: textLines.join('\n'),
+    })
+  }
+  return rows
+}
+
+/**
+ * Fetch a completed job's result file with the auth header the API requires, and parse it
+ * into cue rows for the QA preview. Throws on a non-OK response (e.g. 401) instead of
+ * silently returning nothing, so callers can show the user a real error rather than an
+ * unexplained blank preview.
+ */
+async function fetchSubtitlePreviewRows(
+  downloadUrl: string,
+  fileName?: string
+): Promise<{ rows: SubtitleRow[]; isZip: boolean }> {
+  const token = getAuthToken()
+  const res = await fetch(getAbsoluteDownloadUrl(downloadUrl), {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  })
+  if (!res.ok) {
+    throw new Error(`Failed to load subtitle preview (${res.status})`)
+  }
+  const ct = res.headers.get('content-type') || ''
+  const isZip = fileName?.toLowerCase().endsWith('.zip') || ct.includes('application/zip')
+  if (isZip) return { rows: [], isZip: true }
+  const text = await res.text()
+  return { rows: parseSubtitlesToRows(text), isZip: false }
+}
+
 export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const { seoH1, seoIntro, faq = [], seoTutorial } = props
   const location = useLocation()
@@ -238,18 +288,11 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           setUploadProgress(100)
           if (isLoggedIn() && jobStatus.result?.downloadUrl) {
             try {
-              const subtitleResponse = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
-              const ct = subtitleResponse.headers.get('content-type') || ''
-              const isZip =
-                jobStatus.result.fileName?.toLowerCase().endsWith('.zip') || ct.includes('application/zip')
-              if (!isZip) {
-                const subtitleText = await subtitleResponse.text()
-                setSubtitleRows(parseSubtitlesToRows(subtitleText))
-              } else {
-                setSubtitleRows([])
-              }
+              const { rows } = await fetchSubtitlePreviewRows(jobStatus.result.downloadUrl, jobStatus.result.fileName)
+              setSubtitleRows(rows)
             } catch {
-              // ignore
+              setSubtitleRows([])
+              toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
             }
           }
           return
@@ -292,17 +335,11 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
               if (isLoggedIn() && s.result?.downloadUrl) {
                 try {
-                  const res = await fetch(getAbsoluteDownloadUrl(s.result.downloadUrl))
-                  const ct = res.headers.get('content-type') || ''
-                  const isZip = s.result.fileName?.toLowerCase().endsWith('.zip') || ct.includes('application/zip')
-                  if (!isZip) {
-                    const text = await res.text()
-                    setSubtitleRows(parseSubtitlesToRows(text))
-                  } else {
-                    setSubtitleRows([])
-                  }
+                  const { rows } = await fetchSubtitlePreviewRows(s.result.downloadUrl, s.result.fileName)
+                  setSubtitleRows(rows)
                 } catch {
-                  // ignore
+                  setSubtitleRows([])
+                  toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
                 }
               }
             } else if (t === 'failed') {
@@ -436,32 +473,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       setProgress(0)
       toast('Cancelled. You can try again or upload a different file.')
     }
-  }
-
-  const parseSubtitlesToRows = (text: string): SubtitleRow[] => {
-    const blocks = text
-      .replace(/\r/g, '')
-      .trim()
-      .split('\n\n')
-      .filter(Boolean)
-
-    const rows: SubtitleRow[] = []
-    for (const block of blocks) {
-      const lines = block.split('\n').filter((l) => l.trim().length > 0)
-      const timeLineIdx = lines.findIndex((l) => l.includes('-->'))
-      if (timeLineIdx === -1) continue
-
-      const timeLine = lines[timeLineIdx]
-      const [start, end] = timeLine.split('-->').map((s) => s.trim())
-      const textLines = lines.slice(timeLineIdx + 1)
-      rows.push({
-        index: rows.length + 1,
-        startTime: start,
-        endTime: end,
-        text: textLines.join('\n'),
-      })
-    }
-    return rows
   }
 
   const rowsToSrt = (rows: SubtitleRow[]): string => {
@@ -614,26 +625,12 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           const processingMs = Date.now() - started
           // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })
           if (isLoggedIn() && jobStatus.result?.downloadUrl) {
-            try {
-              fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
-                .then((subtitleResponse) => {
-                  const ct = subtitleResponse.headers.get('content-type') || ''
-                  const isZip =
-                    (jobStatus.result?.fileName?.toLowerCase().endsWith('.zip')) ||
-                    ct.includes('application/zip')
-                  if (isZip) {
-                    setSubtitleRows([])
-                    return
-                  }
-                  return subtitleResponse.text()
-                })
-                .then((subtitleText) => {
-                  if (typeof subtitleText === 'string') setSubtitleRows(parseSubtitlesToRows(subtitleText))
-                })
-                .catch(() => setSubtitleRows([]))
-            } catch {
-              // Ignore preview fetch errors
-            }
+            fetchSubtitlePreviewRows(jobStatus.result.downloadUrl, jobStatus.result.fileName)
+              .then(({ rows }) => setSubtitleRows(rows))
+              .catch(() => {
+                setSubtitleRows([])
+                toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
+              })
           }
           incrementUsage('video-to-subtitles')
           try {
@@ -777,10 +774,28 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: fmt, lang: langSlug }) } catch { /* non-blocking */ }
   }
 
+  /** Fetch a download URL with the required auth header and trigger a real file save (window.open can't carry the Bearer token, so it 401s). */
+  const downloadAuthedUrl = async (url: string, filename: string) => {
+    const token = getAuthToken()
+    const res = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (!res.ok) throw new Error(`Download failed (${res.status})`)
+    const blob = await res.blob()
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(a.href)
+    return blob
+  }
+
   const handleConvertFormat = async () => {
     if (!result?.downloadUrl || !result?.fileName) return
     if (convertTargetFormat === currentResultFormat) {
-      window.open(getDownloadUrl(), '_blank')
+      try {
+        await downloadAuthedUrl(getDownloadUrl(), result.fileName)
+      } catch {
+        toast.error('Download failed')
+      }
       return
     }
     try {
@@ -791,7 +806,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       }
       setConvertProgress(true)
       setConvertPreview(null)
-      const res = await fetch(getDownloadUrl())
+      const token = getAuthToken()
+      const res = await fetch(getDownloadUrl(), { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+      if (!res.ok) throw new Error(`Couldn't read the original file (${res.status})`)
       const blob = await res.blob()
       const file = new File([blob], result.fileName || fallbackSubtitleName, { type: blob.type || 'text/plain' })
       const uploadRes = await uploadFile(file, {
@@ -800,25 +817,32 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       })
       const pollIntervalRef = { current: 0 as number }
       const doPoll = async () => {
+        let jobStatus: Awaited<ReturnType<typeof getJobStatus>>
         try {
-          const jobStatus = await getJobStatus(uploadRes.jobId, uploadRes.jobToken ? { jobToken: uploadRes.jobToken } : undefined)
-          if (getJobLifecycleTransition(jobStatus) === 'completed' && jobStatus.result?.downloadUrl) {
-            clearInterval(pollIntervalRef.current)
+          jobStatus = await getJobStatus(uploadRes.jobId, uploadRes.jobToken ? { jobToken: uploadRes.jobToken } : undefined)
+        } catch {
+          return // transient network error while polling — keep the interval running
+        }
+        if (getJobLifecycleTransition(jobStatus) === 'completed' && jobStatus.result?.downloadUrl) {
+          clearInterval(pollIntervalRef.current)
+          try {
             const convertedUrl = getAbsoluteDownloadUrl(jobStatus.result.downloadUrl)
             if (plan === 'free') {
-              const prevRes = await fetch(convertedUrl)
+              const convertToken = getAuthToken()
+              const prevRes = await fetch(convertedUrl, { headers: convertToken ? { Authorization: `Bearer ${convertToken}` } : {} })
+              if (!prevRes.ok) throw new Error(`Couldn't load preview (${prevRes.status})`)
               const text = await prevRes.text()
               const lines = text.split(/\n\n|\n/).slice(0, 30)
               setConvertPreview(lines.join('\n'))
             } else {
-              window.open(convertedUrl, '_blank')
+              await downloadAuthedUrl(convertedUrl, jobStatus.result.fileName || `converted.${effectiveFormat}`)
             }
-          } else if (getJobLifecycleTransition(jobStatus) === 'failed') {
-            clearInterval(pollIntervalRef.current)
-            toast.error('Conversion failed.')
+          } catch (e: any) {
+            toast.error(e?.message || 'Conversion preview/download failed.')
           }
-        } catch {
-          // keep polling
+        } else if (getJobLifecycleTransition(jobStatus) === 'failed') {
+          clearInterval(pollIntervalRef.current)
+          toast.error('Conversion failed.')
         }
       }
       pollIntervalRef.current = window.setInterval(doPoll, JOB_POLL_INTERVAL_MS)

@@ -42,6 +42,7 @@ const FINDING_META: Record<string, { icon: typeof Film; colorText: string; color
   reading_speed: { icon: Zap,        colorText: 'text-amber-600 dark:text-amber-400',    colorBg: 'bg-amber-50 dark:bg-amber-950/20',       colorBorder: 'border-amber-200 dark:border-amber-800',     label: 'Reading speed (CPS)' },
   large_gap:     { icon: Clock,      colorText: 'text-gray-500 dark:text-gray-400',      colorBg: 'bg-gray-50 dark:bg-gray-900/60',         colorBorder: 'border-gray-200 dark:border-gray-700',       label: 'Large gap' },
   scene_cut:     { icon: Scissors,   colorText: 'text-violet-600 dark:text-violet-400',  colorBg: 'bg-violet-50 dark:bg-violet-950/20',     colorBorder: 'border-violet-200 dark:border-violet-800',   label: 'Spans scene cut' },
+  invalid_timing:{ icon: AlertTriangle, colorText: 'text-red-600 dark:text-red-400',     colorBg: 'bg-red-50 dark:bg-red-950/20',           colorBorder: 'border-red-200 dark:border-red-800',         label: 'Invalid timing' },
 }
 const DEFAULT_FINDING_META = { icon: AlertTriangle, colorText: 'text-gray-600 dark:text-gray-400', colorBg: 'bg-gray-50 dark:bg-gray-900', colorBorder: 'border-gray-200 dark:border-gray-700', label: 'Issue' }
 
@@ -413,11 +414,16 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             // texJobCompleted(processingMs, 'fix-subtitles')
             if (jobStatus.result?.downloadUrl) {
               try {
-                const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
+                const token = getAuthToken()
+                const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl), {
+                  headers: token ? { Authorization: `Bearer ${token}` } : {},
+                })
+                if (!res.ok) throw new Error(`Preview fetch failed (${res.status})`)
                 const txt = await res.text()
                 setSubtitleRows(parseSubtitlesToRows(txt))
               } catch {
-                // ignore
+                setSubtitleRows([])
+                toast.error("Fixed subtitles are ready, but the preview couldn't load. Use Download below to get the file.")
               }
             }
           } else if (transition === 'failed') {
@@ -919,8 +925,8 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                       onChange={setFixTiming}
                     />
                     <Checkbox
-                      label="Grammar"
-                      description="Normalize casing and punctuation"
+                      label="Grammar & spelling"
+                      description="Fix spelling, grammar, casing, and punctuation"
                       checked={grammarFix}
                       onChange={setGrammarFix}
                     />

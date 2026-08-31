@@ -2216,7 +2216,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             lineBreakFix: opt?.lineBreakFix === true || opt?.lineBreakFix === 'true',
             removeFillers: opt?.removeFillers === true || opt?.removeFillers === 'true',
           }
-          const fixed = fixSubtitleFile(data.filePath!, fixOptions)
+          const fixed = await fixSubtitleFile(data.filePath!, fixOptions)
 
           // Scene cut detection: if a video was uploaded alongside, detect cuts and flag spanning cues
           await job.progress(50)
