@@ -58,6 +58,12 @@ describe('newCompletedTranscription trigger', () => {
 
     expect(result.id).toBe('t1');
     expect(result.txt_url).toBe('https://api.videotext.io/api/download/t1.txt?jobToken=tok');
+    // tool_type is a raw internal field (server/src/services/apiV1Format.ts) that
+    // duplicates `operation` and is not declared in outputFields/sample — must not leak.
+    expect(result).not.toHaveProperty('tool_type');
+    expect(Object.keys(result).sort()).toEqual(
+      App.triggers.newCompletedTranscription.operation.outputFields.map((f) => f.key).sort()
+    );
   });
 
   it('defensively excludes anything not completed or carrying a failure_reason', async () => {

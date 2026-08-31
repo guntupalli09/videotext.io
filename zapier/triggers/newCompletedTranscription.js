@@ -115,6 +115,7 @@ module.exports = {
       { key: 'original_size_bytes', label: 'Original Size (bytes)', type: 'number' },
       { key: 'created_at', label: 'Created At', type: 'datetime' },
       { key: 'completed_at', label: 'Completed At', type: 'datetime' },
+      { key: 'failure_reason', label: 'Failure Reason', type: 'string' },
     ],
   },
 };
