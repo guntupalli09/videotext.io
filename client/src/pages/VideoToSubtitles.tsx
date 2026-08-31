@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { MessageSquare, FileDown, Lock, CheckCircle2, Upload } from 'lucide-react'
+import { MessageSquare, FileDown, Lock, CheckCircle2, Upload, AlertTriangle, RefreshCw } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 import TranscriptSharePanel from '../components/TranscriptSharePanel'
@@ -26,6 +26,7 @@ import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
+import { parseTimeToMs } from '../lib/subtitleUtils'
 import { LANGUAGES } from '../lib/languages'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
 import { trackEvent, trackFirstOutputSeen } from '../lib/analytics'
@@ -48,6 +49,56 @@ export type VideoToSubtitlesSeoProps = {
     ctaText?: string
     ctaPath?: string
   }
+}
+
+function parseSubtitlesToRows(text: string): SubtitleRow[] {
+  const blocks = text
+    .replace(/\r/g, '')
+    .trim()
+    .split('\n\n')
+    .filter(Boolean)
+
+  const rows: SubtitleRow[] = []
+  for (const block of blocks) {
+    const lines = block.split('\n').filter((l) => l.trim().length > 0)
+    const timeLineIdx = lines.findIndex((l) => l.includes('-->'))
+    if (timeLineIdx === -1) continue
+
+    const timeLine = lines[timeLineIdx]
+    const [start, end] = timeLine.split('-->').map((s) => s.trim())
+    const textLines = lines.slice(timeLineIdx + 1)
+    rows.push({
+      index: rows.length + 1,
+      startTime: start,
+      endTime: end,
+      text: textLines.join('\n'),
+    })
+  }
+  return rows
+}
+
+/**
+ * Fetch a completed job's result file with the auth header the API requires, and parse it
+ * into cue rows for the QA preview. Throws on a non-OK response (e.g. 401) instead of
+ * silently returning nothing, so callers can show the user a real error rather than an
+ * unexplained blank preview.
+ */
+async function fetchSubtitlePreviewRows(
+  downloadUrl: string,
+  fileName?: string
+): Promise<{ rows: SubtitleRow[]; isZip: boolean }> {
+  const token = getAuthToken()
+  const res = await fetch(getAbsoluteDownloadUrl(downloadUrl), {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  })
+  if (!res.ok) {
+    throw new Error(`Failed to load subtitle preview (${res.status})`)
+  }
+  const ct = res.headers.get('content-type') || ''
+  const isZip = fileName?.toLowerCase().endsWith('.zip') || ct.includes('application/zip')
+  if (isZip) return { rows: [], isZip: true }
+  const text = await res.text()
+  return { rows: parseSubtitlesToRows(text), isZip: false }
 }
 
 export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
@@ -74,6 +125,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; warnings?: { type: string; message: string; line?: number }[] } | null>(null)
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
+  const [previewError, setPreviewError] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
   const [paywallReason, setPaywallReason] = useState<PaywallReason>('FREE_DAILY_LIMIT_REACHED')
   const [showAuthGate, setShowAuthGate] = useState(false)
@@ -238,18 +290,13 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           setUploadProgress(100)
           if (isLoggedIn() && jobStatus.result?.downloadUrl) {
             try {
-              const subtitleResponse = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
-              const ct = subtitleResponse.headers.get('content-type') || ''
-              const isZip =
-                jobStatus.result.fileName?.toLowerCase().endsWith('.zip') || ct.includes('application/zip')
-              if (!isZip) {
-                const subtitleText = await subtitleResponse.text()
-                setSubtitleRows(parseSubtitlesToRows(subtitleText))
-              } else {
-                setSubtitleRows([])
-              }
+              const { rows } = await fetchSubtitlePreviewRows(jobStatus.result.downloadUrl, jobStatus.result.fileName)
+              setSubtitleRows(rows)
+              setPreviewError(false)
             } catch {
-              // ignore
+              setSubtitleRows([])
+              setPreviewError(true)
+              toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
             }
           }
           return
@@ -292,17 +339,13 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
               if (isLoggedIn() && s.result?.downloadUrl) {
                 try {
-                  const res = await fetch(getAbsoluteDownloadUrl(s.result.downloadUrl))
-                  const ct = res.headers.get('content-type') || ''
-                  const isZip = s.result.fileName?.toLowerCase().endsWith('.zip') || ct.includes('application/zip')
-                  if (!isZip) {
-                    const text = await res.text()
-                    setSubtitleRows(parseSubtitlesToRows(text))
-                  } else {
-                    setSubtitleRows([])
-                  }
+                  const { rows } = await fetchSubtitlePreviewRows(s.result.downloadUrl, s.result.fileName)
+                  setSubtitleRows(rows)
+                  setPreviewError(false)
                 } catch {
-                  // ignore
+                  setSubtitleRows([])
+                  setPreviewError(true)
+                  toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
                 }
               }
             } else if (t === 'failed') {
@@ -436,32 +479,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       setProgress(0)
       toast('Cancelled. You can try again or upload a different file.')
     }
-  }
-
-  const parseSubtitlesToRows = (text: string): SubtitleRow[] => {
-    const blocks = text
-      .replace(/\r/g, '')
-      .trim()
-      .split('\n\n')
-      .filter(Boolean)
-
-    const rows: SubtitleRow[] = []
-    for (const block of blocks) {
-      const lines = block.split('\n').filter((l) => l.trim().length > 0)
-      const timeLineIdx = lines.findIndex((l) => l.includes('-->'))
-      if (timeLineIdx === -1) continue
-
-      const timeLine = lines[timeLineIdx]
-      const [start, end] = timeLine.split('-->').map((s) => s.trim())
-      const textLines = lines.slice(timeLineIdx + 1)
-      rows.push({
-        index: rows.length + 1,
-        startTime: start,
-        endTime: end,
-        text: textLines.join('\n'),
-      })
-    }
-    return rows
   }
 
   const rowsToSrt = (rows: SubtitleRow[]): string => {
@@ -614,26 +631,16 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           const processingMs = Date.now() - started
           // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })
           if (isLoggedIn() && jobStatus.result?.downloadUrl) {
-            try {
-              fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
-                .then((subtitleResponse) => {
-                  const ct = subtitleResponse.headers.get('content-type') || ''
-                  const isZip =
-                    (jobStatus.result?.fileName?.toLowerCase().endsWith('.zip')) ||
-                    ct.includes('application/zip')
-                  if (isZip) {
-                    setSubtitleRows([])
-                    return
-                  }
-                  return subtitleResponse.text()
-                })
-                .then((subtitleText) => {
-                  if (typeof subtitleText === 'string') setSubtitleRows(parseSubtitlesToRows(subtitleText))
-                })
-                .catch(() => setSubtitleRows([]))
-            } catch {
-              // Ignore preview fetch errors
-            }
+            fetchSubtitlePreviewRows(jobStatus.result.downloadUrl, jobStatus.result.fileName)
+              .then(({ rows }) => {
+                setSubtitleRows(rows)
+                setPreviewError(false)
+              })
+              .catch(() => {
+                setSubtitleRows([])
+                setPreviewError(true)
+                toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
+              })
           }
           incrementUsage('video-to-subtitles')
           try {
@@ -743,6 +750,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setUploadProgress(0)
     setResult(null)
     setSubtitleRows([])
+    setPreviewError(false)
     setPartialSegments([])
     setTranslationLanguage(null)
     setTranslatedSubtitleRows([])
@@ -777,10 +785,28 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     try { trackEvent('result_downloaded', { tool: 'video-to-subtitles', format: fmt, lang: langSlug }) } catch { /* non-blocking */ }
   }
 
+  /** Fetch a download URL with the required auth header and trigger a real file save (window.open can't carry the Bearer token, so it 401s). */
+  const downloadAuthedUrl = async (url: string, filename: string) => {
+    const token = getAuthToken()
+    const res = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (!res.ok) throw new Error(`Download failed (${res.status})`)
+    const blob = await res.blob()
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(a.href)
+    return blob
+  }
+
   const handleConvertFormat = async () => {
     if (!result?.downloadUrl || !result?.fileName) return
     if (convertTargetFormat === currentResultFormat) {
-      window.open(getDownloadUrl(), '_blank')
+      try {
+        await downloadAuthedUrl(getDownloadUrl(), result.fileName)
+      } catch {
+        toast.error('Download failed')
+      }
       return
     }
     try {
@@ -791,7 +817,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       }
       setConvertProgress(true)
       setConvertPreview(null)
-      const res = await fetch(getDownloadUrl())
+      const token = getAuthToken()
+      const res = await fetch(getDownloadUrl(), { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+      if (!res.ok) throw new Error(`Couldn't read the original file (${res.status})`)
       const blob = await res.blob()
       const file = new File([blob], result.fileName || fallbackSubtitleName, { type: blob.type || 'text/plain' })
       const uploadRes = await uploadFile(file, {
@@ -800,25 +828,32 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       })
       const pollIntervalRef = { current: 0 as number }
       const doPoll = async () => {
+        let jobStatus: Awaited<ReturnType<typeof getJobStatus>>
         try {
-          const jobStatus = await getJobStatus(uploadRes.jobId, uploadRes.jobToken ? { jobToken: uploadRes.jobToken } : undefined)
-          if (getJobLifecycleTransition(jobStatus) === 'completed' && jobStatus.result?.downloadUrl) {
-            clearInterval(pollIntervalRef.current)
+          jobStatus = await getJobStatus(uploadRes.jobId, uploadRes.jobToken ? { jobToken: uploadRes.jobToken } : undefined)
+        } catch {
+          return // transient network error while polling — keep the interval running
+        }
+        if (getJobLifecycleTransition(jobStatus) === 'completed' && jobStatus.result?.downloadUrl) {
+          clearInterval(pollIntervalRef.current)
+          try {
             const convertedUrl = getAbsoluteDownloadUrl(jobStatus.result.downloadUrl)
             if (plan === 'free') {
-              const prevRes = await fetch(convertedUrl)
+              const convertToken = getAuthToken()
+              const prevRes = await fetch(convertedUrl, { headers: convertToken ? { Authorization: `Bearer ${convertToken}` } : {} })
+              if (!prevRes.ok) throw new Error(`Couldn't load preview (${prevRes.status})`)
               const text = await prevRes.text()
               const lines = text.split(/\n\n|\n/).slice(0, 30)
               setConvertPreview(lines.join('\n'))
             } else {
-              window.open(convertedUrl, '_blank')
+              await downloadAuthedUrl(convertedUrl, jobStatus.result.fileName || `converted.${effectiveFormat}`)
             }
-          } else if (getJobLifecycleTransition(jobStatus) === 'failed') {
-            clearInterval(pollIntervalRef.current)
-            toast.error('Conversion failed.')
+          } catch (e: any) {
+            toast.error(e?.message || 'Conversion preview/download failed.')
           }
-        } catch {
-          // keep polling
+        } else if (getJobLifecycleTransition(jobStatus) === 'failed') {
+          clearInterval(pollIntervalRef.current)
+          toast.error('Conversion failed.')
         }
       }
       pollIntervalRef.current = window.setInterval(doPoll, JOB_POLL_INTERVAL_MS)
@@ -1052,8 +1087,39 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                   </button>
                 </div>
 
+                {/* ── Stat pills — mirrors Video → Transcript's pill row so the two tools read the same way at a glance ── */}
+                {subtitleRows.length > 0 && (() => {
+                  const cueCount = subtitleRows.length
+                  const lastRow = subtitleRows[subtitleRows.length - 1]
+                  const durSec = lastRow ? parseTimeToMs(lastRow.endTime) / 1000 : 0
+                  const durStr =
+                    durSec > 60
+                      ? `${Math.floor(durSec / 60)}m ${String(Math.floor(durSec % 60)).padStart(2, '0')}s`
+                      : durSec > 0
+                        ? `${Math.floor(durSec)}s`
+                        : null
+                  const pills = [
+                    `${cueCount} cue${cueCount !== 1 ? 's' : ''}`,
+                    durStr,
+                    currentResultFormat.toUpperCase(),
+                    language || 'auto-detected',
+                  ].filter(Boolean) as string[]
+                  return (
+                    <div className="flex flex-wrap items-center gap-2 px-1">
+                      {pills.map((label) => (
+                        <span
+                          key={label}
+                          className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs font-medium text-gray-500 dark:text-gray-400"
+                        >
+                          {label}
+                        </span>
+                      ))}
+                    </div>
+                  )
+                })()}
+
                 {/* ── Two-column layout: left = editor, right = exports ─────── */}
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_300px] items-start">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px] items-start">
 
                   {/* ── Left column: toggle + QA editor ────────────────────── */}
                   <div className="space-y-3 min-w-0">
@@ -1111,6 +1177,33 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                           }}
                         />
                       </Suspense>
+                    )}
+                    {/* Preview failed to load — an explicit, actionable card instead of leaving this column blank */}
+                    {subtitleRows.length === 0 && previewError && result?.downloadUrl && (
+                      <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
+                        <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">Couldn't load the cue preview</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
+                          Your subtitles processed fine and are ready to download from the Exports panel — this only affects the on-screen preview.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (!result?.downloadUrl) return
+                            try {
+                              const { rows } = await fetchSubtitlePreviewRows(result.downloadUrl, result.fileName)
+                              setSubtitleRows(rows)
+                              setPreviewError(false)
+                            } catch {
+                              toast.error("Still couldn't load the preview. Please use the Exports panel to download.")
+                            }
+                          }}
+                          className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+                        >
+                          <RefreshCw className="h-3.5 w-3.5" />
+                          Retry preview
+                        </button>
+                      </div>
                     )}
                     {!canEdit && subtitleRows.length > 0 && (
                       <button type="button" onClick={() => { setPaywallReason('INLINE_EDIT'); setShowPaywall(true) }} className="px-1 text-left text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
