@@ -44,6 +44,7 @@ import { attachLiveTranscription } from './routes/liveTranscription'
 import { maybeRunYoutubeCanary } from './services/youtubeCanary'
 import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
+import { startPricingIntentRescueCron } from './jobs/pricingIntentRescueCron'
 import { runReconciliation } from './services/stripeReconciliation'
 import { stripe } from './services/stripe'
 import { STRIPE_RECONCILIATION_ENABLED } from './utils/featureFlags'
@@ -529,6 +530,11 @@ const server = app.listen(PORT, () => {
 
   // Upgrade rescue sequence for users who clicked upgrade but did not complete payment in 24h.
   startUpgradeRescueCron()
+
+  // Near-real-time nudge for users who just showed pricing intent (pricing_page_view,
+  // upgrade_clicked, checkout-tier events). Checks every 60s; personalizes by the
+  // user's actual tool usage and video length when they have job history.
+  startPricingIntentRescueCron()
 
   // Optional heap memory monitoring — set MEMORY_DEBUG=1 to enable
   if (process.env.MEMORY_DEBUG === '1') {
