@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { MessageSquare, FileDown, Lock, CheckCircle2, Upload } from 'lucide-react'
+import { MessageSquare, FileDown, Lock, CheckCircle2, Upload, AlertTriangle, RefreshCw } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
 import TranscriptSharePanel from '../components/TranscriptSharePanel'
@@ -26,6 +26,7 @@ import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
+import { parseTimeToMs } from '../lib/subtitleUtils'
 import { LANGUAGES } from '../lib/languages'
 import { persistJobId, getPersistedJobId, getPersistedJobToken, clearPersistedJobId } from '../lib/jobSession'
 import { trackEvent, trackFirstOutputSeen } from '../lib/analytics'
@@ -124,6 +125,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; warnings?: { type: string; message: string; line?: number }[] } | null>(null)
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
+  const [previewError, setPreviewError] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
   const [paywallReason, setPaywallReason] = useState<PaywallReason>('FREE_DAILY_LIMIT_REACHED')
   const [showAuthGate, setShowAuthGate] = useState(false)
@@ -290,8 +292,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             try {
               const { rows } = await fetchSubtitlePreviewRows(jobStatus.result.downloadUrl, jobStatus.result.fileName)
               setSubtitleRows(rows)
+              setPreviewError(false)
             } catch {
               setSubtitleRows([])
+              setPreviewError(true)
               toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
             }
           }
@@ -337,8 +341,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                 try {
                   const { rows } = await fetchSubtitlePreviewRows(s.result.downloadUrl, s.result.fileName)
                   setSubtitleRows(rows)
+                  setPreviewError(false)
                 } catch {
                   setSubtitleRows([])
+                  setPreviewError(true)
                   toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
                 }
               }
@@ -626,9 +632,13 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })
           if (isLoggedIn() && jobStatus.result?.downloadUrl) {
             fetchSubtitlePreviewRows(jobStatus.result.downloadUrl, jobStatus.result.fileName)
-              .then(({ rows }) => setSubtitleRows(rows))
+              .then(({ rows }) => {
+                setSubtitleRows(rows)
+                setPreviewError(false)
+              })
               .catch(() => {
                 setSubtitleRows([])
+                setPreviewError(true)
                 toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
               })
           }
@@ -740,6 +750,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setUploadProgress(0)
     setResult(null)
     setSubtitleRows([])
+    setPreviewError(false)
     setPartialSegments([])
     setTranslationLanguage(null)
     setTranslatedSubtitleRows([])
@@ -1076,8 +1087,39 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                   </button>
                 </div>
 
+                {/* ── Stat pills — mirrors Video → Transcript's pill row so the two tools read the same way at a glance ── */}
+                {subtitleRows.length > 0 && (() => {
+                  const cueCount = subtitleRows.length
+                  const lastRow = subtitleRows[subtitleRows.length - 1]
+                  const durSec = lastRow ? parseTimeToMs(lastRow.endTime) / 1000 : 0
+                  const durStr =
+                    durSec > 60
+                      ? `${Math.floor(durSec / 60)}m ${String(Math.floor(durSec % 60)).padStart(2, '0')}s`
+                      : durSec > 0
+                        ? `${Math.floor(durSec)}s`
+                        : null
+                  const pills = [
+                    `${cueCount} cue${cueCount !== 1 ? 's' : ''}`,
+                    durStr,
+                    currentResultFormat.toUpperCase(),
+                    language || 'auto-detected',
+                  ].filter(Boolean) as string[]
+                  return (
+                    <div className="flex flex-wrap items-center gap-2 px-1">
+                      {pills.map((label) => (
+                        <span
+                          key={label}
+                          className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs font-medium text-gray-500 dark:text-gray-400"
+                        >
+                          {label}
+                        </span>
+                      ))}
+                    </div>
+                  )
+                })()}
+
                 {/* ── Two-column layout: left = editor, right = exports ─────── */}
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_300px] items-start">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px] items-start">
 
                   {/* ── Left column: toggle + QA editor ────────────────────── */}
                   <div className="space-y-3 min-w-0">
@@ -1135,6 +1177,33 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                           }}
                         />
                       </Suspense>
+                    )}
+                    {/* Preview failed to load — an explicit, actionable card instead of leaving this column blank */}
+                    {subtitleRows.length === 0 && previewError && result?.downloadUrl && (
+                      <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
+                        <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">Couldn't load the cue preview</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
+                          Your subtitles processed fine and are ready to download from the Exports panel — this only affects the on-screen preview.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (!result?.downloadUrl) return
+                            try {
+                              const { rows } = await fetchSubtitlePreviewRows(result.downloadUrl, result.fileName)
+                              setSubtitleRows(rows)
+                              setPreviewError(false)
+                            } catch {
+                              toast.error("Still couldn't load the preview. Please use the Exports panel to download.")
+                            }
+                          }}
+                          className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+                        >
+                          <RefreshCw className="h-3.5 w-3.5" />
+                          Retry preview
+                        </button>
+                      </div>
                     )}
                     {!canEdit && subtitleRows.length > 0 && (
                       <button type="button" onClick={() => { setPaywallReason('INLINE_EDIT'); setShowPaywall(true) }} className="px-1 text-left text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">

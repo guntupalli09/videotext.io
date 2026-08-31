@@ -19,7 +19,7 @@ import { ProcessingProgress } from '../components/figma/ProcessingProgress'
 import { TranslateResult } from '../components/figma/TranslateResult'
 import { Checkbox } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
-const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
+const SubtitleQAReview = lazy(() => import('../components/SubtitleQAReview'))
 import { incrementUsage } from '../lib/usage'
 import { uploadFileWithProgress, uploadFixSubtitlesDual, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, getAuthToken, claimGuestJob } from '../lib/api'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
@@ -59,6 +59,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
   const [issues, setIssues] = useState<any[]>([])
   const [warnings, setWarnings] = useState<{ type: string; message: string; line?: number }[]>([])
   const [showIssues, setShowIssues] = useState(false)
@@ -142,6 +143,20 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     })()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Object URL for the optional dual-uploaded video, so the QA review editor can show a
+  // synced video preview the same way Video → Subtitles does.
+  useEffect(() => {
+    if (videoFile) {
+      const url = URL.createObjectURL(videoFile)
+      setVideoPreviewUrl(url)
+      return () => {
+        setVideoPreviewUrl(null)
+        setTimeout(() => URL.revokeObjectURL(url), 0)
+      }
+    }
+    setVideoPreviewUrl(null)
+  }, [videoFile])
 
   const handleFileSelect = (file: File) => {
     try {
@@ -1248,25 +1263,26 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               </div>
             </motion.div>
 
-            {/* ── Subtitle editor (pro inline editing) ───────────────────── */}
+            {/* ── QA editor — same reviewer used on Video → Subtitles (video-synced cue list,
+                 live overlap/CPL/CPS/AI-artifact detection, inline edit mode) so both subtitle
+                 tools give users the same review experience. Falls back to its own "no video
+                 preview" state when this job had no dual-uploaded video. ── */}
             {subtitleRows.length > 0 && (
-              <div className="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
-                <div className="border-b border-gray-100 px-5 py-3.5 dark:border-gray-800 flex items-center justify-between">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">Edit cues</p>
-                  {!canEdit && (
-                    <button type="button" onClick={() => { setProPaywallReason('INLINE_EDIT'); setShowProPaywall(true) }} className="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">Upgrade to Pro to edit — $7.99/mo</button>
-                  )}
-                </div>
-                <div className="p-5">
-                  <Suspense fallback={null}>
-                    <SubtitleEditor
-                      entries={subtitleRows}
-                      editable={canEdit}
-                      onChange={setSubtitleRows}
-                    />
-                  </Suspense>
-                </div>
-              </div>
+              <Suspense fallback={<div className="h-[300px] rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />}>
+                <SubtitleQAReview
+                  key={result?.downloadUrl}
+                  videoSrc={videoPreviewUrl}
+                  rows={subtitleRows}
+                  onRowsChange={canEdit ? setSubtitleRows : () => {}}
+                  editable={canEdit}
+                  onDownloadEdited={handleExportSrt}
+                />
+              </Suspense>
+            )}
+            {!canEdit && subtitleRows.length > 0 && (
+              <button type="button" onClick={() => { setProPaywallReason('INLINE_EDIT'); setShowProPaywall(true) }} className="px-1 text-left text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
+                Upgrade to Pro to edit subtitle text — $7.99/mo
+              </button>
             )}
 
             {(issues.length > 0 || warnings.length > 0) && renderIssueEditor()}
