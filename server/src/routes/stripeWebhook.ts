@@ -27,6 +27,7 @@ import {
 } from '../utils/analytics'
 import { captureFunnelEvent } from '../utils/funnelEvents'
 import { notifyFounderNewCustomer, notifyFounderActivationFailure } from '../utils/founderNotify'
+import { sendPaymentFailedCustomerEmail } from '../utils/paymentFailedNotify'
 
 const log = getLogger('api')
 
@@ -599,6 +600,14 @@ async function handleInvoicePaymentFailed(
       : null,
     amountDueCents: invoice.amount_due,
     currency: invoice.currency,
+  })
+
+  await sendPaymentFailedCustomerEmail({ user, invoice }).catch((notifyErr) => {
+    log.error({
+      msg: 'payment-failed-notify: customer email threw unexpectedly (swallowed)',
+      eventId,
+      error: (notifyErr as Error).message,
+    })
   })
 }
 
