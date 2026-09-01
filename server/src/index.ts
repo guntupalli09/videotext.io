@@ -45,6 +45,7 @@ import { maybeRunYoutubeCanary } from './services/youtubeCanary'
 import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
 import { startPricingIntentRescueCron } from './jobs/pricingIntentRescueCron'
+import { startXPostCron } from './jobs/xPostCron'
 import { runReconciliation } from './services/stripeReconciliation'
 import { stripe } from './services/stripe'
 import { STRIPE_RECONCILIATION_ENABLED } from './utils/featureFlags'
@@ -535,6 +536,11 @@ const server = app.listen(PORT, () => {
   // upgrade_clicked, checkout-tier events). Checks every 60s; personalizes by the
   // user's actual tool usage and video length when they have job history.
   startPricingIntentRescueCron()
+
+  // X (Twitter) posting, 3x/day, via Typefully's direct API — see xPostCron.ts
+  // for why (Zapier has no X integration; X's API also blocks links in
+  // automated posts, so this cron never includes one).
+  startXPostCron()
 
   // Optional heap memory monitoring — set MEMORY_DEBUG=1 to enable
   if (process.env.MEMORY_DEBUG === '1') {
