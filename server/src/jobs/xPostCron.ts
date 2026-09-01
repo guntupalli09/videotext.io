@@ -28,10 +28,10 @@
  * Rotation state (category index + post-within-category index) lives in
  * Redis so restarts don't reset the cycle or repeat the same post.
  */
-import { readFileSync } from 'fs'
 import path from 'path'
 import { createRedisClient } from '../utils/redis'
 import { getLogger } from '../lib/logger'
+import { uploadTypefullyImage, publishToTypefully } from '../utils/typefullyClient'
 
 const log = getLogger('worker')
 const redis = createRedisClient('client')
@@ -85,52 +85,6 @@ async function getNextPost(): Promise<{ category: Category; text: string }> {
   return { category, text: POSTS[category][postIdx] }
 }
 
-async function typefullyApi(pathname: string, apiKey: string, options: RequestInit = {}): Promise<any> {
-  const res = await fetch(`https://api.typefully.com/v2${pathname}`, {
-    ...options,
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...(options.headers || {}),
-    },
-    signal: AbortSignal.timeout(15_000),
-  })
-  if (!res.ok) {
-    const body = await res.text().catch(() => '')
-    throw new Error(`${pathname} -> ${res.status}: ${body.slice(0, 500)}`)
-  }
-  return res.status === 204 ? null : res.json()
-}
-
-async function uploadCategoryImage(category: Category, apiKey: string, socialSetId: string): Promise<string | null> {
-  try {
-    const imagePath = path.join(__dirname, '../../assets/x-cards', `${category}.jpg`)
-    const buf = readFileSync(imagePath)
-
-    const presign = await typefullyApi(`/social-sets/${socialSetId}/media/upload`, apiKey, {
-      method: 'POST',
-      body: JSON.stringify({ file_name: `${category}.jpg` }),
-    })
-    const mediaId = presign.media_id
-    if (!mediaId || !presign.upload_url) throw new Error(`Unexpected presign response: ${JSON.stringify(presign)}`)
-
-    // No headers on this PUT — see file header comment for why.
-    const putRes = await fetch(presign.upload_url, { method: 'PUT', body: buf })
-    if (!putRes.ok) throw new Error(`Media upload PUT failed: ${putRes.status}`)
-
-    for (let i = 0; i < 15; i++) {
-      const status = await typefullyApi(`/social-sets/${socialSetId}/media/${mediaId}`, apiKey)
-      if (status.status === 'ready') return mediaId
-      if (status.status === 'failed') throw new Error(`Media processing failed: ${JSON.stringify(status)}`)
-      await new Promise((r) => setTimeout(r, 1500))
-    }
-    throw new Error('Media did not become ready in time')
-  } catch (e) {
-    log.warn({ msg: 'x-post-cron: image upload failed, posting text-only', category, error: (e as Error)?.message })
-    return null
-  }
-}
-
 async function publishToX(category: Category, text: string): Promise<{ ok: boolean; url?: string; error?: string }> {
   const apiKey = process.env.TYPEFULLY_API_KEY
   const socialSetId = process.env.TYPEFULLY_X_SOCIAL_SET_ID
@@ -138,24 +92,16 @@ async function publishToX(category: Category, text: string): Promise<{ ok: boole
     return { ok: false, error: 'TYPEFULLY_API_KEY or TYPEFULLY_X_SOCIAL_SET_ID not set' }
   }
 
-  try {
-    const mediaId = await uploadCategoryImage(category, apiKey, socialSetId)
-    const data = await typefullyApi(`/social-sets/${socialSetId}/drafts`, apiKey, {
-      method: 'POST',
-      body: JSON.stringify({
-        platforms: {
-          x: { enabled: true, posts: [{ text, ...(mediaId ? { media_ids: [mediaId] } : {}) }] },
-        },
-        publish_at: 'now',
-      }),
-    })
-    if (data.status !== 'published' || !data.x_published_url) {
-      return { ok: false, error: `Unexpected response: ${JSON.stringify(data).slice(0, 500)}` }
-    }
-    return { ok: true, url: data.x_published_url }
-  } catch (e) {
-    return { ok: false, error: (e as Error)?.message }
-  }
+  const imagePath = path.join(__dirname, '../../assets/x-cards', `${category}.jpg`)
+  const mediaId = await uploadTypefullyImage(imagePath, `${category}.jpg`, apiKey, socialSetId, log)
+
+  return publishToTypefully({
+    platform: 'x',
+    content: { posts: [{ text, ...(mediaId ? { media_ids: [mediaId] } : {}) }] },
+    apiKey,
+    socialSetId,
+    publishedUrlField: 'x_published_url',
+  })
 }
 
 async function tick(): Promise<void> {

@@ -46,6 +46,8 @@ import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
 import { startPricingIntentRescueCron } from './jobs/pricingIntentRescueCron'
 import { startXPostCron } from './jobs/xPostCron'
+import { startLinkedInPostCron } from './jobs/linkedinPostCron'
+import { startSubstackPostCron } from './jobs/substackPostCron'
 import { runReconciliation } from './services/stripeReconciliation'
 import { stripe } from './services/stripe'
 import { STRIPE_RECONCILIATION_ENABLED } from './utils/featureFlags'
@@ -541,6 +543,11 @@ const server = app.listen(PORT, () => {
   // for why (Zapier has no X integration; X's API also blocks links in
   // automated posts, so this cron never includes one).
   startXPostCron()
+
+  // LinkedIn + Substack, same Typefully API, same rendered cards — replaces
+  // the earlier Zapier-based LinkedIn routine (see linkedinPostCron.ts).
+  startLinkedInPostCron()
+  startSubstackPostCron()
 
   // Optional heap memory monitoring — set MEMORY_DEBUG=1 to enable
   if (process.env.MEMORY_DEBUG === '1') {
