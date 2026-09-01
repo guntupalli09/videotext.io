@@ -65,19 +65,31 @@ async function uploadMedia(socialSetId, imagePath) {
   // Step 1: ask Typefully for a presigned upload target.
   const presign = await api(`/social-sets/${socialSetId}/media/upload`, {
     method: 'POST',
-    body: JSON.stringify({ content_type: contentType }),
+    body: JSON.stringify({ content_type: contentType, file_name: path.basename(imagePath) }),
   })
   const mediaId = presign.media_id || presign.id
   const uploadUrl = presign.upload_url || presign.presigned_url || presign.url
   if (!uploadUrl || !mediaId) {
     throw new Error(`Unexpected presign response: ${JSON.stringify(presign)}`)
   }
+  if (process.env.DEBUG) console.error('presign response:', JSON.stringify(presign, null, 2))
 
-  // Step 2: PUT the raw file bytes to the presigned URL (never goes through
-  // our own API key or JSON — direct binary upload).
+  // Step 2: upload the raw file bytes to the presigned S3 URL. This is a
+  // v2-signed URL whose StringToSign embeds the x-amz-meta-* query params —
+  // the PUT request must echo those exact values back as real headers, or
+  // S3 returns SignatureDoesNotMatch. Extract them from the URL itself.
   const buf = readFileSync(imagePath)
-  const putRes = await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': contentType }, body: buf })
-  if (!putRes.ok) throw new Error(`Media upload PUT failed: ${putRes.status}`)
+  const parsedUrl = new URL(uploadUrl)
+  const putHeaders = { 'Content-Type': contentType }
+  for (const [key, value] of parsedUrl.searchParams.entries()) {
+    if (key.toLowerCase().startsWith('x-amz-meta-')) putHeaders[key] = value
+  }
+  if (process.env.DEBUG) console.error('putHeaders:', JSON.stringify(putHeaders, null, 2))
+  const putRes = await fetch(uploadUrl, { method: 'PUT', headers: putHeaders, body: buf })
+  if (!putRes.ok) {
+    const body = await putRes.text().catch(() => '')
+    throw new Error(`Media upload failed: ${putRes.status} ${body.slice(0, 500)}`)
+  }
 
   // Step 3: poll until the media is processed.
   for (let i = 0; i < 20; i++) {
@@ -90,10 +102,19 @@ async function uploadMedia(socialSetId, imagePath) {
 }
 
 async function createAndPublishDraft({ socialSetId, text, mediaId, publishAt }) {
-  const platforms = { x: { content: text, ...(mediaId ? { media: [{ media_id: mediaId }] } : {}) } }
+  const body = {
+    platforms: {
+      x: {
+        enabled: true,
+        posts: [{ text, ...(mediaId ? { media_ids: [mediaId] } : {}) }],
+      },
+    },
+    publish_at: publishAt || 'now',
+  }
+  if (process.env.DEBUG) console.error('draft request body:', JSON.stringify(body, null, 2))
   const draft = await api(`/social-sets/${socialSetId}/drafts`, {
     method: 'POST',
-    body: JSON.stringify({ platforms, publish_at: publishAt || 'now' }),
+    body: JSON.stringify(body),
   })
 
   // Poll until the publish attempt resolves.
