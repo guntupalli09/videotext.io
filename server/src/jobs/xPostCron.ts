@@ -1,9 +1,22 @@
 /**
- * Posts to X (Twitter) 3x/day via Typefully's direct REST API — no Zapier,
- * no image (Typefully's presigned-upload signing is currently broken on
- * their end, confirmed 2026-09-01; see scripts/social/post-typefully.mjs).
- * X's API also rejects automated posts containing URLs, so post text is
- * always link-free by design here — never add one.
+ * Posts to X (Twitter) 3x/day via Typefully's direct REST API — no Zapier.
+ * X's API rejects automated posts containing URLs, so post text is always
+ * link-free by design here — never add one.
+ *
+ * Images: one fixed, pre-rendered branded card per category, bundled at
+ * server/assets/x-cards/<category>.jpg (copied into the Docker image since
+ * the build only COPYs server/, not client/ or scripts/ — see Dockerfile).
+ * No headless browser runs in production; images are rendered once at
+ * commit time via scripts/social/render-card.mjs and checked in as static
+ * files, not generated at runtime.
+ *
+ * Media upload uses Typefully's presigned-S3 flow. CRITICAL per their docs
+ * (confirmed by testing 2026-09-01 — do not "fix" this by adding headers
+ * back, that's what broke it originally): the PUT to the presigned URL
+ * must carry NO extra headers at all (no Content-Type, no x-amz-meta-*),
+ * even though S3's own SignatureDoesNotMatch error message appears to list
+ * those headers as required — it doesn't, that's a red herring from how
+ * S3 echoes back what it received. Zero headers is correct.
  *
  * Content is a fixed, pre-verified set of posts, NOT LLM-generated at
  * runtime. Every number/claim below was checked against this repo
@@ -15,8 +28,10 @@
  * Rotation state (category index + post-within-category index) lives in
  * Redis so restarts don't reset the cycle or repeat the same post.
  */
+import path from 'path'
 import { createRedisClient } from '../utils/redis'
 import { getLogger } from '../lib/logger'
+import { uploadTypefullyImage, publishToTypefully } from '../utils/typefullyClient'
 
 const log = getLogger('worker')
 const redis = createRedisClient('client')
@@ -70,35 +85,23 @@ async function getNextPost(): Promise<{ category: Category; text: string }> {
   return { category, text: POSTS[category][postIdx] }
 }
 
-async function publishToX(text: string): Promise<{ ok: boolean; url?: string; error?: string }> {
+async function publishToX(category: Category, text: string): Promise<{ ok: boolean; url?: string; error?: string }> {
   const apiKey = process.env.TYPEFULLY_API_KEY
   const socialSetId = process.env.TYPEFULLY_X_SOCIAL_SET_ID
   if (!apiKey || !socialSetId) {
     return { ok: false, error: 'TYPEFULLY_API_KEY or TYPEFULLY_X_SOCIAL_SET_ID not set' }
   }
 
-  try {
-    const res = await fetch(`https://api.typefully.com/v2/social-sets/${socialSetId}/drafts`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        platforms: { x: { enabled: true, posts: [{ text }] } },
-        publish_at: 'now',
-      }),
-      signal: AbortSignal.timeout(15_000),
-    })
-    if (!res.ok) {
-      const body = await res.text().catch(() => '')
-      return { ok: false, error: `${res.status}: ${body.slice(0, 500)}` }
-    }
-    const data = (await res.json()) as { x_published_url?: string; status?: string }
-    if (data.status !== 'published' || !data.x_published_url) {
-      return { ok: false, error: `Unexpected response: ${JSON.stringify(data).slice(0, 500)}` }
-    }
-    return { ok: true, url: data.x_published_url }
-  } catch (e) {
-    return { ok: false, error: (e as Error)?.message }
-  }
+  const imagePath = path.join(__dirname, '../../assets/x-cards', `${category}.jpg`)
+  const mediaId = await uploadTypefullyImage(imagePath, `${category}.jpg`, apiKey, socialSetId, log)
+
+  return publishToTypefully({
+    platform: 'x',
+    content: { posts: [{ text, ...(mediaId ? { media_ids: [mediaId] } : {}) }] },
+    apiKey,
+    socialSetId,
+    publishedUrlField: 'x_published_url',
+  })
 }
 
 async function tick(): Promise<void> {
@@ -112,7 +115,7 @@ async function tick(): Promise<void> {
   if (lock !== 'OK') return // already fired this slot
 
   const { category, text } = await getNextPost()
-  const result = await publishToX(text)
+  const result = await publishToX(category, text)
 
   if (result.ok) {
     log.info({ msg: 'x-post-cron: published', category, url: result.url })
