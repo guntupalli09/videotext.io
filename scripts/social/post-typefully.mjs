@@ -59,33 +59,27 @@ async function listSocialSets() {
 }
 
 async function uploadMedia(socialSetId, imagePath) {
-  const ext = path.extname(imagePath).toLowerCase()
-  const contentType = ext === '.png' ? 'image/png' : 'image/jpeg'
-
-  // Step 1: ask Typefully for a presigned upload target.
+  // Step 1: ask Typefully for a presigned upload target. Per their docs,
+  // content_type is not a request field — only file_name.
   const presign = await api(`/social-sets/${socialSetId}/media/upload`, {
     method: 'POST',
-    body: JSON.stringify({ content_type: contentType, file_name: path.basename(imagePath) }),
+    body: JSON.stringify({ file_name: path.basename(imagePath) }),
   })
-  const mediaId = presign.media_id || presign.id
-  const uploadUrl = presign.upload_url || presign.presigned_url || presign.url
+  const mediaId = presign.media_id
+  const uploadUrl = presign.upload_url
   if (!uploadUrl || !mediaId) {
     throw new Error(`Unexpected presign response: ${JSON.stringify(presign)}`)
   }
-  if (process.env.DEBUG) console.error('presign response:', JSON.stringify(presign, null, 2))
 
-  // Step 2: upload the raw file bytes to the presigned S3 URL. This is a
-  // v2-signed URL whose StringToSign embeds the x-amz-meta-* query params —
-  // the PUT request must echo those exact values back as real headers, or
-  // S3 returns SignatureDoesNotMatch. Extract them from the URL itself.
+  // Step 2: PUT raw file bytes with NO extra headers. Per Typefully's docs:
+  // "Send a plain PUT with only raw file bytes as the body — no extra
+  // headers (Content-Type, Authorization, etc.). The presigned URL
+  // signature was calculated without them, so adding headers causes a
+  // 403 SignatureDoesNotMatch." (Confirmed: adding Content-Type or
+  // x-amz-meta-* headers, even matching what S3's own error message
+  // claimed was required, broke the signature. Zero headers works.)
   const buf = readFileSync(imagePath)
-  const parsedUrl = new URL(uploadUrl)
-  const putHeaders = { 'Content-Type': contentType }
-  for (const [key, value] of parsedUrl.searchParams.entries()) {
-    if (key.toLowerCase().startsWith('x-amz-meta-')) putHeaders[key] = value
-  }
-  if (process.env.DEBUG) console.error('putHeaders:', JSON.stringify(putHeaders, null, 2))
-  const putRes = await fetch(uploadUrl, { method: 'PUT', headers: putHeaders, body: buf })
+  const putRes = await fetch(uploadUrl, { method: 'PUT', body: buf })
   if (!putRes.ok) {
     const body = await putRes.text().catch(() => '')
     throw new Error(`Media upload failed: ${putRes.status} ${body.slice(0, 500)}`)
@@ -93,7 +87,7 @@ async function uploadMedia(socialSetId, imagePath) {
 
   // Step 3: poll until the media is processed.
   for (let i = 0; i < 20; i++) {
-    const status = await api(`/media/${mediaId}`)
+    const status = await api(`/social-sets/${socialSetId}/media/${mediaId}`)
     if (status.status === 'ready') return mediaId
     if (status.status === 'failed') throw new Error(`Media processing failed: ${JSON.stringify(status)}`)
     await new Promise((r) => setTimeout(r, 1500))
