@@ -146,11 +146,6 @@ export async function runGuidelineFormatIntake(
     }
 
     if (plan === 'free') {
-      const dailyLimitKey = authedUserId ?? `ip_${String(req.ip || req.headers['x-forwarded-for'] || 'unknown')}`
-      const allowed = await checkAndRecordGuidelineDaily(dailyLimitKey, 3)
-      if (!allowed) {
-        return intakeError(429, 'QUOTA_EXCEEDED', 'Free plan limit reached: 3 guideline formats per day. Upgrade to Pro for unlimited.')
-      }
       const mins = estimateTranscriptMinutes(trimmed)
       if (mins > 30) {
         return intakeError(400, 'VALIDATION_ERROR', 'Free plan supports up to ~30 minutes of transcript text per run. Upgrade to Pro for longer transcripts.')
@@ -164,6 +159,17 @@ export async function runGuidelineFormatIntake(
 
     const presetIdRaw = req.body?.presetId
     const presetId = typeof presetIdRaw === 'string' && presetIdRaw.length > 0 ? presetIdRaw : null
+
+    // Daily quota is checked/recorded last, immediately before the job is
+    // actually created, so a request rejected by validation above (too long,
+    // missing rules, etc.) never consumes a free-plan daily slot.
+    if (plan === 'free') {
+      const dailyLimitKey = authedUserId ?? `ip_${String(req.ip || req.headers['x-forwarded-for'] || 'unknown')}`
+      const allowed = await checkAndRecordGuidelineDaily(dailyLimitKey, 3)
+      if (!allowed) {
+        return intakeError(429, 'QUOTA_EXCEEDED', 'Free plan limit reached: 3 guideline formats per day. Upgrade to Pro for unlimited.')
+      }
+    }
 
     const job = await prisma.formattingJob.create({
       data: {
