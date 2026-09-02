@@ -276,3 +276,67 @@ US 1,513 (22.2%) · Singapore 997 (14.6%) · China 496 (7.3%) · India 490 (7.2%
 - No Web Analytics event data exists for signup/pricing conversions — any conversion-rate claim needs the product's own analytics, not Ahrefs
 
 Everything else in this document is now backed by either a directly-opened Ahrefs PDF or Santhosh's manual transcription of the same 2026-08-31 capture. Ready to proceed to codebase audit (Section 27).
+
+---
+
+## 9. Codebase audit findings and fixes shipped (2026-09-02)
+
+A background code investigation (routing, prerendering, canonical logic, robots.txt, sitemap generation, internal linking, structured data) traced every technical finding above to exact files. What follows is what was fixed, what turned out to be a false lead, and what still needs a decision outside this repo.
+
+### 9.1 Root cause: `/srt-generator` and `/video-to-srt` were actively suppressed — FIXED
+
+**Evidence chain**: §3.7's keyword table shows `srt generator` ranking position 6 and `video-to-srt`'s traffic (288 visitors/30d per Top Pages, 396 all-time entries) far exceeding `/video-to-subtitles` (94 visitors/30d) — the page the site's own canonical tag told Google was the "real" version. `client/src/lib/seoRegistry.ts` had both pages registered with genuinely distinct titles/H1/FAQ (not thin duplicates), yet `client/src/lib/slugToPrimary.ts` aliased both onto `/video-to-subtitles`, and both carried `indexable: false`. Net effect: three separate mechanisms were suppressing two pages Google had already decided, on its own evidence, deserved to rank independently — the canonical tag told crawlers "not this page," `indexable: false` excluded them from the sitemap, and the same flag silently rewrote all internal "related tool" links pointing at them (15+ existing `relatedSlugs` references across the registry) onto `/video-to-subtitles` instead — meaning these two top-traffic pages had close to zero internal link equity despite being cited as "related" all over the site.
+
+**Fix**: flipped `indexable: false → true` for both entries, removed both from the alias map (they now self-canonicalize), and added SoftwareApplication JSON-LD schema matching what `/video-to-transcript` already has. The 15+ pre-existing `relatedSlugs` references to these pages across the registry now render as real `<a href>` links automatically — no manual link-adding needed, the intent was already there in the data, only the resolver was rewriting it away.
+
+**Verified**: rebuilt and re-ran the prerender pipeline; `dist/srt-generator/index.html` and `dist/video-to-srt/index.html` now each self-canonicalize, and `sitemap-programmatic.xml` now lists both URLs (diff-checked — no other URLs moved).
+
+**Expected impact**: these are the two highest-traffic tool pages in the entire Web Analytics dataset after the homepage. Google was already ranking and sending traffic to them against the site's own signals; removing the contradiction should let their existing rankings consolidate and improve rather than stay capped, and the restored internal links give them the link equity the Best-by-Links data showed they never had. This directly targets your "core paid tools + high ranking" ask — no new content had to be written, the demand and rankings already existed.
+
+**Not touched, on purpose**: ~50 other slug aliases in the same map (e.g. `subtitle-generator → /video-to-subtitles`, `srt-to-vtt → /video-to-subtitles`) follow the identical pattern but have **no Ahrefs keyword-table or Web Analytics evidence of independently outranking their canonical target**. Changing those would be speculation, not an evidence-backed fix, so they were left as-is per the "don't invent missing values" rule.
+
+### 9.2 `/tools/html-to-srt` was 404ing on real traffic — FIXED
+
+Web Analytics shows 131 visitors/30 days and 237 all-time entries on `/tools/html-to-srt` — but no route for it existed anywhere in `App.tsx`; it silently fell through to the catch-all `NotFound` page. Built a real client-side HTML-caption-to-SRT converter (`client/src/pages/tools/HtmlToSrt.tsx`, following the exact pattern of the existing `VttToSrt`/`TtmlToSrt`/`AssToSrt` tools already on the site — zero-upload, browser-only conversion). It parses the three caption-timing shapes actually seen in the wild: `data-start`/`data-end` attributes, TTML-style `begin`/`end` attributes, and bracketed inline timestamps. Wired into the route table, SEO metadata, prerender static generation, sitemap, and the `/tools` hub listing. Verified it now prerenders with its own title and self-referencing canonical.
+
+**Expected impact**: converts ~131 monthly visitors currently hitting a dead page into a working tool session — direct, immediate traffic recovery, not speculative.
+
+### 9.3 `/otter-ai-alternative` had no real 301 — FIXED
+
+Confirmed via `reports/ssr-routes.json` that this URL was `indexable: false, prerendered: false` and only redirected client-side (`<Navigate>`, requires JS execution) with no server-level redirect. A non-JS crawler request got the generic homepage shell instead of either the real content or a clean redirect signal. Added a proper edge-level 301 in `vercel.json` (`/otter-ai-alternative → /otter-alternative`), matching the pattern already used for 28 other consolidated slugs on this site.
+
+### 9.4 `/batch-process` canonical/redirect self-contradiction — FIXED (and a clobbering bug caught in the process)
+
+`/batch-process` is a real, heavily cross-linked marketing mention (Home, About, Compare, nav) that is, in the live app, a pure client-side redirect into `/video-to-transcript` (batch capability lives inside that tool; `client/src/pages/BatchProcess.tsx` is itself just a redirect — there is no standalone batch UI to restore, so no feature was built or faked here). Despite being a redirect, it was simultaneously registered as a real, indexable, sitemapped page with its own SEO metadata and rich prerendered marketing content (comparison table, how-to steps, social proof) — the "canonical points at a redirect target" pattern from the Ahrefs Site Audit finding. Fixed by canonicalizing `/batch-process` and its four alias slugs (`batch-video-processing`, `bulk-subtitle-export`, `bulk-transcript-export`, `bulk-video-transcription`) directly onto `/video-to-transcript`.
+
+**Caught during verification**: this fix initially caused a real regression — `/video-to-transcript`'s own prerendered file was being silently overwritten by `/batch-process`'s static content, because both pages' generator entries wrote to the same canonicalized output path and whichever ran later won. This was only caught by actually running the build and prerender pipeline end-to-end and diffing the output, not by reasoning about the code alone. Fixed by removing `/batch-process`'s standalone prerender entry (its content was for a page that was never actually reachable as distinct content anyway). Re-verified: `/video-to-transcript` now prerenders with its own correct title again, and `/batch-process` correctly has no separate static file.
+
+**Lesson applied elsewhere**: swept all ~56 slug aliases for the same collision class (a real hand-authored prerender entry canonicalizing onto another real page's URL) — found no other live instance. The other aliased slugs either have no prerender entry of their own or aren't hand-authored content pages, so they don't hit this failure mode.
+
+### 9.5 `/founder` — private dashboard was crawlable — FIXED
+
+`/founder` routes to `FounderDashboard`, a login-gated internal analytics tool, with no entry in `ROUTE_SEO`, the registry, or the prerender route list, and no `robots.txt` rule. A logged-out crawler hitting it got the generic homepage shell (not noindexed), while a JS-executing crawler saw a client-side "Page not found, noindex" flash before the login redirect — an inconsistent, unintentional signal on a page that should never be publicly indexed at all. Added `Disallow: /founder` to every user-agent block in `robots.txt` (the wildcard alone isn't sufficient — a named bot's own `Allow: /` block overrides the wildcard's rules for that bot under the robots.txt spec, so each block needed its own line).
+
+### 9.6 registry/canonical drift cleanup — FIXED
+
+`scripts/seo/registry.ts` carried its own hardcoded copy of `SLUG_TO_PRIMARY`, explicitly commented "keep in sync with" the real client copy — but had drifted (the youtube-family slugs and `zoom-recording-transcript` pointed to different targets than the live app). Investigation confirmed this copy was **never actually imported or used anywhere** — pure dead code creating a false impression of a live inconsistency. Replaced it with a re-export of the real client-side map, so there is now exactly one source of truth and no way for this specific drift to recur.
+
+### 9.7 Investigated, found not to be a repo-level issue
+
+**"Inconsistent AI training bot policy" / "blocked from some AI search bots"** (265 pages, Site Audit): `client/public/robots.txt` and every in-app meta-robots code path were checked line by line — every named AI bot (GPTBot, ClaudeBot, anthropic-ai, PerplexityBot, Google-Extended, Bytespider, cohere-ai, Meta-ExternalAgent, Applebot-Extended) plus the wildcard (which also covers CCBot) are fully and consistently `Allow: /`, and no per-page robots meta or `X-Robots-Tag` variance exists anywhere in the codebase. **This cannot be fixed here** — it points to a hosting/CDN/WAF-level bot-management setting (e.g. a Vercel or Cloudflare firewall "block AI crawlers" toggle) outside this repository. Check the Vercel project's firewall/bot-protection settings directly; nothing in this codebase is causing it.
+
+**13 structured-data rich-results validation errors**: `SoftwareApplication` schemas across the site (`client/src/lib/seoMeta.ts`) have no `aggregateRating`/`review` field, which Google's rich-results validator commonly flags as a warning (not a hard error) for this schema type. This is a plausible contributor, not a confirmed one — the exact 13 URLs from Ahrefs' list weren't in the evidence package, so this wasn't changed speculatively. If you get the actual 13-URL list, this is the first thing to check against.
+
+### 9.8 Verification performed before shipping
+
+- `npx tsc --noEmit` — clean, zero errors introduced.
+- `npm run build` (Vite production build) — succeeded.
+- `npx tsx scripts/prerender.ts` — 293 static pages generated (same pre-existing 2 unrelated failures on `/integrations/zapier` and `/docs/api`, both a missing `React` import predating this work, not touched).
+- `npx tsx scripts/seo/generate-sitemap.ts` — regenerated; diffed old vs. new sitemap URL lists line-by-line — confirmed exactly the four intended changes (`/batch-process` removed, `/srt-generator`, `/video-to-srt`, `/tools/html-to-srt` added) and nothing else moved.
+- Spot-checked prerendered `<title>` and `<link rel="canonical">` for every changed route plus three unrelated pillar pages (`/video-to-subtitles`, `/fix-subtitles`, `/translate-subtitles`, `/burn-subtitles`) to confirm no other page's static content was disturbed.
+
+### 9.9 What this does and doesn't claim
+
+This will not move Ahrefs' Domain Rating directly — DR is a function of referring-domain authority, which none of these changes touch. What it does address, with direct evidence behind each: two already-ranking, high-traffic pages no longer fight their own canonical tag; a real traffic-receiving URL no longer 404s; a redirect stub no longer masquerades as indexable content and no longer corrupts a real page's metadata; a private dashboard is no longer crawlable; and AI/rich-result visibility on the two restored pages now has the same schema markup as this site's proven-effective pages. The AI-bot-policy finding is real but not fixable from this codebase — it needs a decision in the hosting dashboard, not code.
+
+**Not yet done, and each needs the missing evidence named next to it before touching**: the other ~50 slug aliases (needs per-slug ranking/traffic evidence, not present); the 13 structured-data error URLs (needs the actual Ahrefs list); the 21 canonical→4xx URLs beyond `/batch-process` and `/otter-ai-alternative` (needs the actual Ahrefs list — those two were the only ones this investigation could independently derive from first principles); Backlinks/Referring-Domains spam-cluster monitoring (needs a follow-up Ahrefs pull in 30 days per the monthly scoreboard schedule already defined in §31 of the original brief).

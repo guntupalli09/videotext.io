@@ -448,6 +448,10 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: 'ASS / SSA to SRT Converter — Strip Styling, Keep Dialogue Free | VideoText',
     description: 'Convert ASS or SSA subtitle files to plain SRT. Strips all styling tags and positioning codes, preserves dialogue text and timing. Free, runs in your browser.',
   },
+  '/tools/html-to-srt': {
+    title: 'HTML to SRT Converter — Convert HTML Captions & Transcripts Free | VideoText',
+    description: 'Convert HTML captions or transcript exports to SRT format. Supports data-start timing attributes, TTML-style begin/end attributes, and bracketed timestamps. Free, browser-based.',
+  },
   '/tools/ttml-to-srt': {
     title: 'TTML to SRT Converter — Convert DFXP & EBU-TT Subtitles Free | VideoText',
     description: 'Convert TTML, DFXP, or EBU-TT subtitle files to SRT format. Used for Netflix, broadcast, and enterprise video workflows. Free, browser-based.',
@@ -574,6 +578,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
   '/tools/srt-to-sbv': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'SRT to SBV', path: '/tools/srt-to-sbv' }],
   '/tools/ass-to-srt': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'ASS to SRT', path: '/tools/ass-to-srt' }],
   '/tools/ttml-to-srt': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'TTML to SRT', path: '/tools/ttml-to-srt' }],
+  '/tools/html-to-srt': [{ name: 'Home', path: '/' }, { name: 'Free Tools', path: '/tools' }, { name: 'HTML to SRT', path: '/tools/html-to-srt' }],
   '/blog/how-to-transcribe-podcast-episode': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Transcribe Podcast Episode', path: '/blog/how-to-transcribe-podcast-episode' }],
   '/blog/how-to-add-captions-youtube-video': [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: 'Add Captions to YouTube Video', path: '/blog/how-to-add-captions-youtube-video' }],
   '/subtitle-tools': [{ name: 'Home', path: '/' }, { name: 'Subtitle Tools', path: '/subtitle-tools' }],
@@ -1373,10 +1378,15 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
     description: 'Compress video online with light, medium, or heavy compression settings. Reduce file size for sharing and uploads.',
     featureList: 'Video compression, Light compression, Medium compression, Heavy compression, MP4 output, No quality loss option',
   },
-  '/batch-process': {
-    name: 'Batch Video to Subtitles — Multiple Videos at Once',
-    description: 'Transcribe or subtitle many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro plan.',
-    featureList: 'Batch transcription, Batch subtitle generation, ZIP download, Multi-language batch, Pro plan',
+  '/srt-generator': {
+    name: 'SRT Generator — Create SRT Subtitle Files from Video',
+    description: 'Generate SRT subtitle files from any video with AI. Upload your video, get a timed SRT file in seconds. Supports 70+ languages.',
+    featureList: 'SRT generation, AI timing, 70+ language support, YouTube URL input, Instant download',
+  },
+  '/video-to-srt': {
+    name: 'Video to SRT — Generate SRT Subtitle Files Online',
+    description: 'Convert video to an SRT subtitle file online with AI. Upload any video and download a timed SRT file in seconds.',
+    featureList: 'SRT generation, AI timing, VTT export option, YouTube URL input, Instant download',
   },
 }
 

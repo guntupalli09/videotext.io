@@ -6,6 +6,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { getProgrammaticSeoEntries } from '../../client/src/lib/generateSeoPages'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
+export { SLUG_TO_PRIMARY } from '../../client/src/lib/slugToPrimary'
 
 const SCRIPT_DIR = __dirname
 const REPO_ROOT = path.join(SCRIPT_DIR, '..', '..')
@@ -208,6 +209,7 @@ export const FREE_TOOL_AND_HUB_PATHS: string[] = [
   '/tools/srt-to-sbv',
   '/tools/ass-to-srt',
   '/tools/ttml-to-srt',
+  '/tools/html-to-srt',
   '/subtitle-tools',
   '/subtitle-resources',
 ]
@@ -260,67 +262,6 @@ export function getExistingIntentKeys(): Set<string> {
     if (m && m[1]) keys.add(m[1])
   }
   return keys
-}
-
-/** Slug to primary path mapping for tool clusters (canonical tool URL). */
-export const SLUG_TO_PRIMARY: Record<string, string> = {
-  'video-to-text': '/video-to-transcript',
-  'mp4-to-text': '/video-to-transcript',
-  'mp4-to-srt': '/video-to-subtitles',
-  'subtitle-generator': '/video-to-subtitles',
-  'srt-translator': '/translate-subtitles',
-  'meeting-transcript': '/video-to-transcript',
-  'speaker-diarization': '/video-to-transcript',
-  'video-summary-generator': '/video-to-transcript',
-  'video-chapters-generator': '/video-to-transcript',
-  'keyword-indexed-transcript': '/video-to-transcript',
-  'srt-to-vtt': '/video-to-subtitles',
-  'subtitle-converter': '/video-to-subtitles',
-  'subtitle-timing-fixer': '/fix-subtitles',
-  'subtitle-validation': '/fix-subtitles',
-  'subtitle-translator': '/translate-subtitles',
-  'multilingual-subtitles': '/translate-subtitles',
-  'subtitle-language-checker': '/translate-subtitles',
-  'subtitle-grammar-fixer': '/fix-subtitles',
-  'subtitle-line-break-fixer': '/fix-subtitles',
-  'hardcoded-captions': '/burn-subtitles',
-  'video-with-subtitles': '/burn-subtitles',
-  'video-compressor': '/compress-video',
-  'reduce-video-size': '/compress-video',
-  'batch-video-processing': '/batch-process',
-  'bulk-subtitle-export': '/batch-process',
-  'bulk-transcript-export': '/batch-process',
-  // Transcription variants
-  'transcribe-video': '/video-to-transcript',
-  'video-transcription': '/video-to-transcript',
-  'free-transcription': '/video-to-transcript',
-  'online-transcription': '/video-to-transcript',
-  'ai-transcription': '/video-to-transcript',
-  'audio-to-text': '/video-to-transcript',
-  'podcast-transcript': '/video-to-transcript',
-  'zoom-recording-transcript': '/video-to-transcript',
-  'interview-transcription': '/video-to-transcript',
-  'lecture-transcription': '/video-to-transcript',
-  // YouTube transcription (high SEO potential)
-  'youtube-to-transcript': '/youtube-to-transcript',
-  'youtube-transcript': '/youtube-to-transcript',
-  'youtube-video-transcript': '/youtube-to-transcript',
-  'transcribe-youtube-video': '/youtube-to-transcript',
-  'youtube-to-text': '/youtube-to-transcript',
-  // Format-specific transcription
-  'mov-to-text': '/video-to-transcript',
-  'webm-to-text': '/video-to-transcript',
-  // Subtitle/caption variants
-  'automatic-subtitles': '/video-to-subtitles',
-  'caption-generator': '/video-to-subtitles',
-  'closed-caption-generator': '/video-to-subtitles',
-  'free-subtitle-generator': '/video-to-subtitles',
-  'video-to-srt': '/video-to-subtitles',
-  'srt-generator': '/video-to-subtitles',
-  // Translation variants
-  'translate-video': '/translate-subtitles',
-  'video-translation': '/translate-subtitles',
-  'bulk-video-transcription': '/batch-process',
 }
 
 export function pathToSlug(routePath: string): string {

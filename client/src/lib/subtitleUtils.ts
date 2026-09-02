@@ -425,3 +425,82 @@ function extractTtmlCues(doc: Document): SubtitleCue[] {
 
   return cues
 }
+
+/** Convert a numeric timestamp (seconds, or milliseconds if large) to ms. */
+function numericTimeToMs(raw: string): number {
+  const n = parseFloat(raw)
+  if (!Number.isFinite(n)) return NaN
+  // Heuristic: values above 4 hours in "seconds" are almost certainly already milliseconds.
+  return n > 14400 ? n : n * 1000
+}
+
+/** Parse an HTML caption/transcript export into cues. Supports the common real-world shapes:
+ *  1. Elements with data-start/data-start-ms + data-end/data-end-ms (caption-editor exports)
+ *  2. Elements with begin/end attributes, HTML5-flavored TTML-in-HTML
+ *  3. Plain-text blocks prefixed with a bracketed/parenthesized timestamp, e.g. "[00:00:12] Hello" */
+export function parseHtmlCaptions(text: string): SubtitleCue[] {
+  const doc = new DOMParser().parseFromString(text, 'text/html')
+
+  const dataTimed = doc.querySelectorAll('[data-start], [data-start-ms], [data-time], [data-start-time]')
+  if (dataTimed.length > 0) {
+    const cues: SubtitleCue[] = []
+    const nodes = Array.from(dataTimed)
+    nodes.forEach((el, i) => {
+      const startRaw = el.getAttribute('data-start-ms') ?? el.getAttribute('data-start') ?? el.getAttribute('data-time') ?? el.getAttribute('data-start-time') ?? ''
+      const startMs = el.hasAttribute('data-start-ms') ? parseFloat(startRaw) : numericTimeToMs(startRaw)
+      if (!Number.isFinite(startMs)) return
+      const endRaw = el.getAttribute('data-end-ms') ?? el.getAttribute('data-end') ?? el.getAttribute('data-duration') ?? ''
+      let endMs = el.hasAttribute('data-end-ms')
+        ? parseFloat(endRaw)
+        : el.hasAttribute('data-duration')
+          ? startMs + numericTimeToMs(endRaw)
+          : numericTimeToMs(endRaw)
+      if (!Number.isFinite(endMs) || endMs <= startMs) {
+        const next = nodes[i + 1]
+        const nextStartRaw = next?.getAttribute('data-start-ms') ?? next?.getAttribute('data-start') ?? next?.getAttribute('data-time') ?? next?.getAttribute('data-start-time')
+        const nextStartMs = nextStartRaw != null ? (next!.hasAttribute('data-start-ms') ? parseFloat(nextStartRaw) : numericTimeToMs(nextStartRaw)) : NaN
+        endMs = Number.isFinite(nextStartMs) && nextStartMs > startMs ? nextStartMs : startMs + 3000
+      }
+      const textContent = (el.textContent ?? '').trim()
+      if (!textContent) return
+      cues.push({ index: cues.length + 1, startTime: msToSrtTime(startMs), endTime: msToSrtTime(endMs), text: textContent })
+    })
+    if (cues.length > 0) return cues
+  }
+
+  const beginEnd = doc.querySelectorAll('[begin]')
+  if (beginEnd.length > 0) return extractTtmlCues(doc)
+
+  // Fallback: plain-text blocks prefixed with a timestamp like [00:12], [1:02:03.456] or (00:00:12)
+  const plain = (doc.body?.textContent ?? text).replace(/\r\n/g, '\n')
+  const timestampRe = /[[(]\s*(\d{1,2}(?::\d{2}){1,2}(?:[.,]\d{1,3})?)\s*[\])]/g
+  const matches = [...plain.matchAll(timestampRe)]
+  if (matches.length === 0) return []
+
+  const flexibleTimeToMs = (raw: string): number => {
+    const [main, frac] = raw.replace(',', '.').split('.')
+    const parts = main.split(':').map((p) => parseInt(p, 10))
+    const ms = parts.length === 3
+      ? parts[0] * 3_600_000 + parts[1] * 60_000 + parts[2] * 1_000
+      : parts[0] * 60_000 + parts[1] * 1_000
+    return ms + (frac ? parseInt(frac.padEnd(3, '0').slice(0, 3), 10) : 0)
+  }
+
+  const cues: SubtitleCue[] = []
+  for (let i = 0; i < matches.length; i++) {
+    const m = matches[i]
+    const startMs = flexibleTimeToMs(m[1])
+    const segStart = m.index! + m[0].length
+    const segEnd = i + 1 < matches.length ? matches[i + 1].index! : plain.length
+    const segText = plain.slice(segStart, segEnd).trim()
+    if (!segText) continue
+    const nextStartMs = i + 1 < matches.length ? flexibleTimeToMs(matches[i + 1][1]) : startMs + 3000
+    cues.push({
+      index: cues.length + 1,
+      startTime: msToSrtTime(startMs),
+      endTime: msToSrtTime(Math.max(nextStartMs, startMs + 500)),
+      text: segText,
+    })
+  }
+  return cues
+}

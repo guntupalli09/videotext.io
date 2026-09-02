@@ -122,6 +122,7 @@ const SbvToSrt = lazy(() => import('./pages/tools/SbvToSrt'))
 const SrtToSbv = lazy(() => import('./pages/tools/SrtToSbv'))
 const AssToSrt = lazy(() => import('./pages/tools/AssToSrt'))
 const TtmlToSrt = lazy(() => import('./pages/tools/TtmlToSrt'))
+const HtmlToSrt = lazy(() => import('./pages/tools/HtmlToSrt'))
 
 /** Minimal loading fallback for route chunks — fast, accessible, no layout shift. */
 function RouteFallback() {
@@ -882,6 +883,7 @@ function App() {
             <Route path="/tools/srt-to-sbv" element={<SrtToSbv />} />
             <Route path="/tools/ass-to-srt" element={<AssToSrt />} />
             <Route path="/tools/ttml-to-srt" element={<TtmlToSrt />} />
+            <Route path="/tools/html-to-srt" element={<HtmlToSrt />} />
             <Route path="*" element={<NotFound />} />
             </Route>
               </Routes>
