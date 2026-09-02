@@ -172,6 +172,11 @@
       "status": 301
     },
     {
+      "src": "/otter-ai-alternative",
+      "dest": "/otter-alternative",
+      "status": 301
+    },
+    {
       "handle": "filesystem"
     },
     {

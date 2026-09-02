@@ -1,6 +1,6 @@
 /**
  * Alternate SEO paths → primary product URLs (cluster consolidation).
- * Keep in sync with scripts/seo/registry.ts SLUG_TO_PRIMARY.
+ * Single source of truth — scripts/seo/registry.ts re-exports this directly.
  */
 export const SLUG_TO_PRIMARY: Record<string, string> = {
   'video-to-text': '/video-to-transcript',
@@ -26,9 +26,13 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'video-with-subtitles': '/burn-subtitles',
   'video-compressor': '/compress-video',
   'reduce-video-size': '/compress-video',
-  'batch-video-processing': '/batch-process',
-  'bulk-subtitle-export': '/batch-process',
-  'bulk-transcript-export': '/batch-process',
+  // '/batch-process' is itself a client redirect into '/video-to-transcript' (batch
+  // capability lives inside that tool, not a standalone page) — canonicalize it and
+  // its aliases directly to the final page rather than through the redirect stub.
+  'batch-process': '/video-to-transcript',
+  'batch-video-processing': '/video-to-transcript',
+  'bulk-subtitle-export': '/video-to-transcript',
+  'bulk-transcript-export': '/video-to-transcript',
   'transcribe-video': '/video-to-transcript',
   'video-transcription': '/video-to-transcript',
   'free-transcription': '/video-to-transcript',
@@ -54,10 +58,13 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'caption-generator': '/video-to-subtitles',
   'closed-caption-generator': '/video-to-subtitles',
   'free-subtitle-generator': '/video-to-subtitles',
-  'video-to-srt': '/video-to-subtitles',
-  'srt-generator': '/video-to-subtitles',
+  // NOTE: '/video-to-srt' and '/srt-generator' are intentionally NOT aliased here.
+  // Both have their own distinct real-world search demand and Google rankings
+  // that outperform '/video-to-subtitles' (see reports/seo-baseline-2026-08-31.md
+  // §6) — canonicalizing them away was actively suppressing indexable, high-traffic
+  // pages. They now self-canonicalize (see client/src/lib/seoRegistry.ts entries).
   'translate-video': '/translate-subtitles',
   'video-translation': '/translate-subtitles',
-  'bulk-video-transcription': '/batch-process',
+  'bulk-video-transcription': '/video-to-transcript',
   'otter-ai-alternative': '/otter-alternative',
 }

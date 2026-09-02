@@ -1204,7 +1204,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Video to SRT',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/mp4-to-srt', '/srt-generator', '/automatic-subtitles'],
-    indexable: false,
+    indexable: true,
     intentKey: 'video-to-srt',
     faq: [
       { q: 'What is an SRT file?', a: 'An SRT (SubRip Text) file is a plain-text subtitle format that contains numbered caption blocks, each with a start time, end time, and the spoken text. It is the most widely supported subtitle format, accepted by YouTube, Vimeo, VLC, LinkedIn, Facebook Video, and virtually every video platform and editing tool.' },
@@ -1224,7 +1224,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'SRT Generator',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-srt', '/mp4-to-srt', '/subtitle-generator'],
-    indexable: false,
+    indexable: true,
     intentKey: 'srt-generator',
     faq: [
       { q: 'What is an SRT generator?', a: 'An SRT generator transcribes speech in a video and creates a properly timed SRT subtitle file automatically. You upload video and download captions.' },

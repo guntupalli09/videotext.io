@@ -319,31 +319,15 @@ const STATIC_META: RouteMeta[] = [
       { stat: 'Free', desc: '3 videos/month included' },
     ],
   },
-  {
-    path: '/batch-process',
-    title: `Batch Video to Subtitles — Multiple Videos at Once | ${SITE_NAME}`,
-    description:
-      'Generate SRT subtitles for many videos in one go. Upload multiple videos, get one ZIP of subtitle files. Pro and Agency plans.',
-    h1: 'Batch Video to Subtitles',
-    valueProposition: 'Process 10-100+ videos at once. Upload a folder of videos, get a ZIP with perfectly timed SRT/VTT subtitles for each. Save 10+ hours per week. Perfect for creators, agencies, studios, and content teams. No per-file limits on Pro+.',
-    keywords: ['batch video processing', 'bulk video transcription', 'batch subtitles', 'batch process videos', 'process multiple videos', 'batch export subtitles', 'bulk subtitle generation', 'batch transcription tool', 'process videos in batch', 'batch SRT generation', 'batch VTT conversion', 'bulk video subtitles'],
-    comparison: [
-      { tool: 'Manual uploads one-by-one', vs: '5-10 min per video = 50-100+ hours/month' },
-      { tool: 'Descript batch mode', vs: '$24/mo + wait times, no SRT export focus' },
-      { tool: 'Rev bulk API', vs: '$0.25/min per video, slow turnaround, expensive' },
-    ],
-    howToUse: [
-      { step: 1, title: 'Upload Multiple Videos', detail: 'Drag & drop 10-100+ files at once. MP4, MOV, WebM supported.' },
-      { step: 2, title: 'Choose Format & Language', detail: 'SRT or VTT. Single or multi-language. All files use same settings.' },
-      { step: 3, title: 'Download ZIP of Subtitles', detail: 'One ZIP file with all subtitles properly named. Ready to upload to each video.' },
-    ],
-    socialProof: [
-      { stat: '100+ videos', desc: 'Process at once' },
-      { stat: '99%', desc: 'Time saved vs manual' },
-      { stat: 'Parallel processing', desc: 'All files done simultaneously' },
-      { stat: 'Pro+ only', desc: 'Unlimited batch processing' },
-    ],
-  },
+  // NOTE: '/batch-process' intentionally has no STATIC_META entry. It is a pure
+  // client-side redirect into '/video-to-transcript' (batch capability lives inside
+  // that tool, not a standalone UI — see client/src/pages/BatchProcess.tsx). It used
+  // to have its own entry here, which canonicalized onto '/video-to-transcript' after
+  // the 2026-08-31 SEO fix (see reports/seo-baseline-2026-08-31.md) — but since both
+  // entries wrote to the same output path, whichever ran later clobbered the other's
+  // prerendered file. Keeping this content out of STATIC_META avoids that collision;
+  // if batch processing ever gets a real standalone UI, give it a real route + its
+  // own canonical path instead of reusing '/batch-process' as a content page.
   // ── Comparison & alternative pages ──────────────────────────────────────────
   {
     path: '/compare',
@@ -789,6 +773,13 @@ const STATIC_META: RouteMeta[] = [
     description:
       'Convert TTML, DFXP, or EBU-TT subtitle files to SRT format. Used for Netflix, broadcast, and enterprise video workflows. Free, browser-based.',
     breadcrumbLabel: 'TTML to SRT',
+  },
+  {
+    path: '/tools/html-to-srt',
+    title: `HTML to SRT Converter — Convert HTML Captions & Transcripts Free | ${SITE_NAME}`,
+    description:
+      'Convert HTML captions or transcript exports to SRT format. Supports data-start timing attributes, TTML-style begin/end attributes, and bracketed timestamps. Free, browser-based.',
+    breadcrumbLabel: 'HTML to SRT',
   },
   // ── Hub pages ────────────────────────────────────────────────────────────────
   {
@@ -1396,6 +1387,7 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
     { path: '/tools/srt-to-sbv', label: 'SRT to SBV' },
     { path: '/tools/ass-to-srt', label: 'ASS to SRT' },
     { path: '/tools/ttml-to-srt', label: 'TTML to SRT' },
+    { path: '/tools/html-to-srt', label: 'HTML to SRT' },
     { path: '/tools/shift-subtitle-timing', label: 'Shift Subtitle Timing' },
     { path: '/subtitle-resources', label: 'Subtitle Resources & Standards' },
     { path: '/open-captions-vs-closed-captions', label: 'Open vs Closed Captions' },
