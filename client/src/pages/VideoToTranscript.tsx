@@ -3858,18 +3858,44 @@ export default function VideoToTranscript(
                         </p>
                         <div className="mt-1">
                           <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-                            No. of speakers{" "}
-                            <span className="text-gray-400">(optional)</span>
+                            No. of speakers
                           </label>
-                          <input
-                            type="number"
-                            min={1}
-                            max={50}
-                            value={numSpeakers}
-                            onChange={(e) => setNumSpeakers(e.target.value)}
-                            placeholder="Auto-detect"
-                            className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                          />
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-1.5">
+                            Telling us the speaker count (e.g. a 1-on-1
+                            interview) noticeably improves who-said-what
+                            accuracy — auto-detect has to guess it first.
+                          </p>
+                          <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+                            {(
+                              [
+                                { value: "", label: "Auto" },
+                                { value: "2", label: "2" },
+                                { value: "3", label: "3" },
+                                { value: "4", label: "4" },
+                                { value: "5", label: "5+" },
+                              ] as const
+                            ).map(({ value, label }) => (
+                              <button
+                                key={label}
+                                type="button"
+                                onClick={() => setNumSpeakers(value)}
+                                className={`flex-1 py-1.5 text-xs font-medium transition-colors ${
+                                  numSpeakers === value
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                }`}
+                              >
+                                {label}
+                              </button>
+                            ))}
+                          </div>
+                          {numSpeakers === "5" && (
+                            <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
+                              "5+" is sent as a floor of 5 speakers — the
+                              diarization model takes an exact count, not an
+                              open-ended range.
+                            </p>
+                          )}
                         </div>
                       </>
                     )}
