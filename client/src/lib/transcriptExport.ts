@@ -12,6 +12,7 @@
 
 import type { Segment } from './srtExport'
 import { formatTimestamp } from './srtExport'
+import { addAnchorTimecode } from './smpteTimecode'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -22,9 +23,12 @@ export type SpeakerNameMap = Record<string, string>
  * - `per-speaker`: one timestamp at the start of each speaker turn (default — Adaiah feedback)
  * - `per-segment`: timestamp on every Whisper segment (old behaviour, mirrors subtitle timing)
  * - `per-interval`: a `[MM:SS]` marker is emitted every N seconds (set via `intervalSec` option)
+ * - `smpte`: one SMPTE/BITC timecode (HH:MM:SS:FF) at the start of each speaker turn, computed
+ *   from a starting timecode + frame rate (see `smpteAnchor`/`smpteFps` options) — opt-in only,
+ *   never on by default. Frame-accurate, deterministic; never touched by the guideline formatter.
  * - `none`: no timestamps; speaker names still appear when diarisation is active
  */
-export type TimestampMode = 'per-speaker' | 'per-segment' | 'per-interval' | 'none'
+export type TimestampMode = 'per-speaker' | 'per-segment' | 'per-interval' | 'smpte' | 'none'
 
 /**
  * Controls filler-word handling in text-based exports.
@@ -159,9 +163,9 @@ export function applyCleanVerbatim(text: string): string {
  */
 export function groupSegmentsBySpeakerEntry(
   resolved: ResolvedSegment[],
-  options: { paragraphGapSec?: number } = {},
+  options: { paragraphGapSec?: number; splitOnLongPause?: boolean } = {},
 ): Array<{ speaker?: string; start: number; text: string }> {
-  const { paragraphGapSec = 3.0 } = options
+  const { paragraphGapSec = 3.0, splitOnLongPause = false } = options
   type Group = { speaker?: string; start: number; end: number; text: string }
   const groups: Group[] = []
 
@@ -175,12 +179,15 @@ export function groupSegmentsBySpeakerEntry(
       // Same turn, seamless continuation
       last.text = last.text.trimEnd() + ' ' + seg.text.trim()
       last.end = seg.end
-    } else if (isSameSpeaker && isLongPause) {
+    } else if (isSameSpeaker && isLongPause && !splitOnLongPause) {
       // Same speaker but notable pause → new paragraph within same turn
       last.text = last.text.trimEnd() + '\n\n' + seg.text.trim()
       last.end = seg.end
     } else {
-      // New speaker (or first segment)
+      // New speaker, first segment, or (when splitOnLongPause) a long pause —
+      // starts a fresh group with its own header. smpte mode needs this: a BITC
+      // reference point is only useful if it doesn't go stale across a long
+      // same-speaker pause.
       groups.push({ speaker: seg.speaker, start: seg.start, end: seg.end, text: seg.text.trim() })
     }
   }
@@ -223,9 +230,23 @@ export function buildFullTranscript(segments: Segment[]): string {
 export function buildTxt(
   segments: Segment[],
   nameMap: SpeakerNameMap,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode; intervalSec?: number } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    intervalSec?: number
+    /** Starting BITC/SMPTE timecode (HH:MM:SS:FF or HH:MM:SS;FF), only used when timestampMode is 'smpte'. */
+    smpteAnchor?: string
+    /** Video frame rate (e.g. 25, 29.97, 30), only used when timestampMode is 'smpte'. */
+    smpteFps?: number
+  } = {},
 ): string {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full', intervalSec = 30 } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    intervalSec = 30,
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
   const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t)
   const lines: string[] = []
@@ -278,14 +299,20 @@ export function buildTxt(
     }
     flushPending()
   } else {
-    // per-speaker and none: group consecutive same-speaker segments into turns
-    const groups = groupSegmentsBySpeakerEntry(resolved)
+    // per-speaker, smpte, and none: group consecutive same-speaker segments into turns.
+    // smpte mode splits on a long same-speaker pause too, so a BITC reference
+    // point never goes stale for minutes at a stretch.
+    const groups = groupSegmentsBySpeakerEntry(resolved, { splitOnLongPause: timestampMode === 'smpte' })
     for (const g of groups) {
       const text = applyVerb(g.text)
       if (!text) continue
       if (g.speaker) {
         const header =
-          timestampMode === 'none' ? g.speaker : `${g.speaker} (${formatTimestamp(g.start)})`
+          timestampMode === 'none'
+            ? g.speaker
+            : timestampMode === 'smpte'
+              ? `${g.speaker} (${addAnchorTimecode(smpteAnchor, smpteFps, g.start)})`
+              : `${g.speaker} (${formatTimestamp(g.start)})`
         lines.push(header)
         lines.push(text)
         lines.push('')

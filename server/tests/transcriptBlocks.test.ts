@@ -21,6 +21,14 @@ test('parseHeaderedBlocks: multi-digit minutes and hour-scale minutes', () => {
   assert.equal(blocks[0].header, 'Speaker 1 (75:03)')
 })
 
+test('parseHeaderedBlocks: smpte "Name (HH:MM:SS:FF)" and drop-frame "Name (HH:MM:SS;FF)" headers', () => {
+  const text = 'LUCA (00:19:34:16)\nReally good.\n\nP (01:02:05;10)\nOkay.'
+  const blocks = parseHeaderedBlocks(text)
+  assert.equal(blocks.length, 2)
+  assert.deepEqual(blocks[0], { header: 'LUCA (00:19:34:16)', body: 'Really good.' })
+  assert.deepEqual(blocks[1], { header: 'P (01:02:05;10)', body: 'Okay.' })
+})
+
 test('parseHeaderedBlocks: per-interval "[M:SS]" header', () => {
   const text = '[0:00]\nP: Hello there.'
   const blocks = parseHeaderedBlocks(text)

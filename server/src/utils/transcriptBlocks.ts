@@ -4,10 +4,11 @@
  * spoken-words-only bodies, so the guideline formatter can edit body text
  * without ever seeing (and therefore never inventing or dropping) attribution.
  *
- * Recognizes two header shapes buildTxt emits:
- *   - "Speaker (0:19)"   — per-speaker / per-segment timestamp modes
- *   - "[0:19]"           — per-interval timestamp mode (time-only marker)
- * Any block whose first line doesn't match either shape is treated as
+ * Recognizes three header shapes buildTxt emits:
+ *   - "Speaker (0:19)"          — per-speaker / per-segment timestamp modes
+ *   - "Speaker (01:02:05:10)"   — smpte mode (BITC/SMPTE, HH:MM:SS:FF or HH:MM:SS;FF)
+ *   - "[0:19]"                  — per-interval timestamp mode (time-only marker)
+ * Any block whose first line doesn't match one of these is treated as
  * headerless (its whole text is the body) — this covers 'none' mode and
  * arbitrary pasted transcripts that don't follow this convention.
  */
@@ -19,7 +20,7 @@ export interface TranscriptBlock {
   body: string
 }
 
-const SPEAKER_TIMESTAMP_HEADER = /^.+\s\(\d{1,4}:\d{2}\)$/
+const SPEAKER_TIMESTAMP_HEADER = /^.+\s\((?:\d{1,4}:\d{2}|\d{1,2}:\d{2}:\d{2}[:;]\d{1,2})\)$/
 const INTERVAL_HEADER = /^\[\d{1,4}:\d{2}\]$/
 
 function isHeaderLine(line: string): boolean {
