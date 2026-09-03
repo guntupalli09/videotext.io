@@ -1491,7 +1491,9 @@ export default function VideoToTranscript(
       const _isPaid =
         typeof window !== "undefined" &&
         (localStorage.getItem("plan") || "free").toLowerCase() !== "free";
-      const diarizationEnabledForJob = true;
+      // Speaker labels are a Pro-only feature (paid Replicate diarization cost per job) —
+      // the server re-checks plan too, but never ask for it on free plan in the first place.
+      const diarizationEnabledForJob = _isPaid && speakerDiarization;
       const baseOptions: Parameters<typeof uploadFileWithProgress>[1] = {
         toolType: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT,
         trimmedStart: trimStartSec ?? trimStart ?? undefined,
@@ -1945,7 +1947,9 @@ export default function VideoToTranscript(
       setPartialSegments([]);
       setYoutubeStage(null);
       youtubeStageAtFailureRef.current = null;
-      const diarizationEnabledForJob = true;
+      // Speaker labels are a Pro-only feature (paid Replicate diarization cost per job) —
+      // the server re-checks plan too, but never ask for it on free plan in the first place.
+      const diarizationEnabledForJob = _isPaid && speakerDiarization;
       setDiarizationWasRequested(diarizationEnabledForJob);
       trackEvent("processing_started", {
         tool: "video-to-transcript",

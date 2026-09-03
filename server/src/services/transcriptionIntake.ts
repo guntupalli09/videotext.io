@@ -302,7 +302,9 @@ export async function runTranscriptionIntake(
       compressProfile: options.compressProfile,
       includeSummary: options.includeSummary === true || options.includeSummary === 'true',
       includeChapters: options.includeChapters === true || options.includeChapters === 'true',
-      speakerDiarization: options.speakerDiarization === true || options.speakerDiarization === 'true',
+      // Speaker diarization is a paid-plan feature (real Replicate GPU cost per job) —
+      // never trust a client-supplied flag; free plan never gets it regardless of what was sent.
+      speakerDiarization: plan !== 'free' && (options.speakerDiarization === true || options.speakerDiarization === 'true'),
       numSpeakers: options.numSpeakers ? Number(options.numSpeakers) : undefined,
       diarizationLanguage: typeof options.diarizationLanguage === 'string' && options.diarizationLanguage.trim() ? options.diarizationLanguage.trim() : undefined,
       glossary: typeof options.glossary === 'string' && options.glossary.trim() ? options.glossary.trim() : undefined,
