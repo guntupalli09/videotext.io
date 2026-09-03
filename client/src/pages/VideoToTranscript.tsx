@@ -340,6 +340,17 @@ export default function VideoToTranscript(
     useState<TimestampMode>("per-interval");
   const [verbatimMode, setVerbatimMode] = useState<VerbatimMode>("full");
   const [intervalSec, setIntervalSec] = useState(30);
+  // SMPTE / BITC timecode mode — opt-in only, off unless the user explicitly
+  // selects it under Timestamp format. Manual starting timecode + frame rate,
+  // same one-time entry the user already does in tools like ExpressScribe;
+  // VideoText then computes every segment's timecode deterministically from it.
+  // Four separate numeric fields (not free-text HH:MM:SS:FF) so there's no
+  // ambiguous parsing of hand-typed colons/semicolons.
+  const [smpteAnchorH, setSmpteAnchorH] = useState(0);
+  const [smpteAnchorM, setSmpteAnchorM] = useState(0);
+  const [smpteAnchorS, setSmpteAnchorS] = useState(0);
+  const [smpteAnchorF, setSmpteAnchorF] = useState(0);
+  const [smpteFpsChoice, setSmpteFpsChoice] = useState("25");
   // Text-only translation panel state
   const [textTranslateOpen, setTextTranslateOpen] = useState(false);
   const [textTranslateInput, setTextTranslateInput] = useState("");
@@ -351,6 +362,17 @@ export default function VideoToTranscript(
   const [numSpeakers, setNumSpeakers] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [glossary, setGlossary] = useState("");
+  /** Parses "29.97-df" / "29.97-ndf" / "25" etc. into { fps, dropFrame }. */
+  const { smpteFps, smpteDropFrame } = useMemo(() => {
+    const [ratePart, flag] = smpteFpsChoice.split("-");
+    return { smpteFps: parseFloat(ratePart) || 25, smpteDropFrame: flag === "df" };
+  }, [smpteFpsChoice]);
+  /** "HH:MM:SS:FF" (or ";FF" for drop-frame) built from the four numeric fields — no free-text parsing. */
+  const smpteAnchor = useMemo(() => {
+    const pad = (n: number) => String(Math.max(0, Math.floor(n))).padStart(2, "0");
+    const sep = smpteDropFrame ? ";" : ":";
+    return `${pad(smpteAnchorH)}:${pad(smpteAnchorM)}:${pad(smpteAnchorS)}${sep}${pad(smpteAnchorF)}`;
+  }, [smpteAnchorH, smpteAnchorM, smpteAnchorS, smpteAnchorF, smpteDropFrame]);
   const [searchQuery, setSearchQuery] = useState("");
   const [transcriptEditMode, setTranscriptEditMode] = useState(false);
   const [editableSegments, setEditableSegments] = useState<Segment[] | null>(
@@ -1491,7 +1513,9 @@ export default function VideoToTranscript(
       const _isPaid =
         typeof window !== "undefined" &&
         (localStorage.getItem("plan") || "free").toLowerCase() !== "free";
-      const diarizationEnabledForJob = true;
+      // Speaker labels are a Pro-only feature (paid Replicate diarization cost per job) —
+      // the server re-checks plan too, but never ask for it on free plan in the first place.
+      const diarizationEnabledForJob = _isPaid && speakerDiarization;
       const baseOptions: Parameters<typeof uploadFileWithProgress>[1] = {
         toolType: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT,
         trimmedStart: trimStartSec ?? trimStart ?? undefined,
@@ -1945,7 +1969,9 @@ export default function VideoToTranscript(
       setPartialSegments([]);
       setYoutubeStage(null);
       youtubeStageAtFailureRef.current = null;
-      const diarizationEnabledForJob = true;
+      // Speaker labels are a Pro-only feature (paid Replicate diarization cost per job) —
+      // the server re-checks plan too, but never ask for it on free plan in the first place.
+      const diarizationEnabledForJob = _isPaid && speakerDiarization;
       setDiarizationWasRequested(diarizationEnabledForJob);
       trackEvent("processing_started", {
         tool: "video-to-transcript",
@@ -3225,12 +3251,16 @@ export default function VideoToTranscript(
         ? translatedSegments
         : segmentsForExport;
     if (segs?.length) {
-      return segs
-        .map((s) =>
-          verbatimMode === "clean" ? applyCleanVerbatim(s.text) : s.text,
-        )
-        .join("\n\n")
-        .trim();
+      // Carry real speaker + timestamp data into the guideline formatter (same
+      // builder the TXT export uses) instead of bare segment text — otherwise
+      // the formatter receives no speaker/time signal and fabricates its own.
+      return buildTxt(segs, speakerNameMap, {
+        timestampMode,
+        verbatimMode,
+        intervalSec,
+        smpteAnchor,
+        smpteFps,
+      }).trim();
     }
     return (
       displayTranscript ||
@@ -3242,7 +3272,12 @@ export default function VideoToTranscript(
     transcriptView,
     translatedSegments,
     segmentsForExport,
+    speakerNameMap,
+    timestampMode,
     verbatimMode,
+    intervalSec,
+    smpteAnchor,
+    smpteFps,
     displayTranscript,
     fullTranscript,
     transcriptPreview,
@@ -3823,18 +3858,44 @@ export default function VideoToTranscript(
                         </p>
                         <div className="mt-1">
                           <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-                            No. of speakers{" "}
-                            <span className="text-gray-400">(optional)</span>
+                            No. of speakers
                           </label>
-                          <input
-                            type="number"
-                            min={1}
-                            max={50}
-                            value={numSpeakers}
-                            onChange={(e) => setNumSpeakers(e.target.value)}
-                            placeholder="Auto-detect"
-                            className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                          />
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-1.5">
+                            Telling us the speaker count (e.g. a 1-on-1
+                            interview) noticeably improves who-said-what
+                            accuracy — auto-detect has to guess it first.
+                          </p>
+                          <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+                            {(
+                              [
+                                { value: "", label: "Auto" },
+                                { value: "2", label: "2" },
+                                { value: "3", label: "3" },
+                                { value: "4", label: "4" },
+                                { value: "5", label: "5+" },
+                              ] as const
+                            ).map(({ value, label }) => (
+                              <button
+                                key={label}
+                                type="button"
+                                onClick={() => setNumSpeakers(value)}
+                                className={`flex-1 py-1.5 text-xs font-medium transition-colors ${
+                                  numSpeakers === value
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                }`}
+                              >
+                                {label}
+                              </button>
+                            ))}
+                          </div>
+                          {numSpeakers === "5" && (
+                            <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
+                              "5+" is sent as a floor of 5 speakers — the
+                              diarization model takes an exact count, not an
+                              open-ended range.
+                            </p>
+                          )}
                         </div>
                       </>
                     )}
@@ -5140,6 +5201,10 @@ export default function VideoToTranscript(
                                           value: "per-segment",
                                           label: "Per segment",
                                         },
+                                        {
+                                          value: "smpte",
+                                          label: "SMPTE / BITC timecode",
+                                        },
                                       ] as const
                                     ).map(({ value, label }) => (
                                       <label
@@ -5180,6 +5245,81 @@ export default function VideoToTranscript(
                                         <option value={120}>2m</option>
                                         <option value={300}>5m</option>
                                       </select>
+                                    </div>
+                                  )}
+                                  {timestampMode === "smpte" && (
+                                    <div className="mt-1.5 ml-4 space-y-1.5">
+                                      <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                                        Starting timecode (matches the video's
+                                        BITC / burned-in timecode)
+                                      </p>
+                                      <div className="flex items-center gap-1">
+                                        {(
+                                          [
+                                            { v: smpteAnchorH, set: setSmpteAnchorH, max: 23, label: "HH" },
+                                            { v: smpteAnchorM, set: setSmpteAnchorM, max: 59, label: "MM" },
+                                            { v: smpteAnchorS, set: setSmpteAnchorS, max: 59, label: "SS" },
+                                            { v: smpteAnchorF, set: setSmpteAnchorF, max: 59, label: "FF" },
+                                          ] as const
+                                        ).map(({ v, set, max, label }, i) => (
+                                          <span key={label} className="flex items-center">
+                                            {i > 0 && (
+                                              <span className="text-[10px] text-gray-400 px-0.5">
+                                                :
+                                              </span>
+                                            )}
+                                            <input
+                                              type="number"
+                                              min={0}
+                                              max={max}
+                                              value={v}
+                                              onChange={(e) =>
+                                                set(
+                                                  Math.max(0, Math.min(max, Number(e.target.value) || 0)),
+                                                )
+                                              }
+                                              title={label}
+                                              className="w-10 text-[10px] rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-1 py-0.5"
+                                            />
+                                          </span>
+                                        ))}
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <label className="text-[10px] text-gray-500 shrink-0">
+                                          Frame rate:
+                                        </label>
+                                        <select
+                                          value={smpteFpsChoice}
+                                          onChange={(e) =>
+                                            setSmpteFpsChoice(e.target.value)
+                                          }
+                                          className="text-[10px] rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-1.5 py-0.5"
+                                        >
+                                          <option value="23.976">23.976 fps</option>
+                                          <option value="24">24 fps</option>
+                                          <option value="25">25 fps (PAL)</option>
+                                          <option value="29.97-ndf">
+                                            29.97 fps — Non-Drop
+                                          </option>
+                                          <option value="29.97-df">
+                                            29.97 fps — Drop-Frame (NTSC)
+                                          </option>
+                                          <option value="30">30 fps</option>
+                                          <option value="50">50 fps</option>
+                                          <option value="59.94-ndf">
+                                            59.94 fps — Non-Drop
+                                          </option>
+                                          <option value="59.94-df">
+                                            59.94 fps — Drop-Frame
+                                          </option>
+                                          <option value="60">60 fps</option>
+                                        </select>
+                                      </div>
+                                      <p className="text-[10px] text-gray-400 dark:text-gray-500">
+                                        Computed deterministically from this
+                                        anchor + frame rate — never edited by
+                                        AI formatting.
+                                      </p>
                                     </div>
                                   )}
                                   {timestampMode === "per-speaker" && (
@@ -5291,6 +5431,8 @@ export default function VideoToTranscript(
                                             timestampMode,
                                             verbatimMode,
                                             intervalSec,
+                                            smpteAnchor,
+                                            smpteFps,
                                           },
                                         );
                                         const FREE_EXPORT_WATERMARK =
@@ -5403,6 +5545,8 @@ export default function VideoToTranscript(
                                                     timestampMode,
                                                     verbatimMode,
                                                     intervalSec,
+                                                    smpteAnchor,
+                                                    smpteFps,
                                                   },
                                                 );
                                       const FREE_EXPORT_WATERMARK =
@@ -5557,6 +5701,8 @@ export default function VideoToTranscript(
                                                     timestampMode,
                                                     verbatimMode,
                                                     intervalSec,
+                                                    smpteAnchor,
+                                                    smpteFps,
                                                   },
                                                 );
                                       if (freeUsedAll) {

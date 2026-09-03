@@ -465,6 +465,11 @@ router.post('/complete', async (req: Request, res: Response) => {
       const trimmedStart = opts.trimmedStart != null ? (typeof opts.trimmedStart === 'number' ? opts.trimmedStart : parseFloat(String(opts.trimmedStart))) : undefined
       const trimmedEnd = opts.trimmedEnd != null ? (typeof opts.trimmedEnd === 'number' ? opts.trimmedEnd : parseFloat(String(opts.trimmedEnd))) : undefined
       const { trimmedStart: _s, trimmedEnd: _e, uploadMode: _um, originalFileName: _ofn, originalFileSize: _ofs, ...restOptions } = opts
+      // Speaker diarization is a paid-plan feature (real Replicate GPU cost per job) —
+      // never trust a client-supplied flag; free plan never gets it regardless of what was sent.
+      if (meta.plan === 'free') {
+        (restOptions as Record<string, unknown>).speakerDiarization = false
+      }
       const isChunkedAudioOnly =
         (meta.toolType === 'video-to-transcript' || meta.toolType === 'video-to-subtitles') &&
         opts.uploadMode === 'audio-only'
@@ -826,7 +831,9 @@ router.post('/youtube', async (req: Request, res: Response) => {
       language: normalizeLanguageCode(options.language),
       includeSummary: options.includeSummary === true || options.includeSummary === 'true',
       includeChapters: options.includeChapters === true || options.includeChapters === 'true',
-      speakerDiarization: options.speakerDiarization === true || options.speakerDiarization === 'true',
+      // Speaker diarization is a paid-plan feature (real Replicate GPU cost per job) —
+      // never trust a client-supplied flag; free plan never gets it regardless of what was sent.
+      speakerDiarization: plan !== 'free' && (options.speakerDiarization === true || options.speakerDiarization === 'true'),
       numSpeakers: options.numSpeakers ? Number(options.numSpeakers) : undefined,
       diarizationLanguage: typeof options.diarizationLanguage === 'string' && options.diarizationLanguage.trim() ? options.diarizationLanguage.trim() : undefined,
       glossary: typeof options.glossary === 'string' && options.glossary.trim() ? options.glossary.trim() : undefined,
