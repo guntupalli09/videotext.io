@@ -3225,12 +3225,14 @@ export default function VideoToTranscript(
         ? translatedSegments
         : segmentsForExport;
     if (segs?.length) {
-      return segs
-        .map((s) =>
-          verbatimMode === "clean" ? applyCleanVerbatim(s.text) : s.text,
-        )
-        .join("\n\n")
-        .trim();
+      // Carry real speaker + timestamp data into the guideline formatter (same
+      // builder the TXT export uses) instead of bare segment text — otherwise
+      // the formatter receives no speaker/time signal and fabricates its own.
+      return buildTxt(segs, speakerNameMap, {
+        timestampMode,
+        verbatimMode,
+        intervalSec,
+      }).trim();
     }
     return (
       displayTranscript ||
@@ -3242,7 +3244,10 @@ export default function VideoToTranscript(
     transcriptView,
     translatedSegments,
     segmentsForExport,
+    speakerNameMap,
+    timestampMode,
     verbatimMode,
+    intervalSec,
     displayTranscript,
     fullTranscript,
     transcriptPreview,
