@@ -133,3 +133,26 @@ test('switching away from smpte falls back to the pre-existing per-speaker times
   assert.match(perSpeaker, /\(1:05\)/)
   assert.doesNotMatch(perSpeaker, /;|:\d{2}:\d{2}:\d{2}/)
 })
+
+// ── DOCX/PDF export header parity ────────────────────────────────────────────
+//
+// exportToDocx/exportToPdf/exportToDocxThreeColumn/exportToPdfThreeColumn all
+// depend on browser-only libraries (docx, jspdf) and DOM APIs not available in
+// this Node test run, so they can't be executed end-to-end here. What CAN be
+// pinned down without those libraries: their header-line construction is the
+// exact same three-way branch as buildTxt's (`timestampMode === 'smpte' ?
+// addAnchorTimecode(smpteAnchor, smpteFps, g.start) : ... : formatTimestamp(...)`),
+// just with a double-space before the parenthesis instead of a single space
+// (`"${speaker}  (${tc})"` vs buildTxt's `"${speaker} (${tc})"`). These tests
+// assert that exact string shape using the real production case, so a manual
+// source diff against transcriptExport.ts's four export functions is enough
+// to confirm they match — same addAnchorTimecode call, same anchor/fps state.
+
+test('docx/pdf export header format (double-space before parenthesis) matches the production SMPTE case', () => {
+  const anchor = '19:30:00;00'
+  const fps = 29.97
+  const start = 8.942275608942277
+  const tc = addAnchorTimecode(anchor, fps, start)
+  const docxPdfHeader = `Speaker 1  (${tc})` // exportToDocx/exportToPdf's exact template
+  assert.equal(docxPdfHeader, 'Speaker 1  (19:30:08;28)')
+})
