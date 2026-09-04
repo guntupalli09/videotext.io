@@ -4172,6 +4172,87 @@ export default function VideoToTranscript(
                     ))}
                   </select>
                 </div>
+                <div className="py-2">
+                  {isPaidPlan ? (
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={speakerDiarization}
+                        onChange={(e) =>
+                          setSpeakerDiarization(e.target.checked)
+                        }
+                        className="rounded border-gray-300 text-blue-600"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        Speaker labels (who said what)
+                      </span>
+                    </label>
+                  ) : (
+                    <div className="flex items-center justify-between opacity-60">
+                      <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                        Speaker labels (who said what){" "}
+                        <Lock className="w-3 h-3 text-gray-400" />
+                      </span>
+                      <Link
+                        to="/pricing"
+                        className="text-xs text-blue-600 font-medium hover:underline"
+                      >
+                        Pro
+                      </Link>
+                    </div>
+                  )}
+                  {isPaidPlan && speakerDiarization && (
+                    <>
+                      <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 mt-2">
+                        Speaker identification adds extra processing time —
+                        roughly 1.5× longer than standard transcription
+                        (e.g. a 2-hour video takes ~10 min instead of ~4
+                        min).
+                      </p>
+                      <div className="mt-2">
+                        <label className="mb-1 block text-[11px] text-gray-500 dark:text-gray-400">
+                          No. of speakers
+                        </label>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-1.5">
+                          Telling us the speaker count (e.g. a 1-on-1
+                          interview) noticeably improves who-said-what
+                          accuracy — auto-detect has to guess it first.
+                        </p>
+                        <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+                          {(
+                            [
+                              { value: "", label: "Auto" },
+                              { value: "2", label: "2" },
+                              { value: "3", label: "3" },
+                              { value: "4", label: "4" },
+                              { value: "5", label: "5+" },
+                            ] as const
+                          ).map(({ value, label }) => (
+                            <button
+                              key={label}
+                              type="button"
+                              onClick={() => setNumSpeakers(value)}
+                              className={`flex-1 py-1.5 text-xs font-medium transition-colors ${
+                                numSpeakers === value
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                              }`}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                        {numSpeakers === "5" && (
+                          <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
+                            "5+" is sent as a floor of 5 speakers — the
+                            diarization model takes an exact count, not an
+                            open-ended range.
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </ProcessingInterface>
