@@ -97,6 +97,7 @@ import {
   formatTimestamp,
   type Segment,
 } from "../lib/srtExport";
+import { addAnchorTimecode } from "../lib/smpteTimecode";
 import {
   type SpeakerNameMap,
   type TimestampMode,
@@ -4880,7 +4881,9 @@ export default function VideoToTranscript(
                               ? `Per interval (${intervalSec}s)`
                               : timestampMode === "per-segment"
                                 ? "Per segment"
-                                : "No timestamps"}
+                                : timestampMode === "smpte"
+                                  ? `SMPTE/BITC (${smpteFps}fps${smpteDropFrame ? " DF" : " NDF"})`
+                                  : "No timestamps"}
                         </span>
                         <span className="text-[11px] text-gray-500 dark:text-gray-400">
                           Transcript mode:
@@ -5080,7 +5083,8 @@ export default function VideoToTranscript(
                               speakerNameMap,
                             );
                             const showSpeakerHeaders =
-                              timestampMode === "per-speaker";
+                              timestampMode === "per-speaker" ||
+                              timestampMode === "smpte";
                             const hasSpeakers =
                               showSpeakerHeaders &&
                               resolvedForView.some((s) => s.speaker);
@@ -5151,7 +5155,15 @@ export default function VideoToTranscript(
                                           {vg.speaker}
                                           {showSpeakerHeaders && (
                                             <span className="ml-1.5 font-mono text-[11px] text-gray-400">
-                                              {formatTimestamp(vg.startTime)}
+                                              {timestampMode === "smpte"
+                                                ? addAnchorTimecode(
+                                                    smpteAnchor,
+                                                    smpteFps,
+                                                    vg.startTime,
+                                                  )
+                                                : formatTimestamp(
+                                                    vg.startTime,
+                                                  )}
                                             </span>
                                           )}
                                         </div>
