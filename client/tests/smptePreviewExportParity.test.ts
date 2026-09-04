@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { buildTxt } from '../src/lib/transcriptExport'
+import { buildTxt, buildCsv, buildJson, buildNotion } from '../src/lib/transcriptExport'
 import { addAnchorTimecode } from '../src/lib/smpteTimecode'
 
 // ── Preview/export parity ────────────────────────────────────────────────────
@@ -155,4 +155,66 @@ test('docx/pdf export header format (double-space before parenthesis) matches th
   const tc = addAnchorTimecode(anchor, fps, start)
   const docxPdfHeader = `Speaker 1  (${tc})` // exportToDocx/exportToPdf's exact template
   assert.equal(docxPdfHeader, 'Speaker 1  (19:30:08;28)')
+})
+
+// ── CSV / JSON / Notion export SMPTE parity ─────────────────────────────────
+//
+// These three are pure functions (no browser-only libs), so they're executed
+// directly here rather than pinned like the docx/pdf ones above.
+
+test('CSV: start/end columns are the SMPTE string, not raw seconds, in smpte mode', () => {
+  const anchor = '19:30:00;00'
+  const fps = 29.97
+  const start = 8.942275608942277
+  const segments = [{ start, end: start + 2, text: 'Good afternoon.', speaker: 'SPEAKER_00' }]
+
+  const csv = buildCsv(segments, {}, { timestampMode: 'smpte', smpteAnchor: anchor, smpteFps: fps })
+  const [header, row] = csv.split('\n')
+  assert.equal(header, 'start,end,speaker,text')
+  assert.ok(row.includes(addAnchorTimecode(anchor, fps, start)), `expected SMPTE start in row: ${row}`)
+  assert.ok(row.includes(addAnchorTimecode(anchor, fps, start + 2)), `expected SMPTE end in row: ${row}`)
+  assert.doesNotMatch(row, /\b8\.94\d*\b/, 'must not contain the raw-seconds form')
+})
+
+test('CSV: non-smpte modes are unaffected (still raw seconds)', () => {
+  const segments = [{ start: 8.94, end: 10.94, text: 'x', speaker: 'A' }]
+  const csv = buildCsv(segments, {}, { timestampMode: 'per-speaker' })
+  assert.match(csv.split('\n')[1], /^8\.940,10\.940,/)
+})
+
+test('JSON: segments carry startTimecode/endTimecode SMPTE strings in smpte mode, start/end stay numeric seconds', () => {
+  const anchor = '19:30:00;00'
+  const fps = 29.97
+  const start = 8.942275608942277
+  const segments = [{ start, end: start + 2, text: 'Good afternoon.', speaker: 'SPEAKER_00' }]
+
+  const json = JSON.parse(
+    buildJson(segments, {}, {}, { timestampMode: 'smpte', smpteAnchor: anchor, smpteFps: fps }),
+  )
+  const seg = json.segments[0]
+  assert.equal(seg.startTimecode, addAnchorTimecode(anchor, fps, start))
+  assert.equal(seg.endTimecode, addAnchorTimecode(anchor, fps, start + 2))
+  assert.equal(typeof seg.start, 'number') // numeric seconds preserved for existing consumers
+  assert.equal(seg.start, start)
+})
+
+test('JSON: non-smpte modes never add startTimecode/endTimecode fields', () => {
+  const segments = [{ start: 8.94, end: 10.94, text: 'x', speaker: 'A' }]
+  const json = JSON.parse(buildJson(segments, {}, {}, { timestampMode: 'per-speaker' }))
+  assert.equal('startTimecode' in json.segments[0], false)
+})
+
+test('Notion: block content includes the SMPTE timestamp in smpte mode', () => {
+  const anchor = '19:30:00;00'
+  const fps = 29.97
+  const start = 8.942275608942277
+  const segments = [{ start, end: start + 2, text: 'Good afternoon.', speaker: 'SPEAKER_00' }]
+
+  const blocks = JSON.parse(
+    buildNotion(segments, {}, { timestampMode: 'smpte', smpteAnchor: anchor, smpteFps: fps }),
+  )
+  const content = blocks[0].rich_text[0].text.content
+  const tc = addAnchorTimecode(anchor, fps, start)
+  assert.equal(content, `[Speaker 1] (${tc}) Good afternoon.`)
+  assert.equal(tc, '19:30:08;28')
 })

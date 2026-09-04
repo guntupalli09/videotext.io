@@ -338,20 +338,32 @@ function csvCell(value: string): string {
 export function buildCsv(
   segments: Segment[],
   nameMap: SpeakerNameMap,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
 ): string {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
   const includeTimestamps = timestampMode !== 'none'
   const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t)
+  const formatTc = (t: number) =>
+    timestampMode === 'smpte' ? csvCell(addAnchorTimecode(smpteAnchor, smpteFps, t)) : t.toFixed(3)
 
   const header = includeTimestamps
     ? (hasSpeakers ? 'start,end,speaker,text' : 'start,end,text')
     : (hasSpeakers ? 'speaker,text' : 'text')
   const rows = resolved.map((seg) => {
     const cols = [
-      ...(includeTimestamps ? [seg.start.toFixed(3), seg.end.toFixed(3)] : []),
+      ...(includeTimestamps ? [formatTc(seg.start), formatTc(seg.end)] : []),
       ...(hasSpeakers ? [csvCell(seg.speaker ?? '')] : []),
       csvCell(applyVerb(seg.text)),
     ]
@@ -364,7 +376,15 @@ export function buildCsv(
 
 export interface TranscriptJsonExport {
   fullTranscript: string
-  segments: Array<{ start?: number; end?: number; text: string; speaker?: string }>
+  segments: Array<{
+    start?: number
+    end?: number
+    /** SMPTE/BITC timecode, only present when timestampMode is 'smpte'. */
+    startTimecode?: string
+    endTimecode?: string
+    text: string
+    speaker?: string
+  }>
   speakers?: Array<{ speaker: string; text: string }>
   summary?: unknown
   chapters?: unknown
@@ -386,9 +406,19 @@ export function buildJson(
     highlights?: unknown
     keywords?: unknown
   } = {},
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
 ): string {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
 
@@ -399,6 +429,12 @@ export function buildJson(
     fullTranscript,
     segments: resolved.map((s) => ({
       ...(timestampMode !== 'none' ? { start: s.start, end: s.end } : {}),
+      ...(timestampMode === 'smpte'
+        ? {
+            startTimecode: addAnchorTimecode(smpteAnchor, smpteFps, s.start),
+            endTimecode: addAnchorTimecode(smpteAnchor, smpteFps, s.end),
+          }
+        : {}),
       text: applyVerb(s.text),
       ...(hasSpeakers && s.speaker ? { speaker: s.speaker } : {}),
     })),
@@ -423,9 +459,19 @@ export function buildJson(
 export function buildNotion(
   segments: Segment[],
   nameMap: SpeakerNameMap,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
 ): string {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
   const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t)
   const blocks = resolved.map((seg) => ({
@@ -438,7 +484,9 @@ export function buildNotion(
             timestampMode === 'none'
               ? applyVerb(seg.text)
               : seg.speaker
-                ? `[${seg.speaker}] ${applyVerb(seg.text)}`
+                ? timestampMode === 'smpte'
+                  ? `[${seg.speaker}] (${addAnchorTimecode(smpteAnchor, smpteFps, seg.start)}) ${applyVerb(seg.text)}`
+                  : `[${seg.speaker}] ${applyVerb(seg.text)}`
                 : applyVerb(seg.text),
         },
       },
