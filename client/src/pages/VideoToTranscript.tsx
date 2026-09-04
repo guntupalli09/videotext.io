@@ -5618,13 +5618,23 @@ export default function VideoToTranscript(
                                                 highlights,
                                                 keywords,
                                               },
-                                              { timestampMode, verbatimMode },
+                                              {
+                                                timestampMode,
+                                                verbatimMode,
+                                                smpteAnchor,
+                                                smpteFps,
+                                              },
                                             )
                                           : format === "csv"
                                             ? buildCsv(
                                                 segsForFormat,
                                                 speakerNameMap,
-                                                { timestampMode, verbatimMode },
+                                                {
+                                                  timestampMode,
+                                                  verbatimMode,
+                                                  smpteAnchor,
+                                                  smpteFps,
+                                                },
                                               )
                                             : format === "notion"
                                               ? buildNotion(
@@ -5633,6 +5643,8 @@ export default function VideoToTranscript(
                                                   {
                                                     timestampMode,
                                                     verbatimMode,
+                                                    smpteAnchor,
+                                                    smpteFps,
                                                   },
                                                 )
                                               : buildTxt(
@@ -5774,13 +5786,23 @@ export default function VideoToTranscript(
                                               translatedSegments,
                                               speakerNameMap,
                                               {},
-                                              { timestampMode, verbatimMode },
+                                              {
+                                                timestampMode,
+                                                verbatimMode,
+                                                smpteAnchor,
+                                                smpteFps,
+                                              },
                                             )
                                           : format === "csv"
                                             ? buildCsv(
                                                 translatedSegments,
                                                 speakerNameMap,
-                                                { timestampMode, verbatimMode },
+                                                {
+                                                  timestampMode,
+                                                  verbatimMode,
+                                                  smpteAnchor,
+                                                  smpteFps,
+                                                },
                                               )
                                             : format === "notion"
                                               ? buildNotion(
@@ -5789,6 +5811,8 @@ export default function VideoToTranscript(
                                                   {
                                                     timestampMode,
                                                     verbatimMode,
+                                                    smpteAnchor,
+                                                    smpteFps,
                                                   },
                                                 )
                                               : buildTxt(
