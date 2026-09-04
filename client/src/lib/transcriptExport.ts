@@ -463,9 +463,21 @@ export async function exportToPdf(
   nameMap: SpeakerNameMap,
   filename: string,
   watermark?: string,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode; intervalSec?: number } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    intervalSec?: number
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
 ): Promise<void> {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full', intervalSec = 30 } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    intervalSec = 30,
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const { jsPDF } = await import('jspdf')
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
@@ -567,7 +579,7 @@ export async function exportToPdf(
     flushPendingPdf()
   } else {
     // per-speaker / none: grouped speaker turns with intra-turn paragraph breaks
-    const groups = groupSegmentsBySpeakerEntry(resolved)
+    const groups = groupSegmentsBySpeakerEntry(resolved, { splitOnLongPause: timestampMode === 'smpte' })
     for (const g of groups) {
       const paras = g.text.split('\n\n').filter(Boolean)
       const bodyText = paras.map((p) => applyVerb(p)).filter(Boolean).join('\n')
@@ -584,7 +596,9 @@ export async function exportToPdf(
         const headerText =
           timestampMode === 'none'
             ? g.speaker
-            : `${g.speaker}  (${formatTimestamp(g.start)})`
+            : timestampMode === 'smpte'
+              ? `${g.speaker}  (${addAnchorTimecode(smpteAnchor, smpteFps, g.start)})`
+              : `${g.speaker}  (${formatTimestamp(g.start)})`
         doc.text(headerText, margin, y)
         doc.setTextColor(0)
         y += lineH
@@ -628,9 +642,21 @@ export async function exportToDocx(
   nameMap: SpeakerNameMap,
   filename: string,
   watermark?: string,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode; intervalSec?: number } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    intervalSec?: number
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
 ): Promise<void> {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full', intervalSec = 30 } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    intervalSec = 30,
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const { Document, Paragraph, TextRun, HeadingLevel, Packer } = await import('docx')
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
@@ -721,14 +747,16 @@ export async function exportToDocx(
     }
     flushPendingDocx()
   } else {
-    // per-speaker / none: grouped turns with intra-turn paragraph breaks
-    const groups = groupSegmentsBySpeakerEntry(resolved)
+    // per-speaker / smpte / none: grouped turns with intra-turn paragraph breaks
+    const groups = groupSegmentsBySpeakerEntry(resolved, { splitOnLongPause: timestampMode === 'smpte' })
     for (const g of groups) {
       if (hasSpeakers && g.speaker) {
         const headerText =
           timestampMode === 'none'
             ? g.speaker
-            : `${g.speaker}  (${formatTimestamp(g.start)})`
+            : timestampMode === 'smpte'
+              ? `${g.speaker}  (${addAnchorTimecode(smpteAnchor, smpteFps, g.start)})`
+              : `${g.speaker}  (${formatTimestamp(g.start)})`
         children.push(
           new Paragraph({
             children: [new TextRun({ text: headerText, bold: true, color: '5028A0' })],
@@ -777,10 +805,20 @@ export async function exportToDocxThreeColumn(
   segments: Segment[],
   nameMap: SpeakerNameMap,
   filename: string,
-  options: { verbatimMode?: VerbatimMode } = {},
+  options: {
+    verbatimMode?: VerbatimMode
+    timestampMode?: TimestampMode
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
   watermark?: string,
 ): Promise<void> {
-  const { verbatimMode = 'full' } = options
+  const {
+    verbatimMode = 'full',
+    timestampMode = 'per-speaker',
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const {
     Document,
     Paragraph,
@@ -795,8 +833,10 @@ export async function exportToDocxThreeColumn(
   } = await import('docx')
 
   const resolved = withResolvedSpeakers(segments, nameMap)
-  const groups = groupSegmentsBySpeakerEntry(resolved)
+  const groups = groupSegmentsBySpeakerEntry(resolved, { splitOnLongPause: timestampMode === 'smpte' })
   const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t.trim())
+  const formatTc = (start: number) =>
+    timestampMode === 'smpte' ? addAnchorTimecode(smpteAnchor, smpteFps, start) : formatTimestamp(start)
 
   const cellPad = { top: 80, bottom: 80, left: 120, right: 120 }
 
@@ -841,7 +881,7 @@ export async function exportToDocxThreeColumn(
       new TableRow({
         children: [
           makeDataCell(g.speaker ?? '', !!g.speaker, g.speaker ? '5028A0' : undefined),
-          makeDataCell(formatTimestamp(g.start)),
+          makeDataCell(formatTc(g.start)),
           makeDataCell(applyVerb(g.text)),
         ],
       }),
@@ -897,14 +937,26 @@ export async function exportToPdfThreeColumn(
   segments: Segment[],
   nameMap: SpeakerNameMap,
   filename: string,
-  options: { verbatimMode?: VerbatimMode } = {},
+  options: {
+    verbatimMode?: VerbatimMode
+    timestampMode?: TimestampMode
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
   watermark?: string,
 ): Promise<void> {
-  const { verbatimMode = 'full' } = options
+  const {
+    verbatimMode = 'full',
+    timestampMode = 'per-speaker',
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const { jsPDF } = await import('jspdf')
   const resolved = withResolvedSpeakers(segments, nameMap)
-  const groups = groupSegmentsBySpeakerEntry(resolved)
+  const groups = groupSegmentsBySpeakerEntry(resolved, { splitOnLongPause: timestampMode === 'smpte' })
   const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t.trim())
+  const formatTc = (start: number) =>
+    timestampMode === 'smpte' ? addAnchorTimecode(smpteAnchor, smpteFps, start) : formatTimestamp(start)
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const pageW = doc.internal.pageSize.getWidth()
@@ -984,7 +1036,7 @@ export async function exportToPdfThreeColumn(
     // Timecode
     doc.setFont('helvetica', 'normal')
     doc.setTextColor(100)
-    doc.text(formatTimestamp(g.start), col2X, y)
+    doc.text(formatTc(g.start), col2X, y)
     doc.setTextColor(0)
 
     // Dialogue

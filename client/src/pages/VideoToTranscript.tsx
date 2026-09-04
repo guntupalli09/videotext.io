@@ -2750,6 +2750,8 @@ export default function VideoToTranscript(
         timestampMode,
         verbatimMode,
         intervalSec,
+        smpteAnchor,
+        smpteFps,
       });
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
       try {
@@ -2810,6 +2812,8 @@ export default function VideoToTranscript(
         timestampMode,
         verbatimMode,
         intervalSec,
+        smpteAnchor,
+        smpteFps,
       });
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
       try {
@@ -2870,7 +2874,7 @@ export default function VideoToTranscript(
         speakerNameMap,
         filename,
         watermark,
-        { timestampMode, verbatimMode, intervalSec },
+        { timestampMode, verbatimMode, intervalSec, smpteAnchor, smpteFps },
       );
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
       try {
@@ -2930,7 +2934,7 @@ export default function VideoToTranscript(
         speakerNameMap,
         filename,
         watermark,
-        { timestampMode, verbatimMode, intervalSec },
+        { timestampMode, verbatimMode, intervalSec, smpteAnchor, smpteFps },
       );
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
       try {
@@ -2990,7 +2994,7 @@ export default function VideoToTranscript(
         segs,
         speakerNameMap,
         filename,
-        { verbatimMode },
+        { verbatimMode, timestampMode, smpteAnchor, smpteFps },
         watermark,
       );
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
@@ -3052,7 +3056,7 @@ export default function VideoToTranscript(
         segs,
         speakerNameMap,
         filename,
-        { verbatimMode },
+        { verbatimMode, timestampMode, smpteAnchor, smpteFps },
         watermark,
       );
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
