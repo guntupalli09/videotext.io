@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Film } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Film, CheckCircle } from 'lucide-react'
 // import { useWorkflow } from '../contexts/WorkflowContext'
 import FailedState from '../components/FailedState'
 import SamplesModule from '../components/SamplesModule'
@@ -17,11 +18,13 @@ import { TranslateResult } from '../components/figma/TranslateResult'
 import { Select } from '../components/figma/FormControls'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { incrementUsage } from '../lib/usage'
-import { uploadDualFilesWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError } from '../lib/api'
+import { uploadDualFilesWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, claimGuestJob } from '../lib/api'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
-import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
+import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
+import { isLoggedIn } from '../lib/auth'
+import JobAuthGateModal from '../components/JobAuthGateModal'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 import { Minimize2, FileText, MessageSquare } from 'lucide-react'
@@ -88,6 +91,9 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
   const [filePreview, setFilePreview] = useState<FilePreviewData | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
+  const pendingDownloadRef = useRef<(() => void) | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const hasPaidPlan = isPaidPlan(plan)
@@ -100,6 +106,12 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   useEffect(() => {
     if (result?.downloadUrl) setFreeExportsUsed(0)
   }, [result?.downloadUrl])
+
+  useEffect(() => {
+    if (status === 'completed' && !isLoggedIn()) {
+      setShowAuthModal(true)
+    }
+  }, [status])
 
   useEffect(() => {
     if (!videoFile) {
@@ -260,6 +272,15 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const getDownloadUrl = () => {
     if (!result?.downloadUrl) return ''
     return getAbsoluteDownloadUrl(result.downloadUrl)
+  }
+
+  function requireAuthForDownload(action: () => void) {
+    if (isLoggedIn()) {
+      action()
+    } else {
+      pendingDownloadRef.current = action
+      setShowAuthModal(true)
+    }
   }
 
   const breadcrumbs = [{ label: 'Burn Subtitles', href: '/burn-subtitles' }]
@@ -426,14 +447,44 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
           </div>
         )}
 
-        {status === 'completed' && result && (
+        {status === 'completed' && result && !isLoggedIn() && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 text-center space-y-4"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <CheckCircle className="h-6 w-6 text-green-500" />
+              <p className="text-base font-semibold text-gray-900 dark:text-white">Your video with burned-in subtitles is ready!</p>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Create a free account to download your video.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <button
+                onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
+                className="flex-1 max-w-[200px] py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
+              >
+                Create free account
+              </button>
+              <button
+                onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
+                className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+              >
+                Log in
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {status === 'completed' && result && isLoggedIn() && (
           <div className="space-y-6">
             <TranslateResult
               title="Video with burned subtitles ready!"
               fileName={result.fileName ?? fallbackBurnName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
               downloadLabel={!hasPaidPlan ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download (2 free)') : 'Download Video'}
-              onDownload={
+              onDownload={() => requireAuthForDownload(
                 !hasPaidPlan
                   ? async () => {
                       if (freeExportsUsed >= 2) {
@@ -462,7 +513,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                       a.click()
                       try { trackEvent('result_downloaded', { tool: 'burn-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
                     }
-              }
+              )}
               onProcessAnother={handleProcessAnother}
               relatedTools={[
                 { path: '/compress-video', name: 'Compress Video', description: 'Reduce file size' },
@@ -562,6 +613,36 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
         tool="burn-subtitles"
+      />
+
+      <JobAuthGateModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authModalMode}
+        jobDescription="Your video with burned-in subtitles is ready!"
+        onAuthSuccess={async () => {
+          const jobId = getPersistedJobId(location.pathname)
+          const jobToken = getPersistedJobToken(location.pathname)
+          if (jobId && jobToken) {
+            try {
+              await claimGuestJob(jobId, jobToken)
+            } catch (err) {
+              console.error('Failed to claim guest job:', err)
+              toast.error('Could not link this job to your account. Please try again.')
+            }
+          }
+          setShowAuthModal(false)
+          if (pendingDownloadRef.current) {
+            const action = pendingDownloadRef.current
+            pendingDownloadRef.current = null
+            action()
+          } else if (result) {
+            // Result is already in memory — just close the modal.
+            // The download panel becomes visible on the next render since isLoggedIn() is now true.
+          } else {
+            window.location.reload()
+          }
+        }}
       />
 
       {(faq.length > 0 || location.pathname === '/burn-subtitles') && (
