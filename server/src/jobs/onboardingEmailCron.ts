@@ -4,6 +4,7 @@ import { generateUnsubscribeToken } from '../routes/newsletter'
 import { createRedisClient } from '../utils/redis'
 import { getLogger } from '../lib/logger'
 import { captureFunnelEvent } from '../utils/funnelEvents'
+import { sendGrowthEmail } from '../utils/mailer'
 
 const redis = createRedisClient('client')
 const log = getLogger('worker')
@@ -94,12 +95,10 @@ function onboardingHtml(stage: OnboardingStage, ctaUrl: string, unsubLink: strin
 }
 
 export async function runOnboardingEmailSequence(): Promise<void> {
-  const resendKey = process.env.RESEND_API_KEY
-  if (!resendKey) return
+  if (!process.env.GMAIL_SMTP_USER || !process.env.GMAIL_SMTP_APP_PASSWORD) return
 
   const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
   const apiBaseUrl = (process.env.API_BASE_URL || 'https://api.videotext.io').replace(/\/$/, '')
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>'
   const debugOnboarding = process.env.DEBUG_ONBOARDING === 'true'
   const now = Date.now()
 
@@ -159,23 +158,9 @@ export async function runOnboardingEmailSequence(): Promise<void> {
     const html = onboardingHtml(stage, ctaUrl, apiUnsubLink)
     const subject = STAGE_CONFIG[stage].subject
 
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: [user.email],
-        subject,
-        html,
-        headers: {
-          'List-Unsubscribe': `<${apiUnsubLink}>`,
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        },
-      }),
-      signal: AbortSignal.timeout(8_000),
-    })
+    const ok = await sendGrowthEmail({ to: user.email, subject, html, unsubscribeUrl: apiUnsubLink })
 
-    if (res.ok) {
+    if (ok) {
       sent += 1
       stageSent[stage] += 1
       if (stage === 'first_3to6h') {
@@ -189,8 +174,7 @@ export async function runOnboardingEmailSequence(): Promise<void> {
       }
       await redis.set(key, '1', 'EX', 60 * 60 * 24 * 45)
     } else {
-      const body = await res.text().catch(() => '')
-      log.warn({ msg: 'Onboarding email send failed', status: res.status, email: user.email, stage, body })
+      log.warn({ msg: 'Onboarding email send failed', email: user.email, stage })
     }
   }
 

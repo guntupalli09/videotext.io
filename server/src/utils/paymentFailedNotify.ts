@@ -28,6 +28,7 @@
 
 import type Stripe from 'stripe'
 import type { User } from '../models/User'
+import { sendGrowthEmail } from './mailer'
 import { getLogger } from '../lib/logger'
 
 const log = getLogger('api')
@@ -88,9 +89,8 @@ export async function sendPaymentFailedCustomerEmail(opts: {
   invoice: Stripe.Invoice
 }): Promise<void> {
   const { user, invoice } = opts
-  const resendKey = process.env.RESEND_API_KEY
-  if (!resendKey) {
-    log.warn({ msg: 'payment-failed-notify: RESEND_API_KEY not set — skipping customer email' })
+  if (!process.env.GMAIL_SMTP_USER || !process.env.GMAIL_SMTP_APP_PASSWORD) {
+    log.warn({ msg: 'payment-failed-notify: GMAIL_SMTP_USER or GMAIL_SMTP_APP_PASSWORD not set — skipping customer email' })
     return
   }
   if (!user.email || !user.email.includes('@') || user.email.startsWith('demo-user-')) {
@@ -98,7 +98,6 @@ export async function sendPaymentFailedCustomerEmail(opts: {
     return
   }
 
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>'
   const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
 
   const firstName = (user.name || '').trim().split(/\s+/)[0] || ''
@@ -117,24 +116,9 @@ export async function sendPaymentFailedCustomerEmail(opts: {
   const html = emailHtml({ greeting, amountLine, retryLine, ctaUrl: `${baseUrl}/pricing` })
 
   try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: [user.email],
-        subject: 'Your VideoText payment didn\'t go through',
-        html,
-      }),
-      signal: AbortSignal.timeout(8_000),
-    })
-    if (!res.ok) {
-      log.error({
-        msg: 'payment-failed-notify: Resend API returned an error',
-        status: res.status,
-        body: await res.text().catch(() => ''),
-        userId: user.id,
-      })
+    const ok = await sendGrowthEmail({ to: user.email, subject: 'Your VideoText payment didn\'t go through', html })
+    if (!ok) {
+      log.error({ msg: 'payment-failed-notify: send failed', userId: user.id })
     }
   } catch (e) {
     log.error({ msg: 'payment-failed-notify: send threw', userId: user.id, error: (e as Error)?.message })

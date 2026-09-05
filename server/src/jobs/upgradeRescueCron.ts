@@ -2,6 +2,7 @@ import { prisma } from '../db'
 import { getLogger } from '../lib/logger'
 import { createRedisClient } from '../utils/redis'
 import { generateUnsubscribeToken } from '../routes/newsletter'
+import { sendGrowthEmail } from '../utils/mailer'
 
 const log = getLogger('api')
 const redis = createRedisClient('client')
@@ -45,10 +46,8 @@ function upgradeRescueHtml(ctaUrl: string, unsubLink: string): string {
 }
 
 export async function runUpgradeRescueCron(): Promise<void> {
-  const resendKey = process.env.RESEND_API_KEY
-  if (!resendKey) return
+  if (!process.env.GMAIL_SMTP_USER || !process.env.GMAIL_SMTP_APP_PASSWORD) return
 
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>'
   const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
   const apiBaseUrl = (process.env.API_BASE_URL || 'https://api.videotext.io').replace(/\/$/, '')
   const now = Date.now()
@@ -119,28 +118,13 @@ export async function runUpgradeRescueCron(): Promise<void> {
     const unsubToken = generateUnsubscribeToken(email)
     const apiUnsubLink = `${apiBaseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}&token=${unsubToken}`
     const html = upgradeRescueHtml(`${baseUrl}/pricing`, apiUnsubLink)
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: [email],
-        subject: RESCUE_SUBJECT,
-        html,
-        headers: {
-          'List-Unsubscribe': `<${apiUnsubLink}>`,
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        },
-      }),
-      signal: AbortSignal.timeout(8_000),
-    })
+    const ok = await sendGrowthEmail({ to: email, subject: RESCUE_SUBJECT, html, unsubscribeUrl: apiUnsubLink })
 
-    if (res.ok) {
+    if (ok) {
       sent += 1
     } else {
       skipped += 1
-      const body = await res.text().catch(() => '')
-      log.warn({ msg: 'Upgrade rescue email send failed', status: res.status, userId: intent.userId, source: intent.source, body })
+      log.warn({ msg: 'Upgrade rescue email send failed', userId: intent.userId, source: intent.source })
     }
   }
 
