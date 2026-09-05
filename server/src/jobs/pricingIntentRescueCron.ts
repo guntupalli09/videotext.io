@@ -71,12 +71,20 @@ function emailHtml(bodyHtml: string, ctaUrl: string, unsubLink: string): string 
 </html>`
 }
 
-export async function runPricingIntentRescueCron(): Promise<void> {
+/**
+ * @param opts.lookbackMs Overrides LOOKBACK_MS — used only by the one-time
+ * backfill script (scripts/backfill-intent-rescue-emails.ts) to catch leads
+ * whose pricing-intent event happened before Gmail SMTP was wired up. The
+ * recurring cron always calls this with no args (default 10-minute window).
+ * @param opts.dryRun Logs each candidate instead of sending and does not
+ * acquire the cooldown lock, so a preview run never blocks the real send.
+ */
+export async function runPricingIntentRescueCron(opts?: { lookbackMs?: number; dryRun?: boolean }): Promise<void> {
   if (!process.env.GMAIL_SMTP_USER || !process.env.GMAIL_SMTP_APP_PASSWORD) return
 
   const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
   const apiBaseUrl = (process.env.API_BASE_URL || 'https://api.videotext.io').replace(/\/$/, '')
-  const since = new Date(Date.now() - LOOKBACK_MS)
+  const since = new Date(Date.now() - (opts?.lookbackMs ?? LOOKBACK_MS))
 
   const events = await prisma.eventLog.findMany({
     where: { eventName: { in: RELEVANT_EVENT_NAMES }, userId: { not: null }, createdAt: { gte: since } },
@@ -109,8 +117,13 @@ export async function runPricingIntentRescueCron(): Promise<void> {
     if (user.newsletterSubscribed === false) { skipped++; continue }
 
     const lockKey = `pricing_intent_rescue:${user.id}`
-    const lock = await redis.set(lockKey, '1', 'EX', COOLDOWN_SECONDS, 'NX')
-    if (lock !== 'OK') { skipped++; continue }
+    if (opts?.dryRun) {
+      const alreadyLocked = await redis.get(lockKey)
+      if (alreadyLocked) { skipped++; continue }
+    } else {
+      const lock = await redis.set(lockKey, '1', 'EX', COOLDOWN_SECONDS, 'NX')
+      if (lock !== 'OK') { skipped++; continue }
+    }
 
     eligible++
 
@@ -149,13 +162,15 @@ export async function runPricingIntentRescueCron(): Promise<void> {
     const unsubToken = generateUnsubscribeToken(user.email)
     const apiUnsubLink = `${apiBaseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`
     const html = emailHtml(bodyHtml, `${baseUrl}/pricing`, apiUnsubLink)
+    const subject = jobs.length > 0 ? 'Saw you checking out Pro pricing' : 'Any questions on VideoText pricing?'
 
-    const ok = await sendGrowthEmail({
-      to: user.email,
-      subject: jobs.length > 0 ? 'Saw you checking out Pro pricing' : 'Any questions on VideoText pricing?',
-      html,
-      unsubscribeUrl: apiUnsubLink,
-    })
+    if (opts?.dryRun) {
+      log.info({ msg: 'DRY RUN — would send pricing intent rescue email', email: user.email, subject, jobCount: jobs.length })
+      sent++
+      continue
+    }
+
+    const ok = await sendGrowthEmail({ to: user.email, subject, html, unsubscribeUrl: apiUnsubLink })
     if (ok) sent++
     else skipped++
   }

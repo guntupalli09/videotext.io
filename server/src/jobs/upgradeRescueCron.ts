@@ -45,13 +45,21 @@ function upgradeRescueHtml(ctaUrl: string, unsubLink: string): string {
 </html>`
 }
 
-export async function runUpgradeRescueCron(): Promise<void> {
+/**
+ * @param opts.minLookbackMs Overrides the 24h lower bound — used only by the
+ * one-time backfill script (scripts/backfill-intent-rescue-emails.ts) to catch
+ * leads whose upgrade_clicked intent happened before Gmail SMTP was wired
+ * up. The recurring cron always calls this with no args (default 24h/2h window).
+ * @param opts.dryRun Logs each candidate instead of sending and does not
+ * acquire the cooldown lock, so a preview run never blocks the real send.
+ */
+export async function runUpgradeRescueCron(opts?: { minLookbackMs?: number; dryRun?: boolean }): Promise<void> {
   if (!process.env.GMAIL_SMTP_USER || !process.env.GMAIL_SMTP_APP_PASSWORD) return
 
   const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
   const apiBaseUrl = (process.env.API_BASE_URL || 'https://api.videotext.io').replace(/\/$/, '')
   const now = Date.now()
-  const minCreatedAt = new Date(now - 24 * 60 * 60 * 1000)
+  const minCreatedAt = new Date(now - (opts?.minLookbackMs ?? 24 * 60 * 60 * 1000))
   const maxCreatedAt = new Date(now - 2 * 60 * 60 * 1000)
 
   const intents = await prisma.upgradeIntent.findMany({
@@ -109,15 +117,24 @@ export async function runUpgradeRescueCron(): Promise<void> {
 
     const intentDate = intent.createdAt.toISOString().slice(0, 10)
     const lockKey = `upgrade_rescue:first:${intent.userId}:${intentDate}`
-    const lock = await redis.set(lockKey, '1', 'EX', 35 * 24 * 60 * 60, 'NX')
-    if (lock !== 'OK') {
-      skipped += 1
-      continue
+    if (opts?.dryRun) {
+      const alreadyLocked = await redis.get(lockKey)
+      if (alreadyLocked) { skipped += 1; continue }
+    } else {
+      const lock = await redis.set(lockKey, '1', 'EX', 35 * 24 * 60 * 60, 'NX')
+      if (lock !== 'OK') { skipped += 1; continue }
     }
 
     const unsubToken = generateUnsubscribeToken(email)
     const apiUnsubLink = `${apiBaseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}&token=${unsubToken}`
     const html = upgradeRescueHtml(`${baseUrl}/pricing`, apiUnsubLink)
+
+    if (opts?.dryRun) {
+      log.info({ msg: 'DRY RUN — would send upgrade rescue email', email, source: intent.source })
+      sent += 1
+      continue
+    }
+
     const ok = await sendGrowthEmail({ to: email, subject: RESCUE_SUBJECT, html, unsubscribeUrl: apiUnsubLink })
 
     if (ok) {
