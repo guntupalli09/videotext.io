@@ -2,6 +2,7 @@ import { prisma } from '../db'
 import { getLogger } from '../lib/logger'
 import { createRedisClient } from '../utils/redis'
 import { generateUnsubscribeToken } from '../routes/newsletter'
+import { sendGrowthEmail } from '../utils/mailer'
 import {
   RELEVANT_EVENT_NAMES,
   isUserConverted,
@@ -71,10 +72,8 @@ function emailHtml(bodyHtml: string, ctaUrl: string, unsubLink: string): string 
 }
 
 export async function runPricingIntentRescueCron(): Promise<void> {
-  const resendKey = process.env.RESEND_API_KEY
-  if (!resendKey) return
+  if (!process.env.GMAIL_SMTP_USER || !process.env.GMAIL_SMTP_APP_PASSWORD) return
 
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'VideoText <onboarding@resend.dev>'
   const baseUrl = (process.env.BASE_URL || 'https://videotext.io').replace(/\/$/, '')
   const apiBaseUrl = (process.env.API_BASE_URL || 'https://api.videotext.io').replace(/\/$/, '')
   const since = new Date(Date.now() - LOOKBACK_MS)
@@ -151,33 +150,14 @@ export async function runPricingIntentRescueCron(): Promise<void> {
     const apiUnsubLink = `${apiBaseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`
     const html = emailHtml(bodyHtml, `${baseUrl}/pricing`, apiUnsubLink)
 
-    try {
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
-        body: JSON.stringify({
-          from: fromEmail,
-          to: [user.email],
-          subject: jobs.length > 0 ? 'Saw you checking out Pro pricing' : 'Any questions on VideoText pricing?',
-          html,
-          headers: {
-            'List-Unsubscribe': `<${apiUnsubLink}>`,
-            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-          },
-        }),
-        signal: AbortSignal.timeout(8_000),
-      })
-      if (res.ok) {
-        sent++
-      } else {
-        skipped++
-        const body = await res.text().catch(() => '')
-        log.warn({ msg: 'Pricing intent rescue email send failed', status: res.status, userId: user.id, body })
-      }
-    } catch (e) {
-      skipped++
-      log.warn({ msg: 'Pricing intent rescue email error', userId: user.id, error: (e as Error)?.message })
-    }
+    const ok = await sendGrowthEmail({
+      to: user.email,
+      subject: jobs.length > 0 ? 'Saw you checking out Pro pricing' : 'Any questions on VideoText pricing?',
+      html,
+      unsubscribeUrl: apiUnsubLink,
+    })
+    if (ok) sent++
+    else skipped++
   }
 
   if (eligible > 0) {
