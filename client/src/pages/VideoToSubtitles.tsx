@@ -889,7 +889,19 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
             />
             {location.pathname === '/video-to-subtitles' && (
-              <SamplesModule sourcePath={location.pathname} samplesHref="/samples#subtitle" />
+              <>
+                <SamplesModule sourcePath={location.pathname} samplesHref="/samples#subtitle" />
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Looking for a narrower intent?{' '}
+                  <Link to="/srt-generator" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                    SRT file generator
+                  </Link>
+                  {' · '}
+                  <Link to="/video-to-srt" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                    Video to SRT converter
+                  </Link>
+                </p>
+              </>
             )}
           </div>
         )}
@@ -1483,16 +1495,24 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
 
       {isSrtSibling && (
-        <aside className="mt-10 max-w-4xl mx-auto px-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/70 dark:bg-blue-950/30 p-5">
-          <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">Need the full VideoText caption product?</p>
+        <aside className="mt-10 max-w-4xl mx-auto px-4 rounded-2xl border-2 border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-950/40 p-5">
+          <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+            Need the full VideoText caption product?
+          </p>
           <p className="mt-1 text-sm text-blue-800 dark:text-blue-200">
             This page is the {location.pathname === '/srt-generator' ? 'SRT file maker/creator' : 'video → SRT converter'}.
             {' '}
             <Link to="/video-to-subtitles" className="font-semibold underline hover:no-underline">
               Video to Subtitles
             </Link>
-            {' '}is the hub for timed SRT/VTT plus the rest of the workflow (fix, translate, burn, and transcript + summary via Video to Transcript).
+            {' '}is the hub for timed SRT/VTT plus fix, translate, and burn.
           </p>
+          <Link
+            to="/video-to-subtitles"
+            className="mt-3 inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5"
+          >
+            Open the Video to Subtitles hub →
+          </Link>
         </aside>
       )}
 

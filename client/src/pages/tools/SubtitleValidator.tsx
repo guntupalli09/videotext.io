@@ -42,6 +42,16 @@ export default function SubtitleValidator() {
       title="Subtitle Validator — Check SRT & VTT Files for Errors"
       description="Validate SRT and VTT subtitle files for overlapping timestamps, long lines, empty cues, and reading speed violations. Instant, browser-based, no account required."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
+      moneyCta={{
+        kicker: 'Overlaps, CPS, or long lines?',
+        title: 'Fix this file in one click',
+        body: 'Out of sync, overlapping, or CPS fail → the Fix tool auto-corrects timing, lines, and reading speed.',
+        primary: { label: 'Fix this file in one click', path: '/fix-subtitles' },
+        secondary: [
+          { label: 'Translate', path: '/translate-subtitles' },
+          { label: 'Burn', path: '/burn-subtitles' },
+        ],
+      }}
       contentSections={[
         {
           heading: 'What does subtitle validation check for?',

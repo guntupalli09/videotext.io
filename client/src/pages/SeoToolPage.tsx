@@ -10,6 +10,8 @@ import { getSeoEntry, getRelatedSuggestionsForEntry } from '../lib/seoRegistry'
 import type { SeoToolKey } from '../lib/seoRegistry'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import MoneyPagesCta from '../components/MoneyPagesCta'
+import SeoJourneyBanner from '../components/SeoJourneyBanner'
+import { getSeoJourneyBanner } from '../lib/seoJourneyConfig'
 import NotFound from './NotFound'
 import { resolveInternalLinkPath } from '../lib/primaryUrls'
 import { getContextualCta, getRouteFamily, getWorkflowStageCtas } from '../lib/routeFamilyTemplates'
@@ -118,9 +120,11 @@ export default function SeoToolPage() {
   const primaryCtaText = contextualPrimaryCta.text
   const primaryCtaPath = resolveInternalLinkPath(contextualPrimaryCta.path || PRIMARY_TOOL_PATH_BY_KEY[entry.toolKey])
   const stageCtas = getWorkflowStageCtas(routeFamily, pathname).slice(0, 2)
+  const journey = getSeoJourneyBanner(pathname)
 
   return (
     <div className="min-h-screen">
+      {journey && <SeoJourneyBanner data={journey} />}
       <Suspense fallback={<RouteFallback />}>
         <Tool {...toolProps} />
       </Suspense>

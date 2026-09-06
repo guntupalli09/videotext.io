@@ -3298,9 +3298,9 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
           </h2>
         </div>
         <p className="text-gray-500 dark:text-gray-400 text-sm mb-7 max-w-2xl">
-          Each transcription platform has its own formatting rules. Browse
-          detailed style guides for the services below — verbatim levels,
-          speaker labels, timestamps, and every rule you need to pass QA.
+          Start with the guides that already get search traffic — GoTranscript,
+          Scribie, Verbit, TranscribeMe, and Rev — then format your file to
+          those rules in one click on this page.
         </p>
         {[
           {
