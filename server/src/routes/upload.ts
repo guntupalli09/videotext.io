@@ -461,6 +461,26 @@ router.post('/complete', async (req: Request, res: Response) => {
         fs.unlinkSync(outPath)
         throw Object.assign(new Error('File exceeds plan limit. Upgrade for larger files.'), { statusCode: 400 })
       }
+      // Verify the assembled file is close to the declared totalSize.
+      // Browsers (especially Safari on iOS) can silently under-send large files:
+      // each chunk the server received was valid, but only a fraction of the file
+      // was actually transmitted.  Without this check the worker gets a stub file,
+      // ffprobe reads a tiny duration, and Whisper rejects the extracted audio.
+      // Tolerance of 1 % handles any minor rounding in File.size vs actual bytes.
+      const declaredSize = meta.totalSize ?? 0
+      if (declaredSize > 0 && fileSize < declaredSize * 0.99) {
+        fs.unlinkSync(outPath)
+        uploadLog.warn({
+          msg: '[upload/complete] assembled size mismatch',
+          declared: declaredSize,
+          actual: fileSize,
+          pct: Math.round((fileSize / declaredSize) * 100),
+        })
+        throw Object.assign(
+          new Error('Upload incomplete: only part of the file was received. Please try again.'),
+          { statusCode: 400 }
+        )
+      }
       const opts = meta.options || {}
       const trimmedStart = opts.trimmedStart != null ? (typeof opts.trimmedStart === 'number' ? opts.trimmedStart : parseFloat(String(opts.trimmedStart))) : undefined
       const trimmedEnd = opts.trimmedEnd != null ? (typeof opts.trimmedEnd === 'number' ? opts.trimmedEnd : parseFloat(String(opts.trimmedEnd))) : undefined
