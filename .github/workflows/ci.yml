@@ -37,8 +37,8 @@ jobs:
       - name: Install serve and wait-on
         run: npm install -D serve wait-on
 
-      - name: Serve built client (background, SPA mode for client-side routes)
-        run: npx serve dist -l 4173 -s &
+      - name: Serve prerendered HTML (filesystem, not SPA fallback)
+        run: npx serve dist -l 4173 &
 
       - name: Wait for server
         run: npx wait-on http://localhost:4173 -t 15000
