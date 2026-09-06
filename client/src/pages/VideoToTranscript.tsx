@@ -6272,7 +6272,7 @@ export default function VideoToTranscript(
       />
 
       {location.pathname === "/video-to-transcript" && (
-        <CoreToolSeoDepth path="/video-to-transcript" hideFaq />
+        <CoreToolSeoDepth path="/video-to-transcript" />
       )}
 
       {(hasDeepContent || faq.length > 0) && (
