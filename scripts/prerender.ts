@@ -16,9 +16,16 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { getProgrammaticSeoEntries } from '../client/src/lib/generateSeoPages'
 import { getCanonicalPathForRoute } from '../client/src/lib/primaryUrls'
-import { getSoftwareApplicationJsonLd, getHowToJsonLd } from '../client/src/lib/seoMeta'
+import { getSoftwareApplicationJsonLd, getHowToJsonLd, getHomeSoftwareApplicationJsonLd } from '../client/src/lib/seoMeta'
+import {
+  formatPublicRatingCount,
+  formatPublicRatingValue,
+  parsePublicRating,
+  type PublicRating,
+} from '../client/src/lib/publicRating'
 import { getCoreToolFaq, getCoreToolSeoDepth } from '../client/src/lib/coreToolSeoDepth'
 import { getIndexablePaths } from './seo/registry'
+import { stripTopLevelSoftwareApplicationScripts } from './seo/jsonLdUtils'
 import { renderPageToHtml } from '../client/src/ssr-render'
 import { getContextualCta, getRouteFamily, getWorkflowStageCtas } from '../client/src/lib/routeFamilyTemplates'
 
@@ -1284,11 +1291,14 @@ function dedupeSchemas(schemas: object[]): object[] {
   return unique
 }
 
-function injectStructuredData(template: string, routePath: string, meta: RouteMeta): string {
+function injectStructuredData(template: string, routePath: string, meta: RouteMeta, rating: PublicRating | null): string {
+  const html = stripTopLevelSoftwareApplicationScripts(template)
   const schemas: object[] = []
   const breadcrumb = buildBreadcrumbJsonLd(routePath, meta)
   const faq = buildFaqJsonLd(routePath, meta)
-  const softwareApp = getSoftwareApplicationJsonLd(routePath)
+  const softwareApp = routePath === '/'
+    ? getHomeSoftwareApplicationJsonLd(rating)
+    : getSoftwareApplicationJsonLd(routePath)
   const howTo = getHowToJsonLd(routePath)
   const product = buildPricingProductJsonLd(routePath)
   if (breadcrumb) schemas.push(breadcrumb)
@@ -1296,11 +1306,11 @@ function injectStructuredData(template: string, routePath: string, meta: RouteMe
   if (softwareApp) schemas.push(softwareApp)
   if (howTo) schemas.push(howTo)
   if (product) schemas.push(product)
-  if (!schemas.length) return template
+  if (!schemas.length) return html
   const scripts = dedupeSchemas(schemas)
     .map((schema) => `<script type="application/ld+json">${JSON.stringify(schema)}</script>`)
     .join('\n')
-  return template.replace('</head>', `${scripts}\n</head>`)
+  return html.replace('</head>', `${scripts}\n</head>`)
 }
 
 // Hub page link definitions (must match React component lists)
@@ -1960,9 +1970,51 @@ function assertPrerenderCoverage(allRoutes: RouteMeta[], generatedPaths: Set<str
   }
 }
 
+async function fetchPublicRatingForPrerender(): Promise<PublicRating | null> {
+  const origin = (process.env.VITE_API_URL || process.env.API_BASE_URL || 'https://api.videotext.io')
+    .replace(/\/api\/?$/, '')
+    .replace(/\/$/, '')
+  try {
+    const res = await fetch(`${origin}/api/stats/public/rating`, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(8000),
+    })
+    if (!res.ok) return null
+    return parsePublicRating(await res.json())
+  } catch (err) {
+    console.warn('[prerender] public rating fetch failed; omitting AggregateRating', (err as Error)?.message)
+    return null
+  }
+}
+
+function buildHomeRatingHtml(rating: PublicRating): string {
+  const value = escapeHtml(formatPublicRatingValue(rating))
+  const countLabel = escapeHtml(formatPublicRatingCount(rating))
+  return `<div id="vt-public-rating" data-average="${value}" data-count="${rating.ratingCount}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 16px 8px;font-family:system-ui,-apple-system,sans-serif;color:#111827">
+      <p style="margin:0;font-size:16px;font-weight:700">Rated ${value} out of 5 from ${countLabel}</p>
+    </div>`
+}
+
+function buildPublicRatingBootstrap(rating: PublicRating): string {
+  return `<script>window.__PUBLIC_RATING__=${JSON.stringify(rating)}</script>`
+}
+
+function injectHomepageVisibleRating(html: string, rating: PublicRating | null): string {
+  if (!rating) return html
+  const ratingHtml = buildHomeRatingHtml(rating)
+  const bootstrap = buildPublicRatingBootstrap(rating)
+  html = html.replace('</head>', `${bootstrap}\n</head>`)
+  // Insert after the first H1 so crawlers see stars next to the page title.
+  // Never replace an empty #root here — that blocks SSR / H1 fallback injection.
+  if (/<h1\b/i.test(html)) {
+    return html.replace(/<\/h1>/i, `</h1>\n${ratingHtml}`)
+  }
+  return html.replace('</body>', `${ratingHtml}\n</body>`)
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-function main() {
+async function main() {
   const templatePath = path.join(DIST_DIR, 'index.html')
   if (!fs.existsSync(templatePath)) {
     console.error('[prerender] dist/index.html not found — run the client build first.')
@@ -1970,6 +2022,10 @@ function main() {
   }
 
   const template = fs.readFileSync(templatePath, 'utf8')
+  const publicRating = await fetchPublicRatingForPrerender()
+  if (publicRating) {
+    console.log(`[prerender] public rating ${publicRating.averageRating.toFixed(1)} from ${publicRating.ratingCount} ratings`)
+  }
 
   // Collect all routes: static + registry (parsed) + programmatic
   const registryEntries = parseRegistryEntries()
@@ -2011,7 +2067,7 @@ function main() {
   for (const meta of allRoutes) {
     const routePath = meta.path
     let html = injectHead(template, meta)
-    html = injectStructuredData(html, routePath, meta)
+    html = injectStructuredData(html, routePath, meta, publicRating)
 
     // Full SSR: inject complete React-rendered HTML into the root div for comparison/vs pages.
     // Non-JS crawlers (LLM training pipelines, etc.) will see the full page content.
@@ -2020,8 +2076,11 @@ function main() {
       html = html.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`)
     } else if (meta.h1) {
       // For all other pages: inject minimal H1 + description for non-JS crawlers.
-      const h1Html = buildH1Html(meta)
-      html = html.replace('</body>', `${h1Html}\n</body>`)
+      html = html.replace('</body>', `${buildH1Html(meta)}\n</body>`)
+    }
+
+    if (routePath === '/') {
+      html = injectHomepageVisibleRating(html, publicRating)
     }
 
     // Inject high-conversion content (keywords, comparison, how-to, proof)
@@ -2082,4 +2141,4 @@ function main() {
   console.log(`[prerender] Generated ${count} static HTML files in ${DIST_DIR}`)
 }
 
-main()
+void main()
