@@ -96,8 +96,60 @@ Typical Rev-style clean-verbatim job, single speaker, 60-minute WAV, client requ
 | Batch queue (podcast backlog) | ⚠️ One file at a time | ✅ [Batch process](https://videotext.io/batch-process) |
 | Zero data retention | ❌ | ✅ |
 | Free tier | ⚠️ Limited | ✅ 3 uploads/day |
+| **Pro pricing** | ~$40–80 (player + optional AI) | **$7.99/mo flat** |
+| Speaker name mapping UI | ❌ Manual tags | ✅ "Who said what" + diarization |
+| 3-column export (Speaker · Timecode · Dialogue) | ❌ | ✅ PDF/DOCX |
+| Share read-only with client | ❌ | ✅ Original + translated links |
 
 BITC deep dive: [BITC timecode transcription workflow →](https://videotext.io/blog/bitc-timecode-transcription-workflow)
+
+---
+
+## Pricing: Express Scribe stack vs VideoText.io
+
+Express Scribe pricing looks like a one-time player license — until you add **typing time**, **AI add-ons**, and **Word formatting**.
+
+| | Express Scribe stack | VideoText.io |
+|---|---------------------|--------------|
+| **Software cost** | $40–80 (player) + optional AI | **Free** → **$7.99/mo Pro** |
+| **AI transcription** | Add-on / separate tool | ✅ Whisper large-v3 included |
+| **BITC / SMPTE export** | ⚠️ Manual; drift on long DF files | ✅ Deterministic, included |
+| **Speaker mapping** | ❌ You type every tag | ✅ Diarization + name speakers |
+| **Client guideline export** | ❌ Manual in Word | ✅ [Guideline format](https://videotext.io/guideline-format) |
+| **Effective $/hour (60-min Rev job)** | $10–13/hr wall-clock | **$60/hr** with same deliverable |
+
+### Why VideoText.io wins on cost efficiency
+
+- **No per-minute billing** — Rev AI at $0.25/min = $15 per 60-min file; VideoText Pro = **$7.99/mo flat** for continued processing  
+- **One tool replaces 3–4** — Express Scribe + TurboScribe + Word + timestamp scripts → single upload  
+- **Fast processing** — 60-min file in ~3 min; you spend time on QA, not typing  
+
+[Pricing →](https://videotext.io/pricing)
+
+---
+
+## Full workflow: speaker mapping + BITC exports
+
+Professional deliverables need more than raw text. VideoText.io includes:
+
+**1. Speaker diarization + mapping** — enable speaker labels before transcribing; open "Who said what" to assign real names; tap any line to seek audio.
+
+**2. Export formats transcriptionists actually deliver:**
+- Per-speaker timestamps  
+- **SMPTE / BITC timecode** (29.97 DF, 25fps, etc.)  
+- Full verbatim vs clean verbatim  
+- **3-column PDF/DOCX** — Speaker · Timecode · Dialogue table  
+- JSON, CSV, Notion  
+
+**3. Make this client-ready →** applies Rev / GoTranscript / Scribie presets in one pass.
+
+**4. Share with a link** — send read-only original or translated transcript to client QA without an account.
+
+![Speaker mapping — name each detected speaker](https://videotext.io/images/blog/videotext-speaker-mapping.png)
+
+![Exports panel — SMPTE/BITC, per-speaker timestamps, 3-column formats](https://videotext.io/images/blog/videotext-exports-bitc-speaker.png)
+
+![Live transcript review — tap a line to seek while QAing](https://videotext.io/images/blog/videotext-live-transcript.png)
 
 ---
 

@@ -82,6 +82,56 @@ Real workflow for a creator publishing the same clip to TikTok **and** YouTube.
 
 ---
 
+## Pricing: CapCut vs VideoText.io (total workflow cost)
+
+CapCut looks free until you price the **extra tools and time** required to finish the job.
+
+| | CapCut | VideoText.io |
+|---|--------|--------------|
+| **Free tier** | ✅ In-app captions | ✅ 3 uploads/day, no card |
+| **Paid plan** | $9.99/mo (CapCut Pro) | **$7.99/mo Pro** (flat, no per-minute) |
+| **SRT/VTT export** | ❌ Not available | ✅ Included |
+| **Chapters + summary** | ❌ | ✅ Included |
+| **Subtitle translation (70+ langs)** | ⚠️ In-app only | ✅ Included |
+| **Speaker mapping** | ⚠️ Limited | ✅ Diarization + name each speaker |
+| **Share read-only with client** | ❌ | ✅ Original + translated links |
+
+### Monthly cost at 10 hours of video
+
+| Stack | Monthly cost | Deliverables |
+|-------|--------------|--------------|
+| CapCut Pro + manual re-transcribe + Otter overflow | **$9.99 + $16.99+** + your time | Burned-in TikTok only; YouTube SRT still manual |
+| CapCut + TurboScribe ($10) + Kapwing ($16) | **~$36/mo** + 30–60 min/file cleanup | Text + maybe SRT; no chapters/summary in one run |
+| **VideoText.io Pro** | **$7.99/mo flat** | Transcript + SRT + chapters + summary + translation + burn-in |
+
+**VideoText.io is the most cost-efficient full workflow** — cheaper than CapCut Pro alone on paid tier, and you skip the multi-tool stack tax.
+
+[Pricing →](https://videotext.io/pricing) · [Compare all tools →](https://videotext.io/compare)
+
+---
+
+## Full workflow in one upload (not just captions)
+
+CapCut stops at styled overlays. VideoText.io runs the **entire publish pipeline**:
+
+1. **Live transcript** — stream and review as audio processes (tap any line to seek)  
+2. **Speaker mapping** — enable diarization, name each speaker in "Who said what"  
+3. **Exports panel** — per-speaker timestamps, SMPTE/BITC, full/clean verbatim, PDF/DOCX/TXT, 3-column Speaker · Timecode · Dialogue tables  
+4. **Make this client-ready** — one click into [guideline formatting](https://videotext.io/guideline-format)  
+5. **Share with a link** — read-only review page for clients (original or translated, no account needed)
+
+![VideoText.io live transcript — tap any line to seek while reviewing](https://videotext.io/images/blog/videotext-live-transcript.png)
+
+![Speaker mapping — name each detected speaker before export](https://videotext.io/images/blog/videotext-speaker-mapping.png)
+
+![Exports — SMPTE/BITC timecode, per-speaker timestamps, 3-column DOCX/PDF](https://videotext.io/images/blog/videotext-exports-bitc-speaker.png)
+
+![Share with a link — read-only original or translated transcript for clients](https://videotext.io/images/blog/videotext-share-link.png)
+
+**Speed:** 60-minute video processes in ~3 minutes — comparable to CapCut auto-captions, with **~98.5% Whisper large-v3 accuracy** vs CapCut's ~88% on long-form speech.
+
+---
+
 ## CapCut vs VideoText.io: feature comparison
 
 | Feature | CapCut | VideoText.io |
@@ -97,6 +147,7 @@ Real workflow for a creator publishing the same clip to TikTok **and** YouTube.
 | [Burn captions into video](https://videotext.io/burn-subtitles) | ✅ | ✅ |
 | Zero data retention | ❌ | ✅ |
 | Free tier (no credit card) | ✅ | ✅ 3 uploads/day |
+| **Pro pricing** | $9.99/mo | **$7.99/mo flat** |
 
 Deep comparison: [CapCut captions to SRT →](https://videotext.io/capcut-captions)
 
@@ -150,6 +201,12 @@ Yes — [Burn Subtitles](https://videotext.io/burn-subtitles) embeds captions pe
 
 **CapCut alternative for YouTube creators?**  
 VideoText.io — paste URL or upload file, export SRT, upload to YouTube Studio. See [transcription tool for YouTube →](https://videotext.io/blog/transcription-tool-youtube).
+
+**Is VideoText.io cheaper than CapCut Pro?**  
+Yes — VideoText Pro is **$7.99/mo** vs CapCut Pro **$9.99/mo**, and VideoText includes SRT export, speaker mapping, chapters, and translation CapCut cannot deliver as files.
+
+**CapCut alternative with speaker labels?**  
+VideoText.io — enable diarization, map names in "Who said what", export per-speaker timestamps or 3-column DOCX.
 
 ---
 

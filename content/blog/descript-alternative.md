@@ -49,6 +49,23 @@ Descript loses when:
 
 ---
 
+## Pricing: Descript vs VideoText.io
+
+| | Descript | VideoText.io |
+|---|----------|--------------|
+| Free tier | ⚠️ Limited trial | **3 uploads/day**, no card |
+| Cheapest paid | **$24/mo** (Creator) | **$7.99/mo Pro** |
+| 60-min processing | ~18 min | **~3 min** |
+| Full workflow (SRT + chapters + summary + translation) | ⚠️ Partial | ✅ One upload |
+| Speaker mapping + BITC export | ⚠️ Editor-centric | ✅ Exports panel |
+| Browser-based (no install) | ❌ Desktop app | ✅ |
+
+**10 hours/month:** Descript Creator = **$24/mo** for an editor you may not use. VideoText Pro = **$7.99/mo** for the full output stack — **3× cheaper** for transcript-first workflows.
+
+[Pricing →](https://videotext.io/pricing) · [Speed test vs Descript →](https://videotext.io/blog/videotext-vs-turboscribe-vs-descript-speed-test)
+
+---
+
 ## VideoText vs Descript
 
 | Feature | Descript | VideoText |

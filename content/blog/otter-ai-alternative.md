@@ -64,6 +64,22 @@ Deep dive: [Best Otter alternatives on VideoText →](https://videotext.io/best-
 
 ---
 
+## Pricing: Otter.ai vs VideoText.io
+
+| | Otter.ai | VideoText.io |
+|---|----------|--------------|
+| Free tier | 300 min/mo (meetings) | **3 uploads/day**, full workflow |
+| Pro plan | $16.99/mo | **$7.99/mo Pro** flat |
+| SRT + chapters + translation | ⚠️ Partial / missing | ✅ One upload |
+| Speaker mapping + share links | ⚠️ Basic | ✅ Full diarization + read-only links |
+| Per-minute overage | ✅ Minute caps | ❌ Flat Pro rate |
+
+**10 hours/month of file video:** Otter Pro ($16.99) still lacks full export stack. VideoText Pro (**$7.99**) includes transcript + SRT + chapters + summary + speaker mapping + translation.
+
+[Pricing →](https://videotext.io/pricing)
+
+---
+
 ## Descript as an Otter alternative
 
 **Choose Descript** if you want to **edit video by editing text** and will live inside their NLE.

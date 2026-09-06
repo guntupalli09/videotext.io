@@ -86,6 +86,42 @@ Single-camera interview with BITC starting at `00:00:00;00`, drop-frame 29.97fps
 
 ---
 
+## Pricing: BITC workflows — tool stack vs VideoText.io
+
+BITC jobs historically require **Express Scribe + manual typing** or expensive human Rev review. VideoText.io collapses that stack.
+
+| | Express Scribe + manual | TurboScribe + manual BITC | VideoText.io |
+|---|--------------------------|---------------------------|--------------|
+| **Monthly cost** | $40–80 player + your hours | $10/mo + no BITC support | **Free → $7.99/mo Pro** |
+| **3-hour BITC job labor** | 6–8 hours typing | N/A (no BITC) | ~51 min QA |
+| **Rev human (3 hr @ $1.50/min)** | $270 per file | — | AI + QA for $7.99/mo |
+| **Drift rework risk** | High on 29.97 DF | N/A | ✅ Integer-frame SMPTE |
+| **3-column Speaker·Timecode·Dialogue export** | ❌ Manual Word | ❌ | ✅ Built-in |
+
+**Most cost-efficient BITC pipeline:** upload once → SMPTE/BITC mode → speaker mapping → 3-column DOCX → [guideline format](https://videotext.io/guideline-format) → deliver.
+
+[Pricing →](https://videotext.io/pricing)
+
+---
+
+## Full BITC workflow in VideoText.io (with screenshots)
+
+**Step 1 — Enable SMPTE / BITC timecode** in Exports before processing. Set anchor timecode + frame rate (e.g. 29.97 drop-frame) matching your burned-in clock.
+
+**Step 2 — Speaker diarization + mapping.** Turn on speaker labels; use "Who said what" to assign names. Each speaker turn gets a BITC-accurate tag — no hand-typing from the on-screen clock.
+
+**Step 3 — Export.** Choose per-speaker timestamps with SMPTE notation, or **3-column PDF/DOCX** (Speaker · Timecode · Dialogue) for broadcast clients.
+
+**Step 4 — Share.** Send a read-only link for client spot-checks against picture — original or translated.
+
+![Exports — SMPTE/BITC timecode mode with per-speaker and 3-column export options](https://videotext.io/images/blog/videotext-exports-bitc-speaker.png)
+
+![Speaker mapping for BITC-tagged multi-speaker scripts](https://videotext.io/images/blog/videotext-speaker-mapping.png)
+
+![Live transcript — tap any line to verify against burned-in timecode](https://videotext.io/images/blog/videotext-live-transcript.png)
+
+---
+
 ## Drop-frame vs non-drop: why it matters
 
 | Rate | Notation | Real-world use |

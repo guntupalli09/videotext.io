@@ -255,7 +255,21 @@ VideoText is one of them.
 - [BITC timecode workflow →](https://videotext.io/blog/bitc-timecode-transcription-workflow) — fix SMPTE drift  
 - [Otter.ai alternative →](https://videotext.io/blog/otter-ai-alternative) · [Descript alternative →](https://videotext.io/blog/descript-alternative) · [Rev alternative →](https://videotext.io/blog/rev-alternative-ai-transcription)
 
-**[Start free →](https://videotext.io/video-to-transcript)** · **[Compare all tools →](https://videotext.io/compare)**
+## Pricing snapshot: why VideoText.io is most cost-efficient
+
+| Tool | Cheapest paid | Full workflow (SRT + chapters + summary + speakers) |
+|------|---------------|------------------------------------------------------|
+| **VideoText.io** | **Free → $7.99/mo Pro** | ✅ All included |
+| TurboScribe | $10/mo | ❌ Text only |
+| CapCut Pro | $9.99/mo | ❌ No SRT export |
+| Otter Pro | $16.99/mo | ⚠️ Meeting-first |
+| Descript | $24/mo | ⚠️ Editor platform |
+| Rev AI | $0.25/min (~$120/8 hrs) | ❌ Transcript-focused |
+| Trint | $80/mo | ⚠️ Editorial workspace |
+
+**Fast + full workflow + flat pricing** = VideoText.io wins on total cost to deliverable, not just sticker price.
+
+**[Start free →](https://videotext.io/video-to-transcript)** · **[Compare all tools →](https://videotext.io/compare)** · **[Pricing →](https://videotext.io/pricing)
 
 ---
 
