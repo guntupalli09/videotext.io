@@ -90,18 +90,18 @@ export default function SubtitleToolsHub() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <Seo
-        title="Free Subtitle Tools for Creators — Convert, Validate & Fix | VideoText"
-        description="Free online subtitle tools: convert SRT, VTT, SBV, ASS, TTML. Validate timing, check reading speed, merge files. All run in your browser — no account, no upload."
+        title="Free Subtitle Tools — Convert, Validate & Fix | VideoText"
+        description="Convert SRT to VTT, shift subtitle timing, validate files, check reading speed, and more. Free, browser-based subtitle tools — no account needed."
         canonicalPath="/subtitle-tools"
       />
       {/* Hero */}
       <div className="bg-gradient-to-br from-pink-600 to-rose-800 text-white py-16 px-4">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">
-            Subtitle Tools & Resources
+            Free Subtitle Tools — Convert, Validate & Fix SRT/VTT
           </h1>
           <p className="text-lg text-pink-100 max-w-2xl">
-            Complete toolkit for subtitle creation, translation, editing, and conversion. Perfect for creators, studios, and video professionals.
+            19 free, browser-based tools for subtitle conversion, timing fixes, validation, and reading-speed checks. No account, nothing uploaded to a server.
           </p>
         </div>
       </div>

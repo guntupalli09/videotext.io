@@ -10,9 +10,9 @@ import { resolveInternalLinkPath } from './primaryUrls'
 /** Static (non-SEO-registry) routes: title + description. */
 const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> = {
   '/': {
-    title: 'Video to Text Transcription Software | Fast AI Transcript & Subtitles',
+    title: 'VideoText — AI Video Transcription & Subtitles, Fast',
     description:
-      'VideoText turns long video into structured transcripts, subtitles, summaries, and chapters in one workflow, with export support for TXT, DOCX, PDF, SRT, and VTT.',
+      'VideoText turns any video into a clean transcript, SRT/VTT subtitles, and translations in one AI-powered workflow. Free to try, no card needed.',
   },
   '/pricing': {
     title: 'Pricing — Free & Pro Plans | VideoText',
@@ -70,9 +70,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Generate subtitles from video instantly. Create SRT and VTT files online with accurate timestamps. Fast, automatic, and no editing required.',
   },
   '/translate-subtitles': {
-    title: 'Translate Subtitles/ Documents Online (SRT, VTT, TXT, DOC, PDF ++) — Fast & Accurate',
+    title: 'Translate Subtitles (SRT/VTT) — 70+ Languages | VideoText',
     description:
-      'Translate subtitles, SRT files, and transcripts online in seconds. 70+ languages with timestamps preserved. No signup. Fast and accurate.',
+      'Translate SRT or VTT subtitle files to 70+ languages with AI. Upload, pick a language, download — timestamps stay perfectly in sync. Free, no signup.',
   },
   '/fix-subtitles': {
     title: 'Fix Subtitles — Auto-Correct Timing & Format',
@@ -376,8 +376,8 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Check subtitle reading speed with characters-per-second and words-per-minute guidance for Netflix, BBC, EBU, YouTube, and social captions.',
   },
   '/subtitle-character-checker': {
-    title: 'Subtitle Character Limit Checker — Netflix, YouTube & BBC | VideoText',
-    description: 'Check subtitle line lengths against common caption character limits so SRT and VTT files stay readable on Netflix, YouTube, BBC-style, and social video layouts.',
+    title: 'Subtitle Character Checker — Netflix, YouTube & BBC | VideoText',
+    description: 'Check if subtitle lines meet Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) limits. Instant pass/fail report per cue. Free, no signup.',
   },
   '/subtitle-word-counter': {
     title: 'Subtitle Word Counter — Count Words in SRT & VTT Files | VideoText',
@@ -405,8 +405,8 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Check every subtitle cue for characters-per-second against Netflix (17 CPS), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
   },
   '/tools/subtitle-character-checker': {
-    title: 'Subtitle Character Limit Checker — Netflix, YouTube & BBC | VideoText',
-    description: 'Check if subtitle lines meet Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) character limits. Instant pass/fail report per cue. Free.',
+    title: 'Subtitle Character Checker — Netflix, YouTube & BBC | VideoText',
+    description: 'Check if subtitle lines meet Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) limits. Instant pass/fail report per cue. Free, no signup.',
   },
   '/tools/subtitle-word-counter': {
     title: 'Subtitle Word Counter — Count Words in SRT & VTT Files | VideoText',
@@ -457,8 +457,8 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Convert TTML, DFXP, or EBU-TT subtitle files to SRT format. Used for Netflix, broadcast, and enterprise video workflows. Free, browser-based.',
   },
   '/subtitle-tools': {
-    title: 'Free Subtitle Tools for Creators — SRT, VTT, Timing & Validation | VideoText',
-    description: 'Convert SRT to VTT, shift subtitle timing, validate files, check reading speed, and more. All tools are free, browser-based, and require no account.',
+    title: 'Free Subtitle Tools — Convert, Validate & Fix | VideoText',
+    description: 'Convert SRT to VTT, shift subtitle timing, validate files, check reading speed, and more. Free, browser-based subtitle tools — no account needed.',
   },
   '/subtitle-resources': {
     title: 'Subtitle Resources & Standards — Formats, Netflix Rules, CPS Limits | VideoText',
@@ -1379,13 +1379,13 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
     featureList: 'Video compression, Light compression, Medium compression, Heavy compression, MP4 output, No quality loss option',
   },
   '/srt-generator': {
-    name: 'SRT Generator — Create SRT Subtitle Files from Video',
-    description: 'Generate SRT subtitle files from any video with AI. Upload your video, get a timed SRT file in seconds. Supports 70+ languages.',
+    name: 'SRT File Generator — Create an SRT File From Any Video',
+    description: 'Generate an SRT subtitle file from any video with AI. Accurate, timed captions in seconds. Supports 70+ languages.',
     featureList: 'SRT generation, AI timing, 70+ language support, YouTube URL input, Instant download',
   },
   '/video-to-srt': {
-    name: 'Video to SRT — Generate SRT Subtitle Files Online',
-    description: 'Convert video to an SRT subtitle file online with AI. Upload any video and download a timed SRT file in seconds.',
+    name: 'Video to SRT Converter — Turn Your Video Into Subtitles',
+    description: 'Convert any video to a timed SRT subtitle file online with AI. Upload MP4 or MOV, download in seconds.',
     featureList: 'SRT generation, AI timing, VTT export option, YouTube URL input, Instant download',
   },
 }

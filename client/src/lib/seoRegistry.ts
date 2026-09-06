@@ -1195,12 +1195,12 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/video-to-srt',
-    title: 'Video to SRT – Generate SRT Subtitle Files Online | VideoText',
+    title: 'Video to SRT Converter – Free Online Tool | VideoText',
     description:
-      'Convert video to SRT subtitle file online. Upload any video and download a timed SRT file in seconds. Free, AI-powered. Sign up for free to try. Perfect for YouTube and video platforms.',
-    h1: 'Video to SRT – Generate SRT Subtitle Files',
+      'Convert any video to a timed SRT subtitle file online. Upload MP4 or MOV, download in seconds. Free AI-powered converter with 70+ language support.',
+    h1: 'Video to SRT Converter — Turn Your Video Into Subtitles',
     intro:
-      'Generate an SRT subtitle file from any video in seconds. Upload your video, our AI transcribes the speech and creates a timed SRT file ready to upload to YouTube or any video platform. Free tier. Sign up for free to try.',
+      'Upload your video and convert it directly to a timed SRT subtitle file — no separate transcript step needed. Our AI transcribes the speech and generates accurate timestamps, ready to upload to YouTube, Vimeo, or any platform. Free to start, 70+ languages supported.',
     breadcrumbLabel: 'Video to SRT',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/mp4-to-srt', '/srt-generator', '/automatic-subtitles'],
@@ -1215,12 +1215,12 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/srt-generator',
-    title: 'SRT Generator – Create SRT Subtitle Files from Video | VideoText',
+    title: 'SRT File Generator – Create SRT Files Free | VideoText',
     description:
-      'Generate SRT subtitle files from any video. Upload your video and get a timed SRT file in seconds. Free, AI-powered, supports 99 languages. Sign up for free to try.',
-    h1: 'SRT Generator – Create SRT Files from Video',
+      'Generate an SRT subtitle file from any video with AI. Get accurate, timed captions in seconds — supports 70+ languages. Free to start, no signup required.',
+    h1: 'SRT File Generator — Create an SRT File From Any Video',
     intro:
-      'Generate SRT subtitle files from any video with one click. Upload your video, our AI transcribes the speech with accurate timestamps, and you download an SRT file ready for YouTube, Vimeo, or any platform. Free tier. Sign up for free to try, 70+ languages supported.',
+      'Turn any video into a ready-to-upload SRT subtitle file. Upload your video, our AI transcribes the speech and times every line automatically, and you download an SRT file for YouTube, Vimeo, or any platform. Free to start, 70+ languages supported.',
     breadcrumbLabel: 'SRT Generator',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-srt', '/mp4-to-srt', '/subtitle-generator'],

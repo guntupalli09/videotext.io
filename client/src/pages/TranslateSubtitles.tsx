@@ -1074,7 +1074,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       {location.pathname === '/translate-subtitles' && (
         <section className="max-w-4xl mx-auto px-4 py-10 space-y-10">
           <header className="space-y-3">
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-gray-100">Translate Subtitles &amp; Transcripts Online (SRT, VTT, TXT)</h1>
+            <h2 className="text-3xl font-medium text-gray-900 dark:text-gray-100">Translate Subtitles &amp; Transcripts Online (SRT, VTT, TXT)</h2>
             <p className="text-gray-700 dark:text-gray-300">Translate subtitles, SRT files, and transcripts into 70+ languages — timestamps and structure preserved.</p>
             <p className="text-sm font-medium text-gray-800 dark:text-gray-200">👉 Upload subtitle file → get translated version instantly</p>
             <p className="text-sm text-gray-700 dark:text-gray-300">👉 No formatting loss. No manual editing. Works for long files.</p>

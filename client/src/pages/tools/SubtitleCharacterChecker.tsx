@@ -58,8 +58,8 @@ export default function SubtitleCharacterChecker() {
 
   return (
     <FreeToolLayout
-      title="Subtitle Character Limit Checker — Netflix, YouTube & BBC"
-      description="Verify every subtitle line meets Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) character limits. Instant pass/fail per cue. Free, browser-based."
+      title="Subtitle Character Checker — Netflix, YouTube & BBC"
+      description="Check if your subtitle lines meet Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) limits. Instant pass/fail report per cue. Free, no signup."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
       contentSections={[
         {
