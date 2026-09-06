@@ -16,6 +16,7 @@ const CORE_PATHS = new Set([
   '/fix-subtitles',
   '/burn-subtitles',
   '/compress-video',
+  '/guideline-format',
 ])
 
 function main() {

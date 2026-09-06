@@ -17,10 +17,10 @@ import * as path from 'path'
 import { getProgrammaticSeoEntries } from '../client/src/lib/generateSeoPages'
 import { getCanonicalPathForRoute } from '../client/src/lib/primaryUrls'
 import { getSoftwareApplicationJsonLd, getHowToJsonLd } from '../client/src/lib/seoMeta'
+import { getCoreToolFaq, getCoreToolSeoDepth } from '../client/src/lib/coreToolSeoDepth'
 import { getIndexablePaths } from './seo/registry'
 import { renderPageToHtml } from '../client/src/ssr-render'
 import { getContextualCta, getRouteFamily, getWorkflowStageCtas } from '../client/src/lib/routeFamilyTemplates'
-import { getCoreToolSeoDepth } from '../client/src/lib/coreToolSeoDepth'
 
 const REPO_ROOT = path.resolve(__dirname, '..')
 // Vercel outputDirectory is the root-level dist/ (build copies client/dist → dist/).
@@ -1207,12 +1207,18 @@ function buildBreadcrumbJsonLd(routePath: string, routeMeta: RouteMeta): object 
   }
 }
 
-function buildFaqJsonLd(meta: RouteMeta): object | null {
-  if (!meta.faq?.length) return null
+function resolveFaqItems(routePath: string, meta: RouteMeta): Array<{ q: string; a: string }> {
+  if (meta.faq?.length) return meta.faq
+  return getCoreToolFaq(routePath)
+}
+
+function buildFaqJsonLd(routePath: string, meta: RouteMeta): object | null {
+  const faq = resolveFaqItems(routePath, meta)
+  if (!faq.length) return null
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: meta.faq.map((item) => ({
+    mainEntity: faq.map((item) => ({
       '@type': 'Question',
       name: item.q,
       acceptedAnswer: { '@type': 'Answer', text: item.a },
@@ -1281,7 +1287,7 @@ function dedupeSchemas(schemas: object[]): object[] {
 function injectStructuredData(template: string, routePath: string, meta: RouteMeta): string {
   const schemas: object[] = []
   const breadcrumb = buildBreadcrumbJsonLd(routePath, meta)
-  const faq = buildFaqJsonLd(meta)
+  const faq = buildFaqJsonLd(routePath, meta)
   const softwareApp = getSoftwareApplicationJsonLd(routePath)
   const howTo = getHowToJsonLd(routePath)
   const product = buildPricingProductJsonLd(routePath)
