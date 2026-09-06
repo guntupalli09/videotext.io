@@ -854,7 +854,10 @@ function App() {
             <Route path="/zoom-meeting-transcript" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/zoom-recording-transcript" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/transcribe-meeting-recording" element={<Navigate to="/meeting-recording-to-transcript" replace />} />
-            <Route path="/translate-subtitles" element={<TranslateSubtitles />} />
+            <Route path="/translate-subtitles" element={<TranslateSubtitles
+              seoH1="Translate Subtitles (SRT/VTT) to 70+ Languages"
+              seoIntro="Upload an SRT or VTT file, pick a target language, and download the translated version in seconds — timestamps stay perfectly in sync."
+            />} />
             <Route path="/translation" element={<TranslateSubtitles />} />
             <Route path="/free-captions-and-subtitles" element={<VideoToSubtitles />} />
             <Route path="/fix-subtitles" element={<FixSubtitles />} />
