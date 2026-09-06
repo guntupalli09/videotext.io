@@ -256,12 +256,19 @@ export function getSitemapPaths(): string[] {
     .filter((p, i, arr) => arr.indexOf(p) === i)
 }
 
+/** Routes that 301 to blog.videotext.io (vercel.json) — no local /dist HTML is expected. */
+export function isHashnodeRedirectRoute(routePath: string): boolean {
+  const p = getCanonicalPathForRoute(routePath)
+  return p === '/blog' || p.startsWith('/blog/')
+}
+
 /** All routes (for validation). No duplicates. Excludes Hashnode-only blog posts (they redirect, not prerender). */
 export function getIndexablePaths(): string[] {
   return [...new Set([...CORE_PATHS, ...getSitemap2Paths()])]
     .map((p) => getCanonicalPathForRoute(p))
     .filter(Boolean)
     .filter((p) => p !== '/site-index')
+    .filter((p) => !isHashnodeRedirectRoute(p))
     .filter((p, i, arr) => arr.indexOf(p) === i)
 }
 
