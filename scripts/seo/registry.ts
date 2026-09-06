@@ -6,6 +6,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { getProgrammaticSeoEntries } from '../../client/src/lib/generateSeoPages'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
+import { getMappedContentSlugs } from '../../client/src/lib/blogSlugMap'
 export { SLUG_TO_PRIMARY } from '../../client/src/lib/slugToPrimary'
 
 const SCRIPT_DIR = __dirname
@@ -231,7 +232,21 @@ export function getSitemap2Paths(): string[] {
     .filter((p, i, arr) => arr.indexOf(p) === i)
 }
 
-/** All routes (for validation). No duplicates. */
+/** Hashnode editorial posts referenced from videotext.io (content slug paths). */
+export function getHashnodeBlogPaths(): string[] {
+  return getMappedContentSlugs().map((slug) => `/blog/${slug}`)
+}
+
+/** Routes that should appear in sitemap (includes Hashnode blog posts on blog.videotext.io). */
+export function getSitemapPaths(): string[] {
+  return [...new Set([...getIndexablePaths(), ...getHashnodeBlogPaths()])]
+    .map((p) => getCanonicalPathForRoute(p))
+    .filter(Boolean)
+    .filter((p) => p !== '/site-index')
+    .filter((p, i, arr) => arr.indexOf(p) === i)
+}
+
+/** All routes (for validation). No duplicates. Excludes Hashnode-only blog posts (they redirect, not prerender). */
 export function getIndexablePaths(): string[] {
   return [...new Set([...CORE_PATHS, ...getSitemap2Paths()])]
     .map((p) => getCanonicalPathForRoute(p))

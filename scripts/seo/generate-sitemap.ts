@@ -5,8 +5,9 @@
  */
 import * as path from 'path'
 import * as fs from 'fs'
-import { CORE_PATHS, getSitemap2Paths } from './registry'
+import { CORE_PATHS, getSitemap2Paths, getHashnodeBlogPaths } from './registry'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
+import { getHashnodePostUrl } from '../../client/src/lib/blogSlugMap'
 
 const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
 const BLOG_URL = (process.env.BLOG_URL || 'https://blog.videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
@@ -41,7 +42,7 @@ function assertNoMixedDomains(urls: string[]): void {
 
 function getCanonicalLoc(canonicalPath: string): string {
   if (canonicalPath === '/blog') return `${BLOG_URL}/`
-  if (canonicalPath.startsWith('/blog/')) return `${BLOG_URL}/${canonicalPath.slice('/blog/'.length)}`
+  if (canonicalPath.startsWith('/blog/')) return getHashnodePostUrl(canonicalPath)
   return canonicalPath === '/' ? `${SITE_URL}/` : `${SITE_URL}${canonicalPath}`
 }
 
@@ -104,7 +105,7 @@ async function main(): Promise<void> {
   const today = new Date().toISOString().slice(0, 10)
 
   // Sitemap 1 — Core pages (~40). Submit this first.
-  const corePaths = [...new Set(CORE_PATHS)].filter(isSitemapPath)
+  const corePaths = [...new Set([...CORE_PATHS, ...getHashnodeBlogPaths()])].filter(isSitemapPath)
   const coreXml = buildUrlSet(corePaths, today)
   const coreWritten = writeSitemapFiles('sitemap-core.xml', coreXml)
   console.log('[SEO] Sitemap 1 (core):', coreWritten[0], `(${corePaths.length} URLs)`)

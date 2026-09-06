@@ -5,8 +5,9 @@
  */
 import * as path from 'path'
 import * as fs from 'fs'
-import { getIndexablePaths } from './registry'
+import { getSitemapPaths } from './registry'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
+import { getHashnodePostUrl, contentSlugFromLiveSlug } from '../../client/src/lib/blogSlugMap'
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const PUBLIC_DIR = path.join(REPO_ROOT, 'client', 'public')
@@ -32,7 +33,7 @@ function normalizeUrl(url: string): string {
 function canonicalUrlForPath(routePath: string): string {
   const canonicalPath = getCanonicalPathForRoute(routePath)
   if (canonicalPath === '/blog') return `${BLOG_URL}/`
-  if (canonicalPath.startsWith('/blog/')) return `${BLOG_URL}/${canonicalPath.slice('/blog/'.length)}`
+  if (canonicalPath.startsWith('/blog/')) return getHashnodePostUrl(canonicalPath)
   return canonicalPath === '/' ? `${SITE_URL}/` : `${SITE_URL}${canonicalPath}`
 }
 
@@ -40,7 +41,11 @@ function pathFromCanonicalUrl(url: string): string | null {
   if (url === SITE_URL || url === `${SITE_URL}/`) return '/'
   if (url.startsWith(`${SITE_URL}/`)) return url.slice(SITE_URL.length) || '/'
   if (url === BLOG_URL || url === `${BLOG_URL}/`) return '/blog'
-  if (url.startsWith(`${BLOG_URL}/`)) return `/blog/${url.slice(`${BLOG_URL}/`.length)}`
+  if (url.startsWith(`${BLOG_URL}/`)) {
+    const liveSlug = url.slice(`${BLOG_URL}/`.length)
+    const contentSlug = contentSlugFromLiveSlug(liveSlug) || liveSlug
+    return `/blog/${contentSlug}`
+  }
   return null
 }
 
@@ -57,7 +62,7 @@ function main(): void {
   const programmaticUrls = extractUrlsFromXml(fs.readFileSync(programmaticPath, 'utf8'))
   const found = [...coreUrls, ...programmaticUrls].map(normalizeUrl)
 
-  const indexablePaths = getIndexablePaths()
+  const indexablePaths = getSitemapPaths()
   const expectedUrls = new Set(
     indexablePaths.map((p) => normalizeUrl(canonicalUrlForPath(p)))
   )
