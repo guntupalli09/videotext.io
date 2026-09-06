@@ -61,6 +61,16 @@ export default function SubtitleCharacterChecker() {
       title="Subtitle Character Limits — Pass/Fail"
       description="Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
+      moneyCta={{
+        kicker: 'Netflix 42 · YouTube 80 · BBC 37',
+        title: 'Fix this file in one click',
+        body: 'Line-length fail? Fix Subtitles reflows long lines and CPS so the file can pass.',
+        primary: { label: 'Fix this file in one click', path: '/fix-subtitles' },
+        secondary: [
+          { label: 'Translate', path: '/translate-subtitles' },
+          { label: 'Burn', path: '/burn-subtitles' },
+        ],
+      }}
       contentSections={[
         {
           heading: 'Why do subtitle character limits matter?',

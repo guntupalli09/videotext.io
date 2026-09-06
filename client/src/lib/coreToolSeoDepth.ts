@@ -13,6 +13,7 @@ export type CoreToolSeoDepth = {
   proof: { heading: string; items: { label: string; detail: string }[] }
   related: { heading: string; links: { href: string; label: string; note: string }[] }
   faq: CoreToolFaq[]
+  extraSections?: { heading: string; body: string }[]
 }
 
 const CORE: Record<string, CoreToolSeoDepth> = {
@@ -114,9 +115,25 @@ const CORE: Record<string, CoreToolSeoDepth> = {
         { href: '/video-to-transcript', label: 'Video to Transcript', note: 'Need searchable text and chapters, not burned captions.' },
       ],
     },
+    extraSections: [
+      {
+        heading: 'Hardcode subtitles online (no Premiere)',
+        body: 'Hardcode subtitles online by uploading the video and an SRT or VTT. The words are written into the pixels — same idea as “hardcode subtitles” in an NLE, without installing Premiere, CapCut, or FFmpeg.',
+      },
+      {
+        heading: 'Open captions vs a sidecar file',
+        body: 'Open captions (also called hardcoded or burned-in captions) are always visible. A sidecar SRT can be toggled off. Use this page when you need open captions for Instagram, TikTok, or any player that ignores subtitle tracks.',
+      },
+      {
+        heading: 'Permanently embed captions',
+        body: 'Permanently embed captions when the deliverable is one MP4. Viewers cannot turn them off. If you still need an editable track, keep the SRT and upload it as closed captions on YouTube or Vimeo instead.',
+      },
+    ],
     faq: [
       { q: 'What does it mean to burn subtitles into a video?', a: 'Burning (hardcoding) embeds caption text into the video frames. Viewers see the words even if the player has no caption track.' },
-      { q: 'How do I burn SRT or VTT into a video?', a: 'Upload the video and the SRT or VTT on this page, then download the new file with captions baked in.' },
+      { q: 'How do I hardcode subtitles online?', a: 'Upload the video and the SRT or VTT on this page, then download the new file with captions baked in. No desktop editor required.' },
+      { q: 'Are burned subtitles the same as open captions?', a: 'Yes. Open captions, hardcoded captions, and burned-in captions all mean the text is permanently part of the picture.' },
+      { q: 'How do I permanently embed captions?', a: 'Use this burn tool: video + SRT/VTT in, one MP4 out. The captions cannot be toggled off.' },
       { q: 'Do I need Premiere or FFmpeg?', a: 'No. This is a browser workflow: video + subtitle file in, burned video out.' },
       { q: 'Is this the same as /burn-subtitles-into-video?', a: 'Yes. That URL now redirects here so “burn subtitles into video” and the product page share one ranking URL.' },
       { q: 'Can I generate the SRT on the same site first?', a: 'Yes. Use Video to Subtitles (or the SRT file generator) to create a timed file, optionally Fix or Translate it, then burn it here.' },
@@ -324,8 +341,12 @@ const CORE: Record<string, CoreToolSeoDepth> = {
       heading: 'Transcript in, captions out',
       links: [
         { href: '/video-to-transcript', label: 'Video to Transcript', note: 'Create the raw transcript first.' },
+        { href: '/gotranscript-guidelines', label: 'GoTranscript guidelines', note: 'Highest-traffic vendor example — then format here in one click.' },
+        { href: '/scribie-transcription-guidelines', label: 'Scribie guidelines', note: 'Full-verbatim example. Apply the preset on this page.' },
+        { href: '/verbit-transcription-guidelines', label: 'Verbit guidelines', note: 'Enterprise / legal style example.' },
+        { href: '/transcribeme-guidelines', label: 'TranscribeMe guidelines', note: 'Intelligent-verbatim example.' },
+        { href: '/rev-transcript-guidelines', label: 'Rev guidelines', note: 'Clean-verbatim example.' },
         { href: '/fix-subtitles', label: 'Fix Subtitles', note: 'Cue-level QC (overlaps, CPS) after you export SRT.' },
-        { href: '/translate-subtitles', label: 'Translate Subtitles', note: 'Localize the caption file, not the style-guide text.' },
         { href: '/video-to-subtitles', label: 'Video to Subtitles', note: 'Caption-first path if the deliverable is SRT/VTT.' },
       ],
     },

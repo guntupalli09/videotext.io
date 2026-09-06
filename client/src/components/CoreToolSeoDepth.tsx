@@ -61,6 +61,13 @@ export default function CoreToolSeoDepth({ path, hideFaq = false }: Props) {
         </ul>
       </section>
 
+      {data.extraSections?.map((section) => (
+        <section key={section.heading} className="space-y-3">
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white">{section.heading}</h2>
+          <p className="text-gray-700 dark:text-gray-300">{section.body}</p>
+        </section>
+      ))}
+
       <section className="space-y-3">
         <h2 className="text-2xl font-medium text-gray-900 dark:text-white">{data.related.heading}</h2>
         <ul className="space-y-2">

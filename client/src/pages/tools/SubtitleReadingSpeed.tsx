@@ -59,6 +59,16 @@ export default function SubtitleReadingSpeed() {
       title="Subtitle Reading Speed Checker — CPS Analyzer"
       description="Analyze every subtitle cue's Characters Per Second (CPS) against Netflix (17), BBC (17), and EBU (21) broadcast standards. Instant per-cue pass/fail, free."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
+      moneyCta={{
+        kicker: 'CPS fail?',
+        title: 'Fix this file in one click',
+        body: 'Cues over Netflix / BBC / EBU reading speed can be auto-reflowed on Fix Subtitles.',
+        primary: { label: 'Fix this file in one click', path: '/fix-subtitles' },
+        secondary: [
+          { label: 'Translate', path: '/translate-subtitles' },
+          { label: 'Burn', path: '/burn-subtitles' },
+        ],
+      }}
       contentSections={[
         {
           heading: 'What is CPS in subtitles?',
