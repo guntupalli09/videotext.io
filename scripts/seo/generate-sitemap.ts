@@ -12,6 +12,9 @@ const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace('https
 const BLOG_URL = (process.env.BLOG_URL || 'https://blog.videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const PUBLIC_DIR = path.join(REPO_ROOT, 'client', 'public')
+const DIST_DIR = path.join(REPO_ROOT, 'dist')
+const CLIENT_DIST_DIR = path.join(REPO_ROOT, 'client', 'dist')
+const SITEMAP_SKIP = new Set(['/site-index'])
 
 function escapeXml(s: string): string {
   return s
@@ -42,9 +45,17 @@ function getCanonicalLoc(canonicalPath: string): string {
   return canonicalPath === '/' ? `${SITE_URL}/` : `${SITE_URL}${canonicalPath}`
 }
 
+function isSitemapPath(routePath: string): boolean {
+  if (!routePath || routePath === '*') return false
+  if (SITEMAP_SKIP.has(routePath)) return false
+  const canonicalPath = getCanonicalPathForRoute(routePath)
+  if (SITEMAP_SKIP.has(canonicalPath)) return false
+  return true
+}
+
 function buildNormalizedLocs(paths: string[]): string[] {
   const uniqueUrls = new Set<string>()
-  for (const p of paths.filter((x) => x !== '*')) {
+  for (const p of paths.filter(isSitemapPath)) {
     const canonicalPath = getCanonicalPathForRoute(p)
     const loc = getCanonicalLoc(canonicalPath)
     uniqueUrls.add(normalizeUrl(loc))
@@ -75,22 +86,36 @@ ${urls.join('\n')}
 `
 }
 
+function writeSitemapFiles(filename: string, xml: string): string[] {
+  const dirs = [PUBLIC_DIR]
+  if (fs.existsSync(DIST_DIR)) dirs.push(DIST_DIR)
+  if (fs.existsSync(CLIENT_DIST_DIR)) dirs.push(CLIENT_DIST_DIR)
+  const written: string[] = []
+  for (const dir of dirs) {
+    fs.mkdirSync(dir, { recursive: true })
+    const dest = path.join(dir, filename)
+    fs.writeFileSync(dest, xml, 'utf8')
+    written.push(dest)
+  }
+  return written
+}
+
 async function main(): Promise<void> {
   const today = new Date().toISOString().slice(0, 10)
 
   // Sitemap 1 — Core pages (~40). Submit this first.
-  const corePaths = [...new Set(CORE_PATHS)]
+  const corePaths = [...new Set(CORE_PATHS)].filter(isSitemapPath)
   const coreXml = buildUrlSet(corePaths, today)
-  const corePath = path.join(PUBLIC_DIR, 'sitemap-core.xml')
-  fs.writeFileSync(corePath, coreXml, 'utf8')
-  console.log('[SEO] Sitemap 1 (core):', corePath, `(${corePaths.length} URLs)`)
+  const coreWritten = writeSitemapFiles('sitemap-core.xml', coreXml)
+  console.log('[SEO] Sitemap 1 (core):', coreWritten[0], `(${corePaths.length} URLs)`)
+  for (const extra of coreWritten.slice(1)) console.log('[SEO]   also wrote', extra)
 
   // Sitemap 2 — Programmatic + remaining manual pages
-  const sitemap2Paths = getSitemap2Paths()
+  const sitemap2Paths = getSitemap2Paths().filter(isSitemapPath)
   const sitemap2Xml = buildUrlSet(sitemap2Paths, today)
-  const sitemap2Path = path.join(PUBLIC_DIR, 'sitemap-programmatic.xml')
-  fs.writeFileSync(sitemap2Path, sitemap2Xml, 'utf8')
-  console.log('[SEO] Sitemap 2 (programmatic + other):', sitemap2Path, `(${sitemap2Paths.length} URLs)`)
+  const sitemap2Written = writeSitemapFiles('sitemap-programmatic.xml', sitemap2Xml)
+  console.log('[SEO] Sitemap 2 (programmatic + other):', sitemap2Written[0], `(${sitemap2Paths.length} URLs)`)
+  for (const extra of sitemap2Written.slice(1)) console.log('[SEO]   also wrote', extra)
 
   // Sitemap index — references both. Submit sitemap-index.xml or sitemap-core.xml first.
   const indexLocs = [`${SITE_URL}/sitemap-core.xml`, `${SITE_URL}/sitemap-programmatic.xml`].map(normalizeUrl)
@@ -107,13 +132,12 @@ async function main(): Promise<void> {
   </sitemap>
 </sitemapindex>
 `
-  const indexPath = path.join(PUBLIC_DIR, 'sitemap-index.xml')
-  fs.writeFileSync(indexPath, indexXml, 'utf8')
-  console.log('[SEO] Sitemap index:', indexPath)
+  const indexWritten = writeSitemapFiles('sitemap-index.xml', indexXml)
+  console.log('[SEO] Sitemap index:', indexWritten[0])
 
   // Legacy: also write sitemap.xml as copy of index (for backwards compatibility)
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), indexXml, 'utf8')
-  console.log('[SEO] sitemap.xml (→ index):', path.join(PUBLIC_DIR, 'sitemap.xml'))
+  const legacyWritten = writeSitemapFiles('sitemap.xml', indexXml)
+  console.log('[SEO] sitemap.xml (→ index):', legacyWritten[0])
 
   if (process.env.SITEMAP_PING !== '0' && process.env.SITEMAP_PING !== 'false') {
     // Ping with index; to submit core only first, use: SITEMAP_PING_URL=https://videotext.io/sitemap-core.xml

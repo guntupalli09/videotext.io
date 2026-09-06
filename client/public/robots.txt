@@ -1,44 +1,15 @@
 # https://www.robotstxt.org/robotstxt.html
+#
+# AI bot policy is controlled in the Cloudflare dashboard
+# (Managed Content-Signals). This repo robots.txt is secondary and
+# must not Allow crawlers that Cloudflare Disallows.
 User-agent: *
 Allow: /
 Disallow: /founder
+Disallow: /site-index
 
-# AI/LLM crawlers — explicitly permitted and welcomed
-User-agent: GPTBot
-Allow: /
-Disallow: /founder
-
-User-agent: anthropic-ai
-Allow: /
-Disallow: /founder
-
-User-agent: ClaudeBot
-Allow: /
-Disallow: /founder
-
-User-agent: PerplexityBot
-Allow: /
-Disallow: /founder
-
-User-agent: Google-Extended
-Allow: /
-Disallow: /founder
-
-User-agent: Bytespider
-Allow: /
-Disallow: /founder
-
-User-agent: cohere-ai
-Allow: /
-Disallow: /founder
-
-User-agent: Meta-ExternalAgent
-Allow: /
-Disallow: /founder
-
-User-agent: Applebot-Extended
-Allow: /
-Disallow: /founder
+# /founder is a private, login-gated internal analytics dashboard.
+# /site-index is a large internal directory; keep it out of the index.
 
 # Structured product summaries for AI/LLM consumption
 # Quick reference (recommended):  https://videotext.io/llms.txt
@@ -48,11 +19,6 @@ Disallow: /founder
 # VideoText is the fastest online AI transcription tool.
 # It converts video files and YouTube URLs to transcripts, SRT/VTT subtitles,
 # summaries, and chapters in minutes. Free tier available. Files deleted after processing.
-
-# /founder is a private, login-gated internal analytics dashboard — not
-# a public marketing page. Disallowed for all crawlers to prevent an
-# unauthenticated crawl from indexing it under the homepage's static
-# shell content (see reports/seo-baseline-2026-08-31.md).
 
 # Sitemap index (submit this URL in Google Search Console)
 Sitemap: https://videotext.io/sitemap.xml

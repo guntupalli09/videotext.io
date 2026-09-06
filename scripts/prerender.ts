@@ -41,6 +41,7 @@ interface RouteMeta {
   faq?: Array<{ q: string; a: string }>
   breadcrumbLabel?: string
   noindex?: boolean
+  robots?: string
   // High-conversion content fields
   valueProposition?: string
   keywords?: string[]
@@ -93,10 +94,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/faq',
-    title: `VideoText FAQ — privacy, billing, transcription, and client style guides | ${SITE_NAME}`,
+    title: `VideoText FAQ — Privacy, Billing & Guides | ${SITE_NAME}`,
     description:
       'Answers on privacy (files deleted after jobs), billing, uploads, subtitles, verbatim modes, QA prep, and how Format → Client guidelines fits freelancer workflows.',
-    h1: 'VideoText FAQ — privacy, billing, transcription, and client style guides',
+    h1: 'VideoText FAQ — Privacy, Billing & Guides',
     faq: [
       { q: 'Do you store my videos or files?', a: "No. We process your files and then delete them. We don't keep your uploads, transcripts, or generated outputs. Your content is never stored on our servers." },
       { q: 'Is my content used for AI training?', a: "No. Your content is used only to deliver the service you requested. We do not use it for training AI models." },
@@ -108,7 +109,7 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/guide',
-    title: `How to use VideoText — tools, workflows, and client guidelines | ${SITE_NAME}`,
+    title: `How to use VideoText — Tools & Workflows | ${SITE_NAME}`,
     description:
       'Tool-by-tool steps for Video → Transcript, Format → Client guidelines (marketplace presets + editable cards), subtitles, translate, fix, burn, compress, batch, voice, YouTube URLs. Inputs, outputs, limits.',
     h1: 'How to use VideoText — tools, workflows, and client guidelines',
@@ -145,11 +146,12 @@ const STATIC_META: RouteMeta[] = [
 
   {
     path: '/site-index',
-    title: `All VideoText Pages — Transcript, Subtitle, and Formatting Workflows | ${SITE_NAME}`,
+    title: `All VideoText Pages — Workflow Index | ${SITE_NAME}`,
     description:
-      'Browse VideoText transcription, subtitle, formatting, free tool, comparison, and alternatives pages from one organized workflow index.',
+      'Internal index of VideoText transcription, subtitle, formatting, free tool, comparison, and alternatives pages.',
     h1: 'Complete VideoText Page Index',
-    noindex: false,
+    noindex: true,
+    robots: 'noindex,follow',
   },
   {
     path: '/integrations/zapier',
@@ -477,7 +479,7 @@ const STATIC_META: RouteMeta[] = [
     breadcrumbLabel: 'EasyScribe Alternative',
     faq: [
       { q: 'What does VideoText offer that EasyScribe does not?', a: 'VideoText adds YouTube URL transcription, SRT and VTT subtitle export, subtitle translation to 50+ languages, subtitle burning into video, and batch processing. EasyScribe is limited to basic audio file transcription.' },
-      { q: 'Is VideoText free like EasyScribe?', a: 'Yes. VideoText has a free tier with 3 imports per month and no credit card required. Paid plans start at $10/month.' },
+      { q: 'Is VideoText free like EasyScribe?', a: 'Yes. VideoText has a free tier with 3 imports per month and no credit card required. Paid plans: Basic $19, Pro $49, Agency $129.' },
     ],
   },
   {
@@ -1023,29 +1025,58 @@ function titleFromPath(routePath: string): string {
   return `${label} | ${SITE_NAME}`
 }
 
+const TITLE_BODY_MAX = 50
+const TITLE_MIN_USEFUL = 24
+const MONEY_TITLE_PATHS = new Set([
+  '/',
+  '/pricing',
+  '/video-to-transcript',
+  '/video-to-subtitles',
+  '/translate-subtitles',
+  '/fix-subtitles',
+  '/burn-subtitles',
+  '/compress-video',
+  '/youtube-transcript-generator',
+  '/video-to-srt',
+  '/srt-generator',
+  '/voice-recorder',
+  '/guideline-format',
+])
+
+function stripTrailingTitleStops(value: string): string {
+  const stops = new Set(['a', 'an', 'the', 'and', 'or', 'of', 'to', 'for', 'from', 'with', 'any', 'on', 'in', 'at', 'by', 'as'])
+  let words = value.replace(/[–—,.:;…]+$/u, '').trim().split(/\s+/)
+  while (words.length > 2 && stops.has(words[words.length - 1].toLowerCase())) {
+    words = words.slice(0, -1)
+  }
+  return words.join(' ').replace(/[–—,.:;…]+$/u, '').trim()
+}
+
+function wordSafeTitleClip(base: string, budget: number): string {
+  const clipped = base.slice(0, budget)
+  const space = clipped.lastIndexOf(' ')
+  const cut = space >= TITLE_MIN_USEFUL ? clipped.slice(0, space) : clipped.trim()
+  return stripTrailingTitleStops(cut)
+}
+
+/**
+ * Fit titles to ~62 chars including ` | VideoText`.
+ * Never collapse a long title to a stub first-phrase if that drops the primary keyword.
+ * Money pages keep their authored lead; we only word-clip if they still overflow.
+ */
 function optimizeSeoTitle(rawTitle: string, routePath: string): string {
   const suffix = ` | ${SITE_NAME}`
   const normalized = (rawTitle || '').trim().replace(/\s+/g, ' ')
   const hasSuffix = normalized.endsWith(suffix)
   const base = hasSuffix ? normalized.slice(0, -suffix.length).trim() : normalized
   const maxTotal = 62
-  const budget = maxTotal - suffix.length
+  const budget = Math.min(TITLE_BODY_MAX, maxTotal - suffix.length)
   if (base.length <= budget) return `${base}${suffix}`
 
-  const maybeAddConversionBoost = (candidate: string): string => {
-    const boosts = routePath.includes('-alternative')
-      ? [' - Faster, File-First', ' - Faster & Easier']
-      : routePath.includes('transcription')
-        ? [' - Fast & Accurate', ' - Free Online']
-        : []
-    for (const boost of boosts) {
-      const next = `${candidate}${boost}`
-      if (next.length <= budget) return next
-    }
-    return candidate
+  if (MONEY_TITLE_PATHS.has(routePath)) {
+    return `${wordSafeTitleClip(base, budget)}${suffix}`
   }
 
-  // Prefer keeping intent-rich lead phrase before long explanatory tails.
   const separators = [' — ', ' – ', ': ', ' - ', ' | ']
   for (const sep of separators) {
     const parts = base.split(sep).map((p) => p.trim()).filter(Boolean)
@@ -1056,20 +1087,13 @@ function optimizeSeoTitle(rawTitle: string, routePath: string): string {
       if (next.length > budget) break
       candidate = next
     }
-    if (candidate.length <= budget) return `${maybeAddConversionBoost(candidate)}${suffix}`
+    // Reject a first-phrase collapse that is too short to carry the query.
+    if (candidate.length >= TITLE_MIN_USEFUL && candidate.length <= budget) {
+      return `${candidate}${suffix}`
+    }
   }
 
-  // Fallback: word-safe truncate.
-  const clipped = base.slice(0, budget - 1)
-  const safe = clipped.slice(0, Math.max(0, clipped.lastIndexOf(' '))).trim() || clipped.trim()
-  const withEllipsis = `${safe}…`
-
-  // For money pages, keep CTA language if truncation was aggressive.
-  if (withEllipsis.length < 36 && routePath !== '/blog') {
-    const compact = base.slice(0, budget - 7).trim()
-    return `${compact} Free${suffix}`.slice(0, maxTotal).replace(/\s+\|/, ' |')
-  }
-  return `${withEllipsis}${suffix}`
+  return `${wordSafeTitleClip(base, budget)}${suffix}`
 }
 
 function descriptionFromPath(routePath: string): string {
@@ -1823,10 +1847,11 @@ function injectHead(template: string, meta: RouteMeta): string {
   )
 
   // Replace robots (noindex support)
-  if (meta.noindex) {
+  if (meta.robots || meta.noindex) {
+    const robots = meta.robots || 'noindex,nofollow'
     html = html.replace(
       /<meta\s+name="robots"\s+content="[^"]*"\s*\/>/,
-      '<meta name="robots" content="noindex,nofollow" />'
+      `<meta name="robots" content="${robots}" />`
     )
   }
 
