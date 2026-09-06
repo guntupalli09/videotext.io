@@ -177,6 +177,21 @@
       "status": 301
     },
     {
+      "src": "/burn-subtitles-into-video",
+      "dest": "/burn-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/hardcoded-captions",
+      "dest": "/burn-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/video-with-subtitles",
+      "dest": "/burn-subtitles",
+      "status": 301
+    },
+    {
       "handle": "filesystem"
     },
     {
@@ -193,11 +208,6 @@
     {
       "source": "/blog/:path*",
       "destination": "https://blog.videotext.io/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/burn-subtitles-into-video",
-      "destination": "/burn-subtitles",
       "permanent": true
     }
   ]
