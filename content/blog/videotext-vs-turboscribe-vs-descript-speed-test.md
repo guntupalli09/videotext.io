@@ -12,7 +12,9 @@ tags:
 
 # 90-Minute Video Transcription Speed Test: VideoText vs TurboScribe vs Descript
 
-*We ran the same 90-minute interview through three tools. We tracked processing time, cleanup time, and total time to a publish-ready output. Here is everything.*
+We ran the same **90-minute interview** through VideoText, TurboScribe, and Descript — processing time **and** cleanup-to-publish time. Processing speed alone lies.
+
+> **Run your own test:** [Video → Transcript (free) →](https://videotext.io/video-to-transcript) · [Compare tools →](https://videotext.io/compare) · [Otter vs Descript vs TurboScribe →](https://videotext.io/blog/otter-vs-descript-vs-turboscribe)
 
 ---
 

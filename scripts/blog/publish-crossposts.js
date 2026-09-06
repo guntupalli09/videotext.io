@@ -22,7 +22,7 @@
  *   DEVTO_ORGANIZATION_ID=12345
  *   HASHNODE_ENDPOINT=https://gql.hashnode.com
  *   HASHNODE_PUBLISH_AS=published | draft
- *   CANONICAL_TEMPLATE=https://blog.videotext.io/{slug}
+ *   CANONICAL_TEMPLATE=https://blog.videotext.io/{slug}  (defaults to live Hashnode URL from client/src/data/hashnode-slug-map.json)
  *   DEVTO_CANONICAL_TEMPLATE=https://blog.videotext.io/{slug}
  *   HASHNODE_CANONICAL_TEMPLATE=https://blog.videotext.io/{slug}
  *   DEVTO_PUBLISH_DELAY_MS=4000   — pause after each DEV.to create (default 4000; raise if you still see 429)
@@ -42,6 +42,7 @@
 const fs = require('node:fs/promises');
 const fsSync = require('node:fs');
 const path = require('node:path');
+const { resolveHashnodeSlug, hashnodePostUrl } = require('./hashnode-slug-map');
 
 const loadedBlogEnvFiles = loadOptionalEnvFiles();
 
@@ -112,7 +113,7 @@ async function main() {
 
   for (const post of posts) {
     console.log(`• ${post.title}`);
-    console.log(`  slug: ${post.slug}`);
+    console.log(`  slug: ${post.slug}${post.hashnodeSlug !== post.slug ? ` (Hashnode: ${post.hashnodeSlug})` : ''}`);
     console.log(`  canonical: ${post.canonicalUrl}`);
 
     if (!shouldPublish) continue;
@@ -126,6 +127,11 @@ async function main() {
     if (needsHashnode(target)) {
       const hashnodeResult = await publishToHashnode(post, hashnodePublicationId);
       console.log(`  Hashnode: ${hashnodeResult.url || `created post ${hashnodeResult.id}`}`);
+      if (hashnodeResult.slug && hashnodeResult.slug !== post.hashnodeSlug) {
+        console.warn(
+          `  ⚠ Hashnode returned slug "${hashnodeResult.slug}" — update client/src/data/hashnode-slug-map.json if this is the live URL.`,
+        );
+      }
     }
   }
 
@@ -150,6 +156,7 @@ async function loadPosts(directory) {
     const title = String(frontmatter.title || titleFromSlug(slug)).trim();
     const description = String(frontmatter.description || '').trim();
     const tags = normalizeTags(frontmatter.tags).slice(0, 4);
+    const hashnodeSlug = resolveHashnodeSlug(slug);
     const canonicalUrl = buildCanonicalUrl(slug, frontmatter.canonical_url || frontmatter.canonicalUrl);
 
     const coreMarkdown = ensureTitle(body, title);
@@ -161,12 +168,13 @@ async function loadPosts(directory) {
     posts.push({
       file,
       slug,
+      hashnodeSlug,
       title,
       description,
       tags,
       canonicalUrl,
-      devtoCanonicalUrl: buildPlatformCanonicalUrl('DEVTO_CANONICAL_TEMPLATE', slug, canonicalUrl),
-      hashnodeCanonicalUrl: buildPlatformCanonicalUrl('HASHNODE_CANONICAL_TEMPLATE', slug, canonicalUrl),
+      devtoCanonicalUrl: buildPlatformCanonicalUrl('DEVTO_CANONICAL_TEMPLATE', hashnodeSlug, canonicalUrl),
+      hashnodeCanonicalUrl: buildPlatformCanonicalUrl('HASHNODE_CANONICAL_TEMPLATE', hashnodeSlug, canonicalUrl),
       markdown,
     });
   }
@@ -253,9 +261,13 @@ function normalizeTags(tags) {
     .filter(Boolean);
 }
 
-function buildCanonicalUrl(slug, explicitCanonical) {
-  if (explicitCanonical) return String(explicitCanonical).trim();
-  return renderCanonicalTemplate(process.env.CANONICAL_TEMPLATE || defaultCanonicalTemplate, slug);
+function buildCanonicalUrl(contentSlug, explicitCanonical) {
+  if (explicitCanonical) {
+    const raw = String(explicitCanonical).trim();
+    // Non-blog canonicals (e.g. syndication) pass through; blog URLs always use live Hashnode slug.
+    if (!/blog\.videotext\.io/i.test(raw)) return raw;
+  }
+  return hashnodePostUrl(contentSlug);
 }
 
 function buildPlatformCanonicalUrl(envName, slug, fallback) {
@@ -345,7 +357,7 @@ async function publishToHashnode(post, publicationId) {
       title: post.title,
       subtitle: post.description || undefined,
       contentMarkdown: post.markdown,
-      slug: post.slug,
+      slug: post.hashnodeSlug,
       publicationId,
       originalArticleURL: post.hashnodeCanonicalUrl,
       tags: post.tags.map((tag) => ({ name: tag, slug: slugifyTag(tag) })),

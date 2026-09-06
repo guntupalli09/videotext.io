@@ -11,6 +11,7 @@ export { SLUG_TO_PRIMARY } from '../../client/src/lib/slugToPrimary'
 const SCRIPT_DIR = __dirname
 const REPO_ROOT = path.join(SCRIPT_DIR, '..', '..')
 const REGISTRY_PATH = path.join(REPO_ROOT, 'client', 'src', 'lib', 'seoRegistry.ts')
+const CONTENT_BLOG_DIR = path.join(REPO_ROOT, 'content', 'blog')
 
 /** Static routes (all indexable). Single source of truth; sync script imports from here. */
 export const STATIC_ROUTES = [
@@ -231,12 +232,43 @@ export function getSitemap2Paths(): string[] {
     .filter((p, i, arr) => arr.indexOf(p) === i)
 }
 
-/** All routes (for validation). No duplicates. */
+/** Every markdown post under content/blog/ (source of truth for blog sitemap). */
+export function getAllContentBlogSlugs(): string[] {
+  if (!fs.existsSync(CONTENT_BLOG_DIR)) return []
+  return fs
+    .readdirSync(CONTENT_BLOG_DIR)
+    .filter((f) => f.endsWith('.md') && !f.startsWith('_'))
+    .map((f) => f.replace(/\.md$/, ''))
+    .sort()
+}
+
+/** Hashnode editorial posts — all content/blog slugs as /blog/{slug} paths. */
+export function getHashnodeBlogPaths(): string[] {
+  return getAllContentBlogSlugs().map((slug) => `/blog/${slug}`)
+}
+
+/** Routes that should appear in sitemap (includes Hashnode blog posts on blog.videotext.io). */
+export function getSitemapPaths(): string[] {
+  return [...new Set([...getIndexablePaths(), ...getHashnodeBlogPaths()])]
+    .map((p) => getCanonicalPathForRoute(p))
+    .filter(Boolean)
+    .filter((p) => p !== '/site-index')
+    .filter((p, i, arr) => arr.indexOf(p) === i)
+}
+
+/** Routes that 301 to blog.videotext.io (vercel.json) — no local /dist HTML is expected. */
+export function isHashnodeRedirectRoute(routePath: string): boolean {
+  const p = getCanonicalPathForRoute(routePath)
+  return p === '/blog' || p.startsWith('/blog/')
+}
+
+/** All routes (for validation). No duplicates. Excludes Hashnode-only blog posts (they redirect, not prerender). */
 export function getIndexablePaths(): string[] {
   return [...new Set([...CORE_PATHS, ...getSitemap2Paths()])]
     .map((p) => getCanonicalPathForRoute(p))
     .filter(Boolean)
     .filter((p) => p !== '/site-index')
+    .filter((p) => !isHashnodeRedirectRoute(p))
     .filter((p, i, arr) => arr.indexOf(p) === i)
 }
 

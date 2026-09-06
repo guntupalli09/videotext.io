@@ -28,6 +28,7 @@ import { getIndexablePaths } from './seo/registry'
 import { stripTopLevelSoftwareApplicationScripts } from './seo/jsonLdUtils'
 import { renderPageToHtml } from '../client/src/ssr-render'
 import { getContextualCta, getRouteFamily, getWorkflowStageCtas } from '../client/src/lib/routeFamilyTemplates'
+import slugMapJson from '../client/src/data/hashnode-slug-map.json'
 
 const REPO_ROOT = path.resolve(__dirname, '..')
 // Vercel outputDirectory is the root-level dist/ (build copies client/dist → dist/).
@@ -129,13 +130,6 @@ const STATIC_META: RouteMeta[] = [
     description:
       "Terms of use for VideoText. We don't store your data. Billing via Stripe. Use the service in accordance with these terms.",
     h1: 'Terms of Service',
-  },
-  {
-    path: '/blog',
-    title: `VideoText blog — transcription, subtitles, and workflow guides | ${SITE_NAME}`,
-    description:
-      'Product updates, privacy notes, practitioner guides, and links to tools like Format → Client guidelines for marketplace-style QA prep.',
-    h1: 'VideoText blog — transcription, subtitles, and workflow guides',
   },
   {
     path: '/samples',
@@ -519,147 +513,7 @@ const STATIC_META: RouteMeta[] = [
     breadcrumbLabel: 'Open Stats',
     keywords: ['open stats', 'transparency', 'accuracy benchmarks', 'performance metrics', 'transcription statistics', 'processing speed', 'real data', 'public stats'],
   },
-  // ── Blog posts ───────────────────────────────────────────────────────────────
-  {
-    path: '/blog/how-to-transcribe-zoom-recording',
-    title: `How to Transcribe a Zoom Recording: Step-by-Step Guide | ${SITE_NAME}`,
-    description:
-      'Zoom saves recordings as MP4. Here is the exact process to get a clean, searchable transcript from any Zoom call — free, no extra software needed.',
-    breadcrumbLabel: 'Transcribe Zoom Recording',
-  },
-  {
-    path: '/blog/srt-vs-vtt-subtitle-formats',
-    title: `SRT vs VTT: Which Subtitle Format Should You Use? | ${SITE_NAME}`,
-    description:
-      'SRT and VTT are both plain-text subtitle formats. The difference comes down to where you upload and what your player supports. Quick guide.',
-    breadcrumbLabel: 'SRT vs VTT',
-  },
-  {
-    path: '/blog/how-to-add-subtitles-to-video-free',
-    title: `How to Add Subtitles to Any Video for Free | ${SITE_NAME}`,
-    description:
-      'Generate subtitles automatically, fix timing issues, then burn them into the video permanently — all free, no desktop software required.',
-    breadcrumbLabel: 'Add Subtitles Free',
-  },
-  {
-    path: '/blog/best-free-transcription-tools-2026',
-    title: `Best Free Transcription Tools in 2026: An Honest Comparison | ${SITE_NAME}`,
-    description:
-      'We compared Otter.ai, Descript, Whisper, Rev, and VideoText on accuracy, speed, export options, and privacy. Including our own limitations.',
-    breadcrumbLabel: 'Best Free Transcription Tools',
-  },
-  {
-    path: '/blog/how-we-handle-support',
-    title: `How We Handle Support: Honest, Fast, No Ticket Queue | ${SITE_NAME}`,
-    description:
-      'Every support email is read by the person who built the product. Here is what that means in practice.',
-    breadcrumbLabel: 'How We Handle Support',
-  },
-  {
-    path: '/blog/why-we-delete-your-files',
-    title: `Why We Delete Your Files — And Why That Makes Us Faster | ${SITE_NAME}`,
-    description:
-      'Privacy-first design is not just an ethical choice — it is an architectural one that makes everything run leaner and faster.',
-    breadcrumbLabel: 'Why We Delete Your Files',
-  },
-  {
-    path: '/blog/processing-speed-breakdown',
-    title: `How VideoText Processes Video: A Plain-English Pipeline Breakdown | ${SITE_NAME}`,
-    description:
-      'What actually happens between "upload complete" and your subtitle file appearing — and why VideoText is faster than most alternatives.',
-    breadcrumbLabel: 'Processing Speed Breakdown',
-  },
-  {
-    path: '/blog/batch-subtitles-for-creators',
-    title: `Batch Subtitles: Caption 20 Videos at Once and Download a ZIP | ${SITE_NAME}`,
-    description:
-      'The batch tool was built for creators and agencies who need to process a week of content in one session without babysitting each upload.',
-    breadcrumbLabel: 'Batch Subtitles for Creators',
-  },
-  {
-    path: '/blog/how-to-get-youtube-transcript',
-    title: `How to Get a YouTube Video Transcript (Free, Any Video) | ${SITE_NAME}`,
-    description:
-      "Three ways to get a transcript from any YouTube video — using VideoText, YouTube's own CC export, or the API. Which method is best for your use case.",
-    breadcrumbLabel: 'Get YouTube Transcript',
-  },
-  {
-    path: '/blog/how-to-transcribe-audio-to-text-free',
-    title: `How to Transcribe Audio to Text for Free in 2026 | ${SITE_NAME}`,
-    description:
-      'The fastest free methods to convert audio recordings to text: MP3, M4A, WAV. Step-by-step, including accuracy tips and format options.',
-    breadcrumbLabel: 'Transcribe Audio to Text Free',
-  },
-  {
-    path: '/blog/how-to-translate-subtitles',
-    title: `How to Translate Subtitles to Any Language (SRT & VTT) | ${SITE_NAME}`,
-    description:
-      'Translate an SRT or VTT subtitle file to Spanish, Arabic, Hindi, French, or 50+ other languages. Keep the original timestamps intact.',
-    breadcrumbLabel: 'How to Translate Subtitles',
-  },
-  {
-    path: '/blog/best-transcription-software-2026',
-    title: `Best Transcription Software in 2026: Ranked by Speed, Accuracy & Price | ${SITE_NAME}`,
-    description:
-      'We tested 8 transcription tools — VideoText, Otter.ai, Descript, Trint, Rev, Whisper, and more. Here is which tool wins for each use case.',
-    breadcrumbLabel: 'Best Transcription Software 2026',
-  },
-  {
-    path: '/blog/best-video-captioning-tools-2026',
-    title: `Best Video Captioning Tools for Content Creators in 2026 | ${SITE_NAME}`,
-    description:
-      'Auto-captions, burned-in subtitles, translated captions — a practical guide to the best tools for YouTube, Instagram, TikTok, and Reels.',
-    breadcrumbLabel: 'Best Video Captioning Tools 2026',
-  },
-  {
-    path: '/blog/how-to-transcribe-podcast-episode',
-    title: `How to Transcribe a Podcast Episode (Free, Any Format) | ${SITE_NAME}`,
-    description:
-      'How to transcribe a podcast episode from MP3 or M4A in minutes. Free tool, 98.5% accuracy, speaker labels, and show notes export included.',
-    breadcrumbLabel: 'Transcribe Podcast Episode',
-  },
-  {
-    path: '/blog/how-to-add-captions-youtube-video',
-    title: `How to Add Captions to a YouTube Video (The Right Way) | ${SITE_NAME}`,
-    description:
-      'How to add captions to a YouTube video the right way: upload an SRT file instead of relying on auto-captions. Better accuracy, better SEO.',
-    breadcrumbLabel: 'Add Captions to YouTube Video',
-  },
-  {
-    path: '/blog/rev-style-guide-transcript-formatter',
-    title: `Rev Style Guide Transcript Formatter — Freelancer QA Workflow | ${SITE_NAME}`,
-    description:
-      'Map AI transcripts onto Rev transcription style rules faster: verbatim modes, speaker labels, inaudible tags, editable checklist, then proof for payout.',
-    breadcrumbLabel: 'Rev Style Guide Transcript Formatter',
-  },
-  {
-    path: '/blog/how-to-earn-more-per-hour-as-a-transcriptionist',
-    title: `How to Earn More Per Hour as a Transcriptionist (AI + QA Stack) | ${SITE_NAME}`,
-    description:
-      'Raise effective hourly transcription pay by cutting rework: AI first pass, preset style guides for GoTranscript/Rev clients, repeatable QA logs, faster invoicing.',
-    breadcrumbLabel: 'Earn More Per Hour (Transcriptionist)',
-  },
-  {
-    path: '/blog/clean-verbatim-vs-full-verbatim',
-    title: `Clean Verbatim vs Full Verbatim — Transcription Freelancer Guide | ${SITE_NAME}`,
-    description:
-      'Clean verbatim removes filler vs full verbatim keeps disfluencies. Learn marketplace differences, payouts, tagging, when to escalate — with VideoText presets.',
-    breadcrumbLabel: 'Clean Verbatim vs Full Verbatim',
-  },
-  {
-    path: '/blog/what-is-transcript-qa',
-    title: `What Is Transcript QA? Compliance Checklist for Agencies | ${SITE_NAME}`,
-    description:
-      'Transcript QA defined: glossary, timestamps, readability, tagging, speaker labels. Separate QA from transcription; align rubrics inside VideoText guideline workspace.',
-    breadcrumbLabel: 'What Is Transcript QA',
-  },
-  {
-    path: '/blog/freelance-transcription-style-guide-cheatsheet',
-    title: `Freelance Transcription Style Guide Cheatsheet (GoTranscript, Scribie) | ${SITE_NAME}`,
-    description:
-      'One-page freelancer cheatsheet aligning GoTranscript, Scribie, and custom PDF client briefs to editable presets so QA matches invoice-ready deliverables.',
-    breadcrumbLabel: 'Freelance Style Guide Cheatsheet',
-  },
+  // Blog posts live on blog.videotext.io (Hashnode). vercel.json redirects /blog/* — do not prerender duplicates here.
   // ── Free client-side tools ───────────────────────────────────────────────────
   {
     path: '/tools',
@@ -977,10 +831,20 @@ function parseRegistryEntries(): ParsedEntry[] {
 // ── HTML injection ────────────────────────────────────────────────────────────
 
 
+function resolveHashnodeSlug(contentSlug: string): string {
+  const map = Object.fromEntries(
+    Object.entries(slugMapJson as Record<string, string>).filter(([key]) => !key.startsWith('_')),
+  )
+  return map[contentSlug] ?? contentSlug
+}
+
 function getCanonicalUrlForPath(pathOrUrl: string): string {
   if (pathOrUrl.startsWith('http')) return pathOrUrl
-  if (pathOrUrl === '/blog') return `${BLOG_URL}/`
-  if (pathOrUrl.startsWith('/blog/')) return `${BLOG_URL}/${pathOrUrl.slice('/blog/'.length)}`
+  if (pathOrUrl === '/blog' || pathOrUrl === '/blog/') return `${BLOG_URL}/`
+  if (pathOrUrl.startsWith('/blog/')) {
+    const slug = pathOrUrl.slice('/blog/'.length)
+    return `${BLOG_URL}/${resolveHashnodeSlug(slug)}`
+  }
   return pathOrUrl === '/' ? SITE_URL + '/' : `${SITE_URL}${pathOrUrl}`
 }
 
@@ -1171,7 +1035,9 @@ function mergeRouteMetaWithSitemapCoverage(routes: RouteMeta[]): RouteMeta[] {
     })
   }
 
-  const sitemapPaths = getIndexablePaths().map((p) => getCanonicalPathForRoute(p))
+  const sitemapPaths = getIndexablePaths()
+    .map((p) => getCanonicalPathForRoute(p))
+    .filter((routePath) => routePath !== '/blog' && !routePath.startsWith('/blog/'))
   for (const routePath of sitemapPaths) {
     if (!byPath.has(routePath)) {
       byPath.set(routePath, {
@@ -1942,7 +1808,11 @@ function auditPrerenderedHtml(routePath: string): PrerenderOutputAudit {
 }
 
 function assertPrerenderCoverage(allRoutes: RouteMeta[], generatedPaths: Set<string>): void {
-  const indexablePaths = new Set(getIndexablePaths().map((routePath) => getCanonicalPathForRoute(routePath)))
+  const indexablePaths = new Set(
+    getIndexablePaths()
+      .map((routePath) => getCanonicalPathForRoute(routePath))
+      .filter((routePath) => routePath !== '/blog' && !routePath.startsWith('/blog/')),
+  )
   const expectedPaths = new Set([...allRoutes.map((route) => route.path), ...indexablePaths])
   const errors: string[] = []
 
@@ -2019,6 +1889,12 @@ async function main() {
   if (!fs.existsSync(templatePath)) {
     console.error('[prerender] dist/index.html not found — run the client build first.')
     process.exit(1)
+  }
+
+  const blogDistDir = path.join(DIST_DIR, 'blog')
+  if (fs.existsSync(blogDistDir)) {
+    fs.rmSync(blogDistDir, { recursive: true, force: true })
+    console.log('[prerender] Removed stale dist/blog/ (Hashnode is canonical; vercel.json redirects /blog/*)')
   }
 
   const template = fs.readFileSync(templatePath, 'utf8')

@@ -5,8 +5,9 @@
  */
 import * as path from 'path'
 import * as fs from 'fs'
-import { getIndexablePaths } from './registry'
+import { getSitemapPaths, getHashnodeBlogPaths } from './registry'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
+import { getHashnodePostUrl, contentSlugFromLiveSlug } from '../../client/src/lib/blogSlugMap'
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const PUBLIC_DIR = path.join(REPO_ROOT, 'client', 'public')
@@ -32,7 +33,7 @@ function normalizeUrl(url: string): string {
 function canonicalUrlForPath(routePath: string): string {
   const canonicalPath = getCanonicalPathForRoute(routePath)
   if (canonicalPath === '/blog') return `${BLOG_URL}/`
-  if (canonicalPath.startsWith('/blog/')) return `${BLOG_URL}/${canonicalPath.slice('/blog/'.length)}`
+  if (canonicalPath.startsWith('/blog/')) return getHashnodePostUrl(canonicalPath)
   return canonicalPath === '/' ? `${SITE_URL}/` : `${SITE_URL}${canonicalPath}`
 }
 
@@ -40,24 +41,30 @@ function pathFromCanonicalUrl(url: string): string | null {
   if (url === SITE_URL || url === `${SITE_URL}/`) return '/'
   if (url.startsWith(`${SITE_URL}/`)) return url.slice(SITE_URL.length) || '/'
   if (url === BLOG_URL || url === `${BLOG_URL}/`) return '/blog'
-  if (url.startsWith(`${BLOG_URL}/`)) return `/blog/${url.slice(`${BLOG_URL}/`.length)}`
+  if (url.startsWith(`${BLOG_URL}/`)) {
+    const liveSlug = url.slice(`${BLOG_URL}/`.length)
+    const contentSlug = contentSlugFromLiveSlug(liveSlug) || liveSlug
+    return `/blog/${contentSlug}`
+  }
   return null
 }
 
 function main(): void {
   const corePath = path.join(PUBLIC_DIR, 'sitemap-core.xml')
   const programmaticPath = path.join(PUBLIC_DIR, 'sitemap-programmatic.xml')
+  const blogSitemapPath = path.join(PUBLIC_DIR, 'sitemap-blog.xml')
 
-  if (!fs.existsSync(corePath) || !fs.existsSync(programmaticPath)) {
+  if (!fs.existsSync(corePath) || !fs.existsSync(programmaticPath) || !fs.existsSync(blogSitemapPath)) {
     console.error('[validate-sitemap] Run npm run seo:sitemap first')
     process.exit(1)
   }
 
   const coreUrls = extractUrlsFromXml(fs.readFileSync(corePath, 'utf8'))
   const programmaticUrls = extractUrlsFromXml(fs.readFileSync(programmaticPath, 'utf8'))
-  const found = [...coreUrls, ...programmaticUrls].map(normalizeUrl)
+  const blogSitemapUrls = extractUrlsFromXml(fs.readFileSync(blogSitemapPath, 'utf8'))
+  const found = [...coreUrls, ...programmaticUrls, ...blogSitemapUrls].map(normalizeUrl)
 
-  const indexablePaths = getIndexablePaths()
+  const indexablePaths = getSitemapPaths()
   const expectedUrls = new Set(
     indexablePaths.map((p) => normalizeUrl(canonicalUrlForPath(p)))
   )
@@ -96,10 +103,29 @@ function main(): void {
     }
   }
 
+  const blogPaths = getHashnodeBlogPaths()
+  const expectedBlogUrls = new Set(blogPaths.map((p) => normalizeUrl(getHashnodePostUrl(p))))
+  const blogSitemapSet = new Set(blogSitemapUrls.map(normalizeUrl))
+  for (const url of expectedBlogUrls) {
+    if (!blogSitemapSet.has(url)) {
+      console.error('[validate-sitemap] Missing from sitemap-blog.xml:', url)
+      failed = true
+    }
+  }
+
   if (failed) {
     process.exit(1)
   }
-  console.log('[validate-sitemap] OK — core:', coreUrls.length, ', programmatic:', programmaticUrls.length, ', total:', found.length)
+  console.log(
+    '[validate-sitemap] OK — core:',
+    coreUrls.length,
+    ', programmatic:',
+    programmaticUrls.length,
+    ', blog:',
+    blogSitemapUrls.length,
+    ', total:',
+    found.length,
+  )
 }
 
 main()

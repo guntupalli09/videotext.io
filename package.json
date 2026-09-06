@@ -22,6 +22,9 @@
     "blog:publish-crossposts": "node scripts/blog/publish-crossposts.js",
     "blog:publish-crossposts:publish": "node scripts/blog/publish-crossposts.js --publish",
     "blog:publish-crossposts:hashnode": "node scripts/blog/publish-crossposts.js --publish --target=hashnode",
+    "blog:fix-hashnode-canonicals": "node scripts/blog/fix-hashnode-canonicals.js",
+    "blog:fix-hashnode-canonicals:apply": "node scripts/blog/fix-hashnode-canonicals.js --apply",
+    "blog:publish-all:hashnode": "node scripts/blog/publish-batch-hashnode.js --file=content/blog/all-slugs.txt",
     "ssr:audit": "cd client && npx tsx ../scripts/ssr-audit.ts",
     "seo:content-audit": "tsx scripts/seo/content-audit.ts",
     "seo:validate-prerender-gaps": "tsx scripts/seo/validate-prerender-gaps.ts"

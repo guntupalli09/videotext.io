@@ -5,8 +5,9 @@
  */
 import * as path from 'path'
 import * as fs from 'fs'
-import { CORE_PATHS, getSitemap2Paths } from './registry'
+import { CORE_PATHS, getSitemap2Paths, getHashnodeBlogPaths } from './registry'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
+import { getHashnodePostUrl } from '../../client/src/lib/blogSlugMap'
 
 const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
 const BLOG_URL = (process.env.BLOG_URL || 'https://blog.videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
@@ -41,7 +42,7 @@ function assertNoMixedDomains(urls: string[]): void {
 
 function getCanonicalLoc(canonicalPath: string): string {
   if (canonicalPath === '/blog') return `${BLOG_URL}/`
-  if (canonicalPath.startsWith('/blog/')) return `${BLOG_URL}/${canonicalPath.slice('/blog/'.length)}`
+  if (canonicalPath.startsWith('/blog/')) return getHashnodePostUrl(canonicalPath)
   return canonicalPath === '/' ? `${SITE_URL}/` : `${SITE_URL}${canonicalPath}`
 }
 
@@ -103,7 +104,7 @@ function writeSitemapFiles(filename: string, xml: string): string[] {
 async function main(): Promise<void> {
   const today = new Date().toISOString().slice(0, 10)
 
-  // Sitemap 1 — Core pages (~40). Submit this first.
+  // Sitemap 1 — Core product pages (blog posts live in sitemap-blog.xml)
   const corePaths = [...new Set(CORE_PATHS)].filter(isSitemapPath)
   const coreXml = buildUrlSet(corePaths, today)
   const coreWritten = writeSitemapFiles('sitemap-core.xml', coreXml)
@@ -117,8 +118,33 @@ async function main(): Promise<void> {
   console.log('[SEO] Sitemap 2 (programmatic + other):', sitemap2Written[0], `(${sitemap2Paths.length} URLs)`)
   for (const extra of sitemap2Written.slice(1)) console.log('[SEO]   also wrote', extra)
 
-  // Sitemap index — references both. Submit sitemap-index.xml or sitemap-core.xml first.
-  const indexLocs = [`${SITE_URL}/sitemap-core.xml`, `${SITE_URL}/sitemap-programmatic.xml`].map(normalizeUrl)
+  // Sitemap 3 — All Hashnode blog posts (/blog index is in sitemap-core.xml)
+  const blogPaths = getHashnodeBlogPaths().filter(isSitemapPath)
+  const blogUrls = buildNormalizedLocs(blogPaths)
+    .map((loc) => {
+      const url = new URL(loc)
+      const pathPart = url.pathname || '/'
+      return `  <url>
+    <loc>${escapeXml(loc)}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${pathPart === '/' || pathPart === '' ? '0.9' : '0.85'}</priority>
+  </url>`
+    })
+  const blogXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${blogUrls.join('\n')}
+</urlset>
+`
+  const blogWritten = writeSitemapFiles('sitemap-blog.xml', blogXml)
+  console.log('[SEO] Sitemap 3 (blog):', blogWritten[0], `(${blogPaths.length} URLs)`)
+
+  // Sitemap index — references all three
+  const indexLocs = [
+    `${SITE_URL}/sitemap-core.xml`,
+    `${SITE_URL}/sitemap-programmatic.xml`,
+    `${SITE_URL}/sitemap-blog.xml`,
+  ].map(normalizeUrl)
   assertNoMixedDomains(indexLocs)
   const indexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -128,6 +154,10 @@ async function main(): Promise<void> {
   </sitemap>
   <sitemap>
     <loc>${indexLocs[1]}</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${indexLocs[2]}</loc>
     <lastmod>${today}</lastmod>
   </sitemap>
 </sitemapindex>

@@ -11,9 +11,9 @@ tags:
 
 # Batch video transcription for creators and teams (queue many files without losing quality)
 
-High-intent searches—**batch transcribe videos**, **bulk MP4 transcription**, **transcribe multiple files**, **podcast batch transcription**—signal operational pain: teams have **dozens** of inputs per week and zero tolerance for babysitting single uploads.
+**Batch transcribe videos**, **bulk MP4 transcription**, and **podcast batch transcription** — teams need queue throughput without babysitting uploads.
 
-This page targets that intent with a realistic split between **queue-scale** processing and **high-touch** episodes that still deserve manual QA.
+> **Queue many files:** [Batch process →](https://videotext.io/batch-process) · Single file? [Video → Transcript →](https://videotext.io/video-to-transcript)
 
 ---
 
