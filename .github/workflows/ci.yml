@@ -29,6 +29,11 @@ jobs:
           echo "VITE_RELEASE=${{ github.sha }}-${{ github.run_number }}" >> .env.production.local
           npm ci && npm run build && node -e "require('fs').cpSync('dist','../dist',{recursive:true})"
 
+      - name: Prerender smoke routes (production canonicals)
+        run: npx tsx scripts/prerender.ts
+        env:
+          PRERENDER_ONLY: /,/pricing,/faq,/video-to-transcript,/video-to-subtitles,/translate-subtitles,/fix-subtitles,/burn-subtitles,/compress-video,/meeting-transcription
+
       - name: Install serve and wait-on
         run: npm install -D serve wait-on
 
@@ -42,6 +47,7 @@ jobs:
         run: npm run seo:smoke
         env:
           BASE_URL: http://localhost:4173
+          SITE_URL: https://videotext.io
 
       - name: "SEO health check (shell-mode: robots + sitemap)"
         run: npm run seo:health
