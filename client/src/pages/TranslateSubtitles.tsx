@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, Suspense, lazy } from 'react'
-import { useLocation, useNavigate, Link } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams, Link } from 'react-router-dom'
+import TranslateLangCluster from '../components/TranslateLangCluster'
 import { Languages, Copy, Check, Download, ArrowRight, Bold, Italic, AlignLeft, AlignCenter, AlignRight } from 'lucide-react'
 import FailedState from '../components/FailedState'
 import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
@@ -205,7 +206,12 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [tab, setTab] = useState<Tab>('upload')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [pastedText, setPastedText] = useState('')
-  const [targetLanguage, setTargetLanguage] = useState<string>('Spanish')
+  const [searchParams] = useSearchParams()
+  const [targetLanguage, setTargetLanguage] = useState<string>(() => {
+    const fromQuery = searchParams.get('to')
+    if (fromQuery && LANGUAGES.some((l) => l.value === fromQuery)) return fromQuery
+    return 'Spanish'
+  })
   const [copied, setCopied] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
   const [paywallReason, setPaywallReason] = useState<PaywallReason>('FREE_DAILY_LIMIT_REACHED')
@@ -270,6 +276,13 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       setShowAuthGate(true)
     }
   }
+
+  useEffect(() => {
+    const fromQuery = searchParams.get('to')
+    if (fromQuery && LANGUAGES.some((l) => l.value === fromQuery)) {
+      setTargetLanguage(fromQuery)
+    }
+  }, [searchParams])
 
   // On mount: restore a completed job if jobId is persisted in URL/sessionStorage
   // (handles browser refresh after a translate job completes)
@@ -1072,7 +1085,12 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
         )}
       </ToolLayout>
 
-      {location.pathname === '/translate-subtitles' && <CoreToolSeoDepth path="/translate-subtitles" />}
+      {location.pathname === '/translate-subtitles' && (
+        <>
+          <TranslateLangCluster />
+          <CoreToolSeoDepth path="/translate-subtitles" />
+        </>
+      )}
 
 
       <JobAuthGateModal

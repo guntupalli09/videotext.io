@@ -33,6 +33,14 @@ interface FreeToolLayoutProps {
   hubLink?: { label: string; path: string }
   /** Show /open stats teaser (default true). */
   showOpenStatsStrip?: boolean
+  /** Above-fold money CTA (fix / translate / burn). Visible without hunting. */
+  moneyCta?: {
+    kicker?: string
+    title: string
+    body?: string
+    primary: { label: string; path: string }
+    secondary?: { label: string; path: string }[]
+  }
 }
 
 const defaultRelated = [
@@ -53,6 +61,7 @@ export default function FreeToolLayout({
   contentSections = [],
   hubLink,
   showOpenStatsStrip = true,
+  moneyCta,
 }: FreeToolLayoutProps) {
   const { pathname } = useLocation()
   const isSubtitleCluster = hubLink?.path === '/subtitle-tools'
@@ -79,6 +88,32 @@ export default function FreeToolLayout({
           <p className="mt-3 text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             {description}
           </p>
+          {moneyCta && (
+            <div className="mt-6 mx-auto max-w-xl text-left rounded-2xl border-2 border-blue-400 dark:border-blue-600 bg-white dark:bg-gray-900 px-4 py-4 sm:px-5">
+              <p className="text-xs font-semibold uppercase tracking-widest text-blue-700 dark:text-blue-300">
+                {moneyCta.kicker ?? 'Next step'}
+              </p>
+              <p className="mt-1 text-base font-medium text-gray-900 dark:text-white">{moneyCta.title}</p>
+              {moneyCta.body && <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{moneyCta.body}</p>}
+              <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                <Link
+                  to={resolveInternalLinkPath(moneyCta.primary.path)}
+                  className="inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5"
+                >
+                  {moneyCta.primary.label} →
+                </Link>
+                {moneyCta.secondary?.map((s) => (
+                  <Link
+                    key={s.path}
+                    to={resolveInternalLinkPath(s.path)}
+                    className="inline-flex items-center justify-center rounded-xl border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 text-sm font-semibold px-4 py-2.5 hover:bg-blue-50 dark:hover:bg-blue-950/40"
+                  >
+                    {s.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -111,6 +146,49 @@ export default function FreeToolLayout({
 
         {/* The actual tool */}
         <section>{children}</section>
+
+        {isSubtitleCluster && (
+          <section
+            className="rounded-2xl border-2 border-blue-300 dark:border-blue-700 bg-blue-50/80 dark:bg-blue-950/30 px-5 py-5"
+            aria-label="Next steps after this file"
+          >
+            <p className="text-xs font-semibold uppercase tracking-widest text-blue-700 dark:text-blue-300 mb-1">
+              Don’t stop at the download
+            </p>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+              Next: fix, translate, burn, or generate from video
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Out of sync, overlapping, or CPS fail? Use Fix. Need another language or hardcoded captions? Those are one click away.
+            </p>
+            <div className="flex flex-col sm:flex-row flex-wrap gap-2">
+              <Link
+                to="/fix-subtitles"
+                className="inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5"
+              >
+                Fix this file in one click →
+              </Link>
+              <Link
+                to="/translate-subtitles"
+                className="inline-flex items-center justify-center rounded-xl border border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 text-blue-800 dark:text-blue-200 text-sm font-semibold px-4 py-2.5"
+              >
+                Translate
+              </Link>
+              <Link
+                to="/burn-subtitles"
+                className="inline-flex items-center justify-center rounded-xl border border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 text-blue-800 dark:text-blue-200 text-sm font-semibold px-4 py-2.5"
+              >
+                Burn
+              </Link>
+              <Link
+                to="/video-to-subtitles"
+                className="inline-flex items-center justify-center rounded-xl border border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 text-blue-800 dark:text-blue-200 text-sm font-semibold px-4 py-2.5"
+              >
+                Video to Subtitles
+              </Link>
+            </div>
+          </section>
+        )}
 
         {/* Upgrade nudge — positioned immediately after the tool delivers value */}
         <section className="rounded-xl bg-gray-900 dark:bg-gray-800 border border-gray-700 dark:border-gray-600 overflow-hidden">
