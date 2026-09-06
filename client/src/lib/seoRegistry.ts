@@ -1696,7 +1696,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         'Otter.ai does not accept video file uploads (MP4, MOV, AVI, WebM). VideoText processes all of them.',
         'Otter.ai does not generate SRT or VTT subtitle files. VideoText exports broadcast-ready SRT in one step — free tier.',
         'Otter.ai cannot transcribe YouTube URLs. VideoText transcribes any public YouTube URL directly — no download needed.',
-        'Otter.ai free tier is meeting-only (Zoom/Meet/Teams). VideoText free tier includes video file uploads — 3 per day, no credit card.',
+        'Otter.ai free tier is meeting-only (Zoom/Meet/Teams). VideoText free tier includes video file uploads — 3 imports/month, no credit card.',
         'Otter.ai stores your meeting recordings in their cloud. VideoText deletes your file the moment processing ends.',
         'Otter.ai does not translate subtitles. VideoText translates SRT/VTT to 70+ languages with timestamps preserved.',
       ],

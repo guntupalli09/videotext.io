@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ChevronRight, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import HeroTrustChips from "../HeroTrustChips";
+import CoreToolSeoDepth from "../CoreToolSeoDepth";
 
 interface Breadcrumb {
   label: string;
@@ -19,6 +20,8 @@ interface ToolLayoutProps {
   sidebar?: React.ReactNode | null;
   compactToolHeader?: boolean;
   currentStepLabel?: string;
+  /** When set, renders the compact answer-first block under the H1. */
+  coreToolPath?: string;
 }
 
 export function ToolLayout({
@@ -31,6 +34,7 @@ export function ToolLayout({
   sidebar = null,
   compactToolHeader = false,
   currentStepLabel = "Ready",
+  coreToolPath,
 }: ToolLayoutProps) {
   return (
     <div
@@ -80,14 +84,15 @@ export function ToolLayout({
           className={compactToolHeader ? "mb-3" : "mb-5 sm:mb-7"}
         >
           {compactToolHeader ? (
+            <>
             <div className="flex h-10 items-center justify-between gap-3 border-b border-white/[0.08] dark:border-white/[0.08] border-gray-200/80">
               <div className="flex min-w-0 items-center gap-2">
                 <span className="inline-flex h-4 w-4 items-center justify-center [&>svg]:h-4 [&>svg]:w-4">
                   {icon}
                 </span>
-                <span className="truncate text-[14px] font-medium text-gray-900 dark:text-white">
+                <h1 className="truncate text-[14px] font-medium text-gray-900 dark:text-white">
                   {title}
-                </span>
+                </h1>
                 <span className="text-[13px] text-gray-400">·</span>
                 <span className="truncate text-[13px] text-gray-500 dark:text-gray-400">
                   {currentStepLabel}
@@ -100,6 +105,8 @@ export function ToolLayout({
                 How it works
               </Link>
             </div>
+            {coreToolPath && <CoreToolSeoDepth path={coreToolPath} variant="lead" />}
+            </>
           ) : (
             <>
               <div className="flex items-center gap-3 sm:gap-4 mb-4">
@@ -126,6 +133,7 @@ export function ToolLayout({
               <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl">
                 {subtitle}
               </p>
+              {coreToolPath && <CoreToolSeoDepth path={coreToolPath} variant="lead" />}
               <HeroTrustChips />
               {tags.length > 0 && (
                 <motion.div

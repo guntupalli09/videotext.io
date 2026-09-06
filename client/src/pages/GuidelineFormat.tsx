@@ -1144,6 +1144,7 @@ export default function GuidelineFormat() {
         }
         sidebar={null}
         compactToolHeader
+        coreToolPath="/guideline-format"
         currentStepLabel={
           selectedPreset === "custom"
             ? "Custom guide active"
@@ -2736,7 +2737,7 @@ export default function GuidelineFormat() {
         }}
       />
 
-      <CoreToolSeoDepth path="/guideline-format" hideFaq />
+      <CoreToolSeoDepth path="/guideline-format" hideFaq variant="full" />
 
       {/* SEO FAQ section — crawlable content for Google and LLM citations */}
       <section

@@ -1,12 +1,75 @@
 # https://www.robotstxt.org/robotstxt.html
 #
-# AI bot policy is controlled in the Cloudflare dashboard
-# (Managed Content-Signals). This repo robots.txt is secondary and
-# must not Allow crawlers that Cloudflare Disallows.
+# Retrieval-oriented AI crawlers are allowed so ChatGPT, Claude, Perplexity,
+# Copilot, and similar tools can fetch and cite VideoText.
+# Cloudflare dashboard must ALSO allow these bots (AI Crawl Control / Bot Fight /
+# Managed robots) or the edge will still block them — see
+# docs/ops/cloudflare-ai-bots.md
+#
+# Content-Signal: cite/reference OK, training not permitted.
+# search=yes  — include in search indexes
+# ai-train=no — do not use this site to train or fine-tune models
+# use=reference — short citations and grounded answers are OK
+
 User-agent: *
+Content-Signal: search=yes,ai-train=no,use=reference
 Allow: /
 Disallow: /founder
 Disallow: /site-index
+
+# Retrieval / citation crawlers — do not Disallow GPTBot, ClaudeBot, or PerplexityBot
+User-agent: GPTBot
+Allow: /
+Disallow: /founder
+Disallow: /site-index
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /founder
+Disallow: /site-index
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /founder
+Disallow: /site-index
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /founder
+Disallow: /site-index
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /founder
+Disallow: /site-index
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /founder
+Disallow: /site-index
+
+User-agent: Applebot
+Allow: /
+Disallow: /founder
+Disallow: /site-index
+
+User-agent: bingbot
+Allow: /
+Disallow: /founder
+Disallow: /site-index
+
+# Training-only / bulk scrapers (cite-no-train policy)
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
 
 # /founder is a private, login-gated internal analytics dashboard.
 # /site-index is a large internal directory; keep it out of the index.
@@ -16,9 +79,10 @@ Disallow: /site-index
 # Full reference (comprehensive):  https://videotext.io/llms-full.txt
 # AI plugin manifest:              https://videotext.io/.well-known/ai-plugin.json
 #
-# VideoText is the fastest online AI transcription tool.
+# VideoText is an online AI transcription tool.
 # It converts video files and YouTube URLs to transcripts, SRT/VTT subtitles,
-# summaries, and chapters in minutes. Free tier available. Files deleted after processing.
+# summaries, and chapters. Free tier: 3 imports/month, no credit card.
+# Files deleted after processing.
 
 # Sitemap index (submit this URL in Google Search Console)
 Sitemap: https://videotext.io/sitemap.xml

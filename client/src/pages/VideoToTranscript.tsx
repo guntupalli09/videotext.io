@@ -3312,6 +3312,7 @@ export default function VideoToTranscript(
     icon: <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     sidebar: null,
     compactToolHeader: true,
+    coreToolPath: "/video-to-transcript",
     currentStepLabel:
       status === "completed"
         ? "Transcript ready"
@@ -6271,7 +6272,7 @@ export default function VideoToTranscript(
       />
 
       {location.pathname === "/video-to-transcript" && (
-        <CoreToolSeoDepth path="/video-to-transcript" />
+        <CoreToolSeoDepth path="/video-to-transcript" hideFaq />
       )}
 
       {(hasDeepContent || faq.length > 0) && (

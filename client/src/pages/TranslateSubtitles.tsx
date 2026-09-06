@@ -549,6 +549,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     icon: <Languages className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['SRT', 'VTT', 'TXT', 'DOCX', 'JSON', '70+ Languages'],
     sidebar: null,
+    coreToolPath: location.pathname === '/translate-subtitles' ? '/translate-subtitles' : undefined,
   }
 
   // ── Shared tab bar (used in both modes) ────────────────────────────────────

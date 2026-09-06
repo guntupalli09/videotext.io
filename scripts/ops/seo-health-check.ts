@@ -76,7 +76,10 @@ async function main(): Promise<void> {
   const robotsOk = await fetchOk(robotsUrl)
   if (!robotsOk) fail('robots.txt did not return 200', robotsUrl)
   const robotsBody = await fetchUrl(robotsUrl)
-  if (/Disallow:\s*\/\s*$/m.test(robotsBody)) fail('robots.txt appears to block all (Disallow: /)', robotsUrl)
+  // Only fail if the wildcard group blocks the whole site (named scrapers may Disallow: /).
+  if (/User-agent:\s*\*\s*\n(?:(?!User-agent:)[^\n]*\n)*Disallow:\s*\/\s*$/m.test(robotsBody)) {
+    fail('robots.txt User-agent: * appears to block all (Disallow: /)', robotsUrl)
+  }
   console.log('[seo-health] robots.txt OK')
 
   // 2) sitemap.xml

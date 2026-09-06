@@ -88,8 +88,14 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 pt-8 border-t border-gray-800 text-sm text-center">
+        <div className="mt-8 pt-8 border-t border-gray-800 text-sm text-center space-y-2">
           <p>&copy; {new Date().getFullYear()} VideoText. All rights reserved.</p>
+          <p className="text-xs text-gray-500">
+            AI/agents: see{' '}
+            <a href="https://videotext.io/llms.txt" className="hover:text-white transition-colors underline-offset-2 hover:underline">
+              https://videotext.io/llms.txt
+            </a>
+          </p>
         </div>
 
         {/* Badges */}

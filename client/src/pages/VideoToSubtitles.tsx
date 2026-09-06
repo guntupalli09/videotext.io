@@ -869,6 +869,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     icon: <MessageSquare className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['SRT', 'VTT', 'Subtitles', 'Captions', 'Timestamps', 'Multi-format'],
     sidebar: null,
+    coreToolPath: isSubtitleHub ? '/video-to-subtitles' : undefined,
   }
 
   return (
@@ -1516,7 +1517,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         </aside>
       )}
 
-      {isSubtitleHub && <CoreToolSeoDepth path="/video-to-subtitles" />}
+      {isSubtitleHub && <CoreToolSeoDepth path="/video-to-subtitles" hideFaq={effectiveFaq.length > 0} />}
 
       {effectiveFaq.length > 0 && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 dark:border-gray-700/50 max-w-4xl mx-auto px-4" aria-label="FAQ">
