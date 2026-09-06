@@ -8,6 +8,7 @@ import { invalidateUsageCache } from './lib/api'
 import Footer from './components/Footer'
 import Seo from './components/Seo'
 import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd, getSoftwareApplicationJsonLd, getHowToJsonLd, getAeoJsonLd, BLOG_POST_DATES } from './lib/seoMeta'
+import { getCoreToolFaq } from './lib/coreToolSeoDepth'
 import { getCanonicalPathForRoute } from './lib/primaryUrls'
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
@@ -225,6 +226,8 @@ function AppSeo() {
     if (softwareAppSchema) schemas.push(softwareAppSchema)
     if (howToSchema) schemas.push(howToSchema)
     if (!isBlogPost && seoEntry?.faq?.length) schemas.push(getFaqJsonLdFromItems(seoEntry.faq))
+    const coreFaq = getCoreToolFaq(pathname)
+    if (!isBlogPost && coreFaq.length) schemas.push(getFaqJsonLdFromItems(coreFaq))
     const aeoSchemas = getAeoJsonLd(pathname)
     if (aeoSchemas?.length) schemas.push(...aeoSchemas)
     const normalizedSchemas = dedupeAndMergeFaqSchemas(schemas)
@@ -851,9 +854,12 @@ function App() {
             <Route path="/free-captions-and-subtitles" element={<VideoToSubtitles />} />
             <Route path="/fix-subtitles" element={<FixSubtitles />} />
             <Route path="/burn-subtitles" element={<BurnSubtitles />} />
+            <Route path="/burn-subtitles-into-video" element={<Navigate to="/burn-subtitles" replace />} />
             <Route path="/compress-video" element={<CompressVideo />} />
             {/* SEO utility routes: registry-driven; same tools, alternate URLs. No backend or behavior change. */}
-            {getAllSeoPaths().map((path) => (
+            {getAllSeoPaths()
+              .filter((path) => path !== '/burn-subtitles-into-video')
+              .map((path) => (
               <Route key={path} path={path} element={<SeoToolPage />} />
             ))}
             {/* Free tools — client-side only, no server calls */}

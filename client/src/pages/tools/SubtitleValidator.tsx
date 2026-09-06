@@ -80,12 +80,12 @@ export default function SubtitleValidator() {
         { q: 'I have 50 warnings but no errors — is my file usable?', a: 'Yes. Warnings indicate best-practice violations (like slightly long lines) but won\'t cause playback failures. Errors (overlapping timestamps, bad timing) may cause visible issues. Fix errors first; address warnings if the file is for broadcast delivery.' },
       ]}
       relatedTools={[
-        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'AI auto-correct overlaps, timing & long lines' },
-        { label: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing', desc: 'Bulk-adjust all timestamps' },
-        { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Detailed CPS analysis per cue' },
+        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct overlaps, timing & long lines' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate timed SRT/VTT from video' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
+        { label: 'Burn Subtitles', path: '/burn-subtitles', desc: 'Hardcode a cleaned SRT into video' },
         { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Netflix/YouTube line length check' },
-        { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine two subtitle files' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate clean AI subtitles from video' },
+        { label: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing', desc: 'Bulk-adjust all timestamps' },
       ]}
     >
       <div className="space-y-4">

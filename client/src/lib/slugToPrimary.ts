@@ -24,6 +24,9 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'subtitle-line-break-fixer': '/fix-subtitles',
   'hardcoded-captions': '/burn-subtitles',
   'video-with-subtitles': '/burn-subtitles',
+  // GSC: /burn-subtitles-into-video ranked better than the money URL for the same
+  // “burn into video” intent. Consolidate to /burn-subtitles (301 + canonical).
+  'burn-subtitles-into-video': '/burn-subtitles',
   'video-compressor': '/compress-video',
   'reduce-video-size': '/compress-video',
   // '/batch-process' is itself a client redirect into '/video-to-transcript' (batch

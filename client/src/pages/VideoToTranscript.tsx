@@ -21,6 +21,7 @@ import {
   Copy as CopyIcon,
 } from "lucide-react";
 import FailedState from "../components/FailedState";
+import CoreToolSeoDepth from "../components/CoreToolSeoDepth";
 import { MakeClientReadyTranscriptButton } from "../components/SuccessState";
 import SamplesModule from "../components/SamplesModule";
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
@@ -3305,7 +3306,9 @@ export default function VideoToTranscript(
   const layoutProps = {
     breadcrumbs,
     title: "Fastest Way to Transcribe Your Audio/Video",
-    subtitle: seoIntro ?? "Extract spoken text from any video in seconds",
+    subtitle:
+      seoIntro ??
+      "Upload a video or YouTube URL. Get a transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.",
     icon: <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     sidebar: null,
     compactToolHeader: true,
@@ -6266,6 +6269,10 @@ export default function VideoToTranscript(
           window.location.reload();
         }}
       />
+
+      {location.pathname === "/video-to-transcript" && (
+        <CoreToolSeoDepth path="/video-to-transcript" />
+      )}
 
       {(hasDeepContent || faq.length > 0) && (
         <div className="mt-20 border-t border-gray-100 dark:border-gray-800/60" />

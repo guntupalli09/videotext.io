@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, Suspense, lazy } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { Languages, Copy, Check, Download, ArrowRight, Bold, Italic, AlignLeft, AlignCenter, AlignRight } from 'lucide-react'
 import FailedState from '../components/FailedState'
+import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
@@ -530,8 +531,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const breadcrumbs = [{ label: 'Translate', href: '/translation' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Translate',
-    subtitle: seoIntro ?? 'Translate subtitles, documents, DOCX, TXT, and JSON into 70+ languages — structure always preserved.',
+    title: seoH1 ?? 'Translate Subtitles to Any Language',
+    subtitle: seoIntro ?? 'Translate SRT or VTT to 70+ languages with timestamps intact. Files deleted after processing. Free to try — 3 imports/mo.',
     icon: <Languages className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['SRT', 'VTT', 'TXT', 'DOCX', 'JSON', '70+ Languages'],
     sidebar: null,
@@ -1071,38 +1072,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
         )}
       </ToolLayout>
 
-      {location.pathname === '/translate-subtitles' && (
-        <section className="max-w-4xl mx-auto px-4 py-10 space-y-10">
-          <header className="space-y-3">
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-gray-100">Translate Subtitles &amp; Transcripts Online (SRT, VTT, TXT)</h1>
-            <p className="text-gray-700 dark:text-gray-300">Translate subtitles, SRT files, and transcripts into 70+ languages — timestamps and structure preserved.</p>
-            <p className="text-sm font-medium text-gray-800 dark:text-gray-200">👉 Upload subtitle file → get translated version instantly</p>
-            <p className="text-sm text-gray-700 dark:text-gray-300">👉 No formatting loss. No manual editing. Works for long files.</p>
-          </header>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium">Translate Subtitles Online (SRT, VTT, TXT)</h2>
-            <p>Easily translate subtitles and transcripts online without breaking timing or formatting. Upload an SRT, VTT, TXT, or DOCX file and get a clean, translated version in seconds. Need subtitles first? Use the <Link to="/subtitle-generator" className="text-blue-600 hover:underline">subtitle generator</Link>.</p>
-            <ul className="list-disc pl-6 space-y-1">
-              <li>Translate subtitles to 70+ languages</li><li>Keep timestamps perfectly aligned</li><li>Download translated SRT/VTT instantly</li>
-            </ul>
-          </section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">Translate SRT Files Without Losing Timestamps</h2><p>Most tools break subtitle timing. This subtitle translator keeps every timestamp intact. Working from video first? Convert your file with <Link to="/video-to-transcript" className="text-blue-600 hover:underline">video to transcript</Link>.</p></section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">Translate Video Subtitles Automatically</h2><p>Translate subtitles directly from video or from existing transcript files. Ideal for YouTube, courses, interviews, and podcasts. Starting from YouTube? Try the <Link to="/youtube-transcript-generator" className="text-blue-600 hover:underline">YouTube transcript generator</Link>.</p></section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">Why This Subtitle Translator Is Better</h2><ul className="list-disc pl-6 space-y-1"><li>Timestamps preserved — no sync issues</li><li>Multiple formats supported — SRT, VTT, TXT, DOCX, JSON</li><li>No manual cleanup — clean output instantly</li><li>Fast processing — large files handled in minutes</li><li>Privacy-first — files deleted after processing</li></ul></section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">Fast Subtitle Translation Without Editing</h2><p>Traditional tools require manual fixes after translation. With VideoText: upload → translate → download, with no timeline editing and no formatting fixes. It also works with long files via <Link to="/transcribe-long-videos" className="text-blue-600 hover:underline">transcribe long videos</Link>.</p></section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">Who Needs Subtitle Translation?</h2><ul className="list-disc pl-6 space-y-1"><li>YouTubers → translate captions for global audience</li><li>Course creators → localize lessons</li><li>Agencies → scale multilingual content</li><li>Podcasters → expand reach with subtitles</li></ul></section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">More Transcription &amp; Subtitle Tools</h2><ul className="list-disc pl-6 space-y-1"><li><Link to="/video-to-transcript" className="text-blue-600 hover:underline">Video to transcript tool</Link></li><li><Link to="/subtitle-generator" className="text-blue-600 hover:underline">Subtitle generator</Link></li><li><Link to="/youtube-transcript-generator" className="text-blue-600 hover:underline">YouTube transcript generator</Link></li><li><Link to="/transcribe-long-videos" className="text-blue-600 hover:underline">Transcribe long videos</Link></li></ul></section>
-
-          <section className="space-y-3" aria-label="FAQ"><h2 className="text-2xl font-medium">Frequently Asked Questions</h2><dl className="space-y-3"><div><dt className="font-medium">How do I translate subtitles online?</dt><dd className="text-gray-700 dark:text-gray-300">Upload your subtitle file (SRT/VTT), select the target language, and download the translated version instantly.</dd></div><div><dt className="font-medium">Can I translate SRT files without losing timestamps?</dt><dd className="text-gray-700 dark:text-gray-300">Yes. This tool preserves all timing while translating text.</dd></div><div><dt className="font-medium">Is there a free subtitle translator?</dt><dd className="text-gray-700 dark:text-gray-300">Yes, basic usage is available without signup.</dd></div><div><dt className="font-medium">How do I translate video subtitles automatically?</dt><dd className="text-gray-700 dark:text-gray-300">Upload your subtitle file or video transcript and export the translated version.</dd></div><div><dt className="font-medium">What formats are supported?</dt><dd className="text-gray-700 dark:text-gray-300">SRT, VTT, TXT, DOCX, and JSON.</dd></div></dl></section>
-        </section>
-      )}
+      {location.pathname === '/translate-subtitles' && <CoreToolSeoDepth path="/translate-subtitles" />}
 
 
       <JobAuthGateModal
