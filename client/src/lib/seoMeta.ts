@@ -50,24 +50,24 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       "Terms of use for VideoText. We don't store your data; see our Privacy Policy for details. Billing via Stripe. Use the service in accordance with these terms.",
   },
   '/voice-recorder': {
-    title: 'Live Voice to Text Online (Real-Time Speech to Text — Free & Fast)',
+    title: 'Voice to Text — In-Browser Recorder | VideoText',
     description:
-      'Convert voice to text instantly as you speak. Live speech-to-text with no upload required. Real-time transcription, fast, private, and free.',
+      'Speak in the browser and get text. No video upload to start. Privacy-first: files deleted after processing. Free: 3 imports/mo, no card, no watermark.',
   },
   '/video-to-transcript': {
-    title: 'Video to Transcript — Free AI Transcription, 98.5% Accurate | VideoText',
+    title: 'Video to Transcript — Free AI, 98.5% | VideoText',
     description:
-      'Transcribe any video in minutes. 98.5% accuracy. Paste a YouTube URL or upload MP4/MOV. Get transcript + SRT subtitles + AI summary + chapters in one pass. Free.',
+      'Upload video or a YouTube URL. Get transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.',
   },
   '/guideline-format': {
-    title: 'Transcript Style Guide Formatter — Rev, GoTranscript, TranscribeMe, Scribie | VideoText',
+    title: 'Format Transcripts to Client Guides | VideoText',
     description:
-      'Format transcripts to pass Rev, GoTranscript, TranscribeMe, or Scribie QA automatically. Apply verbatim rules, speaker label formats, filler word handling — then export client-ready. Free.',
+      'Format a transcript to Rev, GoTranscript, TranscribeMe, or Scribie-style rules. Editable presets. Files deleted after processing. 3 free imports/mo.',
   },
   '/video-to-subtitles': {
-    title: 'Subtitle Generator (SRT & VTT) — Auto Generate Subtitles Online',
+    title: 'Video to Subtitles — Full Caption Hub | VideoText',
     description:
-      'Generate subtitles from video instantly. Create SRT and VTT files online with accurate timestamps. Fast, automatic, and no editing required.',
+      'Caption-first hub: video or YouTube URL → timed SRT/VTT, then fix, translate, or burn. Transcript + summary lives on Video to Transcript. 3 free imports/mo.',
   },
   '/translate-subtitles': {
     title: 'Translate Subtitles to Any Language | VideoText',
@@ -75,19 +75,19 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Translate SRT or VTT to 70+ languages with timestamps intact. Upload, pick a language, download. Free to try. Files deleted after processing.',
   },
   '/fix-subtitles': {
-    title: 'Fix Subtitles — Auto-Correct Timing & Format',
+    title: 'Fix Subtitles — Timing, CPS & Lines | VideoText',
     description:
-      'Fix overlapping timestamps, long lines, and gaps in SRT/VTT files. Auto-correct timing and formatting for readability and YouTube limits. Upload SRT or VTT, download corrected file. Free.',
+      'Fix overlapping timestamps, long lines, CPS/reading-speed, and SRT/VTT formatting. Upload, download a cleaned file. Files deleted after processing.',
   },
   '/burn-subtitles': {
-    title: 'Burn Subtitles into Video (Hardcode Captions Online — Free)',
+    title: 'Burn Subtitles into Video — Hardcode | VideoText',
     description:
-      'Burn subtitles into video instantly. Hardcode captions permanently with styling and positioning. Fast, online, and no editing required.',
+      'Hardcode SRT or VTT into video. Upload video + captions, download one file. For Instagram, TikTok, and players without caption tracks. 3 free imports/mo.',
   },
   '/compress-video': {
-    title: 'Compress Video Online (Reduce File Size Without Losing Quality)',
+    title: 'Compress Video — Light, Medium, Heavy | VideoText',
     description:
-      'Compress video files instantly without losing quality. Reduce video size online for faster uploads and sharing. Fast, simple, and no software required.',
+      'Compress video online with light, medium, or heavy settings. Reduce size for uploads and sharing. Files deleted after processing. 3 free imports/mo.',
   },
   '/batch-process': {
     title: 'Batch Video to Subtitles — Multiple Videos at Once',
@@ -1354,9 +1354,9 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
     featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 uploads/day (no credit card), Pro tier: continued transcription ($7.99/month), Zero data retention (files deleted after processing)',
   },
   '/video-to-subtitles': {
-    name: 'Video to Subtitles — SRT & VTT Generator',
-    description: 'Generate broadcast-ready SRT and VTT subtitle files from any video with AI. Single or multi-language. Powered by OpenAI Whisper.',
-    featureList: 'SRT generation, VTT generation, Multi-language subtitles, AI timing, YouTube URL input, Subtitle download',
+    name: 'Video to Subtitles — Full Caption Hub',
+    description: 'Caption-first VideoText hub: timed SRT/VTT from video or YouTube URL, then fix, translate, or burn. Transcript + summary + chapters via Video to Transcript.',
+    featureList: 'SRT generation, VTT generation, YouTube URL input, Caption workflow hub, Handoff to fix/translate/burn',
   },
   '/translate-subtitles': {
     name: 'Translate Subtitles to Any Language',

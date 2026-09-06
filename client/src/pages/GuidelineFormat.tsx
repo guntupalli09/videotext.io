@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { ToolLayout } from "../components/figma/ToolLayout";
+import CoreToolSeoDepth from "../components/CoreToolSeoDepth";
 import { api } from "../lib/api";
 import {
   detectFormat,
@@ -1133,8 +1134,8 @@ export default function GuidelineFormat() {
             href: "/guideline-format",
           },
         ]}
-        title="Format + QA"
-        subtitle="Paste your raw transcript, select a platform preset, and apply style guide rules automatically — verbatim handling, speaker labels, filler words, QA validation — then export client-ready."
+        title="Format Transcripts to Client Guidelines"
+        subtitle="Apply Rev, GoTranscript, TranscribeMe, or Scribie-style rules to a transcript. Then export client-ready text. 3 free imports/mo."
         icon={
           <FileText
             className="text-blue-600 dark:text-blue-400"
@@ -2734,6 +2735,8 @@ export default function GuidelineFormat() {
           }
         }}
       />
+
+      <CoreToolSeoDepth path="/guideline-format" hideFaq />
 
       {/* SEO FAQ section — crawlable content for Google and LLM citations */}
       <section

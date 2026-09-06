@@ -7,6 +7,7 @@ import {
   AlertTriangle, Info,
 } from 'lucide-react'
 import FailedState from '../components/FailedState'
+import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
 import FreePlanNudge from '../components/FreePlanNudge'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import { isPaidPlan } from '../lib/plans'
@@ -720,8 +721,8 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const breadcrumbs = [{ label: 'Fix Subtitles', href: '/fix-subtitles' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Fix Subtitles',
-    subtitle: seoIntro ?? 'Validate and auto-correct CPS, CPL, timing, and scene cut issues in SRT and VTT files.',
+    title: seoH1 ?? 'Fix Subtitles — Timing, CPS & Lines',
+    subtitle: seoIntro ?? 'Fix overlapping timestamps, long lines, CPS/reading-speed, and formatting in SRT/VTT. Files deleted after processing. 3 free imports/mo.',
     icon: <Wrench className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['CPS', 'CPL', 'Timing', 'Scene Cuts', 'Line Breaks', 'Filler Words'],
     sidebar: null,
@@ -1303,7 +1304,9 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
         )}
       </ToolLayout>
 
-      {faq.length > 0 && (
+      {location.pathname === '/fix-subtitles' && <CoreToolSeoDepth path="/fix-subtitles" />}
+
+      {faq.length > 0 && location.pathname !== '/fix-subtitles' && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
           <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently asked questions</h2>
           <dl className="space-y-4">

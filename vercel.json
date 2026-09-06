@@ -194,6 +194,11 @@
       "source": "/blog/:path*",
       "destination": "https://blog.videotext.io/:path*",
       "permanent": true
+    },
+    {
+      "source": "/burn-subtitles-into-video",
+      "destination": "/burn-subtitles",
+      "permanent": true
     }
   ]
 }

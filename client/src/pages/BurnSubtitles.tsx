@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Film, CheckCircle } from 'lucide-react'
 // import { useWorkflow } from '../contexts/WorkflowContext'
 import FailedState from '../components/FailedState'
+import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
@@ -41,13 +42,6 @@ export type BurnSubtitlesSeoProps = {
 
 export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const { seoH1, seoIntro, faq = [] } = props
-  const defaultFaq = [
-    { q: 'What does it mean to burn subtitles?', a: 'Burning subtitles means embedding captions directly into the video so they cannot be turned off.' },
-    { q: 'How do I hardcode subtitles into a video?', a: 'Upload your video and subtitle file, and export a version with subtitles permanently embedded.' },
-    { q: 'Can I burn subtitles without editing software?', a: 'Yes. This tool allows you to hardcode subtitles online without using video editors.' },
-    { q: 'What formats are supported?', a: 'Common formats like SRT and VTT are supported.' },
-    { q: 'Are burned subtitles permanent?', a: 'Yes. They are part of the video and cannot be removed.' },
-  ]
   const location = useLocation()
   const navigate = useNavigate()
   // const workflow = useWorkflow()
@@ -286,8 +280,8 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const breadcrumbs = [{ label: 'Burn Subtitles', href: '/burn-subtitles' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Burn Subtitles into Video (Hardcode Captions Online)',
-    subtitle: seoIntro ?? 'Add subtitles directly into your video permanently. Hardcode captions with styling, position, and perfect sync.',
+    title: seoH1 ?? 'Burn Subtitles into Video',
+    subtitle: seoIntro ?? 'Hardcode SRT or VTT into your video. Upload video + captions, download one file. Files deleted after processing. 3 free imports/mo.',
     icon: <Film className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['Hardcode', 'Burn-in', 'Permanent', 'Styling', 'Position'],
     sidebar: null,
@@ -541,73 +535,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
 
 
 
-      {location.pathname === '/burn-subtitles' && (
-        <section className="mt-12 max-w-4xl mx-auto px-4 space-y-8" aria-label="Burn subtitles guide">
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Burn Subtitles into Video Instantly</h2>
-            <p className="mt-3 text-gray-600 dark:text-gray-300">Add subtitles directly into your video so they are permanently visible.</p>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li>burn subtitles</li>
-              <li>hardcode subtitles</li>
-              <li>add subtitles to video permanently</li>
-            </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need subtitles first? <a href="/video-to-subtitles" className="text-blue-600 hover:underline">Generate subtitles automatically</a>.</p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Hardcode Subtitles (No External Files Needed)</h2>
-            <p className="mt-3 text-gray-600 dark:text-gray-300">Burned subtitles are embedded into the video itself.</p>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li>no SRT required for playback</li>
-              <li>works across all platforms</li>
-              <li>subtitles always visible</li>
-            </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need subtitle files? <a href="/video-to-subtitles" className="text-blue-600 hover:underline">Create SRT &amp; VTT subtitles</a>.</p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Add Subtitles to Video Without Editing Software</h2>
-            <p className="mt-3 text-gray-600 dark:text-gray-300">No need for complex tools like Premiere or Final Cut.</p>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li>upload video</li>
-              <li>upload subtitle file</li>
-              <li>export video with captions</li>
-            </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need full transcript first? <a href="/video-to-transcript" className="text-blue-600 hover:underline">Convert video to transcript</a>.</p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Customize Subtitle Styling and Position</h2>
-            <p className="mt-3 text-gray-600 dark:text-gray-300">Control how subtitles appear in your video:</p>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li>font size and style</li>
-              <li>position on screen</li>
-              <li>color and readability</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Who Needs Burned Subtitles?</h2>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li>Social media creators → captions always visible</li>
-              <li>YouTubers → accessibility and engagement</li>
-              <li>Agencies → deliver ready-to-publish videos</li>
-              <li>Educators → clearer learning content</li>
-            </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need translation? <a href="/translate-subtitles" className="text-blue-600 hover:underline">Translate subtitles instantly</a>.</p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Complete Subtitle &amp; Transcription Workflow</h2>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li><a href="/video-to-subtitles" className="text-blue-600 hover:underline">Generate subtitles</a></li>
-              <li><a href="/translate-subtitles" className="text-blue-600 hover:underline">Translate subtitles</a></li>
-              <li><a href="/video-to-transcript" className="text-blue-600 hover:underline">Convert video to transcript</a></li>
-              <li><a href="/youtube-transcript-generator" className="text-blue-600 hover:underline">YouTube transcript generator</a></li>
-            </ul>
-          </section>
-        </section>
-      )}
+      {location.pathname === '/burn-subtitles' && <CoreToolSeoDepth path="/burn-subtitles" />}
 
       <PaywallModal
         isOpen={showPaywall}
@@ -645,11 +573,11 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
         }}
       />
 
-      {(faq.length > 0 || location.pathname === '/burn-subtitles') && (
+      {faq.length > 0 && location.pathname !== '/burn-subtitles' && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
           <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently Asked Questions</h2>
           <dl className="space-y-4">
-            {(faq.length > 0 ? faq : defaultFaq).map((item, i) => (
+            {faq.map((item, i) => (
               <div key={i}>
                 <dt className="font-medium text-gray-800">{item.q}</dt>
                 <dd className="mt-1 text-gray-600">{item.a}</dd>
