@@ -2003,12 +2003,13 @@ function injectHomepageVisibleRating(html: string, rating: PublicRating | null):
   if (!rating) return html
   const ratingHtml = buildHomeRatingHtml(rating)
   const bootstrap = buildPublicRatingBootstrap(rating)
-  if (html.includes('<div id="root"></div>')) {
-    html = html.replace('<div id="root"></div>', `<div id="root">${ratingHtml}</div>`)
-  } else {
-    html = html.replace('</body>', `${ratingHtml}\n</body>`)
+  html = html.replace('</head>', `${bootstrap}\n</head>`)
+  // Insert after the first H1 so crawlers see stars next to the page title.
+  // Never replace an empty #root here — that blocks SSR / H1 fallback injection.
+  if (/<h1\b/i.test(html)) {
+    return html.replace(/<\/h1>/i, `</h1>\n${ratingHtml}`)
   }
-  return html.replace('</head>', `${bootstrap}\n</head>`)
+  return html.replace('</body>', `${ratingHtml}\n</body>`)
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -2067,9 +2068,6 @@ async function main() {
     const routePath = meta.path
     let html = injectHead(template, meta)
     html = injectStructuredData(html, routePath, meta, publicRating)
-    if (routePath === '/') {
-      html = injectHomepageVisibleRating(html, publicRating)
-    }
 
     // Full SSR: inject complete React-rendered HTML into the root div for comparison/vs pages.
     // Non-JS crawlers (LLM training pipelines, etc.) will see the full page content.
@@ -2078,16 +2076,11 @@ async function main() {
       html = html.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`)
     } else if (meta.h1) {
       // For all other pages: inject minimal H1 + description for non-JS crawlers.
-      let h1Html = buildH1Html(meta)
-      if (routePath === '/' && publicRating) {
-        const value = escapeHtml(formatPublicRatingValue(publicRating))
-        const countLabel = escapeHtml(formatPublicRatingCount(publicRating))
-        h1Html = h1Html.replace(
-          '<p style="margin:0 0 14px 0;font-size:16px;line-height:1.7;color:#4b5563">',
-          `<p style="margin:0 0 12px 0;font-size:16px;font-weight:700;color:#111827">Rated ${value} out of 5 from ${countLabel}</p>\n      <p style="margin:0 0 14px 0;font-size:16px;line-height:1.7;color:#4b5563">`,
-        )
-      }
-      html = html.replace('</body>', `${h1Html}\n</body>`)
+      html = html.replace('</body>', `${buildH1Html(meta)}\n</body>`)
+    }
+
+    if (routePath === '/') {
+      html = injectHomepageVisibleRating(html, publicRating)
     }
 
     // Inject high-conversion content (keywords, comparison, how-to, proof)

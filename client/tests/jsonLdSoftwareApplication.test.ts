@@ -50,6 +50,16 @@ test('each money core has a page-level SoftApp and no HowTo', () => {
   }
 })
 
+test('prerender injects homepage rating after SSR/H1 so / keeps semantic coverage', () => {
+  const prerenderSrc = readFileSync(resolve(process.cwd(), '../scripts/prerender.ts'), 'utf8')
+  const ssrIdx = prerenderSrc.indexOf('const ssrHtml = renderPageToHtml(routePath)')
+  const ratingIdx = prerenderSrc.indexOf("if (routePath === '/') {\n      html = injectHomepageVisibleRating")
+  assert.ok(ssrIdx !== -1, 'homepage SSR injection must exist')
+  assert.ok(ratingIdx !== -1, 'homepage rating injection must exist')
+  assert.ok(ratingIdx > ssrIdx, 'rating must be injected after renderPageToHtml so #root stays free for H1/H2')
+  assert.match(prerenderSrc, /Never replace an empty #root/)
+})
+
 test('stripping inherited template SoftApp leaves at most one injectible SoftApp', () => {
   const html = `<html><head>
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"VideoText"}</script>
