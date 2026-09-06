@@ -34,19 +34,19 @@ const FAQ_ITEMS = [
     category: "General",
     icon: HelpCircle,
     q: "Do I need to sign up?",
-    a: "Sign up for a free account to try. No credit card required. You get 3 free imports per day. Upgrade when you need more imports, languages, or batch processing.",
+    a: "Sign up for a free account to try. No credit card required. You get 3 free imports per month. Upgrade when you need more imports, languages, or batch processing.",
   },
   {
     category: "General",
     icon: HelpCircle,
     q: "Can I transcribe a YouTube video without downloading it?",
-    a: "YouTube URL support is coming soon. Currently, download the video first (MP4) and upload it to the Video to Transcript tool. Once YouTube URL support launches, you'll be able to paste any public youtube.com or youtu.be link directly — no download needed.",
+    a: "Yes. Paste any public youtube.com or youtu.be link into Video to Transcript or the YouTube Transcript Generator — no download needed. We stream the audio and return a transcript plus SRT/VTT, summary, and chapters.",
   },
   {
     category: "General",
     icon: HelpCircle,
     q: "What file formats are supported?",
-    a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. YouTube URL support is coming soon.",
+    a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. You can also paste a public YouTube URL (youtube.com or youtu.be) — no download required.",
   },
   {
     category: "General",
@@ -70,7 +70,7 @@ const FAQ_ITEMS = [
     category: "General",
     icon: HelpCircle,
     q: "How do I transcribe a video for free?",
-    a: "Sign up for free (no credit card). You get 3 uploads per day. Go to Video to Transcript, upload your video (MP4, MOV, AVI, WebM), set the language, and click Start. Your transcript is ready in 1–8 minutes depending on video length. Copy it or download as TXT.",
+    a: "Sign up for free (no credit card). You get 3 imports per month. Go to Video to Transcript, upload your video (MP4, MOV, AVI, WebM) or paste a YouTube URL, set the language, and click Start. Your transcript is ready in 1–8 minutes depending on video length. Copy it or download as TXT.",
   },
   {
     category: "General",
@@ -175,13 +175,13 @@ const FAQ_ITEMS = [
     category: "Billing",
     icon: CreditCard,
     q: "How does the free tier work?",
-    a: "Sign up for free (no credit card) to get 3 uploads per day. Single language, watermark on subtitle exports. Transcript and subtitles are always available. AI features (Summary, Chapters, Speakers, Translation, Batch) are Pro only. Upgrade any time on the Pricing page.",
+    a: "Sign up for free (no credit card) to get 3 imports per month (resets on the 1st). Single language, watermark on subtitle exports. Transcript and subtitles are always available. Paid plans: Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Upgrade any time on the Pricing page.",
   },
   {
     category: "Billing",
     icon: CreditCard,
     q: "What does Pro include that Free doesn't?",
-    a: "Pro unlocks: AI Summary, AI Chapters, Speaker diarization, Transcript translation (70+ languages), Batch processing (up to 20 videos), longer videos (2 hours vs 30 min), more languages, and no watermark on exports. Pro is $7.99/month.",
+    a: "Pro ($49/month, 1,200 min) unlocks: AI Summary, AI Chapters, Speaker diarization, Transcript translation (70+ languages), Batch processing (up to 20 videos), longer videos, more languages, and no watermark on exports. Basic is $19/month (450 min). Agency is $129/month (3,000 min).",
   },
   {
     category: "Billing",
@@ -228,7 +228,7 @@ export default function Faq() {
           ← Back to home
         </Link>
 
-        <h1 className="text-3xl font-medium text-gray-900 mb-2">VideoText FAQ — privacy, billing, transcription, and client style guides</h1>
+        <h1 className="text-3xl font-medium text-gray-900 mb-2">VideoText FAQ — Privacy, Billing & Guides</h1>
         <p className="text-gray-600 mb-6">
           Quick answers about privacy, accuracy, tools, billing, and client guideline prep. For step-by-step tool flows, see the{" "}
           <Link to="/guide" className="text-blue-600 hover:text-blue-700 font-medium">how-to guide</Link>

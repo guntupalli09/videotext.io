@@ -57,7 +57,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-medium mb-4">Popular pages</h3>
             <ul className="space-y-2 text-sm">
-              {popularLinks.slice(0, 14).map(({ path, label }) => (
+              {popularLinks.slice(0, 8).map(({ path, label }) => (
                 <li key={path}>
                   <Link to={path} className="hover:text-white transition-colors">
                     {label}

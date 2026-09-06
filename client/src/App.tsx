@@ -252,7 +252,8 @@ function AppSeo() {
       description={meta.description}
       canonicalPath={canonicalPath}
       jsonLd={jsonLd}
-      noindex={is404}
+      noindex={is404 || pathname === '/site-index'}
+      robots={pathname === '/site-index' ? 'noindex,follow' : undefined}
       articleMeta={articleMeta}
     />
   )
@@ -587,6 +588,9 @@ function App() {
             <Route path="/podcast-transcription-tool" element={<PodcastTranscriptionTool />} />
             <Route path="/interview-transcription-tool" element={<InterviewTranscriptionTool />} />
             {/* <Route path="/youtube-transcript-generator" element={<YoutubeTranscriptGenerator />} /> */}
+            <Route path="/youtube-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
+            <Route path="/youtube-transcript-transcription" element={<Navigate to="/youtube-transcript-generator" replace />} />
+            <Route path="/youtube-to-text" element={<Navigate to="/youtube-transcript-generator" replace />} />
             <Route path="/youtube-url-to-transcription" element={<Navigate to="/youtube-transcript-generator" replace />} />
             <Route path="/youtube-to-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
             <Route path="/youtube-video-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
@@ -847,7 +851,8 @@ function App() {
             />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
             <Route path="/batch-process" element={<Navigate to="/video-to-transcript" replace />} />
-            <Route path="/zoom-recording-transcript" element={<Navigate to="/zoom-meeting-transcript" replace />} />
+            <Route path="/zoom-meeting-transcript" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/zoom-recording-transcript" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/transcribe-meeting-recording" element={<Navigate to="/meeting-recording-to-transcript" replace />} />
             <Route path="/translate-subtitles" element={<TranslateSubtitles />} />
             <Route path="/translation" element={<TranslateSubtitles />} />
@@ -858,7 +863,18 @@ function App() {
             <Route path="/compress-video" element={<CompressVideo />} />
             {/* SEO utility routes: registry-driven; same tools, alternate URLs. No backend or behavior change. */}
             {getAllSeoPaths()
-              .filter((path) => path !== '/burn-subtitles-into-video')
+              .filter((path) => ![
+                '/burn-subtitles-into-video',
+                '/youtube-transcript',
+                '/youtube-transcript-transcription',
+                '/youtube-to-text',
+                '/youtube-to-transcript',
+                '/youtube-video-transcript',
+                '/youtube-url-to-transcription',
+                '/batch-process',
+                '/zoom-meeting-transcript',
+                '/zoom-recording-transcript',
+              ].includes(path))
               .map((path) => (
               <Route key={path} path={path} element={<SeoToolPage />} />
             ))}
