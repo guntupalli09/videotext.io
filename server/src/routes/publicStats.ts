@@ -29,6 +29,7 @@ const MIN_RATINGS_FOR_PUBLIC_DISPLAY = 5
 
 interface PublicRating {
   averageRating: number | null
+  ratingCount: number | null
 }
 
 let ratingCache: PublicRating | null = null
@@ -38,10 +39,13 @@ const RATING_CACHE_TTL_MS = 60 * 60 * 1000 // 1 hour — ratings don't need seco
 async function fetchRating(): Promise<PublicRating> {
   const distribution = await getCanonicalStarDistribution()
   const { average, count } = computeAverageRating(distribution)
-  const averageRating = average != null && count >= MIN_RATINGS_FOR_PUBLIC_DISPLAY
-    ? Math.round(average * 10) / 10
-    : null
-  return { averageRating }
+  if (average == null || count < MIN_RATINGS_FOR_PUBLIC_DISPLAY) {
+    return { averageRating: null, ratingCount: null }
+  }
+  return {
+    averageRating: Math.round(average * 10) / 10,
+    ratingCount: count,
+  }
 }
 
 async function fetchStats(): Promise<PublicStats> {
@@ -78,24 +82,29 @@ router.get('/public', async (_req: Request, res: Response) => {
   }
 })
 
-// GET /api/stats/public/rating — canonical overall rating average, no auth.
+// GET /api/stats/public/rating — canonical overall rating average + count, no auth.
 // Same aggregation/exclusion semantics as the Founder Dashboard's
 // "Overall rating" card (see server/src/services/ratingAggregation.ts) so
-// the two can never disagree. Exposes only the rounded average — no counts,
-// no individual feedback, no per-tool or per-user data.
+// the two can never disagree. Exposes the rounded average and the rating
+// count used for homepage stars / JSON-LD — no individual feedback, no
+// per-tool or per-user data.
 router.get('/public/rating', async (_req: Request, res: Response) => {
   try {
     const now = Date.now()
     if (!ratingCache || now > ratingCacheExpiresAt) {
       ratingCache = await fetchRating()
       ratingCacheExpiresAt = now + RATING_CACHE_TTL_MS
-      log.info({ msg: '[publicStats] rating cache refreshed', averageRating: ratingCache.averageRating })
+      log.info({
+        msg: '[publicStats] rating cache refreshed',
+        averageRating: ratingCache.averageRating,
+        ratingCount: ratingCache.ratingCount,
+      })
     }
     res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=300')
     res.json(ratingCache)
   } catch (err) {
     log.error({ msg: '[publicStats] failed to fetch rating', error: (err as Error)?.message })
     // No fabricated rating on failure — null tells the client to hide it.
-    res.json({ averageRating: null })
+    res.json({ averageRating: null, ratingCount: null })
   }
 })

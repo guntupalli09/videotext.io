@@ -76,14 +76,15 @@ test('canonical star distribution query excludes founder/internal/demo accounts 
 
 // ── Public endpoint: response shape and privacy ────────────────────────────
 
-test('public rating endpoint response type exposes only averageRating', () => {
+test('public rating endpoint response type exposes averageRating and ratingCount only', () => {
   const src = readFileSync(resolve(process.cwd(), 'src/routes/publicStats.ts'), 'utf8')
   const interfaceMatch = src.match(/interface PublicRating \{([^}]*)\}/)
   assert.ok(interfaceMatch, 'PublicRating interface must exist')
   const body = interfaceMatch![1]
   assert.match(body, /averageRating\s*:\s*number \| null/)
-  // No count, no comments, no user identifiers, no per-tool breakdowns.
-  for (const forbidden of ['count', 'comment', 'email', 'userId', 'toolId', 'stars:', 'name']) {
+  assert.match(body, /ratingCount\s*:\s*number \| null/)
+  // No comments, no user identifiers, no per-tool breakdowns.
+  for (const forbidden of ['comment', 'email', 'userId', 'toolId', 'stars:', 'name']) {
     assert.doesNotMatch(body, new RegExp(forbidden), `PublicRating must not expose "${forbidden}"`)
   }
 })
@@ -101,6 +102,8 @@ test('public rating route never fabricates a fallback rating on failure', () => 
   const catchBlock = src.split("router.get('/public/rating'")[1]
   assert.ok(catchBlock)
   assert.match(catchBlock, /averageRating:\s*null/)
+  assert.match(catchBlock, /ratingCount:\s*null/)
   assert.doesNotMatch(catchBlock, /averageRating:\s*4\.9/)
   assert.doesNotMatch(catchBlock, /averageRating:\s*4\.2/)
+  assert.doesNotMatch(catchBlock, /ratingCount:\s*45/)
 })

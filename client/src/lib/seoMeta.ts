@@ -6,6 +6,23 @@ import { SITE_URL, SITE_NAME, getCanonicalUrlForPath } from './seo'
 import { ENTITY_DESCRIPTION, PRODUCT_CATEGORY, PRIMARY_DEFINITION } from './productDna'
 import { getAllSeoEntries } from './seoRegistry'
 import { resolveInternalLinkPath } from './primaryUrls'
+import { getAggregateRatingJsonLd, type PublicRating } from './publicRating'
+
+/** Core conversion URLs that must emit at most one SoftwareApplication and no HowTo. */
+export const MONEY_CORE_PATHS = [
+  '/video-to-transcript',
+  '/video-to-subtitles',
+  '/translate-subtitles',
+  '/fix-subtitles',
+  '/burn-subtitles',
+  '/compress-video',
+  '/guideline-format',
+  '/youtube-transcript-generator',
+] as const
+
+export function isMoneyCorePath(pathname: string): boolean {
+  return (MONEY_CORE_PATHS as readonly string[]).includes(pathname)
+}
 
 /** Static (non-SEO-registry) routes: title + description. */
 const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> = {
@@ -1301,11 +1318,6 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       operatingSystem: 'Web Browser',
       url: 'https://videotext.io/youtube-transcript-generator',
       featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 imports/month (no credit card), Pro tier: continued transcription ($49/month), Zero data retention (files deleted after processing), Batch processing (Pro/Agency)',
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.9',
-        ratingCount: '2300',
-      },
       offers: {
         '@type': 'AggregateOffer',
         priceCurrency: 'USD',
@@ -1338,7 +1350,17 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
 }
 
 export function getAeoJsonLd(pathname: string): object[] | null {
-  return AEO_ROUTE_SCHEMAS[pathname] ?? null
+  const schemas = AEO_ROUTE_SCHEMAS[pathname]
+  if (!schemas?.length) return null
+  const filtered = schemas.filter((schema) => {
+    const type = (schema as { '@type'?: string })['@type']
+    // Page-level getSoftwareApplicationJsonLd is the only SoftApp source.
+    if (type === 'SoftwareApplication') return false
+    // HowTo rich results are deprecated and fail money-core validation; drop there.
+    if (type === 'HowTo' && isMoneyCorePath(pathname)) return false
+    return true
+  })
+  return filtered.length ? filtered : null
 }
 
 /** SoftwareApplication JSON-LD for individual paid tool pages. */
@@ -1409,6 +1431,43 @@ export function getSoftwareApplicationJsonLd(pathname: string): object | null {
     url: `${SITE_URL}${pathname}`,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier: 3 imports/month. Pro plan $49/month.' },
     provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+  }
+}
+
+/** Homepage-only VideoText SoftwareApplication. Rating is attached only when live/canonical. */
+export function getHomeSoftwareApplicationJsonLd(rating: PublicRating | null): object {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'VideoText',
+    url: SITE_URL,
+    applicationCategory: 'MultimediaApplication',
+    operatingSystem: 'Web',
+    description:
+      'AI-powered video transcription and subtitle generation. The fastest online transcription tool — processes a 60-minute video in under 5 minutes. Upload a video file or paste a YouTube URL to get a transcript, SRT/VTT subtitles, AI summary, and chapters. 98.5%+ word accuracy via OpenAI Whisper large-v3. Privacy-first: files deleted after processing. Free tier available.',
+    featureList: [
+      'Video to transcript (MP4, MOV, AVI, WebM)',
+      'YouTube URL to transcript — no download required',
+      'SRT and VTT subtitle generation',
+      'Subtitle translation to 70+ languages',
+      'Subtitle timing fix and formatting',
+      'Burn subtitles into video (hardcoded captions)',
+      'Video compression',
+      'Batch processing (Pro/Agency)',
+      'Speaker diarization (speaker labels)',
+      'Automatic chapter markers',
+      'AI summary generation',
+      'Voice to text recording',
+      '19 free browser-based subtitle tools',
+      'Privacy-first: files deleted after processing',
+    ],
+    offers: [
+      { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'USD', description: '3 video imports per month, no credit card required, full features' },
+      { '@type': 'Offer', name: 'Basic', price: '19', priceCurrency: 'USD', description: '450 minutes per month, multi-language, priority support' },
+      { '@type': 'Offer', name: 'Pro', price: '49', priceCurrency: 'USD', description: '1,200 minutes per month, batch processing, priority queue' },
+      { '@type': 'Offer', name: 'Agency', price: '129', priceCurrency: 'USD', description: '3,000 minutes per month, batch processing, priority queue, multi-seat' },
+    ],
+    ...(rating ? { aggregateRating: getAggregateRatingJsonLd(rating) } : {}),
   }
 }
 
@@ -1499,6 +1558,9 @@ const HOWTO_SCHEMAS: Record<string, { name: string; description: string; steps: 
 }
 
 export function getHowToJsonLd(pathname: string): object | null {
+  // HowTo rich results are deprecated; money cores were failing validation with
+  // leftover HowTo + conflicting SoftApp. Prefer no HowTo over broken markup.
+  if (isMoneyCorePath(pathname)) return null
   const schema = HOWTO_SCHEMAS[pathname]
   if (!schema) return null
   return {

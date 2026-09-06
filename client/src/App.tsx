@@ -7,7 +7,7 @@ import { getSessionDetails, getSessionStatus, setupPassword } from './lib/billin
 import { invalidateUsageCache } from './lib/api'
 import Footer from './components/Footer'
 import Seo from './components/Seo'
-import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd, getSoftwareApplicationJsonLd, getHowToJsonLd, getAeoJsonLd, BLOG_POST_DATES } from './lib/seoMeta'
+import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd, getAeoJsonLd, BLOG_POST_DATES } from './lib/seoMeta'
 import { getCoreToolFaq } from './lib/coreToolSeoDepth'
 import { getCanonicalPathForRoute } from './lib/primaryUrls'
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
@@ -176,12 +176,6 @@ function AppSeo() {
     : undefined
   const blogPostingSchema = isBlogPost ? getBlogPostingJsonLd(pathname, meta.title, meta.description) : null
 
-  // SoftwareApplication schema for paid tool pages
-  const softwareAppSchema = getSoftwareApplicationJsonLd(pathname)
-
-  // HowTo schema for how-to pages
-  const howToSchema = getHowToJsonLd(pathname)
-
   const dedupeAndMergeFaqSchemas = (schemas: object[]): object[] => {
     const mergedFaqEntities: Array<Record<string, unknown>> = []
     const nonFaqSchemas: object[] = []
@@ -223,8 +217,6 @@ function AppSeo() {
     if (pathname === '/faq') return [getFaqJsonLd()]
     if (breadcrumb) schemas.push(getBreadcrumbJsonLd(pathname, breadcrumb))
     if (isBlogPost && blogPostingSchema) schemas.push(blogPostingSchema)
-    if (softwareAppSchema) schemas.push(softwareAppSchema)
-    if (howToSchema) schemas.push(howToSchema)
     if (!isBlogPost && seoEntry?.faq?.length) schemas.push(getFaqJsonLdFromItems(seoEntry.faq))
     const coreFaq = getCoreToolFaq(pathname)
     if (!isBlogPost && coreFaq.length) schemas.push(getFaqJsonLdFromItems(coreFaq))

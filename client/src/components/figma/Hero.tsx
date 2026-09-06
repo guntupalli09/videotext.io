@@ -3,6 +3,14 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { ImageWithFallback } from "./ImageWithFallback";
 import TrustBadge from "../TrustBadge";
+import { api } from "../../lib/api";
+import {
+  formatPublicRatingCount,
+  formatPublicRatingValue,
+  parsePublicRating,
+  readBootstrappedPublicRating,
+  type PublicRating,
+} from "../../lib/publicRating";
 
 const CREATOR_AVATARS = [
   "https://i.pravatar.cc/80?img=12",
@@ -12,17 +20,18 @@ const CREATOR_AVATARS = [
   "https://i.pravatar.cc/80?img=56",
 ];
 
-function useAverageRating(): number | null {
-  const [rating, setRating] = useState<number | null>(null);
+function usePublicRating(): PublicRating | null {
+  const [rating, setRating] = useState<PublicRating | null>(readBootstrappedPublicRating);
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/stats/public/rating")
+    api("/api/stats/public/rating")
       .then((r) => (r.ok ? r.json() : null))
-      .then((data: { averageRating: number | null } | null) => {
-        if (!cancelled && data?.averageRating != null) setRating(data.averageRating);
+      .then((data: unknown) => {
+        const parsed = parsePublicRating(data);
+        if (!cancelled && parsed) setRating(parsed);
       })
-      .catch(() => {/* degrade silently — no rating shown */});
+      .catch(() => {/* degrade silently — keep bootstrap or hide */});
     return () => {
       cancelled = true;
     };
@@ -63,7 +72,7 @@ function HeroActions() {
 }
 
 export function Hero() {
-  const averageRating = useAverageRating();
+  const publicRating = usePublicRating();
 
   return (
     <section className="relative flex flex-col items-center overflow-hidden bg-gray-950">
@@ -136,23 +145,36 @@ export function Hero() {
           <div className="flex flex-col items-center gap-1.5">
             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[12px] text-white/35">
               {/* Stars */}
-              <span className="flex items-center gap-1">
+              <span
+                className="flex items-center gap-1.5"
+                aria-label={
+                  publicRating
+                    ? `Rated ${formatPublicRatingValue(publicRating)} out of 5 from ${formatPublicRatingCount(publicRating)}`
+                    : undefined
+                }
+              >
                 {[1, 2, 3, 4, 5].map((i) => (
                   <svg
                     key={i}
-                    className="w-3 h-3 text-amber-400"
+                    className="w-3.5 h-3.5 text-amber-400"
                     fill="currentColor"
                     viewBox="0 0 20 20"
+                    aria-hidden
                   >
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
                 <span
-                  className="ml-1 font-semibold text-white/50 min-w-[3.5em] inline-block"
-                  aria-hidden={averageRating == null}
+                  className="ml-0.5 font-semibold text-white/80 tabular-nums min-w-[2.5em] inline-block"
+                  aria-hidden={publicRating == null}
                 >
-                  {averageRating != null ? `${averageRating.toFixed(1)} / 5` : ""}
+                  {publicRating != null ? formatPublicRatingValue(publicRating) : ""}
                 </span>
+                {publicRating != null ? (
+                  <span className="font-medium text-white/55 tabular-nums">
+                    {formatPublicRatingCount(publicRating)}
+                  </span>
+                ) : null}
               </span>
               <span className="w-px h-3 bg-white/10" />
               {/* Avatars + ICP claim */}

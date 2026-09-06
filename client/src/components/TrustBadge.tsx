@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { TrendingUp } from 'lucide-react'
+import { api } from '../lib/api'
 
 interface PublicStats {
   totalJobsCompleted: number
@@ -44,7 +45,7 @@ export default function TrustBadge({ className = '' }: { className?: string }) {
   const [stats, setStats] = useState<PublicStats | null>(null)
 
   const fetchStats = () => {
-    fetch('/api/stats/public')
+    api('/api/stats/public')
       .then((r) => (r.ok ? r.json() : null))
       .then((data: PublicStats | null) => {
         if (data) setStats(data)
