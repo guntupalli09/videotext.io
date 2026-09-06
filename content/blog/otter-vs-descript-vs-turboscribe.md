@@ -12,7 +12,9 @@ tags:
 
 # Otter vs Descript vs TurboScribe: Which Transcription Tool Actually Saves Time?
 
-*Three tools. Three different definitions of "done." Here is what each one actually delivers — and where each one stops.*
+**Otter vs Descript vs TurboScribe** is the comparison everyone runs — but the wrong metric wins most reviews. Speed and accuracy demos end at “text appeared.” Real workflows end at **publish-ready output**.
+
+> **Compare on your own 60-minute file:** [VideoText free tier →](https://videotext.io/video-to-transcript) — transcript + SRT + chapters + summary in one run. Then see [full comparison vs Otter, Descript, TurboScribe →](https://videotext.io/compare)
 
 ---
 
@@ -156,7 +158,14 @@ That gap is where VideoText sits. Same speed range as TurboScribe, structured ou
 
 **Choose TurboScribe if:** You need a fast, unlimited, flat-rate transcript with no frills and no downstream workflow needs.
 
-**Choose VideoText if:** You work with long-form video and need more than a transcript — chapters, summaries, subtitles, and translation in a single workflow.
+**Choose VideoText if:** You work with long-form video and need more than a transcript — chapters, summaries, subtitles, translation, and client guideline formatting in one workflow.
+
+| Need | VideoText tool |
+|------|----------------|
+| YouTube / long video | [Video → Transcript](https://videotext.io/video-to-transcript) |
+| Subtitles | [Video → Subtitles](https://videotext.io/video-to-subtitles) |
+| Rev/GoTranscript QA prep | [Format → Client guidelines](https://videotext.io/guideline-format) |
+| vs TurboScribe specifically | [TurboScribe alternative guide →](https://videotext.io/blog/turboscribe-alternative) |
 
 The tools are not interchangeable. The right answer depends entirely on where your workflow ends.
 
@@ -164,7 +173,7 @@ The tools are not interchangeable. The right answer depends entirely on where yo
 
 For anyone still undecided: the clearest test is to process the same 60-minute file through two tools and count how many minutes pass between upload and having something you can actually publish. That number tells you more than any feature comparison table.
 
-See how VideoText performs on that test: [videotext.io](https://videotext.io).
+See how VideoText performs on that test: **[Start free — Video → Transcript →](https://videotext.io/video-to-transcript)** · [Compare all tools →](https://videotext.io/compare)
 
 ---
 
