@@ -98,14 +98,22 @@ export function ToolLayout({
                   {currentStepLabel}
                 </span>
               </div>
-              <Link
-                to={breadcrumbs[0]?.href || "#"}
-                className="shrink-0 text-[13px] text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-              >
-                How it works
-              </Link>
+              {coreToolPath ? (
+                <a
+                  href="#how-this-tool-works"
+                  className="shrink-0 text-[13px] text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                >
+                  How it works
+                </a>
+              ) : (
+                <Link
+                  to={breadcrumbs[0]?.href || "#"}
+                  className="shrink-0 text-[13px] text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                >
+                  How it works
+                </Link>
+              )}
             </div>
-            {coreToolPath && <CoreToolSeoDepth path={coreToolPath} variant="lead" />}
             </>
           ) : (
             <>
@@ -130,10 +138,11 @@ export function ToolLayout({
                   {title}
                 </h1>
               </div>
-              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl">
-                {subtitle}
-              </p>
-              {coreToolPath && <CoreToolSeoDepth path={coreToolPath} variant="lead" />}
+              {!coreToolPath && (
+                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl">
+                  {subtitle}
+                </p>
+              )}
               <HeroTrustChips />
               {tags.length > 0 && (
                 <motion.div
