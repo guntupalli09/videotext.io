@@ -11,7 +11,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
-import { getIndexablePaths } from './registry'
+import { getIndexablePaths, isHashnodeRedirectRoute } from './registry'
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const DIST_DIR = path.join(REPO_ROOT, 'dist')
@@ -1281,6 +1281,7 @@ function logCliSummary(pages: PageAudit[]): void {
 function assertBuildQuality(pages: PageAudit[]): void {
   const failures: string[] = []
   for (const page of pages) {
+    if (isHashnodeRedirectRoute(page.path)) continue
     if (!page.exists) {
       failures.push(`${page.path}: Missing local prerendered HTML in /dist`)
       continue
