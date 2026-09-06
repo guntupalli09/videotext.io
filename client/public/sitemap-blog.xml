@@ -13,6 +13,18 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://blog.videotext.io/bitc-timecode-transcription-workflow</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://blog.videotext.io/capcut-alternative</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://blog.videotext.io/clean-verbatim-vs-full-verbatim-1-1-1</loc>
     <lastmod>2026-09-06</lastmod>
     <changefreq>weekly</changefreq>
@@ -20,6 +32,12 @@
   </url>
   <url>
     <loc>https://blog.videotext.io/descript-alternative</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://blog.videotext.io/express-scribe-alternative</loc>
     <lastmod>2026-09-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>

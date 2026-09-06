@@ -1,7 +1,10 @@
 batch-video-transcription-for-creators-and-teams
 best-transcription-tools-2026
+bitc-timecode-transcription-workflow
+capcut-alternative
 clean-verbatim-vs-full-verbatim
 descript-alternative
+express-scribe-alternative
 fireflies-alternative-transcription
 freelance-transcription-style-guide-cheatsheet
 generate-srt-subtitles-from-video-online

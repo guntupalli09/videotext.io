@@ -247,6 +247,18 @@ VideoText is one of them.
 
 ---
 
+## Competitor guides (2026)
+
+- [CapCut alternative →](https://videotext.io/blog/capcut-alternative) — SRT export CapCut cannot do  
+- [TurboScribe alternative →](https://videotext.io/blog/turboscribe-alternative) — before/after time savings  
+- [Express Scribe alternative →](https://videotext.io/blog/express-scribe-alternative) — AI + pedal-ready timestamps  
+- [BITC timecode workflow →](https://videotext.io/blog/bitc-timecode-transcription-workflow) — fix SMPTE drift  
+- [Otter.ai alternative →](https://videotext.io/blog/otter-ai-alternative) · [Descript alternative →](https://videotext.io/blog/descript-alternative) · [Rev alternative →](https://videotext.io/blog/rev-alternative-ai-transcription)
+
+**[Start free →](https://videotext.io/video-to-transcript)** · **[Compare all tools →](https://videotext.io/compare)**
+
+---
+
 *This article reflects independent analysis based on publicly available product features, documentation, and general workflow benchmarks. No sponsored placements or affiliate relationships are involved.*
 
 ---
