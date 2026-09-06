@@ -20,7 +20,7 @@ const {
   contentSlugFromLive,
 } = require('./hashnode-slug-map');
 
-const hashnodeEndpoint = process.env.HASHNODE_ENDPOINT || 'https://gql.hashnode.com';
+const hashnodeEndpoint = process.env.HASHNODE_ENDPOINT || 'https://gql-beta.hashnode.com';
 const shouldApply = process.argv.slice(2).some((a) => a === '--apply' || a === '--publish');
 
 main().catch((err) => {

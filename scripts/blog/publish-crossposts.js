@@ -20,7 +20,7 @@
  *   SITE_URL=https://videotext.io
  *   BLOG_DIR=content/blog
  *   DEVTO_ORGANIZATION_ID=12345
- *   HASHNODE_ENDPOINT=https://gql.hashnode.com
+ *   HASHNODE_ENDPOINT=https://gql-beta.hashnode.com
  *   HASHNODE_PUBLISH_AS=published | draft
  *   CANONICAL_TEMPLATE=https://blog.videotext.io/{slug}  (defaults to live Hashnode URL from client/src/data/hashnode-slug-map.json)
  *   DEVTO_CANONICAL_TEMPLATE=https://blog.videotext.io/{slug}
@@ -57,7 +57,7 @@ const target = getArgValue('--target') || 'both';
 const selectedSlug = getArgValue('--slug');
 const blogDir = path.resolve(process.env.BLOG_DIR || 'content/blog');
 const defaultCanonicalTemplate = 'https://blog.videotext.io/{slug}';
-const hashnodeEndpoint = process.env.HASHNODE_ENDPOINT || 'https://gql.hashnode.com';
+const hashnodeEndpoint = process.env.HASHNODE_ENDPOINT || 'https://gql-beta.hashnode.com';
 const publishHashnodeAs = process.env.HASHNODE_PUBLISH_AS || 'published';
 const devtoPublishDelayMs = Math.max(0, Number(process.env.DEVTO_PUBLISH_DELAY_MS) || 4000);
 
@@ -413,7 +413,17 @@ async function fetchHashnodePublicationId(host) {
 
 async function readApiResponse(response, provider) {
   const text = await response.text();
-  const payload = text ? JSON.parse(text) : {};
+  let payload;
+  try {
+    payload = text ? JSON.parse(text) : {};
+  } catch {
+    const snippet = text.replace(/\s+/g, ' ').slice(0, 120);
+    const hint =
+      snippet.includes('<!DOCTYPE') || snippet.includes('<html')
+        ? ' Received HTML instead of JSON — set HASHNODE_ENDPOINT=https://gql-beta.hashnode.com (gql.hashnode.com is deprecated).'
+        : '';
+    throw new Error(`${provider} API returned non-JSON (HTTP ${response.status}): ${snippet}${hint}`);
+  }
   if (!response.ok) {
     throw new Error(`${provider} API returned HTTP ${response.status}: ${JSON.stringify(payload, null, 2)}`);
   }
