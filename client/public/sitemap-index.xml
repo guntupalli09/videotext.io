@@ -8,4 +8,8 @@
     <loc>https://videotext.io/sitemap-programmatic.xml</loc>
     <lastmod>2026-09-06</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>https://videotext.io/sitemap-blog.xml</loc>
+    <lastmod>2026-09-06</lastmod>
+  </sitemap>
 </sitemapindex>

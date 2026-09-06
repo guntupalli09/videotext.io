@@ -5,7 +5,7 @@
  */
 import * as path from 'path'
 import * as fs from 'fs'
-import { getSitemapPaths } from './registry'
+import { getSitemapPaths, getHashnodeBlogPaths } from './registry'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
 import { getHashnodePostUrl, contentSlugFromLiveSlug } from '../../client/src/lib/blogSlugMap'
 
@@ -52,15 +52,17 @@ function pathFromCanonicalUrl(url: string): string | null {
 function main(): void {
   const corePath = path.join(PUBLIC_DIR, 'sitemap-core.xml')
   const programmaticPath = path.join(PUBLIC_DIR, 'sitemap-programmatic.xml')
+  const blogSitemapPath = path.join(PUBLIC_DIR, 'sitemap-blog.xml')
 
-  if (!fs.existsSync(corePath) || !fs.existsSync(programmaticPath)) {
+  if (!fs.existsSync(corePath) || !fs.existsSync(programmaticPath) || !fs.existsSync(blogSitemapPath)) {
     console.error('[validate-sitemap] Run npm run seo:sitemap first')
     process.exit(1)
   }
 
   const coreUrls = extractUrlsFromXml(fs.readFileSync(corePath, 'utf8'))
   const programmaticUrls = extractUrlsFromXml(fs.readFileSync(programmaticPath, 'utf8'))
-  const found = [...coreUrls, ...programmaticUrls].map(normalizeUrl)
+  const blogSitemapUrls = extractUrlsFromXml(fs.readFileSync(blogSitemapPath, 'utf8'))
+  const found = [...coreUrls, ...programmaticUrls, ...blogSitemapUrls].map(normalizeUrl)
 
   const indexablePaths = getSitemapPaths()
   const expectedUrls = new Set(
@@ -101,10 +103,29 @@ function main(): void {
     }
   }
 
+  const blogPaths = getHashnodeBlogPaths()
+  const expectedBlogUrls = new Set(blogPaths.map((p) => normalizeUrl(getHashnodePostUrl(p))))
+  const blogSitemapSet = new Set(blogSitemapUrls.map(normalizeUrl))
+  for (const url of expectedBlogUrls) {
+    if (!blogSitemapSet.has(url)) {
+      console.error('[validate-sitemap] Missing from sitemap-blog.xml:', url)
+      failed = true
+    }
+  }
+
   if (failed) {
     process.exit(1)
   }
-  console.log('[validate-sitemap] OK — core:', coreUrls.length, ', programmatic:', programmaticUrls.length, ', total:', found.length)
+  console.log(
+    '[validate-sitemap] OK — core:',
+    coreUrls.length,
+    ', programmatic:',
+    programmaticUrls.length,
+    ', blog:',
+    blogSitemapUrls.length,
+    ', total:',
+    found.length,
+  )
 }
 
 main()
