@@ -820,6 +820,7 @@ export default function VoiceRecorder() {
       subtitle="Speak in the browser and get text. No video upload to start. Files deleted after processing. 3 free imports/mo."
       icon={<Mic className="w-5 h-5 text-blue-600" />}
       tags={['Free', '99 Languages', 'Live Transcription', 'Translation']}
+      coreToolPath="/voice-recorder"
     >
       <div className={`max-w-2xl mx-auto space-y-5 ${audioObjectUrl ? 'pb-24 sm:pb-28' : 'pb-16'}`}>
         <UpgradeBanner variant="voice" tool="voice-recorder" />

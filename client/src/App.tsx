@@ -618,7 +618,7 @@ function App() {
                 },
                 {
                   q: 'Can I transcribe video online for free?',
-                  a: 'Yes. The free tier includes 3 uploads per day with no credit card required. Free transcripts include full timestamped text, AI summary, auto-generated chapters, and SRT/VTT subtitle files. Pro plan is $7.99/month with expanded workflow access.',
+                  a: 'Yes. The free plan includes 3 imports per month, no credit card, and no watermark. Paid plans are Basic $19, Pro $49, and Agency $129 per month.',
                 },
                 {
                   q: 'How long does it take to transcribe a video?',
@@ -785,7 +785,7 @@ function App() {
                   { feature: 'Subtitle file formats', videotext: 'SRT + VTT both generated, broadcast-safe line breaks', alternatives: 'Otter: SRT only | Descript: SRT only | Rev: SRT | TurboScribe: SRT | none auto-format line breaks' },
                   { feature: 'Batch processing', videotext: 'Pro/Agency: parallel batch, one ZIP output', alternatives: 'Otter: sequential only | Descript: one file at a time | Rev: batch portal (slow, expensive)' },
                   { feature: 'Export formats', videotext: 'TXT, PDF, DOCX, JSON, CSV, SRT, VTT, Notion, 3-column', alternatives: 'Otter: TXT, DOCX, PDF | Descript: TXT, DOCX | Rev: TXT, DOCX, SRT' },
-                  { feature: 'Cost per month', videotext: 'Pro: $7.99/month flat rate', alternatives: 'Otter: $20/month (limited AI features) | Descript: $24/month | Rev AI: ~$56/month ($0.125/min)' },
+                  { feature: 'Cost per month', videotext: 'Free 3 imports/mo; Basic $19; Pro $49; Agency $129', alternatives: 'Otter: $20/month (limited AI features) | Descript: $24/month | Rev AI: ~$56/month ($0.125/min)' },
                 ],
                 useCases: [
                   {
@@ -838,7 +838,7 @@ function App() {
                   },
                   {
                     title: 'Non-profits and community organizations',
-                    body: 'Make recorded board meetings, community events, and program documentation accessible and searchable. Transcription makes oral history archives searchable. Captions make video content accessible to deaf and hard-of-hearing community members. Free tier: 3 uploads per day, no credit card required.',
+                    body: 'Make recorded board meetings, community events, and program documentation accessible and searchable. Transcription makes oral history archives searchable. Captions make video content accessible to deaf and hard-of-hearing community members. Free plan: 3 imports/month, no credit card required.',
                   },
                   {
                     title: 'Accessibility and captioning specialists',

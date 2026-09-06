@@ -268,6 +268,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
     icon: <Minimize2 className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['Compression', 'Reduce size', 'Quality', 'Optimize'],
     sidebar: null,
+    coreToolPath: '/compress-video',
   }
 
   return (

@@ -285,6 +285,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
     icon: <Film className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['Hardcode', 'Burn-in', 'Permanent', 'Styling', 'Position'],
     sidebar: null,
+    coreToolPath: '/burn-subtitles',
   }
 
   return (

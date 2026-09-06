@@ -726,6 +726,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     icon: <Wrench className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['CPS', 'CPL', 'Timing', 'Scene Cuts', 'Line Breaks', 'Filler Words'],
     sidebar: null,
+    coreToolPath: '/fix-subtitles',
   }
 
   return (
