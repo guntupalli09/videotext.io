@@ -1931,6 +1931,18 @@ function assertPrerenderCoverage(allRoutes: RouteMeta[], generatedPaths: Set<str
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
+function parsePrerenderOnlyPaths(): Set<string> | null {
+  const raw = process.env.PRERENDER_ONLY
+  if (!raw?.trim()) return null
+  return new Set(
+    raw
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .map((value) => (value === '/' ? '/' : value.startsWith('/') ? value : `/${value}`))
+  )
+}
+
 function main() {
   const templatePath = path.join(DIST_DIR, 'index.html')
   if (!fs.existsSync(templatePath)) {
@@ -1939,6 +1951,7 @@ function main() {
   }
 
   const template = fs.readFileSync(templatePath, 'utf8')
+  const prerenderOnly = parsePrerenderOnlyPaths()
 
   // Collect all routes: static + registry (parsed) + programmatic
   const registryEntries = parseRegistryEntries()
@@ -1973,7 +1986,16 @@ function main() {
     // Keep static routes last so canonical core pages (e.g. /video-to-transcript)
     // are not overwritten by registry aliases that resolve to the same primary URL.
     ...STATIC_META,
-  ])
+  ]).filter((route) => !prerenderOnly || prerenderOnly.has(route.path))
+
+  if (prerenderOnly) {
+    const missing = [...prerenderOnly].filter((routePath) => !allRoutes.some((route) => route.path === routePath))
+    if (missing.length) {
+      console.error('[prerender] PRERENDER_ONLY paths not in route inventory:', missing.join(', '))
+      process.exit(1)
+    }
+    console.log(`[prerender] Limiting to ${allRoutes.length} PRERENDER_ONLY path(s)`)
+  }
 
   let count = 0
   const generatedPaths = new Set<string>()
@@ -2047,7 +2069,9 @@ function main() {
     count++
   }
 
-  assertPrerenderCoverage(allRoutes, generatedPaths)
+  if (!prerenderOnly) {
+    assertPrerenderCoverage(allRoutes, generatedPaths)
+  }
   console.log(`[prerender] Generated ${count} static HTML files in ${DIST_DIR}`)
 }
 

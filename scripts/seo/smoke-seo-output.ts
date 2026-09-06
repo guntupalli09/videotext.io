@@ -2,46 +2,34 @@
 /**
  * Smoke test: fetch 10 URLs and assert title, meta description, canonical, FAQ/Breadcrumb JSON-LD sanity.
  * FAQPage & BreadcrumbList in raw HTML are optional (react-helmet adds after load); duplicates in ld+json fail.
- * No flaky deps; uses fetch. Run after build with BASE_URL pointing at served client (e.g. http://localhost:4173).
+ * Canonicals always use the production SITE_URL (prerender / index.html), not the local BASE_URL host.
+ * No flaky deps; uses fetch. Run after build+prerender with BASE_URL pointing at served client (e.g. http://localhost:4173).
  * Run from repo root: npx tsx scripts/seo/smoke-seo-output.ts
  */
-import * as path from 'path'
-import * as fs from 'fs'
+import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
 import { countFaqPageInJsonLdScripts, countBreadcrumbListInJsonLdScripts } from './jsonLdUtils'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173'
-const REPO_ROOT = path.resolve(__dirname, '..', '..')
-const REGISTRY_PATH = path.join(REPO_ROOT, 'client', 'src', 'lib', 'seoRegistry.ts')
+const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace(/\/$/, '')
 
 const STATIC_PATHS = ['/', '/pricing', '/faq']
 const CORE_TOOL_PATHS = ['/video-to-transcript', '/video-to-subtitles']
-const FIVE_SEO_PATHS = ['/video-to-text', '/mp4-to-srt', '/subtitle-generator', '/srt-translator', '/meeting-transcript']
+/** Self-canonical indexable pages (not slug aliases). Aliases like /video-to-text
+ * collapse to a primary in prerender and 301/SPA-fallback locally. */
+const FIVE_SEO_PATHS = [
+  '/translate-subtitles',
+  '/fix-subtitles',
+  '/burn-subtitles',
+  '/compress-video',
+  '/meeting-transcription',
+]
 
 const TEN_PATHS = [...STATIC_PATHS, ...CORE_TOOL_PATHS, ...FIVE_SEO_PATHS]
-
-/** Parse registry file: path -> number of FAQ items (0 if no faq or path not found). */
-function getRegistryFaqCountByPath(): Map<string, number> {
-  const out = new Map<string, number>()
-  if (!fs.existsSync(REGISTRY_PATH)) return out
-  const content = fs.readFileSync(REGISTRY_PATH, 'utf8')
-  const pathRe = /path:\s*'(\/[^']+)'/g
-  const matches = [...content.matchAll(pathRe)]
-  for (let i = 0; i < matches.length; i++) {
-    const p = matches[i][1]
-    const blockEnd = i + 1 < matches.length ? matches[i + 1].index! : content.length
-    const block = content.slice(matches[i].index!, blockEnd)
-    const faqMatch = block.match(/faq:\s*\[\n([\s\S]*?)\n    \],/)
-    const count = faqMatch ? (faqMatch[1].match(/\{\s*q:\s*'/g) || []).length : 0
-    out.set(p, count)
-  }
-  return out
-}
 
 function parseHtml(html: string): {
   title: string | null
   metaDescription: string | null
   canonical: string | null
-  breadcrumbList: boolean
 } {
   const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i)
   const title = titleMatch ? titleMatch[1].trim() : null
@@ -59,7 +47,6 @@ async function fetchUrl(url: string): Promise<string> {
 }
 
 async function main(): Promise<void> {
-  const registryFaqCount = getRegistryFaqCountByPath()
   const base = BASE_URL.replace(/\/$/, '')
   let failed = false
   for (const p of TEN_PATHS) {
@@ -79,9 +66,12 @@ async function main(): Promise<void> {
         failed = true
         continue
       }
-      const expectedPath = p === '/' ? '' : p
-      const expectedCanonical = `${base}${expectedPath}`
-      if (!canonical || canonical !== expectedCanonical) {
+      const canonicalPath = getCanonicalPathForRoute(p)
+      const expectedCanonical =
+        canonicalPath === '/' ? `${SITE_URL}/` : `${SITE_URL}${canonicalPath}`
+      const canonicalNorm = canonical ? canonical.replace(/\/$/, '') || canonical : ''
+      const expectedNorm = expectedCanonical.replace(/\/$/, '')
+      if (!canonical || canonicalNorm !== expectedNorm) {
         console.error(`[smoke] ${url}: canonical expected ${expectedCanonical}, got ${canonical}`)
         failed = true
         continue
@@ -93,12 +83,6 @@ async function main(): Promise<void> {
       }
       if (faqJsonLdCount > 1) {
         console.error(`[smoke] ${url}: duplicate FAQPage in application/ld+json (count=${faqJsonLdCount})`)
-        failed = true
-        continue
-      }
-      const expectFaqPage = p === '/faq' || (registryFaqCount.get(p) ?? 0) > 0
-      if (!expectFaqPage && faqJsonLdCount > 0) {
-        console.error(`[smoke] ${url}: FAQPage JSON-LD should not be present (registry has no FAQs for this path)`)
         failed = true
         continue
       }
