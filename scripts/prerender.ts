@@ -66,10 +66,15 @@ const MONEY_PAGES: Array<{ path: string; label: string }> = [
 const STATIC_META: RouteMeta[] = [
   {
     path: '/',
-    title: `Video to Text & Subtitles — Free Online Tools | ${SITE_NAME}`,
+    title: `VideoText: Video to Text & Subtitles | ${SITE_NAME}`,
     description:
-      'VideoText: AI-powered video to text and subtitle tools. Transcribe video to transcript, generate SRT/VTT, translate subtitles, fix timing, burn captions, compress video. Sign up for free to try.',
-    h1: 'AI-Powered Video to Text & Subtitles',
+      'VideoText is AI video-to-text software: transcript, SRT/VTT, summary, and chapters from a video or YouTube URL. Whisper large-v3. 3 free imports/mo.',
+    h1: 'VideoText: Video to Text & Subtitle Tools',
+    faq: [
+      { q: 'What is VideoText — is it the same as “video text”?', a: 'VideoText is one word: AI software that turns video into a transcript, SRT/VTT subtitles, a summary, and chapters. It is not a generic “video text” site. Upload a video or YouTube URL to try 3 free imports this month — no card, no watermark.' },
+      { q: 'What do I get from one upload?', a: 'A transcript plus SRT/VTT subtitles, a summary, and chapters. Files are deleted after processing.' },
+      { q: 'Is VideoText free to try?', a: 'Yes. 3 imports per month, no credit card, no watermark. Paid plans start if you need more volume.' },
+    ],
   },
   {
     path: '/pricing',
@@ -221,27 +226,31 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/translate-subtitles',
-    title: `Translate Subtitles — SRT/VTT to Any Language | ${SITE_NAME}`,
+    title: `Translate Subtitles to Any Language | ${SITE_NAME}`,
     description:
-      'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, and 50+ languages with AI. Upload subtitles, pick target language, download. Free tier available.',
-    h1: 'Translate Subtitles',
-    valueProposition: 'Translate subtitle files to 50+ languages in seconds. Preserve perfect timing and formatting. Works with SRT, VTT, and all major formats. Support for Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, and more. No watermarks, no registration required for small files.',
-    keywords: ['translate subtitles', 'subtitle translator', 'SRT translator', 'VTT translator', 'translate SRT online', 'free subtitle translation', 'multilingual subtitles', 'subtitle translation tool', 'batch translate subtitles', 'translate subtitles to spanish', 'translate subtitles to hindi', 'translate subtitles to french', '50+ language translation'],
+      'Translate SRT or VTT to 70+ languages with timestamps intact. Upload, pick a language, download. Free to try. Files deleted after processing.',
+    h1: 'Translate Subtitles to Any Language',
+    valueProposition: 'Translate SRT or VTT subtitle files to 70+ languages with timestamps preserved. Upload, pick a target language, download. Support for Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, and more. Free to try — files deleted after processing.',
+    keywords: ['translate subtitles', 'subtitle translator', 'SRT translator', 'VTT translator', 'translate SRT online', 'free subtitle translation', 'multilingual subtitles', 'subtitle translation tool', 'batch translate subtitles', 'translate subtitles to spanish', 'translate subtitles to hindi', 'translate subtitles to french', '70+ language translation'],
     comparison: [
       { tool: 'Manual translation', vs: 'Hours of work, expensive, error-prone' },
       { tool: 'Generic translation tools', vs: 'Lose subtitle timing and formatting' },
       { tool: 'Translation agencies', vs: '$200-500 per file, weeks for turnaround' },
     ],
     howToUse: [
-      { step: 1, title: 'Upload Subtitle File', detail: 'SRT, VTT, or any subtitle format. Drag & drop or browse.' },
-      { step: 2, title: 'Choose Target Language', detail: 'Pick from 50+ languages. Timestamps stay perfect.' },
+      { step: 1, title: 'Upload Subtitle File', detail: 'SRT or VTT. Drag & drop or browse.' },
+      { step: 2, title: 'Choose Target Language', detail: 'Pick from 70+ languages. Timestamps stay intact.' },
       { step: 3, title: 'Download Translated File', detail: 'Same format, new language. Upload directly to your platform.' },
     ],
     socialProof: [
-      { stat: '50+', desc: 'Languages supported' },
-      { stat: '100%', desc: 'Timing preserved' },
-      { stat: '0.5 sec', desc: 'Translation time' },
-      { stat: '98%', desc: 'Accuracy maintained' },
+      { stat: '70+', desc: 'Languages supported' },
+      { stat: 'Timestamps', desc: 'Preserved on every cue' },
+    ],
+    faq: [
+      { q: 'How do I translate SRT or VTT subtitles?', a: 'Upload your SRT or VTT file, pick a target language, and download the translated file. Timestamps stay aligned with the original cues.' },
+      { q: 'Do timestamps survive translation?', a: 'Yes. VideoText translates cue text only and keeps the original start and end times.' },
+      { q: 'How many languages can I translate to?', a: '70+ languages, including Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, and Korean.' },
+      { q: 'I do not have an SRT yet — how do I start?', a: 'Create one with the SRT file generator or the video to SRT converter, then translate it here.' },
     ],
   },
   {
@@ -374,10 +383,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/subtitle-tools',
-    title: `Subtitle Tools & Resources | ${SITE_NAME}`,
+    title: `Free Subtitle Tools: Convert & Validate | ${SITE_NAME}`,
     description:
-      'Complete toolkit for subtitle creation, translation, editing, and conversion. Perfect for creators, studios, and video professionals.',
-    h1: 'Subtitle Tools & Resources',
+      'Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded.',
+    h1: 'Free Subtitle Tools for Creators',
     breadcrumbLabel: 'Subtitle Tools',
   },
   {
@@ -692,9 +701,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/tools/subtitle-character-checker',
-    title: `Subtitle Character Limit Checker — Netflix, YouTube & BBC | ${SITE_NAME}`,
+    title: `Subtitle Character Limits — Pass/Fail | ${SITE_NAME}`,
     description:
-      'Check if subtitle lines meet Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) character limits. Instant pass/fail report per cue. Free.',
+      'Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account.',
+    h1: 'Check Subtitle Character Limits',
     breadcrumbLabel: 'Character Limit Checker',
   },
   {
@@ -784,9 +794,10 @@ const STATIC_META: RouteMeta[] = [
   // ── Hub pages ────────────────────────────────────────────────────────────────
   {
     path: '/subtitle-tools',
-    title: `Free Subtitle Tools for Creators — SRT, VTT, Timing & Validation | ${SITE_NAME}`,
+    title: `Free Subtitle Tools: Convert & Validate | ${SITE_NAME}`,
     description:
-      'Convert SRT to VTT, shift subtitle timing, validate files, check reading speed, and more. All tools are free, browser-based, and require no account.',
+      'Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded.',
+    h1: 'Free Subtitle Tools for Creators',
     breadcrumbLabel: 'Subtitle Tools',
   },
   {
@@ -1359,6 +1370,8 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
   ],
   '/subtitle-tools': [
     { path: '/video-to-subtitles', label: 'Video to Subtitles' },
+    { path: '/srt-generator', label: 'SRT File Generator' },
+    { path: '/video-to-srt', label: 'Video to SRT Converter' },
     { path: '/subtitle-generator', label: 'Subtitle Generator' },
     { path: '/auto-subtitle-generator', label: 'Auto Subtitle Generator' },
     { path: '/youtube-subtitle-generator', label: 'YouTube Subtitle Generator' },
@@ -1646,6 +1659,9 @@ function buildCanonicalToolsSection(hubPath: string): string {
 
   if (hubPath === '/subtitle-tools') {
     tools = [
+      { path: '/srt-generator', label: 'SRT File Generator' },
+      { path: '/video-to-srt', label: 'Video to SRT Converter' },
+      { path: '/translate-subtitles', label: 'Translate Subtitles' },
       { path: '/burn-subtitles', label: 'Burn Subtitles into Video' },
     ]
   } else if (hubPath === '/transcription-tools') {

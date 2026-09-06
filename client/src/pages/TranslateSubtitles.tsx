@@ -530,8 +530,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const breadcrumbs = [{ label: 'Translate', href: '/translation' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Translate',
-    subtitle: seoIntro ?? 'Translate subtitles, documents, DOCX, TXT, and JSON into 70+ languages — structure always preserved.',
+    title: seoH1 ?? 'Translate Subtitles to Any Language',
+    subtitle: seoIntro ?? 'Upload SRT or VTT, pick a target language, download a timed file. 70+ languages. Timestamps stay in sync. Try it free.',
     icon: <Languages className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['SRT', 'VTT', 'TXT', 'DOCX', 'JSON', '70+ Languages'],
     sidebar: null,
@@ -1074,8 +1074,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       {location.pathname === '/translate-subtitles' && (
         <section className="max-w-4xl mx-auto px-4 py-10 space-y-10">
           <header className="space-y-3">
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-gray-100">Translate Subtitles &amp; Transcripts Online (SRT, VTT, TXT)</h1>
-            <p className="text-gray-700 dark:text-gray-300">Translate subtitles, SRT files, and transcripts into 70+ languages — timestamps and structure preserved.</p>
+            <h2 className="text-3xl font-medium text-gray-900 dark:text-gray-100">How subtitle translation works</h2>
+            <p className="text-gray-700 dark:text-gray-300">Translate SRT or VTT into 70+ languages — timestamps and cue structure preserved.</p>
             <p className="text-sm font-medium text-gray-800 dark:text-gray-200">👉 Upload subtitle file → get translated version instantly</p>
             <p className="text-sm text-gray-700 dark:text-gray-300">👉 No formatting loss. No manual editing. Works for long files.</p>
           </header>
@@ -1098,9 +1098,9 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
           <section className="space-y-3"><h2 className="text-2xl font-medium">Who Needs Subtitle Translation?</h2><ul className="list-disc pl-6 space-y-1"><li>YouTubers → translate captions for global audience</li><li>Course creators → localize lessons</li><li>Agencies → scale multilingual content</li><li>Podcasters → expand reach with subtitles</li></ul></section>
 
-          <section className="space-y-3"><h2 className="text-2xl font-medium">More Transcription &amp; Subtitle Tools</h2><ul className="list-disc pl-6 space-y-1"><li><Link to="/video-to-transcript" className="text-blue-600 hover:underline">Video to transcript tool</Link></li><li><Link to="/subtitle-generator" className="text-blue-600 hover:underline">Subtitle generator</Link></li><li><Link to="/youtube-transcript-generator" className="text-blue-600 hover:underline">YouTube transcript generator</Link></li><li><Link to="/transcribe-long-videos" className="text-blue-600 hover:underline">Transcribe long videos</Link></li></ul></section>
+          <section className="space-y-3"><h2 className="text-2xl font-medium">More Transcription &amp; Subtitle Tools</h2><ul className="list-disc pl-6 space-y-1"><li><Link to="/srt-generator" className="text-blue-600 hover:underline">SRT file generator</Link></li><li><Link to="/video-to-srt" className="text-blue-600 hover:underline">Video to SRT converter</Link></li><li><Link to="/subtitle-tools" className="text-blue-600 hover:underline">Free subtitle tools</Link></li><li><Link to="/tools/subtitle-character-checker" className="text-blue-600 hover:underline">Subtitle character limit checker</Link></li></ul></section>
 
-          <section className="space-y-3" aria-label="FAQ"><h2 className="text-2xl font-medium">Frequently Asked Questions</h2><dl className="space-y-3"><div><dt className="font-medium">How do I translate subtitles online?</dt><dd className="text-gray-700 dark:text-gray-300">Upload your subtitle file (SRT/VTT), select the target language, and download the translated version instantly.</dd></div><div><dt className="font-medium">Can I translate SRT files without losing timestamps?</dt><dd className="text-gray-700 dark:text-gray-300">Yes. This tool preserves all timing while translating text.</dd></div><div><dt className="font-medium">Is there a free subtitle translator?</dt><dd className="text-gray-700 dark:text-gray-300">Yes, basic usage is available without signup.</dd></div><div><dt className="font-medium">How do I translate video subtitles automatically?</dt><dd className="text-gray-700 dark:text-gray-300">Upload your subtitle file or video transcript and export the translated version.</dd></div><div><dt className="font-medium">What formats are supported?</dt><dd className="text-gray-700 dark:text-gray-300">SRT, VTT, TXT, DOCX, and JSON.</dd></div></dl></section>
+          <section className="space-y-3" aria-label="FAQ"><h2 className="text-2xl font-medium">Frequently Asked Questions</h2><dl className="space-y-3"><div><dt className="font-medium">How do I translate SRT or VTT subtitles?</dt><dd className="text-gray-700 dark:text-gray-300">Upload your SRT or VTT file, pick a target language, and download the translated file. Timestamps stay aligned with the original cues.</dd></div><div><dt className="font-medium">Do timestamps survive translation?</dt><dd className="text-gray-700 dark:text-gray-300">Yes. VideoText translates cue text only and keeps the original start/end times, so the file stays in sync.</dd></div><div><dt className="font-medium">How many languages can I translate to?</dt><dd className="text-gray-700 dark:text-gray-300">70+ languages, including Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, and Korean.</dd></div><div><dt className="font-medium">I don&apos;t have an SRT yet — how do I start?</dt><dd className="text-gray-700 dark:text-gray-300">Create one with the SRT file generator or the video to SRT converter, then come back here to translate it. Free browser tools on the subtitle tools hub can convert SRT to VTT first if you need that format.</dd></div></dl></section>
         </section>
       )}
 

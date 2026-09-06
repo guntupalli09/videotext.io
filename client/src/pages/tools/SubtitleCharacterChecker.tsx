@@ -58,8 +58,8 @@ export default function SubtitleCharacterChecker() {
 
   return (
     <FreeToolLayout
-      title="Subtitle Character Limit Checker — Netflix, YouTube & BBC"
-      description="Verify every subtitle line meets Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) character limits. Instant pass/fail per cue. Free, browser-based."
+      title="Subtitle Character Limits — Pass/Fail"
+      description="Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
       contentSections={[
         {
@@ -117,12 +117,12 @@ export default function SubtitleCharacterChecker() {
         { q: 'Can I set a custom character limit?', a: 'Yes. Select "Custom" from the platform options and enter any maximum characters per line value to check against your own style guide or broadcaster specification.' },
       ]}
       relatedTools={[
+        { label: 'Free Subtitle Tools', path: '/subtitle-tools', desc: 'Converters, timing, validator, and more' },
+        { label: 'SRT File Generator', path: '/srt-generator', desc: 'Create a timed SRT from video' },
+        { label: 'Video to SRT Converter', path: '/video-to-srt', desc: 'Convert a video file to SRT' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
         { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Check CPS against broadcast standards' },
-        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Full validation including overlaps' },
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-fix long lines and formatting' },
-        { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert format after checking' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate broadcast-ready subtitles with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate to 70+ languages' },
       ]}
     >
       <div className="space-y-4">
