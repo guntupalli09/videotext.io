@@ -58,9 +58,19 @@ export default function SubtitleCharacterChecker() {
 
   return (
     <FreeToolLayout
-      title="Subtitle Character Checker — Netflix, YouTube & BBC"
-      description="Check if your subtitle lines meet Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) limits. Instant pass/fail report per cue. Free, no signup."
+      title="Subtitle Character Limits — Pass/Fail"
+      description="Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
+      moneyCta={{
+        kicker: 'Netflix 42 · YouTube 80 · BBC 37',
+        title: 'Fix this file in one click',
+        body: 'Line-length fail? Fix Subtitles reflows long lines and CPS so the file can pass.',
+        primary: { label: 'Fix this file in one click', path: '/fix-subtitles' },
+        secondary: [
+          { label: 'Translate', path: '/translate-subtitles' },
+          { label: 'Burn', path: '/burn-subtitles' },
+        ],
+      }}
       contentSections={[
         {
           heading: 'Why do subtitle character limits matter?',
@@ -117,12 +127,12 @@ export default function SubtitleCharacterChecker() {
         { q: 'Can I set a custom character limit?', a: 'Yes. Select "Custom" from the platform options and enter any maximum characters per line value to check against your own style guide or broadcaster specification.' },
       ]}
       relatedTools={[
-        { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Check CPS against broadcast standards' },
-        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Full validation including overlaps' },
-        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-fix long lines and formatting' },
-        { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert format after checking' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate broadcast-ready subtitles with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate to 70+ languages' },
+        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-fix long lines, CPS, and formatting' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Full caption hub: generate SRT/VTT from video' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
+        { label: 'Burn Subtitles', path: '/burn-subtitles', desc: 'Hardcode the checked file into video' },
+        { label: 'SRT File Generator', path: '/srt-generator', desc: 'Create a timed SRT from video' },
+        { label: 'Free Subtitle Tools', path: '/subtitle-tools', desc: 'Converters, timing, validator, and more' },
       ]}
     >
       <div className="space-y-4">

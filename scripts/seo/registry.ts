@@ -15,7 +15,6 @@ const REGISTRY_PATH = path.join(REPO_ROOT, 'client', 'src', 'lib', 'seoRegistry.
 /** Static routes (all indexable). Single source of truth; sync script imports from here. */
 export const STATIC_ROUTES = [
   '/',
-  '/site-index',
   '/samples',
   '/pricing',
   '/privacy',
@@ -27,7 +26,6 @@ export const STATIC_ROUTES = [
   '/fix-subtitles',
   '/burn-subtitles',
   '/compress-video',
-  '/batch-process',
   '/best-transcription-tool',
   '/fastest-transcription-tool',
   '/podcast-transcription-tool',
@@ -37,8 +35,8 @@ export const STATIC_ROUTES = [
   '/fastest-transcription-software',
   '/ai-transcription-tools',
   '/ai-transcription-workflow',
-  '/google-meet-transcription',
-  '/teams-meeting-transcription',
+  '/google-meet-transcript',
+  '/teams-meeting-transcript',
   '/free-captions-and-subtitles',
   '/translation',
   '/voice-recorder',
@@ -92,7 +90,6 @@ export const CORE_PATHS: string[] = [
   '/translate-subtitles',
   '/fix-subtitles',
   '/burn-subtitles',
-  '/batch-process',
   '/compress-video',
   '/best-transcription-tool',
   '/fastest-transcription-tool',
@@ -103,8 +100,8 @@ export const CORE_PATHS: string[] = [
   '/fastest-transcription-software',
   '/ai-transcription-tools',
   '/ai-transcription-workflow',
-  '/google-meet-transcription',
-  '/teams-meeting-transcription',
+  '/google-meet-transcript',
+  '/teams-meeting-transcript',
   '/free-captions-and-subtitles',
   '/translation',
   '/voice-recorder',
@@ -188,7 +185,6 @@ export const CORE_PATHS: string[] = [
  * Previously omitted from sitemaps → weaker discovery vs internal links only.
  */
 export const FREE_TOOL_AND_HUB_PATHS: string[] = [
-  '/site-index',
   '/tools',
   '/tools/srt-to-vtt',
   '/tools/vtt-to-srt',
@@ -238,6 +234,7 @@ export function getIndexablePaths(): string[] {
   return [...new Set([...CORE_PATHS, ...getSitemap2Paths()])]
     .map((p) => getCanonicalPathForRoute(p))
     .filter(Boolean)
+    .filter((p) => p !== '/site-index')
     .filter((p, i, arr) => arr.indexOf(p) === i)
 }
 

@@ -117,18 +117,43 @@
       "status": 301
     },
     {
+      "src": "/youtube-transcript",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
       "src": "/youtube-transcript-transcription",
-      "dest": "/youtube-transcript",
+      "dest": "/youtube-transcript-generator",
       "status": 301
     },
     {
       "src": "/youtube-to-text",
-      "dest": "/youtube-transcript",
+      "dest": "/youtube-transcript-generator",
       "status": 301
     },
     {
       "src": "/youtube-video-transcript",
-      "dest": "/youtube-transcript",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
+      "src": "/youtube-to-transcript",
+      "dest": "/youtube-transcript-generator",
+      "status": 301
+    },
+    {
+      "src": "/batch-process",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/zoom-meeting-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/zoom-recording-transcript",
+      "dest": "/video-to-transcript",
       "status": 301
     },
     {
@@ -174,6 +199,21 @@
     {
       "src": "/otter-ai-alternative",
       "dest": "/otter-alternative",
+      "status": 301
+    },
+    {
+      "src": "/burn-subtitles-into-video",
+      "dest": "/burn-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/hardcoded-captions",
+      "dest": "/burn-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/video-with-subtitles",
+      "dest": "/burn-subtitles",
       "status": 301
     },
     {

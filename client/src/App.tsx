@@ -8,6 +8,7 @@ import { invalidateUsageCache } from './lib/api'
 import Footer from './components/Footer'
 import Seo from './components/Seo'
 import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd, getSoftwareApplicationJsonLd, getHowToJsonLd, getAeoJsonLd, BLOG_POST_DATES } from './lib/seoMeta'
+import { getCoreToolFaq } from './lib/coreToolSeoDepth'
 import { getCanonicalPathForRoute } from './lib/primaryUrls'
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
@@ -225,6 +226,8 @@ function AppSeo() {
     if (softwareAppSchema) schemas.push(softwareAppSchema)
     if (howToSchema) schemas.push(howToSchema)
     if (!isBlogPost && seoEntry?.faq?.length) schemas.push(getFaqJsonLdFromItems(seoEntry.faq))
+    const coreFaq = getCoreToolFaq(pathname)
+    if (!isBlogPost && coreFaq.length) schemas.push(getFaqJsonLdFromItems(coreFaq))
     const aeoSchemas = getAeoJsonLd(pathname)
     if (aeoSchemas?.length) schemas.push(...aeoSchemas)
     const normalizedSchemas = dedupeAndMergeFaqSchemas(schemas)
@@ -249,7 +252,8 @@ function AppSeo() {
       description={meta.description}
       canonicalPath={canonicalPath}
       jsonLd={jsonLd}
-      noindex={is404}
+      noindex={is404 || pathname === '/site-index'}
+      robots={pathname === '/site-index' ? 'noindex,follow' : undefined}
       articleMeta={articleMeta}
     />
   )
@@ -584,6 +588,9 @@ function App() {
             <Route path="/podcast-transcription-tool" element={<PodcastTranscriptionTool />} />
             <Route path="/interview-transcription-tool" element={<InterviewTranscriptionTool />} />
             {/* <Route path="/youtube-transcript-generator" element={<YoutubeTranscriptGenerator />} /> */}
+            <Route path="/youtube-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
+            <Route path="/youtube-transcript-transcription" element={<Navigate to="/youtube-transcript-generator" replace />} />
+            <Route path="/youtube-to-text" element={<Navigate to="/youtube-transcript-generator" replace />} />
             <Route path="/youtube-url-to-transcription" element={<Navigate to="/youtube-transcript-generator" replace />} />
             <Route path="/youtube-to-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
             <Route path="/youtube-video-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
@@ -844,7 +851,8 @@ function App() {
             />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
             <Route path="/batch-process" element={<Navigate to="/video-to-transcript" replace />} />
-            <Route path="/zoom-recording-transcript" element={<Navigate to="/zoom-meeting-transcript" replace />} />
+            <Route path="/zoom-meeting-transcript" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/zoom-recording-transcript" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/transcribe-meeting-recording" element={<Navigate to="/meeting-recording-to-transcript" replace />} />
             <Route path="/translate-subtitles" element={<TranslateSubtitles
               seoH1="Translate Subtitles (SRT/VTT) to 70+ Languages"
@@ -854,9 +862,23 @@ function App() {
             <Route path="/free-captions-and-subtitles" element={<VideoToSubtitles />} />
             <Route path="/fix-subtitles" element={<FixSubtitles />} />
             <Route path="/burn-subtitles" element={<BurnSubtitles />} />
+            <Route path="/burn-subtitles-into-video" element={<Navigate to="/burn-subtitles" replace />} />
             <Route path="/compress-video" element={<CompressVideo />} />
             {/* SEO utility routes: registry-driven; same tools, alternate URLs. No backend or behavior change. */}
-            {getAllSeoPaths().map((path) => (
+            {getAllSeoPaths()
+              .filter((path) => ![
+                '/burn-subtitles-into-video',
+                '/youtube-transcript',
+                '/youtube-transcript-transcription',
+                '/youtube-to-text',
+                '/youtube-to-transcript',
+                '/youtube-video-transcript',
+                '/youtube-url-to-transcription',
+                '/batch-process',
+                '/zoom-meeting-transcript',
+                '/zoom-recording-transcript',
+              ].includes(path))
+              .map((path) => (
               <Route key={path} path={path} element={<SeoToolPage />} />
             ))}
             {/* Free tools — client-side only, no server calls */}

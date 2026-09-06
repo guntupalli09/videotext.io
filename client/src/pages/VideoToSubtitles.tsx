@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { MessageSquare, FileDown, Lock, CheckCircle2, Upload, AlertTriangle, RefreshCw } from 'lucide-react'
 import FailedState from '../components/FailedState'
+import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
 import SamplesModule from '../components/SamplesModule'
 import TranscriptSharePanel from '../components/TranscriptSharePanel'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
@@ -104,14 +105,9 @@ async function fetchSubtitlePreviewRows(
 export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const { seoH1, seoIntro, faq = [], seoTutorial } = props
   const location = useLocation()
-  const defaultFaq = location.pathname === '/video-to-subtitles' ? [
-    { q: 'How do I generate subtitles from a video?', a: 'Upload your video file and the tool will automatically generate subtitles with timestamps.' },
-    { q: 'Can I create SRT files automatically?', a: 'Yes. The tool generates SRT files instantly from video.' },
-    { q: 'Is there a free subtitle generator?', a: 'Yes, you can generate subtitles online without manual editing.' },
-    { q: 'Can I export subtitles in different formats?', a: 'Yes. SRT and VTT formats are supported.' },
-    { q: 'Does this work for long videos?', a: 'Yes. The tool is optimized for large and long video files.' },
-  ] : []
-  const effectiveFaq = faq.length > 0 ? faq : defaultFaq
+  const isSubtitleHub = location.pathname === '/video-to-subtitles'
+  const isSrtSibling = location.pathname === '/srt-generator' || location.pathname === '/video-to-srt'
+  const effectiveFaq = faq
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [trimStart, setTrimStart] = useState<number | null>(null)
@@ -868,8 +864,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const breadcrumbs = [{ label: 'Video to Subtitles', href: '/video-to-subtitles' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Subtitle Generator (Auto Create SRT & VTT from Video)',
-    subtitle: seoIntro ?? 'Generate subtitles from video automatically. Accurate timestamps, SRT and VTT export — no manual editing.',
+    title: seoH1 ?? 'Video to Subtitles — Full Caption Hub',
+    subtitle: seoIntro ?? 'Turn video or a YouTube URL into timed SRT/VTT, then fix, translate, or burn. For transcript + summary + chapters, use Video to Transcript.',
     icon: <MessageSquare className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['SRT', 'VTT', 'Subtitles', 'Captions', 'Timestamps', 'Multi-format'],
     sidebar: null,
@@ -893,7 +889,19 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               fromWorkflowLabel={fileFromWorkflow ? 'From previous step' : undefined}
             />
             {location.pathname === '/video-to-subtitles' && (
-              <SamplesModule sourcePath={location.pathname} samplesHref="/samples#subtitle" />
+              <>
+                <SamplesModule sourcePath={location.pathname} samplesHref="/samples#subtitle" />
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Looking for a narrower intent?{' '}
+                  <Link to="/srt-generator" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                    SRT file generator
+                  </Link>
+                  {' · '}
+                  <Link to="/video-to-srt" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                    Video to SRT converter
+                  </Link>
+                </p>
+              </>
             )}
           </div>
         )}
@@ -1486,61 +1494,29 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
 
 
-      {location.pathname === '/video-to-subtitles' && (
-        <section className="mt-12 pt-8 border-t border-gray-100/70 dark:border-gray-700/50 max-w-4xl mx-auto px-4 space-y-8" aria-label="Subtitle Generator SEO content">
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Generate Subtitles from Video Instantly</h2>
-            <p className="text-gray-600 dark:text-gray-400">Create subtitles automatically from any video file. No timeline editing or manual typing required. This subtitle generator is built for creators who need fast, accurate captions without extra cleanup. Need full text output too? Convert video to transcript with our <Link to="/video-to-transcript" className="text-blue-600 hover:text-blue-700 font-medium">video to transcript tool</Link>.</p>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Create SRT &amp; VTT Subtitle Files Automatically</h2>
-            <p className="text-gray-600 dark:text-gray-400">Generate ready-to-use subtitle files for YouTube, social media, and video platforms. Export in SRT or VTT in seconds with clean timestamps. Need multilingual workflows after export? Use <Link to="/translate-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">translate subtitles</Link> to localize files instantly.</p>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Automatic Subtitle Generator (No Manual Editing)</h2>
-            <p className="text-gray-600 dark:text-gray-400">Most tools require heavy cleanup. This tool generates clean subtitles, adds timestamps automatically, and outputs ready-to-use files. Working from YouTube content? Start with our <Link to="/youtube-transcript-generator" className="text-blue-600 hover:text-blue-700 font-medium">YouTube transcript generator</Link> and export subtitles when ready.</p>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Generate Subtitles for Long Videos Fast</h2>
-            <p className="text-gray-600 dark:text-gray-400">Built for large files and long-form content: process long videos efficiently, no splitting required, and fast output even for large files. Need higher-volume or queue-style workflows? Use <Link to="/transcribe-long-videos" className="text-blue-600 hover:text-blue-700 font-medium">transcribe long videos</Link>.</p>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Why This Subtitle Generator Is Better</h2>
-            <ul className="list-disc pl-5 space-y-2 text-gray-600 dark:text-gray-400">
-              <li>Automatic timestamps — no manual sync</li>
-              <li>Multi-format export — SRT, VTT</li>
-              <li>Fast processing — minutes, not hours</li>
-              <li>Clean output — minimal editing needed</li>
-              <li>Privacy-first — files deleted after processing</li>
-            </ul>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">Who Needs a Subtitle Generator?</h2>
-            <ul className="list-disc pl-5 space-y-2 text-gray-600 dark:text-gray-400">
-              <li>YouTubers — captions for videos</li>
-              <li>Social media creators — subtitles for engagement</li>
-              <li>Agencies — scale caption workflows</li>
-              <li>Educators — accessibility and learning</li>
-            </ul>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2">More Transcription &amp; Subtitle Tools</h2>
-            <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-              <li><Link to="/video-to-transcript" className="text-blue-600 hover:text-blue-700 font-medium">Video to transcript tool</Link></li>
-              <li><Link to="/youtube-transcript-generator" className="text-blue-600 hover:text-blue-700 font-medium">YouTube transcript generator</Link></li>
-              <li><Link to="/voice-recorder" className="text-blue-600 hover:text-blue-700 font-medium">Voice to text (live transcription)</Link></li>
-              <li><Link to="/translate-subtitles" className="text-blue-600 hover:text-blue-700 font-medium">Translate subtitles</Link></li>
-              <li><Link to="/transcribe-long-videos" className="text-blue-600 hover:text-blue-700 font-medium">Transcribe long videos fast</Link></li>
-            </ul>
-          </div>
-        </section>
+      {isSrtSibling && (
+        <aside className="mt-10 max-w-4xl mx-auto px-4 rounded-2xl border-2 border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-950/40 p-5">
+          <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+            Need the full VideoText caption product?
+          </p>
+          <p className="mt-1 text-sm text-blue-800 dark:text-blue-200">
+            This page is the {location.pathname === '/srt-generator' ? 'SRT file maker/creator' : 'video → SRT converter'}.
+            {' '}
+            <Link to="/video-to-subtitles" className="font-semibold underline hover:no-underline">
+              Video to Subtitles
+            </Link>
+            {' '}is the hub for timed SRT/VTT plus fix, translate, and burn.
+          </p>
+          <Link
+            to="/video-to-subtitles"
+            className="mt-3 inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5"
+          >
+            Open the Video to Subtitles hub →
+          </Link>
+        </aside>
       )}
+
+      {isSubtitleHub && <CoreToolSeoDepth path="/video-to-subtitles" />}
 
       {effectiveFaq.length > 0 && (
         <section className="mt-12 pt-8 border-t border-gray-100/70 dark:border-gray-700/50 max-w-4xl mx-auto px-4" aria-label="FAQ">

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronRight, Home } from "lucide-react";
 import { Link } from "react-router-dom";
+import HeroTrustChips from "../HeroTrustChips";
 
 interface Breadcrumb {
   label: string;
@@ -125,6 +126,7 @@ export function ToolLayout({
               <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl">
                 {subtitle}
               </p>
+              <HeroTrustChips />
               {tags.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}

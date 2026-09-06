@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { ToolLayout } from "../components/figma/ToolLayout";
+import CoreToolSeoDepth from "../components/CoreToolSeoDepth";
 import { api } from "../lib/api";
 import {
   detectFormat,
@@ -1133,8 +1134,8 @@ export default function GuidelineFormat() {
             href: "/guideline-format",
           },
         ]}
-        title="Format + QA"
-        subtitle="Paste your raw transcript, select a platform preset, and apply style guide rules automatically — verbatim handling, speaker labels, filler words, QA validation — then export client-ready."
+        title="Format Transcripts to Client Guidelines"
+        subtitle="Apply Rev, GoTranscript, TranscribeMe, or Scribie-style rules to a transcript. Then export client-ready text. 3 free imports/mo."
         icon={
           <FileText
             className="text-blue-600 dark:text-blue-400"
@@ -2735,6 +2736,8 @@ export default function GuidelineFormat() {
         }}
       />
 
+      <CoreToolSeoDepth path="/guideline-format" hideFaq />
+
       {/* SEO FAQ section — crawlable content for Google and LLM citations */}
       <section
         className="mx-auto mt-8 max-w-3xl border-t border-white/[0.08] px-4 pt-8 pb-12 sm:px-6 sm:pb-16 lg:px-8"
@@ -3295,9 +3298,9 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
           </h2>
         </div>
         <p className="text-gray-500 dark:text-gray-400 text-sm mb-7 max-w-2xl">
-          Each transcription platform has its own formatting rules. Browse
-          detailed style guides for the services below — verbatim levels,
-          speaker labels, timestamps, and every rule you need to pass QA.
+          Start with the guides that already get search traffic — GoTranscript,
+          Scribie, Verbit, TranscribeMe, and Rev — then format your file to
+          those rules in one click on this page.
         </p>
         {[
           {

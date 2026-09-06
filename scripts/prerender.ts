@@ -41,6 +41,7 @@ interface RouteMeta {
   faq?: Array<{ q: string; a: string }>
   breadcrumbLabel?: string
   noindex?: boolean
+  robots?: string
   // High-conversion content fields
   valueProposition?: string
   keywords?: string[]
@@ -66,10 +67,15 @@ const MONEY_PAGES: Array<{ path: string; label: string }> = [
 const STATIC_META: RouteMeta[] = [
   {
     path: '/',
-    title: `Video to Text & Subtitles — Free Online Tools | ${SITE_NAME}`,
+    title: `VideoText: Video to Text & Subtitles | ${SITE_NAME}`,
     description:
-      'VideoText: AI-powered video to text and subtitle tools. Transcribe video to transcript, generate SRT/VTT, translate subtitles, fix timing, burn captions, compress video. Sign up for free to try.',
-    h1: 'AI-Powered Video to Text & Subtitles',
+      'VideoText is AI video-to-text software: transcript, SRT/VTT, summary, and chapters from a video or YouTube URL. Whisper large-v3. 3 free imports/mo.',
+    h1: 'VideoText: Video to Text & Subtitle Tools',
+    faq: [
+      { q: 'What is VideoText — is it the same as “video text”?', a: 'VideoText is one word: AI software that turns video into a transcript, SRT/VTT subtitles, a summary, and chapters. It is not a generic “video text” site. Upload a video or YouTube URL to try 3 free imports this month — no card, no watermark.' },
+      { q: 'What do I get from one upload?', a: 'A transcript plus SRT/VTT subtitles, a summary, and chapters. Files are deleted after processing.' },
+      { q: 'Is VideoText free to try?', a: 'Yes. 3 imports per month, no credit card, no watermark. Paid plans start if you need more volume.' },
+    ],
   },
   {
     path: '/pricing',
@@ -88,10 +94,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/faq',
-    title: `VideoText FAQ — privacy, billing, transcription, and client style guides | ${SITE_NAME}`,
+    title: `VideoText FAQ — Privacy, Billing & Guides | ${SITE_NAME}`,
     description:
       'Answers on privacy (files deleted after jobs), billing, uploads, subtitles, verbatim modes, QA prep, and how Format → Client guidelines fits freelancer workflows.',
-    h1: 'VideoText FAQ — privacy, billing, transcription, and client style guides',
+    h1: 'VideoText FAQ — Privacy, Billing & Guides',
     faq: [
       { q: 'Do you store my videos or files?', a: "No. We process your files and then delete them. We don't keep your uploads, transcripts, or generated outputs. Your content is never stored on our servers." },
       { q: 'Is my content used for AI training?', a: "No. Your content is used only to deliver the service you requested. We do not use it for training AI models." },
@@ -103,7 +109,7 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/guide',
-    title: `How to use VideoText — tools, workflows, and client guidelines | ${SITE_NAME}`,
+    title: `How to use VideoText — Tools & Workflows | ${SITE_NAME}`,
     description:
       'Tool-by-tool steps for Video → Transcript, Format → Client guidelines (marketplace presets + editable cards), subtitles, translate, fix, burn, compress, batch, voice, YouTube URLs. Inputs, outputs, limits.',
     h1: 'How to use VideoText — tools, workflows, and client guidelines',
@@ -140,11 +146,12 @@ const STATIC_META: RouteMeta[] = [
 
   {
     path: '/site-index',
-    title: `All VideoText Pages — Transcript, Subtitle, and Formatting Workflows | ${SITE_NAME}`,
+    title: `All VideoText Pages — Workflow Index | ${SITE_NAME}`,
     description:
-      'Browse VideoText transcription, subtitle, formatting, free tool, comparison, and alternatives pages from one organized workflow index.',
+      'Internal index of VideoText transcription, subtitle, formatting, free tool, comparison, and alternatives pages.',
     h1: 'Complete VideoText Page Index',
-    noindex: false,
+    noindex: true,
+    robots: 'noindex,follow',
   },
   {
     path: '/integrations/zapier',
@@ -163,10 +170,10 @@ const STATIC_META: RouteMeta[] = [
 
   {
     path: '/video-to-transcript',
-    title: 'Video to Transcript in Minutes (Free, Fast & Private Tool)',
+    title: 'Video to Transcript — Free AI, 98.5% | VideoText',
     description:
-      'Convert any video to transcript online in minutes. Upload or paste a link to get transcripts, subtitles (SRT/VTT), summary and chapters. No signup. Private.',
-    h1: 'Video to Transcript in 3 Minutes (Free, Fast & Private)',
+      'Upload video or a YouTube URL. Get transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.',
+    h1: 'Fastest Way to Transcribe Your Audio/Video',
     valueProposition: 'VideoText lets you convert video to transcript online in minutes. Upload any video and get transcript text, subtitles (SRT/VTT), summary, and chapters in one click. 2-hour video → transcript in ~3–5 minutes.',
     keywords: ['video to transcript', 'convert video to transcript', 'transcribe video online', 'video to text', 'youtube transcript generator', 'subtitle generator', 'long video transcription', 'private transcription tool'],
     comparison: [
@@ -188,18 +195,18 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/guideline-format',
-    title: `Format transcripts to match client transcription style guides | ${SITE_NAME}`,
+    title: `Format Transcripts to Client Guides | ${SITE_NAME}`,
     description:
-      'Paste or upload a transcript, then work through editable Rev-, GoTranscript-, TranscribeMe-, and Scribie-style rule presets before QA. Optional client PDF/DOCX/TXT upload is stored for your workflow; automated parsing and auto-reformat from those files is not live yet—use presets and rule cards today.',
-    h1: 'Format transcripts to match client transcription style guides',
+      'Format a transcript to Rev, GoTranscript, TranscribeMe, or Scribie-style rules. Editable presets. Files deleted after processing. 3 free imports/mo.',
+    h1: 'Format Transcripts to Client Guidelines',
     breadcrumbLabel: 'Format to client guidelines',
   },
   {
     path: '/video-to-subtitles',
-    title: `Video to Subtitles — SRT & VTT Generator | ${SITE_NAME}`,
+    title: `Video to Subtitles — Full Caption Hub | ${SITE_NAME}`,
     description:
-      'Generate SRT and VTT subtitle files from any video with AI. Upload video. Single or multi-language. Free tier available.',
-    h1: 'Video to Subtitles',
+      'Caption-first hub: video or YouTube URL → timed SRT/VTT, then fix, translate, or burn. Transcript + summary lives on Video to Transcript. 3 free imports/mo.',
+    h1: 'Video to Subtitles — Full Caption Hub',
     valueProposition: 'Create publication-ready SRT and VTT subtitle files in seconds. Perfect for YouTube, Vimeo, social media. No manual timing. No transcription service delays. Free tier: 3 imports/month.',
     keywords: ['video to subtitles', 'subtitle generator', 'SRT generator', 'VTT generator', 'auto subtitle', 'caption generator', 'subtitle maker', 'automatic captions'],
     comparison: [
@@ -221,35 +228,39 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/translate-subtitles',
-    title: `Translate Subtitles — SRT/VTT to Any Language | ${SITE_NAME}`,
+    title: `Translate Subtitles to Any Language | ${SITE_NAME}`,
     description:
-      'Translate SRT or VTT subtitle files to Arabic, Hindi, Spanish, and 50+ languages with AI. Upload subtitles, pick target language, download. Free tier available.',
-    h1: 'Translate Subtitles',
-    valueProposition: 'Translate subtitle files to 50+ languages in seconds. Preserve perfect timing and formatting. Works with SRT, VTT, and all major formats. Support for Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, and more. No watermarks, no registration required for small files.',
-    keywords: ['translate subtitles', 'subtitle translator', 'SRT translator', 'VTT translator', 'translate SRT online', 'free subtitle translation', 'multilingual subtitles', 'subtitle translation tool', 'batch translate subtitles', 'translate subtitles to spanish', 'translate subtitles to hindi', 'translate subtitles to french', '50+ language translation'],
+      'Translate SRT or VTT to 70+ languages with timestamps intact. Upload, pick a language, download. Free to try. Files deleted after processing.',
+    h1: 'Translate Subtitles to Any Language',
+    valueProposition: 'Translate SRT or VTT subtitle files to 70+ languages with timestamps preserved. Upload, pick a target language, download. Support for Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, and more. Free to try — files deleted after processing.',
+    keywords: ['translate subtitles', 'subtitle translator', 'SRT translator', 'VTT translator', 'translate SRT online', 'free subtitle translation', 'multilingual subtitles', 'subtitle translation tool', 'batch translate subtitles', 'translate subtitles to spanish', 'translate subtitles to hindi', 'translate subtitles to french', '70+ language translation'],
     comparison: [
       { tool: 'Manual translation', vs: 'Hours of work, expensive, error-prone' },
       { tool: 'Generic translation tools', vs: 'Lose subtitle timing and formatting' },
       { tool: 'Translation agencies', vs: '$200-500 per file, weeks for turnaround' },
     ],
     howToUse: [
-      { step: 1, title: 'Upload Subtitle File', detail: 'SRT, VTT, or any subtitle format. Drag & drop or browse.' },
-      { step: 2, title: 'Choose Target Language', detail: 'Pick from 50+ languages. Timestamps stay perfect.' },
+      { step: 1, title: 'Upload Subtitle File', detail: 'SRT or VTT. Drag & drop or browse.' },
+      { step: 2, title: 'Choose Target Language', detail: 'Pick from 70+ languages. Timestamps stay intact.' },
       { step: 3, title: 'Download Translated File', detail: 'Same format, new language. Upload directly to your platform.' },
     ],
     socialProof: [
-      { stat: '50+', desc: 'Languages supported' },
-      { stat: '100%', desc: 'Timing preserved' },
-      { stat: '0.5 sec', desc: 'Translation time' },
-      { stat: '98%', desc: 'Accuracy maintained' },
+      { stat: '70+', desc: 'Languages supported' },
+      { stat: 'Timestamps', desc: 'Preserved on every cue' },
+    ],
+    faq: [
+      { q: 'How do I translate SRT or VTT subtitles?', a: 'Upload your SRT or VTT file, pick a target language, and download the translated file. Timestamps stay aligned with the original cues.' },
+      { q: 'Do timestamps survive translation?', a: 'Yes. VideoText translates cue text only and keeps the original start and end times.' },
+      { q: 'How many languages can I translate to?', a: '70+ languages, including Arabic, Hindi, Spanish, French, German, Portuguese, Chinese, Japanese, and Korean.' },
+      { q: 'I do not have an SRT yet — how do I start?', a: 'Create one with the SRT file generator or the video to SRT converter, then translate it here.' },
     ],
   },
   {
     path: '/fix-subtitles',
-    title: `Fix Subtitles — Auto-Correct Timing & Format | ${SITE_NAME}`,
+    title: `Fix Subtitles — Timing, CPS & Lines | ${SITE_NAME}`,
     description:
-      'Fix overlapping timestamps, long lines, and gaps in SRT/VTT files. Auto-correct timing and formatting. Upload SRT or VTT, download corrected file. Free.',
-    h1: 'Fix Subtitles',
+      'Fix overlapping timestamps, long lines, CPS/reading-speed, and SRT/VTT formatting. Upload, download a cleaned file. Files deleted after processing.',
+    h1: 'Fix Subtitles — Timing, CPS & Lines',
     valueProposition: 'Fix out-of-sync, overlapping, and malformed subtitles instantly. Auto-correct timing offsets, merge overlapping cues, split long lines, and validate formatting. Works with SRT, VTT, ASS, and TTML. No quality loss, no manual re-timing needed. Free and unlimited.',
     keywords: ['fix subtitles', 'subtitle fixer', 'fix out of sync subtitles', 'fix SRT timing', 'subtitle timing fixer', 'online subtitle editor', 'fix VTT files', 'subtitle editor free', 'fix overlapping subtitles', 'subtitle formatter', 'correct subtitle timing', 'shift subtitle timing', 'fix broken subtitles'],
     comparison: [
@@ -271,9 +282,9 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/burn-subtitles',
-    title: `Burn Subtitles into Video — Hardcode Captions | ${SITE_NAME}`,
+    title: `Burn Subtitles into Video — Hardcode | ${SITE_NAME}`,
     description:
-      'Burn SRT or VTT subtitles directly into your video. Upload video + subtitle file, get one video with hardcoded captions. Free tier available.',
+      'Hardcode SRT or VTT into video. Upload video + captions, download one file. For Instagram, TikTok, and players without caption tracks. 3 free imports/mo.',
     h1: 'Burn Subtitles into Video',
     valueProposition: 'Embed subtitles permanently into your video as hardcoded captions. Perfect for social media where external subtitle tracks won\'t disappear. Works with SRT and VTT files. Supports all major video formats: MP4, MOV, WebM. Customize position, size, and color. No watermarks, no quality loss.',
     keywords: ['burn subtitles', 'hardcode captions', 'embed subtitles in video', 'burn SRT into video', 'hardcoded captions', 'permanent subtitles', 'overlay subtitles on video', 'add captions to video', 'subtitle burner', 'hardcode subtitles free', 'burn subtitles online', 'burn subtitles without software', 'batch burn subtitles'],
@@ -296,11 +307,11 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/compress-video',
-    title: `Compress Video — Reduce File Size Online | ${SITE_NAME}`,
+    title: `Compress Video — Light, Medium, Heavy | ${SITE_NAME}`,
     description:
-      'Compress video online: light, medium, or heavy compression. Upload video. Reduce file size for sharing and uploads. Free tier available.',
-    h1: 'Compress Video',
-    valueProposition: 'Reduce video file size by 40-80% without losing quality. Choose light, medium, or heavy compression. Upload MP4, MOV, AVI, WebM, MKV. Download instantly. No software required, no watermark, works on any device.',
+      'Compress video online with light, medium, or heavy settings. Reduce size for uploads and sharing. Files deleted after processing. 3 free imports/mo.',
+    h1: 'Compress Video — Light, Medium, Heavy',
+    valueProposition: 'Choose light, medium, or heavy compression. Files are deleted after processing. Free plan: 3 imports/mo, no card, no watermark.',
     keywords: ['compress video', 'video compressor', 'reduce video size', 'video compression tool', 'compress MP4', 'free video compressor', 'compress video online', 'reduce file size', 'compress MOV', 'compress AVI', 'compress WebM', 'compress video without losing quality', 'batch compress videos'],
     comparison: [
       { tool: 'Adobe Media Encoder', vs: '$55/month, slow, quality loss, steep learning' },
@@ -318,6 +329,14 @@ const STATIC_META: RouteMeta[] = [
       { stat: 'Instant', desc: 'No waiting, no email, download direct' },
       { stat: 'Free', desc: '3 videos/month included' },
     ],
+  },
+  {
+    path: '/voice-recorder',
+    title: `Voice to Text — In-Browser Recorder | ${SITE_NAME}`,
+    description:
+      'Speak in the browser and get text. No video upload to start. Privacy-first: files deleted after processing. Free: 3 imports/mo, no card, no watermark.',
+    h1: 'Voice to Text — In-Browser Recorder',
+    breadcrumbLabel: 'Voice Recorder',
   },
   // NOTE: '/batch-process' intentionally has no STATIC_META entry. It is a pure
   // client-side redirect into '/video-to-transcript' (batch capability lives inside
@@ -374,10 +393,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/subtitle-tools',
-    title: `Subtitle Tools & Resources | ${SITE_NAME}`,
+    title: `Free Subtitle Tools: Convert & Validate | ${SITE_NAME}`,
     description:
-      'Complete toolkit for subtitle creation, translation, editing, and conversion. Perfect for creators, studios, and video professionals.',
-    h1: 'Subtitle Tools & Resources',
+      'Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded.',
+    h1: 'Free Subtitle Tools for Creators',
     breadcrumbLabel: 'Subtitle Tools',
   },
   {
@@ -460,7 +479,7 @@ const STATIC_META: RouteMeta[] = [
     breadcrumbLabel: 'EasyScribe Alternative',
     faq: [
       { q: 'What does VideoText offer that EasyScribe does not?', a: 'VideoText adds YouTube URL transcription, SRT and VTT subtitle export, subtitle translation to 50+ languages, subtitle burning into video, and batch processing. EasyScribe is limited to basic audio file transcription.' },
-      { q: 'Is VideoText free like EasyScribe?', a: 'Yes. VideoText has a free tier with 3 imports per month and no credit card required. Paid plans start at $10/month.' },
+      { q: 'Is VideoText free like EasyScribe?', a: 'Yes. VideoText has a free tier with 3 imports per month and no credit card required. Paid plans: Basic $19, Pro $49, Agency $129.' },
     ],
   },
   {
@@ -692,9 +711,10 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/tools/subtitle-character-checker',
-    title: `Subtitle Character Limit Checker — Netflix, YouTube & BBC | ${SITE_NAME}`,
+    title: `Subtitle Character Limits — Pass/Fail | ${SITE_NAME}`,
     description:
-      'Check if subtitle lines meet Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) character limits. Instant pass/fail report per cue. Free.',
+      'Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account.',
+    h1: 'Check Subtitle Character Limits',
     breadcrumbLabel: 'Character Limit Checker',
   },
   {
@@ -784,9 +804,10 @@ const STATIC_META: RouteMeta[] = [
   // ── Hub pages ────────────────────────────────────────────────────────────────
   {
     path: '/subtitle-tools',
-    title: `Free Subtitle Tools for Creators — SRT, VTT, Timing & Validation | ${SITE_NAME}`,
+    title: `Free Subtitle Tools: Convert & Validate | ${SITE_NAME}`,
     description:
-      'Convert SRT to VTT, shift subtitle timing, validate files, check reading speed, and more. All tools are free, browser-based, and require no account.',
+      'Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded.',
+    h1: 'Free Subtitle Tools for Creators',
     breadcrumbLabel: 'Subtitle Tools',
   },
   {
@@ -1004,29 +1025,58 @@ function titleFromPath(routePath: string): string {
   return `${label} | ${SITE_NAME}`
 }
 
+const TITLE_BODY_MAX = 50
+const TITLE_MIN_USEFUL = 24
+const MONEY_TITLE_PATHS = new Set([
+  '/',
+  '/pricing',
+  '/video-to-transcript',
+  '/video-to-subtitles',
+  '/translate-subtitles',
+  '/fix-subtitles',
+  '/burn-subtitles',
+  '/compress-video',
+  '/youtube-transcript-generator',
+  '/video-to-srt',
+  '/srt-generator',
+  '/voice-recorder',
+  '/guideline-format',
+])
+
+function stripTrailingTitleStops(value: string): string {
+  const stops = new Set(['a', 'an', 'the', 'and', 'or', 'of', 'to', 'for', 'from', 'with', 'any', 'on', 'in', 'at', 'by', 'as'])
+  let words = value.replace(/[–—,.:;…]+$/u, '').trim().split(/\s+/)
+  while (words.length > 2 && stops.has(words[words.length - 1].toLowerCase())) {
+    words = words.slice(0, -1)
+  }
+  return words.join(' ').replace(/[–—,.:;…]+$/u, '').trim()
+}
+
+function wordSafeTitleClip(base: string, budget: number): string {
+  const clipped = base.slice(0, budget)
+  const space = clipped.lastIndexOf(' ')
+  const cut = space >= TITLE_MIN_USEFUL ? clipped.slice(0, space) : clipped.trim()
+  return stripTrailingTitleStops(cut)
+}
+
+/**
+ * Fit titles to ~62 chars including ` | VideoText`.
+ * Never collapse a long title to a stub first-phrase if that drops the primary keyword.
+ * Money pages keep their authored lead; we only word-clip if they still overflow.
+ */
 function optimizeSeoTitle(rawTitle: string, routePath: string): string {
   const suffix = ` | ${SITE_NAME}`
   const normalized = (rawTitle || '').trim().replace(/\s+/g, ' ')
   const hasSuffix = normalized.endsWith(suffix)
   const base = hasSuffix ? normalized.slice(0, -suffix.length).trim() : normalized
   const maxTotal = 62
-  const budget = maxTotal - suffix.length
+  const budget = Math.min(TITLE_BODY_MAX, maxTotal - suffix.length)
   if (base.length <= budget) return `${base}${suffix}`
 
-  const maybeAddConversionBoost = (candidate: string): string => {
-    const boosts = routePath.includes('-alternative')
-      ? [' - Faster, File-First', ' - Faster & Easier']
-      : routePath.includes('transcription')
-        ? [' - Fast & Accurate', ' - Free Online']
-        : []
-    for (const boost of boosts) {
-      const next = `${candidate}${boost}`
-      if (next.length <= budget) return next
-    }
-    return candidate
+  if (MONEY_TITLE_PATHS.has(routePath)) {
+    return `${wordSafeTitleClip(base, budget)}${suffix}`
   }
 
-  // Prefer keeping intent-rich lead phrase before long explanatory tails.
   const separators = [' — ', ' – ', ': ', ' - ', ' | ']
   for (const sep of separators) {
     const parts = base.split(sep).map((p) => p.trim()).filter(Boolean)
@@ -1037,20 +1087,13 @@ function optimizeSeoTitle(rawTitle: string, routePath: string): string {
       if (next.length > budget) break
       candidate = next
     }
-    if (candidate.length <= budget) return `${maybeAddConversionBoost(candidate)}${suffix}`
+    // Reject a first-phrase collapse that is too short to carry the query.
+    if (candidate.length >= TITLE_MIN_USEFUL && candidate.length <= budget) {
+      return `${candidate}${suffix}`
+    }
   }
 
-  // Fallback: word-safe truncate.
-  const clipped = base.slice(0, budget - 1)
-  const safe = clipped.slice(0, Math.max(0, clipped.lastIndexOf(' '))).trim() || clipped.trim()
-  const withEllipsis = `${safe}…`
-
-  // For money pages, keep CTA language if truncation was aggressive.
-  if (withEllipsis.length < 36 && routePath !== '/blog') {
-    const compact = base.slice(0, budget - 7).trim()
-    return `${compact} Free${suffix}`.slice(0, maxTotal).replace(/\s+\|/, ' |')
-  }
-  return `${withEllipsis}${suffix}`
+  return `${wordSafeTitleClip(base, budget)}${suffix}`
 }
 
 function descriptionFromPath(routePath: string): string {
@@ -1359,6 +1402,8 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
   ],
   '/subtitle-tools': [
     { path: '/video-to-subtitles', label: 'Video to Subtitles' },
+    { path: '/srt-generator', label: 'SRT File Generator' },
+    { path: '/video-to-srt', label: 'Video to SRT Converter' },
     { path: '/subtitle-generator', label: 'Subtitle Generator' },
     { path: '/auto-subtitle-generator', label: 'Auto Subtitle Generator' },
     { path: '/youtube-subtitle-generator', label: 'YouTube Subtitle Generator' },
@@ -1646,6 +1691,9 @@ function buildCanonicalToolsSection(hubPath: string): string {
 
   if (hubPath === '/subtitle-tools') {
     tools = [
+      { path: '/srt-generator', label: 'SRT File Generator' },
+      { path: '/video-to-srt', label: 'Video to SRT Converter' },
+      { path: '/translate-subtitles', label: 'Translate Subtitles' },
       { path: '/burn-subtitles', label: 'Burn Subtitles into Video' },
     ]
   } else if (hubPath === '/transcription-tools') {
@@ -1799,10 +1847,11 @@ function injectHead(template: string, meta: RouteMeta): string {
   )
 
   // Replace robots (noindex support)
-  if (meta.noindex) {
+  if (meta.robots || meta.noindex) {
+    const robots = meta.robots || 'noindex,nofollow'
     html = html.replace(
       /<meta\s+name="robots"\s+content="[^"]*"\s*\/>/,
-      '<meta name="robots" content="noindex,nofollow" />'
+      `<meta name="robots" content="${robots}" />`
     )
   }
 

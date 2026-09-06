@@ -55,6 +55,16 @@ export default function ShiftSubtitleTiming() {
       title="Subtitle Time Shifter — Delay or Advance All Subtitle Timestamps"
       description="Fix out-of-sync subtitles by shifting every timestamp forward or backward by any number of seconds. Works with SRT and VTT files. Free, browser-based, instant."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
+      moneyCta={{
+        kicker: 'Out of sync?',
+        title: 'Fix this file in one click',
+        body: 'A uniform shift helps constant offset. Overlaps, CPS, or mixed drift → use Fix Subtitles.',
+        primary: { label: 'Fix this file in one click', path: '/fix-subtitles' },
+        secondary: [
+          { label: 'Translate', path: '/translate-subtitles' },
+          { label: 'Burn', path: '/burn-subtitles' },
+        ],
+      }}
       contentSections={[
         {
           heading: 'Why are subtitles out of sync?',

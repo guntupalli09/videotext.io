@@ -23,6 +23,7 @@ import {
   Languages,
 } from 'lucide-react'
 import { ToolLayout } from '../components/figma/ToolLayout'
+import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
 import TranscriptSharePanel from '../components/TranscriptSharePanel'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import {
@@ -815,8 +816,8 @@ export default function VoiceRecorder() {
   return (
     <ToolLayout
       breadcrumbs={[{ label: 'Voice Recorder', href: '/voice-recorder' }]}
-      title="Live Voice to Text (Real-Time Speech to Text — No Upload Needed)"
-      subtitle="Speak and see words appear instantly as you talk. Real-time transcription with no delay or file upload."
+      title="Voice to Text — In-Browser Recorder"
+      subtitle="Speak in the browser and get text. No video upload to start. Files deleted after processing. 3 free imports/mo."
       icon={<Mic className="w-5 h-5 text-blue-600" />}
       tags={['Free', '99 Languages', 'Live Transcription', 'Translation']}
     >
@@ -1457,85 +1458,7 @@ export default function VoiceRecorder() {
           />
         )}
 
-        <section className="max-w-3xl mx-auto space-y-8 pt-4">
-          <p className="text-base font-semibold text-gray-800 dark:text-gray-200">
-            👉 No upload. No waiting. Just live transcription as you speak.
-          </p>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            👉 Works instantly in your browser — no installation required.
-          </p>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Convert Voice to Text Online Instantly</h2>
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-              Use your microphone to convert speech into text in real time. No uploads, no processing — just instant results.
-              This is built for <strong>voice to text online</strong>, <strong>speech to text instantly</strong>, and
-              <strong> real-time voice transcription</strong>.
-              Need file workflows? Try <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/video-to-transcript">video to transcript</Link>.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Live Voice to Text (See Words as You Speak)</h2>
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-              This is not traditional transcription. Words appear in real time with continuous live updates and no waiting for
-              processing. If you are working from links, use our <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/youtube-transcript-generator">YouTube transcript generator</Link>.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Voice to Text Without Uploading Files</h2>
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-              Most tools require uploading audio and waiting. This tool uses your microphone directly, converts speech instantly,
-              and avoids file uploads completely. Need captions after transcript? Open the <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/subtitle-generator">subtitle generator</Link>.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Why This Live Voice to Text Tool Is Different</h2>
-            <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-              <li>Real-time transcription — not delayed</li>
-              <li>No upload required — direct microphone input</li>
-              <li>Fast and continuous — no interruptions</li>
-              <li>Privacy-first — nothing stored</li>
-              <li>Multi-language support — 70+ languages</li>
-            </ul>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              Need multilingual output? Use <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/translate-subtitles">translate subtitles</Link>.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Who Uses Live Voice to Text?</h2>
-            <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-              <li>Writers — dictate ideas instantly</li>
-              <li>Students — capture lectures in real time</li>
-              <li>Professionals — take notes without typing</li>
-              <li>Creators — convert speech into content instantly</li>
-            </ul>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">More Transcription &amp; Subtitle Tools</h2>
-            <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/video-to-transcript">Video to transcript tool</Link></li>
-              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/youtube-transcript-generator">YouTube transcript generator</Link></li>
-              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/subtitle-generator">Subtitle generator</Link></li>
-              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/translate-subtitles">Translate subtitles</Link></li>
-            </ul>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Frequently Asked Questions</h2>
-            <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-              <p><strong>How do I convert voice to text online?</strong><br />Use your microphone and start speaking. The tool converts your speech into text instantly.</p>
-              <p><strong>Is there a free voice to text tool?</strong><br />Yes, you can use this tool directly in your browser without uploading files.</p>
-              <p><strong>Can I transcribe speech in real time?</strong><br />Yes. This tool provides live transcription as you speak.</p>
-              <p><strong>Does this work without uploading audio?</strong><br />Yes. It uses your microphone directly, so no upload is needed.</p>
-              <p><strong>What languages are supported?</strong><br />70+ languages with automatic detection.</p>
-            </div>
-          </section>
-        </section>
+        <CoreToolSeoDepth path="/voice-recorder" />
 
       </div>
 

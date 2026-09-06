@@ -9,12 +9,13 @@ const SUBTITLE_TOOLS = [
     icon: MessageSquare,
     description: 'Create subtitles from video or audio',
     links: [
-      { path: '/video-to-subtitles', label: 'Video to Subtitles' },
+      { path: '/video-to-subtitles', label: 'Video to Subtitles (full product hub)' },
+      { path: '/srt-generator', label: 'SRT File Generator' },
+      { path: '/video-to-srt', label: 'Video to SRT Converter' },
       { path: '/subtitle-generator', label: 'Subtitle Generator' },
       { path: '/auto-subtitle-generator', label: 'Auto Subtitle Generator' },
       { path: '/youtube-subtitle-generator', label: 'YouTube Subtitle Generator' },
       { path: '/caption-video-online', label: 'Caption Video Online' },
-      { path: '/video-with-subtitles', label: 'Video with Subtitles' },
       { path: '/batch-process', label: 'Batch Video to Subtitles' },
     ],
   },
@@ -90,18 +91,18 @@ export default function SubtitleToolsHub() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <Seo
-        title="Free Subtitle Tools — Convert, Validate & Fix | VideoText"
-        description="Convert SRT to VTT, shift subtitle timing, validate files, check reading speed, and more. Free, browser-based subtitle tools — no account needed."
+        title="Free Subtitle Tools: Convert & Validate | VideoText"
+        description="Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded."
         canonicalPath="/subtitle-tools"
       />
       {/* Hero */}
       <div className="bg-gradient-to-br from-pink-600 to-rose-800 text-white py-16 px-4">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">
-            Free Subtitle Tools — Convert, Validate & Fix SRT/VTT
+            Free Subtitle Tools for Creators
           </h1>
           <p className="text-lg text-pink-100 max-w-2xl">
-            19 free, browser-based tools for subtitle conversion, timing fixes, validation, and reading-speed checks. No account, nothing uploaded to a server.
+            Convert formats, shift timing, validate cues, and check character limits in your browser. No account. Nothing uploaded.
           </p>
         </div>
       </div>
@@ -222,12 +223,10 @@ export default function SubtitleToolsHub() {
           <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
           <div className="space-y-5">
             {[
-              { q: 'Are these subtitle tools really free?', a: 'Yes, completely. All tools on this page run in your browser with no server processing. There are no file size limits, no account requirements, and no usage restrictions. They work using pure JavaScript in your browser.' },
+              { q: 'Are these subtitle tools really free?', a: 'Yes. Converters, timing, validator, reading-speed, and character-limit tools run in your browser. No account and no upload. If you need a new SRT from video, use the SRT file generator or the video to SRT converter (those use the AI workflow and include 3 free imports per month).' },
               { q: 'Do subtitle files get uploaded to a server?', a: 'No. When you use tools like the Subtitle Validator or Shift Timing tool, your file is read by your browser locally using the HTML5 File API. The file content is processed in JavaScript in your browser tab and never leaves your device.' },
               { q: 'What subtitle formats are supported?', a: 'Most tools support SRT (SubRip Text) and VTT (WebVTT) — the two most widely used formats. SRT is universally compatible with editing software and platforms. VTT is the web standard required for HTML5 players. Some tools only accept SRT, so if you have a VTT file, use the VTT to SRT converter first.' },
-              { q: 'How do I fix subtitles that are out of sync?', a: 'Use the Shift Subtitle Timing tool. If subtitles are consistently early by the same amount, enter a negative offset (e.g. -1.5 seconds). If they appear too late, enter a positive offset. For subtitles that drift over time (not a fixed offset), you\'ll need to re-time them manually in a subtitle editor like Subtitle Edit.' },
-              { q: 'What is CPS and why does it matter?', a: 'CPS stands for characters per second — how fast a subtitle requires the viewer to read. Netflix\'s limit is 17 CPS for most languages (20 CPS for English). Subtitles above the limit are too fast to read comfortably and will fail QC checks for broadcast delivery. Use the Subtitle Reading Speed Checker to identify cues that exceed the limit.' },
-              { q: 'What is the maximum number of characters per subtitle line?', a: 'This varies by platform: Netflix allows 42 characters per line, BBC iPlayer 37, and Apple TV+ 40. Lines over these limits may wrap awkwardly or fail delivery QC. Use the Subtitle Character Limit Checker to scan your file for long lines before submitting.' },
+              { q: 'How do I check Netflix or YouTube line limits?', a: 'Open the Subtitle Character Limit Checker, upload an SRT or VTT, and pick Netflix (42), YouTube (80), or BBC (37). You get a pass/fail report per cue. Need the file in another language first? Translate Subtitles keeps timestamps intact.' },
             ].map(({ q, a }) => (
               <div key={q}>
                 <p className="font-semibold text-gray-900 dark:text-white text-sm mb-1">{q}</p>
