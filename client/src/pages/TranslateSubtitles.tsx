@@ -532,7 +532,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const layoutProps = {
     breadcrumbs,
     title: seoH1 ?? 'Translate Subtitles to Any Language',
-    subtitle: seoIntro ?? 'Translate SRT or VTT to 70+ languages with timestamps intact. Files deleted after processing. Free to try — 3 imports/mo.',
+    subtitle: seoIntro ?? 'Upload SRT or VTT, pick a target language, download a timed file. 70+ languages. Timestamps stay in sync. Try it free.',
     icon: <Languages className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     tags: ['SRT', 'VTT', 'TXT', 'DOCX', 'JSON', '70+ Languages'],
     sidebar: null,

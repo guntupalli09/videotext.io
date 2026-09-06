@@ -1200,7 +1200,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Convert video to a timed SRT subtitle file online. Upload MP4/MOV or a YouTube URL. AI timestamps, no watermark. Sign up free — 3 imports/mo.',
     h1: 'Convert Video to an SRT File',
     intro:
-      'Converter path: video in, timed SRT out. Upload MP4/MOV or paste a YouTube URL. For the full caption product (fix, translate, burn, and transcript + summary), use Video to Subtitles.',
+      'Turn a video into a timed SRT subtitle file. Upload MP4, MOV, or a YouTube URL — VideoText transcribes the speech and writes the SRT. Need a file maker instead? Use the SRT file generator. For the full caption product (fix, translate, burn, transcript + summary), use Video to Subtitles. Files deleted after processing. Try 3 free imports this month.',
     breadcrumbLabel: 'Video to SRT',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-subtitles', '/srt-generator', '/translate-subtitles', '/subtitle-tools'],
@@ -1209,8 +1209,9 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How do I convert a video to an SRT file?', a: 'Upload an MP4 or MOV, or paste a YouTube URL. VideoText transcribes the audio and downloads a timed SRT you can add in YouTube Studio, Vimeo, or any editor. Sign up free to try — 3 imports per month, no card.' },
       { q: 'Is this video to SRT converter free?', a: 'Yes. The free plan includes 3 imports per month with no credit card and no watermark on SRT downloads. Upgrade only if you need more imports.' },
-      { q: 'What is the difference between Video to SRT and the SRT file generator?', a: 'This page is the converter: video in, SRT out. The SRT file generator is the same workflow framed as creating a new subtitle file (maker/creator). Use this page if you searched “video to srt”; use /srt-generator if you searched “srt file generator.”' },
+      { q: 'What is the difference between Video to SRT and the SRT file generator?', a: 'This page is the converter: video in, SRT out. The SRT file generator is the same workflow framed as creating a new subtitle file (maker/creator). Use this page if you searched “video to srt”; use /srt-generator if you searched “srt file generator”.' },
       { q: 'When should I use Video to Subtitles instead?', a: 'Use /video-to-subtitles when you want the full caption product hub — timed SRT/VTT plus next steps (fix, translate, burn) and a path to transcript + summary. This page stays a converter.' },
+      { q: 'Can I translate the SRT after converting?', a: 'Yes. After you download the SRT, open Translate Subtitles to send it to 70+ languages with timestamps preserved. Free browser tools on /subtitle-tools can also convert SRT to VTT or check line limits.' },
     ],
   },
   {
@@ -1220,7 +1221,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Create a timed SRT file from any video. Upload or paste a YouTube URL, download SRT in seconds. Whisper AI. 3 free imports/mo, no card, no watermark.',
     h1: 'Free SRT File Generator from Video',
     intro:
-      'File maker/creator: upload video, download a timed .srt. For the full caption product hub (fix, translate, burn, and transcript + summary), use Video to Subtitles. For “video to srt” converter wording, use /video-to-srt.',
+      'Make a timed SRT subtitle file from video — a file maker, not a caption-format converter. Upload a video or YouTube URL and download SRT. For the full caption product hub (fix, translate, burn, transcript + summary), use Video to Subtitles. Whisper large-v3. Files deleted after processing. Try 3 free imports this month.',
     breadcrumbLabel: 'SRT Generator',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-subtitles', '/video-to-srt', '/translate-subtitles', '/subtitle-tools'],
@@ -1230,7 +1231,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'What is an SRT file generator?', a: 'An SRT file generator (also called an SRT file maker or creator) transcribes speech in a video and writes a timed .srt file. You upload video and download captions ready for YouTube, Vimeo, or an editor.' },
       { q: 'Is the SRT file generator free?', a: 'Yes. Sign up free for 3 imports per month — no card and no watermark. Paid plans add more minutes if you outgrow the free tier.' },
       { q: 'Does it support multiple languages?', a: 'Yes. Set the spoken language before processing for best accuracy. After you have an SRT, use Translate Subtitles to create versions in 70+ languages without losing timestamps.' },
-      { q: 'SRT file generator vs video to SRT — which should I use?', a: 'Use this page to create a new SRT file from video (file generator/maker). If you want a video-to-SRT converter, use /video-to-srt. For the full caption product plus next steps, use /video-to-subtitles.' },
+      { q: 'SRT file generator vs video to SRT — which should I use?', a: 'Use this page to create a new SRT file from video (file generator/maker). If you want a video-to-SRT converter, use /video-to-srt. For the full caption product plus next steps, use /video-to-subtitles. To fix or convert an existing SRT, see the free tools on /subtitle-tools.' },
     ],
   },
   // ── Video translation variants ───────────────────────────────────────────────

@@ -58,8 +58,8 @@ export default function SubtitleCharacterChecker() {
 
   return (
     <FreeToolLayout
-      title="Subtitle Character Limit Checker — Netflix, YouTube & BBC"
-      description="Verify every subtitle line meets Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) character limits. Instant pass/fail per cue. Free, browser-based."
+      title="Subtitle Character Limits — Pass/Fail"
+      description="Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
       contentSections={[
         {
@@ -122,7 +122,7 @@ export default function SubtitleCharacterChecker() {
         { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
         { label: 'Burn Subtitles', path: '/burn-subtitles', desc: 'Hardcode the checked file into video' },
         { label: 'SRT File Generator', path: '/srt-generator', desc: 'Create a timed SRT from video' },
-        { label: 'Video to SRT Converter', path: '/video-to-srt', desc: 'Convert a video file to SRT' },
+        { label: 'Free Subtitle Tools', path: '/subtitle-tools', desc: 'Converters, timing, validator, and more' },
       ]}
     >
       <div className="space-y-4">

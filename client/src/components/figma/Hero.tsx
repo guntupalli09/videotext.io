@@ -93,13 +93,13 @@ export function Hero() {
           className="mx-auto mb-3 max-w-4xl text-center font-display font-medium tracking-tight leading-[1.08]"
           style={{ fontSize: "clamp(2rem, 4.6vw, 3.75rem)" }}
         >
-          <span className="text-white">Turn Any Video Into a Clean Transcript or Perfect Subtitles — </span>
+          <span className="text-white">VideoText: Video to Text &amp; Subtitle Tools — </span>
           <span className="bg-gradient-to-r from-fuchsia-300 via-blue-300 to-blue-300 bg-clip-text text-transparent">Fast.</span>
         </h1>
 
         {/* Sub-headline */}
         <p className="mx-auto mb-6 max-w-2xl text-center text-[15px] leading-relaxed text-white/60 sm:text-[17px]">
-          Transcribe videos, generate subtitles, or fix broken SRT files in minutes with accurate timing, clean formatting, and export-ready results.
+          Upload a video or YouTube URL. Get a transcript, SRT/VTT, summary, and chapters. Files deleted after processing. Start free — 3 imports/mo.
         </p>
 
         <HeroActions />

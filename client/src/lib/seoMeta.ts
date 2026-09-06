@@ -10,9 +10,9 @@ import { resolveInternalLinkPath } from './primaryUrls'
 /** Static (non-SEO-registry) routes: title + description. */
 const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> = {
   '/': {
-    title: 'Video to Text Transcription Software | Fast AI Transcript & Subtitles',
+    title: 'VideoText: Video to Text & Subtitles | VideoText',
     description:
-      'VideoText turns long video into structured transcripts, subtitles, summaries, and chapters in one workflow, with export support for TXT, DOCX, PDF, SRT, and VTT.',
+      'VideoText is AI video-to-text software: transcript, SRT/VTT, summary, and chapters from a video or YouTube URL. Whisper large-v3. 3 free imports/mo.',
   },
   '/pricing': {
     title: 'Pricing — Free & Pro Plans | VideoText',
@@ -376,8 +376,8 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Check subtitle reading speed with characters-per-second and words-per-minute guidance for Netflix, BBC, EBU, YouTube, and social captions.',
   },
   '/subtitle-character-checker': {
-    title: 'Subtitle Character Limit Checker — Netflix, YouTube & BBC | VideoText',
-    description: 'Check subtitle line lengths against common caption character limits so SRT and VTT files stay readable on Netflix, YouTube, BBC-style, and social video layouts.',
+    title: 'Subtitle Character Limits — Pass/Fail | VideoText',
+    description: 'Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account.',
   },
   '/subtitle-word-counter': {
     title: 'Subtitle Word Counter — Count Words in SRT & VTT Files | VideoText',
@@ -405,8 +405,8 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Check every subtitle cue for characters-per-second against Netflix (17 CPS), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
   },
   '/tools/subtitle-character-checker': {
-    title: 'Subtitle Character Limit Checker — Netflix, YouTube & BBC | VideoText',
-    description: 'Check if subtitle lines meet Netflix (42 chars), YouTube (80 chars), or BBC (37 chars) character limits. Instant pass/fail report per cue. Free.',
+    title: 'Subtitle Character Limits — Pass/Fail | VideoText',
+    description: 'Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account.',
   },
   '/tools/subtitle-word-counter': {
     title: 'Subtitle Word Counter — Count Words in SRT & VTT Files | VideoText',
@@ -457,8 +457,8 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Convert TTML, DFXP, or EBU-TT subtitle files to SRT format. Used for Netflix, broadcast, and enterprise video workflows. Free, browser-based.',
   },
   '/subtitle-tools': {
-    title: 'Free Subtitle Tools for Creators — SRT, VTT, Timing & Validation | VideoText',
-    description: 'Convert SRT to VTT, shift subtitle timing, validate files, check reading speed, and more. All tools are free, browser-based, and require no account.',
+    title: 'Free Subtitle Tools: Convert & Validate | VideoText',
+    description: 'Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded.',
   },
   '/subtitle-resources': {
     title: 'Subtitle Resources & Standards — Formats, Netflix Rules, CPS Limits | VideoText',
