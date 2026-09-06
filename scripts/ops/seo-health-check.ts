@@ -9,6 +9,7 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import { countFaqPageInJsonLdScripts, countBreadcrumbListInJsonLdScripts } from '../seo/jsonLdUtils'
+import { getCoreToolFaq } from '../../client/src/lib/coreToolSeoDepth'
 
 const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace(/\/$/, '')
 const BASE_URL = (process.env.BASE_URL || SITE_URL).replace(/\/$/, '')
@@ -124,7 +125,7 @@ async function main(): Promise<void> {
       if (!canonical || canonicalNorm !== expectedNorm) fail(`canonical expected ${expectedCanonical}, got ${canonical || 'null'}`, url)
       if (breadcrumbJsonLdCount > 1) fail(`duplicate BreadcrumbList in application/ld+json (count=${breadcrumbJsonLdCount})`, url)
       if (faqJsonLdCount > 1) fail(`duplicate FAQPage in application/ld+json (count=${faqJsonLdCount})`, url)
-      const expectFaqPage = pathKey === '/faq' || (registryFaq.get(pathKey) ?? 0) > 0
+      const expectFaqPage = pathKey === '/faq' || (registryFaq.get(pathKey) ?? 0) > 0 || getCoreToolFaq(pathKey).length > 0
       if (!expectFaqPage && faqJsonLdCount > 0) fail('FAQPage JSON-LD should not be present', url)
     } catch (e) {
       fail((e as Error).message, url)
