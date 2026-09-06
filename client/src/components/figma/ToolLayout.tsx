@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { ChevronRight, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import HeroTrustChips from "../HeroTrustChips";
-import CoreToolSeoDepth from "../CoreToolSeoDepth";
 
 interface Breadcrumb {
   label: string;
