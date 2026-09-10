@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { MessageSquare, FileDown, Lock, AlertTriangle, RefreshCw } from 'lucide-react'
 import FailedState from '../components/FailedState'
@@ -25,10 +25,11 @@ import { ResultSkeleton } from '../components/figma/ResultSkeleton'
 import { Select } from '../components/figma/FormControls'
 import SubtitleStudioPhaseRail, { type StudioPhase } from '../components/subtitleStudio/SubtitleStudioPhaseRail'
 import SmartAssistCard from '../components/subtitleStudio/SmartAssistCard'
+import LanguageLaneBar from '../components/subtitleStudio/LanguageLaneBar'
+import ReviewEditingDesk from '../components/subtitleStudio/ReviewEditingDesk'
 import BilingualCueStudio from '../components/subtitleStudio/BilingualCueStudio'
 import { applySafeAssistFixes, summarizeAssist } from '../lib/subtitleQaAssist'
 import type { SubtitleRow } from '../components/SubtitleEditor'
-const SubtitleQAReview = lazy(() => import('../components/SubtitleQAReview'))
 import { incrementUsage } from '../lib/usage'
 import { uploadFile, uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob } from '../lib/api'
 import { isLoggedIn } from '../lib/auth'
@@ -163,6 +164,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const [failedMessage, setFailedMessage] = useState<string | undefined>(undefined)
   const [translationLanguage, setTranslationLanguage] = useState<string | null>(null)
+  const [translationLanes, setTranslationLanes] = useState<Record<string, SubtitleRow[]>>({})
   const [translatedSubtitleRows, setTranslatedSubtitleRows] = useState<SubtitleRow[]>([])
   const [isTranslating, setIsTranslating] = useState(false)
   const [studioPhase, setStudioPhase] = useState<StudioPhase>('review')
@@ -220,7 +222,11 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       .then((r) => r.json())
       .then(({ translatedText }: { translatedText?: string }) => {
         if (translatedText) {
-          setTranslatedSubtitleRows(parseSubtitlesToRows(translatedText))
+          const parsed = parseSubtitlesToRows(translatedText)
+          setTranslatedSubtitleRows(parsed)
+          setTranslationLanes((prev) =>
+            translationLanguage ? { ...prev, [translationLanguage]: parsed } : prev
+          )
         }
       })
       .catch(() => toast.error('Subtitle translation failed. Please try again.'))
@@ -791,6 +797,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setPreviewError(false)
     setPartialSegments([])
     setTranslationLanguage(null)
+    setTranslationLanes({})
     setTranslatedSubtitleRows([])
     setIsTranslating(false)
     setStudioPhase('review')
@@ -1132,7 +1139,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                             </div>
                           )}
 
-                          {translatedSubtitleRows.length > 0 && translationLanguage ? (
+                          {translatedSubtitleRows.length > 0 && translationLanguage && studioPhase === 'translate' ? (
                             <BilingualCueStudio
                               videoSrc={videoPreviewUrl}
                               sourceRows={subtitleRows}
@@ -1140,25 +1147,19 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                               sourceLabel={sourceLabel}
                               targetLabel={translationLanguage}
                               editable={canEdit}
-                              onTargetRowsChange={setTranslatedSubtitleRows}
+                              onTargetRowsChange={(next) => {
+                                setTranslatedSubtitleRows(next)
+                                setTranslationLanes((prev) => ({ ...prev, [translationLanguage]: next }))
+                              }}
                             />
                           ) : (
-                            <Suspense fallback={<div className="h-[300px] rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />}>
-                              <SubtitleQAReview
-                                key={result?.downloadUrl}
-                                videoSrc={videoPreviewUrl}
-                                rows={subtitleRows}
-                                onRowsChange={canEdit ? setSubtitleRows : () => {}}
-                                editable={canEdit}
-                                onDownloadEdited={() => {
-                                  handleDownloadSubtitles(
-                                    subtitleRows,
-                                    currentResultFormat === 'vtt' ? 'vtt' : 'srt',
-                                    `original_${langCodeForFile(language || undefined)}`
-                                  )
-                                }}
-                              />
-                            </Suspense>
+                            <ReviewEditingDesk
+                              videoSrc={videoPreviewUrl}
+                              rows={subtitleRows}
+                              editable={canEdit}
+                              onRowsChange={setSubtitleRows}
+                              reviewCueIndices={summarizeAssist(subtitleRows).reviewIssues.map((i) => i.cueIndex)}
+                            />
                           )}
 
                           <SmartAssistCard
@@ -1167,28 +1168,25 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                             onReviewCues={() => setStudioPhase('review')}
                           />
 
-                          {!translationLanguage && (
-                            <div className="flex flex-wrap items-center gap-2">
-                              <label className="text-sm font-medium text-gray-800 dark:text-gray-100">+ Add translation</label>
-                              <select
-                                value=""
-                                onChange={(e) => {
-                                  const v = e.target.value
-                                  if (!v) return
-                                  setTranslatedSubtitleRows([])
-                                  setTranslationLanguage(v)
-                                  setStudioPhase('translate')
-                                }}
-                                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                aria-label="Add translation language"
-                              >
-                                <option value="">Choose language…</option>
-                                {LANGUAGES.map((l) => (
-                                  <option key={l.value} value={l.value}>{l.label}</option>
-                                ))}
-                              </select>
-                            </div>
-                          )}
+                          <LanguageLaneBar
+                            activeLanguage={translationLanguage}
+                            languages={Object.keys(translationLanes).length > 0
+                              ? Object.keys(translationLanes)
+                              : (translationLanguage ? [translationLanguage] : [])}
+                            languageOptions={LANGUAGES}
+                            onSelectLanguage={(lang) => {
+                              setTranslationLanguage(lang)
+                              const existing = translationLanes[lang]
+                              if (existing?.length) setTranslatedSubtitleRows(existing)
+                              else setTranslatedSubtitleRows([])
+                              setStudioPhase('translate')
+                            }}
+                            onAddLanguage={(lang) => {
+                              setTranslatedSubtitleRows([])
+                              setTranslationLanguage(lang)
+                              setStudioPhase('translate')
+                            }}
+                          />
 
                           {!canEdit && (
                             <button type="button" onClick={() => { setPaywallReason('INLINE_EDIT'); setShowPaywall(true) }} className="px-1 text-left text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">

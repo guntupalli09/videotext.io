@@ -9,6 +9,8 @@ import { ToolLayout } from '../components/figma/ToolLayout'
 import SubtitleStudioPhaseRail, { type StudioPhase } from '../components/subtitleStudio/SubtitleStudioPhaseRail'
 import SmartAssistCard from '../components/subtitleStudio/SmartAssistCard'
 import BilingualCueStudio from '../components/subtitleStudio/BilingualCueStudio'
+import ReviewEditingDesk from '../components/subtitleStudio/ReviewEditingDesk'
+import LanguageLaneBar from '../components/subtitleStudio/LanguageLaneBar'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 import { LANGUAGES } from '../lib/languages'
 
@@ -16,26 +18,63 @@ const SOURCE: SubtitleRow[] = [
   { index: 1, startTime: '00:00:04,000', endTime: '00:00:08,000', text: 'We should probably start with the first example.' },
   { index: 2, startTime: '00:00:08,000', endTime: '00:00:12,000', text: "I agree, but there's one thing we should clarify first." },
   { index: 3, startTime: '00:00:12,200', endTime: '00:00:16,000', text: 'Sure — what did you have in mind?' },
+  { index: 4, startTime: '00:00:16,200', endTime: '00:00:20,000', text: 'If we keep the timing locked, translation stays easy.' },
+  { index: 5, startTime: '00:00:20,200', endTime: '00:00:24,000', text: 'Exactly. Then we can focus on the wording itself.' },
 ]
 
-const SPANISH: SubtitleRow[] = [
-  { index: 1, startTime: '00:00:04,000', endTime: '00:00:08,000', text: 'Probablemente deberíamos empezar con el primer ejemplo.' },
-  { index: 2, startTime: '00:00:08,000', endTime: '00:00:12,000', text: 'Estoy de acuerdo, pero hay algo que deberíamos aclarar primero.' },
-  { index: 3, startTime: '00:00:12,200', endTime: '00:00:16,000', text: 'Claro — ¿qué tenías en mente?' },
-]
+const TRANSLATIONS: Record<string, SubtitleRow[]> = {
+  Spanish: [
+    { index: 1, startTime: '00:00:04,000', endTime: '00:00:08,000', text: 'Probablemente deberíamos empezar con el primer ejemplo.' },
+    { index: 2, startTime: '00:00:08,000', endTime: '00:00:12,000', text: 'Estoy de acuerdo, pero hay algo que deberíamos aclarar primero.' },
+    { index: 3, startTime: '00:00:12,200', endTime: '00:00:16,000', text: 'Claro — ¿qué tenías en mente?' },
+    { index: 4, startTime: '00:00:16,200', endTime: '00:00:20,000', text: 'Si mantenemos el tiempo bloqueado, traducir es fácil.' },
+    { index: 5, startTime: '00:00:20,200', endTime: '00:00:24,000', text: 'Exacto. Entonces podemos centrarnos en el texto.' },
+  ],
+  French: [
+    { index: 1, startTime: '00:00:04,000', endTime: '00:00:08,000', text: 'On devrait probablement commencer par le premier exemple.' },
+    { index: 2, startTime: '00:00:08,000', endTime: '00:00:12,000', text: "Je suis d'accord, mais il y a une chose à clarifier d'abord." },
+    { index: 3, startTime: '00:00:12,200', endTime: '00:00:16,000', text: "Bien sûr — qu'est-ce que tu avais en tête ?" },
+    { index: 4, startTime: '00:00:16,200', endTime: '00:00:20,000', text: 'Si on garde le timing verrouillé, la traduction reste simple.' },
+    { index: 5, startTime: '00:00:20,200', endTime: '00:00:24,000', text: 'Exactement. On peut alors se concentrer sur le texte.' },
+  ],
+  German: [
+    { index: 1, startTime: '00:00:04,000', endTime: '00:00:08,000', text: 'Wir sollten wahrscheinlich mit dem ersten Beispiel beginnen.' },
+    { index: 2, startTime: '00:00:08,000', endTime: '00:00:12,000', text: 'Ich stimme zu, aber es gibt eine Sache, die wir zuerst klären sollten.' },
+    { index: 3, startTime: '00:00:12,200', endTime: '00:00:16,000', text: 'Klar — was hattest du im Sinn?' },
+    { index: 4, startTime: '00:00:16,200', endTime: '00:00:20,000', text: 'Wenn wir das Timing sperren, bleibt Übersetzen einfach.' },
+    { index: 5, startTime: '00:00:20,200', endTime: '00:00:24,000', text: 'Genau. Dann können wir uns auf den Text konzentrieren.' },
+  ],
+}
+
+const PREVIEW_LANG_OPTIONS = LANGUAGES.filter((l) =>
+  ['Spanish', 'French', 'German', 'Portuguese', 'Italian'].includes(l.value)
+)
 
 export default function SubtitleStudioPreview() {
   const [phase, setPhase] = useState<StudioPhase>('review')
-  const [translationLanguage, setTranslationLanguage] = useState<string | null>(null)
-  const [targetRows, setTargetRows] = useState<SubtitleRow[]>([])
+  const [sourceRows, setSourceRows] = useState<SubtitleRow[]>(SOURCE)
+  const [lanes, setLanes] = useState<Record<string, SubtitleRow[]>>({})
+  const [activeLanguage, setActiveLanguage] = useState<string | null>(null)
 
   const completed = useMemo(() => {
     const list: StudioPhase[] = ['generate']
     if (phase !== 'review') list.push('review')
-    if (targetRows.length > 0) list.push('translate')
+    if (Object.keys(lanes).length > 0) list.push('translate')
     if (phase === 'export') list.push('final')
     return list
-  }, [phase, targetRows.length])
+  }, [phase, lanes])
+
+  const targetRows = activeLanguage ? lanes[activeLanguage] ?? [] : []
+  const showTranslateDesk = phase === 'translate' && activeLanguage && targetRows.length > 0
+
+  const addLanguage = (lang: string) => {
+    setLanes((prev) => ({
+      ...prev,
+      [lang]: prev[lang] ?? TRANSLATIONS[lang] ?? SOURCE.map((r) => ({ ...r, text: `[${lang}] ${r.text}` })),
+    }))
+    setActiveLanguage(lang)
+    setPhase('translate')
+  }
 
   return (
     <ToolLayout
@@ -60,62 +99,44 @@ export default function SubtitleStudioPreview() {
           <SubtitleStudioPhaseRail active={phase} completed={completed} onSelect={setPhase} />
 
           <div className="mt-4 space-y-4">
-            {targetRows.length > 0 && translationLanguage ? (
+            {showTranslateDesk ? (
               <BilingualCueStudio
                 videoSrc={null}
-                sourceRows={SOURCE}
+                sourceRows={sourceRows}
                 targetRows={targetRows}
                 sourceLabel="English"
-                targetLabel={translationLanguage}
+                targetLabel={activeLanguage!}
                 editable
-                onTargetRowsChange={setTargetRows}
+                onTargetRowsChange={(next) =>
+                  setLanes((prev) => ({ ...prev, [activeLanguage!]: next }))
+                }
               />
             ) : (
-              <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
-                <div className="grid grid-cols-1 lg:grid-cols-[38%_1fr]">
-                  <div className="flex aspect-video items-center justify-center bg-gray-950 text-sm text-gray-400 lg:aspect-auto lg:min-h-[320px]">
-                    VIDEO
-                  </div>
-                  <div className="divide-y divide-gray-100 dark:divide-gray-800">
-                    {SOURCE.map((cue) => (
-                      <div key={cue.index} className="px-4 py-3">
-                        <div className="mb-1 font-mono text-[11px] tabular-nums text-gray-400">
-                          {cue.startTime.replace(',', '.')} → {cue.endTime.replace(',', '.')}
-                        </div>
-                        <p className="text-sm text-gray-800 dark:text-gray-100">{cue.text}</p>
-                        {cue.index === 1 && (
-                          <p className="mt-1 text-[11px] font-medium text-emerald-600">✓ Saved</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <ReviewEditingDesk
+                videoSrc={null}
+                rows={sourceRows}
+                editable
+                onRowsChange={setSourceRows}
+                reviewCueIndices={[1, 3]}
+              />
             )}
 
-            <SmartAssistCard safeFixesApplied={8} reviewCueCount={2} onReviewCues={() => setPhase('review')} />
+            <SmartAssistCard
+              safeFixesApplied={8}
+              reviewCueCount={2}
+              onReviewCues={() => setPhase('review')}
+            />
 
-            {!translationLanguage ? (
-              <div className="flex flex-wrap items-center gap-2">
-                <label className="text-sm font-medium text-gray-800 dark:text-gray-100">+ Add translation</label>
-                <select
-                  value=""
-                  onChange={(e) => {
-                    const v = e.target.value
-                    if (!v) return
-                    setTranslationLanguage(v)
-                    setTargetRows(v === 'Spanish' ? SPANISH : SPANISH.map((r) => ({ ...r, text: `[${v}] ${r.text}` })))
-                    setPhase('translate')
-                  }}
-                  className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                >
-                  <option value="">Choose language…</option>
-                  {LANGUAGES.filter((l) => ['Spanish', 'French', 'German', 'English'].includes(l.value)).map((l) => (
-                    <option key={l.value} value={l.value}>{l.label}</option>
-                  ))}
-                </select>
-              </div>
-            ) : null}
+            <LanguageLaneBar
+              activeLanguage={activeLanguage}
+              languages={Object.keys(lanes)}
+              languageOptions={PREVIEW_LANG_OPTIONS}
+              onSelectLanguage={(lang) => {
+                setActiveLanguage(lang)
+                setPhase('translate')
+              }}
+              onAddLanguage={addLanguage}
+            />
           </div>
         </div>
       </div>

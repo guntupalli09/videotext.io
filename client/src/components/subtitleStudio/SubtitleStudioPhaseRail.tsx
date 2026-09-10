@@ -6,7 +6,7 @@ const PHASES: { id: StudioPhase; label: string }[] = [
   { id: 'generate', label: 'Generate' },
   { id: 'review', label: 'Review' },
   { id: 'translate', label: 'Translate' },
-  { id: 'final', label: 'Final Check' },
+  { id: 'final', label: 'Final QA' },
   { id: 'export', label: 'Export' },
 ]
 
