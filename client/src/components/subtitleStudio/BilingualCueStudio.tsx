@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Lock, Pause, Play } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { Lock, Pause, Play, Unlock } from 'lucide-react'
 import type { SubtitleRow } from '../SubtitleEditor'
-import { parseTimeToMs } from '../../lib/subtitleUtils'
+import { msToSrtTime, parseTimeToMs } from '../../lib/subtitleUtils'
+import { useCuePlaybackSync } from './useCuePlaybackSync'
 
 interface BilingualCueStudioProps {
   videoSrc: string | null
@@ -27,8 +28,8 @@ function fmtRange(start: string, end: string): string {
 }
 
 /**
- * Translate desk: sticky video (~37%) + cue workspace (~63%).
- * Source = reference. Target = working field.
+ * Translate desk: source + target lanes stay on the same cue / timing.
+ * Timestamps locked to source by default; advanced unlock for target timing.
  */
 export default function BilingualCueStudio({
   videoSrc,
@@ -39,40 +40,37 @@ export default function BilingualCueStudio({
   editable,
   onTargetRowsChange,
 }: BilingualCueStudioProps) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [activeIdx, setActiveIdx] = useState(-1)
   const [savedFlash, setSavedFlash] = useState<number | null>(null)
+  const [timingUnlocked, setTimingUnlocked] = useState(false)
 
   const pairCount = Math.min(sourceRows.length, targetRows.length)
+  const timedCues = useMemo(
+    () =>
+      sourceRows.slice(0, pairCount).map((row, i) =>
+        timingUnlocked
+          ? {
+              startTime: targetRows[i]?.startTime ?? row.startTime,
+              endTime: targetRows[i]?.endTime ?? row.endTime,
+            }
+          : { startTime: row.startTime, endTime: row.endTime }
+      ),
+    [sourceRows, targetRows, pairCount, timingUnlocked]
+  )
 
-  const activeFromTime = useMemo(() => {
-    for (let i = 0; i < pairCount; i++) {
-      const start = parseTimeToMs(sourceRows[i].startTime) / 1000
-      const end = parseTimeToMs(sourceRows[i].endTime) / 1000
-      if (currentTime >= start && currentTime < end) return i
-    }
-    return -1
-  }, [currentTime, pairCount, sourceRows])
-
-  useEffect(() => {
-    setActiveIdx(activeFromTime)
-  }, [activeFromTime])
-
-  const seekToCue = (idx: number) => {
-    const start = parseTimeToMs(sourceRows[idx].startTime) / 1000
-    if (videoRef.current) {
-      videoRef.current.currentTime = start
-      setCurrentTime(start)
-    }
-    setActiveIdx(idx)
-  }
-
-  const updateTargetText = (idx: number, text: string) => {
-    onTargetRowsChange(targetRows.map((row, i) => (i === idx ? { ...row, text } : row)))
-    setSavedFlash(idx)
-  }
+  const {
+    videoRef,
+    listRef,
+    isPlaying,
+    setIsPlaying,
+    activeIdx,
+    pinnedIdx,
+    setPinnedIdx,
+    seekToCue,
+    handleTimeUpdate,
+    replayPinnedCue,
+    togglePlay,
+    setRowRef,
+  } = useCuePlaybackSync(timedCues)
 
   useEffect(() => {
     if (savedFlash == null) return
@@ -80,10 +78,65 @@ export default function BilingualCueStudio({
     return () => window.clearTimeout(t)
   }, [savedFlash])
 
+  // Keep target timing synced to source while locked.
+  useEffect(() => {
+    if (timingUnlocked) return
+    let changed = false
+    const next = targetRows.map((row, i) => {
+      const source = sourceRows[i]
+      if (!source) return row
+      if (row.startTime === source.startTime && row.endTime === source.endTime) return row
+      changed = true
+      return { ...row, startTime: source.startTime, endTime: source.endTime }
+    })
+    if (changed) onTargetRowsChange(next)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync only when lock / source timing changes
+  }, [timingUnlocked, sourceRows])
+
+  const updateTargetText = (idx: number, text: string) => {
+    onTargetRowsChange(targetRows.map((row, i) => (i === idx ? { ...row, text } : row)))
+    setSavedFlash(idx)
+  }
+
+  const updateTargetTiming = (idx: number, field: 'startTime' | 'endTime', value: string) => {
+    if (!timingUnlocked) return
+    onTargetRowsChange(targetRows.map((row, i) => (i === idx ? { ...row, [field]: value } : row)))
+  }
+
+  const nudgeTargetTiming = (idx: number, field: 'startTime' | 'endTime', deltaMs: number) => {
+    if (!timingUnlocked) return
+    const current = parseTimeToMs(targetRows[idx][field])
+    updateTargetTiming(idx, field, msToSrtTime(Math.max(0, current + deltaMs)))
+  }
+
+  const activeSource = sourceRows[Math.max(0, activeIdx)]
+  const activeTarget = targetRows[Math.max(0, activeIdx)]
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-gray-950">
+        <div>
+          <p className="text-sm font-medium text-gray-900 dark:text-white">Translation desk</p>
+          <p className="text-[11px] text-gray-500 dark:text-gray-400">
+            Lanes stay on the same cue · click timestamp to seek · timing locked to source by default
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setTimingUnlocked((v) => !v)}
+          className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
+            timingUnlocked
+              ? 'border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200'
+              : 'border-gray-200 bg-white text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300'
+          }`}
+          title={timingUnlocked ? 'Re-lock target timing to source' : 'Unlock target timing (advanced)'}
+        >
+          {timingUnlocked ? <Unlock className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
+          {timingUnlocked ? 'Timing unlocked' : 'Timing locked to source'}
+        </button>
+      </div>
+
       <div className="flex flex-col lg:flex-row lg:items-start">
-        {/* Sticky video — ~37% */}
         <div className="flex w-full shrink-0 flex-col border-b border-gray-200 bg-black lg:sticky lg:top-0 lg:w-[37%] lg:self-start lg:border-b-0 lg:border-r dark:border-gray-800">
           {videoSrc ? (
             <div className="relative flex aspect-video items-center justify-center overflow-hidden bg-black">
@@ -92,44 +145,59 @@ export default function BilingualCueStudio({
                 src={videoSrc}
                 className="max-h-full max-w-full object-contain"
                 preload="metadata"
-                onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
+                onTimeUpdate={handleTimeUpdate}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
               />
+              {activeTarget && (
+                <div className="pointer-events-none absolute bottom-3 left-0 right-0 flex justify-center px-4">
+                  <div className="max-w-[92%] rounded-lg bg-black/80 px-3 py-1.5 text-center text-sm leading-snug text-white">
+                    {activeTarget.text}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex aspect-video items-center justify-center bg-gray-900 text-sm text-gray-400">
               No video preview
             </div>
           )}
-          <div className="flex items-center gap-2 border-t border-gray-800 bg-gray-950 px-3 py-2">
+          <div className="flex flex-wrap items-center gap-2 border-t border-gray-800 bg-gray-950 px-3 py-2">
             <button
               type="button"
-              onClick={() => {
-                const v = videoRef.current
-                if (!v) return
-                if (isPlaying) v.pause()
-                else void v.play().catch(() => {})
-              }}
+              onClick={togglePlay}
               className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700"
               aria-label={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="ml-0.5 h-4 w-4" />}
             </button>
-            <span className="font-mono text-xs tabular-nums text-gray-400">
+            {pinnedIdx != null && (
+              <button
+                type="button"
+                onClick={replayPinnedCue}
+                className="rounded-md border border-gray-700 px-2 py-1 text-[11px] font-medium text-gray-200 hover:bg-gray-800"
+              >
+                Replay cue
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => activeIdx >= 0 && seekToCue(activeIdx, { play: true })}
+              className="font-mono text-xs tabular-nums text-gray-400 hover:text-gray-200 hover:underline"
+              title="Seek to active cue start"
+            >
               {fmtRange(
-                sourceRows[Math.max(0, activeIdx)]?.startTime ?? '00:00:00,000',
-                sourceRows[Math.max(0, activeIdx)]?.endTime ?? '00:00:00,000'
+                activeSource?.startTime ?? '00:00:00,000',
+                activeSource?.endTime ?? '00:00:00,000'
               )}
-            </span>
+            </button>
             <span className="ml-auto inline-flex items-center gap-1 text-xs text-gray-400">
-              <Lock className="h-3 w-3" aria-hidden />
-              Same timing
+              {timingUnlocked ? <Unlock className="h-3 w-3" aria-hidden /> : <Lock className="h-3 w-3" aria-hidden />}
+              {timingUnlocked ? 'Custom timing' : 'Same timing'}
             </span>
           </div>
         </div>
 
-        {/* Cue workspace — ~63% */}
         <div className="min-w-0 flex-1 lg:w-[63%]">
           <div className="grid grid-cols-1 border-b border-gray-200 dark:border-gray-800 sm:grid-cols-[minmax(0,0.88fr)_minmax(0,1.2fr)]">
             <div className="bg-gray-100/90 px-3 py-2 dark:bg-gray-950/90">
@@ -146,53 +214,126 @@ export default function BilingualCueStudio({
             </div>
           </div>
 
-          <div className="max-h-[min(70vh,720px)] divide-y divide-gray-100 overflow-y-auto dark:divide-gray-800">
+          <div
+            ref={listRef}
+            className="max-h-[min(70vh,720px)] divide-y divide-gray-100 overflow-y-auto dark:divide-gray-800"
+          >
             {Array.from({ length: pairCount }).map((_, idx) => {
               const source = sourceRows[idx]
               const target = targetRows[idx]
               const isActive = idx === activeIdx
+              const isPinned = idx === pinnedIdx
+              const displayStart = timingUnlocked ? target.startTime : source.startTime
+              const displayEnd = timingUnlocked ? target.endTime : source.endTime
+
               return (
                 <div
                   key={source.index}
+                  ref={(el) => setRowRef(idx, el)}
                   className={`grid grid-cols-1 sm:grid-cols-[minmax(0,0.88fr)_minmax(0,1.2fr)] ${
-                    isActive ? 'bg-blue-50/40 dark:bg-blue-950/15' : ''
+                    isActive
+                      ? 'bg-blue-50/50 ring-1 ring-inset ring-blue-200 dark:bg-blue-950/20 dark:ring-blue-800'
+                      : ''
                   }`}
                 >
-                  <button
-                    type="button"
-                    onClick={() => seekToCue(idx)}
-                    title="Jump video to this cue"
+                  <div
                     className={`border-b border-gray-100 px-3 py-3 text-left sm:border-b-0 sm:border-r dark:border-gray-800 ${
                       isActive
                         ? 'bg-gray-100/95 dark:bg-gray-950/70'
                         : 'bg-gray-50/90 dark:bg-gray-950/45'
                     }`}
                   >
-                    <div className="mb-1.5 font-mono text-[10px] tabular-nums text-gray-400 dark:text-gray-500">
+                    <button
+                      type="button"
+                      onClick={() => seekToCue(idx, { play: true })}
+                      className="mb-1.5 font-mono text-[10px] tabular-nums text-blue-600 hover:underline dark:text-blue-400"
+                      title="Seek to timestamp"
+                    >
                       {fmtRange(source.startTime, source.endTime)}
-                    </div>
-                    <p className="text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => seekToCue(idx, { play: true })}
+                      className="block w-full text-left text-[13px] leading-relaxed text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                      title="Jump video to this cue"
+                    >
                       {source.text}
-                    </p>
-                  </button>
+                    </button>
+                  </div>
 
                   <div className="bg-white px-3 py-3 dark:bg-gray-900">
-                    <div className="mb-1.5 flex items-center justify-between gap-2">
-                      <span className="inline-flex items-center gap-1 font-mono text-[10px] tabular-nums text-gray-400">
-                        <Lock className="h-3 w-3" aria-hidden />
-                        Same timing
-                      </span>
+                    <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+                      {timingUnlocked && editable ? (
+                        <span className="inline-flex flex-wrap items-center gap-1 font-mono text-[10px] tabular-nums text-blue-700 dark:text-blue-300">
+                          <input
+                            type="text"
+                            value={target.startTime}
+                            onChange={(e) => updateTargetTiming(idx, 'startTime', e.target.value)}
+                            onBlur={() => seekToCue(idx, { pin: true })}
+                            className="w-[7.5rem] rounded border border-blue-300 bg-white px-1 py-0.5 dark:border-blue-700 dark:bg-gray-950"
+                            aria-label={`${targetLabel} start time for cue ${source.index}`}
+                          />
+                          <button
+                            type="button"
+                            className="rounded px-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            onClick={() => nudgeTargetTiming(idx, 'startTime', -100)}
+                          >
+                            −
+                          </button>
+                          <button
+                            type="button"
+                            className="rounded px-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            onClick={() => nudgeTargetTiming(idx, 'startTime', 100)}
+                          >
+                            +
+                          </button>
+                          <span>→</span>
+                          <input
+                            type="text"
+                            value={target.endTime}
+                            onChange={(e) => updateTargetTiming(idx, 'endTime', e.target.value)}
+                            className="w-[7.5rem] rounded border border-blue-300 bg-white px-1 py-0.5 dark:border-blue-700 dark:bg-gray-950"
+                            aria-label={`${targetLabel} end time for cue ${source.index}`}
+                          />
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => seekToCue(idx, { play: true })}
+                          className="inline-flex items-center gap-1 font-mono text-[10px] tabular-nums text-blue-600 hover:underline dark:text-blue-400"
+                          title="Seek video to this timestamp"
+                        >
+                          <Lock className="h-3 w-3 text-gray-400" aria-hidden />
+                          {fmtRange(displayStart, displayEnd)}
+                        </button>
+                      )}
                       {savedFlash === idx ? (
-                        <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">✓ Saved</span>
+                        <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                          ✓ Saved
+                        </span>
+                      ) : isPinned ? (
+                        <span className="text-[11px] font-medium text-sky-600 dark:text-sky-400">
+                          Editing
+                        </span>
                       ) : isActive ? (
-                        <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">Editing</span>
+                        <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">
+                          Playing
+                        </span>
                       ) : null}
                     </div>
                     {editable ? (
                       <textarea
                         value={target.text}
                         onChange={(e) => updateTargetText(idx, e.target.value)}
-                        onFocus={() => seekToCue(idx)}
+                        onFocus={() => {
+                          setPinnedIdx(idx)
+                          seekToCue(idx, { pin: true })
+                        }}
+                        onBlur={() => {
+                          window.setTimeout(() => {
+                            setPinnedIdx((current) => (current === idx ? null : current))
+                          }, 200)
+                        }}
                         rows={Math.max(2, target.text.split('\n').length)}
                         className={`w-full resize-y rounded-lg border bg-white px-3 py-2.5 text-sm font-medium leading-relaxed text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/35 dark:bg-gray-950 dark:text-gray-50 ${
                           isActive
@@ -202,9 +343,13 @@ export default function BilingualCueStudio({
                         aria-label={`${targetLabel} translation for cue ${source.index}`}
                       />
                     ) : (
-                      <p className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium leading-relaxed text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-50">
+                      <button
+                        type="button"
+                        onClick={() => seekToCue(idx, { play: true })}
+                        className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-left text-sm font-medium leading-relaxed text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-50"
+                      >
                         {target.text}
-                      </p>
+                      </button>
                     )}
                   </div>
                 </div>
