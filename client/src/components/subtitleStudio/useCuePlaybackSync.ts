@@ -22,64 +22,57 @@ export function useCuePlaybackSync(cues: TimedCue[]) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const rowRefs = useRef<Map<number, HTMLElement>>(new Map())
+  const rafRef = useRef<number | null>(null)
 
   const [currentTime, setCurrentTime] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [activeIdx, setActiveIdx] = useState(0)
   /** When set, playback follows / loops this cue instead of free-running. */
   const [pinnedIdx, setPinnedIdx] = useState<number | null>(null)
+  const [playError, setPlayError] = useState<string | null>(null)
 
   const timedActiveIdx = useMemo(() => {
     for (let i = 0; i < cues.length; i++) {
       const start = parseTimeToMs(cues[i].startTime) / 1000
       const end = parseTimeToMs(cues[i].endTime) / 1000
-      if (currentTime >= start && currentTime < end) return i
+      if (Number.isFinite(start) && Number.isFinite(end) && currentTime >= start && currentTime < end) {
+        return i
+      }
     }
     for (let i = cues.length - 1; i >= 0; i--) {
       const start = parseTimeToMs(cues[i].startTime) / 1000
-      if (currentTime >= start) return i
+      if (Number.isFinite(start) && currentTime >= start) return i
     }
     return 0
   }, [currentTime, cues])
 
+  // Follow playback time unless a cue is pinned for editing.
   useEffect(() => {
     if (pinnedIdx != null) {
       setActiveIdx(pinnedIdx)
       return
     }
-    if (isPlaying) setActiveIdx(timedActiveIdx)
-  }, [timedActiveIdx, isPlaying, pinnedIdx])
+    setActiveIdx(timedActiveIdx)
+  }, [timedActiveIdx, pinnedIdx])
 
+  // Scroll inside the cue list (not the page) as the active cue advances.
   useEffect(() => {
-    const el = rowRefs.current.get(activeIdx)
     const list = listRef.current
-    if (!el || !list) return
-    const listRect = list.getBoundingClientRect()
-    const elRect = el.getBoundingClientRect()
-    const pad = 12
-    if (elRect.top < listRect.top + pad || elRect.bottom > listRect.bottom - pad) {
-      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    const el = rowRefs.current.get(activeIdx)
+    if (!list || !el) return
+    const listTop = list.scrollTop
+    const listBottom = listTop + list.clientHeight
+    const elTop = el.offsetTop
+    const elBottom = elTop + el.offsetHeight
+    const pad = 24
+    if (elTop < listTop + pad) {
+      list.scrollTo({ top: Math.max(0, elTop - pad), behavior: 'smooth' })
+    } else if (elBottom > listBottom - pad) {
+      list.scrollTo({ top: Math.max(0, elBottom - list.clientHeight + pad), behavior: 'smooth' })
     }
   }, [activeIdx])
 
-  const seekToCue = useCallback(
-    (idx: number, opts?: SeekOptions) => {
-      if (idx < 0 || idx >= cues.length) return
-      const start = parseTimeToMs(cues[idx].startTime) / 1000
-      const video = videoRef.current
-      if (video) {
-        video.currentTime = start
-        if (opts?.play) void video.play().catch(() => {})
-      }
-      setCurrentTime(start)
-      setActiveIdx(idx)
-      if (opts?.pin) setPinnedIdx(idx)
-      else if (opts?.play) setPinnedIdx(null)
-    },
-    [cues]
-  )
-
-  const handleTimeUpdate = useCallback(() => {
+  const syncTimeFromVideo = useCallback(() => {
     const video = videoRef.current
     if (!video) return
     const t = video.currentTime
@@ -95,6 +88,65 @@ export function useCuePlaybackSync(cues: TimedCue[]) {
     }
   }, [pinnedIdx, cues])
 
+  // rAF ticker while playing — more reliable than sparse timeupdate events.
+  useEffect(() => {
+    if (!isPlaying) {
+      if (rafRef.current != null) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+      return
+    }
+    const tick = () => {
+      syncTimeFromVideo()
+      rafRef.current = requestAnimationFrame(tick)
+    }
+    rafRef.current = requestAnimationFrame(tick)
+    return () => {
+      if (rafRef.current != null) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+    }
+  }, [isPlaying, syncTimeFromVideo])
+
+  const tryPlay = useCallback(async () => {
+    const video = videoRef.current
+    if (!video) {
+      setPlayError('No video loaded')
+      return
+    }
+    try {
+      await video.play()
+      setPlayError(null)
+      setIsPlaying(true)
+    } catch {
+      setPlayError('Could not play — click Play again')
+      setIsPlaying(false)
+    }
+  }, [])
+
+  const seekToCue = useCallback(
+    (idx: number, opts?: SeekOptions) => {
+      if (idx < 0 || idx >= cues.length) return
+      const start = parseTimeToMs(cues[idx].startTime) / 1000
+      const video = videoRef.current
+      if (video && Number.isFinite(start)) {
+        video.currentTime = start
+      }
+      setCurrentTime(Number.isFinite(start) ? start : 0)
+      setActiveIdx(idx)
+      if (opts?.pin) setPinnedIdx(idx)
+      else if (opts?.play) setPinnedIdx(null)
+      if (opts?.play) void tryPlay()
+    },
+    [cues, tryPlay]
+  )
+
+  const handleTimeUpdate = useCallback(() => {
+    syncTimeFromVideo()
+  }, [syncTimeFromVideo])
+
   const replayPinnedCue = useCallback(() => {
     const idx = pinnedIdx ?? activeIdx
     seekToCue(idx, { play: true, pin: pinnedIdx != null })
@@ -102,9 +154,13 @@ export function useCuePlaybackSync(cues: TimedCue[]) {
 
   const togglePlay = useCallback(() => {
     const video = videoRef.current
-    if (!video) return
+    if (!video) {
+      setPlayError('No video loaded')
+      return
+    }
     if (!video.paused) {
       video.pause()
+      setIsPlaying(false)
       return
     }
     if (pinnedIdx != null && cues[pinnedIdx]) {
@@ -115,8 +171,8 @@ export function useCuePlaybackSync(cues: TimedCue[]) {
         setCurrentTime(start)
       }
     }
-    void video.play().catch(() => {})
-  }, [pinnedIdx, cues])
+    void tryPlay()
+  }, [pinnedIdx, cues, tryPlay])
 
   const setRowRef = useCallback((idx: number, el: HTMLElement | null) => {
     if (el) rowRefs.current.set(idx, el)
@@ -138,5 +194,6 @@ export function useCuePlaybackSync(cues: TimedCue[]) {
     replayPinnedCue,
     togglePlay,
     setRowRef,
+    playError,
   }
 }

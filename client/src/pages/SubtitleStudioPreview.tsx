@@ -10,6 +10,8 @@ import SubtitleStudioPhaseRail, { type StudioPhase } from '../components/subtitl
 import StudioWorkspaceToolbar from '../components/subtitleStudio/StudioWorkspaceToolbar'
 import BilingualCueStudio from '../components/subtitleStudio/BilingualCueStudio'
 import ReviewEditingDesk from '../components/subtitleStudio/ReviewEditingDesk'
+import FinalQaCheckpoint from '../components/subtitleStudio/FinalQaCheckpoint'
+import StudioExportScreen from '../components/subtitleStudio/StudioExportScreen'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 import { chipsByCueIndex } from '../lib/subtitleQaAssist'
 import { LANGUAGES } from '../lib/languages'
@@ -25,33 +27,18 @@ const SOURCE: SubtitleRow[] = [
 ]
 
 const TRANSLATIONS: Record<string, SubtitleRow[]> = {
-  Spanish: [
-    { index: 1, startTime: '00:00:04,000', endTime: '00:00:08,000', text: 'Probablemente deberíamos empezar con el primer ejemplo.' },
-    { index: 2, startTime: '00:00:08,000', endTime: '00:00:12,000', text: 'Estoy de acuerdo, pero hay algo que deberíamos aclarar primero.' },
-    { index: 3, startTime: '00:00:12,200', endTime: '00:00:16,000', text: 'Claro — ¿qué tenías en mente?' },
-    { index: 4, startTime: '00:00:16,200', endTime: '00:00:20,000', text: 'Si mantenemos el tiempo bloqueado, traducir es fácil.' },
-    { index: 5, startTime: '00:00:20,200', endTime: '00:00:24,000', text: 'Exacto. Entonces podemos centrarnos en el texto.' },
-    { index: 6, startTime: '00:00:24,200', endTime: '00:00:28,000', text: 'Esta pista es intencionalmente un poco larga.' },
-    { index: 7, startTime: '00:00:28,200', endTime: '00:00:30,000', text: 'Corto.' },
-  ],
-  French: [
-    { index: 1, startTime: '00:00:04,000', endTime: '00:00:08,000', text: 'On devrait probablement commencer par le premier exemple.' },
-    { index: 2, startTime: '00:00:08,000', endTime: '00:00:12,000', text: "Je suis d'accord, mais il y a une chose à clarifier d'abord." },
-    { index: 3, startTime: '00:00:12,200', endTime: '00:00:16,000', text: "Bien sûr — qu'est-ce que tu avais en tête ?" },
-    { index: 4, startTime: '00:00:16,200', endTime: '00:00:20,000', text: 'Si on garde le timing verrouillé, la traduction reste simple.' },
-    { index: 5, startTime: '00:00:20,200', endTime: '00:00:24,000', text: 'Exactement. On peut alors se concentrer sur le texte.' },
-    { index: 6, startTime: '00:00:24,200', endTime: '00:00:28,000', text: 'Cette piste est volontairement un peu longue.' },
-    { index: 7, startTime: '00:00:28,200', endTime: '00:00:30,000', text: 'Court.' },
-  ],
-  German: [
-    { index: 1, startTime: '00:00:04,000', endTime: '00:00:08,000', text: 'Wir sollten wahrscheinlich mit dem ersten Beispiel beginnen.' },
-    { index: 2, startTime: '00:00:08,000', endTime: '00:00:12,000', text: 'Ich stimme zu, aber es gibt eine Sache, die wir zuerst klären sollten.' },
-    { index: 3, startTime: '00:00:12,200', endTime: '00:00:16,000', text: 'Klar — was hattest du im Sinn?' },
-    { index: 4, startTime: '00:00:16,200', endTime: '00:00:20,000', text: 'Wenn wir das Timing sperren, bleibt Übersetzen einfach.' },
-    { index: 5, startTime: '00:00:20,200', endTime: '00:00:24,000', text: 'Genau. Dann können wir uns auf den Text konzentrieren.' },
-    { index: 6, startTime: '00:00:24,200', endTime: '00:00:28,000', text: 'Dieser Cue ist absichtlich etwas lang.' },
-    { index: 7, startTime: '00:00:28,200', endTime: '00:00:30,000', text: 'Kurz.' },
-  ],
+  Spanish: SOURCE.map((r, i) => ({
+    ...r,
+    text: [
+      'Probablemente deberíamos empezar con el primer ejemplo.',
+      'Estoy de acuerdo, pero hay algo que deberíamos aclarar primero.',
+      'Claro — ¿qué tenías en mente?',
+      'Si mantenemos el tiempo bloqueado, traducir es fácil.',
+      'Exacto. Entonces podemos centrarnos en el texto.',
+      'Esta pista es intencionalmente un poco larga.',
+      'Corto.',
+    ][i],
+  })),
 }
 
 const PREVIEW_LANG_OPTIONS = LANGUAGES.filter((l) =>
@@ -67,6 +54,9 @@ export default function SubtitleStudioPreview() {
   const [lanes, setLanes] = useState<Record<string, SubtitleRow[]>>({})
   const [activeLanguage, setActiveLanguage] = useState<string | null>(null)
   const [focusCue, setFocusCue] = useState<number | null>(null)
+  const [finalQaAccepted, setFinalQaAccepted] = useState(false)
+  const [revision, setRevision] = useState(0)
+  const [lastExportRevision, setLastExportRevision] = useState<number | null>(null)
 
   const completed = useMemo(() => {
     const list: StudioPhase[] = ['generate']
@@ -86,7 +76,15 @@ export default function SubtitleStudioPreview() {
   }, [cueChips])
 
   const targetRows = activeLanguage ? lanes[activeLanguage] ?? [] : []
-  const showTranslateDesk = phase === 'translate' && activeLanguage && targetRows.length > 0
+  const showTranslateDesk =
+    (phase === 'translate' || phase === 'final') && !!activeLanguage && targetRows.length > 0
+  const exportUnlocked = reviewItemCount === 0 || finalQaAccepted
+  const exportStale = lastExportRevision != null && revision > lastExportRevision
+
+  const bump = () => {
+    setRevision((n) => n + 1)
+    setFinalQaAccepted(false)
+  }
 
   const addLanguage = (lang: string) => {
     setLanes((prev) => ({
@@ -97,11 +95,38 @@ export default function SubtitleStudioPreview() {
     setPhase('translate')
   }
 
+  const cueDesk = showTranslateDesk ? (
+    <BilingualCueStudio
+      videoSrc={null}
+      sourceRows={sourceRows}
+      targetRows={targetRows}
+      sourceLabel="English"
+      targetLabel={activeLanguage!}
+      editable
+      onTargetRowsChange={(next) => {
+        setLanes((prev) => ({ ...prev, [activeLanguage!]: next }))
+        bump()
+      }}
+    />
+  ) : (
+    <ReviewEditingDesk
+      videoSrc={null}
+      rows={sourceRows}
+      editable
+      onRowsChange={(rows) => {
+        setSourceRows(rows)
+        bump()
+      }}
+      cueChips={cueChips}
+      focusCueIndex={focusCue}
+    />
+  )
+
   return (
     <ToolLayout
       breadcrumbs={[{ label: 'Video → Subtitles', href: '/video-to-subtitles' }]}
       title="Subtitle Studio (preview)"
-      subtitle="Mock of the Natalia continuous workflow after Generate."
+      subtitle="Mock of Generate → Review → Translate → Final QA → Export"
       icon={<FileText className="h-5 w-5 text-blue-600" />}
       tags={['Preview', 'Mock data']}
     >
@@ -120,51 +145,87 @@ export default function SubtitleStudioPreview() {
             <h1 className="mb-2 text-base font-semibold tracking-tight text-gray-900 dark:text-white">
               Recording #16
             </h1>
-            <SubtitleStudioPhaseRail active={phase} completed={completed} onSelect={setPhase} />
-          </div>
-          <StudioWorkspaceToolbar
-            sourceLanguageLabel="English"
-            activeLanguage={activeLanguage}
-            languages={Object.keys(lanes)}
-            languageOptions={PREVIEW_LANG_OPTIONS}
-            onSelectLanguage={(lang) => {
-              setActiveLanguage(lang)
-              setPhase('translate')
-            }}
-            onAddLanguage={addLanguage}
-            reviewItemCount={reviewItemCount}
-            safeFixesApplied={8}
-            onReviewItems={() => {
-              setPhase('review')
-              setFocusCue(REVIEW_FOCUS)
-            }}
-          />
-        </div>
-
-        <div className="space-y-4">
-          {showTranslateDesk ? (
-            <BilingualCueStudio
-              videoSrc={null}
-              sourceRows={sourceRows}
-              targetRows={targetRows}
-              sourceLabel="English"
-              targetLabel={activeLanguage!}
-              editable
-              onTargetRowsChange={(next) =>
-                setLanes((prev) => ({ ...prev, [activeLanguage!]: next }))
-              }
+            <SubtitleStudioPhaseRail
+              active={phase}
+              completed={completed}
+              onSelect={(next) => {
+                if (next === 'export' && !exportUnlocked) {
+                  setPhase('final')
+                  return
+                }
+                setPhase(next)
+              }}
             />
-          ) : (
-            <ReviewEditingDesk
-              videoSrc={null}
-              rows={sourceRows}
-              editable
-              onRowsChange={setSourceRows}
-              cueChips={cueChips}
-              focusCueIndex={focusCue}
+          </div>
+          {phase !== 'export' && (
+            <StudioWorkspaceToolbar
+              sourceLanguageLabel="English"
+              activeLanguage={activeLanguage}
+              languages={Object.keys(lanes)}
+              languageOptions={PREVIEW_LANG_OPTIONS}
+              onSelectLanguage={(lang) => {
+                setActiveLanguage(lang)
+                setPhase('translate')
+              }}
+              onAddLanguage={addLanguage}
+              reviewItemCount={reviewItemCount}
+              safeFixesApplied={8}
+              onReviewItems={() => {
+                setPhase('review')
+                setFocusCue(REVIEW_FOCUS)
+              }}
             />
           )}
         </div>
+
+        {phase === 'export' ? (
+          <StudioExportScreen
+            lanes={[
+              { id: 'source', label: 'English', rows: sourceRows },
+              ...Object.entries(lanes).map(([lang, rows]) => ({ id: lang, label: lang, rows })),
+            ]}
+            exportStale={exportStale}
+            exportUnlocked={exportUnlocked}
+            onExportLane={() => setLastExportRevision(revision)}
+          />
+        ) : phase === 'final' ? (
+          <div className="space-y-4">
+            <FinalQaCheckpoint
+              sourceRows={sourceRows}
+              translatedRows={targetRows}
+              translationLanguage={activeLanguage}
+              accepted={finalQaAccepted}
+              onAcceptRemaining={() => setFinalQaAccepted(true)}
+              onFocusCue={(idx) => setFocusCue(idx)}
+              onContinueToExport={() => {
+                if (exportUnlocked) setPhase('export')
+              }}
+              exportUnlocked={exportUnlocked}
+            />
+            {cueDesk}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {cueDesk}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() =>
+                  setPhase(
+                    phase === 'review' && Object.keys(lanes).length > 0 ? 'translate' : 'final'
+                  )
+                }
+                className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700"
+              >
+                {phase === 'review' && Object.keys(lanes).length === 0
+                  ? 'Continue to Final QA'
+                  : phase === 'review'
+                    ? 'Continue to Translate'
+                    : 'Continue to Final QA'}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </ToolLayout>
   )
