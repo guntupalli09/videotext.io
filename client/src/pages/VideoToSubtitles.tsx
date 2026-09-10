@@ -14,7 +14,6 @@ import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
 import ResultUpgradeCard from '../components/ResultUpgradeCard'
 import ResultHeader from '../components/ResultHeader'
 import { incrementJobCompletedCount } from '../lib/jobCount'
-import LanguageSelector from '../components/LanguageSelector'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingInterface } from '../components/figma/ProcessingInterface'
@@ -23,7 +22,7 @@ import { ProcessingStateShell } from '../components/figma/ProcessingStateShell'
 import { ExportsPanel, ExportSection } from '../components/figma/ExportsPanel'
 import ProCheckoutLink from '../components/ProCheckoutLink'
 import { ResultSkeleton } from '../components/figma/ResultSkeleton'
-import { RadioGroup, Select } from '../components/figma/FormControls'
+import { Select } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 const SubtitleQAReview = lazy(() => import('../components/SubtitleQAReview'))
 import { incrementUsage } from '../lib/usage'
@@ -120,9 +119,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [trimStart, setTrimStart] = useState<number | null>(null)
   const [trimEnd, setTrimEnd] = useState<number | null>(null)
-  const [format, setFormat] = useState<'srt' | 'vtt'>('srt')
+  const format = 'srt' as const // generation always SRT; SRT/VTT chosen at export
   const [language, setLanguage] = useState<string>('')
-  const [additionalLanguages, setAdditionalLanguages] = useState<string[]>([])
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
   const [progress, setProgress] = useState(0)
   const [uploadPhase, setUploadPhase] = useState<'uploading' | 'processing'>('uploading')
@@ -167,13 +165,12 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [isTranslating, setIsTranslating] = useState(false)
 
   const fallbackSubtitleName = useMemo(() => {
-    const ext = format === 'vtt' ? '.vtt' : '.srt'
     return joinExportFilename(
       exportFileStem(selectedFile?.name, 'video'),
       `subtitles_original_${langCodeForFile(language || undefined)}`,
-      ext
+      '.srt'
     )
-  }, [selectedFile?.name, language, format])
+  }, [selectedFile?.name, language])
 
   useEffect(() => {
     setFreeExportsUsed(0)
@@ -213,8 +210,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const canEdit = hasPaidPlan(plan)
-  const canMultiLanguage = hasPaidPlan(plan)
-  const maxAdditionalLanguages = plan === 'agency' ? 9 : plan === 'pro' ? 4 : plan === 'basic' ? 1 : 0
 
   // Instant file preview (browser only); persists through upload + processing
   useEffect(() => {
@@ -466,7 +461,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setFileFromWorkflow(false)
     setTrimStart(null)
     setTrimEnd(null)
-    setAdditionalLanguages([])
   }
 
   const handleCancelUpload = () => {
@@ -584,11 +578,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     try {
       const baseOptions = {
         toolType: BACKEND_TOOL_TYPES.VIDEO_TO_SUBTITLES,
-        format: plan === 'free' ? 'srt' : format,
+        format: 'srt',  // export format chosen after generation
         language: language || undefined,
         trimmedStart: (trimStartSec ?? trimStart) ?? undefined,
         trimmedEnd: (trimEndSec ?? trimEnd) ?? undefined,
-        additionalLanguages: canMultiLanguage ? additionalLanguages : undefined,
       }
       setUploadPhase('uploading')
       trackEvent('processing_started', { tool: 'video-to-subtitles' })
@@ -764,7 +757,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     lastPartialVersionRef.current = 0
     setTrimStart(null)
     setTrimEnd(null)
-    setAdditionalLanguages([])
     setStatus('idle')
     setProgress(0)
     setUploadPhase('uploading')
@@ -959,21 +951,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             durationSeconds={filePreview?.durationSeconds}
           >
             <div className="space-y-component">
-              <RadioGroup
-                label="Subtitle Format"
-                options={
-                  plan === 'free'
-                    ? [{ value: 'srt', label: 'SRT (Recommended for YouTube)', description: 'Free plan: SRT only. Upgrade for VTT.' }]
-                    : [
-                        { value: 'srt', label: 'SRT (Recommended for YouTube)', description: 'Use SRT for most platforms' },
-                        { value: 'vtt', label: 'VTT (Recommended for web)', description: 'Web Video Text Tracks format' },
-                      ]
-                }
-                value={plan === 'free' ? 'srt' : format}
-                onChange={(v) => setFormat(v as 'srt' | 'vtt')}
-              />
               <Select
-                label="Language (optional)"
+                label="Spoken language"
                 options={[
                   { value: '', label: 'Auto-detect' },
                   { value: 'en', label: 'English' },
@@ -988,29 +967,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                 value={language}
                 onChange={setLanguage}
               />
-              <div>
-                <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-                  Translate subtitles to <span className="text-gray-400">(optional)</span>
-                </label>
-                <select
-                  value={translationLanguage ?? ''}
-                  onChange={(e) => setTranslationLanguage(e.target.value || null)}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                >
-                  <option value="">— None —</option>
-                  {LANGUAGES.map((l) => (
-                    <option key={l.value} value={l.value}>{l.label}</option>
-                  ))}
-                </select>
-              </div>
-              {canMultiLanguage && (
-                <LanguageSelector
-                  primaryLanguage={language || 'en'}
-                  selected={additionalLanguages}
-                  onChange={setAdditionalLanguages}
-                  maxAdditional={maxAdditionalLanguages}
-                />
-              )}
             </div>
           </ProcessingInterface>
         )}
@@ -1155,6 +1111,29 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
                   {/* ── Left column: toggle + QA editor ────────────────────── */}
                   <div className="min-w-0 space-y-component-sm">
+                    {/* Add translation after generation (Natalia workflow) */}
+                    {!translationLanguage && subtitleRows.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <label className="text-xs font-medium text-gray-600 dark:text-gray-300">+ Add translation</label>
+                        <select
+                          value=""
+                          onChange={(e) => {
+                            const v = e.target.value
+                            if (!v) return
+                            setTranslatedSubtitleRows([])
+                            setSubtitleView('original')
+                            setTranslationLanguage(v)
+                          }}
+                          className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                          aria-label="Add translation language"
+                        >
+                          <option value="">Choose language…</option>
+                          {LANGUAGES.map((l) => (
+                            <option key={l.value} value={l.value}>{l.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                     {/* Translation toggle */}
                     {translationLanguage && (
                       <div className="flex items-center gap-2">
