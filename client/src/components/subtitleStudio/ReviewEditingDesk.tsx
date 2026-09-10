@@ -64,6 +64,7 @@ export default function ReviewEditingDesk({
     replayPinnedCue,
     togglePlay,
     setRowRef,
+    playError,
   } = useCuePlaybackSync(rows)
 
   useEffect(() => {
@@ -175,11 +176,14 @@ export default function ReviewEditingDesk({
               <video
                 ref={videoRef}
                 src={videoSrc}
-                className="max-h-full max-w-full object-contain"
-                preload="metadata"
+                className="max-h-full max-w-full cursor-pointer object-contain"
+                preload="auto"
+                playsInline
+                onClick={togglePlay}
                 onTimeUpdate={handleTimeUpdate}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
+                onEnded={() => setIsPlaying(false)}
               />
               {rows[activeIdx] && (
                 <div className="pointer-events-none absolute bottom-3 left-0 right-0 flex justify-center px-4">
@@ -221,6 +225,9 @@ export default function ReviewEditingDesk({
               >
                 {toClock(rows[activeIdx].startTime)} → {toClock(rows[activeIdx].endTime)}
               </button>
+            )}
+            {playError && (
+              <span className="text-[10px] text-amber-300">{playError}</span>
             )}
             {pinnedIdx != null && (
               <span className="ml-auto text-[10px] text-sky-300">Pinned for edit / replay</span>

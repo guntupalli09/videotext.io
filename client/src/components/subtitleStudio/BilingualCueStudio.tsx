@@ -70,6 +70,7 @@ export default function BilingualCueStudio({
     replayPinnedCue,
     togglePlay,
     setRowRef,
+    playError,
   } = useCuePlaybackSync(timedCues)
 
   useEffect(() => {
@@ -143,11 +144,14 @@ export default function BilingualCueStudio({
               <video
                 ref={videoRef}
                 src={videoSrc}
-                className="max-h-full max-w-full object-contain"
-                preload="metadata"
+                className="max-h-full max-w-full cursor-pointer object-contain"
+                preload="auto"
+                playsInline
+                onClick={togglePlay}
                 onTimeUpdate={handleTimeUpdate}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
+                onEnded={() => setIsPlaying(false)}
               />
               {activeTarget && (
                 <div className="pointer-events-none absolute bottom-3 left-0 right-0 flex justify-center px-4">
@@ -195,6 +199,7 @@ export default function BilingualCueStudio({
               {timingUnlocked ? <Unlock className="h-3 w-3" aria-hidden /> : <Lock className="h-3 w-3" aria-hidden />}
               {timingUnlocked ? 'Custom timing' : 'Same timing'}
             </span>
+            {playError && <span className="w-full text-[10px] text-amber-300">{playError}</span>}
           </div>
         </div>
 
