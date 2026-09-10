@@ -36,6 +36,7 @@ model User {
   utmCampaign              String?
   firstReferrer            String?
   firstSeenAt              DateTime?
+  country                  String?   // ISO 3166-1 alpha-2, resolved from edge geo-IP headers at signup
   lastActiveAt             DateTime?
   createdAt                DateTime
   updatedAt                DateTime
