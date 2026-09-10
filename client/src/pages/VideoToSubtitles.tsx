@@ -36,6 +36,7 @@ import { isPaidPlan as hasPaidPlan } from '../lib/plans'
 import { getFailureMessage } from '../lib/failureMessage'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
+import { isPlayableMediaFile } from '../lib/mediaPreview'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
 import { LANGUAGES } from '../lib/languages'
@@ -112,6 +113,33 @@ async function fetchSubtitlePreviewRows(
   return { rows: parseSubtitlesToRows(text), isZip: false }
 }
 
+/** Result file can lag status=completed briefly; retry so Studio isn't blank until a manual refresh. */
+async function fetchSubtitlePreviewRowsWithRetry(
+  downloadUrl: string,
+  fileName?: string,
+  attempts = 4
+): Promise<{ rows: SubtitleRow[]; isZip: boolean }> {
+  let lastError: unknown
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const result = await fetchSubtitlePreviewRows(downloadUrl, fileName)
+      if (result.isZip || result.rows.length > 0) return result
+      if (i < attempts - 1) {
+        await new Promise((r) => setTimeout(r, 400 * (i + 1)))
+        continue
+      }
+      return result
+    } catch (err) {
+      lastError = err
+      if (i < attempts - 1) {
+        await new Promise((r) => setTimeout(r, 400 * (i + 1)))
+        continue
+      }
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error('Failed to load subtitle preview')
+}
+
 export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const { seoH1, seoIntro, faq = [], seoTutorial } = props
   const location = useLocation()
@@ -128,9 +156,18 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [progress, setProgress] = useState(0)
   const [uploadPhase, setUploadPhase] = useState<'uploading' | 'processing'>('uploading')
   const [uploadProgress, setUploadProgress] = useState(0)
-  const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; warnings?: { type: string; message: string; line?: number }[] } | null>(null)
+  const [result, setResult] = useState<{
+    downloadUrl: string
+    fileName?: string
+    warnings?: { type: string; message: string; line?: number }[]
+    /** Server-extracted AAC for in-Studio playback when the local upload blob is gone. */
+    audioUrl?: string
+  } | null>(null)
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
   const [previewError, setPreviewError] = useState(false)
+  /** True while fetching cue rows after job completion — avoids blank "Subtitles ready" shell. */
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const previewLoadGenRef = useRef(0)
   const [showPaywall, setShowPaywall] = useState(false)
   const [paywallReason, setPaywallReason] = useState<PaywallReason>('FREE_DAILY_LIMIT_REACHED')
   const [showAuthGate, setShowAuthGate] = useState(false)
@@ -150,6 +187,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const activeUploadPollRef = useRef<(() => void) | null>(null)
   const pollConsecutiveNetworkErrorsRef = useRef(0)
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
+  /** User-attached media for cue verification when the original upload object URL is unavailable. */
+  const [attachedMediaFile, setAttachedMediaFile] = useState<File | null>(null)
+  const [attachedMediaUrl, setAttachedMediaUrl] = useState<string | null>(null)
   const jobStartedTrackedRef = useRef<string | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
   const terminalRef = useRef(false)
@@ -197,6 +237,33 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setTimingAdjustedIndices(timingIdx)
     setSubtitleRows(fixed)
     setStudioPhase('review')
+  }
+
+  const loadCompletedPreview = async (downloadUrl: string, fileName?: string) => {
+    const gen = ++previewLoadGenRef.current
+    setPreviewLoading(true)
+    setPreviewError(false)
+    try {
+      const { rows, isZip } = await fetchSubtitlePreviewRowsWithRetry(downloadUrl, fileName)
+      if (gen !== previewLoadGenRef.current) return
+      if (isZip || rows.length === 0) {
+        setSubtitleRows([])
+        setPreviewError(true)
+        if (rows.length === 0 && !isZip) {
+          toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
+        }
+        return
+      }
+      ingestGeneratedRows(rows, downloadUrl)
+      setPreviewError(false)
+    } catch {
+      if (gen !== previewLoadGenRef.current) return
+      setSubtitleRows([])
+      setPreviewError(true)
+      toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
+    } finally {
+      if (gen === previewLoadGenRef.current) setPreviewLoading(false)
+    }
   }
 
 
@@ -260,8 +327,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     }
   }, [selectedFile])
 
+  // Object URL for Studio playback — MIME is often empty on .mp4/.mov drops, so use extension too.
   useEffect(() => {
-    if (selectedFile && selectedFile.type.startsWith('video/')) {
+    if (selectedFile && isPlayableMediaFile(selectedFile)) {
       const url = URL.createObjectURL(selectedFile)
       setVideoPreviewUrl(url)
       return () => {
@@ -272,6 +340,30 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     }
     setVideoPreviewUrl(null)
   }, [selectedFile])
+
+  useEffect(() => {
+    if (attachedMediaFile && isPlayableMediaFile(attachedMediaFile)) {
+      const url = URL.createObjectURL(attachedMediaFile)
+      setAttachedMediaUrl(url)
+      return () => {
+        setAttachedMediaUrl(null)
+        const u = url
+        setTimeout(() => URL.revokeObjectURL(u), 0)
+      }
+    }
+    setAttachedMediaUrl(null)
+  }, [attachedMediaFile])
+
+  const studioMediaSrc = useMemo(() => {
+    if (attachedMediaUrl) return attachedMediaUrl
+    if (videoPreviewUrl) return videoPreviewUrl
+    if (result?.audioUrl) return getAbsoluteDownloadUrl(result.audioUrl)
+    return null
+  }, [attachedMediaUrl, videoPreviewUrl, result?.audioUrl])
+
+  const handleAttachStudioMedia = (file: File | null) => {
+    setAttachedMediaFile(file)
+  }
 
   // Elapsed time ticker when processing (cleanup on unmount/complete/fail)
   useEffect(() => {
@@ -315,6 +407,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         if (transition === 'completed') {
           terminalRef.current = true
           setPartialSegments([])
+          setPreviewLoading(Boolean(isLoggedIn() && jobStatus.result?.downloadUrl))
           setStatus('completed')
           if (isLoggedIn() && !jobStatus.requiresAuth) {
             setResult(jobStatus.result ?? null)
@@ -327,15 +420,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           setUploadPhase('processing')
           setUploadProgress(100)
           if (isLoggedIn() && jobStatus.result?.downloadUrl) {
-            try {
-              const { rows } = await fetchSubtitlePreviewRows(jobStatus.result.downloadUrl, jobStatus.result.fileName)
-              ingestGeneratedRows(rows)
-              setPreviewError(false)
-            } catch {
-              setSubtitleRows([])
-              setPreviewError(true)
-              toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
-            }
+            await loadCompletedPreview(jobStatus.result.downloadUrl, jobStatus.result.fileName)
           }
           return
         }
@@ -371,6 +456,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               setPartialSegments([])
               if (rehydratePollRef.current) clearInterval(rehydratePollRef.current)
               rehydratePollRef.current = null
+              setPreviewLoading(Boolean(isLoggedIn() && s.result?.downloadUrl))
               setStatus('completed')
               if (isLoggedIn() && !s.requiresAuth) {
                 setResult(s.result ?? null)
@@ -381,15 +467,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               trackAppEvent('transcription_completed', { toolId: 'video-to-subtitles' })
               // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
               if (isLoggedIn() && s.result?.downloadUrl) {
-                try {
-                  const { rows } = await fetchSubtitlePreviewRows(s.result.downloadUrl, s.result.fileName)
-                  ingestGeneratedRows(rows)
-                  setPreviewError(false)
-                } catch {
-                  setSubtitleRows([])
-                  setPreviewError(true)
-                  toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
-                }
+                await loadCompletedPreview(s.result.downloadUrl, s.result.fileName)
               }
             } else if (t === 'failed') {
               terminalRef.current = true
@@ -665,6 +743,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             activeUploadPollRef.current = null
           }
           jobStartedTrackedRef.current = null
+          setPreviewLoading(Boolean(isLoggedIn() && jobStatus.result?.downloadUrl))
           setStatus('completed')
           if (isLoggedIn() && !jobStatus.requiresAuth) {
             setResult(jobStatus.result ?? null)
@@ -677,16 +756,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           const processingMs = Date.now() - started
           // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })
           if (isLoggedIn() && jobStatus.result?.downloadUrl) {
-            fetchSubtitlePreviewRows(jobStatus.result.downloadUrl, jobStatus.result.fileName)
-              .then(({ rows }) => {
-                ingestGeneratedRows(rows)
-                setPreviewError(false)
-              })
-              .catch(() => {
-                setSubtitleRows([])
-                setPreviewError(true)
-                toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
-              })
+            void loadCompletedPreview(jobStatus.result.downloadUrl, jobStatus.result.fileName)
           }
           incrementUsage('video-to-subtitles')
           try {
@@ -798,6 +868,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setResult(null)
     setSubtitleRows([])
     setPreviewError(false)
+    setPreviewLoading(false)
+    previewLoadGenRef.current += 1
     setPartialSegments([])
     setTranslationLanguage(null)
     setTranslationLanes({})
@@ -811,6 +883,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setLastExportedRevision(null)
     setFinalQaAccepted(false)
     assistAppliedForUrl.current = null
+    setAttachedMediaFile(null)
   }
 
 
@@ -1074,7 +1147,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
                   const cueDesk = showTranslateDesk ? (
                     <BilingualCueStudio
-                      videoSrc={videoPreviewUrl}
+                      videoSrc={studioMediaSrc}
                       sourceRows={subtitleRows}
                       targetRows={translatedSubtitleRows}
                       sourceLabel={sourceLabel}
@@ -1084,16 +1157,18 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                         updateTranslatedRows(next)
                         setTranslationLanes((prev) => ({ ...prev, [translationLanguage!]: next }))
                       }}
+                      onAttachMedia={handleAttachStudioMedia}
                     />
                   ) : (
                     <ReviewEditingDesk
-                      videoSrc={videoPreviewUrl}
+                      videoSrc={studioMediaSrc}
                       rows={subtitleRows}
                       editable={canEdit}
                       onRowsChange={updateSubtitleRows}
                       cueChips={cueChips}
                       focusCueIndex={focusAssistCue}
                       focusCueToken={focusAssistToken}
+                      onAttachMedia={handleAttachStudioMedia}
                     />
                   )
 
@@ -1295,7 +1370,12 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                       )}
                     </div>
                   )
-                })() : (
+                })() : previewLoading || (!previewError && !!result?.downloadUrl) ? (
+                  <div className="space-y-2">
+                    <p className="px-1 text-xs text-gray-500 dark:text-gray-400">Loading subtitle cues…</p>
+                    <ResultSkeleton variant="subtitle" />
+                  </div>
+                ) : (
                   previewError && result?.downloadUrl ? (
                     <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
                       <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
@@ -1305,15 +1385,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                       </p>
                       <button
                         type="button"
-                        onClick={async () => {
+                        onClick={() => {
                           if (!result?.downloadUrl) return
-                          try {
-                            const { rows } = await fetchSubtitlePreviewRows(result.downloadUrl, result.fileName)
-                            ingestGeneratedRows(rows, result.downloadUrl)
-                            setPreviewError(false)
-                          } catch {
-                            toast.error("Still couldn't load the preview. Please use the Exports panel to download.")
-                          }
+                          void loadCompletedPreview(result.downloadUrl, result.fileName)
                         }}
                         className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
                       >

@@ -3,6 +3,8 @@
  * Returns filename, duration, thumbnail (video) for use in UI that persists through upload + processing.
  */
 
+import { isPlayableAudioFile, isPlayableVideoFile } from './mediaPreview'
+
 export interface FilePreviewData {
   fileName: string
   fileSize: number
@@ -107,7 +109,7 @@ function getAudioDuration(file: File): Promise<number | undefined> {
  * Thumbnail only for video; duration for both when supported.
  */
 export async function getFilePreview(file: File): Promise<FilePreviewData> {
-  const isVideo = file.type.startsWith('video/')
+  const isVideo = isPlayableVideoFile(file)
   const base = {
     fileName: file.name,
     fileSize: file.size,
@@ -119,7 +121,7 @@ export async function getFilePreview(file: File): Promise<FilePreviewData> {
     return { ...base, durationSeconds: extra.durationSeconds, thumbnailDataUrl: extra.thumbnailDataUrl }
   }
 
-  if (file.type.startsWith('audio/')) {
+  if (isPlayableAudioFile(file)) {
     const durationSeconds = await getAudioDuration(file)
     return { ...base, durationSeconds }
   }

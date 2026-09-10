@@ -1761,6 +1761,16 @@ async function processJob(job: import('bull').Job<JobData>) {
             throw new Error(durationCheck.error || 'Video too long')
           }
 
+          // Parallel AAC extract for Studio playback (cue verify after refresh / missing local blob).
+          const audioFilename = audioExtractFilename(data.originalName)
+          const audioOutputPath = path.join(tempDir, audioFilename)
+          const playbackAudioPromise = extractAudioForPlayback(videoPath, audioOutputPath)
+            .then(() => `/api/audio/${audioFilename}`)
+            .catch((err: Error) => {
+              log.warn({ msg: 'audio_extraction_for_playback_failed', error: err.message, jobId: String(jobId) })
+              return null as string | null
+            })
+
           const format = options?.format || 'srt'
           const additionalLangs = options?.additionalLanguages || []
           
@@ -1824,10 +1834,12 @@ async function processJob(job: import('bull').Job<JobData>) {
               zip.finalize()
             })
 
+            const playbackAudioUrl = await playbackAudioPromise
             result = {
               downloadUrl: `/api/download/${zipFilename}`,
               fileName: zipFilename,
               multiLanguage: outputFiles,
+              ...(playbackAudioUrl && { audioUrl: playbackAudioUrl }),
             }
 
             if (data.videoHash && userId) {
@@ -1913,12 +1925,14 @@ async function processJob(job: import('bull').Job<JobData>) {
               segments: verboseResult.segments,
               videoPath,
             })
+            const playbackAudioUrl = await playbackAudioPromise
             result = {
               downloadUrl: `/api/download/${outputFilename}`,
               fileName: outputFilename,
               warnings: warnings.length > 0 ? warnings : undefined,
               processingMs: fileReceivedToTranscriptionFinishedMs,
               videoDurationSeconds: processedSecondsSub,
+              ...(playbackAudioUrl && { audioUrl: playbackAudioUrl }),
             }
 
             if (data.videoHash && userId) {
