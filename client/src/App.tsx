@@ -35,6 +35,7 @@ const Pricing = lazy(() => import('./pages/Pricing'))
 const Login = lazy(() => import('./pages/Login'))
 const Demo = lazy(() => import('./pages/Demo'))
 const TranscriptResultWorkspaceMock = lazy(() => import('./pages/TranscriptResultWorkspaceMock'))
+const SubtitleStudioPreview = lazy(() => import('./pages/SubtitleStudioPreview'))
 const Signup = lazy(() => import('./pages/Signup'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
@@ -540,6 +541,7 @@ function App() {
             <Route path="/pro-access" element={<Demo />} />
             <Route path="/demo" element={<Navigate to="/pro-access" replace />} />
             <Route path="/preview/transcript-results" element={<TranscriptResultWorkspaceMock />} />
+            <Route path="/preview/subtitle-studio" element={<SubtitleStudioPreview />} />
             <Route path="/preview/icp-results-studio" element={<Navigate to="/preview/transcript-results" replace />} />
             <Route path="/icp-results-studio" element={<Navigate to="/preview/transcript-results" replace />} />
             <Route path="/signup" element={<Signup />} />
