@@ -66,8 +66,7 @@ export default function BilingualCueStudio({
   }
 
   const updateTargetText = (idx: number, text: string) => {
-    const next = targetRows.map((row, i) => (i === idx ? { ...row, text } : row))
-    onTargetRowsChange(next)
+    onTargetRowsChange(targetRows.map((row, i) => (i === idx ? { ...row, text } : row)))
     setSavedFlash(idx)
   }
 
@@ -80,7 +79,7 @@ export default function BilingualCueStudio({
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
       <div className="flex flex-col lg:flex-row lg:min-h-[420px]">
-        <div className="flex w-full flex-col border-b border-gray-200 bg-black lg:w-[38%] lg:border-b-0 lg:border-r dark:border-gray-800">
+        <div className="flex w-full flex-col border-b border-gray-200 bg-black lg:w-[36%] lg:border-b-0 lg:border-r dark:border-gray-800">
           {videoSrc ? (
             <div className="relative flex aspect-video items-center justify-center overflow-hidden bg-black lg:aspect-auto lg:flex-1 lg:min-h-0">
               <video
@@ -126,10 +125,22 @@ export default function BilingualCueStudio({
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="grid grid-cols-2 gap-0 border-b border-gray-200 bg-gray-50 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-400">
-            <div>Source — {sourceLabel}</div>
-            <div>{targetLabel}</div>
+          {/* Column hierarchy: reference vs working field */}
+          <div className="grid grid-cols-1 border-b border-gray-200 dark:border-gray-800 sm:grid-cols-[minmax(0,0.88fr)_minmax(0,1.2fr)]">
+            <div className="bg-gray-100/90 px-3 py-2 dark:bg-gray-950/90">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-gray-400 dark:text-gray-500">
+                Reference
+              </p>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{sourceLabel}</p>
+            </div>
+            <div className="border-t border-gray-200 bg-white px-3 py-2 dark:border-gray-800 dark:bg-gray-900 sm:border-l sm:border-t-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-blue-600 dark:text-blue-400">
+                Working field
+              </p>
+              <p className="text-xs font-semibold text-gray-900 dark:text-white">{targetLabel}</p>
+            </div>
           </div>
+
           <div className="max-h-[420px] divide-y divide-gray-100 overflow-y-auto dark:divide-gray-800">
             {Array.from({ length: pairCount }).map((_, idx) => {
               const source = sourceRows[idx]
@@ -138,29 +149,41 @@ export default function BilingualCueStudio({
               return (
                 <div
                   key={source.index}
-                  className={`grid grid-cols-1 gap-2 px-3 py-3 sm:grid-cols-2 ${
-                    isActive ? 'bg-blue-50/80 dark:bg-blue-950/30' : ''
+                  className={`grid grid-cols-1 sm:grid-cols-[minmax(0,0.88fr)_minmax(0,1.2fr)] ${
+                    isActive ? 'bg-blue-50/40 dark:bg-blue-950/15' : ''
                   }`}
                 >
+                  {/* Source = quiet reference (not a working control) */}
                   <button
                     type="button"
                     onClick={() => seekToCue(idx)}
-                    className="text-left"
+                    title="Jump video to this cue"
+                    className={`border-b border-gray-100 px-3 py-3 text-left sm:border-b-0 sm:border-r dark:border-gray-800 ${
+                      isActive
+                        ? 'bg-gray-100/95 dark:bg-gray-950/70'
+                        : 'bg-gray-50/90 dark:bg-gray-950/45'
+                    }`}
                   >
-                    <div className="mb-1 font-mono text-[11px] tabular-nums text-gray-400">
+                    <div className="mb-1.5 font-mono text-[10px] tabular-nums text-gray-400 dark:text-gray-500">
                       {fmtRange(source.startTime, source.endTime)}
                     </div>
-                    <p className="text-sm leading-snug text-gray-700 dark:text-gray-200">{source.text}</p>
+                    <p className="text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
+                      {source.text}
+                    </p>
                   </button>
-                  <div>
-                    <div className="mb-1 flex items-center justify-between gap-2">
-                      <span className="inline-flex items-center gap-1 font-mono text-[11px] tabular-nums text-gray-400">
+
+                  {/* Target = primary working field */}
+                  <div className="bg-white px-3 py-3 dark:bg-gray-900">
+                    <div className="mb-1.5 flex items-center justify-between gap-2">
+                      <span className="inline-flex items-center gap-1 font-mono text-[10px] tabular-nums text-gray-400">
                         <Lock className="h-3 w-3" aria-hidden />
                         Same timing
                       </span>
-                      {savedFlash === idx && (
+                      {savedFlash === idx ? (
                         <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">✓ Saved</span>
-                      )}
+                      ) : isActive ? (
+                        <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">Editing</span>
+                      ) : null}
                     </div>
                     {editable ? (
                       <textarea
@@ -168,10 +191,17 @@ export default function BilingualCueStudio({
                         onChange={(e) => updateTargetText(idx, e.target.value)}
                         onFocus={() => seekToCue(idx)}
                         rows={Math.max(2, target.text.split('\n').length)}
-                        className="w-full resize-y rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-sm leading-snug text-gray-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
+                        className={`w-full resize-y rounded-lg border bg-white px-3 py-2.5 text-sm font-medium leading-relaxed text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/35 dark:bg-gray-950 dark:text-gray-50 ${
+                          isActive
+                            ? 'border-blue-500 ring-2 ring-blue-500/20'
+                            : 'border-gray-300 hover:border-blue-300 dark:border-gray-600 dark:hover:border-blue-500'
+                        }`}
+                        aria-label={`${targetLabel} translation for cue ${source.index}`}
                       />
                     ) : (
-                      <p className="text-sm leading-snug text-gray-700 dark:text-gray-200">{target.text}</p>
+                      <p className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium leading-relaxed text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-50">
+                        {target.text}
+                      </p>
                     )}
                   </div>
                 </div>
