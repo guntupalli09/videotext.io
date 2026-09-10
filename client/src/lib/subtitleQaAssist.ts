@@ -20,6 +20,13 @@ export interface AssistIssue {
   autoFixable: boolean
 }
 
+export type CueChipKind = 'hard-to-read' | 'timing-adjusted' | 'needs-review'
+
+export interface CueChip {
+  kind: CueChipKind
+  label: string
+}
+
 const AI_ARTIFACT_PATTERNS: RegExp[] = [
   /\[inaudible\]/i,
   /\[unintelligible\]/i,
@@ -137,10 +144,12 @@ export function runAssistValidation(rows: SubtitleRow[]): AssistIssue[] {
 export function applySafeAssistFixes(rows: SubtitleRow[]): {
   rows: SubtitleRow[]
   fixedCount: number
+  timingAdjustedIndices: number[]
 } {
-  if (rows.length === 0) return { rows, fixedCount: 0 }
+  if (rows.length === 0) return { rows, fixedCount: 0, timingAdjustedIndices: [] }
   const next = rows.map((r) => ({ ...r }))
   let fixedCount = 0
+  const timingAdjusted = new Set<number>()
 
   for (let i = 0; i < next.length; i++) {
     const trimmed = next[i].text.replace(/[ \t]+$/gm, '').replace(/^\s+|\s+$/g, '')
@@ -157,10 +166,11 @@ export function applySafeAssistFixes(rows: SubtitleRow[]): {
       const clamped = Math.max(parseTimeToMs(next[i].startTime) + 40, nextStart - 40)
       next[i] = { ...next[i], endTime: msToSrtTime(clamped) }
       fixedCount += 1
+      timingAdjusted.add(i)
     }
   }
 
-  return { rows: next, fixedCount }
+  return { rows: next, fixedCount, timingAdjustedIndices: [...timingAdjusted] }
 }
 
 export function summarizeAssist(rows: SubtitleRow[]): {
@@ -173,4 +183,47 @@ export function summarizeAssist(rows: SubtitleRow[]): {
   const reviewCueCount = new Set(reviewIssues.map((i) => i.cueIndex)).size
   const safeFixCount = issues.filter((i) => i.autoFixable).length
   return { safeFixCount, reviewCueCount, reviewIssues }
+}
+
+/** Plain-language chips for a single cue. */
+export function chipsForCue(
+  cueIndex: number,
+  issues: AssistIssue[],
+  timingAdjustedIndices: number[] = []
+): CueChip[] {
+  const cueIssues = issues.filter((i) => i.cueIndex === cueIndex && !i.autoFixable)
+  const chips: CueChip[] = []
+
+  if (timingAdjustedIndices.includes(cueIndex)) {
+    chips.push({ kind: 'timing-adjusted', label: 'Timing adjusted' })
+  }
+
+  const hardRead = cueIssues.some((i) => i.type === 'fast-reading' || i.type === 'long-line' || i.type === 'short-duration')
+  if (hardRead) {
+    chips.push({ kind: 'hard-to-read', label: 'Hard to read' })
+  }
+
+  const needsJudgment = cueIssues.some(
+    (i) => i.type === 'empty' || i.type === 'bad-timing' || i.type === 'ai-artifact' || i.type === 'large-gap'
+  )
+  if (needsJudgment || (cueIssues.length > 0 && !hardRead)) {
+    chips.push({ kind: 'needs-review', label: 'Needs review' })
+  } else if (hardRead && !chips.some((c) => c.kind === 'needs-review') && cueIssues.length > 1) {
+    // already have hard-to-read; skip duplicate needs-review unless other issues exist
+  }
+
+  return chips
+}
+
+export function chipsByCueIndex(
+  rows: SubtitleRow[],
+  timingAdjustedIndices: number[] = []
+): Map<number, CueChip[]> {
+  const issues = runAssistValidation(rows)
+  const map = new Map<number, CueChip[]>()
+  for (let i = 0; i < rows.length; i++) {
+    const chips = chipsForCue(i, issues, timingAdjustedIndices)
+    if (chips.length) map.set(i, chips)
+  }
+  return map
 }

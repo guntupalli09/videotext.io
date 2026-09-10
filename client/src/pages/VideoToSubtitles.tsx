@@ -24,11 +24,10 @@ import ProCheckoutLink from '../components/ProCheckoutLink'
 import { ResultSkeleton } from '../components/figma/ResultSkeleton'
 import { Select } from '../components/figma/FormControls'
 import SubtitleStudioPhaseRail, { type StudioPhase } from '../components/subtitleStudio/SubtitleStudioPhaseRail'
-import SmartAssistCard from '../components/subtitleStudio/SmartAssistCard'
-import LanguageLaneBar from '../components/subtitleStudio/LanguageLaneBar'
+import StudioWorkspaceToolbar from '../components/subtitleStudio/StudioWorkspaceToolbar'
 import ReviewEditingDesk from '../components/subtitleStudio/ReviewEditingDesk'
 import BilingualCueStudio from '../components/subtitleStudio/BilingualCueStudio'
-import { applySafeAssistFixes, summarizeAssist } from '../lib/subtitleQaAssist'
+import { applySafeAssistFixes, chipsByCueIndex, summarizeAssist } from '../lib/subtitleQaAssist'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 import { incrementUsage } from '../lib/usage'
 import { uploadFile, uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob } from '../lib/api'
@@ -169,6 +168,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [isTranslating, setIsTranslating] = useState(false)
   const [studioPhase, setStudioPhase] = useState<StudioPhase>('review')
   const [safeFixesApplied, setSafeFixesApplied] = useState(0)
+  const [timingAdjustedIndices, setTimingAdjustedIndices] = useState<number[]>([])
+  const [focusAssistCue, setFocusAssistCue] = useState<number | null>(null)
+  const [focusAssistToken, setFocusAssistToken] = useState(0)
   const assistAppliedForUrl = useRef<string | null>(null)
 
   const fallbackSubtitleName = useMemo(() => {
@@ -189,9 +191,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       setSubtitleRows(rows)
       return
     }
-    const { rows: fixed, fixedCount } = applySafeAssistFixes(rows)
+    const { rows: fixed, fixedCount, timingAdjustedIndices: timingIdx } = applySafeAssistFixes(rows)
     assistAppliedForUrl.current = key
     setSafeFixesApplied(fixedCount)
+    setTimingAdjustedIndices(timingIdx)
     setSubtitleRows(fixed)
     setStudioPhase('review')
   }
@@ -802,6 +805,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setIsTranslating(false)
     setStudioPhase('review')
     setSafeFixesApplied(0)
+    setTimingAdjustedIndices([])
+    setFocusAssistCue(null)
     assistAppliedForUrl.current = null
   }
 
@@ -1106,6 +1111,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                 {subtitleRows.length > 0 ? (() => {
                   const assist = summarizeAssist(subtitleRows)
                   const reviewCueCount = assist.reviewCueCount
+                  const cueChips = chipsByCueIndex(subtitleRows, timingAdjustedIndices)
+                  const firstReviewCue = assist.reviewIssues[0]?.cueIndex ?? null
                   const completedPhases: StudioPhase[] = ['generate']
                   if (studioPhase !== 'review') completedPhases.push('review')
                   if (translatedSubtitleRows.length > 0) completedPhases.push('translate')
@@ -1116,19 +1123,57 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                   const sourceLabel = language
                     ? ({ en: 'English', es: 'Spanish', fr: 'French', de: 'German', ar: 'Arabic', hi: 'Hindi', zh: 'Chinese', ja: 'Japanese' } as Record<string, string>)[language] || language
                     : 'Original'
+                  const laneLanguages = Object.keys(translationLanes).length > 0
+                    ? Object.keys(translationLanes)
+                    : (translationLanguage ? [translationLanguage] : [])
 
                   return (
                     <div className="space-y-component-sm">
-                      <SubtitleStudioPhaseRail
-                        active={studioPhase}
-                        completed={completedPhases}
-                        onSelect={(phase) => {
-                          setStudioPhase(phase)
-                          if (phase === 'export') {
-                            document.getElementById('subtitle-studio-exports')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                          }
-                        }}
-                      />
+                      {/* Sticky project header + workspace toolbar */}
+                      <div className="sticky top-0 z-30 -mx-1 space-y-0 overflow-hidden rounded-xl border border-gray-200 bg-white/95 shadow-sm backdrop-blur dark:border-gray-800 dark:bg-gray-900/95">
+                        <div className="border-b border-gray-100 px-4 py-3 dark:border-gray-800">
+                          <h2 className="mb-2 truncate text-base font-semibold tracking-tight text-gray-900 dark:text-white">
+                            {selectedFile?.name || result.fileName || 'Subtitles'}
+                          </h2>
+                          <SubtitleStudioPhaseRail
+                            active={studioPhase}
+                            completed={completedPhases}
+                            onSelect={(phase) => {
+                              setStudioPhase(phase)
+                              if (phase === 'export') {
+                                document.getElementById('subtitle-studio-exports')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                              }
+                            }}
+                          />
+                        </div>
+                        <StudioWorkspaceToolbar
+                          sourceLanguageLabel={sourceLabel}
+                          activeLanguage={translationLanguage}
+                          languages={laneLanguages}
+                          languageOptions={LANGUAGES}
+                          onSelectLanguage={(lang) => {
+                            setTranslationLanguage(lang)
+                            const existing = translationLanes[lang]
+                            if (existing?.length) setTranslatedSubtitleRows(existing)
+                            else setTranslatedSubtitleRows([])
+                            setStudioPhase('translate')
+                          }}
+                          onAddLanguage={(lang) => {
+                            setTranslatedSubtitleRows([])
+                            setTranslationLanguage(lang)
+                            setStudioPhase('translate')
+                          }}
+                          reviewItemCount={reviewCueCount}
+                          safeFixesApplied={safeFixesApplied}
+                          onReviewItems={() => {
+                            setStudioPhase('review')
+                            if (firstReviewCue != null) {
+                              setFocusAssistCue(firstReviewCue)
+                              setFocusAssistToken((t) => t + 1)
+                            }
+                          }}
+                        />
+                      </div>
 
                       <div className="grid grid-cols-1 gap-component-sm lg:grid-cols-[minmax(0,1fr)_320px] items-start">
                         <div className="min-w-0 space-y-component-sm">
@@ -1158,35 +1203,11 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                               rows={subtitleRows}
                               editable={canEdit}
                               onRowsChange={setSubtitleRows}
-                              reviewCueIndices={summarizeAssist(subtitleRows).reviewIssues.map((i) => i.cueIndex)}
+                              cueChips={cueChips}
+                              focusCueIndex={focusAssistCue}
+                              focusCueToken={focusAssistToken}
                             />
                           )}
-
-                          <SmartAssistCard
-                            safeFixesApplied={safeFixesApplied}
-                            reviewCueCount={reviewCueCount}
-                            onReviewCues={() => setStudioPhase('review')}
-                          />
-
-                          <LanguageLaneBar
-                            activeLanguage={translationLanguage}
-                            languages={Object.keys(translationLanes).length > 0
-                              ? Object.keys(translationLanes)
-                              : (translationLanguage ? [translationLanguage] : [])}
-                            languageOptions={LANGUAGES}
-                            onSelectLanguage={(lang) => {
-                              setTranslationLanguage(lang)
-                              const existing = translationLanes[lang]
-                              if (existing?.length) setTranslatedSubtitleRows(existing)
-                              else setTranslatedSubtitleRows([])
-                              setStudioPhase('translate')
-                            }}
-                            onAddLanguage={(lang) => {
-                              setTranslatedSubtitleRows([])
-                              setTranslationLanguage(lang)
-                              setStudioPhase('translate')
-                            }}
-                          />
 
                           {!canEdit && (
                             <button type="button" onClick={() => { setPaywallReason('INLINE_EDIT'); setShowPaywall(true) }} className="px-1 text-left text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">

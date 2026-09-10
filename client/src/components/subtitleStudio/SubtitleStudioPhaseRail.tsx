@@ -24,7 +24,7 @@ export default function SubtitleStudioPhaseRail({
   return (
     <nav
       aria-label="Subtitle workflow"
-      className="flex flex-wrap items-center gap-1 border-b border-gray-200 pb-3 dark:border-gray-800"
+      className="flex flex-wrap items-center gap-1"
     >
       {PHASES.map((phase, index) => {
         const isDone = completed.includes(phase.id)

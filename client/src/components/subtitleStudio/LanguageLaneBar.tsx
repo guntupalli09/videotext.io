@@ -9,6 +9,8 @@ interface LanguageLaneBarProps {
   languageOptions: { value: string; label: string }[]
   onSelectLanguage: (language: string) => void
   onAddLanguage: (language: string) => void
+  /** Tighter controls for sticky toolbar. */
+  compact?: boolean
 }
 
 /**
@@ -21,13 +23,19 @@ export default function LanguageLaneBar({
   languageOptions,
   onSelectLanguage,
   onAddLanguage,
+  compact = false,
 }: LanguageLaneBarProps) {
   const availableToAdd = languageOptions.filter((l) => !languages.includes(l.value))
+  const selectClass = compact
+    ? 'appearance-none rounded-md border border-gray-300 bg-white py-1.5 pl-2.5 pr-7 text-xs font-medium text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white'
+    : 'appearance-none rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-8 text-sm font-medium text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white'
 
   if (!activeLanguage) {
     return (
-      <div className="flex flex-wrap items-center gap-2">
-        <label className="text-sm font-medium text-gray-800 dark:text-gray-100">+ Add translation</label>
+      <div className={`flex flex-wrap items-center ${compact ? 'gap-1.5' : 'gap-2'}`}>
+        <label className={compact ? 'text-xs font-medium text-gray-700 dark:text-gray-200' : 'text-sm font-medium text-gray-800 dark:text-gray-100'}>
+          + Add translation
+        </label>
         <select
           value=""
           onChange={(e) => {
@@ -35,7 +43,7 @@ export default function LanguageLaneBar({
             if (!v) return
             onAddLanguage(v)
           }}
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+          className={selectClass}
           aria-label="Add translation language"
         >
           <option value="">Choose language…</option>
@@ -48,12 +56,12 @@ export default function LanguageLaneBar({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className={`flex flex-wrap items-center ${compact ? 'gap-1.5' : 'gap-2'}`}>
       <div className="relative">
         <select
           value={activeLanguage}
           onChange={(e) => onSelectLanguage(e.target.value)}
-          className="appearance-none rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-8 text-sm font-medium text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+          className={selectClass}
           aria-label="Active translation language"
         >
           {languages.map((lang) => (
@@ -61,7 +69,7 @@ export default function LanguageLaneBar({
           ))}
         </select>
         <ChevronDown
-          className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400"
+          className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-gray-400 ${compact ? 'right-1.5 h-3 w-3' : 'right-2 h-3.5 w-3.5'}`}
           aria-hidden
         />
       </div>
@@ -75,7 +83,11 @@ export default function LanguageLaneBar({
               if (!v) return
               onAddLanguage(v)
             }}
-            className="appearance-none rounded-lg border border-dashed border-gray-300 bg-white py-2 pl-8 pr-3 text-sm font-medium text-gray-700 hover:border-blue-400 hover:text-blue-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+            className={
+              compact
+                ? 'appearance-none rounded-md border border-dashed border-gray-300 bg-white py-1.5 pl-7 pr-2.5 text-xs font-medium text-gray-700 hover:border-blue-400 hover:text-blue-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200'
+                : 'appearance-none rounded-lg border border-dashed border-gray-300 bg-white py-2 pl-8 pr-3 text-sm font-medium text-gray-700 hover:border-blue-400 hover:text-blue-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200'
+            }
             aria-label="Add language"
           >
             <option value="">Add language</option>
@@ -84,7 +96,7 @@ export default function LanguageLaneBar({
             ))}
           </select>
           <Plus
-            className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400"
+            className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-gray-400 ${compact ? 'left-2 h-3 w-3' : 'left-2.5 h-3.5 w-3.5'}`}
             aria-hidden
           />
         </div>

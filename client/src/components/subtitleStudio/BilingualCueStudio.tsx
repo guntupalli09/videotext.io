@@ -26,6 +26,10 @@ function fmtRange(start: string, end: string): string {
   return `${toShort(start)} → ${toShort(end)}`
 }
 
+/**
+ * Translate desk: sticky video (~37%) + cue workspace (~63%).
+ * Source = reference. Target = working field.
+ */
 export default function BilingualCueStudio({
   videoSrc,
   sourceRows,
@@ -78,10 +82,11 @@ export default function BilingualCueStudio({
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
-      <div className="flex flex-col lg:flex-row lg:min-h-[420px]">
-        <div className="flex w-full flex-col border-b border-gray-200 bg-black lg:w-[36%] lg:border-b-0 lg:border-r dark:border-gray-800">
+      <div className="flex flex-col lg:flex-row lg:items-start">
+        {/* Sticky video — ~37% */}
+        <div className="flex w-full shrink-0 flex-col border-b border-gray-200 bg-black lg:sticky lg:top-0 lg:w-[37%] lg:self-start lg:border-b-0 lg:border-r dark:border-gray-800">
           {videoSrc ? (
-            <div className="relative flex aspect-video items-center justify-center overflow-hidden bg-black lg:aspect-auto lg:flex-1 lg:min-h-0">
+            <div className="relative flex aspect-video items-center justify-center overflow-hidden bg-black">
               <video
                 ref={videoRef}
                 src={videoSrc}
@@ -93,7 +98,7 @@ export default function BilingualCueStudio({
               />
             </div>
           ) : (
-            <div className="flex aspect-video items-center justify-center bg-gray-900 text-sm text-gray-400 lg:aspect-auto lg:flex-1">
+            <div className="flex aspect-video items-center justify-center bg-gray-900 text-sm text-gray-400">
               No video preview
             </div>
           )}
@@ -124,8 +129,8 @@ export default function BilingualCueStudio({
           </div>
         </div>
 
-        <div className="min-w-0 flex-1">
-          {/* Column hierarchy: reference vs working field */}
+        {/* Cue workspace — ~63% */}
+        <div className="min-w-0 flex-1 lg:w-[63%]">
           <div className="grid grid-cols-1 border-b border-gray-200 dark:border-gray-800 sm:grid-cols-[minmax(0,0.88fr)_minmax(0,1.2fr)]">
             <div className="bg-gray-100/90 px-3 py-2 dark:bg-gray-950/90">
               <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-gray-400 dark:text-gray-500">
@@ -141,7 +146,7 @@ export default function BilingualCueStudio({
             </div>
           </div>
 
-          <div className="max-h-[420px] divide-y divide-gray-100 overflow-y-auto dark:divide-gray-800">
+          <div className="max-h-[min(70vh,720px)] divide-y divide-gray-100 overflow-y-auto dark:divide-gray-800">
             {Array.from({ length: pairCount }).map((_, idx) => {
               const source = sourceRows[idx]
               const target = targetRows[idx]
@@ -153,7 +158,6 @@ export default function BilingualCueStudio({
                     isActive ? 'bg-blue-50/40 dark:bg-blue-950/15' : ''
                   }`}
                 >
-                  {/* Source = quiet reference (not a working control) */}
                   <button
                     type="button"
                     onClick={() => seekToCue(idx)}
@@ -172,7 +176,6 @@ export default function BilingualCueStudio({
                     </p>
                   </button>
 
-                  {/* Target = primary working field */}
                   <div className="bg-white px-3 py-3 dark:bg-gray-900">
                     <div className="mb-1.5 flex items-center justify-between gap-2">
                       <span className="inline-flex items-center gap-1 font-mono text-[10px] tabular-nums text-gray-400">
