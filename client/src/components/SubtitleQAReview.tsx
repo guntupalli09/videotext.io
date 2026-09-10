@@ -364,7 +364,7 @@ export default function SubtitleQAReview({
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="px-4 py-3 flex items-center justify-between bg-gray-50 border-b border-gray-200">
         <div className="flex items-center gap-2.5 flex-wrap min-w-0">
-          <span className="text-sm font-medium text-gray-900 tracking-tight">QA Review</span>
+          <span className="text-sm font-medium text-gray-900 tracking-tight">Review</span>
           <span className="text-xs text-gray-400 tabular-nums">{parsedCues.length} cues</span>
           {reviewed.size > 0 && (
             <>
