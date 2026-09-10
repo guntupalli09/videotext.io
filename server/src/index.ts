@@ -411,8 +411,17 @@ const server = app.listen(PORT, () => {
 
   // Daily quota reset email — fires once per day at 9 AM CST (15:00 UTC)
   // Sends free-plan users a magic-login email so they can open the tool in one click.
+  //
+  // DISABLED: this sent to every free-plan user (800+) every day via Resend,
+  // which exhausted Resend's shared daily send quota and blocked transactional
+  // sends on the same RESEND_API_KEY — including the sign-in OTP email in
+  // routes/auth.ts, locking users out of login. Replaced by manual targeted
+  // outreach instead of a blanket daily blast. Re-enable only after moving this
+  // off Resend (e.g. to the Gmail SMTP path in utils/mailer.ts, like the other
+  // growth crons) or onto a higher-quota provider.
+  const DAILY_QUOTA_EMAIL_CRON_ENABLED: boolean = false
   let lastDailyEmailDate = ''
-  setInterval(async () => {
+  if (DAILY_QUOTA_EMAIL_CRON_ENABLED) setInterval(async () => {
     try {
       const now = new Date()
       // CST = UTC-6 (no DST adjustment needed — close enough for a daily email)
