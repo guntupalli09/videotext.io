@@ -2,10 +2,10 @@ import { Check } from 'lucide-react'
 
 export type StudioPhase = 'generate' | 'review' | 'translate' | 'final' | 'export'
 
-const PHASES: { id: StudioPhase; label: string }[] = [
+const PHASES: { id: StudioPhase; label: string; optional?: boolean }[] = [
   { id: 'generate', label: 'Generate' },
   { id: 'review', label: 'Review' },
-  { id: 'translate', label: 'Translate' },
+  { id: 'translate', label: 'Translate', optional: true },
   { id: 'final', label: 'Final QA' },
   { id: 'export', label: 'Export' },
 ]
@@ -49,6 +49,11 @@ export default function SubtitleStudioPhaseRail({
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-white" aria-hidden />
               ) : null}
               {phase.label}
+              {phase.optional && !isDone && (
+                <span className={`text-[10px] font-normal ${isActive ? 'text-blue-100' : 'text-gray-400 dark:text-gray-500'}`}>
+                  (optional)
+                </span>
+              )}
             </button>
             {index < PHASES.length - 1 && (
               <span className="mx-0.5 hidden text-gray-300 sm:inline dark:text-gray-600" aria-hidden>

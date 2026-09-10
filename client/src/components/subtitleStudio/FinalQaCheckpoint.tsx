@@ -84,7 +84,7 @@ export default function FinalQaCheckpoint({
         reviewCueCount === 0
           ? 'clear'
           : accepted
-            ? `${reviewCueCount} accepted`
+            ? `${reviewCueCount} cue${reviewCueCount === 1 ? '' : 's'} reviewed`
             : `${reviewCueCount} cue${reviewCueCount === 1 ? '' : 's'} need attention`,
       cueIndex: reviewIssues[0]?.cueIndex,
     },
