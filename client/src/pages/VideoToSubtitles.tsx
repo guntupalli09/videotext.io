@@ -63,6 +63,9 @@ export type VideoToSubtitlesSeoProps = {
   }
 }
 
+/** Extra polls to wait for a completed job's result URL before giving up (avoids a blank Studio when status flips before the result is attached). */
+const MAX_MISSING_RESULT_RETRIES = 8
+
 function parseSubtitlesToRows(text: string): SubtitleRow[] {
   const blocks = text
     .replace(/\r/g, '')
@@ -194,6 +197,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const processingStartedAtRef = useRef<number | null>(null)
   const terminalRef = useRef(false)
   const lastPartialVersionRef = useRef(0)
+  /** status can flip to 'completed' before the result URL is attached server-side; retry a few times instead of rendering a blank Studio. */
+  const missingResultRetriesRef = useRef(0)
+  const [resultLoadTimedOut, setResultLoadTimedOut] = useState(false)
   const [partialSegments, setPartialSegments] = useState<{ start: number; end: number; text: string }[]>([])
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
@@ -266,6 +272,31 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     }
   }
 
+  /**
+   * status can flip to 'completed' before the result URL is attached server-side (the SSE/poll
+   * transport stops itself on the first 'completed' message regardless of whether result is
+   * present). Rather than block finalizing — which risks the previously-fixed "stuck processing
+   * forever" bug — we finalize immediately and fill in the result in the background so the
+   * Studio doesn't sit blank until a manual refresh.
+   */
+  const pollForMissingResult = async (jobId: string, jobToken?: string) => {
+    setResultLoadTimedOut(false)
+    for (let i = 0; i < MAX_MISSING_RESULT_RETRIES; i++) {
+      await new Promise((r) => setTimeout(r, JOB_POLL_INTERVAL_MS))
+      try {
+        const s = await getJobStatus(jobId, jobToken ? { jobToken } : undefined)
+        if (s.result?.downloadUrl) {
+          setResult(s.result)
+          setPreviewLoading(true)
+          await loadCompletedPreview(s.result.downloadUrl, s.result.fileName)
+          return
+        }
+      } catch {
+        // keep trying
+      }
+    }
+    setResultLoadTimedOut(true)
+  }
 
   useEffect(() => {
     if (status === 'completed' && !isLoggedIn()) {
@@ -385,6 +416,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
     terminalRef.current = false
     lastPartialVersionRef.current = 0
+    missingResultRetriesRef.current = 0
+    setResultLoadTimedOut(false)
     setStatus('processing')
     setUploadPhase('processing')
     setUploadProgress(100)
@@ -404,7 +437,12 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         if (jobStatus.queuePosition !== undefined) setQueuePosition(jobStatus.queuePosition)
 
         const transition = getJobLifecycleTransition(jobStatus)
-        if (transition === 'completed') {
+        const resultMissing =
+          transition === 'completed' && isLoggedIn() && !jobStatus.requiresAuth && !jobStatus.result?.downloadUrl
+        if (resultMissing && missingResultRetriesRef.current < MAX_MISSING_RESULT_RETRIES) {
+          // status flipped to completed before the result URL was attached — keep polling instead of rendering a blank Studio.
+          missingResultRetriesRef.current += 1
+        } else if (transition === 'completed') {
           terminalRef.current = true
           setPartialSegments([])
           setPreviewLoading(Boolean(isLoggedIn() && jobStatus.result?.downloadUrl))
@@ -421,6 +459,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           setUploadProgress(100)
           if (isLoggedIn() && jobStatus.result?.downloadUrl) {
             await loadCompletedPreview(jobStatus.result.downloadUrl, jobStatus.result.fileName)
+          } else if (resultMissing) {
+            void pollForMissingResult(jobId, jobToken ?? undefined)
           }
           return
         }
@@ -451,7 +491,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             setProgress(s.progress ?? 0)
             if (s.queuePosition !== undefined) setQueuePosition(s.queuePosition)
             const t = getJobLifecycleTransition(s)
-            if (t === 'completed') {
+            const resultMissing = t === 'completed' && isLoggedIn() && !s.requiresAuth && !s.result?.downloadUrl
+            if (resultMissing && missingResultRetriesRef.current < MAX_MISSING_RESULT_RETRIES) {
+              missingResultRetriesRef.current += 1
+            } else if (t === 'completed') {
               terminalRef.current = true
               setPartialSegments([])
               if (rehydratePollRef.current) clearInterval(rehydratePollRef.current)
@@ -468,6 +511,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
               if (isLoggedIn() && s.result?.downloadUrl) {
                 await loadCompletedPreview(s.result.downloadUrl, s.result.fileName)
+              } else if (resultMissing) {
+                void pollForMissingResult(jobId, jobToken ?? undefined)
               }
             } else if (t === 'failed') {
               terminalRef.current = true
@@ -715,6 +760,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       setUploadProgress(100)
       terminalRef.current = false
       lastPartialVersionRef.current = 0
+      missingResultRetriesRef.current = 0
+      setResultLoadTimedOut(false)
       setPartialSegments([])
       const startedAt = Date.now()
       setProcessingStartedAt(startedAt)
@@ -735,6 +782,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           }
         }
         const transition = getJobLifecycleTransition(jobStatus)
+        const resultMissing =
+          transition === 'completed' && isLoggedIn() && !jobStatus.requiresAuth && !jobStatus.result?.downloadUrl
         if (transition === 'completed') {
           terminalRef.current = true
           setPartialSegments([])
@@ -757,6 +806,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })
           if (isLoggedIn() && jobStatus.result?.downloadUrl) {
             void loadCompletedPreview(jobStatus.result.downloadUrl, jobStatus.result.fileName)
+          } else if (resultMissing) {
+            // Result URL wasn't attached yet — keep checking in the background instead of leaving the Studio blank.
+            void pollForMissingResult(response.jobId, jobToken)
           }
           incrementUsage('video-to-subtitles')
           try {
@@ -859,6 +911,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     uploadAbortRef.current = null
     terminalRef.current = false
     lastPartialVersionRef.current = 0
+    missingResultRetriesRef.current = 0
+    setResultLoadTimedOut(false)
     setTrimStart(null)
     setTrimEnd(null)
     setStatus('idle')
@@ -1057,6 +1111,31 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             />
             <ResultSkeleton variant="subtitle" />
           </ProcessingStateShell>
+        )}
+
+        {status === 'completed' && !result && (
+          resultLoadTimedOut ? (
+            <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
+              <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
+              <p className="text-sm font-medium text-gray-900 dark:text-white">Your subtitles are still finishing up</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
+                This is taking longer than usual. Refresh the page to check again.
+              </p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Refresh
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <p className="px-1 text-xs text-gray-500 dark:text-gray-400">Finishing up — loading your subtitles…</p>
+              <ResultSkeleton variant="subtitle" />
+            </div>
+          )
         )}
 
         {status === 'completed' && result && (

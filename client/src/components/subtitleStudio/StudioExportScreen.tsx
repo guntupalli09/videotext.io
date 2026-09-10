@@ -42,14 +42,16 @@ export default function StudioExportScreen({
       <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-950">
         <p className="text-sm font-semibold text-gray-900 dark:text-white">Export latest version</p>
         <p className="text-[11px] text-gray-500 dark:text-gray-400">
-          Generated from the current saved project — not a cached earlier SRT.
+          {exportStale
+            ? 'Your last export is out of date — it was generated before your most recent edits.'
+            : 'Generated from the latest saved revision — includes every edit made in Review, Translate, and Final QA.'}
         </p>
       </div>
 
       {exportStale && (
         <div className="flex flex-wrap items-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-900 dark:border-amber-800/60 dark:bg-amber-950/30 dark:text-amber-100">
           <RefreshCw className="h-4 w-4 shrink-0" aria-hidden />
-          <span className="font-medium">Changes made since last export — regenerate</span>
+          <span className="font-medium">Changes made since last export — regenerate to include them</span>
         </div>
       )}
 
@@ -66,16 +68,16 @@ export default function StudioExportScreen({
                 onClick={() => onExportLane(lane.id, 'srt')}
                 className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700"
               >
-                <FileDown className="h-3.5 w-3.5" />
-                SRT
+                {exportStale ? <RefreshCw className="h-3.5 w-3.5" /> : <FileDown className="h-3.5 w-3.5" />}
+                {exportStale ? 'Regenerate SRT' : 'SRT'}
               </button>
               <button
                 type="button"
                 onClick={() => onExportLane(lane.id, 'vtt')}
                 className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
               >
-                <FileDown className="h-3.5 w-3.5" />
-                VTT
+                {exportStale ? <RefreshCw className="h-3.5 w-3.5" /> : <FileDown className="h-3.5 w-3.5" />}
+                {exportStale ? 'Regenerate VTT' : 'VTT'}
               </button>
               <button
                 type="button"
