@@ -36,6 +36,7 @@ import { isPaidPlan as hasPaidPlan } from '../lib/plans'
 import { getFailureMessage } from '../lib/failureMessage'
 import { checkVideoPreflight } from '../lib/uploadPreflight'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
+import { isPlayableMediaFile } from '../lib/mediaPreview'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
 import { LANGUAGES } from '../lib/languages'
@@ -155,7 +156,13 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [progress, setProgress] = useState(0)
   const [uploadPhase, setUploadPhase] = useState<'uploading' | 'processing'>('uploading')
   const [uploadProgress, setUploadProgress] = useState(0)
-  const [result, setResult] = useState<{ downloadUrl: string; fileName?: string; warnings?: { type: string; message: string; line?: number }[] } | null>(null)
+  const [result, setResult] = useState<{
+    downloadUrl: string
+    fileName?: string
+    warnings?: { type: string; message: string; line?: number }[]
+    /** Server-extracted AAC for in-Studio playback when the local upload blob is gone. */
+    audioUrl?: string
+  } | null>(null)
   const [subtitleRows, setSubtitleRows] = useState<SubtitleRow[]>([])
   const [previewError, setPreviewError] = useState(false)
   /** True while fetching cue rows after job completion — avoids blank "Subtitles ready" shell. */
@@ -180,6 +187,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const activeUploadPollRef = useRef<(() => void) | null>(null)
   const pollConsecutiveNetworkErrorsRef = useRef(0)
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
+  /** User-attached media for cue verification when the original upload object URL is unavailable. */
+  const [attachedMediaFile, setAttachedMediaFile] = useState<File | null>(null)
+  const [attachedMediaUrl, setAttachedMediaUrl] = useState<string | null>(null)
   const jobStartedTrackedRef = useRef<string | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
   const terminalRef = useRef(false)
@@ -317,8 +327,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     }
   }, [selectedFile])
 
+  // Object URL for Studio playback — MIME is often empty on .mp4/.mov drops, so use extension too.
   useEffect(() => {
-    if (selectedFile && selectedFile.type.startsWith('video/')) {
+    if (selectedFile && isPlayableMediaFile(selectedFile)) {
       const url = URL.createObjectURL(selectedFile)
       setVideoPreviewUrl(url)
       return () => {
@@ -329,6 +340,30 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     }
     setVideoPreviewUrl(null)
   }, [selectedFile])
+
+  useEffect(() => {
+    if (attachedMediaFile && isPlayableMediaFile(attachedMediaFile)) {
+      const url = URL.createObjectURL(attachedMediaFile)
+      setAttachedMediaUrl(url)
+      return () => {
+        setAttachedMediaUrl(null)
+        const u = url
+        setTimeout(() => URL.revokeObjectURL(u), 0)
+      }
+    }
+    setAttachedMediaUrl(null)
+  }, [attachedMediaFile])
+
+  const studioMediaSrc = useMemo(() => {
+    if (attachedMediaUrl) return attachedMediaUrl
+    if (videoPreviewUrl) return videoPreviewUrl
+    if (result?.audioUrl) return getAbsoluteDownloadUrl(result.audioUrl)
+    return null
+  }, [attachedMediaUrl, videoPreviewUrl, result?.audioUrl])
+
+  const handleAttachStudioMedia = (file: File | null) => {
+    setAttachedMediaFile(file)
+  }
 
   // Elapsed time ticker when processing (cleanup on unmount/complete/fail)
   useEffect(() => {
@@ -848,6 +883,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setLastExportedRevision(null)
     setFinalQaAccepted(false)
     assistAppliedForUrl.current = null
+    setAttachedMediaFile(null)
   }
 
 
@@ -1111,7 +1147,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
                   const cueDesk = showTranslateDesk ? (
                     <BilingualCueStudio
-                      videoSrc={videoPreviewUrl}
+                      videoSrc={studioMediaSrc}
                       sourceRows={subtitleRows}
                       targetRows={translatedSubtitleRows}
                       sourceLabel={sourceLabel}
@@ -1121,16 +1157,18 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                         updateTranslatedRows(next)
                         setTranslationLanes((prev) => ({ ...prev, [translationLanguage!]: next }))
                       }}
+                      onAttachMedia={handleAttachStudioMedia}
                     />
                   ) : (
                     <ReviewEditingDesk
-                      videoSrc={videoPreviewUrl}
+                      videoSrc={studioMediaSrc}
                       rows={subtitleRows}
                       editable={canEdit}
                       onRowsChange={updateSubtitleRows}
                       cueChips={cueChips}
                       focusCueIndex={focusAssistCue}
                       focusCueToken={focusAssistToken}
+                      onAttachMedia={handleAttachStudioMedia}
                     />
                   )
 

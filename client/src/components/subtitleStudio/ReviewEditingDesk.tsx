@@ -13,6 +13,8 @@ interface ReviewEditingDeskProps {
   cueChips?: Map<number, CueChip[]>
   focusCueIndex?: number | null
   focusCueToken?: number
+  /** When no videoSrc, let the user pick a local file to verify cues. */
+  onAttachMedia?: (file: File | null) => void
 }
 
 function toClock(t: string): string {
@@ -47,6 +49,7 @@ export default function ReviewEditingDesk({
   cueChips,
   focusCueIndex = null,
   focusCueToken = 0,
+  onAttachMedia,
 }: ReviewEditingDeskProps) {
   const [savedFlash, setSavedFlash] = useState<number | null>(null)
   const [timingUnlocked, setTimingUnlocked] = useState(false)
@@ -194,8 +197,26 @@ export default function ReviewEditingDesk({
               )}
             </div>
           ) : (
-            <div className="flex aspect-video items-center justify-center bg-gray-950 text-sm text-gray-400">
-              VIDEO
+            <div className="flex aspect-video flex-col items-center justify-center gap-3 bg-gray-950 px-4 text-center">
+              <p className="text-sm font-medium text-gray-200">No video loaded</p>
+              <p className="max-w-xs text-[11px] leading-relaxed text-gray-400">
+                Attach the original video to play and verify subtitle timing.
+              </p>
+              {onAttachMedia && (
+                <label className="cursor-pointer rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
+                  Choose video
+                  <input
+                    type="file"
+                    accept="video/*,audio/*,.mp4,.mov,.webm,.mkv,.m4v,.mp3,.wav,.m4a"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] ?? null
+                      onAttachMedia(file)
+                      e.target.value = ''
+                    }}
+                  />
+                </label>
+              )}
             </div>
           )}
           <div className="flex flex-wrap items-center gap-2 border-t border-gray-800 bg-gray-950 px-3 py-2">
