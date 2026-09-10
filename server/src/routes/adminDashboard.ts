@@ -532,7 +532,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
       // older accounts remain available in the founder table and CSV export.
       prisma.$queryRaw<{
         id: string; email: string; name: string | null; plan: string; createdAt: Date; lastActiveAt: Date | null;
-        utmSource: string | null; firstReferrer: string | null;
+        utmSource: string | null; firstReferrer: string | null; country: string | null;
         totalJobs: bigint; jobCount30d: bigint;
       }[]>`
         WITH job_counts AS (
@@ -542,7 +542,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
           FROM "Job"
           GROUP BY "userId"
         )
-        SELECT u.id, u.email, u.name, u.plan, u."createdAt", u."lastActiveAt", u."utmSource", u."firstReferrer",
+        SELECT u.id, u.email, u.name, u.plan, u."createdAt", u."lastActiveAt", u."utmSource", u."firstReferrer", u."country",
           COALESCE(jc."totalJobs", 0)::bigint AS "totalJobs",
           COALESCE(jc."jobCount30d", 0)::bigint AS "jobCount30d"
         FROM "User" u
@@ -773,6 +773,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
       lastActiveAt: u.lastActiveAt ? u.lastActiveAt.toISOString() : null,
       utmSource: u.utmSource,
       firstReferrer: u.firstReferrer,
+      country: u.country,
       totalJobs: Number(u.totalJobs),
       jobCount30d: Number(u.jobCount30d),
     }))

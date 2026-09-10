@@ -9,6 +9,7 @@ import { signAuthToken, signEmailVerificationToken, verifyEmailVerificationToken
 import { getPlanAndEmailForStripeCustomer } from '../services/stripe'
 import { getPlanLimits } from '../utils/limits'
 import { applyReferralOnSignup } from '../services/referral'
+import { getRequestCountry } from '../utils/geoPricing'
 import { getLogger } from '../lib/logger'
 import { incrementResendCounter } from '../lib/apiCreditsCache'
 import { prisma } from '../db'
@@ -250,8 +251,35 @@ interface SignupBody {
   password: string
 }
 
+/** Client-captured first-touch acquisition data, sent by every signup path. All optional/untrusted. */
+interface AttributionBody {
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  referrer?: string | null
+}
+
+const MAX_ATTRIBUTION_FIELD_LEN = 512
+
+function sanitizeAttributionField(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined
+  const trimmed = value.trim().slice(0, MAX_ATTRIBUTION_FIELD_LEN)
+  return trimmed || undefined
+}
+
+/** Resolve client-reported UTM/referrer + server-trusted geo-IP country for a new signup. */
+function resolveSignupAttribution(req: Request, body: AttributionBody) {
+  return {
+    utmSource: sanitizeAttributionField(body.utmSource),
+    utmMedium: sanitizeAttributionField(body.utmMedium),
+    utmCampaign: sanitizeAttributionField(body.utmCampaign),
+    firstReferrer: sanitizeAttributionField(body.referrer),
+    country: getRequestCountry(req),
+  }
+}
+
 /** Complete signup after OTP verification. Body: { verificationToken, password, referralCode? }. */
-interface CompleteSignupBody {
+interface CompleteSignupBody extends AttributionBody {
   verificationToken: string
   password: string
   referralCode?: string
@@ -260,6 +288,7 @@ interface CompleteSignupBody {
 router.post('/complete-signup', async (req: Request, res: Response) => {
   try {
     const { verificationToken, password, referralCode } = req.body as CompleteSignupBody
+    const attribution = resolveSignupAttribution(req, req.body as AttributionBody)
     if (!verificationToken || !password) {
       return res.status(400).json({ message: 'Verification token and password are required.' })
     }
@@ -313,6 +342,8 @@ router.post('/complete-signup', async (req: Request, res: Response) => {
       },
       limits: getPlanLimits('free'),
       overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
+      ...attribution,
+      firstSeenAt: now,
       createdAt: now,
       updatedAt: now,
     }
@@ -601,10 +632,11 @@ const googleAuthLimit = rateLimit({
  */
 router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
   try {
-    const { credential, referralCode } = req.body as { credential?: string; referralCode?: string }
+    const { credential, referralCode } = req.body as { credential?: string; referralCode?: string } & AttributionBody
     if (!credential || typeof credential !== 'string') {
       return res.status(400).json({ message: 'Google credential is required.' })
     }
+    const attribution = resolveSignupAttribution(req, req.body as AttributionBody)
 
     const clientId = process.env.GOOGLE_CLIENT_ID
     if (!clientId) {
@@ -680,6 +712,8 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
         },
         limits: getPlanLimits('free'),
         overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
+        ...attribution,
+        firstSeenAt: now,
         createdAt: now,
         updatedAt: now,
       }
