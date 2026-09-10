@@ -30,7 +30,7 @@ import StudioExportScreen from '../components/subtitleStudio/StudioExportScreen'
 import { applySafeAssistFixes, chipsByCueIndex, runAssistValidation, summarizeAssist } from '../lib/subtitleQaAssist'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 import { incrementUsage } from '../lib/usage'
-import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob } from '../lib/api'
+import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob, ensureGuestJobClaimed } from '../lib/api'
 import { isLoggedIn } from '../lib/auth'
 import { isPaidPlan as hasPaidPlan } from '../lib/plans'
 import { getFailureMessage } from '../lib/failureMessage'
@@ -200,6 +200,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   /** status can flip to 'completed' before the result URL is attached server-side; retry a few times instead of rendering a blank Studio. */
   const missingResultRetriesRef = useRef(0)
   const [resultLoadTimedOut, setResultLoadTimedOut] = useState(false)
+  /** Set when auto-claiming a guest job for the now-logged-in user fails, so the panel shows an actionable message instead of nothing. */
+  const [resultClaimFailed, setResultClaimFailed] = useState(false)
   const [partialSegments, setPartialSegments] = useState<{ start: number; end: number; text: string }[]>([])
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
@@ -296,6 +298,37 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       }
     }
     setResultLoadTimedOut(true)
+  }
+
+  /**
+   * A job started as a guest is only linked to a real account once claimed (see
+   * JobAuthGateModal). If the user is already logged in by the time the job completes — e.g.
+   * they signed in during processing, or on a later visit — the server still withholds the
+   * result (requiresAuth: true) because the job record isn't attached to them yet. Rather than
+   * show a broken "ready but nothing to see" panel, claim it in the background and reload.
+   */
+  const claimAndReloadResult = async (jobId: string, jobToken?: string) => {
+    setResultClaimFailed(false)
+    if (!jobToken) {
+      setPreviewLoading(false)
+      setResultClaimFailed(true)
+      return
+    }
+    try {
+      await ensureGuestJobClaimed(jobId, jobToken)
+      const s = await getJobStatus(jobId, { jobToken })
+      if (s.result?.downloadUrl) {
+        setShowAuthGate(false)
+        setResult(s.result)
+        setPreviewLoading(true)
+        await loadCompletedPreview(s.result.downloadUrl, s.result.fileName)
+        return
+      }
+    } catch {
+      // fall through to error state below
+    }
+    setPreviewLoading(false)
+    setResultClaimFailed(true)
   }
 
   useEffect(() => {
@@ -418,6 +451,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     lastPartialVersionRef.current = 0
     missingResultRetriesRef.current = 0
     setResultLoadTimedOut(false)
+    setResultClaimFailed(false)
     setStatus('processing')
     setUploadPhase('processing')
     setUploadProgress(100)
@@ -449,6 +483,12 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           setStatus('completed')
           if (isLoggedIn() && !jobStatus.requiresAuth) {
             setResult(jobStatus.result ?? null)
+          } else if (isLoggedIn()) {
+            // Logged in, but this job isn't linked to the account yet (e.g. started as a guest
+            // job before sign-in) — claim it in the background instead of showing an empty panel.
+            setResult({ downloadUrl: '' })
+            setPreviewLoading(true)
+            void claimAndReloadResult(jobId, jobToken ?? undefined)
           } else {
             setShowAuthGate(true)
             setResult({ downloadUrl: '' })
@@ -503,6 +543,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               setStatus('completed')
               if (isLoggedIn() && !s.requiresAuth) {
                 setResult(s.result ?? null)
+              } else if (isLoggedIn()) {
+                setResult({ downloadUrl: '' })
+                setPreviewLoading(true)
+                void claimAndReloadResult(jobId, jobToken ?? undefined)
               } else {
                 setShowAuthGate(true)
                 setResult({ downloadUrl: '' })
@@ -762,6 +806,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       lastPartialVersionRef.current = 0
       missingResultRetriesRef.current = 0
       setResultLoadTimedOut(false)
+      setResultClaimFailed(false)
       setPartialSegments([])
       const startedAt = Date.now()
       setProcessingStartedAt(startedAt)
@@ -796,6 +841,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           setStatus('completed')
           if (isLoggedIn() && !jobStatus.requiresAuth) {
             setResult(jobStatus.result ?? null)
+          } else if (isLoggedIn()) {
+            setResult({ downloadUrl: '' })
+            setPreviewLoading(true)
+            void claimAndReloadResult(response.jobId, jobToken)
           } else {
             setShowAuthGate(true)
             setResult({ downloadUrl: '' })
@@ -913,6 +962,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     lastPartialVersionRef.current = 0
     missingResultRetriesRef.current = 0
     setResultLoadTimedOut(false)
+    setResultClaimFailed(false)
     setTrimStart(null)
     setTrimEnd(null)
     setStatus('idle')
@@ -1472,6 +1522,22 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                       >
                         <RefreshCw className="h-3.5 w-3.5" />
                         Retry preview
+                      </button>
+                    </div>
+                  ) : resultClaimFailed ? (
+                    <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
+                      <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">Couldn't attach this result to your account</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
+                        This job may have been started in a different session. Try generating again, or refresh if you think this is a mistake.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => window.location.reload()}
+                        className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5" />
+                        Refresh
                       </button>
                     </div>
                   ) : null
