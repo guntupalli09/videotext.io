@@ -49,6 +49,7 @@ const Faq = lazy(() => import('./pages/Faq'))
 const Guide = lazy(() => import('./pages/Guide'))
 const Terms = lazy(() => import('./pages/Terms'))
 const VoiceRecorder = lazy(() => import('./pages/VoiceRecorder'))
+const GuidelineFormat = lazy(() => import('./pages/GuidelineFormat'))
 const VideoToTranscript = lazy(() => import('./pages/VideoToTranscript'))
 const VideoToSubtitles = lazy(() => import('./pages/VideoToSubtitles'))
 const TranslateSubtitles = lazy(() => import('./pages/TranslateSubtitles'))
@@ -622,7 +623,7 @@ function App() {
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/embed/:slug" element={<EmbedTranscript />} />
-            <Route path="/guideline-format" element={<Navigate to="/rev-style-guide" replace />} />
+            <Route path="/guideline-format" element={<GuidelineFormat />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript
               seoH1="Video to Transcript — Free AI Transcription, 98.5% Accurate"
               seoIntro="Upload any video or paste a YouTube URL and get a full transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in one pass. Powered by OpenAI Whisper large-v3 — 98.5% word accuracy on clean audio. A 2-hour video processes in under 5 minutes. Zero data retention: your files are deleted immediately after processing."
@@ -645,7 +646,6 @@ function App() {
             {/* SEO utility routes: registry-driven; same tools, alternate URLs. No backend or behavior change. */}
             {getAllSeoPaths()
               .filter((path) => ![
-                '/guideline-format',
                 '/subtitle-resources',
                 '/burn-subtitles-into-video',
                 '/youtube-transcript',

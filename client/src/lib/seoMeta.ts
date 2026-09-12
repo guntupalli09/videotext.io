@@ -16,7 +16,7 @@ export const MONEY_CORE_PATHS = [
   '/fix-subtitles',
   '/burn-subtitles',
   '/compress-video',
-  '/rev-style-guide',
+  '/guideline-format',
   '/youtube-transcript-generator',
 ] as const
 
@@ -664,9 +664,9 @@ const FAQ_SCHEMA_ITEMS = [
   { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 imports per month. Single language, watermark on subtitle exports. Upgrade any time for more features and batch processing." },
   { q: 'Can I translate subtitles or transcripts?', a: "Yes. Use the Translate Subtitles tool for SRT/VTT files. For transcripts, use the \"Also translate to\" option before starting to get a full translation in 70+ languages." },
   { q: 'What is the maximum video duration?', a: "Free: 30 minutes per video. Pro: 2 hours. To transcribe a longer video, trim or split it into segments before uploading." },
-  { q: 'How do I format a transcript for a client\'s style guide or Rev-type rules?', a: 'Use Format → Client guidelines (/rev-style-guide). Paste your raw transcript or jump from Video → Transcript with "Make this client-ready →". Pick presets such as Rev, GoTranscript, TranscribeMe, or Scribie, tweak the editable rule cards, or upload PDF/DOCX guidance.' },
+  { q: 'How do I format a transcript for a client\'s style guide or Rev-type rules?', a: 'Use Format → Client guidelines (/guideline-format). Paste your raw transcript or jump from Video → Transcript with "Make this client-ready →". Pick presets such as Rev, GoTranscript, TranscribeMe, or Scribie, tweak the editable rule cards, or upload PDF/DOCX guidance.' },
   { q: 'What does "clean verbatim vs full verbatim" mean for freelancers?', a: 'Clean verbatim removes filler words and disfluencies for readability; full verbatim keeps them. Marketplace briefs spell out which variant you owe—see /blog/clean-verbatim-vs-full-verbatim.' },
-  { q: 'What is transcript QA and how does VideoText help before I invoice?', a: 'Transcript QA is the checklist pass against names, glossary, punctuation, timestamps, and style compliance. Produce the text in Video → Transcript, then map platform rules inside /rev-style-guide so reviewers know what you matched before payout.' },
+  { q: 'What is transcript QA and how does VideoText help before I invoice?', a: 'Transcript QA is the checklist pass against names, glossary, punctuation, timestamps, and style compliance. Produce the text in Video → Transcript, then map platform rules inside /guideline-format so reviewers know what you matched before payout.' },
 ]
 
 /** Published dates for blog posts — used for BlogPosting JSON-LD and og:article meta. */

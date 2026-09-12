@@ -48,7 +48,7 @@ const PRIMARY_TOOL_PATH_BY_KEY: Record<SeoToolKey, string> = {
   'compress-video': '/compress-video',
   'batch-process': '/batch-process',
   'voice-to-text': '/voice-recorder',
-  'brand-guideline': '/rev-style-guide',
+  'brand-guideline': '/guideline-format',
 }
 
 function getIntentClass(intentKey: string, toolKey: SeoToolKey): 'converter' | 'generator' | 'comparisonAlternative' | 'howTo' {

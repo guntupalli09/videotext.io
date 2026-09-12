@@ -258,7 +258,7 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
   '/rev-alternative': {
     ...ALT_TO_TRANSCRIPT,
     secondary: [
-      { label: 'Format to client guidelines', href: '/rev-style-guide' },
+      { label: 'Format to client guidelines', href: '/guideline-format' },
       { label: 'Video to Subtitles', href: '/video-to-subtitles' },
     ],
   },
