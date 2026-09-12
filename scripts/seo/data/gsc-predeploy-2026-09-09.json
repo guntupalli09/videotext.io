@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-09-12T16:06:54.087Z",
+  "fetched_at": "2026-09-12T16:07:38.812Z",
   "site_url": "sc-domain:videotext.io",
   "start_date": "2026-08-13",
   "end_date": "2026-09-09",
@@ -9,87 +9,87 @@
   "touched_pages": [
     {
       "page": "/",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 124,
+      "impressions": 3520,
+      "ctr": 0.035227272727272725,
+      "position": 30.570170454545455
     },
     {
       "page": "/pricing",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 1,
+      "impressions": 38,
+      "ctr": 0.02631578947368421,
+      "position": 52.05263157894737
     },
     {
       "page": "/faq",
       "clicks": 0,
-      "impressions": 0,
+      "impressions": 9,
       "ctr": 0,
-      "position": 0
+      "position": 15.88888888888889
     },
     {
       "page": "/guide",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 1,
+      "impressions": 654,
+      "ctr": 0.0015290519877675841,
+      "position": 63.288990825688074
     },
     {
       "page": "/translate-subtitles",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 13,
+      "impressions": 1591,
+      "ctr": 0.008170961659333752,
+      "position": 8.927089880578253
     },
     {
       "page": "/video-to-transcript",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 24,
+      "impressions": 635,
+      "ctr": 0.03779527559055118,
+      "position": 18.7748031496063
     },
     {
       "page": "/video-to-subtitles",
       "clicks": 0,
-      "impressions": 0,
+      "impressions": 156,
       "ctr": 0,
-      "position": 0
+      "position": 46.91025641025641
     },
     {
       "page": "/fix-subtitles",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 4,
+      "impressions": 241,
+      "ctr": 0.016597510373443983,
+      "position": 27.37759336099585
     },
     {
       "page": "/subtitle-grammar-fixer",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 41,
+      "impressions": 715,
+      "ctr": 0.057342657342657345,
+      "position": 6.759440559440559
     },
     {
       "page": "/subtitle-tools",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 8,
+      "impressions": 1209,
+      "ctr": 0.006617038875103391,
+      "position": 15.948717948717949
     },
     {
       "page": "/srt-generator",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 258,
+      "impressions": 7777,
+      "ctr": 0.033174746046033175,
+      "position": 8.633791950623634
     },
     {
       "page": "/capcut-captions",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 69,
+      "impressions": 2149,
+      "ctr": 0.03210795718939041,
+      "position": 8.191251744997674
     },
     {
       "page": "/netflix-ttsc-checklist",
@@ -100,108 +100,108 @@
     },
     {
       "page": "/guideline-format",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 2,
+      "impressions": 451,
+      "ctr": 0.004434589800443459,
+      "position": 15.026607538802661
     },
     {
       "page": "/descript-alternative",
       "clicks": 0,
-      "impressions": 0,
+      "impressions": 13,
       "ctr": 0,
-      "position": 0
+      "position": 21.615384615384617
     },
     {
       "page": "/descript-vs-videotext",
       "clicks": 0,
-      "impressions": 0,
+      "impressions": 110,
       "ctr": 0,
-      "position": 0
+      "position": 23.227272727272727
     },
     {
       "page": "/best-descript-alternatives",
       "clicks": 0,
-      "impressions": 0,
+      "impressions": 430,
       "ctr": 0,
-      "position": 0
+      "position": 24.011627906976745
     },
     {
       "page": "/tools/subtitle-character-checker",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 9,
+      "impressions": 799,
+      "ctr": 0.011264080100125156,
+      "position": 9.300375469336672
     },
     {
       "page": "/tools/subtitle-reading-speed",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 1,
+      "impressions": 154,
+      "ctr": 0.006493506493506494,
+      "position": 16.980519480519483
     },
     {
       "page": "/tools/subtitle-validator",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 33,
+      "impressions": 1219,
+      "ctr": 0.027071369975389663,
+      "position": 11.65791632485644
     },
     {
       "page": "/tools/subtitle-word-counter",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 19,
+      "impressions": 357,
+      "ctr": 0.05322128851540616,
+      "position": 9.871148459383754
     },
     {
       "page": "/tools/merge-srt-files",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 13,
+      "impressions": 792,
+      "ctr": 0.016414141414141416,
+      "position": 30.046717171717173
     },
     {
       "page": "/tools/shift-subtitle-timing",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 6,
+      "impressions": 513,
+      "ctr": 0.011695906432748537,
+      "position": 29.276803118908383
     },
     {
       "page": "/tools/srt-to-vtt",
       "clicks": 0,
-      "impressions": 0,
+      "impressions": 274,
       "ctr": 0,
-      "position": 0
+      "position": 40.496350364963504
     },
     {
       "page": "/tools/vtt-to-srt",
       "clicks": 0,
-      "impressions": 0,
+      "impressions": 8,
       "ctr": 0,
-      "position": 0
+      "position": 24.5
     },
     {
       "page": "/tools/ttml-to-srt",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 166,
+      "impressions": 1786,
+      "ctr": 0.0929451287793953,
+      "position": 4.052631578947368
     },
     {
       "page": "/tools/srt-to-text",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 3,
+      "impressions": 45,
+      "ctr": 0.06666666666666667,
+      "position": 24.333333333333332
     },
     {
       "page": "/tools/video-metadata-viewer",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 88,
+      "impressions": 2147,
+      "ctr": 0.040987424312994875,
+      "position": 22.727061015370285
     },
     {
       "page": "/subtitle-character-checker",
@@ -234,45 +234,1670 @@
     {
       "page": "/subtitle-resources",
       "clicks": 0,
-      "impressions": 0,
+      "impressions": 1099,
       "ctr": 0,
-      "position": 0
+      "position": 29.799818016378527
     },
     {
       "page": "/video-to-srt",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 264,
+      "impressions": 5196,
+      "ctr": 0.050808314087759814,
+      "position": 8.61431870669746
     },
     {
       "page": "/youtube-transcript-generator",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 25,
+      "impressions": 2435,
+      "ctr": 0.01026694045174538,
+      "position": 56.121149897330596
     },
     {
       "page": "/google-meet-transcript",
       "clicks": 0,
-      "impressions": 0,
+      "impressions": 432,
       "ctr": 0,
-      "position": 0
+      "position": 58.682870370370374
     },
     {
       "page": "/interview-transcription-tool",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 1,
+      "impressions": 514,
+      "ctr": 0.0019455252918287938,
+      "position": 52.67898832684825
     },
     {
       "page": "/srt-to-word",
-      "clicks": 0,
-      "impressions": 0,
-      "ctr": 0,
-      "position": 0
+      "clicks": 2,
+      "impressions": 612,
+      "ctr": 0.0032679738562091504,
+      "position": 10.055555555555555
     }
   ],
-  "full_site_pages": []
+  "full_site_pages": [
+    {
+      "page": "/video-to-srt",
+      "clicks": 264,
+      "impressions": 5196,
+      "ctr": 0.050808314087759814,
+      "position": 8.61431870669746
+    },
+    {
+      "page": "/srt-generator",
+      "clicks": 258,
+      "impressions": 7777,
+      "ctr": 0.033174746046033175,
+      "position": 8.633791950623634
+    },
+    {
+      "page": "/tools/ttml-to-srt",
+      "clicks": 166,
+      "impressions": 1786,
+      "ctr": 0.0929451287793953,
+      "position": 4.052631578947368
+    },
+    {
+      "page": "/",
+      "clicks": 124,
+      "impressions": 3520,
+      "ctr": 0.035227272727272725,
+      "position": 30.570170454545455
+    },
+    {
+      "page": "/tools/video-metadata-viewer",
+      "clicks": 88,
+      "impressions": 2147,
+      "ctr": 0.040987424312994875,
+      "position": 22.727061015370285
+    },
+    {
+      "page": "/burn-subtitles-into-video",
+      "clicks": 82,
+      "impressions": 1533,
+      "ctr": 0.05348988910632746,
+      "position": 8.356816699282453
+    },
+    {
+      "page": "/burn-subtitles",
+      "clicks": 74,
+      "impressions": 1011,
+      "ctr": 0.07319485657764589,
+      "position": 14.565776458951532
+    },
+    {
+      "page": "/capcut-captions",
+      "clicks": 69,
+      "impressions": 2149,
+      "ctr": 0.03210795718939041,
+      "position": 8.191251744997674
+    },
+    {
+      "page": "/subtitle-grammar-fixer",
+      "clicks": 41,
+      "impressions": 715,
+      "ctr": 0.057342657342657345,
+      "position": 6.759440559440559
+    },
+    {
+      "page": "/tools/subtitle-validator",
+      "clicks": 33,
+      "impressions": 1219,
+      "ctr": 0.027071369975389663,
+      "position": 11.65791632485644
+    },
+    {
+      "page": "/vimeo-transcription",
+      "clicks": 30,
+      "impressions": 596,
+      "ctr": 0.050335570469798654,
+      "position": 24.427852348993287
+    },
+    {
+      "page": "/youtube-transcript-generator",
+      "clicks": 25,
+      "impressions": 2435,
+      "ctr": 0.01026694045174538,
+      "position": 56.121149897330596
+    },
+    {
+      "page": "/video-to-transcript",
+      "clicks": 24,
+      "impressions": 635,
+      "ctr": 0.03779527559055118,
+      "position": 18.7748031496063
+    },
+    {
+      "page": "/subtitle-line-break-fixer",
+      "clicks": 20,
+      "impressions": 485,
+      "ctr": 0.041237113402061855,
+      "position": 9.742268041237113
+    },
+    {
+      "page": "/tools/subtitle-word-counter",
+      "clicks": 19,
+      "impressions": 357,
+      "ctr": 0.05322128851540616,
+      "position": 9.871148459383754
+    },
+    {
+      "page": "/tools/merge-srt-files",
+      "clicks": 13,
+      "impressions": 792,
+      "ctr": 0.016414141414141416,
+      "position": 30.046717171717173
+    },
+    {
+      "page": "/translate-subtitles",
+      "clicks": 13,
+      "impressions": 1591,
+      "ctr": 0.008170961659333752,
+      "position": 8.927089880578253
+    },
+    {
+      "page": "/tools/timestamp-converter",
+      "clicks": 11,
+      "impressions": 467,
+      "ctr": 0.023554603854389723,
+      "position": 27.64882226980728
+    },
+    {
+      "page": "/tools/subtitle-character-checker",
+      "clicks": 9,
+      "impressions": 799,
+      "ctr": 0.011264080100125156,
+      "position": 9.300375469336672
+    },
+    {
+      "page": "/multilingual-subtitles",
+      "clicks": 8,
+      "impressions": 366,
+      "ctr": 0.02185792349726776,
+      "position": 13.327868852459016
+    },
+    {
+      "page": "/subtitle-tools",
+      "clicks": 8,
+      "impressions": 1209,
+      "ctr": 0.006617038875103391,
+      "position": 15.948717948717949
+    },
+    {
+      "page": "/sdh-subtitles",
+      "clicks": 7,
+      "impressions": 215,
+      "ctr": 0.03255813953488372,
+      "position": 19.6046511627907
+    },
+    {
+      "page": "/tools/shift-subtitle-timing",
+      "clicks": 6,
+      "impressions": 513,
+      "ctr": 0.011695906432748537,
+      "position": 29.276803118908383
+    },
+    {
+      "page": "/french-transcription",
+      "clicks": 5,
+      "impressions": 249,
+      "ctr": 0.020080321285140562,
+      "position": 11.899598393574298
+    },
+    {
+      "page": "/transcription-service",
+      "clicks": 5,
+      "impressions": 128,
+      "ctr": 0.0390625,
+      "position": 53.078125
+    },
+    {
+      "page": "/fix-subtitles",
+      "clicks": 4,
+      "impressions": 241,
+      "ctr": 0.016597510373443983,
+      "position": 27.37759336099585
+    },
+    {
+      "page": "/chinese-transcription",
+      "clicks": 3,
+      "impressions": 122,
+      "ctr": 0.02459016393442623,
+      "position": 28.360655737704917
+    },
+    {
+      "page": "/free-voice-to-text",
+      "clicks": 3,
+      "impressions": 39,
+      "ctr": 0.07692307692307693,
+      "position": 11.487179487179487
+    },
+    {
+      "page": "/gotranscript-test-guide",
+      "clicks": 3,
+      "impressions": 477,
+      "ctr": 0.006289308176100629,
+      "position": 8.20335429769392
+    },
+    {
+      "page": "/loom-transcription",
+      "clicks": 3,
+      "impressions": 205,
+      "ctr": 0.014634146341463415,
+      "position": 53.62439024390244
+    },
+    {
+      "page": "/screen-recording-transcript",
+      "clicks": 3,
+      "impressions": 157,
+      "ctr": 0.01910828025477707,
+      "position": 9.89171974522293
+    },
+    {
+      "page": "/tools/aspect-ratio-calculator",
+      "clicks": 3,
+      "impressions": 157,
+      "ctr": 0.01910828025477707,
+      "position": 11.719745222929935
+    },
+    {
+      "page": "/tools/srt-to-text",
+      "clicks": 3,
+      "impressions": 45,
+      "ctr": 0.06666666666666667,
+      "position": 24.333333333333332
+    },
+    {
+      "page": "/voice-recorder",
+      "clicks": 3,
+      "impressions": 117,
+      "ctr": 0.02564102564102564,
+      "position": 27.444444444444443
+    },
+    {
+      "page": "/gotranscript-transcription-format",
+      "clicks": 2,
+      "impressions": 80,
+      "ctr": 0.025,
+      "position": 10.025
+    },
+    {
+      "page": "/guideline-format",
+      "clicks": 2,
+      "impressions": 451,
+      "ctr": 0.004434589800443459,
+      "position": 15.026607538802661
+    },
+    {
+      "page": "/happyscribe-alternative",
+      "clicks": 2,
+      "impressions": 108,
+      "ctr": 0.018518518518518517,
+      "position": 7.888888888888889
+    },
+    {
+      "page": "/srt-to-word",
+      "clicks": 2,
+      "impressions": 612,
+      "ctr": 0.0032679738562091504,
+      "position": 10.055555555555555
+    },
+    {
+      "page": "/tiktok-captions",
+      "clicks": 2,
+      "impressions": 9,
+      "ctr": 0.2222222222222222,
+      "position": 12.222222222222221
+    },
+    {
+      "page": "/transcribio-guidelines",
+      "clicks": 2,
+      "impressions": 12,
+      "ctr": 0.16666666666666666,
+      "position": 12.666666666666666
+    },
+    {
+      "page": "/youtube-captions",
+      "clicks": 2,
+      "impressions": 22,
+      "ctr": 0.09090909090909091,
+      "position": 9.590909090909092
+    },
+    {
+      "page": "/ai-transcription-tools",
+      "clicks": 1,
+      "impressions": 138,
+      "ctr": 0.007246376811594203,
+      "position": 58.32608695652174
+    },
+    {
+      "page": "/assembly-ai-alternative",
+      "clicks": 1,
+      "impressions": 10,
+      "ctr": 0.1,
+      "position": 8.2
+    },
+    {
+      "page": "/auto-captions",
+      "clicks": 1,
+      "impressions": 14,
+      "ctr": 0.07142857142857142,
+      "position": 18.857142857142858
+    },
+    {
+      "page": "/best-transcription-tool",
+      "clicks": 1,
+      "impressions": 318,
+      "ctr": 0.0031446540880503146,
+      "position": 65.82075471698113
+    },
+    {
+      "page": "/best-transcription-tool-for-students",
+      "clicks": 1,
+      "impressions": 29,
+      "ctr": 0.034482758620689655,
+      "position": 31.689655172413794
+    },
+    {
+      "page": "/capcut-alternative",
+      "clicks": 1,
+      "impressions": 87,
+      "ctr": 0.011494252873563218,
+      "position": 8.655172413793103
+    },
+    {
+      "page": "/castmagic-alternative",
+      "clicks": 1,
+      "impressions": 5,
+      "ctr": 0.2,
+      "position": 7.8
+    },
+    {
+      "page": "/compress-video",
+      "clicks": 1,
+      "impressions": 90,
+      "ctr": 0.011111111111111112,
+      "position": 26.444444444444443
+    },
+    {
+      "page": "/daily-transcripts-style-guide",
+      "clicks": 1,
+      "impressions": 1,
+      "ctr": 1,
+      "position": 3
+    },
+    {
+      "page": "/elevenlabs-alternative",
+      "clicks": 1,
+      "impressions": 20,
+      "ctr": 0.05,
+      "position": 9.25
+    },
+    {
+      "page": "/german-transcription",
+      "clicks": 1,
+      "impressions": 27,
+      "ctr": 0.037037037037037035,
+      "position": 47.81481481481482
+    },
+    {
+      "page": "/gmr-transcription-guidelines",
+      "clicks": 1,
+      "impressions": 4,
+      "ctr": 0.25,
+      "position": 22.25
+    },
+    {
+      "page": "/gotranscript-guidelines",
+      "clicks": 1,
+      "impressions": 133,
+      "ctr": 0.007518796992481203,
+      "position": 8.571428571428571
+    },
+    {
+      "page": "/guide",
+      "clicks": 1,
+      "impressions": 654,
+      "ctr": 0.0015290519877675841,
+      "position": 63.288990825688074
+    },
+    {
+      "page": "/interview-transcription-tool",
+      "clicks": 1,
+      "impressions": 514,
+      "ctr": 0.0019455252918287938,
+      "position": 52.67898832684825
+    },
+    {
+      "page": "/kapwing-alternative",
+      "clicks": 1,
+      "impressions": 13,
+      "ctr": 0.07692307692307693,
+      "position": 33.69230769230769
+    },
+    {
+      "page": "/lecture-transcription",
+      "clicks": 1,
+      "impressions": 170,
+      "ctr": 0.0058823529411764705,
+      "position": 36.95882352941177
+    },
+    {
+      "page": "/meeting-transcription",
+      "clicks": 1,
+      "impressions": 15,
+      "ctr": 0.06666666666666667,
+      "position": 37.266666666666666
+    },
+    {
+      "page": "/microsoft-teams-alternative",
+      "clicks": 1,
+      "impressions": 59,
+      "ctr": 0.01694915254237288,
+      "position": 9.423728813559322
+    },
+    {
+      "page": "/online-subtitle-editor",
+      "clicks": 1,
+      "impressions": 11,
+      "ctr": 0.09090909090909091,
+      "position": 47.45454545454545
+    },
+    {
+      "page": "/panopto-transcription",
+      "clicks": 1,
+      "impressions": 52,
+      "ctr": 0.019230769230769232,
+      "position": 35.61538461538461
+    },
+    {
+      "page": "/podcast-transcription",
+      "clicks": 1,
+      "impressions": 20,
+      "ctr": 0.05,
+      "position": 45
+    },
+    {
+      "page": "/pricing",
+      "clicks": 1,
+      "impressions": 38,
+      "ctr": 0.02631578947368421,
+      "position": 52.05263157894737
+    },
+    {
+      "page": "/privacy",
+      "clicks": 1,
+      "impressions": 6,
+      "ctr": 0.16666666666666666,
+      "position": 6.666666666666667
+    },
+    {
+      "page": "/rev-transcript-guidelines",
+      "clicks": 1,
+      "impressions": 46,
+      "ctr": 0.021739130434782608,
+      "position": 17.434782608695652
+    },
+    {
+      "page": "/subly-alternative",
+      "clicks": 1,
+      "impressions": 2,
+      "ctr": 0.5,
+      "position": 5
+    },
+    {
+      "page": "/submagic-alternative",
+      "clicks": 1,
+      "impressions": 55,
+      "ctr": 0.01818181818181818,
+      "position": 12.4
+    },
+    {
+      "page": "/subtitle-converter",
+      "clicks": 1,
+      "impressions": 10,
+      "ctr": 0.1,
+      "position": 61.9
+    },
+    {
+      "page": "/tools/subtitle-reading-speed",
+      "clicks": 1,
+      "impressions": 154,
+      "ctr": 0.006493506493506494,
+      "position": 16.980519480519483
+    },
+    {
+      "page": "/tools/video-script-timer",
+      "clicks": 1,
+      "impressions": 444,
+      "ctr": 0.0022522522522522522,
+      "position": 22.243243243243242
+    },
+    {
+      "page": "/transcription-for-students",
+      "clicks": 1,
+      "impressions": 21,
+      "ctr": 0.047619047619047616,
+      "position": 57.80952380952381
+    },
+    {
+      "page": "/webex-transcription",
+      "clicks": 1,
+      "impressions": 1,
+      "ctr": 1,
+      "position": 4
+    },
+    {
+      "page": "/zoom-meeting-transcript",
+      "clicks": 1,
+      "impressions": 350,
+      "ctr": 0.002857142857142857,
+      "position": 52.005714285714284
+    },
+    {
+      "page": "/3play-media-format-guide",
+      "clicks": 0,
+      "impressions": 31,
+      "ctr": 0,
+      "position": 7.774193548387097
+    },
+    {
+      "page": "/3play-media-transcription-guidelines",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 33.6
+    },
+    {
+      "page": "/about",
+      "clicks": 0,
+      "impressions": 53,
+      "ctr": 0,
+      "position": 15.49056603773585
+    },
+    {
+      "page": "/accuracy-test",
+      "clicks": 0,
+      "impressions": 111,
+      "ctr": 0,
+      "position": 49.54054054054054
+    },
+    {
+      "page": "/ada-video-captions",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 8
+    },
+    {
+      "page": "/add-subtitles-to-video",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 72.33333333333333
+    },
+    {
+      "page": "/adobe-premiere-captions-alternative",
+      "clicks": 0,
+      "impressions": 18,
+      "ctr": 0,
+      "position": 8.055555555555555
+    },
+    {
+      "page": "/ai-captioning",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 55
+    },
+    {
+      "page": "/ai-transcription-workflow",
+      "clicks": 0,
+      "impressions": 69,
+      "ctr": 0,
+      "position": 44.27536231884058
+    },
+    {
+      "page": "/alternatives",
+      "clicks": 0,
+      "impressions": 52,
+      "ctr": 0,
+      "position": 34.96153846153846
+    },
+    {
+      "page": "/auto-subtitle-generator",
+      "clicks": 0,
+      "impressions": 16,
+      "ctr": 0,
+      "position": 68.875
+    },
+    {
+      "page": "/avi-to-text",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 22.666666666666668
+    },
+    {
+      "page": "/best-caption-generator",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 22
+    },
+    {
+      "page": "/best-descript-alternatives",
+      "clicks": 0,
+      "impressions": 430,
+      "ctr": 0,
+      "position": 24.011627906976745
+    },
+    {
+      "page": "/best-otter-alternatives",
+      "clicks": 0,
+      "impressions": 20,
+      "ctr": 0,
+      "position": 50.65
+    },
+    {
+      "page": "/best-video-transcription-tool",
+      "clicks": 0,
+      "impressions": 34,
+      "ctr": 0,
+      "position": 57.55882352941177
+    },
+    {
+      "page": "/best-youtube-transcription-tool",
+      "clicks": 0,
+      "impressions": 32,
+      "ctr": 0,
+      "position": 58.96875
+    },
+    {
+      "page": "/blog/how-to-transcribe-zoom-recording",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 44.333333333333336
+    },
+    {
+      "page": "/buzz-alternative",
+      "clicks": 0,
+      "impressions": 29,
+      "ctr": 0,
+      "position": 7.310344827586207
+    },
+    {
+      "page": "/caption-video-online",
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 45
+    },
+    {
+      "page": "/changelog",
+      "clicks": 0,
+      "impressions": 16,
+      "ctr": 0,
+      "position": 9.75
+    },
+    {
+      "page": "/compare",
+      "clicks": 0,
+      "impressions": 165,
+      "ctr": 0,
+      "position": 37.32121212121212
+    },
+    {
+      "page": "/daily-transcripts-format-guide",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 6
+    },
+    {
+      "page": "/daily-transcripts-guidelines",
+      "clicks": 0,
+      "impressions": 7,
+      "ctr": 0,
+      "position": 22.857142857142858
+    },
+    {
+      "page": "/deepgram-alternative",
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 7.75
+    },
+    {
+      "page": "/descript-alternative",
+      "clicks": 0,
+      "impressions": 13,
+      "ctr": 0,
+      "position": 21.615384615384617
+    },
+    {
+      "page": "/descript-vs-videotext",
+      "clicks": 0,
+      "impressions": 110,
+      "ctr": 0,
+      "position": 23.227272727272727
+    },
+    {
+      "page": "/dictation-io-alternative",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 17.8
+    },
+    {
+      "page": "/dictation-tool",
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 53.25
+    },
+    {
+      "page": "/ditto-transcripts-alternative",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 5
+    },
+    {
+      "page": "/dragon-dictate-alternative",
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 11
+    },
+    {
+      "page": "/easyscribe-alternative",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 12.333333333333334
+    },
+    {
+      "page": "/faq",
+      "clicks": 0,
+      "impressions": 9,
+      "ctr": 0,
+      "position": 15.88888888888889
+    },
+    {
+      "page": "/fastest-transcription-software",
+      "clicks": 0,
+      "impressions": 49,
+      "ctr": 0,
+      "position": 36.06122448979592
+    },
+    {
+      "page": "/fastest-transcription-tool",
+      "clicks": 0,
+      "impressions": 155,
+      "ctr": 0,
+      "position": 26.232258064516127
+    },
+    {
+      "page": "/free-speech-to-text",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 65.2
+    },
+    {
+      "page": "/free-video-transcription-tool",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 4
+    },
+    {
+      "page": "/generate-subtitles-from-video",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 83
+    },
+    {
+      "page": "/glean-alternative",
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 9
+    },
+    {
+      "page": "/gmr-transcript-format-guide",
+      "clicks": 0,
+      "impressions": 8,
+      "ctr": 0,
+      "position": 8.375
+    },
+    {
+      "page": "/google-docs-voice-typing-alternative",
+      "clicks": 0,
+      "impressions": 9,
+      "ctr": 0,
+      "position": 39.44444444444444
+    },
+    {
+      "page": "/google-meet-transcript",
+      "clicks": 0,
+      "impressions": 432,
+      "ctr": 0,
+      "position": 58.682870370370374
+    },
+    {
+      "page": "/gotranscript-style-guide",
+      "clicks": 0,
+      "impressions": 104,
+      "ctr": 0,
+      "position": 9.125
+    },
+    {
+      "page": "/gotranscript-transcription-rules",
+      "clicks": 0,
+      "impressions": 273,
+      "ctr": 0,
+      "position": 8.494505494505495
+    },
+    {
+      "page": "/granola-alternative",
+      "clicks": 0,
+      "impressions": 10,
+      "ctr": 0,
+      "position": 18
+    },
+    {
+      "page": "/happy-scribe-format-guide",
+      "clicks": 0,
+      "impressions": 80,
+      "ctr": 0,
+      "position": 14.825
+    },
+    {
+      "page": "/happy-scribe-transcription-guidelines",
+      "clicks": 0,
+      "impressions": 34,
+      "ctr": 0,
+      "position": 18.470588235294116
+    },
+    {
+      "page": "/hardcoded-captions",
+      "clicks": 0,
+      "impressions": 9,
+      "ctr": 0,
+      "position": 45.333333333333336
+    },
+    {
+      "page": "/headliner-alternative",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 10
+    },
+    {
+      "page": "/hedy-ai-alternative",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 68
+    },
+    {
+      "page": "/hindi-transcription",
+      "clicks": 0,
+      "impressions": 60,
+      "ctr": 0,
+      "position": 65.11666666666666
+    },
+    {
+      "page": "/instagram-reel-transcript",
+      "clicks": 0,
+      "impressions": 6,
+      "ctr": 0,
+      "position": 7.666666666666667
+    },
+    {
+      "page": "/interview-transcription",
+      "clicks": 0,
+      "impressions": 16,
+      "ctr": 0,
+      "position": 73.5625
+    },
+    {
+      "page": "/invideo-alternative",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 8
+    },
+    {
+      "page": "/italian-transcription",
+      "clicks": 0,
+      "impressions": 27,
+      "ctr": 0,
+      "position": 19.25925925925926
+    },
+    {
+      "page": "/japanese-transcription",
+      "clicks": 0,
+      "impressions": 20,
+      "ctr": 0,
+      "position": 13.65
+    },
+    {
+      "page": "/korean-transcription",
+      "clicks": 0,
+      "impressions": 28,
+      "ctr": 0,
+      "position": 16.214285714285715
+    },
+    {
+      "page": "/macwhisper-alternative",
+      "clicks": 0,
+      "impressions": 38,
+      "ctr": 0,
+      "position": 11.736842105263158
+    },
+    {
+      "page": "/maestra-alternative",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 8.666666666666668
+    },
+    {
+      "page": "/meetgeek-alternative",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 3
+    },
+    {
+      "page": "/meeting-recording-to-transcript",
+      "clicks": 0,
+      "impressions": 190,
+      "ctr": 0,
+      "position": 65.74736842105263
+    },
+    {
+      "page": "/meeting-transcription-tool",
+      "clicks": 0,
+      "impressions": 392,
+      "ctr": 0,
+      "position": 67.09438775510205
+    },
+    {
+      "page": "/mem-ai-alternative",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 5
+    },
+    {
+      "page": "/microphone-to-text",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 53.2
+    },
+    {
+      "page": "/mov-to-text",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 52
+    },
+    {
+      "page": "/movavi-alternative",
+      "clicks": 0,
+      "impressions": 12,
+      "ctr": 0,
+      "position": 20.833333333333332
+    },
+    {
+      "page": "/mp3-to-text",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 24.666666666666668
+    },
+    {
+      "page": "/notability-alternative",
+      "clicks": 0,
+      "impressions": 8,
+      "ctr": 0,
+      "position": 6.5
+    },
+    {
+      "page": "/notta-alternative",
+      "clicks": 0,
+      "impressions": 24,
+      "ctr": 0,
+      "position": 15.791666666666666
+    },
+    {
+      "page": "/ogg-to-text",
+      "clicks": 0,
+      "impressions": 26,
+      "ctr": 0,
+      "position": 52.03846153846154
+    },
+    {
+      "page": "/online-transcription",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 55
+    },
+    {
+      "page": "/open",
+      "clicks": 0,
+      "impressions": 19,
+      "ctr": 0,
+      "position": 22.68421052631579
+    },
+    {
+      "page": "/open-captions-vs-closed-captions",
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 7.25
+    },
+    {
+      "page": "/otter-alternative",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 16.2
+    },
+    {
+      "page": "/otter-vs-videotext",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 31.2
+    },
+    {
+      "page": "/panopto-alternative",
+      "clicks": 0,
+      "impressions": 7,
+      "ctr": 0,
+      "position": 15.428571428571429
+    },
+    {
+      "page": "/podcast-transcription-tool",
+      "clicks": 0,
+      "impressions": 29,
+      "ctr": 0,
+      "position": 47.44827586206897
+    },
+    {
+      "page": "/qualitative-research-transcription",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 53.666666666666664
+    },
+    {
+      "page": "/reels-captions",
+      "clicks": 0,
+      "impressions": 15,
+      "ctr": 0,
+      "position": 9.733333333333333
+    },
+    {
+      "page": "/rev-ai-transcription-guide",
+      "clicks": 0,
+      "impressions": 8,
+      "ctr": 0,
+      "position": 26.875
+    },
+    {
+      "page": "/rev-alternative",
+      "clicks": 0,
+      "impressions": 11,
+      "ctr": 0,
+      "position": 20
+    },
+    {
+      "page": "/rev-style-guide",
+      "clicks": 0,
+      "impressions": 84,
+      "ctr": 0,
+      "position": 8.869047619047619
+    },
+    {
+      "page": "/rev-transcription-format",
+      "clicks": 0,
+      "impressions": 22,
+      "ctr": 0,
+      "position": 18.863636363636363
+    },
+    {
+      "page": "/rev-transcription-requirements",
+      "clicks": 0,
+      "impressions": 33,
+      "ctr": 0,
+      "position": 19.78787878787879
+    },
+    {
+      "page": "/riverside-alternative",
+      "clicks": 0,
+      "impressions": 18,
+      "ctr": 0,
+      "position": 18.944444444444443
+    },
+    {
+      "page": "/riverside-transcription",
+      "clicks": 0,
+      "impressions": 216,
+      "ctr": 0,
+      "position": 8.268518518518519
+    },
+    {
+      "page": "/samples",
+      "clicks": 0,
+      "impressions": 78,
+      "ctr": 0,
+      "position": 46.15384615384615
+    },
+    {
+      "page": "/scribe-alternative",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 3
+    },
+    {
+      "page": "/scribie-format-guide",
+      "clicks": 0,
+      "impressions": 11,
+      "ctr": 0,
+      "position": 2.1818181818181817
+    },
+    {
+      "page": "/scribie-style-guide",
+      "clicks": 0,
+      "impressions": 16,
+      "ctr": 0,
+      "position": 4.8125
+    },
+    {
+      "page": "/scribie-transcription-guidelines",
+      "clicks": 0,
+      "impressions": 41,
+      "ctr": 0,
+      "position": 4.365853658536585
+    },
+    {
+      "page": "/scribie-transcription-rules",
+      "clicks": 0,
+      "impressions": 15,
+      "ctr": 0,
+      "position": 10.933333333333334
+    },
+    {
+      "page": "/shorts-captions",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 6
+    },
+    {
+      "page": "/skribo-alternative",
+      "clicks": 0,
+      "impressions": 7,
+      "ctr": 0,
+      "position": 6.142857142857143
+    },
+    {
+      "page": "/sonix-alternative",
+      "clicks": 0,
+      "impressions": 7,
+      "ctr": 0,
+      "position": 10.285714285714286
+    },
+    {
+      "page": "/spanish-transcription",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 31.4
+    },
+    {
+      "page": "/speech-to-text",
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 59.5
+    },
+    {
+      "page": "/speechify-alternative",
+      "clicks": 0,
+      "impressions": 10,
+      "ctr": 0,
+      "position": 28.6
+    },
+    {
+      "page": "/speechmatics-alternative",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 17.333333333333332
+    },
+    {
+      "page": "/speechpad-format-guide",
+      "clicks": 0,
+      "impressions": 36,
+      "ctr": 0,
+      "position": 24.305555555555557
+    },
+    {
+      "page": "/speechpad-transcription-guidelines",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 44.333333333333336
+    },
+    {
+      "page": "/speechtexter-alternative",
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 8
+    },
+    {
+      "page": "/srt-translator",
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 65.25
+    },
+    {
+      "page": "/subtitle-edit-alternative",
+      "clicks": 0,
+      "impressions": 62,
+      "ctr": 0,
+      "position": 37.17741935483871
+    },
+    {
+      "page": "/subtitle-generator",
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 6
+    },
+    {
+      "page": "/subtitle-maker",
+      "clicks": 0,
+      "impressions": 141,
+      "ctr": 0,
+      "position": 55.5886524822695
+    },
+    {
+      "page": "/subtitle-resources",
+      "clicks": 0,
+      "impressions": 1099,
+      "ctr": 0,
+      "position": 29.799818016378527
+    },
+    {
+      "page": "/subtitle-timing-fixer",
+      "clicks": 0,
+      "impressions": 12,
+      "ctr": 0,
+      "position": 7.75
+    },
+    {
+      "page": "/subtitle-translator",
+      "clicks": 0,
+      "impressions": 727,
+      "ctr": 0,
+      "position": 60.189821182943604
+    },
+    {
+      "page": "/tactiq-alternative",
+      "clicks": 0,
+      "impressions": 7,
+      "ctr": 0,
+      "position": 7.571428571428571
+    },
+    {
+      "page": "/teams-meeting-transcript",
+      "clicks": 0,
+      "impressions": 72,
+      "ctr": 0,
+      "position": 32.486111111111114
+    },
+    {
+      "page": "/temi-vs-videotext",
+      "clicks": 0,
+      "impressions": 19,
+      "ctr": 0,
+      "position": 15.157894736842104
+    },
+    {
+      "page": "/terms",
+      "clicks": 0,
+      "impressions": 6,
+      "ctr": 0,
+      "position": 7.666666666666667
+    },
+    {
+      "page": "/tools",
+      "clicks": 0,
+      "impressions": 204,
+      "ctr": 0,
+      "position": 64.49019607843138
+    },
+    {
+      "page": "/tools/ass-to-srt",
+      "clicks": 0,
+      "impressions": 22,
+      "ctr": 0,
+      "position": 16.636363636363637
+    },
+    {
+      "page": "/tools/sbv-to-srt",
+      "clicks": 0,
+      "impressions": 12,
+      "ctr": 0,
+      "position": 30.916666666666668
+    },
+    {
+      "page": "/tools/srt-to-sbv",
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 29.25
+    },
+    {
+      "page": "/tools/srt-to-vtt",
+      "clicks": 0,
+      "impressions": 274,
+      "ctr": 0,
+      "position": 40.496350364963504
+    },
+    {
+      "page": "/tools/vtt-to-srt",
+      "clicks": 0,
+      "impressions": 8,
+      "ctr": 0,
+      "position": 24.5
+    },
+    {
+      "page": "/tools/words-per-minute-calculator",
+      "clicks": 0,
+      "impressions": 19,
+      "ctr": 0,
+      "position": 6.7368421052631575
+    },
+    {
+      "page": "/transcribe-video-online",
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 23.5
+    },
+    {
+      "page": "/transcribeme-exam-guide",
+      "clicks": 0,
+      "impressions": 79,
+      "ctr": 0,
+      "position": 9.69620253164557
+    },
+    {
+      "page": "/transcribeme-format-guide",
+      "clicks": 0,
+      "impressions": 43,
+      "ctr": 0,
+      "position": 7.255813953488372
+    },
+    {
+      "page": "/transcribeme-guidelines",
+      "clicks": 0,
+      "impressions": 64,
+      "ctr": 0,
+      "position": 9.609375
+    },
+    {
+      "page": "/transcribeme-style-guide",
+      "clicks": 0,
+      "impressions": 57,
+      "ctr": 0,
+      "position": 7.631578947368421
+    },
+    {
+      "page": "/transcribeme-transcription-style",
+      "clicks": 0,
+      "impressions": 6,
+      "ctr": 0,
+      "position": 15.5
+    },
+    {
+      "page": "/transcribio-format-guide",
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 33
+    },
+    {
+      "page": "/transcribio-style-guide",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 4.4
+    },
+    {
+      "page": "/transcription-benchmark",
+      "clicks": 0,
+      "impressions": 34,
+      "ctr": 0,
+      "position": 31.294117647058822
+    },
+    {
+      "page": "/transcription-tools",
+      "clicks": 0,
+      "impressions": 215,
+      "ctr": 0,
+      "position": 67.03255813953488
+    },
+    {
+      "page": "/trint-alternative",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 9.4
+    },
+    {
+      "page": "/verbit-format-guide",
+      "clicks": 0,
+      "impressions": 6,
+      "ctr": 0,
+      "position": 5.166666666666667
+    },
+    {
+      "page": "/verbit-transcription-guidelines",
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 12.75
+    },
+    {
+      "page": "/video-caption-generator",
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 6.5
+    },
+    {
+      "page": "/video-captions",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 67
+    },
+    {
+      "page": "/video-to-subtitles",
+      "clicks": 0,
+      "impressions": 156,
+      "ctr": 0,
+      "position": 46.91025641025641
+    },
+    {
+      "page": "/video-to-text-converter",
+      "clicks": 0,
+      "impressions": 24,
+      "ctr": 0,
+      "position": 72.83333333333333
+    },
+    {
+      "page": "/video-to-transcription",
+      "clicks": 0,
+      "impressions": 100,
+      "ctr": 0,
+      "position": 60.88
+    },
+    {
+      "page": "/video-translation",
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 65.5
+    },
+    {
+      "page": "/video-with-subtitles",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 11
+    },
+    {
+      "page": "/videotext-vs-rev",
+      "clicks": 0,
+      "impressions": 17,
+      "ctr": 0,
+      "position": 26.705882352941178
+    },
+    {
+      "page": "/videotext-vs-turboscribe",
+      "clicks": 0,
+      "impressions": 12,
+      "ctr": 0,
+      "position": 24.166666666666668
+    },
+    {
+      "page": "/voice-memo-to-text",
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 56.5
+    },
+    {
+      "page": "/voice-notes-to-text",
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 66.5
+    },
+    {
+      "page": "/vomo-alternative",
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 7.25
+    },
+    {
+      "page": "/webm-to-text",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 59.666666666666664
+    },
+    {
+      "page": "/whisper-online",
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 55.666666666666664
+    },
+    {
+      "page": "/whisper-transcription",
+      "clicks": 0,
+      "impressions": 12,
+      "ctr": 0,
+      "position": 39.333333333333336
+    },
+    {
+      "page": "/whispertype-alternative",
+      "clicks": 0,
+      "impressions": 6,
+      "ctr": 0,
+      "position": 28.666666666666668
+    },
+    {
+      "page": "/whisperx-alternative",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 8.6
+    },
+    {
+      "page": "/youtube-auto-captions-alternative",
+      "clicks": 0,
+      "impressions": 28,
+      "ctr": 0,
+      "position": 8.642857142857142
+    },
+    {
+      "page": "/youtube-subtitle-generator",
+      "clicks": 0,
+      "impressions": 11,
+      "ctr": 0,
+      "position": 8.818181818181818
+    },
+    {
+      "page": "/youtube-to-transcript",
+      "clicks": 0,
+      "impressions": 9,
+      "ctr": 0,
+      "position": 60.22222222222222
+    },
+    {
+      "page": "/youtube-transcript",
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 4
+    },
+    {
+      "page": "/youtube-url-to-transcription",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 59
+    },
+    {
+      "page": "/youtube-video-to-transcript",
+      "clicks": 0,
+      "impressions": 22,
+      "ctr": 0,
+      "position": 48.04545454545455
+    },
+    {
+      "page": "/zoom-alternative",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 38.2
+    },
+    {
+      "page": "/zoom-recording-transcription",
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 61
+    }
+  ]
 }
