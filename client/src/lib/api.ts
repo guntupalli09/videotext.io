@@ -1,7 +1,7 @@
 import { API_ORIGIN } from './apiBase'
 import { trackEvent } from './analytics'
 import { getSamplesModuleAttribution } from './samplesAttribution'
-import { getSignupAttributionPayload, getStoredAttribution } from './attribution'
+import { getSignupAttributionPayload } from './attribution'
 
 /** True when requests hit same origin (e.g. Vite dev server) and are proxied to backend — use conservative chunking. */
 function isLikelyDevProxy(): boolean {
