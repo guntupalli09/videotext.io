@@ -113,6 +113,7 @@ export const CORE_PATHS: string[] = [
   '/subtitle-reading-speed',
   '/subtitle-character-checker',
   '/subtitle-word-counter',
+  '/netflix-ttsc-checklist',
   // Cluster A — Platform-specific (high-intent) - moved to Sitemap 2 via seoRegistry.ts
   // Cluster B — Language-specific - moved to Sitemap 2 via seoRegistry.ts
   // Cluster C — Competitor alternatives

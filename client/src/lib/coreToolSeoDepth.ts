@@ -480,6 +480,58 @@ const CORE: Record<string, CoreToolSeoDepth> = {
       { q: 'Is this the same as adding subtitles?', a: 'No. This only reduces file size. Use Video to Subtitles to make an SRT, or Burn Subtitles to hardcode captions.' },
     ],
   },
+  '/netflix-ttsc-checklist': {
+    path: '/netflix-ttsc-checklist',
+    answerFirst:
+      'Use this vendor workflow checklist to scan subtitle files against commonly cited Netflix-published TTSC limits — 42 CPL, 20 CPS adult (17 children), overlaps, and timecodes — before handoff. VideoText is not affiliated with or endorsed by Netflix. Passing these browser checks does not guarantee platform acceptance.',
+    howItWorks: {
+      heading: 'How the TTSC checklist workflow runs',
+      steps: [
+        { title: 'Confirm the client brief', detail: 'Verify language, genre, and adult vs children CPS ceiling before you scan or deliver.' },
+        { title: 'Run the matching free checker', detail: 'Open the CPL checker, reading-speed checker, or validator depending on the risk you expect.' },
+        { title: 'Repair and re-scan', detail: 'Use Subtitle Grammar Fixer for line breaks and timing, then re-run the same preset and attach the scan summary to your package.' },
+      ],
+    },
+    whoItsFor: {
+      heading: 'Who this checklist is for',
+      items: [
+        { who: 'Localization vendors', why: 'Standardize pre-delivery scans without a separate QC product.' },
+        { who: 'Freelance captioners', why: 'Catch CPL/CPS issues before client rejection and rework.' },
+        { who: 'In-house media ops', why: 'Map TTSC-style rules to existing VideoText free tools the team already uses.' },
+      ],
+    },
+    outputs: {
+      heading: 'What you get from each linked tool',
+      items: [
+        'Per-cue CPL scan against Netflix-style (42), BBC (37), or wide presets',
+        'CPS comparison against Netflix-published 20/17 and EBU/BBC presets',
+        'Overlap and structure warnings from the subtitle validator',
+        'Optional grammar-fixer export after line-break or timing repair',
+      ],
+    },
+    proof: {
+      heading: 'Important limits',
+      items: [
+        { label: 'Not official Netflix QC', detail: 'This page routes to independent browser checkers — not a Netflix certification gate.' },
+        { label: 'Grammar fixer scan threshold', detail: 'The grammar fixer uses 21 CPS as an EBU-style warning — stricter TTSC presets need the reading-speed checker.' },
+        { label: 'No new product SKU', detail: 'Same free tools and Pro grammar fixer available elsewhere on VideoText.' },
+      ],
+    },
+    related: {
+      heading: 'Linked checks in this checklist',
+      links: [
+        { href: '/tools/subtitle-character-checker', label: 'Netflix-style CPL checker', note: '42-character line preset.' },
+        { href: '/tools/subtitle-reading-speed', label: 'Reading speed checker', note: '20 CPS adult / 17 CPS children presets.' },
+        { href: '/tools/subtitle-validator', label: 'Subtitle validator', note: 'Overlaps, empty cues, structure.' },
+        { href: '/subtitle-grammar-fixer', label: 'Subtitle Grammar Fixer', note: 'Line breaks, timing, and CPS repair.' },
+      ],
+    },
+    faq: [
+      { q: 'Is VideoText affiliated with Netflix?', a: 'No. VideoText is independent and not endorsed or certified by Netflix. Netflix is a trademark of Netflix, Inc.' },
+      { q: 'Does this checklist guarantee TTSC acceptance?', a: 'No. It helps you evaluate files against commonly published limits before delivery. Vendors may apply additional language-specific rules.' },
+      { q: 'Which CPS preset should I use?', a: 'Use 20 CPS for adult content and 17 CPS for children\'s content when your brief follows Netflix-published TTSC. The grammar fixer scan alone uses a 21 CPS warning threshold.' },
+    ],
+  },
 }
 
 export function getCoreToolSeoDepth(pathname: string): CoreToolSeoDepth | null {

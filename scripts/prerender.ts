@@ -393,6 +393,40 @@ const STATIC_META: RouteMeta[] = [
     breadcrumbLabel: 'Subtitle Tools',
   },
   {
+    path: '/netflix-ttsc-checklist',
+    title: `Netflix TTSC Checklist — Pre-Delivery Caption Workflow | ${SITE_NAME}`,
+    description:
+      'Workflow checklist against Netflix-published TTSC limits (42 CPL, 20 CPS adult). Maps rules to free browser checkers — VideoText is not affiliated with or endorsed by Netflix.',
+    h1: 'Netflix TTSC pre-delivery checklist',
+    breadcrumbLabel: 'Netflix TTSC Checklist',
+    keywords: [
+      'Netflix TTSC checklist',
+      'Netflix subtitle CPL',
+      'Netflix CPS limit',
+      'localization vendor QC',
+      'subtitle pre-delivery',
+      'TTSC conformance',
+    ],
+    faq: [
+      {
+        q: 'Is VideoText affiliated with Netflix?',
+        a: 'No. Netflix is a trademark of Netflix, Inc. VideoText is an independent tool and is not affiliated with, endorsed by, or certified by Netflix. This checklist is a workflow aid only.',
+      },
+      {
+        q: 'What limits does Netflix-published TTSC commonly cite?',
+        a: 'Commonly cited limits include 42 characters per line (CPL), up to 2 lines per cue, 20 CPS for adult content (17 CPS for children), valid timecodes, and no overlapping cues. Always confirm the current brief for your language and tier.',
+      },
+      {
+        q: 'Does passing these checks guarantee Netflix acceptance?',
+        a: 'No. A file can meet CPL/CPS presets here and still fail delivery for language-specific style rules, encoding, metadata, or vendor requirements. Use this checklist as a pre-handoff scan, not official certification.',
+      },
+      {
+        q: 'Which free VideoText tools map to TTSC-style rules?',
+        a: 'Character limit checker (42 CPL), reading speed checker (20/17 CPS presets), subtitle validator (overlaps and structure), TTML to SRT converter, and Subtitle Grammar Fixer for line breaks and timing repair.',
+      },
+    ],
+  },
+  {
     path: '/descript-alternative',
     title: `Best Free Descript Alternative for Transcription & Subtitles | ${SITE_NAME}`,
     description:
