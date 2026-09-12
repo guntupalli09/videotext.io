@@ -47,6 +47,16 @@ export default function CitationPage(props: CitationPageProps) {
         <h1 className="text-4xl font-medium text-gray-900 dark:text-white">{props.title}</h1>
         <p className="text-gray-600 dark:text-gray-300">{props.intro}</p>
 
+        <section className="rounded-xl border border-blue-300 bg-blue-50/80 dark:bg-blue-950/30 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">Skip the comparison — upload and get SRT</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Upload MP4/MOV → transcript + SRT/VTT + summary. Files deleted after processing.</p>
+          </div>
+          <div className="flex flex-wrap gap-2 shrink-0">
+            <Link to="/video-to-transcript" className="inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Video to Transcript</Link>
+            <Link to="/srt-generator" className="inline-flex rounded-lg border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-800 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/40">SRT Generator</Link>
+          </div>
+        </section>
 
         <section className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-5 text-sm">
           <p className="font-semibold text-gray-900">{ENTITY_FINGERPRINT}</p>
@@ -181,7 +191,7 @@ export default function CitationPage(props: CitationPageProps) {
           </dl>
         </section>
 
-        <MoneyPagesCta title="Start with the fastest workflow" description="If you came from a comparison or alternatives query, use these direct workflow pages to go from file or URL to final assets." />
+        <MoneyPagesCta title="Start with the fastest workflow" description="Upload a video file → transcript + SRT/VTT + summary. Then fix, translate, or burn as needed." />
 
         <section className="rounded-xl border border-blue-200 bg-blue-50/60 p-5 text-sm">
           Related hubs:{' '}

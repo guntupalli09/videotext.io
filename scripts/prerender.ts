@@ -79,9 +79,9 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/pricing',
-    title: `Pricing — Free, Basic, Pro & Agency Plans | ${SITE_NAME}`,
+    title: `Pricing — Free & Pro Plans | ${SITE_NAME}`,
     description:
-      "VideoText pricing: Free 3 imports/month, Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Multi-language, batch on Pro+. 7-day money-back guarantee.",
+      "VideoText pricing: Free 3 imports/month, no credit card. Pro $7.99/mo — full transcription, subtitles, translation, batch processing, and delivery workflows. 7-day money-back guarantee.",
     h1: 'Simple, Transparent Pricing',
     keywords: ['VideoText pricing', 'pricing plans', 'free transcription tool', 'cheap video transcription', 'affordable transcription service', 'transcription pricing comparison', 'monthly subscription plans', 'no hidden fees', 'money-back guarantee'],
   },
@@ -188,9 +188,9 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/guideline-format',
-    title: `Format Transcripts to Client Guides | ${SITE_NAME}`,
+    title: `Client Rejected Your Transcript Format? | ${SITE_NAME}`,
     description:
-      'Format a transcript to Rev, GoTranscript, TranscribeMe, or Scribie-style rules. Editable presets. Files deleted after processing. 3 free imports/mo.',
+      'Apply Rev, GoTranscript, or Scribie presets — speaker labels, verbatim mode, punctuation. Paste transcript, export client-ready copy.',
     h1: 'Format Transcripts to Client Guidelines',
     breadcrumbLabel: 'Format to client guidelines',
   },
@@ -393,6 +393,40 @@ const STATIC_META: RouteMeta[] = [
     breadcrumbLabel: 'Subtitle Tools',
   },
   {
+    path: '/netflix-ttsc-checklist',
+    title: `Netflix TTSC Checklist — Pre-Delivery Caption Workflow | ${SITE_NAME}`,
+    description:
+      'Workflow checklist against Netflix-published TTSC limits (42 CPL, 20 CPS adult). Maps rules to free browser checkers — VideoText is not affiliated with or endorsed by Netflix.',
+    h1: 'Netflix TTSC pre-delivery checklist',
+    breadcrumbLabel: 'Netflix TTSC Checklist',
+    keywords: [
+      'Netflix TTSC checklist',
+      'Netflix subtitle CPL',
+      'Netflix CPS limit',
+      'localization vendor QC',
+      'subtitle pre-delivery',
+      'TTSC conformance',
+    ],
+    faq: [
+      {
+        q: 'Is VideoText affiliated with Netflix?',
+        a: 'No. Netflix is a trademark of Netflix, Inc. VideoText is an independent tool and is not affiliated with, endorsed by, or certified by Netflix. This checklist is a workflow aid only.',
+      },
+      {
+        q: 'What limits does Netflix-published TTSC commonly cite?',
+        a: 'Commonly cited limits include 42 characters per line (CPL), up to 2 lines per cue, 20 CPS for adult content (17 CPS for children), valid timecodes, and no overlapping cues. Always confirm the current brief for your language and tier.',
+      },
+      {
+        q: 'Does passing these checks guarantee Netflix acceptance?',
+        a: 'No. A file can meet CPL/CPS presets here and still fail delivery for language-specific style rules, encoding, metadata, or vendor requirements. Use this checklist as a pre-handoff scan, not official certification.',
+      },
+      {
+        q: 'Which free VideoText tools map to TTSC-style rules?',
+        a: 'Character limit checker (42 CPL), reading speed checker (20/17 CPS presets), subtitle validator (overlaps and structure), TTML to SRT converter, and Subtitle Grammar Fixer for line breaks and timing repair.',
+      },
+    ],
+  },
+  {
     path: '/descript-alternative',
     title: `Best Free Descript Alternative for Transcription & Subtitles | ${SITE_NAME}`,
     description:
@@ -420,10 +454,10 @@ const STATIC_META: RouteMeta[] = [
     path: '/trint-alternative',
     title: `Cheaper Trint Alternative That Starts Free | ${SITE_NAME}`,
     description:
-      'Trint starts at $80/month. VideoText starts free and scales to $10/month — same Whisper AI accuracy, plus subtitle burning, batch processing, and translation.',
+      'Trint starts at $80/month. VideoText starts free — Pro at $7.99/mo with same Whisper AI accuracy, plus subtitle burning, batch processing, and translation.',
     breadcrumbLabel: 'Trint Alternative',
     faq: [
-      { q: 'Why is VideoText cheaper than Trint?', a: 'Trint is priced for enterprise workflows at $80/month. VideoText is built for individuals and small teams — free tier included, paid plans from $10/month for 450 minutes of transcription.' },
+      { q: 'Why is VideoText cheaper than Trint?', a: 'Trint is priced for enterprise workflows at $80/month. VideoText is built for individuals and small teams — free tier included, Pro at $7.99/month for the full workflow.' },
       { q: 'Does VideoText match Trint\'s transcription accuracy?', a: 'Both use OpenAI Whisper. VideoText benchmarks at 98.5% word accuracy on clear audio, comparable to Trint\'s published figures.' },
       { q: 'Can I export transcripts from VideoText like Trint?', a: 'Yes. VideoText exports plain text (TXT), SRT, VTT, and more on paid plans. Unlike Trint, VideoText also exports subtitle files and can burn captions directly into video.' },
     ],
@@ -432,10 +466,10 @@ const STATIC_META: RouteMeta[] = [
     path: '/rev-alternative',
     title: `Best Rev Alternative with Flat-Rate Pricing | ${SITE_NAME}`,
     description:
-      'Rev AI charges $0.25/minute. VideoText starts free and costs $10/month for 450 minutes. Same AI accuracy, plus subtitle export, translation, and YouTube support.',
+      'Rev AI charges $0.25/minute. VideoText starts free — Pro at $7.99/mo flat with no per-minute fees. Same AI accuracy, plus subtitle export and translation.',
     breadcrumbLabel: 'Rev Alternative',
     faq: [
-      { q: 'How is VideoText pricing different from Rev?', a: 'Rev AI charges per-minute ($0.25/min). A 450-minute month costs $112.50 on Rev. VideoText\'s Basic plan covers 450 minutes for $10/month flat — no per-minute billing.' },
+      { q: 'How is VideoText pricing different from Rev?', a: 'Rev AI charges per-minute ($0.25/min). A 450-minute month costs $112.50 on Rev. VideoText Pro is $7.99/month flat — no per-minute billing.' },
       { q: 'Does VideoText support YouTube transcription like Rev?', a: 'Yes. Paste any public YouTube URL directly into VideoText — no download required. Rev does not offer YouTube URL input.' },
       { q: 'Can VideoText generate subtitles like Rev?', a: 'Yes. VideoText generates SRT and VTT subtitle files from any video. You can also translate subtitles to 50+ languages and burn them into the video permanently.' },
     ],
@@ -456,10 +490,10 @@ const STATIC_META: RouteMeta[] = [
     path: '/sonix-alternative',
     title: `Best Free Sonix Alternative – No Per-Minute Fees | ${SITE_NAME}`,
     description:
-      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free and is $10/month flat — Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing.',
+      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free — Pro at $7.99/mo flat with Whisper AI accuracy, subtitle burning, and zero per-minute billing.',
     breadcrumbLabel: 'Sonix Alternative',
     faq: [
-      { q: 'How does VideoText pricing compare to Sonix?', a: 'Sonix charges $22/month plus $0.10/minute for any overage. VideoText is $10/month for 450 minutes flat — no per-minute fees, ever.' },
+      { q: 'How does VideoText pricing compare to Sonix?', a: 'Sonix charges $22/month plus $0.10/minute for any overage. VideoText Pro is $7.99/month flat — no per-minute fees, ever.' },
       { q: 'Is VideoText as accurate as Sonix?', a: 'Both use Whisper AI. VideoText benchmarks at 98.5% word accuracy on clear audio, on par with Sonix\'s published accuracy.' },
       { q: 'Does VideoText support YouTube URL input like Sonix?', a: 'Yes. Paste any YouTube URL directly into VideoText. Sonix requires manual video download and upload. VideoText streams the audio directly from YouTube — no download needed.' },
     ],
@@ -472,7 +506,7 @@ const STATIC_META: RouteMeta[] = [
     breadcrumbLabel: 'EasyScribe Alternative',
     faq: [
       { q: 'What does VideoText offer that EasyScribe does not?', a: 'VideoText adds YouTube URL transcription, SRT and VTT subtitle export, subtitle translation to 50+ languages, subtitle burning into video, and batch processing. EasyScribe is limited to basic audio file transcription.' },
-      { q: 'Is VideoText free like EasyScribe?', a: 'Yes. VideoText has a free tier with 3 imports per month and no credit card required. Paid plans: Basic $19, Pro $49, Agency $129.' },
+      { q: 'Is VideoText free like EasyScribe?', a: 'Yes. VideoText has a free tier with 3 imports per month and no credit card required. Pro is $7.99/month for the full workflow.' },
     ],
   },
   {
@@ -559,14 +593,14 @@ const STATIC_META: RouteMeta[] = [
     path: '/tools/subtitle-reading-speed',
     title: `Subtitle Reading Speed Checker — CPS Analyzer | ${SITE_NAME}`,
     description:
-      'Check every subtitle cue for characters-per-second against Netflix (17 CPS), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
+      'Check every subtitle cue for characters-per-second against Netflix TTSC (20 CPS adult), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
     breadcrumbLabel: 'Reading Speed Checker',
   },
   {
     path: '/tools/subtitle-character-checker',
-    title: `Subtitle Character Limits — Pass/Fail | ${SITE_NAME}`,
+    title: `Netflix Subtitle CPL Checker — Check 42-Character Limits | ${SITE_NAME}`,
     description:
-      'Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account.',
+      'Check subtitle cues against Netflix-published character-per-line guidelines (42 CPL), BBC (37), or a wide 80-character preset. VideoText is not affiliated with or endorsed by Netflix.',
     h1: 'Check Subtitle Character Limits',
     breadcrumbLabel: 'Character Limit Checker',
   },
@@ -657,20 +691,12 @@ const STATIC_META: RouteMeta[] = [
   // ── Hub pages ────────────────────────────────────────────────────────────────
   {
     path: '/subtitle-tools',
-    title: `Free Subtitle Tools: Convert & Validate | ${SITE_NAME}`,
+    title: `Subtitletools Alternative — Free SRT Convert & Validate | ${SITE_NAME}`,
     description:
-      'Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded.',
-    h1: 'Free Subtitle Tools for Creators',
+      'Free browser subtitle tools like Subtitletools: convert SRT↔VTT, validate CPL/CPS, shift timing — plus AI SRT generation when you need a new file. Nothing uploaded.',
+    h1: 'Free Subtitle Tools — Subtitletools Alternative',
     breadcrumbLabel: 'Subtitle Tools',
   },
-  {
-    path: '/subtitle-resources',
-    title: `Subtitle Resources & Standards — Formats, Netflix Rules, CPS Limits | ${SITE_NAME}`,
-    description:
-      'Subtitle format specs, Netflix delivery requirements, platform character limits, reading speed standards, and timing rules — all in one reference guide.',
-    breadcrumbLabel: 'Subtitle Resources',
-  },
-
   // ── Comparison / vs pages ────────────────────────────────────────────────
   {
     path: '/temi-vs-videotext',
@@ -914,8 +940,8 @@ const MONEY_TITLE_PATHS = new Set([
   '/burn-subtitles',
   '/compress-video',
   '/youtube-transcript-generator',
-  '/video-to-srt',
   '/srt-generator',
+  '/netflix-ttsc-checklist',
   '/voice-recorder',
   '/guideline-format',
 ])
@@ -1124,24 +1150,8 @@ function buildPricingProductJsonLd(routePath: string): object | null {
       },
       {
         '@type': 'Offer',
-        name: 'Basic',
-        price: '19',
-        priceCurrency: 'USD',
-        availability: 'https://schema.org/InStock',
-        url: `${SITE_URL}/pricing`,
-      },
-      {
-        '@type': 'Offer',
         name: 'Pro',
-        price: '49',
-        priceCurrency: 'USD',
-        availability: 'https://schema.org/InStock',
-        url: `${SITE_URL}/pricing`,
-      },
-      {
-        '@type': 'Offer',
-        name: 'Agency',
-        price: '129',
+        price: '7.99',
         priceCurrency: 'USD',
         availability: 'https://schema.org/InStock',
         url: `${SITE_URL}/pricing`,
@@ -1291,7 +1301,7 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
   '/subtitle-tools': [
     { path: '/video-to-subtitles', label: 'Video to Subtitles' },
     { path: '/srt-generator', label: 'SRT File Generator' },
-    { path: '/video-to-srt', label: 'Video to SRT Converter' },
+    { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC Checklist' },
     { path: '/subtitle-generator', label: 'Subtitle Generator' },
     { path: '/auto-subtitle-generator', label: 'Auto Subtitle Generator' },
     { path: '/youtube-subtitle-generator', label: 'YouTube Subtitle Generator' },
@@ -1322,7 +1332,7 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
     { path: '/tools/ttml-to-srt', label: 'TTML to SRT' },
     { path: '/tools/html-to-srt', label: 'HTML to SRT' },
     { path: '/tools/shift-subtitle-timing', label: 'Shift Subtitle Timing' },
-    { path: '/subtitle-resources', label: 'Subtitle Resources & Standards' },
+    { path: '/tools/subtitle-character-checker', label: 'Character Limit Checker' },
     { path: '/open-captions-vs-closed-captions', label: 'Open vs Closed Captions' },
     { path: '/free-captions-and-subtitles', label: 'Free Captions & Subtitles' },
     { path: '/ada-video-captions', label: 'ADA Video Captions' },
@@ -1604,7 +1614,7 @@ function buildCanonicalToolsSection(hubPath: string): string {
   if (hubPath === '/subtitle-tools') {
     tools = [
       { path: '/srt-generator', label: 'SRT File Generator' },
-      { path: '/video-to-srt', label: 'Video to SRT Converter' },
+      { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC Checklist' },
       { path: '/translate-subtitles', label: 'Translate Subtitles' },
       { path: '/burn-subtitles', label: 'Burn Subtitles into Video' },
     ]

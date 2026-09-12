@@ -83,6 +83,16 @@ export default function VideoMetadataViewer() {
       title="Video Metadata Viewer — Check Video Info Without Uploading"
       description="View video file details — duration, resolution, aspect ratio, file size, and format — directly in your browser. Nothing is uploaded. Works on all video files."
       hubLink={{ label: 'Free Video Tools', path: '/tools' }}
+      moneyCta={{
+        kicker: 'Have this file ready?',
+        title: 'Generate SRT from the same video',
+        body: 'You checked duration and resolution — upload the file on Video to SRT for Whisper-timed captions. Files deleted after processing.',
+        primary: { label: 'Generate SRT from video', path: '/srt-generator' },
+        secondary: [
+          { label: 'Full transcript + summary', path: '/video-to-transcript' },
+          { label: 'Burn captions', path: '/burn-subtitles' },
+        ],
+      }}
       contentSections={[
         { heading: 'What is video metadata?', body: 'Video metadata is information stored alongside or within a video file that describes its properties without being part of the visible content. It includes technical details such as duration, resolution, frame rate, codec, bitrate, and creation date. Metadata is used by video players to render the file correctly, by editing software to match settings, by streaming platforms to validate uploads, and by search engines to index content. Some metadata is embedded in the container file itself (like MP4\'s moov atom), while other metadata such as subtitles and chapter markers is stored in separate tracks within the container.' },
         { heading: 'What metadata does the browser expose?', body: 'Web browsers can read a limited but useful set of video metadata without any server-side processing. Using the HTML5 video element and the File API, this tool retrieves the video\'s duration, pixel dimensions (width and height), MIME type, file name, file size, and last-modified date. This information is read directly from your device\'s memory — nothing is sent over the network. More advanced metadata such as codec name, audio sample rate, frame rate, bitrate, or embedded GPS data requires a dedicated analysis tool like MediaInfo or ffprobe that can parse the raw container format.' },

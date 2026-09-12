@@ -116,8 +116,11 @@ Today we'll cover subtitle formats.`,
 
         {/* Netflix Rules */}
         <section id="netflix-rules">
-          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Netflix Subtitle Delivery Requirements</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Netflix publishes detailed timed text style guides for each language. These are the core technical requirements that apply across most languages.</p>
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-2">Netflix-Published Subtitle Guidelines (Reference)</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Netflix publishes timed text style guides for each language. The table below summarizes commonly cited limits — verify against the current language-specific guide before delivery. VideoText is not affiliated with or endorsed by Netflix.</p>
+          <p className="text-xs text-amber-900/80 dark:text-amber-100/80 rounded-lg border border-amber-200 dark:border-amber-800/60 bg-amber-50/80 dark:bg-amber-950/30 px-3 py-2 mb-6">
+            Netflix is a trademark of Netflix, Inc. This reference page does not guarantee Netflix or vendor acceptance.
+          </p>
 
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <table className="w-full text-sm">
@@ -132,8 +135,8 @@ Today we'll cover subtitle formats.`,
                 {[
                   { req: 'Maximum CPS', spec: '20 (English)', notes: '17 for most other languages. Measured per cue.' },
                   { req: 'Maximum characters per line', spec: '42', notes: 'Applies to each line individually, not the cue total.' },
-                  { req: 'Maximum lines per cue', spec: '2', notes: 'Three-line cues are rejected at QC.' },
-                  { req: 'Minimum cue duration', spec: '0.833s (5 frames)', notes: 'Very short cues fail frame-accurate QC checks.' },
+                  { req: 'Maximum lines per cue', spec: '2', notes: 'Three-line cues commonly fail Netflix-style QC.' },
+                  { req: 'Minimum cue duration', spec: '0.833s (5 frames)', notes: 'Very short cues may fail frame-accurate checks.' },
                   { req: 'Maximum cue duration', spec: '7 seconds', notes: 'Longer cues are split into multiple subtitles.' },
                   { req: 'Minimum gap between cues', spec: '2 frames (0.083s at 24fps)', notes: 'Subtitles must not be continuous with no visual break.' },
                   { req: 'Font size', spec: 'Relative to screen', notes: 'Netflix renders at a standard size; do not hardcode pixel sizes.' },
@@ -203,7 +206,7 @@ Today we'll cover subtitle formats.`,
             {[
               { label: 'Comfortable reading', cps: '≤ 15 CPS', desc: 'Easy for all viewers including children and non-native speakers', color: 'border-green-200 dark:border-green-800' },
               { label: 'Professional target', cps: '15–17 CPS', desc: 'EBU R37 and BBC guidelines. Safe for broadcast delivery', color: 'border-blue-200 dark:border-blue-800' },
-              { label: 'Netflix English limit', cps: '≤ 20 CPS', desc: 'Maximum for Netflix EN. Exceeding this fails QC', color: 'border-blue-200 dark:border-blue-800' },
+              { label: 'Netflix-published EN ceiling', cps: '≤ 20 CPS', desc: 'Commonly cited in TTSC for English. Compare with our reading-speed checker — not official certification', color: 'border-blue-200 dark:border-blue-800' },
             ].map((item) => (
               <div key={item.label} className={`rounded-xl border-2 ${item.color} p-4`}>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{item.label}</p>

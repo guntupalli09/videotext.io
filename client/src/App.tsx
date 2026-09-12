@@ -49,13 +49,14 @@ const Faq = lazy(() => import('./pages/Faq'))
 const Guide = lazy(() => import('./pages/Guide'))
 const Terms = lazy(() => import('./pages/Terms'))
 const VoiceRecorder = lazy(() => import('./pages/VoiceRecorder'))
-const VideoToTranscript = lazy(() => import('./pages/VideoToTranscript'))
 const GuidelineFormat = lazy(() => import('./pages/GuidelineFormat'))
+const VideoToTranscript = lazy(() => import('./pages/VideoToTranscript'))
 const VideoToSubtitles = lazy(() => import('./pages/VideoToSubtitles'))
 const TranslateSubtitles = lazy(() => import('./pages/TranslateSubtitles'))
 const FixSubtitles = lazy(() => import('./pages/FixSubtitles'))
 const BurnSubtitles = lazy(() => import('./pages/BurnSubtitles'))
 const CompressVideo = lazy(() => import('./pages/CompressVideo'))
+const NetflixTtscChecklistPage = lazy(() => import('./pages/NetflixTtscChecklistPage'))
 const SeoToolPage = lazy(() => import('./pages/SeoToolPage'))
 const FeedbackView = lazy(() => import('./pages/FeedbackView'))
 const SurveyPage = lazy(() => import('./pages/SurveyPage'))
@@ -101,7 +102,6 @@ const BestOtterAlternatives = lazy(() => import('./pages/BestOtterAlternatives')
 const BestDescriptAlternatives = lazy(() => import('./pages/BestDescriptAlternatives'))
 const AiTranscriptionWorkflow = lazy(() => import('./pages/AiTranscriptionWorkflow'))
 const PodcastTranscriptionTool = lazy(() => import('./pages/PodcastTranscriptionTool'))
-const InterviewTranscriptionTool = lazy(() => import('./pages/InterviewTranscriptionTool'))
 // const YoutubeTranscriptGenerator = lazy(() => import('./pages/YoutubeTranscriptGenerator'))
 const Unsubscribe = lazy(() => import('./pages/Unsubscribe'))
 const JoinFoundingTeam = lazy(() => import('./pages/JoinFoundingTeam'))
@@ -127,7 +127,6 @@ const AspectRatioCalculator = lazy(() => import('./pages/tools/AspectRatioCalcul
 const TimestampConverter = lazy(() => import('./pages/tools/TimestampConverter'))
 const VideoMetadataViewer = lazy(() => import('./pages/tools/VideoMetadataViewer'))
 const SubtitleToolsHub = lazy(() => import('./pages/tools/SubtitleToolsHub'))
-const SubtitleResources = lazy(() => import('./pages/SubtitleResources'))
 // Format converter tools — client-side only, zero server dependency
 const SbvToSrt = lazy(() => import('./pages/tools/SbvToSrt'))
 const SrtToSbv = lazy(() => import('./pages/tools/SrtToSbv'))
@@ -606,17 +605,21 @@ function App() {
             <Route path="/best-descript-alternatives" element={<BestDescriptAlternatives />} />
             <Route path="/ai-transcription-workflow" element={<AiTranscriptionWorkflow />} />
             <Route path="/podcast-transcription-tool" element={<PodcastTranscriptionTool />} />
-            <Route path="/interview-transcription-tool" element={<InterviewTranscriptionTool />} />
-            {/* <Route path="/youtube-transcript-generator" element={<YoutubeTranscriptGenerator />} /> */}
-            <Route path="/youtube-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
-            <Route path="/youtube-transcript-transcription" element={<Navigate to="/youtube-transcript-generator" replace />} />
-            <Route path="/youtube-to-text" element={<Navigate to="/youtube-transcript-generator" replace />} />
-            <Route path="/youtube-url-to-transcription" element={<Navigate to="/youtube-transcript-generator" replace />} />
-            <Route path="/youtube-to-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
-            <Route path="/youtube-video-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
-            <Route path="/how-to-transcript-youtube" element={<Navigate to="/youtube-transcript-generator#how-it-works" replace />} />
-            <Route path="/youtube-transcript-editor" element={<Navigate to="/youtube-transcript-generator#export-options" replace />} />
-            <Route path="/youtube-video-to-transcript" element={<Navigate to="/youtube-transcript-generator" replace />} />
+            <Route path="/interview-transcription-tool" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/youtube-transcript-generator" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/youtube-transcript" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/youtube-transcript-transcription" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/youtube-to-text" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/youtube-url-to-transcription" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/youtube-to-transcript" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/youtube-video-transcript" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/how-to-transcript-youtube" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/youtube-transcript-editor" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/youtube-video-to-transcript" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/google-meet-transcript" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/video-to-srt" element={<Navigate to="/srt-generator" replace />} />
+            <Route path="/srt-to-word" element={<Navigate to="/tools/srt-to-text" replace />} />
+            <Route path="/netflix-ttsc-checklist" element={<NetflixTtscChecklistPage />} />
             <Route path="/otter-vs-videotext" element={<OtterVsVideoText />} />
             <Route path="/descript-vs-videotext" element={<DescriptVsVideoText />} />
             <Route path="/ai-transcription-tools" element={<AiTranscriptionTools />} />
@@ -627,7 +630,7 @@ function App() {
             <Route path="/guideline-format" element={<GuidelineFormat />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript
               seoH1="Video to Transcript — Free AI Transcription, 98.5% Accurate"
-              seoIntro="Upload any video or paste a YouTube URL and get a full transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in one pass. Powered by OpenAI Whisper large-v3 — 98.5% word accuracy on clean audio. A 2-hour video processes in under 5 minutes. Zero data retention: your files are deleted immediately after processing."
+              seoIntro="Upload MP4, MOV, WebM, or MKV and get a full transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in one pass. Powered by OpenAI Whisper large-v3 — 98.5% word accuracy on clean audio. A 2-hour video processes in under 5 minutes. Zero data retention: your files are deleted immediately after processing."
             />} />
             <Route path="/video-to-subtitles" element={<VideoToSubtitles />} />
             <Route path="/batch-process" element={<Navigate to="/video-to-transcript" replace />} />
@@ -636,7 +639,7 @@ function App() {
             <Route path="/transcribe-meeting-recording" element={<Navigate to="/meeting-recording-to-transcript" replace />} />
             <Route path="/translate-subtitles" element={<TranslateSubtitles
               seoH1="Translate Subtitles (SRT/VTT) to 70+ Languages"
-              seoIntro="Upload an SRT or VTT file, pick a target language, and download the translated version in seconds — timestamps stay perfectly in sync."
+              seoIntro="Upload SRT or VTT, pick a target language, download with every cue time preserved. Example: English → Spanish for YouTube or streaming delivery. Then run the grammar fixer if CPL/CPS exceeds your preset."
             />} />
             <Route path="/translation" element={<TranslateSubtitles />} />
             <Route path="/free-captions-and-subtitles" element={<VideoToSubtitles />} />
@@ -647,13 +650,22 @@ function App() {
             {/* SEO utility routes: registry-driven; same tools, alternate URLs. No backend or behavior change. */}
             {getAllSeoPaths()
               .filter((path) => ![
+                '/subtitle-resources',
                 '/burn-subtitles-into-video',
+                '/youtube-transcript-generator',
                 '/youtube-transcript',
                 '/youtube-transcript-transcription',
                 '/youtube-to-text',
                 '/youtube-to-transcript',
                 '/youtube-video-transcript',
                 '/youtube-url-to-transcription',
+                '/youtube-video-to-transcript',
+                '/how-to-transcript-youtube',
+                '/youtube-transcript-editor',
+                '/interview-transcription-tool',
+                '/google-meet-transcript',
+                '/video-to-srt',
+                '/srt-to-word',
                 '/batch-process',
                 '/zoom-meeting-transcript',
                 '/zoom-recording-transcript',
@@ -683,7 +695,7 @@ function App() {
             <Route path="/tools/timestamp-converter" element={<TimestampConverter />} />
             <Route path="/tools/video-metadata-viewer" element={<VideoMetadataViewer />} />
             <Route path="/subtitle-tools" element={<SubtitleToolsHub />} />
-            <Route path="/subtitle-resources" element={<SubtitleResources />} />
+            <Route path="/subtitle-resources" element={<Navigate to="/subtitle-tools" replace />} />
             <Route path="/tools/sbv-to-srt" element={<SbvToSrt />} />
             <Route path="/tools/srt-to-sbv" element={<SrtToSbv />} />
             <Route path="/tools/ass-to-srt" element={<AssToSrt />} />

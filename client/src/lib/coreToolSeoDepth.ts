@@ -62,7 +62,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
         { href: '/fix-subtitles', label: 'Fix Subtitles', note: 'After translation, check overlaps, long lines, and CPS.' },
         { href: '/burn-subtitles', label: 'Burn Subtitles', note: 'Hardcode the translated track into the video for social.' },
         { href: '/srt-generator', label: 'SRT file generator', note: 'Need a new .srt from video (file maker), not a translation.' },
-        { href: '/video-to-srt', label: 'Video to SRT converter', note: 'Converter path: video in, timed SRT out.' },
+        { href: '/srt-generator', label: 'SRT file generator', note: 'Video in, timed SRT out — same engine as this hub.' },
         { href: '/subtitle-tools', label: 'Free subtitle tools', note: 'In-browser convert, validate, and check character limits.' },
       ],
     },
@@ -149,11 +149,11 @@ const CORE: Record<string, CoreToolSeoDepth> = {
   '/video-to-transcript': {
     path: '/video-to-transcript',
     answerFirst:
-      'VideoText converts a video file or public YouTube URL into a clean transcript, SRT/VTT subtitles, an AI summary, and chapter markers. It uses OpenAI Whisper large-v3 (~98.5% on clear audio). A 60-minute video typically finishes in under five minutes. Files are deleted after processing. Free: 3 imports/month, no credit card.',
+      'VideoText converts a video file upload into a clean transcript, SRT/VTT subtitles, an AI summary, and chapter markers. It uses OpenAI Whisper large-v3 (~98.5% on clear audio). A 60-minute video typically finishes in under five minutes. Files are deleted after processing. Free: 3 imports/month, no credit card.',
     howItWorks: {
       heading: 'How video-to-transcript works',
       steps: [
-        { title: 'Upload a file or paste a YouTube URL', detail: 'MP4, MOV, and common video/audio formats, or a public YouTube link. No need to download the YouTube file first.' },
+        { title: 'Upload MP4, MOV, or WebM', detail: 'MP4, MOV, WebM, and common video/audio formats.' },
         { title: 'Whisper large-v3 transcribes the audio', detail: 'About 98.5%+ on clear audio. One pass produces text plus timed subtitle files, not a text dump only.' },
         { title: 'Download transcript, SRT/VTT, summary, and chapters', detail: 'Then format to a client style guide, fix captions, or translate the SRT.' },
       ],
@@ -194,9 +194,9 @@ const CORE: Record<string, CoreToolSeoDepth> = {
       ],
     },
     faq: [
-      { q: 'How do I convert a video to a transcript?', a: 'Upload a video or paste a public YouTube URL. VideoText transcribes with Whisper large-v3 and returns transcript text plus SRT/VTT, summary, and chapters.' },
-      { q: 'Can I transcribe a YouTube video without downloading it?', a: 'Yes. Paste a public YouTube URL on this page. VideoText streams the audio — you do not need to download the video first.' },
-      { q: 'Is it free?', a: 'Yes. Free plan: 3 imports per month, no credit card; watermark on free exports. Paid plans are Basic $19, Pro $49, and Agency $129.' },
+      { q: 'How do I convert a video to a transcript?', a: 'Upload MP4, MOV, or WebM. VideoText transcribes with Whisper large-v3 and returns transcript text plus SRT/VTT, summary, and chapters.' },
+      { q: 'What formats can I upload?', a: 'MP4, MOV, WebM, MKV, and common audio formats. Download from your platform first if needed.' },
+      { q: 'Is it free?', a: 'Yes. Free plan: 3 imports per month, no credit card; watermark on free exports. Paid plans are Pro $7.99/month.' },
       { q: 'How accurate is it?', a: 'About 98.5%+ on clear audio. Set the spoken language when you know it. Noisy or overlapping speech will need a review pass.' },
       { q: 'Does VideoText keep my files?', a: 'Files are deleted after processing. Uploads are not kept as a library.' },
       { q: 'What is the difference between this and Video to Subtitles?', a: 'This page is the full text workflow: transcript + SRT/VTT + summary + chapters. Video to Subtitles is the caption-first hub when the main job is a subtitle file.' },
@@ -206,11 +206,11 @@ const CORE: Record<string, CoreToolSeoDepth> = {
   '/video-to-subtitles': {
     path: '/video-to-subtitles',
     answerFirst:
-      'Turn a video file or YouTube URL into timed SRT and VTT captions with Whisper large-v3 (~98.5% on clear audio). This is the caption-first hub: generate the file, then fix, translate, or burn. For a full transcript plus summary and chapters, use Video to Transcript. Free: 3 imports/month, no card. Files deleted after processing.',
+      'Turn a video upload into timed SRT and VTT captions with Whisper large-v3 (~98.5% on clear audio). This is the caption-first hub: generate the file, then fix, translate, or burn. For a full transcript plus summary and chapters, use Video to Transcript. Free: 3 imports/month, no card. Files deleted after processing.',
     howItWorks: {
       heading: 'How the full caption product works',
       steps: [
-        { title: 'Upload video or a YouTube URL', detail: 'Same AI pipeline as the rest of VideoText — this page is the caption-first entry, not a separate converter brand.' },
+        { title: 'Upload MP4/MOV/WebM', detail: 'Same AI pipeline as the rest of VideoText — this page is the caption-first entry, not a separate converter brand.' },
         { title: 'Get timed SRT or VTT', detail: 'Whisper large-v3 aligns speech to cues. Choose SRT (YouTube, editors) or VTT (HTML5 players).' },
         { title: 'Continue the product path', detail: 'Need the full text package too? Use Video to Transcript for transcript + summary + chapters from the same kind of upload. Then Fix, Translate, or Burn the SRT.' },
       ],
@@ -220,13 +220,13 @@ const CORE: Record<string, CoreToolSeoDepth> = {
       items: [
         { who: 'Creators who want captions plus the rest of VideoText', why: 'This is the product hub: video → timed subtitles, then fix / translate / burn, and transcript+summary when you need words not just cues.' },
         { who: 'People who searched “SRT file generator”', why: 'Use /srt-generator — that page is the file maker/creator. It links back here for the full product.' },
-        { who: 'People who searched “video to SRT”', why: 'Use /video-to-srt — that page is the converter (video in, .srt out). Same engine, narrower intent.' },
+        { who: 'People who searched “video to SRT”', why: 'Use /srt-generator — video in, timed .srt out. Same engine, narrower intent.' },
       ],
     },
     outputs: {
       heading: 'What this hub is for',
       items: [
-        'Timed SRT and VTT from video or YouTube URL',
+        'Timed SRT and VTT from video upload',
         'A path into transcript + summary + chapters via Video to Transcript',
         'Handoff to Fix, Translate, and Burn — not a dead-end file download',
       ],
@@ -243,7 +243,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
       heading: 'File-maker siblings and next tools',
       links: [
         { href: '/srt-generator', label: 'SRT file generator', note: 'Create a new .srt from video (maker/creator intent).' },
-        { href: '/video-to-srt', label: 'Video to SRT converter', note: 'Converter intent: video → timed SRT file.' },
+        { href: '/srt-generator', label: 'SRT file generator', note: 'Video → timed SRT file (canonical for “video to srt” searches).' },
         { href: '/video-to-transcript', label: 'Video to Transcript', note: 'Full text package: transcript + SRT + summary + chapters.' },
         { href: '/fix-subtitles', label: 'Fix Subtitles', note: 'Overlaps, long lines, CPS, formatting.' },
         { href: '/translate-subtitles', label: 'Translate Subtitles', note: '70+ languages, timestamps kept.' },
@@ -251,11 +251,11 @@ const CORE: Record<string, CoreToolSeoDepth> = {
       ],
     },
     faq: [
-      { q: 'How do I generate subtitles from a video?', a: 'Upload a video or paste a YouTube URL, choose SRT or VTT, and download the timed file. Whisper large-v3 creates the cues.' },
-      { q: 'Can I also get a transcript and summary?', a: 'Yes. Use Video to Transcript for transcript + SRT/VTT + summary + chapters from a video or YouTube URL. This hub stays caption-first.' },
+      { q: 'How do I generate subtitles from a video?', a: 'Upload a video, choose SRT or VTT, and download the timed file. Whisper large-v3 creates the cues.' },
+      { q: 'Can I also get a transcript and summary?', a: 'Yes. Use Video to Transcript for transcript + SRT/VTT + summary + chapters from a video upload. This hub stays caption-first.' },
       { q: 'Is it free?', a: 'Yes. 3 imports per month, no card; watermark on free exports. Files are deleted after processing.' },
       { q: 'How is this different from the SRT file generator?', a: 'This page is the full product hub (captions plus the VideoText workflow). /srt-generator is the file maker/creator for “srt file generator” searches. Same engine; different intent.' },
-      { q: 'How is this different from Video to SRT?', a: '/video-to-srt is the converter page (video in, SRT out). Use that if you searched “video to srt”. Come here when you want the caption product and next steps (fix, translate, burn, transcript).' },
+      { q: 'How is this different from the SRT file generator?', a: '/srt-generator is the file maker page (video in, SRT out). Use that if you searched “video to srt” or “srt file generator”. Come here when you want the caption product and next steps (fix, translate, burn, transcript).' },
     ],
   },
 
@@ -304,7 +304,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
         { href: '/burn-subtitles', label: 'Burn Subtitles', note: 'Hardcode the cleaned file into the video.' },
         { href: '/guideline-format', label: 'Client guidelines', note: 'Transcript style rules (verbatim, speakers) — different from cue QC.' },
         { href: '/tools/subtitle-validator', label: 'Subtitle validator', note: 'Free in-browser scan before or after a fix pass.' },
-        { href: '/tools/subtitle-character-checker', label: 'Character limit checker', note: 'Netflix / YouTube / BBC line-length pass/fail.' },
+        { href: '/tools/subtitle-character-checker', label: 'Character limit checker', note: 'Netflix-style / BBC CPL presets — within or over limit per cue.' },
       ],
     },
     faq: [
@@ -366,9 +366,9 @@ const CORE: Record<string, CoreToolSeoDepth> = {
       ],
     },
     faq: [
-      { q: 'Does this transcribe video?', a: 'No. It formats an existing transcript. Use Video to Transcript to get the text from a file or YouTube URL.' },
+      { q: 'Does this transcribe video?', a: 'No. It formats an existing transcript. Use Video to Transcript to get the text from a video upload.' },
       { q: 'What style guides can I apply?', a: 'Presets for Rev, GoTranscript, TranscribeMe, and Scribie-style rules. Cards are editable. You can also work from uploaded client notes in your workflow.' },
-      { q: 'Is guideline formatting free?', a: 'Yes. Free plan: 3 imports per month, no credit card; watermark on free exports. Paid plans are Basic $19, Pro $49, and Agency $129.' },
+      { q: 'Is guideline formatting free?', a: 'Yes. Free plan: 3 imports per month, no credit card; watermark on free exports. Paid plans are Pro $7.99/month.' },
       { q: 'Is this the same as Fix Subtitles?', a: 'No. Guideline format is transcript style (verbatim, speakers, fillers). Fix Subtitles is caption-file QC: overlaps, long lines, and CPS.' },
       { q: 'When should I use this in the workflow?', a: 'After Video to Transcript, before you invoice or send to client QA. If the client also wants SRT, generate or export captions and run Fix Subtitles separately.' },
     ],
@@ -377,12 +377,12 @@ const CORE: Record<string, CoreToolSeoDepth> = {
   '/voice-recorder': {
     path: '/voice-recorder',
     answerFirst:
-      'Record your voice in the browser and get a transcript immediately — no video file required. This is live microphone-to-text for notes, dictation, and memos. For a finished video or YouTube URL, use Video to Transcript instead. Files are deleted after processing. Free: 3 imports/month, no credit card.',
+      'Record your voice in the browser and get a transcript immediately — no video file required. This is live microphone-to-text for notes, dictation, and memos. For a finished video upload, use Video to Transcript instead. Files are deleted after processing. Free: 3 imports/month, no credit card.',
     howItWorks: {
       heading: 'How the in-browser voice recorder works',
       steps: [
         { title: 'Allow the microphone', detail: 'This page is live speech → text in the browser. You do not upload a video file to start.' },
-        { title: 'Speak and see text', detail: 'Use it for notes, dictation, and drafts. For a finished video or YouTube URL, use Video to Transcript instead.' },
+        { title: 'Speak and see text', detail: 'Use it for notes, dictation, and drafts. For a finished video upload, use Video to Transcript instead.' },
         { title: 'Copy or continue in VideoText', detail: 'Move cleaned text into guideline format, or generate captions from a recording on the video tools.' },
       ],
     },
@@ -413,7 +413,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
     related: {
       heading: 'When you have a file instead',
       links: [
-        { href: '/video-to-transcript', label: 'Video to Transcript', note: 'Upload video or YouTube URL → transcript + SRT + summary + chapters.' },
+        { href: '/video-to-transcript', label: 'Video to Transcript', note: 'Upload video → transcript + SRT + summary + chapters.' },
         { href: '/video-to-subtitles', label: 'Video to Subtitles', note: 'Caption-first hub from a video file.' },
         { href: '/guideline-format', label: 'Client guidelines', note: 'Format the text after you capture it.' },
         { href: '/translate-subtitles', label: 'Translate Subtitles', note: 'If you already have an SRT to localize.' },
@@ -421,7 +421,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
     },
     faq: [
       { q: 'How do I convert voice to text in the browser?', a: 'Open this page, allow the microphone, and speak. Text appears from your live recording — you do not start by uploading a video file.' },
-      { q: 'Is this the same as Video to Transcript?', a: 'No. Voice recorder is mic → text. Video to Transcript is file or YouTube URL → transcript + SRT/VTT + summary + chapters.' },
+      { q: 'Is this the same as Video to Transcript?', a: 'No. Voice recorder is mic → text. Video to Transcript is video upload → transcript + SRT/VTT + summary + chapters.' },
       { q: 'Is there a free voice to text option?', a: 'Yes. Free plan: 3 imports per month, no card; watermark on free exports.' },
       { q: 'I landed on /speak-to-text — is that different?', a: 'Same product family. This page is the primary voice → text tool. Use this URL when you want the recorder.' },
     ],
@@ -478,6 +478,58 @@ const CORE: Record<string, CoreToolSeoDepth> = {
       { q: 'Is it free?', a: 'Yes. 3 imports per month, no card; watermark on free exports. Files are deleted after processing.' },
       { q: 'Will quality stay the same?', a: 'Light aims for a smaller file with modest change. Medium and heavy reduce size more and can show more quality loss. Pick the lowest level that meets your size limit.' },
       { q: 'Is this the same as adding subtitles?', a: 'No. This only reduces file size. Use Video to Subtitles to make an SRT, or Burn Subtitles to hardcode captions.' },
+    ],
+  },
+  '/netflix-ttsc-checklist': {
+    path: '/netflix-ttsc-checklist',
+    answerFirst:
+      'Use this vendor workflow checklist to scan subtitle files against commonly cited Netflix-published TTSC limits — 42 CPL, 20 CPS adult (17 children), overlaps, and timecodes — before handoff. VideoText is not affiliated with or endorsed by Netflix. Passing these browser checks does not guarantee platform acceptance.',
+    howItWorks: {
+      heading: 'How the TTSC checklist workflow runs',
+      steps: [
+        { title: 'Confirm the client brief', detail: 'Verify language, genre, and adult vs children CPS ceiling before you scan or deliver.' },
+        { title: 'Run the matching free checker', detail: 'Open the CPL checker, reading-speed checker, or validator depending on the risk you expect.' },
+        { title: 'Repair and re-scan', detail: 'Use Subtitle Grammar Fixer for line breaks and timing, then re-run the same preset and attach the scan summary to your package.' },
+      ],
+    },
+    whoItsFor: {
+      heading: 'Who this checklist is for',
+      items: [
+        { who: 'Localization vendors', why: 'Standardize pre-delivery scans without a separate QC product.' },
+        { who: 'Freelance captioners', why: 'Catch CPL/CPS issues before client rejection and rework.' },
+        { who: 'In-house media ops', why: 'Map TTSC-style rules to existing VideoText free tools the team already uses.' },
+      ],
+    },
+    outputs: {
+      heading: 'What you get from each linked tool',
+      items: [
+        'Per-cue CPL scan against Netflix-style (42), BBC (37), or wide presets',
+        'CPS comparison against Netflix-published 20/17 and EBU/BBC presets',
+        'Overlap and structure warnings from the subtitle validator',
+        'Optional grammar-fixer export after line-break or timing repair',
+      ],
+    },
+    proof: {
+      heading: 'Important limits',
+      items: [
+        { label: 'Not official Netflix QC', detail: 'This page routes to independent browser checkers — not a Netflix certification gate.' },
+        { label: 'Grammar fixer scan threshold', detail: 'The grammar fixer uses 21 CPS as an EBU-style warning — stricter TTSC presets need the reading-speed checker.' },
+        { label: 'No new product SKU', detail: 'Same free tools and Pro grammar fixer available elsewhere on VideoText.' },
+      ],
+    },
+    related: {
+      heading: 'Linked checks in this checklist',
+      links: [
+        { href: '/tools/subtitle-character-checker', label: 'Netflix-style CPL checker', note: '42-character line preset.' },
+        { href: '/tools/subtitle-reading-speed', label: 'Reading speed checker', note: '20 CPS adult / 17 CPS children presets.' },
+        { href: '/tools/subtitle-validator', label: 'Subtitle validator', note: 'Overlaps, empty cues, structure.' },
+        { href: '/subtitle-grammar-fixer', label: 'Subtitle Grammar Fixer', note: 'Line breaks, timing, and CPS repair.' },
+      ],
+    },
+    faq: [
+      { q: 'Is VideoText affiliated with Netflix?', a: 'No. VideoText is independent and not endorsed or certified by Netflix. Netflix is a trademark of Netflix, Inc.' },
+      { q: 'Does this checklist guarantee TTSC acceptance?', a: 'No. It helps you evaluate files against commonly published limits before delivery. Vendors may apply additional language-specific rules.' },
+      { q: 'Which CPS preset should I use?', a: 'Use 20 CPS for adult content and 17 CPS for children\'s content when your brief follows Netflix-published TTSC. The grammar fixer scan alone uses a 21 CPS warning threshold.' },
     ],
   },
 }

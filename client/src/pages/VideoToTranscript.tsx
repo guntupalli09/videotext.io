@@ -41,6 +41,7 @@ import JobAuthGateModal from "../components/JobAuthGateModal";
 import { isLoggedIn } from "../lib/auth";
 import { isPaidPlan as hasPaidPlan } from "../lib/plans";
 import { ToolLayout } from "../components/figma/ToolLayout";
+import SerpTrustStrip from "../components/SerpTrustStrip";
 import { UploadZone } from "../components/figma/UploadZone";
 import { ProcessingInterface } from "../components/figma/ProcessingInterface";
 import { ProcessingProgress } from "../components/figma/ProcessingProgress";
@@ -3358,7 +3359,7 @@ export default function VideoToTranscript(
     title: "Fastest Way to Transcribe Your Audio/Video",
     subtitle:
       seoIntro ??
-      "Upload a video or YouTube URL. Get a transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.",
+      "Upload MP4, MOV, WebM, or MKV. Get a transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.",
     icon: <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     sidebar: null,
     compactToolHeader: true,
@@ -3373,6 +3374,7 @@ export default function VideoToTranscript(
 
   return (
     <>
+      <SerpTrustStrip />
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" tool="video-to-transcript" />
         {status === "idle" && !selectedFile && !isBatchMode && (

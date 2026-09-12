@@ -35,7 +35,7 @@ const TOOL_GREETINGS: Record<NonNullable<ToolId>, string> = {
   'fix-subtitles': "You're on Fix Subtitles. Drop subtitles with timing or format issues and I'll clean them up.",
   'burn-subtitles': "You're on Burn Subtitles. I'll bake your captions into the video file.",
   'compress-video': "You're on Compress Video. Drop a large file and I'll shrink it without killing quality.",
-  'batch-process': "You're on Batch. Upload multiple videos and process them in one go (Pro/Agency).",
+  'batch-process': "You're on Batch. Upload multiple videos and process them in one go (Pro).",
 }
 
 /** Tool-specific short greeting for Tex panel. */

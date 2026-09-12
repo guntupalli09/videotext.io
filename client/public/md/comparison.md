@@ -56,7 +56,7 @@ More: https://videotext.io/descript-vs-videotext | https://videotext.io/descript
 ### VideoText vs Rev AI
 **Winner on cost:** VideoText
 
-Rev AI charges $0.25 per minute of audio (pay-as-you-go). For a 60-minute video: $15. For 450 minutes: $112.50. VideoText's Basic plan covers 450 minutes for $19/month flat.
+Rev AI charges $0.25 per minute of audio (pay-as-you-go). For a 60-minute video: $15. For 450 minutes: $112.50. VideoText Pro is $7.99/month flat — no per-minute billing.
 
 Both tools use AI transcription with comparable accuracy. Rev also offers human-reviewed transcription at $1.50/minute — VideoText does not offer human review.
 
@@ -113,7 +113,7 @@ More: https://videotext.io/videotext-vs-turboscribe
 | Best YouTube transcript tool | **VideoText** |
 | Best for podcast transcription | **VideoText** |
 | Best for clean output | **VideoText** |
-| Best for bulk/batch subtitles | **VideoText** (Pro/Agency) |
+| Best for bulk/batch subtitles | **VideoText** (Pro) |
 | Best for live meeting recording | Otter.ai |
 | Best for video editing | Descript |
 | Best for human-reviewed transcription | Rev |
@@ -125,7 +125,7 @@ More: https://videotext.io/videotext-vs-turboscribe
 
 | Tool | Free tier | Cheapest paid |
 |------|-----------|--------------|
-| **VideoText** | 3 imports/mo | $19/mo (450 min) |
+| **VideoText** | 3 imports/mo | $7.99/mo (Pro) |
 | Otter.ai | 600 min/mo (meeting) | $10/mo |
 | Descript | No | $24/mo |
 | Rev AI | No | $0.25/min |

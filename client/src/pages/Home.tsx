@@ -18,15 +18,13 @@ import { trackEvent } from '../lib/analytics';
 import { ArrowRight } from 'lucide-react';
 
 const HIGH_INTENT_GUIDES = [
-  { label: 'Video to Transcript (Primary)', path: '/video-to-transcript', desc: 'Main page for broad video-to-text and transcript intent' },
+  { label: 'Video to Transcript (Primary)', path: '/video-to-transcript', desc: 'Upload MP4/MOV — transcript, SRT/VTT, summary, and chapters' },
+  { label: 'SRT File Generator', path: '/srt-generator', desc: 'Video in, timed .srt out — high-volume caption intent' },
+  { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'SRT/VTT to 70+ languages with timestamps preserved' },
+  { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'Pre-delivery workflow against Netflix-published TTSC limits' },
   { label: 'Best Transcription Tool', path: '/best-transcription-tool', desc: 'Decision support by speed, outputs, and workflow fit' },
-  { label: 'YouTube Transcript Generator (Primary)', path: '/youtube-transcript-generator', desc: 'Paste a YouTube link and generate transcript-ready output in minutes' },
   { label: 'Podcast Transcription Tool', path: '/podcast-transcription-tool', desc: 'Create show notes, clips, and searchable transcript assets' },
-  { label: 'Meeting Transcription Tool', path: '/meeting-transcription-tool', desc: 'Turn calls into summaries, transcripts, and follow-ups' },
-  { label: 'Google Meet Transcript', path: '/google-meet-transcript', desc: 'Download the Meet recording, upload, and get transcript outputs fast' },
-  { label: 'Zoom Meeting Transcript', path: '/zoom-meeting-transcript', desc: 'Download Zoom recording, upload once, and get structured transcript output' },
   { label: 'Meeting Recording to Transcript', path: '/meeting-recording-to-transcript', desc: 'Hub workflow for Zoom, Meet, Teams, and webinar recordings' },
-  { label: 'Interview Transcription Tool', path: '/interview-transcription-tool', desc: 'Speaker-structured transcripts for newsroom and research' },
   { label: 'Client transcription style guide formatter', path: '/guideline-format', desc: 'Prep transcript text against Rev-, GoTranscript-, and related marketplace rule cards before QA' },
 ];
 
@@ -49,22 +47,21 @@ const ALL_FEATURES = [
   { label: 'Video to Transcript', path: '/video-to-transcript' },
   { label: 'Video to Subtitles', path: '/video-to-subtitles' },
   { label: 'SRT File Generator', path: '/srt-generator' },
-  { label: 'Video to SRT', path: '/video-to-srt' },
   { label: 'Translate Subtitles', path: '/translate-subtitles' },
   { label: 'Subtitle Tools', path: '/subtitle-tools' },
   { label: 'Fix Subtitles', path: '/fix-subtitles' },
   { label: 'Burn Subtitles', path: '/burn-subtitles' },
   { label: 'Compress Video', path: '/compress-video' },
   { label: 'Voice Recorder', path: '/voice-recorder' },
-  { label: 'YouTube Transcripts', path: '/youtube-transcript-generator' },
+  { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist' },
 ];
 
 const FREE_TOOLS = [
   { label: 'SRT → VTT Converter', path: '/tools/srt-to-vtt', desc: 'For HTML5 video players & web apps', icon: '⇄' },
   { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Catch timing overlaps & format errors', icon: '✓' },
-  { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Verify Netflix & EBU CPS limits', icon: '⏱' },
+  { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Compare CPS to Netflix-style & EBU presets', icon: '⏱' },
   { label: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing', desc: 'Fix out-of-sync subtitles instantly', icon: '↔' },
-  { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Check 42-char Netflix line limits', icon: '≤' },
+  { label: 'Netflix-style CPL Checker', path: '/tools/subtitle-character-checker', desc: 'Check 42-char Netflix-published line limits', icon: '≤' },
   { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine multiple subtitle files', icon: '⊕' },
 ];
 
@@ -155,7 +152,7 @@ function PricingSection() {
               {pricing.monthly.displayAmount}
               <span className="text-sm font-normal opacity-60">/mo</span>
             </p>
-            <p className="mb-4 text-sm text-blue-100/80">1,200 min · full transcription and delivery workflows</p>
+            <p className="mb-4 text-sm text-blue-100/80">Full transcription and delivery workflows</p>
             <button
               type="button"
               onClick={() => void handleProCheckout()}
@@ -228,7 +225,7 @@ export default function Home() {
               Choose your workflow path
             </h2>
             <p className="mt-2 max-w-3xl text-sm text-gray-500 dark:text-gray-400">
-              Core entry points are Video to Transcript, Voice to Text, and YouTube Transcript Generator. These pages handle specific contexts like comparisons and meeting workflows.
+              VideoText (videotext.io) is AI video-to-text software — not a generic &ldquo;video text&rdquo; paste tool. Core entry points: Video to Transcript, SRT Generator, and Translate Subtitles.
             </p>
           </div>
           <LinkGrid items={HIGH_INTENT_GUIDES} />

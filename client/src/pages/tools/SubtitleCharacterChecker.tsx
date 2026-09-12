@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import { NetflixTrademarkDisclaimer } from '../../components/NetflixTrademarkDisclaimer'
 import { parseSrt, parseVtt, detectFormat, stripTags } from '../../lib/subtitleUtils'
 
 interface CueCheck {
@@ -8,7 +9,7 @@ interface CueCheck {
 
 const STANDARDS = {
   netflix: { maxChars: 42, maxLines: 2, name: 'Netflix' },
-  youtube: { maxChars: 80, maxLines: 3, name: 'YouTube' },
+  wide80: { maxChars: 80, maxLines: 3, name: 'Wide (80)' },
   bbc: { maxChars: 37, maxLines: 2, name: 'BBC' },
   custom: { maxChars: 42, maxLines: 2, name: 'Custom' },
 }
@@ -58,14 +59,14 @@ export default function SubtitleCharacterChecker() {
 
   return (
     <FreeToolLayout
-      title="Subtitle Character Limits — Pass/Fail"
-      description="Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account."
+      title="Netflix Subtitle CPL Checker — Check 42-Character Limits"
+      description="Check subtitle cues against Netflix-published character-per-line guidelines (42 CPL), BBC (37), or a wide 80-character preset. VideoText is not affiliated with or endorsed by Netflix."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
       moneyCta={{
-        kicker: 'Netflix 42 · YouTube 80 · BBC 37',
-        title: 'Fix this file in one click',
-        body: 'Line-length fail? Fix Subtitles reflows long lines and CPS so the file can pass.',
-        primary: { label: 'Fix this file in one click', path: '/fix-subtitles' },
+        kicker: 'Netflix-style 42 · BBC 37 · Wide 80',
+        title: 'Fix long lines in one click',
+        body: 'Lines over your preset? Subtitle Grammar Fixer reflows CPL and timing — then re-scan here.',
+        primary: { label: 'Fix CPL & CPS in one pass', path: '/subtitle-grammar-fixer' },
         secondary: [
           { label: 'Translate', path: '/translate-subtitles' },
           { label: 'Burn', path: '/burn-subtitles' },
@@ -74,7 +75,7 @@ export default function SubtitleCharacterChecker() {
       contentSections={[
         {
           heading: 'Why do subtitle character limits matter?',
-          body: 'Subtitle character limits exist because display screens have finite width. On a standard TV or monitor, a subtitle line exceeding 42 characters may wrap or be clipped at the edges of the screen, especially on older displays or when subtitles are rendered at small sizes. Netflix enforces 42 characters per line as a hard delivery requirement — files that violate this are rejected by their quality control system. The BBC\'s 37-character limit was set to ensure readability on lower-resolution TV screens. YouTube is more permissive at 80 characters, but long lines still wrap on mobile devices.',
+          body: 'Subtitle character limits exist because display screens have finite width. On a standard TV or monitor, a subtitle line exceeding 42 characters may wrap or be clipped at the edges of the screen, especially on older displays or when subtitles are rendered at small sizes. Netflix-published TTSC guidelines commonly cite 42 characters per line (CPL) — this tool compares your file against that preset; it does not determine official Netflix acceptance. The BBC\'s 37-character limit was set to ensure readability on lower-resolution TV screens. YouTube does not publish an official CPL limit; the Wide (80) preset here is a common display-width check for long single-line cues, not a YouTube delivery spec.',
         },
         {
           heading: 'Character limit standards by platform',
@@ -87,20 +88,22 @@ export default function SubtitleCharacterChecker() {
                       <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Platform</th>
                       <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Max chars/line</th>
                       <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Max lines</th>
+                      <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Notes</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                     {[
-                      { p: 'Netflix', c: 42, l: 2 },
-                      { p: 'BBC', c: 37, l: 2 },
-                      { p: 'Amazon Prime', c: 42, l: 2 },
-                      { p: 'YouTube', c: 80, l: 3 },
-                      { p: 'Vimeo', c: 80, l: 2 },
+                      { p: 'Netflix-style (TTSC)', c: 42, l: 2, note: 'Netflix-published CPL guideline' },
+                      { p: 'BBC', c: 37, l: 2, note: 'Published CPL limit' },
+                      { p: 'Amazon Prime', c: 42, l: 2, note: 'Netflix-equivalent' },
+                      { p: 'YouTube', c: '—', l: '—', note: 'No published CPL limit' },
+                      { p: 'Wide preset', c: 80, l: 3, note: 'Display check only' },
                     ].map((r) => (
                       <tr key={r.p}>
                         <td className="px-4 py-2 text-gray-900 dark:text-white font-medium">{r.p}</td>
                         <td className="px-4 py-2 text-gray-600 dark:text-gray-400">{r.c}</td>
                         <td className="px-4 py-2 text-gray-600 dark:text-gray-400">{r.l}</td>
+                        <td className="px-4 py-2 text-gray-500 dark:text-gray-400 text-xs">{r.note}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -113,15 +116,15 @@ export default function SubtitleCharacterChecker() {
       guideTitle="How to check subtitle character limits"
       guideSteps={[
         { step: 'Upload your SRT or VTT file', desc: 'Click "Choose file" or paste the content. Both SRT and VTT are supported.' },
-        { step: 'Select a platform standard', desc: 'Choose Netflix (42), BBC (37), YouTube (80), or enter a custom character limit.' },
+        { step: 'Select a platform standard', desc: 'Choose Netflix TTSC (42 CPL), BBC (37), Wide (80) for long-line checks, or enter a custom limit.' },
         { step: 'Review failing cues', desc: 'Every cue that exceeds the limit is listed with the exact character count. Fix manually or use our Fix Subtitles tool.' },
       ]}
       faqs={[
-        { q: 'What is the Netflix subtitle character limit?', a: 'Netflix requires a maximum of 42 characters per line, with a maximum of 2 lines per cue. Lines longer than 42 characters cause subtitle rejection during content quality checks.' },
+        { q: 'What is the Netflix subtitle character limit?', a: 'Netflix-published TTSC guidelines commonly specify a maximum of 42 characters per line (CPL), with up to 2 lines per cue (84 characters total). This checker flags cues that exceed the preset you select — passing here does not guarantee Netflix or vendor acceptance.' },
         { q: 'Does the character count include spaces?', a: 'Yes. All characters including spaces and punctuation count. "Hello, how are you today?" is 25 characters including the comma, space, and question mark.' },
-        { q: 'What is the YouTube subtitle character limit?', a: 'YouTube allows up to 80 characters per line and 3 lines per cue. However, on most displays only 2 lines are visible at once, so 2 lines is still recommended.' },
+        { q: 'What is the YouTube subtitle character limit?', a: 'YouTube does not publish an official characters-per-line (CPL) limit for uploaded SRT/VTT files. The Wide (80) preset in this tool is a practical display-width check — useful for spotting cues that will wrap awkwardly on mobile — not a YouTube delivery requirement.' },
         { q: 'What counts as one line?', a: 'Each newline character in a cue creates a new line. A cue with text on two lines (separated by a line break) counts as 2 lines. The character count is checked per individual line, not the total cue length.' },
-        { q: 'My subtitles fail the Netflix check — how do I fix them?', a: 'Options: (1) Shorten the text, (2) split the cue into two shorter cues, or (3) use our AI-powered Fix Subtitles tool which can auto-reformat long lines to meet specifications.' },
+        { q: 'My subtitles exceed the Netflix-style CPL preset — how do I fix them?', a: 'Options: (1) Shorten the text, (2) split the cue into two shorter cues, or (3) use Subtitle Grammar Fixer to auto-reflow long lines toward your target CPL, then re-scan here.' },
         { q: 'What is the BBC subtitle specification?', a: 'The BBC Subtitle Guidelines specify a maximum of 37 characters per line and 2 lines per cue. BBC content is often re-used for broadcast across multiple markets, so the stricter limit accommodates multiple rendering environments.' },
         { q: 'Do HTML tags like <b> count toward the character limit?', a: 'No. HTML tags are stripped before character counting. Only the visible text characters count toward the limit.' },
         { q: 'Can I set a custom character limit?', a: 'Yes. Select "Custom" from the platform options and enter any maximum characters per line value to check against your own style guide or broadcaster specification.' },
@@ -136,6 +139,7 @@ export default function SubtitleCharacterChecker() {
       ]}
     >
       <div className="space-y-4">
+        <NetflixTrademarkDisclaimer variant="short" />
         <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:border-blue-300 transition-colors cursor-pointer" onClick={() => fileRef.current?.click()}>
           <input ref={fileRef} type="file" accept=".srt,.vtt,.txt" className="hidden" onChange={handleFile} />
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{fileName || 'Click to upload SRT or VTT file'}</p>
@@ -161,7 +165,7 @@ export default function SubtitleCharacterChecker() {
         {results !== null && (
           <div className="space-y-3">
             <div className="grid grid-cols-3 gap-2 text-center">
-              {[{ label: 'Total cues', val: results.length }, { label: 'Pass', val: passCount }, { label: 'Fail', val: results.length - passCount, bad: results.length - passCount > 0 }].map((s) => (
+              {[{ label: 'Total cues', val: results.length }, { label: 'Within preset', val: passCount }, { label: 'Over preset', val: results.length - passCount, bad: results.length - passCount > 0 }].map((s) => (
                 <div key={s.label} className={`rounded-xl p-3 ${(s as {bad?: boolean}).bad ? 'bg-red-50 dark:bg-red-900/20' : 'bg-blue-50 dark:bg-blue-900/20'}`}>
                   <p className={`text-xl font-bold ${(s as {bad?: boolean}).bad ? 'text-red-700 dark:text-red-400' : 'text-blue-700 dark:text-blue-300'}`}>{s.val}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{s.label}</p>

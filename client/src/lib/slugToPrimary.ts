@@ -22,6 +22,8 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'subtitle-language-checker': '/translate-subtitles',
   'subtitle-grammar-fixer': '/fix-subtitles',
   'subtitle-line-break-fixer': '/fix-subtitles',
+  // Dead SEO landing → live cluster (301 + canonical)
+  'subtitle-resources': '/subtitle-tools',
   'hardcoded-captions': '/burn-subtitles',
   'video-with-subtitles': '/burn-subtitles',
   // GSC: /burn-subtitles-into-video ranked better than the money URL for the same
@@ -50,23 +52,30 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'transcribe-meeting-recording': '/meeting-recording-to-transcript',
   'meeting-transcription-tool': '/video-to-transcript',
   'interview-transcription': '/video-to-transcript',
+  'interview-transcription-tool': '/video-to-transcript',
   'lecture-transcription': '/video-to-transcript',
-  'youtube-to-transcript': '/youtube-transcript-generator',
-  'youtube-transcript': '/youtube-transcript-generator',
-  'youtube-video-transcript': '/youtube-transcript-generator',
-  'transcribe-youtube-video': '/youtube-transcript-generator',
-  'youtube-to-text': '/youtube-transcript-generator',
+  'google-meet-transcript': '/video-to-transcript',
+  'best-youtube-transcription-tool': '/video-to-transcript',
+  'youtube-transcript-generator': '/video-to-transcript',
+  'youtube-to-transcript': '/video-to-transcript',
+  'youtube-transcript': '/video-to-transcript',
+  'youtube-video-transcript': '/video-to-transcript',
+  'transcribe-youtube-video': '/video-to-transcript',
+  'youtube-to-text': '/video-to-transcript',
+  'youtube-url-to-transcription': '/video-to-transcript',
+  'how-to-transcript-youtube': '/video-to-transcript',
+  'youtube-transcript-editor': '/video-to-transcript',
+  'youtube-video-to-transcript': '/video-to-transcript',
+  'srt-to-word': '/tools/srt-to-text',
   'mov-to-text': '/video-to-transcript',
   'webm-to-text': '/video-to-transcript',
   'automatic-subtitles': '/video-to-subtitles',
   'caption-generator': '/video-to-subtitles',
   'closed-caption-generator': '/video-to-subtitles',
   'free-subtitle-generator': '/video-to-subtitles',
-  // NOTE: '/video-to-srt' and '/srt-generator' are intentionally NOT aliased here.
-  // Both have their own distinct real-world search demand and Google rankings
-  // that outperform '/video-to-subtitles' (see reports/seo-baseline-2026-08-31.md
-  // §6) — canonicalizing them away was actively suppressing indexable, high-traffic
-  // pages. They now self-canonicalize (see client/src/lib/seoRegistry.ts entries).
+  // GSC (Sep 2026): /srt-generator outranked /video-to-srt for the same intent (~12.8k vs ~7.7k impr).
+  // Consolidate video-to-srt → srt-generator (301 + canonical).
+  'video-to-srt': '/srt-generator',
   'translate-video': '/translate-subtitles',
   'video-translation': '/translate-subtitles',
   'bulk-video-transcription': '/video-to-transcript',

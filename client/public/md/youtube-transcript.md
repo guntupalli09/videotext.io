@@ -105,9 +105,7 @@ VideoText transcribes YouTube videos in 50+ languages. For non-English videos:
 | Plan | Price | Imports |
 |------|-------|---------|
 | Free | $0/mo | 3/month |
-| Basic | $19/mo | 450 min |
-| Pro | $49/mo | 1,200 min |
-| Agency | $129/mo | 3,000 min |
+| Pro | $7.99/mo | Full transcription and subtitle workflow |
 
 YouTube URL imports count the same as video uploads (measured in video minutes).
 

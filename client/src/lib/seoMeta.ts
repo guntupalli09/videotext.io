@@ -27,14 +27,14 @@ export function isMoneyCorePath(pathname: string): boolean {
 /** Static (non-SEO-registry) routes: title + description. */
 const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> = {
   '/': {
-    title: 'VideoText: Video to Text & Subtitles | VideoText',
+    title: 'VideoText — AI Video-to-Text Software (Not Generic “Video Text”) | VideoText',
     description:
-      'VideoText is AI video-to-text software: transcript, SRT/VTT, summary, and chapters from a video or YouTube URL. Whisper large-v3. 3 free imports/mo.',
+      'VideoText (videotext.io) is AI video-to-text software — upload MP4/MOV for transcript, SRT/VTT, summary, and chapters. Not a paste-URL tool. Whisper large-v3. 3 free imports/mo. Files deleted after processing.',
   },
   '/pricing': {
-    title: 'Pricing — Free, Basic, Pro & Agency Plans | VideoText',
+    title: 'Pricing — Free & Pro Plans | VideoText',
     description:
-      "VideoText pricing: Free 3 imports/month, Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Multi-language, batch on Pro+. 7-day money-back guarantee.",
+      "VideoText pricing: Free 3 imports/month, no credit card. Pro $7.99/mo — full transcription, subtitles, translation, batch processing, and delivery workflows. 7-day money-back guarantee.",
   },
   '/integrations/zapier': {
     title: 'VideoText + Zapier — Automate Transcription & Subtitles | VideoText',
@@ -64,7 +64,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/guide': {
     title: 'How to use VideoText — Tools & Workflows',
     description:
-      'Tool-by-tool steps for Video → Transcript, Format → Client guidelines (marketplace presets + editable cards), subtitles, translate, fix, burn, compress, batch, voice, and YouTube URLs. Inputs, outputs, limits.',
+      'Tool-by-tool steps for Video → Transcript, Format → Client guidelines (marketplace presets + editable cards), subtitles, translate, fix, burn, compress, batch, and voice. Inputs, outputs, limits.',
   },
   '/terms': {
     title: 'Terms of Service | VideoText',
@@ -79,22 +79,22 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/video-to-transcript': {
     title: 'Video to Transcript — Free AI, 98.5% | VideoText',
     description:
-      'Upload video or a YouTube URL. Get transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.',
+      'Upload MP4, MOV, WebM, or MKV. Get transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.',
   },
   '/guideline-format': {
-    title: 'Format Transcripts to Client Guides | VideoText',
+    title: 'Client Rejected Your Transcript Format? | VideoText',
     description:
-      'Format a transcript to Rev, GoTranscript, TranscribeMe, or Scribie-style rules. Editable presets. Files deleted after processing. 3 free imports/mo.',
+      'Apply Rev, GoTranscript, or Scribie presets — speaker labels, verbatim mode, punctuation. Paste transcript, export client-ready copy.',
   },
   '/video-to-subtitles': {
     title: 'Video to Subtitles — Full Caption Hub | VideoText',
     description:
-      'Caption-first hub: video or YouTube URL → timed SRT/VTT, then fix, translate, or burn. Transcript + summary lives on Video to Transcript. 3 free imports/mo.',
+      'Upload video → timed SRT/VTT, then fix, translate, or burn. Transcript + summary on Video to Transcript. Whisper large-v3. 3 free imports/mo.',
   },
   '/translate-subtitles': {
-    title: 'Translate Subtitles to Any Language | VideoText',
+    title: 'Translate SRT/VTT — Timestamps Stay Intact | VideoText',
     description:
-      'Translate SRT or VTT to 70+ languages with timestamps intact. Upload, pick a language, download. Free to try. Files deleted after processing.',
+      'Upload SRT or VTT, pick from 70+ languages, download with every cue time preserved. Free: 3 imports/mo, no card. Files deleted after processing. Pro from $7.99/mo.',
   },
   '/fix-subtitles': {
     title: 'Fix Subtitles — Timing, CPS & Lines | VideoText',
@@ -110,6 +110,11 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     title: 'Compress Video — Light, Medium, Heavy | VideoText',
     description:
       'Compress video online with light, medium, or heavy settings. Reduce size for uploads and sharing. Files deleted after processing. 3 free imports/mo.',
+  },
+  '/netflix-ttsc-checklist': {
+    title: 'Netflix TTSC Checklist — Pre-Delivery Caption Workflow | VideoText',
+    description:
+      'Workflow checklist against Netflix-published TTSC limits (42 CPL, 20 CPS adult). Maps rules to free browser checkers — VideoText is not affiliated with or endorsed by Netflix.',
   },
   '/batch-process': {
     title: 'Batch Video to Subtitles — Multiple Videos at Once',
@@ -189,7 +194,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/blog/how-to-get-youtube-transcript': {
     title: '3 Ways to Get a YouTube Transcript — We Timed Each Method | VideoText',
     description:
-      "Method 1: YouTube CC export — 8 steps, no timestamps. Method 2: VideoText URL paste — 3 steps, full timestamps. Method 3: YouTube API — developer-only. Full breakdown inside.",
+      "Method 1: YouTube CC export — 8 steps, no timestamps. Method 2: VideoText upload — 3 steps, full timestamps. Method 3: YouTube API — developer-only. Full breakdown inside.",
   },
   '/blog/how-to-transcribe-audio-to-text-free': {
     title: 'Free Audio-to-Text in 2026: We Compared 4 Methods on the Same MP3 | VideoText',
@@ -219,32 +224,32 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/otter-ai-alternative': {
     title: 'Best Otter.ai Alternative for Video Files & Subtitles | VideoText',
     description:
-      'Otter.ai doesn\'t support video uploads or SRT export. VideoText does — plus YouTube URL input, subtitle translation, and file deletion. Free tier available.',
+      'Otter.ai doesn\'t support video uploads or SRT export. VideoText does — plus SRT/VTT export, subtitle translation, and file deletion. Free tier available.',
   },
   '/trint-alternative': {
     title: 'Cheaper Trint Alternative That Starts Free | VideoText',
     description:
-      'Trint starts at $80/month. VideoText starts free — same Whisper AI accuracy, plus subtitle burning, batch processing, and translation. Pro at $49/month.',
+      'Trint starts at $80/month. VideoText starts free — same Whisper AI accuracy, plus subtitle burning, batch processing, and translation. Pro at $7.99/month.',
   },
   '/rev-alternative': {
     title: 'Best Rev Alternative with Flat-Rate Pricing | VideoText',
     description:
-      'Rev AI charges $0.25/minute. VideoText starts free — same AI accuracy, plus subtitle export, translation, and YouTube support. Pro at $49/month with no per-minute fees.',
+      'Rev AI charges $0.25/minute. VideoText starts free — same AI accuracy, plus subtitle export, translation, and YouTube support. Pro at $7.99/month with no per-minute fees.',
   },
   '/happyscribe-alternative': {
     title: 'Best Free HappyScribe Alternative – Transcription & Subtitles | VideoText',
     description:
-      'HappyScribe starts at $17/month with no free tier and no YouTube URL input. VideoText is free to start — upload any video or paste a YouTube link, get SRT, translate, and burn subtitles.',
+      'HappyScribe starts at $17/month with no free tier. VideoText is free to start — upload any video, get SRT, translate, and burn subtitles.',
   },
   '/sonix-alternative': {
     title: 'Best Free Sonix Alternative – No Per-Minute Fees | VideoText',
     description:
-      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free — Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing. Pro at $49/month flat.',
+      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free — Whisper AI accuracy, SRT/VTT export, subtitle burning, zero per-minute billing. Pro at $7.99/month flat.',
   },
   '/easyscribe-alternative': {
     title: 'Best EasyScribe Alternative for Video & Subtitles | VideoText',
     description:
-      'EasyScribe only does basic audio transcription. VideoText handles video files, YouTube URLs, SRT subtitle export, 70+ language translation, and subtitle burning. Free tier available.',
+      'EasyScribe only does basic audio transcription. VideoText handles video files, SRT subtitle export, 70+ language translation, and subtitle burning. Free tier available.',
   },
   '/notta-alternative': {
     title: 'Best Free Notta Alternative for Video Files & Subtitles | VideoText',
@@ -330,8 +335,8 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Compare leading Otter alternatives with speed, output quality, and best-use-case guidance.',
   },
   '/best-descript-alternatives': {
-    title: 'Best Descript Alternatives — Transcription-First Options',
-    description: 'Compare Descript alternatives for teams prioritizing transcription speed and structured outputs.',
+    title: 'Descript Alternative for SRT Export & Transcription | VideoText',
+    description: 'Descript alternative for exportable SRT/VTT: upload MP4/MOV, get transcript + subtitles in minutes. Translate, burn, and QC — no timeline editor required.',
   },
   '/ai-transcription-workflow': {
     title: 'AI Transcription Workflow — Video to Publish-Ready Content',
@@ -395,15 +400,17 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   },
   '/subtitle-reading-speed': {
     title: 'Subtitle Reading Speed Checker — CPS Analyzer | VideoText',
-    description: 'Check subtitle reading speed with characters-per-second and words-per-minute guidance for Netflix, BBC, EBU, YouTube, and social captions.',
+    description: 'Compare subtitle CPS against Netflix-published TTSC (20 adult), BBC (17), and EBU (21) presets. YouTube has no published CPS limit — use presets for readability checks only.',
   },
   '/subtitle-character-checker': {
-    title: 'Subtitle Character Limits — Pass/Fail | VideoText',
-    description: 'Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account.',
+    title: 'Netflix Subtitle CPL Checker — Check 42-Character Limits | VideoText',
+    description:
+      'Check subtitle cues against Netflix-published character-per-line guidelines (42 CPL), BBC (37), or a wide 80-character preset. VideoText is not affiliated with or endorsed by Netflix.',
   },
   '/subtitle-word-counter': {
-    title: 'Subtitle Word Counter — Count Words in SRT & VTT Files | VideoText',
-    description: 'Count words, characters, cues, WPM, and CPS in subtitle files. Use the report to estimate subtitle density, reading speed, and caption editing workload.',
+    title: 'Count Cues, Words & CPS Before You Quote a Job | VideoText',
+    description:
+      'Upload SRT or VTT for cue count, word total, and CPS per line — scope subtitle editing and catch reading-speed problems before delivery.',
   },
 
   '/tools/shift-subtitle-timing': {
@@ -424,15 +431,17 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   },
   '/tools/subtitle-reading-speed': {
     title: 'Subtitle Reading Speed Checker — CPS Analyzer | VideoText',
-    description: 'Check every subtitle cue for characters-per-second against Netflix (17 CPS), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
+    description: 'Check every subtitle cue for characters-per-second against Netflix TTSC (20 CPS adult), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
   },
   '/tools/subtitle-character-checker': {
-    title: 'Subtitle Character Limits — Pass/Fail | VideoText',
-    description: 'Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account.',
+    title: 'Netflix Subtitle CPL Checker — Check 42-Character Limits | VideoText',
+    description:
+      'Check subtitle cues against Netflix-published character-per-line guidelines (42 CPL), BBC (37), or a wide 80-character preset. VideoText is not affiliated with or endorsed by Netflix.',
   },
   '/tools/subtitle-word-counter': {
-    title: 'Subtitle Word Counter — Count Words in SRT & VTT Files | VideoText',
-    description: 'Count words, characters, and get speaking rate stats (WPM, CPS) from any SRT or VTT subtitle file. Free, browser-based, instant results.',
+    title: 'Count Cues, Words & CPS Before You Quote a Job | VideoText',
+    description:
+      'Upload SRT or VTT for cue count, word total, and CPS per line — scope subtitle editing and catch reading-speed problems before delivery.',
   },
   '/tools/video-script-timer': {
     title: 'Video Script Timer — How Long Will My Video Be? | VideoText',
@@ -475,16 +484,18 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Convert HTML captions or transcript exports to SRT format. Supports data-start timing attributes, TTML-style begin/end attributes, and bracketed timestamps. Free, browser-based.',
   },
   '/tools/ttml-to-srt': {
-    title: 'TTML to SRT Converter — Convert DFXP & EBU-TT Subtitles Free | VideoText',
-    description: 'Convert TTML, DFXP, or EBU-TT subtitle files to SRT format. Used for Netflix, broadcast, and enterprise video workflows. Free, browser-based.',
+    title: 'TTML Won\'t Upload? Convert to SRT for Your NLE | VideoText',
+    description:
+      'Netflix or broadcast delivered TTML/DFXP? Convert to SRT in the browser — timecodes and dialogue preserved. Import into Premiere or run QC.',
   },
   '/subtitle-tools': {
-    title: 'Free Subtitle Tools: Convert & Validate | VideoText',
-    description: 'Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded.',
+    title: 'Subtitletools Alternative — Free SRT Convert & Validate | VideoText',
+    description: 'Free browser subtitle tools like Subtitletools: convert SRT↔VTT, validate CPL/CPS, shift timing — plus AI SRT generation when you need a new file. Nothing uploaded.',
   },
   '/subtitle-resources': {
-    title: 'Subtitle Resources & Standards — Formats, Netflix Rules, CPS Limits | VideoText',
-    description: 'Subtitle format specs, Netflix delivery requirements, platform character limits, reading speed standards, and timing rules — all in one reference guide.',
+    title: 'Subtitle Standards — CPS, CPL & Format Specs | VideoText',
+    description:
+      'Netflix CPS limits, SRT vs VTT syntax, line-length rules, and timing benchmarks — reference before QC or platform upload.',
   },
   '/blog/video-transcription-accuracy-whisper': {
     title: "Whisper AI Transcription Accuracy: What to Expect in 2026 | VideoText",
@@ -528,6 +539,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
 /** Static breadcrumb items (non-SEO-registry routes). */
 const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> = {
   '/voice-recorder': [{ name: 'Home', path: '/' }, { name: 'Voice Recorder', path: '/voice-recorder' }],
+  '/netflix-ttsc-checklist': [{ name: 'Home', path: '/' }, { name: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist' }],
   '/pricing': [{ name: 'Home', path: '/' }, { name: 'Pricing', path: '/pricing' }],
   '/faq': [{ name: 'Home', path: '/' }, { name: 'FAQ', path: '/faq' }],
   '/guide': [{ name: 'Home', path: '/' }, { name: 'Guide', path: '/guide' }],
@@ -652,8 +664,8 @@ const FAQ_SCHEMA_ITEMS = [
   { q: 'Do you store my videos or files?', a: "No. We process your files and then delete them immediately after the job completes. We don't keep your uploads, transcripts, or generated outputs. Your content stays yours." },
   { q: 'Is my content used for AI training?', a: "No. Your content is used only to deliver the service you requested. We do not use it for training AI models or any other secondary purpose." },
   { q: 'Do I need to sign up?', a: "Sign up for a free account to try. No credit card required. You get 3 free imports per month. Upgrade when you need more imports, languages, or batch processing." },
-  { q: 'Can I transcribe a YouTube video without downloading it?', a: "Yes. Paste any public youtube.com or youtu.be link into Video to Transcript or the YouTube Transcript Generator — no download needed." },
-  { q: 'What file formats are supported?', a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. You can also paste a public YouTube URL — no download required." },
+  { q: 'How do I transcribe a YouTube video?', a: "Download the video as MP4, then upload to Video to Transcript for transcript + SRT/VTT, summary, and chapters." },
+  { q: 'What file formats are supported?', a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. Upload the file from your editor or download it from your platform first." },
   { q: 'How accurate is VideoText transcription?', a: "VideoText uses OpenAI Whisper large-v3. On clear speech with minimal background noise, accuracy is approximately 98.5% word accuracy. Setting the spoken language manually improves results for non-English content." },
   { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 imports per month. Single language, watermark on subtitle exports. Upgrade any time for more features and batch processing." },
   { q: 'Can I translate subtitles or transcripts?', a: "Yes. Use the Translate Subtitles tool for SRT/VTT files. For transcripts, use the \"Also translate to\" option before starting to get a full translation in 70+ languages." },
@@ -775,7 +787,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'How do I convert a video to a transcript?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Upload any video file (MP4, MOV, MKV, WebM, AVI) or paste a public YouTube URL into VideoText. The tool extracts the audio and transcribes it using OpenAI Whisper large-v3. A full transcript is ready in minutes — no software to install.',
+            text: 'Upload any video file (MP4, MOV, MKV, WebM, AVI) into VideoText. The tool extracts the audio and transcribes it using OpenAI Whisper large-v3. A full transcript is ready in minutes — no software to install.',
           },
         },
         {
@@ -815,7 +827,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'What video formats does VideoText support?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'VideoText accepts MP4, MOV, MKV, WebM, AVI, and most container formats. Audio formats supported: MP3, WAV, M4A, AAC, OGG, FLAC. You can also paste a public YouTube URL to transcribe without downloading the file.',
+            text: 'VideoText accepts MP4, MOV, MKV, WebM, AVI, and most container formats. Audio formats supported: MP3, WAV, M4A, AAC, OGG, FLAC. Download from your platform first if needed, then upload the file.',
           },
         },
         {
@@ -828,10 +840,10 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
         },
         {
           '@type': 'Question',
-          name: 'Can I transcribe a YouTube video without downloading it?',
+          name: 'How do I transcribe a YouTube video?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Paste any public YouTube URL (youtube.com/watch, youtu.be, YouTube Shorts) and VideoText streams the audio directly from YouTube. No download or local file required.',
+            text: 'Download the video as MP4, upload to Video to Transcript, and click Start. You get transcript, SRT/VTT, summary, and chapters. Files are deleted after processing.',
           },
         },
         {
@@ -863,7 +875,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Is video transcription free?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. The free tier includes 3 imports per month with no credit card required. All outputs (transcript, subtitles, summary, chapters) are included in the free tier. Pro plan is $49/month with expanded workflow access.',
+            text: 'Yes. The free tier includes 3 imports per month with no credit card required. All outputs (transcript, subtitles, summary, chapters) are included in the free tier. Pro plan is $7.99/month with expanded workflow access.',
           },
         },
         {
@@ -900,7 +912,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Web Browser',
       url: `${SITE_URL}/guideline-format`,
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier available. Pro plan $49/month.' },
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier available. Pro plan $7.99/month.' },
       provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
     },
     {
@@ -1098,7 +1110,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Is VideoText cheaper than Rev?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Rev AI charges $0.25/minute per file. Rev Human charges $1.50+/minute. VideoText Pro is $49/month flat with no per-minute charges — dramatically cheaper than Rev for any regular workload.',
+            text: 'Yes. Rev AI charges $0.25/minute per file. Rev Human charges $1.50+/minute. VideoText Pro is $7.99/month flat with no per-minute charges — dramatically cheaper than Rev for any regular workload.',
           },
         },
         {
@@ -1158,7 +1170,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'Is VideoText cheaper than Temi?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Temi charges $0.25/minute for every file. VideoText Pro is $49/month flat with no per-minute charges — dramatically cheaper for any regular workload. VideoText also offers a free tier with 3 imports per month, no credit card required.',
+            text: 'Yes. Temi charges $0.25/minute for every file. VideoText Pro is $7.99/month flat with no per-minute charges — dramatically cheaper for any regular workload. VideoText also offers a free tier with 3 imports per month, no credit card required.',
           },
         },
         {
@@ -1182,7 +1194,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'How does Rev compare to VideoText?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Rev AI costs $0.25/minute — the same as Temi. Rev Human costs $1.50+/minute. VideoText Pro is $49/month flat with no per-minute charges. VideoText also generates more outputs per file and has zero data retention versus Rev\'s 30-day retention policy.',
+            text: 'Rev AI costs $0.25/minute — the same as Temi. Rev Human costs $1.50+/minute. VideoText Pro is $7.99/month flat with no per-minute charges. VideoText also generates more outputs per file and has zero data retention versus Rev\'s 30-day retention policy.',
           },
         },
         {
@@ -1298,8 +1310,8 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       step: [
         {
           '@type': 'HowToStep',
-          name: 'Paste YouTube URL',
-          text: 'Copy any YouTube video URL (youtube.com or youtu.be). Paste into VideoText. No download, no software install needed. We stream the audio directly.',
+          name: 'Upload video file',
+          text: 'Upload MP4, MOV, or WebM to Video to Transcript. No software install needed. Whisper large-v3 transcribes the audio.',
         },
         {
           '@type': 'HowToStep',
@@ -1321,7 +1333,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       applicationCategory: 'MultimediaApplication',
       operatingSystem: 'Web Browser',
       url: 'https://videotext.io/youtube-transcript-generator',
-      featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 imports/month (no credit card), Pro tier: continued transcription ($49/month), Zero data retention (files deleted after processing), Batch processing (Pro/Agency)',
+      featureList: 'MP4/MOV file upload, 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 imports/month (no credit card), Pro tier: full workflow ($7.99/month), Zero data retention (files deleted after processing), Batch processing (Pro)',
       offers: {
         '@type': 'AggregateOffer',
         priceCurrency: 'USD',
@@ -1335,7 +1347,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           },
           {
             '@type': 'Offer',
-            price: '49',
+            price: '7.99',
             priceCurrency: 'USD',
             description: 'Pro: continued transcription, batch processing, priority support',
             url: 'https://videotext.io/pricing',
@@ -1372,7 +1384,7 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   '/video-to-transcript': {
     name: 'Video to Transcript — Free AI Transcription, 98.5% Accurate',
     description: 'Convert any video to a clean transcript in minutes. 98.5% word accuracy using OpenAI Whisper large-v3. Outputs: full timestamped transcript, AI summary, auto-generated chapters, SRT/VTT subtitle files, and speaker labels — all in one pass. Zero data retention: files deleted immediately after processing. Free tier included.',
-    featureList: 'AI transcription (2-hour video in ~5 min), 98.5% word accuracy (OpenAI Whisper large-v3), Full timestamped transcript, AI-generated summary with key points, Auto-generated chapter markers, Speaker diarization (auto-labeling), SRT subtitle export, VTT subtitle export, TXT / PDF / DOCX / JSON / CSV export, Three-column transcript export, 90+ language support, YouTube URL input (no download), Batch processing (Pro/Agency), Zero data retention, Free tier: 3 imports/month',
+    featureList: 'AI transcription (2-hour video in ~5 min), 98.5% word accuracy (OpenAI Whisper large-v3), Full timestamped transcript, AI-generated summary with key points, Auto-generated chapter markers, Speaker diarization (auto-labeling), SRT subtitle export, VTT subtitle export, TXT / PDF / DOCX / JSON / CSV export, Three-column transcript export, 90+ language support, MP4/MOV file upload, Batch processing (Pro), Zero data retention, Free tier: 3 imports/month',
   },
   '/guideline-format': {
     name: 'Transcript Style Guide Formatter — Rev, GoTranscript, TranscribeMe, Scribie',
@@ -1382,12 +1394,12 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   '/youtube-transcript-generator': {
     name: 'Free YouTube Transcript Generator — No Download, Instant Results',
     description: 'Free YouTube transcript generator. Paste any video URL — get complete transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in 2-3 minutes. No downloading required. 98.5% accurate. 50,000+ creators use VideoText.',
-    featureList: 'Paste YouTube URL (no download required), 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 imports/month (no credit card), Pro tier: continued transcription ($49/month), Zero data retention (files deleted after processing)',
+    featureList: 'MP4/MOV file upload, 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 imports/month (no credit card), Pro tier: continued transcription ($7.99/month), Zero data retention (files deleted after processing)',
   },
   '/video-to-subtitles': {
     name: 'Video to Subtitles — Full Caption Hub',
-    description: 'Caption-first VideoText hub: timed SRT/VTT from video or YouTube URL, then fix, translate, or burn. Transcript + summary + chapters via Video to Transcript.',
-    featureList: 'SRT generation, VTT generation, YouTube URL input, Caption workflow hub, Handoff to fix/translate/burn',
+    description: 'Caption-first VideoText hub: upload video → timed SRT/VTT, then fix, translate, or burn. Transcript + summary + chapters via Video to Transcript.',
+    featureList: 'SRT generation, VTT generation, Video file upload, Caption workflow hub, Handoff to fix/translate/burn',
   },
   '/translate-subtitles': {
     name: 'Translate Subtitles to Any Language',
@@ -1411,13 +1423,13 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   },
   '/srt-generator': {
     name: 'Free SRT File Generator from Video',
-    description: 'Create a timed SRT file from any video. Upload or paste a YouTube URL, download SRT in seconds. Whisper AI. 3 free imports/mo, no card; watermark on free exports.',
-    featureList: 'SRT file generation, AI timing, YouTube URL input, Instant download, Files deleted after processing',
+    description: 'Create a timed SRT file from any video. Upload MP4/MOV/WebM, download SRT in seconds. Whisper AI. 3 free imports/mo, no card; watermark on free exports.',
+    featureList: 'SRT file generation, AI timing, Video file upload, Instant download, Files deleted after processing',
   },
   '/video-to-srt': {
     name: 'Video to SRT Converter — Free Online',
-    description: 'Convert video to a timed SRT subtitle file online. Upload MP4/MOV or a YouTube URL. AI timestamps. Sign up free — 3 imports/mo; watermark on free exports.',
-    featureList: 'Video to SRT conversion, AI timing, YouTube URL input, Instant download, Files deleted after processing',
+    description: 'Convert video to a timed SRT subtitle file online. Upload MP4/MOV/WebM. AI timestamps. Sign up free — 3 imports/mo; watermark on free exports.',
+    featureList: 'Video to SRT conversion, AI timing, Video file upload, Instant download, Files deleted after processing',
   },
 }
 
@@ -1433,7 +1445,7 @@ export function getSoftwareApplicationJsonLd(pathname: string): object | null {
     applicationCategory: 'MultimediaApplication',
     operatingSystem: 'Web Browser',
     url: `${SITE_URL}${pathname}`,
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier: 3 imports/month. Pro plan $49/month.' },
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier: 3 imports/month. Pro plan $7.99/month.' },
     provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
   }
 }
@@ -1448,16 +1460,15 @@ export function getHomeSoftwareApplicationJsonLd(rating: PublicRating | null): o
     applicationCategory: 'MultimediaApplication',
     operatingSystem: 'Web',
     description:
-      'AI-powered video transcription and subtitle generation. The fastest online transcription tool — processes a 60-minute video in under 5 minutes. Upload a video file or paste a YouTube URL to get a transcript, SRT/VTT subtitles, AI summary, and chapters. 98.5%+ word accuracy via OpenAI Whisper large-v3. Privacy-first: files deleted after processing. Free tier available.',
+      'AI-powered video transcription and subtitle generation. The fastest online transcription tool — processes a 60-minute video in under 5 minutes. Upload a video file to get a transcript, SRT/VTT subtitles, AI summary, and chapters. 98.5%+ word accuracy via OpenAI Whisper large-v3. Privacy-first: files deleted after processing. Free tier available.',
     featureList: [
       'Video to transcript (MP4, MOV, AVI, WebM)',
-      'YouTube URL to transcript — no download required',
       'SRT and VTT subtitle generation',
       'Subtitle translation to 70+ languages',
       'Subtitle timing fix and formatting',
       'Burn subtitles into video (hardcoded captions)',
       'Video compression',
-      'Batch processing (Pro/Agency)',
+      'Batch processing (Pro)',
       'Speaker diarization (speaker labels)',
       'Automatic chapter markers',
       'AI summary generation',
@@ -1466,10 +1477,8 @@ export function getHomeSoftwareApplicationJsonLd(rating: PublicRating | null): o
       'Privacy-first: files deleted after processing',
     ],
     offers: [
-      { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'USD', description: '3 video imports per month, no credit card required, full features' },
-      { '@type': 'Offer', name: 'Basic', price: '19', priceCurrency: 'USD', description: '450 minutes per month, multi-language, priority support' },
-      { '@type': 'Offer', name: 'Pro', price: '49', priceCurrency: 'USD', description: '1,200 minutes per month, batch processing, priority queue' },
-      { '@type': 'Offer', name: 'Agency', price: '129', priceCurrency: 'USD', description: '3,000 minutes per month, batch processing, priority queue, multi-seat' },
+      { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'USD', description: '3 video imports per month, no credit card required' },
+      { '@type': 'Offer', name: 'Pro', price: '7.99', priceCurrency: 'USD', description: 'Full transcription, subtitle, translation, batch, and delivery workflow' },
     ],
     ...(rating ? { aggregateRating: getAggregateRatingJsonLd(rating) } : {}),
   }
@@ -1481,7 +1490,7 @@ const HOWTO_SCHEMAS: Record<string, { name: string; description: string; steps: 
     name: 'How to convert a video to a transcript',
     description: 'Upload any video file and receive a clean transcript, AI summary, auto-generated chapters, and SRT/VTT subtitles — all in under 5 minutes for a 2-hour video.',
     steps: [
-      { name: 'Upload your video', text: 'Drag and drop an MP4, MOV, MKV, or WebM file into the upload zone, or paste a public YouTube URL. Files process at roughly 1 minute of output per 24 seconds of real time.' },
+      { name: 'Upload your video', text: 'Drag and drop an MP4, MOV, MKV, or WebM file into the upload zone. Files process at roughly 1 minute of output per 24 seconds of real time.' },
       { name: 'AI processes your video', text: 'VideoText transcribes the audio using OpenAI Whisper (~98.5% accuracy), identifies speakers, generates chapter markers, and writes an AI summary — all in a single pass. A 2-hour video is typically done in under 5 minutes.' },
       { name: 'Download your structured output', text: 'Export the full transcript as TXT, PDF, DOCX, or JSON. Download SRT or VTT subtitle files. Copy the AI summary or chapters. Your files are deleted immediately after you download.' },
     ],
@@ -1553,7 +1562,7 @@ const HOWTO_SCHEMAS: Record<string, { name: string; description: string; steps: 
     description: 'Step-by-step guide to generating a transcript from any YouTube video. Paste URL, get clean transcript with timestamps, subtitles, and summary — no downloading required.',
     steps: [
       { name: 'Copy your YouTube video URL', text: 'Find any public YouTube video (youtube.com or youtu.be links work). Copy the full URL from the address bar. Works with long-form content like podcasts, lectures, webinars, and interviews.' },
-      { name: 'Paste URL into VideoText', text: 'Go to videotext.io/youtube-transcript-generator. Paste the YouTube URL into the input field. The tool validates instantly — you see if the video is accessible before processing.' },
+      { name: 'Upload to VideoText', text: 'Go to videotext.io/video-to-transcript. Upload your MP4/MOV file and click Start.' },
       { name: 'Start transcript generation', text: 'Click "Generate Transcript". VideoText streams the audio directly from YouTube servers (no download step). Processing time: ~1 minute per 10 minutes of video. A typical 20-minute video finishes in 2-3 minutes.' },
       { name: 'Review and export transcript', text: 'View the clean transcript with [timestamps] and speaker labels. Export as TXT/PDF for notes or DOCX for editing. Download SRT/VTT subtitle files for re-uploading to YouTube or other platforms.' },
       { name: 'Use outputs for SEO, content, or distribution', text: 'Repurpose transcript into blog posts, social snippets, email newsletters, or knowledge base articles. Subtitle files improve video SEO and accessibility on any platform.' },

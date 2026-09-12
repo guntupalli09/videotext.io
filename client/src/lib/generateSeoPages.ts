@@ -66,7 +66,7 @@ const EXISTING_PATHS = new Set([
   '/transcribe-video', '/video-transcription', '/free-transcription', '/online-transcription',
   '/ai-transcription', '/audio-to-text', '/zoom-meeting-transcript',
   '/meeting-recording-to-transcript', '/interview-transcription', '/automatic-subtitles',
-  '/caption-generator', '/closed-caption-generator', '/free-subtitle-generator', '/video-to-srt',
+  '/caption-generator', '/closed-caption-generator', '/free-subtitle-generator',
   '/srt-generator', '/webinar-transcription', '/meeting-transcription-tool',
 ])
 
