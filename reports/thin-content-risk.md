@@ -121,13 +121,10 @@ This report estimates low-value-page risk from semantic uniqueness, informationa
 8. **h2-structure** — 6 pages
    - Signature: where transcription cleanup wastes the most time from long recording to structured usable transcript teams running high volume transcription workflows transcription workflow questions answered related transcription and …
    - Pages: /google-meet-transcription, /meeting-transcription, /podcast-transcription, /teams-meeting-transcription, /video-interview-transcription, /zoom-recording-transcription
-9. **h2-structure** — 5 pages
-   - Signature: what this accuracy benchmark actually measures how the benchmark tests were conducted benchmark results you can verify yourself teams that rely on transcription accuracy data edge cases that stress test transcription ac…
-   - Pages: /accuracy-test, /best-transcription-tool-for-journalists, /best-transcription-tool-for-students, /fastest-transcription-software, /transcription-benchmark
-10. **cta** — 5 pages
+9. **cta** — 5 pages
    - Signature: upload a long recording to compare outputs
    - Pages: /best-transcription-tool, /best-transcription-tool-for-journalists, /best-transcription-tool-for-students, /fastest-transcription-software, /fastest-transcription-tool
-11. **h2-structure** — 4 pages
+10. **h2-structure** — 4 pages
    - Signature: why auto captions fail creator workflows turning youtube videos into structured reusable content youtube transcript outputs for creator workflows creator workflows powered by youtube transcripts youtube specific transcr…
    - Pages: /best-youtube-transcription-tool, /youtube-auto-captions-alternative, /youtube-captions, /youtube-subtitle-generator
 
@@ -136,6 +133,7 @@ This report estimates low-value-page risk from semantic uniqueness, informationa
 
 | Route | Depth risk | Intent risk | HTML richness risk | Missing topical coverage |
 | --- | --- | --- | --- | --- |
+| /accuracy-test | 51 | 8 | 18 | — |
 | /docs/api | 35 | 6 | 24 | — |
 | /integrations/zapier | 35 | 6 | 24 | — |
 | /alternatives | 36 | 16 | 12 | pricing or plan limits |
@@ -143,9 +141,9 @@ This report estimates low-value-page risk from semantic uniqueness, informationa
 | /samples | 33 | 15 | 8 | timing and synchronization, line length and reading speed, platform export compatibility |
 | /tools/timestamp-converter | 33 | 15 | 8 | timing and synchronization, line length and reading speed, platform export compatibility |
 | /voice-memo-to-text | 33 | 15 | 8 | microphone and audio quality, privacy and storage |
+| /transcription-benchmark | 43 | 0 | 12 | — |
 | /ai-transcription-workflow | 40 | 5 | 8 | — |
 | / | 33 | 10 | 8 | timing and synchronization, line length and reading speed |
-| /research/transcription-accuracy-benchmark-2026 | 35 | 0 | 16 | — |
 | /tools | 33 | 10 | 8 | timing and synchronization, platform export compatibility |
 | /transcribio-guidelines | 33 | 10 | 8 | timestamps, QA rejection criteria |
 | /translation | 33 | 10 | 8 | language coverage |
@@ -185,7 +183,6 @@ This report estimates low-value-page risk from semantic uniqueness, informationa
 | /tools/words-per-minute-calculator | 33 | 5 | 8 | — |
 | /transcribe-video-online | 33 | 5 | 8 | long recordings |
 | /video-to-transcription | 33 | 5 | 8 | long recordings |
-| /vimeo-transcription | 33 | 5 | 8 | — |
 
 
 ## Pages likely to be suppressed by Google

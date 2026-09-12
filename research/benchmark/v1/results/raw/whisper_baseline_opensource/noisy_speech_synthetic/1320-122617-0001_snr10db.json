@@ -1,0 +1,40 @@
+{
+  "system": "whisper_baseline_opensource",
+  "model": "whisper-small (faster-whisper, int8, CPU)",
+  "settings": {
+    "model_size": "small",
+    "device": "cpu",
+    "compute_type": "int8",
+    "beam_size": 5,
+    "language": "en",
+    "faster_whisper_version": "1.2.1",
+    "ctranslate2_version": "4.8.2",
+    "python_version": "3.11.15",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "git_commit": "3dae249eb6ff73766254c02475812f98e2500d93"
+  },
+  "request_timestamp": "2026-09-12T06:04:35Z",
+  "http_status": 200,
+  "processing_sec": 4.792,
+  "raw_response": {
+    "text": "In his return to the camp, his acute and practiced intellects were intently engaged in devising means to counteract a watchfulness and suspicion on the part of his enemies that he knew were in no degree inferior to his own.",
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 6.28,
+        "text": " In his return to the camp, his acute and practiced intellects were intently engaged in devising"
+      },
+      {
+        "start": 6.28,
+        "end": 11.36,
+        "text": " means to counteract a watchfulness and suspicion on the part of his enemies that he knew were"
+      },
+      {
+        "start": 11.36,
+        "end": 13.48,
+        "text": " in no degree inferior to his own."
+      }
+    ],
+    "language": "en"
+  }
+}

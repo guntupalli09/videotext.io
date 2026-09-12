@@ -1,0 +1,28 @@
+{
+  "dataset_hash": "5f429d2090c40bb6f2ab88994560199f962988367467a4d7d6d28ee81254800d",
+  "n_files": 136,
+  "n_conditions": 5,
+  "conditions": {
+    "accented_speech": {
+      "n_utterances": 42,
+      "total_duration_sec": 238.2
+    },
+    "clean_read_speech": {
+      "n_utterances": 40,
+      "total_duration_sec": 418.1
+    },
+    "multi_speaker_sequential_synthetic": {
+      "n_utterances": 6,
+      "total_duration_sec": 114.0
+    },
+    "noisy_speech_synthetic": {
+      "n_utterances": 32,
+      "total_duration_sec": 338.4
+    },
+    "reduced_mic_quality_synthetic": {
+      "n_utterances": 16,
+      "total_duration_sec": 169.2
+    }
+  },
+  "hash_algorithm": "sha256(condition:id:file_sha256 concatenated per row, rows sorted by condition,id)"
+}

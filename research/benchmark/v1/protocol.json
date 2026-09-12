@@ -1,0 +1,76 @@
+{
+  "protocol_version": "1.0.0",
+  "git_tag": "benchmark-protocol-v1.0.0",
+  "frozen_at": "2026-09-12",
+  "dataset_hash": "5f429d2090c40bb6f2ab88994560199f962988367467a4d7d6d28ee81254800d",
+  "dataset_manifest_path": "datasets/dataset_manifest.jsonl",
+  "dataset_hash_record_path": "datasets/dataset_hash.json",
+  "normalization": {
+    "module": "scripts/wer.py",
+    "function": "normalize_text",
+    "version": "1.0.0",
+    "rules": ["lowercase", "strip_non_word_non_apostrophe_chars", "collapse_whitespace"]
+  },
+  "metrics": {
+    "wer": { "module": "scripts/wer.py", "version": "1.0.0", "applies_to": "all_conditions" },
+    "der": { "module": "scripts/score_diarization.py", "version": "1.0.0", "applies_to": ["multi_speaker_sequential_synthetic"] },
+    "timestamp_error": { "module": "scripts/score_timestamps.py", "version": "1.0.0", "applies_to": "conditions_with_timing_ground_truth" },
+    "punctuation": { "module": "scripts/punctuation.py", "version": "1.0.0", "applies_to": ["accented_speech"] },
+    "rtf": { "module": "per-runner", "version": "1.0.0", "applies_to": "all_conditions" },
+    "cost_per_audio_hour": { "module": "results/aggregate builder", "version": "1.0.0", "applies_to": "all_conditions", "source": "vendor public list pricing, cited per system" }
+  },
+  "aggregation": {
+    "corpus_metric_formula": "sum(errors) / sum(reference_units) across all utterances in a (system, condition) pair",
+    "confidence_interval": { "method": "percentile_bootstrap", "module": "scripts/bootstrap.py", "n_resamples": 2000, "confidence": 0.95 },
+    "cross_condition_pooling": "never — conditions reported side by side only"
+  },
+  "inclusion_exclusion": {
+    "include_if": "ground truth traces to a cited source or documented synthetic transform of a cited source AND audio file hash matches dataset_manifest.jsonl AND the system returned a non-error response",
+    "exclude_from_aggregate_if": "system call failed (timeout/HTTP error/empty response/rate limit) — logged to results/raw/<system>/failures.json, never scored as 0% or 100%",
+    "not_evaluated_if": "system was never run against a condition (e.g. no credentials) — reported as not_evaluated, never as a number"
+  },
+  "systems": {
+    "whisper_baseline_opensource": {
+      "engine": "faster-whisper",
+      "model_size": "small",
+      "device": "cpu",
+      "compute_type": "int8",
+      "beam_size": 5,
+      "language": "en",
+      "status_at_freeze": "executed"
+    },
+    "videotext_production": {
+      "endpoint": "POST /api/v1/transcriptions",
+      "spec": "docs/API_PRIVATE_BETA.md",
+      "settings": "production default (no non-default parameters)",
+      "status_at_freeze": "runner implemented, not executed (no API key available)"
+    },
+    "openai_whisper_api": {
+      "model": "whisper-1",
+      "settings": { "response_format": "verbose_json", "language": "en" },
+      "status_at_freeze": "runner implemented, not executed (no API key available)"
+    },
+    "deepgram": {
+      "model": "nova-2",
+      "settings": { "punctuate": true, "diarize": true, "smart_format": true },
+      "status_at_freeze": "runner implemented, not executed (no API key available)"
+    },
+    "assemblyai": {
+      "model": "default",
+      "settings": { "punctuate": true, "speaker_labels": true },
+      "status_at_freeze": "runner implemented, not executed (no API key available)"
+    }
+  },
+  "failure_handling": {
+    "raw_output_path_pattern": "results/raw/<system>/<condition>/<id>.json",
+    "skipped_marker_path_pattern": "results/raw/<system>/SKIPPED.json",
+    "fields_preserved_per_run": ["request_timestamp", "http_status_or_exception", "model_version", "settings", "raw_vendor_response_or_error"]
+  },
+  "timing_methodology": "wall_clock; vendor completed_at - created_at for async APIs, request-to-response for synchronous calls; RTF = audio_duration_sec / processing_sec",
+  "known_gaps_not_fabricated": [
+    "spontaneous_conversational_speech",
+    "natural_multi_speaker_dialogue_including_overlap",
+    "technical_domain_vocabulary",
+    "dedicated_named_entity_numbers_dates_condition"
+  ]
+}

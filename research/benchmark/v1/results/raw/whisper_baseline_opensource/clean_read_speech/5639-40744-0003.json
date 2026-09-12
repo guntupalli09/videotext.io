@@ -1,0 +1,55 @@
+{
+  "system": "whisper_baseline_opensource",
+  "model": "whisper-small (faster-whisper, int8, CPU)",
+  "settings": {
+    "model_size": "small",
+    "device": "cpu",
+    "compute_type": "int8",
+    "beam_size": 5,
+    "language": "en",
+    "faster_whisper_version": "1.2.1",
+    "ctranslate2_version": "4.8.2",
+    "python_version": "3.11.15",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "git_commit": "3dae249eb6ff73766254c02475812f98e2500d93"
+  },
+  "request_timestamp": "2026-09-12T06:02:42Z",
+  "http_status": 200,
+  "processing_sec": 11.193,
+  "raw_response": {
+    "text": "In a moment he communicated his thoughts to his companions, and in the next moment they resolved to turn back and carry her off to please Rudolfo. For the rich, who are open-handed, always find parasites ready to encourage their bad propensities. And thus to conceive this wicked design, to communicate it, approve it, resolve unravelled in Leocadia, and to carry that design into effect was the work of a moment.",
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 5.36,
+        "text": " In a moment he communicated his thoughts to his companions, and in the next moment they"
+      },
+      {
+        "start": 5.36,
+        "end": 9.32,
+        "text": " resolved to turn back and carry her off to please Rudolfo."
+      },
+      {
+        "start": 9.32,
+        "end": 14.120000000000001,
+        "text": " For the rich, who are open-handed, always find parasites ready to encourage their bad"
+      },
+      {
+        "start": 14.120000000000001,
+        "end": 15.92,
+        "text": " propensities."
+      },
+      {
+        "start": 15.92,
+        "end": 21.56,
+        "text": " And thus to conceive this wicked design, to communicate it, approve it, resolve unravelled"
+      },
+      {
+        "start": 21.56,
+        "end": 26.56,
+        "text": " in Leocadia, and to carry that design into effect was the work of a moment."
+      }
+    ],
+    "language": "en"
+  }
+}

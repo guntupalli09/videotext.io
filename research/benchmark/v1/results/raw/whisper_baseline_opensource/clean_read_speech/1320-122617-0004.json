@@ -1,0 +1,40 @@
+{
+  "system": "whisper_baseline_opensource",
+  "model": "whisper-small (faster-whisper, int8, CPU)",
+  "settings": {
+    "model_size": "small",
+    "device": "cpu",
+    "compute_type": "int8",
+    "beam_size": 5,
+    "language": "en",
+    "faster_whisper_version": "1.2.1",
+    "ctranslate2_version": "4.8.2",
+    "python_version": "3.11.15",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "git_commit": "3dae249eb6ff73766254c02475812f98e2500d93"
+  },
+  "request_timestamp": "2026-09-12T06:01:25Z",
+  "http_status": 200,
+  "processing_sec": 4.496,
+  "raw_response": {
+    "text": "The ingenious Hawkeye, who recalled the hasty manner in which the other had abandoned his post at the bedside of the sick woman, was not without his suspicions concerning the subject of so much solemn deliberation.",
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 4.84,
+        "text": " The ingenious Hawkeye, who recalled the hasty manner in which the other had abandoned his"
+      },
+      {
+        "start": 4.84,
+        "end": 9.88,
+        "text": " post at the bedside of the sick woman, was not without his suspicions concerning the subject"
+      },
+      {
+        "start": 9.88,
+        "end": 11.8,
+        "text": " of so much solemn deliberation."
+      }
+    ],
+    "language": "en"
+  }
+}

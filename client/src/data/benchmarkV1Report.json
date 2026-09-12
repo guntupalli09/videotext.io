@@ -1,0 +1,152 @@
+{
+  "report_generated_at_utc": "2026-09-12T06:08:34Z",
+  "protocol_version": "1.0.0",
+  "protocol_git_tag": "benchmark-protocol-v1.0.0",
+  "dataset_hash": "5f429d2090c40bb6f2ab88994560199f962988367467a4d7d6d28ee81254800d",
+  "dataset_summary": {
+    "n_files": 136,
+    "n_conditions": 5,
+    "conditions": {
+      "accented_speech": {
+        "n_utterances": 42,
+        "total_duration_sec": 238.2
+      },
+      "clean_read_speech": {
+        "n_utterances": 40,
+        "total_duration_sec": 418.1
+      },
+      "multi_speaker_sequential_synthetic": {
+        "n_utterances": 6,
+        "total_duration_sec": 114.0
+      },
+      "noisy_speech_synthetic": {
+        "n_utterances": 32,
+        "total_duration_sec": 338.4
+      },
+      "reduced_mic_quality_synthetic": {
+        "n_utterances": 16,
+        "total_duration_sec": 169.2
+      }
+    }
+  },
+  "systems_evaluated_count": 1,
+  "systems_total_planned": 5,
+  "benchmark_complete": false,
+  "completeness_note": "1 of 5 planned systems evaluated across 5 speech conditions. This benchmark is NOT complete and must not be cited as a finished multi-system comparison until more systems are executed.",
+  "systems": {
+    "videotext_production": {
+      "status": "not_evaluated",
+      "reason": "VIDEOTEXT_API_KEY not set in environment (see docs/API_PRIVATE_BETA.md)"
+    },
+    "whisper_baseline_opensource": {
+      "status": "evaluated",
+      "results": {
+        "system": "whisper_baseline_opensource",
+        "n_scored_utterances": 136,
+        "n_failures": 0,
+        "conditions": {
+          "accented_speech": {
+            "n_utterances": 42,
+            "total_audio_sec": 238.2,
+            "wer": {
+              "corpus_pct": 1.33,
+              "ci95_low_pct": 0.31,
+              "ci95_high_pct": 2.64,
+              "mean_utterance_pct": 1.04,
+              "median_utterance_pct": 0.0
+            },
+            "rtf_mean": 2.09,
+            "punctuation": {
+              "terminal_f1_mean": 0.976
+            },
+            "diarization": "not_applicable",
+            "timestamp_error": "not_applicable (no word-level forced-alignment ground truth in v1 dataset)",
+            "cost_per_audio_hour_usd": "not_applicable (local open-source model, no per-minute vendor price)"
+          },
+          "clean_read_speech": {
+            "n_utterances": 40,
+            "total_audio_sec": 418.1,
+            "wer": {
+              "corpus_pct": 2.85,
+              "ci95_low_pct": 1.82,
+              "ci95_high_pct": 4.01,
+              "mean_utterance_pct": 2.63,
+              "median_utterance_pct": 0.0
+            },
+            "rtf_mean": 2.47,
+            "punctuation": "not_applicable",
+            "diarization": "not_applicable",
+            "timestamp_error": "not_applicable (no word-level forced-alignment ground truth in v1 dataset)",
+            "cost_per_audio_hour_usd": "not_applicable (local open-source model, no per-minute vendor price)"
+          },
+          "multi_speaker_sequential_synthetic": {
+            "n_utterances": 6,
+            "total_audio_sec": 114.0,
+            "wer": {
+              "corpus_pct": 3.28,
+              "ci95_low_pct": 1.96,
+              "ci95_high_pct": 4.28,
+              "mean_utterance_pct": 3.12,
+              "median_utterance_pct": 4.44
+            },
+            "rtf_mean": 2.97,
+            "punctuation": "not_applicable",
+            "diarization": "not_applicable",
+            "timestamp_error": "not_applicable (no word-level forced-alignment ground truth in v1 dataset)",
+            "cost_per_audio_hour_usd": "not_applicable (local open-source model, no per-minute vendor price)"
+          },
+          "noisy_speech_synthetic": {
+            "n_utterances": 32,
+            "total_audio_sec": 338.4,
+            "wer": {
+              "corpus_pct": 5.05,
+              "ci95_low_pct": 3.62,
+              "ci95_high_pct": 6.78,
+              "mean_utterance_pct": 5.67,
+              "median_utterance_pct": 4.17
+            },
+            "rtf_mean": 2.55,
+            "punctuation": "not_applicable",
+            "diarization": "not_applicable",
+            "timestamp_error": "not_applicable (no word-level forced-alignment ground truth in v1 dataset)",
+            "cost_per_audio_hour_usd": "not_applicable (local open-source model, no per-minute vendor price)"
+          },
+          "reduced_mic_quality_synthetic": {
+            "n_utterances": 16,
+            "total_audio_sec": 169.2,
+            "wer": {
+              "corpus_pct": 3.85,
+              "ci95_low_pct": 2.19,
+              "ci95_high_pct": 5.67,
+              "mean_utterance_pct": 3.39,
+              "median_utterance_pct": 2.5
+            },
+            "rtf_mean": 2.56,
+            "punctuation": "not_applicable",
+            "diarization": "not_applicable",
+            "timestamp_error": "not_applicable (no word-level forced-alignment ground truth in v1 dataset)",
+            "cost_per_audio_hour_usd": "not_applicable (local open-source model, no per-minute vendor price)"
+          }
+        }
+      }
+    },
+    "openai_whisper_api": {
+      "status": "not_evaluated",
+      "reason": "OPENAI_API_KEY not set in environment"
+    },
+    "deepgram": {
+      "status": "not_evaluated",
+      "reason": "DEEPGRAM_API_KEY not set in environment"
+    },
+    "assemblyai": {
+      "status": "not_evaluated",
+      "reason": "ASSEMBLYAI_API_KEY not set in environment"
+    }
+  },
+  "known_gaps_not_fabricated": [
+    "spontaneous_conversational_speech",
+    "natural_multi_speaker_dialogue_including_overlap",
+    "technical_domain_vocabulary",
+    "dedicated_named_entity_numbers_dates_condition"
+  ]
+}

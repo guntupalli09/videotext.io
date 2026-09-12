@@ -1,0 +1,50 @@
+{
+  "system": "whisper_baseline_opensource",
+  "model": "whisper-small (faster-whisper, int8, CPU)",
+  "settings": {
+    "model_size": "small",
+    "device": "cpu",
+    "compute_type": "int8",
+    "beam_size": 5,
+    "language": "en",
+    "faster_whisper_version": "1.2.1",
+    "ctranslate2_version": "4.8.2",
+    "python_version": "3.11.15",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "git_commit": "3dae249eb6ff73766254c02475812f98e2500d93"
+  },
+  "request_timestamp": "2026-09-12T06:03:04Z",
+  "http_status": 200,
+  "processing_sec": 8.173,
+  "raw_response": {
+    "text": "From the respect paid her on all sides, she seemed like a queen, and from the adoration with which she was treated by two or three, she appeared an object of worship. The queen mother gave the French the most affectionate reception. France was her native country, and she had suffered too much unhappiness in England for England to have made her forget France.",
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 6.16,
+        "text": " From the respect paid her on all sides, she seemed like a queen, and from the adoration"
+      },
+      {
+        "start": 6.16,
+        "end": 11.6,
+        "text": " with which she was treated by two or three, she appeared an object of worship."
+      },
+      {
+        "start": 11.6,
+        "end": 16.48,
+        "text": " The queen mother gave the French the most affectionate reception. France was her native"
+      },
+      {
+        "start": 16.48,
+        "end": 22.32,
+        "text": " country, and she had suffered too much unhappiness in England for England to have made her forget"
+      },
+      {
+        "start": 22.32,
+        "end": 24.32,
+        "text": " France."
+      }
+    ],
+    "language": "en"
+  }
+}

@@ -1,5 +1,7 @@
+import React from 'react'
 import { Link } from 'react-router-dom'
 import AnswerBlock from '../components/AnswerBlock'
+void React
 
 const FAQ = [
   {

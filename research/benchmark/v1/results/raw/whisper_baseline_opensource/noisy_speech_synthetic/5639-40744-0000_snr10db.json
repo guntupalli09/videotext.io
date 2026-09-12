@@ -1,0 +1,45 @@
+{
+  "system": "whisper_baseline_opensource",
+  "model": "whisper-small (faster-whisper, int8, CPU)",
+  "settings": {
+    "model_size": "small",
+    "device": "cpu",
+    "compute_type": "int8",
+    "beam_size": 5,
+    "language": "en",
+    "faster_whisper_version": "1.2.1",
+    "ctranslate2_version": "4.8.2",
+    "python_version": "3.11.15",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "git_commit": "3dae249eb6ff73766254c02475812f98e2500d93"
+  },
+  "request_timestamp": "2026-09-12T06:05:24Z",
+  "http_status": 200,
+  "processing_sec": 5.681,
+  "raw_response": {
+    "text": "11 o'clock had struck. It was a fine clear night. They were the only persons on the road, and they sauntered leisurely along to avoid paying the price of fatigue for the recreation provided for the Toledans in the valley or on the banks of their river.",
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 4.0,
+        "text": " 11 o'clock had struck. It was a fine clear night."
+      },
+      {
+        "start": 4.0,
+        "end": 8.0,
+        "text": " They were the only persons on the road, and they sauntered leisurely along"
+      },
+      {
+        "start": 8.0,
+        "end": 14.0,
+        "text": " to avoid paying the price of fatigue for the recreation provided for the Toledans in the valley"
+      },
+      {
+        "start": 14.0,
+        "end": 16.0,
+        "text": " or on the banks of their river."
+      }
+    ],
+    "language": "en"
+  }
+}

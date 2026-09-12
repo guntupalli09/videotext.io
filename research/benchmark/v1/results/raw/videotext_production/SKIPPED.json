@@ -1,0 +1,6 @@
+{
+  "system": "videotext_production",
+  "status": "skipped",
+  "reason": "VIDEOTEXT_API_KEY not set in environment (see docs/API_PRIVATE_BETA.md)",
+  "recorded_at_utc": "2026-09-12T05:58:10Z"
+}

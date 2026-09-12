@@ -33,7 +33,7 @@
     "missingLocalHtml": 1,
     "pagesWithBannedPhrases": 0,
     "pagesFlaggedThin": 4,
-    "pagesWithHighDuplication": 258,
+    "pagesWithHighDuplication": 255,
     "thinContentClassifications": {
       "healthy": 131,
       "moderate": 140,
@@ -2155,7 +2155,7 @@
       ],
       "components": {
         "semanticContentDepth": 20,
-        "templateDuplicationRisk": 44,
+        "templateDuplicationRisk": 46,
         "searchIntentCoverage": 5,
         "engineeringLeakage": 0,
         "topicalCompleteness": 11,
@@ -3089,7 +3089,7 @@
       ],
       "components": {
         "semanticContentDepth": 20,
-        "templateDuplicationRisk": 40,
+        "templateDuplicationRisk": 42,
         "searchIntentCoverage": 5,
         "engineeringLeakage": 0,
         "topicalCompleteness": 11,
@@ -4539,32 +4539,6 @@
       ]
     },
     {
-      "route": "/fastest-transcription-software",
-      "thinContentRisk": 29,
-      "classification": "HEALTHY",
-      "issues": [
-        "Repeated CTA text reused on 5 pages",
-        "96% duplicated paragraph reuse"
-      ],
-      "recommendations": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ],
-      "components": {
-        "semanticContentDepth": 4,
-        "templateDuplicationRisk": 67,
-        "searchIntentCoverage": 0,
-        "engineeringLeakage": 0,
-        "topicalCompleteness": 0,
-        "htmlRichness": 8,
-        "aiTemplatePatternRisk": 8
-      },
-      "missingSubtopics": [],
-      "weakSections": [],
-      "semanticExpansionOpportunities": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ]
-    },
-    {
       "route": "/fireflies-alternative",
       "thinContentRisk": 29,
       "classification": "HEALTHY",
@@ -5566,31 +5540,6 @@
       ]
     },
     {
-      "route": "/accuracy-test",
-      "thinContentRisk": 27,
-      "classification": "HEALTHY",
-      "issues": [
-        "96% duplicated paragraph reuse"
-      ],
-      "recommendations": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ],
-      "components": {
-        "semanticContentDepth": 4,
-        "templateDuplicationRisk": 61,
-        "searchIntentCoverage": 0,
-        "engineeringLeakage": 0,
-        "topicalCompleteness": 0,
-        "htmlRichness": 8,
-        "aiTemplatePatternRisk": 0
-      },
-      "missingSubtopics": [],
-      "weakSections": [],
-      "semanticExpansionOpportunities": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ]
-    },
-    {
       "route": "/auto-captions",
       "thinContentRisk": 27,
       "classification": "HEALTHY",
@@ -5613,61 +5562,6 @@
       "weakSections": [],
       "semanticExpansionOpportunities": [
         "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ]
-    },
-    {
-      "route": "/best-transcription-tool-for-journalists",
-      "thinContentRisk": 27,
-      "classification": "HEALTHY",
-      "issues": [
-        "Repeated CTA text reused on 5 pages",
-        "82% duplicated paragraph reuse"
-      ],
-      "recommendations": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ],
-      "components": {
-        "semanticContentDepth": 4,
-        "templateDuplicationRisk": 57,
-        "searchIntentCoverage": 0,
-        "engineeringLeakage": 0,
-        "topicalCompleteness": 0,
-        "htmlRichness": 8,
-        "aiTemplatePatternRisk": 8
-      },
-      "missingSubtopics": [],
-      "weakSections": [],
-      "semanticExpansionOpportunities": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ]
-    },
-    {
-      "route": "/best-transcription-tool-for-students",
-      "thinContentRisk": 27,
-      "classification": "HEALTHY",
-      "issues": [
-        "Repeated CTA text reused on 5 pages",
-        "82% duplicated paragraph reuse",
-        "AI/template-like sentence patterns detected (1)"
-      ],
-      "recommendations": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights.",
-        "Replace generic AI-style transitions with concrete examples and constraints."
-      ],
-      "components": {
-        "semanticContentDepth": 4,
-        "templateDuplicationRisk": 57,
-        "searchIntentCoverage": 0,
-        "engineeringLeakage": 0,
-        "topicalCompleteness": 0,
-        "htmlRichness": 8,
-        "aiTemplatePatternRisk": 16
-      },
-      "missingSubtopics": [],
-      "weakSections": [],
-      "semanticExpansionOpportunities": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights.",
-        "Replace generic AI-style transitions with concrete examples and constraints."
       ]
     },
     {
@@ -6742,31 +6636,6 @@
       ]
     },
     {
-      "route": "/transcription-benchmark",
-      "thinContentRisk": 27,
-      "classification": "HEALTHY",
-      "issues": [
-        "96% duplicated paragraph reuse"
-      ],
-      "recommendations": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ],
-      "components": {
-        "semanticContentDepth": 4,
-        "templateDuplicationRisk": 61,
-        "searchIntentCoverage": 0,
-        "engineeringLeakage": 0,
-        "topicalCompleteness": 0,
-        "htmlRichness": 8,
-        "aiTemplatePatternRisk": 0
-      },
-      "missingSubtopics": [],
-      "weakSections": [],
-      "semanticExpansionOpportunities": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ]
-    },
-    {
       "route": "/video-accessibility",
       "thinContentRisk": 27,
       "classification": "HEALTHY",
@@ -6880,6 +6749,63 @@
       ]
     },
     {
+      "route": "/best-transcription-tool-for-students",
+      "thinContentRisk": 26,
+      "classification": "HEALTHY",
+      "issues": [
+        "Repeated CTA text reused on 5 pages",
+        "82% duplicated paragraph reuse",
+        "AI/template-like sentence patterns detected (1)"
+      ],
+      "recommendations": [
+        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights.",
+        "Replace generic AI-style transitions with concrete examples and constraints."
+      ],
+      "components": {
+        "semanticContentDepth": 4,
+        "templateDuplicationRisk": 52,
+        "searchIntentCoverage": 0,
+        "engineeringLeakage": 0,
+        "topicalCompleteness": 0,
+        "htmlRichness": 8,
+        "aiTemplatePatternRisk": 16
+      },
+      "missingSubtopics": [],
+      "weakSections": [],
+      "semanticExpansionOpportunities": [
+        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights.",
+        "Replace generic AI-style transitions with concrete examples and constraints."
+      ]
+    },
+    {
+      "route": "/descript-vs-videotext",
+      "thinContentRisk": 26,
+      "classification": "HEALTHY",
+      "issues": [
+        "60% duplicated paragraph reuse",
+        "7 shallow or low-information paragraphs"
+      ],
+      "recommendations": [
+        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
+      ],
+      "components": {
+        "semanticContentDepth": 20,
+        "templateDuplicationRisk": 42,
+        "searchIntentCoverage": 0,
+        "engineeringLeakage": 0,
+        "topicalCompleteness": 0,
+        "htmlRichness": 0,
+        "aiTemplatePatternRisk": 12
+      },
+      "missingSubtopics": [],
+      "weakSections": [
+        "Several paragraphs are too short to add standalone informational value"
+      ],
+      "semanticExpansionOpportunities": [
+        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
+      ]
+    },
+    {
       "route": "/open-captions-vs-closed-captions",
       "thinContentRisk": 26,
       "classification": "HEALTHY",
@@ -6919,7 +6845,7 @@
       ],
       "components": {
         "semanticContentDepth": 20,
-        "templateDuplicationRisk": 40,
+        "templateDuplicationRisk": 42,
         "searchIntentCoverage": 0,
         "engineeringLeakage": 0,
         "topicalCompleteness": 0,
@@ -6967,8 +6893,8 @@
       ]
     },
     {
-      "route": "/descript-vs-videotext",
-      "thinContentRisk": 25,
+      "route": "/videotext-vs-turboscribe",
+      "thinContentRisk": 26,
       "classification": "HEALTHY",
       "issues": [
         "60% duplicated paragraph reuse",
@@ -6979,7 +6905,7 @@
       ],
       "components": {
         "semanticContentDepth": 20,
-        "templateDuplicationRisk": 40,
+        "templateDuplicationRisk": 42,
         "searchIntentCoverage": 0,
         "engineeringLeakage": 0,
         "topicalCompleteness": 0,
@@ -6990,6 +6916,58 @@
       "weakSections": [
         "Several paragraphs are too short to add standalone informational value"
       ],
+      "semanticExpansionOpportunities": [
+        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
+      ]
+    },
+    {
+      "route": "/best-transcription-tool-for-journalists",
+      "thinContentRisk": 25,
+      "classification": "HEALTHY",
+      "issues": [
+        "Repeated CTA text reused on 5 pages",
+        "82% duplicated paragraph reuse"
+      ],
+      "recommendations": [
+        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
+      ],
+      "components": {
+        "semanticContentDepth": 4,
+        "templateDuplicationRisk": 52,
+        "searchIntentCoverage": 0,
+        "engineeringLeakage": 0,
+        "topicalCompleteness": 0,
+        "htmlRichness": 8,
+        "aiTemplatePatternRisk": 8
+      },
+      "missingSubtopics": [],
+      "weakSections": [],
+      "semanticExpansionOpportunities": [
+        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
+      ]
+    },
+    {
+      "route": "/fastest-transcription-software",
+      "thinContentRisk": 25,
+      "classification": "HEALTHY",
+      "issues": [
+        "Repeated CTA text reused on 5 pages",
+        "75% duplicated paragraph reuse"
+      ],
+      "recommendations": [
+        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
+      ],
+      "components": {
+        "semanticContentDepth": 4,
+        "templateDuplicationRisk": 49,
+        "searchIntentCoverage": 0,
+        "engineeringLeakage": 0,
+        "topicalCompleteness": 0,
+        "htmlRichness": 8,
+        "aiTemplatePatternRisk": 8
+      },
+      "missingSubtopics": [],
+      "weakSections": [],
       "semanticExpansionOpportunities": [
         "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
       ]
@@ -7015,34 +6993,6 @@
       },
       "missingSubtopics": [],
       "weakSections": [],
-      "semanticExpansionOpportunities": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ]
-    },
-    {
-      "route": "/videotext-vs-turboscribe",
-      "thinContentRisk": 25,
-      "classification": "HEALTHY",
-      "issues": [
-        "60% duplicated paragraph reuse",
-        "7 shallow or low-information paragraphs"
-      ],
-      "recommendations": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ],
-      "components": {
-        "semanticContentDepth": 20,
-        "templateDuplicationRisk": 40,
-        "searchIntentCoverage": 0,
-        "engineeringLeakage": 0,
-        "topicalCompleteness": 0,
-        "htmlRichness": 0,
-        "aiTemplatePatternRisk": 12
-      },
-      "missingSubtopics": [],
-      "weakSections": [
-        "Several paragraphs are too short to add standalone informational value"
-      ],
       "semanticExpansionOpportunities": [
         "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
       ]
@@ -7102,7 +7052,7 @@
     },
     {
       "route": "/docs/api",
-      "thinContentRisk": 23,
+      "thinContentRisk": 22,
       "classification": "HEALTHY",
       "issues": [
         "50% duplicated paragraph reuse"
@@ -7112,7 +7062,7 @@
       ],
       "components": {
         "semanticContentDepth": 35,
-        "templateDuplicationRisk": 30,
+        "templateDuplicationRisk": 28,
         "searchIntentCoverage": 6,
         "engineeringLeakage": 0,
         "topicalCompleteness": 0,
@@ -7127,7 +7077,7 @@
     },
     {
       "route": "/integrations/zapier",
-      "thinContentRisk": 23,
+      "thinContentRisk": 22,
       "classification": "HEALTHY",
       "issues": [
         "50% duplicated paragraph reuse"
@@ -7137,7 +7087,7 @@
       ],
       "components": {
         "semanticContentDepth": 35,
-        "templateDuplicationRisk": 30,
+        "templateDuplicationRisk": 28,
         "searchIntentCoverage": 6,
         "engineeringLeakage": 0,
         "topicalCompleteness": 0,
@@ -7178,31 +7128,6 @@
       "semanticExpansionOpportunities": [
         "Rewrite duplicated paragraphs with route-specific examples and differentiated insights.",
         "Replace generic AI-style transitions with concrete examples and constraints."
-      ]
-    },
-    {
-      "route": "/research/transcription-accuracy-benchmark-2026",
-      "thinContentRisk": 21,
-      "classification": "HEALTHY",
-      "issues": [
-        "50% duplicated paragraph reuse"
-      ],
-      "recommendations": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-      ],
-      "components": {
-        "semanticContentDepth": 35,
-        "templateDuplicationRisk": 30,
-        "searchIntentCoverage": 0,
-        "engineeringLeakage": 0,
-        "topicalCompleteness": 0,
-        "htmlRichness": 16,
-        "aiTemplatePatternRisk": 0
-      },
-      "missingSubtopics": [],
-      "weakSections": [],
-      "semanticExpansionOpportunities": [
-        "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
       ]
     },
     {
@@ -7349,6 +7274,29 @@
       "semanticExpansionOpportunities": []
     },
     {
+      "route": "/accuracy-test",
+      "thinContentRisk": 14,
+      "classification": "HEALTHY",
+      "issues": [],
+      "recommendations": [
+        "Add operational guidance, edge cases, QA details, export behavior, or troubleshooting steps."
+      ],
+      "components": {
+        "semanticContentDepth": 51,
+        "templateDuplicationRisk": 7,
+        "searchIntentCoverage": 8,
+        "engineeringLeakage": 0,
+        "topicalCompleteness": 0,
+        "htmlRichness": 18,
+        "aiTemplatePatternRisk": 0
+      },
+      "missingSubtopics": [],
+      "weakSections": [],
+      "semanticExpansionOpportunities": [
+        "Add operational guidance, edge cases, QA details, export behavior, or troubleshooting steps."
+      ]
+    },
+    {
       "route": "/buzz-alternative",
       "thinContentRisk": 14,
       "classification": "HEALTHY",
@@ -7400,6 +7348,31 @@
         "Several paragraphs are too short to add standalone informational value"
       ],
       "semanticExpansionOpportunities": []
+    },
+    {
+      "route": "/transcription-benchmark",
+      "thinContentRisk": 11,
+      "classification": "HEALTHY",
+      "issues": [
+        "AI/template-like sentence patterns detected (1)"
+      ],
+      "recommendations": [
+        "Replace generic AI-style transitions with concrete examples and constraints."
+      ],
+      "components": {
+        "semanticContentDepth": 43,
+        "templateDuplicationRisk": 7,
+        "searchIntentCoverage": 0,
+        "engineeringLeakage": 0,
+        "topicalCompleteness": 0,
+        "htmlRichness": 12,
+        "aiTemplatePatternRisk": 8
+      },
+      "missingSubtopics": [],
+      "weakSections": [],
+      "semanticExpansionOpportunities": [
+        "Replace generic AI-style transitions with concrete examples and constraints."
+      ]
     },
     {
       "route": "/podcast-transcription-tool",
@@ -7490,7 +7463,7 @@
       "recommendations": [],
       "components": {
         "semanticContentDepth": 14,
-        "templateDuplicationRisk": 13,
+        "templateDuplicationRisk": 11,
         "searchIntentCoverage": 0,
         "engineeringLeakage": 0,
         "topicalCompleteness": 0,
@@ -7536,7 +7509,7 @@
       "recommendations": [],
       "components": {
         "semanticContentDepth": 14,
-        "templateDuplicationRisk": 13,
+        "templateDuplicationRisk": 11,
         "searchIntentCoverage": 0,
         "engineeringLeakage": 0,
         "topicalCompleteness": 0,
@@ -7589,6 +7562,29 @@
       },
       "missingSubtopics": [],
       "weakSections": [],
+      "semanticExpansionOpportunities": []
+    },
+    {
+      "route": "/research/transcription-accuracy-benchmark-2026",
+      "thinContentRisk": 6,
+      "classification": "HEALTHY",
+      "issues": [
+        "3 shallow or low-information paragraphs"
+      ],
+      "recommendations": [],
+      "components": {
+        "semanticContentDepth": 26,
+        "templateDuplicationRisk": 0,
+        "searchIntentCoverage": 0,
+        "engineeringLeakage": 0,
+        "topicalCompleteness": 0,
+        "htmlRichness": 0,
+        "aiTemplatePatternRisk": 12
+      },
+      "missingSubtopics": [],
+      "weakSections": [
+        "Several paragraphs are too short to add standalone informational value"
+      ],
       "semanticExpansionOpportunities": []
     },
     {
@@ -10002,18 +9998,6 @@
       ]
     },
     {
-      "signature": "what this accuracy benchmark actually measures how the benchmark tests were conducted benchmark results you can verify yourself teams that rely on transcription accuracy data edge cases that stress test transcription accuracy benchmark methodology and scoring approach transcription accuracy and benchmark questions related performance and accuracy tests",
-      "type": "h2-structure",
-      "pageCount": 5,
-      "pages": [
-        "/accuracy-test",
-        "/best-transcription-tool-for-journalists",
-        "/best-transcription-tool-for-students",
-        "/fastest-transcription-software",
-        "/transcription-benchmark"
-      ]
-    },
-    {
       "signature": "upload a long recording to compare outputs",
       "type": "cta",
       "pageCount": 5,
@@ -12045,57 +12029,12 @@
       ]
     },
     {
-      "text": "why do transcription accuracy numbers vary so much between vendors?",
-      "count": 3,
-      "pages": [
-        "/accuracy-test",
-        "/fastest-transcription-software",
-        "/transcription-benchmark"
-      ]
-    },
-    {
-      "text": "how should i test transcription tools for my specific use case?",
-      "count": 3,
-      "pages": [
-        "/accuracy-test",
-        "/fastest-transcription-software",
-        "/transcription-benchmark"
-      ]
-    },
-    {
-      "text": "does transcription accuracy degrade for long recordings?",
-      "count": 3,
-      "pages": [
-        "/accuracy-test",
-        "/fastest-transcription-software",
-        "/transcription-benchmark"
-      ]
-    },
-    {
-      "text": "how do you benchmark cleanup time fairly across tools?",
-      "count": 3,
-      "pages": [
-        "/accuracy-test",
-        "/fastest-transcription-software",
-        "/transcription-benchmark"
-      ]
-    },
-    {
       "text": "does videotext delete my files after transcription?",
       "count": 3,
       "pages": [
         "/easyscribe-alternative",
         "/transcription-for-journalists",
         "/vocallab-alternative"
-      ]
-    },
-    {
-      "text": "what does word error rate actually measure?",
-      "count": 3,
-      "pages": [
-        "/accuracy-test",
-        "/fastest-transcription-software",
-        "/transcription-benchmark"
       ]
     },
     {
@@ -12136,6 +12075,14 @@
       "pages": [
         "/add-captions-to-video",
         "/video-captions"
+      ]
+    },
+    {
+      "text": "is videotext free for students?",
+      "count": 2,
+      "pages": [
+        "/notability-alternative",
+        "/transcription-for-students"
       ]
     }
   ],
@@ -13998,17 +13945,6 @@
       ]
     },
     {
-      "text": "what this accuracy benchmark actually measures how the benchmark tests were conducted benchmark results you can verify yourself teams that rely on transcription accuracy data edge cases that stress test transcription accuracy benchmark methodology and scoring approach transcription accuracy and benchmark questions related performance and accuracy tests",
-      "count": 5,
-      "pages": [
-        "/accuracy-test",
-        "/best-transcription-tool-for-journalists",
-        "/best-transcription-tool-for-students",
-        "/fastest-transcription-software",
-        "/transcription-benchmark"
-      ]
-    },
-    {
       "text": "why auto captions fail creator workflows turning youtube videos into structured reusable content youtube transcript outputs for creator workflows creator workflows powered by youtube transcripts youtube specific transcript friction points youtube upload and format constraints youtube transcript and workflow questions related youtube and creator workflow tools",
       "count": 4,
       "pages": [
@@ -15127,220 +15063,98 @@
       "exists": true,
       "title": "Accuracy Test | VideoText",
       "metaDescription": "VideoText workflow page for accuracy test. Learn the relevant transcript, subtitle, formatting, export, or comparison path and choose the right tool for the.",
-      "h1": "Transcription Accuracy Test",
+      "h1": "Transcription accuracy test",
       "h2s": [
-        "What this accuracy benchmark actually measures",
-        "How the benchmark tests were conducted",
-        "Benchmark results you can verify yourself",
-        "Teams that rely on transcription accuracy data",
-        "Edge cases that stress-test transcription accuracy",
-        "Benchmark methodology and scoring approach",
-        "Transcription accuracy and benchmark questions",
-        "Related performance and accuracy tests"
+        "Which transcription tool is most accurate?",
+        "Where to find real accuracy data",
+        "When VideoText may not be the best choice"
       ],
       "paragraphs": [
-        "Condition-level transcription accuracy reference with measured word accuracy ranges and structured tool comparison for practical selection.",
-        "Select recordings that represent real workflow conditions: clear speech, multi-speaker with 3+ participants, recordings with background noise (HVAC, crowd, traffic), technical vocabulary, non-native accents, and fast speech above 175 WPM.",
-        "Have two independent transcriptionists produce ground-truth text for each test recording. Resolve disagreements through arbitration. Ground truth quality determines benchmark reliability — a flawed reference transcript produces meaningless WER numbers.",
-        "Upload the same recordings to each tool without pre-processing. Record wall-clock processing time from upload completion to transcript available. Use default settings unless the specific goal is to benchmark custom configurations.",
-        "Calculate WER and speaker attribution accuracy from raw output before any editing. Then time how long a single editor takes to bring each raw transcript to delivery-ready quality — same editor, same criteria, measured independently for each tool output.",
-        "Accuracy measured separately for clear speech, moderate noise (SNR 15–25dB), and heavy noise (SNR below 15dB). Results broken out by content type: interview, meeting, podcast, lecture, technical presentation — each has meaningfully different baseline accuracy.",
-        "Wall-clock time from upload completion to transcript ready, measured at 30, 60, and 120 minutes of source audio. Processing time is measured without upload duration — network speed is not a benchmark variable for the transcription engine itself.",
-        "Minutes of human editing time required to bring raw transcript to delivery quality, measured per hour of source audio. This metric captures the total operational cost better than WER alone, since a 92% accurate but unstructured transcript may require more editing than an 88% accurate but well-labeled one.",
-        "Use benchmark data across multiple audio conditions — not just the vendor's best-case scenario — before committing to a paid plan or enterprise contract. Test with your actual content type.",
-        "Run the same recordings you process weekly through each tool under consideration. Measure cleanup time, not just WER — it is the cost that your editors pay on every job.",
-        "Run controlled accuracy tests across multiple providers using a standardized test set with verified ground truth. Document audio conditions precisely — SNR level, speaker count, language, and content type — so results are reproducible.",
-        "Clear studio speech (SNR >30dB): WER typically 3–6%. Office recording with HVAC noise (SNR 20–25dB): WER typically 8–14%. Meeting room with multiple speakers sharing a single microphone (SNR <15dB): WER typically 15–25%. Vendor-published accuracy numbers rarely specify which condition they measured.",
-        "Some transcription models degrade in quality after 30–60 minutes of continuous audio — topic drift, speaker fatigue in the audio signal, and model context limits all contribute. A benchmark that only tests 10-minute clips does not reveal this degradation.",
-        "Most ASR models maintain accuracy up to approximately 160–170 WPM. Above 175 WPM — common in panel discussions, auction recordings, and some podcast styles — accuracy drops sharply. A benchmark that does not include fast-speech samples misses a common real-world failure mode.",
-        "WER counts incorrect words but does not penalize for speaker misattribution separately. A transcript that is 93% accurate on individual words but assigns 30% of dialogue to the wrong speaker will fail completely for any workflow that depends on knowing who said what.",
-        "WER = (Substitutions + Deletions + Insertions) / Total Reference Words. Calculated case-insensitively. Punctuation errors typically excluded. A 5% WER means 5 errors per 100 reference words — which for a 10,000-word transcript produces approximately 500 errors requiring correction.",
-        "Clear speech: single speaker, SNR above 30dB, minimal reverberation. Moderate noise: 2–4 speakers, SNR 15–25dB, background hum or traffic. Challenging: 4+ speakers on shared microphone, SNR below 15dB, overlapping speech and background noise.",
-        "Transcriptionist A produces ground truth. Transcriptionist B independently reviews and marks disagreements. Arbitration resolves disagreements using the source audio as the authoritative reference. Ground truth files are locked before any tool testing begins.",
-        "Measured separately from WER. Speaker attribution error rate = percentage of words assigned to the incorrect speaker label in the benchmark output. A separate metric from word accuracy because speaker label errors are categorically different from transcription word errors.",
-        "WER (Word Error Rate) = (Substitutions + Deletions + Insertions) / Total Reference Words. A 5% WER means approximately 5 errors per 100 words. WER is calculated against a verified ground-truth transcript, case-insensitively, typically excluding punctuation errors. It measures word-level accuracy but does not score speaker attribution errors, formatting quality, or the readability of the output — which is why WER alone is an incomplete operational benchmark.",
-        "The same human editor processes the raw output from each tool under identical conditions: same recording, same quality criteria for \"delivery-ready,\" timed start-to-finish. The editor is not told which tool produced which output to prevent bias. Cleanup time is measured in minutes per hour of source audio. This metric captures speaker label corrections, paragraph restructuring, inaudible-section review, and verbatim level normalization — all the editing steps WER does not measure.",
-        "Most vendor-published accuracy numbers are measured on best-case audio conditions: studio-quality single-speaker speech at low noise levels. Real-world recordings — meetings, podcasts, interviews with consumer microphones — produce meaningfully lower accuracy across all tools. A vendor reporting 99% accuracy has likely measured on clean studio audio. The relevant question is accuracy at the SNR level and speaker count of your actual recordings.",
-        "It depends on the architecture. Some ASR models process audio in fixed chunks (typically 30 minutes) and reassemble independently. These models maintain consistent accuracy across length but may introduce artifacts at chunk boundaries. Other models use longer context windows that can handle topic drift better but may slow down for very long files. Testing with your actual recording duration, not just short samples, is the only reliable way to evaluate long-file behavior.",
-        "Use recordings from your actual workflow — same audio conditions, same speaker count, same content type. Do not use vendor-provided sample audio for evaluation. Measure three things: raw WER against a verified transcript, processing time per hour of audio, and cleanup time for one editor to bring the raw output to your delivery standard. The tool with the best combination of those three metrics for your content type is the right choice, regardless of marketing accuracy claims."
+        "This page previously listed accuracy percentages by audio condition and a tool-comparison table that were not backed by a published dataset, ground truth, or scoring methodology — including claims about other vendors (Otter, Descript, Rev) we could not substantiate. We removed them rather than let unverified numbers stand next to evidence-based research.",
+        "We publish a real, sourced answer on our accuracy benchmark page — not on this one.",
+        "Accuracy claims are only meaningful when every number traces back to a dataset, a ground-truth transcript, and a scoring script someone else can re-run. This page used to state specific percentages without any of that; that was a mistake we've corrected.",
+        "Our AI Transcription Accuracy Benchmark publishes the audio sample set, ground-truth transcripts, scoring code, raw model outputs, and aggregate results — plus a downloadable CSV. It is an early-stage pilot (one clean-speech condition, one open-source baseline model) and states its limitations plainly rather than implying broader coverage than what was tested."
       ],
       "faqQuestions": [
-        "What does Word Error Rate actually measure?",
-        "How do you benchmark cleanup time fairly across tools?",
-        "Why do transcription accuracy numbers vary so much between vendors?",
-        "Does transcription accuracy degrade for long recordings?",
-        "How should I test transcription tools for my specific use case?"
+        "Which transcription tool is most accurate?"
       ],
       "tables": [],
       "internalLinks": [
-        "/guideline-format",
-        "/pricing",
-        "/tools",
-        "/translate-subtitles",
-        "/video-to-subtitles",
+        "/",
+        "/best-transcription-tool",
+        "/research/transcription-accuracy-benchmark-2026",
         "/video-to-transcript"
       ],
       "listItems": [
-        "Word Error Rate measures how many words in the transcript differ from the ground truth — but it does not measure which errors matter. A transcript with 7% WER that misattributes 40% of speaker turns requires more editing than a 10% WER transcript where all speaker labels are correct. WER is a useful starting point, not an operational conclusion.",
-        "Benchmark audio diversity is the most commonly gamed variable in transcription accuracy claims. Testing only studio-quality clear speech (SNR above 30dB) overstates real-world accuracy by 8–15% for typical meeting, interview, and podcast content recorded with consumer-grade microphones in office environments.",
-        "Cleanup time — the number of minutes a human editor spends bringing a raw AI transcript to delivery-ready quality — is the operationally relevant metric that most transcription vendors do not publish. A tool with 94% WER that produces poorly structured output may require more editing time than an 89% WER tool that outputs clean paragraph structure with accurate speaker labels."
+        "See our accuracy benchmark for real, reproducible results with published dataset, methodology, and raw output",
+        "Results there are scoped explicitly to the exact condition and tool tested — no claim is generalized beyond its evidence",
+        "We have not yet benchmarked VideoText itself, or any competitor tool, against that methodology",
+        "Real-time meeting transcription with bot attendance → tools built for live capture are a better fit.",
+        "Collaborative timeline editing inside a video editor → an editor-integrated tool is a better fit."
       ],
       "ctaTexts": [],
       "metrics": {
-        "wordCount": 1387,
-        "paragraphCount": 24,
-        "h2Count": 8,
-        "faqCount": 5,
-        "internalLinkCount": 6,
-        "htmlSize": 22376,
+        "wordCount": 273,
+        "paragraphCount": 4,
+        "h2Count": 3,
+        "faqCount": 1,
+        "internalLinkCount": 4,
+        "htmlSize": 10729,
         "uniqueParagraphRatio": 1,
-        "duplicateParagraphReuseFrequency": 5,
+        "duplicateParagraphReuseFrequency": 0,
         "duplicateH2ReuseFrequency": 7,
-        "duplicateFaqReuseFrequency": 3,
+        "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
-        "visibleTextLength": 9754,
-        "averageParagraphWords": 41.708333333333336,
-        "averageParagraphRichness": 0.8812924000820409,
-        "uniqueSemanticSectionCount": 8,
+        "visibleTextLength": 1852,
+        "averageParagraphWords": 39.25,
+        "averageParagraphRichness": 0.9132376853180296,
+        "uniqueSemanticSectionCount": 3,
         "h2Diversity": 1,
         "faqDiversity": 1,
         "tableCount": 0,
-        "listItemCount": 3,
+        "listItemCount": 5,
         "semanticStructureVariety": 4,
-        "practicalSignalCount": 16,
+        "practicalSignalCount": 5,
         "genericPatternCount": 0,
-        "pageUniquenessRatio": 0.04166666666666663,
-        "reusedContentRatio": 0.9583333333333334,
+        "pageUniquenessRatio": 1,
+        "reusedContentRatio": 0,
         "topicalCoverageRatio": 1
       },
       "bannedPhraseHits": [],
-      "duplicateParagraphs": [
-        {
-          "text": "Select recordings that represent real workflow conditions: clear speech, multi-speaker with 3+ participants, recordings with background noise (HVAC, crowd, traffic), technical vocabulary, non-native accents, and fast speech above 175 WPM.",
-          "pageCount": 5
-        },
-        {
-          "text": "Have two independent transcriptionists produce ground-truth text for each test recording. Resolve disagreements through arbitration. Ground truth quality determines benchmark reliability — a flawed reference transcript produces meaningless WER numbers.",
-          "pageCount": 5
-        },
-        {
-          "text": "Upload the same recordings to each tool without pre-processing. Record wall-clock processing time from upload completion to transcript available. Use default settings unless the specific goal is to benchmark custom configurations.",
-          "pageCount": 5
-        },
-        {
-          "text": "Calculate WER and speaker attribution accuracy from raw output before any editing. Then time how long a single editor takes to bring each raw transcript to delivery-ready quality — same editor, same criteria, measured independently for each tool output.",
-          "pageCount": 5
-        },
-        {
-          "text": "Accuracy measured separately for clear speech, moderate noise (SNR 15–25dB), and heavy noise (SNR below 15dB). Results broken out by content type: interview, meeting, podcast, lecture, technical presentation — each has meaningfully different baseline accuracy.",
-          "pageCount": 5
-        },
-        {
-          "text": "Wall-clock time from upload completion to transcript ready, measured at 30, 60, and 120 minutes of source audio. Processing time is measured without upload duration — network speed is not a benchmark variable for the transcription engine itself.",
-          "pageCount": 5
-        },
-        {
-          "text": "Minutes of human editing time required to bring raw transcript to delivery quality, measured per hour of source audio. This metric captures the total operational cost better than WER alone, since a 92% accurate but unstructured transcript may require more editing than an 88% accurate but well-labeled one.",
-          "pageCount": 5
-        },
-        {
-          "text": "Use benchmark data across multiple audio conditions — not just the vendor's best-case scenario — before committing to a paid plan or enterprise contract. Test with your actual content type.",
-          "pageCount": 5
-        },
-        {
-          "text": "Run the same recordings you process weekly through each tool under consideration. Measure cleanup time, not just WER — it is the cost that your editors pay on every job.",
-          "pageCount": 5
-        },
-        {
-          "text": "Run controlled accuracy tests across multiple providers using a standardized test set with verified ground truth. Document audio conditions precisely — SNR level, speaker count, language, and content type — so results are reproducible.",
-          "pageCount": 5
-        }
-      ],
+      "duplicateParagraphs": [],
       "duplicateH2s": [
         {
-          "text": "What this accuracy benchmark actually measures",
+          "text": "When VideoText may not be the best choice",
           "pageCount": 7
-        },
-        {
-          "text": "Teams that rely on transcription accuracy data",
-          "pageCount": 7
-        },
-        {
-          "text": "Transcription accuracy and benchmark questions",
-          "pageCount": 7
-        },
-        {
-          "text": "Related performance and accuracy tests",
-          "pageCount": 7
-        },
-        {
-          "text": "How the benchmark tests were conducted",
-          "pageCount": 5
-        },
-        {
-          "text": "Benchmark results you can verify yourself",
-          "pageCount": 5
-        },
-        {
-          "text": "Edge cases that stress-test transcription accuracy",
-          "pageCount": 5
-        },
-        {
-          "text": "Benchmark methodology and scoring approach",
-          "pageCount": 5
         }
       ],
-      "duplicateFaqs": [
-        {
-          "text": "What does Word Error Rate actually measure?",
-          "pageCount": 3
-        },
-        {
-          "text": "How do you benchmark cleanup time fairly across tools?",
-          "pageCount": 3
-        },
-        {
-          "text": "Why do transcription accuracy numbers vary so much between vendors?",
-          "pageCount": 3
-        },
-        {
-          "text": "Does transcription accuracy degrade for long recordings?",
-          "pageCount": 3
-        },
-        {
-          "text": "How should I test transcription tools for my specific use case?",
-          "pageCount": 3
-        }
-      ],
+      "duplicateFaqs": [],
       "warnings": [
-        "Paragraphs reused on other pages; max reuse frequency 5",
-        "FAQ questions reused on other pages; max reuse frequency 3"
+        "Low word count: 273 words (< 300)"
       ],
       "criticals": [],
-      "priorityScore": 27,
+      "priorityScore": 20,
       "thinContent": {
         "route": "/accuracy-test",
-        "thinContentRisk": 27,
+        "thinContentRisk": 14,
         "classification": "HEALTHY",
-        "issues": [
-          "96% duplicated paragraph reuse"
-        ],
+        "issues": [],
         "recommendations": [
-          "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
+          "Add operational guidance, edge cases, QA details, export behavior, or troubleshooting steps."
         ],
         "components": {
-          "semanticContentDepth": 4,
-          "templateDuplicationRisk": 61,
-          "searchIntentCoverage": 0,
+          "semanticContentDepth": 51,
+          "templateDuplicationRisk": 7,
+          "searchIntentCoverage": 8,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
-          "htmlRichness": 8,
+          "htmlRichness": 18,
           "aiTemplatePatternRisk": 0
         },
         "missingSubtopics": [],
         "weakSections": [],
         "semanticExpansionOpportunities": [
-          "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
+          "Add operational guidance, edge cases, QA details, export behavior, or troubleshooting steps."
         ]
       }
     },
@@ -18724,7 +18538,7 @@
         "htmlSize": 20199,
         "uniqueParagraphRatio": 1,
         "duplicateParagraphReuseFrequency": 5,
-        "duplicateH2ReuseFrequency": 5,
+        "duplicateH2ReuseFrequency": 7,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 4218,
@@ -18783,11 +18597,11 @@
       ],
       "duplicateH2s": [
         {
-          "text": "Why VideoText is faster than most transcription tools",
-          "pageCount": 5
+          "text": "When VideoText may not be the best choice",
+          "pageCount": 7
         },
         {
-          "text": "When VideoText may not be the best choice",
+          "text": "Why VideoText is faster than most transcription tools",
           "pageCount": 5
         },
         {
@@ -18816,7 +18630,7 @@
         ],
         "components": {
           "semanticContentDepth": 20,
-          "templateDuplicationRisk": 40,
+          "templateDuplicationRisk": 42,
           "searchIntentCoverage": 5,
           "engineeringLeakage": 0,
           "topicalCompleteness": 11,
@@ -18989,7 +18803,7 @@
         "htmlSize": 20030,
         "uniqueParagraphRatio": 1,
         "duplicateParagraphReuseFrequency": 5,
-        "duplicateH2ReuseFrequency": 5,
+        "duplicateH2ReuseFrequency": 7,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 4067,
@@ -19048,11 +18862,11 @@
       ],
       "duplicateH2s": [
         {
-          "text": "Why VideoText is faster than most transcription tools",
-          "pageCount": 5
+          "text": "When VideoText may not be the best choice",
+          "pageCount": 7
         },
         {
-          "text": "When VideoText may not be the best choice",
+          "text": "Why VideoText is faster than most transcription tools",
           "pageCount": 5
         },
         {
@@ -19081,7 +18895,7 @@
         ],
         "components": {
           "semanticContentDepth": 20,
-          "templateDuplicationRisk": 44,
+          "templateDuplicationRisk": 46,
           "searchIntentCoverage": 5,
           "engineeringLeakage": 0,
           "topicalCompleteness": 11,
@@ -19425,7 +19239,7 @@
         "htmlSize": 18154,
         "uniqueParagraphRatio": 1,
         "duplicateParagraphReuseFrequency": 0,
-        "duplicateH2ReuseFrequency": 7,
+        "duplicateH2ReuseFrequency": 5,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 4599,
@@ -19448,19 +19262,19 @@
       "duplicateH2s": [
         {
           "text": "What this accuracy benchmark actually measures",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Teams that rely on transcription accuracy data",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Transcription accuracy and benchmark questions",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Related performance and accuracy tests",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Performance numbers side by side",
@@ -19481,7 +19295,7 @@
         "recommendations": [],
         "components": {
           "semanticContentDepth": 14,
-          "templateDuplicationRisk": 13,
+          "templateDuplicationRisk": 11,
           "searchIntentCoverage": 0,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
@@ -19570,8 +19384,8 @@
         "internalLinkCount": 8,
         "htmlSize": 20663,
         "uniqueParagraphRatio": 1,
-        "duplicateParagraphReuseFrequency": 5,
-        "duplicateH2ReuseFrequency": 7,
+        "duplicateParagraphReuseFrequency": 3,
+        "duplicateH2ReuseFrequency": 5,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 8004,
@@ -19593,88 +19407,88 @@
       "duplicateParagraphs": [
         {
           "text": "Select recordings that represent real workflow conditions: clear speech, multi-speaker with 3+ participants, recordings with background noise (HVAC, crowd, traffic), technical vocabulary, non-native accents, and fast speech above 175 WPM.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Have two independent transcriptionists produce ground-truth text for each test recording. Resolve disagreements through arbitration. Ground truth quality determines benchmark reliability — a flawed reference transcript produces meaningless WER numbers.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Upload the same recordings to each tool without pre-processing. Record wall-clock processing time from upload completion to transcript available. Use default settings unless the specific goal is to benchmark custom configurations.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Calculate WER and speaker attribution accuracy from raw output before any editing. Then time how long a single editor takes to bring each raw transcript to delivery-ready quality — same editor, same criteria, measured independently for each tool output.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Accuracy measured separately for clear speech, moderate noise (SNR 15–25dB), and heavy noise (SNR below 15dB). Results broken out by content type: interview, meeting, podcast, lecture, technical presentation — each has meaningfully different baseline accuracy.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Wall-clock time from upload completion to transcript ready, measured at 30, 60, and 120 minutes of source audio. Processing time is measured without upload duration — network speed is not a benchmark variable for the transcription engine itself.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Minutes of human editing time required to bring raw transcript to delivery quality, measured per hour of source audio. This metric captures the total operational cost better than WER alone, since a 92% accurate but unstructured transcript may require more editing than an 88% accurate but well-labeled one.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Use benchmark data across multiple audio conditions — not just the vendor's best-case scenario — before committing to a paid plan or enterprise contract. Test with your actual content type.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Run the same recordings you process weekly through each tool under consideration. Measure cleanup time, not just WER — it is the cost that your editors pay on every job.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Run controlled accuracy tests across multiple providers using a standardized test set with verified ground truth. Document audio conditions precisely — SNR level, speaker count, language, and content type — so results are reproducible.",
-          "pageCount": 5
+          "pageCount": 3
         }
       ],
       "duplicateH2s": [
         {
           "text": "What this accuracy benchmark actually measures",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Teams that rely on transcription accuracy data",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Transcription accuracy and benchmark questions",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Related performance and accuracy tests",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "How the benchmark tests were conducted",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Benchmark results you can verify yourself",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Edge cases that stress-test transcription accuracy",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Benchmark methodology and scoring approach",
-          "pageCount": 5
+          "pageCount": 3
         }
       ],
       "duplicateFaqs": [],
       "warnings": [
-        "Paragraphs reused on other pages; max reuse frequency 5"
+        "Paragraphs reused on other pages; max reuse frequency 3"
       ],
       "criticals": [],
-      "priorityScore": 27,
+      "priorityScore": 25,
       "thinContent": {
         "route": "/best-transcription-tool-for-journalists",
-        "thinContentRisk": 27,
+        "thinContentRisk": 25,
         "classification": "HEALTHY",
         "issues": [
           "Repeated CTA text reused on 5 pages",
@@ -19685,7 +19499,7 @@
         ],
         "components": {
           "semanticContentDepth": 4,
-          "templateDuplicationRisk": 57,
+          "templateDuplicationRisk": 52,
           "searchIntentCoverage": 0,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
@@ -19776,8 +19590,8 @@
         "internalLinkCount": 8,
         "htmlSize": 20943,
         "uniqueParagraphRatio": 1,
-        "duplicateParagraphReuseFrequency": 5,
-        "duplicateH2ReuseFrequency": 7,
+        "duplicateParagraphReuseFrequency": 3,
+        "duplicateH2ReuseFrequency": 5,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 8180,
@@ -19799,88 +19613,88 @@
       "duplicateParagraphs": [
         {
           "text": "Select recordings that represent real workflow conditions: clear speech, multi-speaker with 3+ participants, recordings with background noise (HVAC, crowd, traffic), technical vocabulary, non-native accents, and fast speech above 175 WPM.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Have two independent transcriptionists produce ground-truth text for each test recording. Resolve disagreements through arbitration. Ground truth quality determines benchmark reliability — a flawed reference transcript produces meaningless WER numbers.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Upload the same recordings to each tool without pre-processing. Record wall-clock processing time from upload completion to transcript available. Use default settings unless the specific goal is to benchmark custom configurations.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Calculate WER and speaker attribution accuracy from raw output before any editing. Then time how long a single editor takes to bring each raw transcript to delivery-ready quality — same editor, same criteria, measured independently for each tool output.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Accuracy measured separately for clear speech, moderate noise (SNR 15–25dB), and heavy noise (SNR below 15dB). Results broken out by content type: interview, meeting, podcast, lecture, technical presentation — each has meaningfully different baseline accuracy.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Wall-clock time from upload completion to transcript ready, measured at 30, 60, and 120 minutes of source audio. Processing time is measured without upload duration — network speed is not a benchmark variable for the transcription engine itself.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Minutes of human editing time required to bring raw transcript to delivery quality, measured per hour of source audio. This metric captures the total operational cost better than WER alone, since a 92% accurate but unstructured transcript may require more editing than an 88% accurate but well-labeled one.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Use benchmark data across multiple audio conditions — not just the vendor's best-case scenario — before committing to a paid plan or enterprise contract. Test with your actual content type.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Run the same recordings you process weekly through each tool under consideration. Measure cleanup time, not just WER — it is the cost that your editors pay on every job.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Run controlled accuracy tests across multiple providers using a standardized test set with verified ground truth. Document audio conditions precisely — SNR level, speaker count, language, and content type — so results are reproducible.",
-          "pageCount": 5
+          "pageCount": 3
         }
       ],
       "duplicateH2s": [
         {
           "text": "What this accuracy benchmark actually measures",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Teams that rely on transcription accuracy data",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Transcription accuracy and benchmark questions",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Related performance and accuracy tests",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "How the benchmark tests were conducted",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Benchmark results you can verify yourself",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Edge cases that stress-test transcription accuracy",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Benchmark methodology and scoring approach",
-          "pageCount": 5
+          "pageCount": 3
         }
       ],
       "duplicateFaqs": [],
       "warnings": [
-        "Paragraphs reused on other pages; max reuse frequency 5"
+        "Paragraphs reused on other pages; max reuse frequency 3"
       ],
       "criticals": [],
-      "priorityScore": 27,
+      "priorityScore": 26,
       "thinContent": {
         "route": "/best-transcription-tool-for-students",
-        "thinContentRisk": 27,
+        "thinContentRisk": 26,
         "classification": "HEALTHY",
         "issues": [
           "Repeated CTA text reused on 5 pages",
@@ -19893,7 +19707,7 @@
         ],
         "components": {
           "semanticContentDepth": 4,
-          "templateDuplicationRisk": 57,
+          "templateDuplicationRisk": 52,
           "searchIntentCoverage": 0,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
@@ -23797,7 +23611,7 @@
         "htmlSize": 18744,
         "uniqueParagraphRatio": 1,
         "duplicateParagraphReuseFrequency": 5,
-        "duplicateH2ReuseFrequency": 5,
+        "duplicateH2ReuseFrequency": 7,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 4145,
@@ -23856,11 +23670,11 @@
       ],
       "duplicateH2s": [
         {
-          "text": "Why VideoText is faster than most transcription tools",
-          "pageCount": 5
+          "text": "When VideoText may not be the best choice",
+          "pageCount": 7
         },
         {
-          "text": "When VideoText may not be the best choice",
+          "text": "Why VideoText is faster than most transcription tools",
           "pageCount": 5
         },
         {
@@ -23873,10 +23687,10 @@
         "Paragraphs reused on other pages; max reuse frequency 5"
       ],
       "criticals": [],
-      "priorityScore": 25,
+      "priorityScore": 26,
       "thinContent": {
         "route": "/descript-vs-videotext",
-        "thinContentRisk": 25,
+        "thinContentRisk": 26,
         "classification": "HEALTHY",
         "issues": [
           "60% duplicated paragraph reuse",
@@ -23887,7 +23701,7 @@
         ],
         "components": {
           "semanticContentDepth": 20,
-          "templateDuplicationRisk": 40,
+          "templateDuplicationRisk": 42,
           "searchIntentCoverage": 0,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
@@ -24542,8 +24356,8 @@
         "internalLinkCount": 6,
         "htmlSize": 12211,
         "uniqueParagraphRatio": 1,
-        "duplicateParagraphReuseFrequency": 3,
-        "duplicateH2ReuseFrequency": 3,
+        "duplicateParagraphReuseFrequency": 2,
+        "duplicateH2ReuseFrequency": 2,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 1862,
@@ -24565,41 +24379,41 @@
       "duplicateParagraphs": [
         {
           "text": "Choose the closest VideoText tool, inspect the generated transcript or subtitle output, then download SRT, VTT, TXT, or review-ready text depending on your delivery target. For subtitle pages, check line length, reading speed, timing overlap, and cue structure before publishing.",
-          "pageCount": 3
+          "pageCount": 2
         },
         {
           "text": "Before sharing the result, confirm that the transcript is readable, subtitles are synchronized, paragraphs are not duplicated, captions stay within platform limits, and translated text preserves the original timing. These checks help prevent rework in YouTube, Vimeo, social video, LMS, legal review, and agency handoff workflows.",
-          "pageCount": 3
+          "pageCount": 2
         },
         {
           "text": "Continue with the adjacent workflow when you need transcript generation, subtitle creation, caption translation, or file-level QA.",
-          "pageCount": 3
+          "pageCount": 2
         }
       ],
       "duplicateH2s": [
         {
           "text": "What this page helps you do",
-          "pageCount": 3
+          "pageCount": 2
         },
         {
           "text": "Quality checks before export",
-          "pageCount": 3
+          "pageCount": 2
         },
         {
           "text": "Related VideoText tools",
-          "pageCount": 3
+          "pageCount": 2
         }
       ],
       "duplicateFaqs": [],
       "warnings": [
         "Low word count: 254 words (< 300)",
-        "Paragraphs reused on other pages; max reuse frequency 3"
+        "Paragraphs reused on other pages; max reuse frequency 2"
       ],
       "criticals": [],
-      "priorityScore": 23,
+      "priorityScore": 22,
       "thinContent": {
         "route": "/docs/api",
-        "thinContentRisk": 23,
+        "thinContentRisk": 22,
         "classification": "HEALTHY",
         "issues": [
           "50% duplicated paragraph reuse"
@@ -24609,7 +24423,7 @@
         ],
         "components": {
           "semanticContentDepth": 35,
-          "templateDuplicationRisk": 30,
+          "templateDuplicationRisk": 28,
           "searchIntentCoverage": 6,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
@@ -25522,9 +25336,9 @@
         "internalLinkCount": 6,
         "htmlSize": 22474,
         "uniqueParagraphRatio": 1,
-        "duplicateParagraphReuseFrequency": 5,
-        "duplicateH2ReuseFrequency": 7,
-        "duplicateFaqReuseFrequency": 3,
+        "duplicateParagraphReuseFrequency": 3,
+        "duplicateH2ReuseFrequency": 5,
+        "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 9751,
         "averageParagraphWords": 41.75,
@@ -25537,129 +25351,107 @@
         "semanticStructureVariety": 4,
         "practicalSignalCount": 16,
         "genericPatternCount": 0,
-        "pageUniquenessRatio": 0.04166666666666663,
-        "reusedContentRatio": 0.9583333333333334,
+        "pageUniquenessRatio": 0.25,
+        "reusedContentRatio": 0.75,
         "topicalCoverageRatio": 1
       },
       "bannedPhraseHits": [],
       "duplicateParagraphs": [
         {
           "text": "Select recordings that represent real workflow conditions: clear speech, multi-speaker with 3+ participants, recordings with background noise (HVAC, crowd, traffic), technical vocabulary, non-native accents, and fast speech above 175 WPM.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Have two independent transcriptionists produce ground-truth text for each test recording. Resolve disagreements through arbitration. Ground truth quality determines benchmark reliability — a flawed reference transcript produces meaningless WER numbers.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Upload the same recordings to each tool without pre-processing. Record wall-clock processing time from upload completion to transcript available. Use default settings unless the specific goal is to benchmark custom configurations.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Calculate WER and speaker attribution accuracy from raw output before any editing. Then time how long a single editor takes to bring each raw transcript to delivery-ready quality — same editor, same criteria, measured independently for each tool output.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Accuracy measured separately for clear speech, moderate noise (SNR 15–25dB), and heavy noise (SNR below 15dB). Results broken out by content type: interview, meeting, podcast, lecture, technical presentation — each has meaningfully different baseline accuracy.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Wall-clock time from upload completion to transcript ready, measured at 30, 60, and 120 minutes of source audio. Processing time is measured without upload duration — network speed is not a benchmark variable for the transcription engine itself.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Minutes of human editing time required to bring raw transcript to delivery quality, measured per hour of source audio. This metric captures the total operational cost better than WER alone, since a 92% accurate but unstructured transcript may require more editing than an 88% accurate but well-labeled one.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Use benchmark data across multiple audio conditions — not just the vendor's best-case scenario — before committing to a paid plan or enterprise contract. Test with your actual content type.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Run the same recordings you process weekly through each tool under consideration. Measure cleanup time, not just WER — it is the cost that your editors pay on every job.",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Run controlled accuracy tests across multiple providers using a standardized test set with verified ground truth. Document audio conditions precisely — SNR level, speaker count, language, and content type — so results are reproducible.",
-          "pageCount": 5
+          "pageCount": 3
         }
       ],
       "duplicateH2s": [
         {
           "text": "What this accuracy benchmark actually measures",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Teams that rely on transcription accuracy data",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Transcription accuracy and benchmark questions",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Related performance and accuracy tests",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "How the benchmark tests were conducted",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Benchmark results you can verify yourself",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Edge cases that stress-test transcription accuracy",
-          "pageCount": 5
+          "pageCount": 3
         },
         {
           "text": "Benchmark methodology and scoring approach",
-          "pageCount": 5
-        }
-      ],
-      "duplicateFaqs": [
-        {
-          "text": "What does Word Error Rate actually measure?",
-          "pageCount": 3
-        },
-        {
-          "text": "How do you benchmark cleanup time fairly across tools?",
-          "pageCount": 3
-        },
-        {
-          "text": "Why do transcription accuracy numbers vary so much between vendors?",
-          "pageCount": 3
-        },
-        {
-          "text": "Does transcription accuracy degrade for long recordings?",
-          "pageCount": 3
-        },
-        {
-          "text": "How should I test transcription tools for my specific use case?",
           "pageCount": 3
         }
       ],
+      "duplicateFaqs": [],
       "warnings": [
-        "Paragraphs reused on other pages; max reuse frequency 5",
-        "FAQ questions reused on other pages; max reuse frequency 3"
+        "Paragraphs reused on other pages; max reuse frequency 3"
       ],
       "criticals": [],
-      "priorityScore": 29,
+      "priorityScore": 25,
       "thinContent": {
         "route": "/fastest-transcription-software",
-        "thinContentRisk": 29,
+        "thinContentRisk": 25,
         "classification": "HEALTHY",
         "issues": [
           "Repeated CTA text reused on 5 pages",
-          "96% duplicated paragraph reuse"
+          "75% duplicated paragraph reuse"
         ],
         "recommendations": [
           "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
         ],
         "components": {
           "semanticContentDepth": 4,
-          "templateDuplicationRisk": 67,
+          "templateDuplicationRisk": 49,
           "searchIntentCoverage": 0,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
@@ -25794,7 +25586,7 @@
         "htmlSize": 16715,
         "uniqueParagraphRatio": 1,
         "duplicateParagraphReuseFrequency": 0,
-        "duplicateH2ReuseFrequency": 7,
+        "duplicateH2ReuseFrequency": 5,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 3576,
@@ -25817,19 +25609,19 @@
       "duplicateH2s": [
         {
           "text": "What this accuracy benchmark actually measures",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Teams that rely on transcription accuracy data",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Transcription accuracy and benchmark questions",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Related performance and accuracy tests",
-          "pageCount": 7
+          "pageCount": 5
         },
         {
           "text": "Performance numbers side by side",
@@ -25850,7 +25642,7 @@
         "recommendations": [],
         "components": {
           "semanticContentDepth": 14,
-          "templateDuplicationRisk": 13,
+          "templateDuplicationRisk": 11,
           "searchIntentCoverage": 0,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
@@ -32965,8 +32757,8 @@
         "internalLinkCount": 6,
         "htmlSize": 12534,
         "uniqueParagraphRatio": 1,
-        "duplicateParagraphReuseFrequency": 3,
-        "duplicateH2ReuseFrequency": 3,
+        "duplicateParagraphReuseFrequency": 2,
+        "duplicateH2ReuseFrequency": 2,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 1979,
@@ -32988,41 +32780,41 @@
       "duplicateParagraphs": [
         {
           "text": "Choose the closest VideoText tool, inspect the generated transcript or subtitle output, then download SRT, VTT, TXT, or review-ready text depending on your delivery target. For subtitle pages, check line length, reading speed, timing overlap, and cue structure before publishing.",
-          "pageCount": 3
+          "pageCount": 2
         },
         {
           "text": "Before sharing the result, confirm that the transcript is readable, subtitles are synchronized, paragraphs are not duplicated, captions stay within platform limits, and translated text preserves the original timing. These checks help prevent rework in YouTube, Vimeo, social video, LMS, legal review, and agency handoff workflows.",
-          "pageCount": 3
+          "pageCount": 2
         },
         {
           "text": "Continue with the adjacent workflow when you need transcript generation, subtitle creation, caption translation, or file-level QA.",
-          "pageCount": 3
+          "pageCount": 2
         }
       ],
       "duplicateH2s": [
         {
           "text": "What this page helps you do",
-          "pageCount": 3
+          "pageCount": 2
         },
         {
           "text": "Quality checks before export",
-          "pageCount": 3
+          "pageCount": 2
         },
         {
           "text": "Related VideoText tools",
-          "pageCount": 3
+          "pageCount": 2
         }
       ],
       "duplicateFaqs": [],
       "warnings": [
         "Low word count: 268 words (< 300)",
-        "Paragraphs reused on other pages; max reuse frequency 3"
+        "Paragraphs reused on other pages; max reuse frequency 2"
       ],
       "criticals": [],
-      "priorityScore": 23,
+      "priorityScore": 22,
       "thinContent": {
         "route": "/integrations/zapier",
-        "thinContentRisk": 23,
+        "thinContentRisk": 22,
         "classification": "HEALTHY",
         "issues": [
           "50% duplicated paragraph reuse"
@@ -33032,7 +32824,7 @@
         ],
         "components": {
           "semanticContentDepth": 35,
-          "templateDuplicationRisk": 30,
+          "templateDuplicationRisk": 28,
           "searchIntentCoverage": 6,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
@@ -38767,7 +38559,7 @@
         "htmlSize": 18849,
         "uniqueParagraphRatio": 1,
         "duplicateParagraphReuseFrequency": 5,
-        "duplicateH2ReuseFrequency": 5,
+        "duplicateH2ReuseFrequency": 7,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 4142,
@@ -38826,11 +38618,11 @@
       ],
       "duplicateH2s": [
         {
-          "text": "Why VideoText is faster than most transcription tools",
-          "pageCount": 5
+          "text": "When VideoText may not be the best choice",
+          "pageCount": 7
         },
         {
-          "text": "When VideoText may not be the best choice",
+          "text": "Why VideoText is faster than most transcription tools",
           "pageCount": 5
         },
         {
@@ -38859,7 +38651,7 @@
         ],
         "components": {
           "semanticContentDepth": 20,
-          "templateDuplicationRisk": 40,
+          "templateDuplicationRisk": 42,
           "searchIntentCoverage": 0,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
@@ -40866,129 +40658,215 @@
       "htmlPath": "dist/research/transcription-accuracy-benchmark-2026/index.html",
       "exists": true,
       "title": "AI Transcription Accuracy Benchmark | VideoText",
-      "metaDescription": "A reproducible transcription accuracy study: public dataset, ground-truth transcripts, scoring code, raw outputs, and a downloadable CSV.",
+      "metaDescription": "How much does audio condition affect AI transcription accuracy? A frozen, versioned benchmark protocol with public dataset. Fast, accurate, free tier.",
       "h1": "AI Transcription Accuracy Benchmark",
       "h2s": [
-        "What this page helps you do",
-        "Recommended workflow",
-        "Quality checks before export",
-        "Related VideoText tools"
+        "This benchmark is not complete",
+        "How much does audio condition affect AI transcription accuracy?",
+        "Dataset composition",
+        "Whisper baseline (open-source) — results by condition",
+        "Methodology (frozen protocol 1.0.0 )",
+        "Limitations and known gaps"
       ],
       "paragraphs": [
-        "A reproducible transcription accuracy study: public dataset, ground-truth transcripts, scoring code, raw outputs, and a downloadable CSV. Phase 1 pilot results and open methodology.",
-        "Use AI Transcription Accuracy Benchmark to choose the right VideoText workflow for transcript, subtitle, caption, translation, validation, or publishing tasks. The page is designed for practical production work: upload or prepare media, review timing and text quality, and export files that are ready for editors, platforms, clients, or accessibility review.",
-        "Choose the closest VideoText tool, inspect the generated transcript or subtitle output, then download SRT, VTT, TXT, or review-ready text depending on your delivery target. For subtitle pages, check line length, reading speed, timing overlap, and cue structure before publishing.",
-        "Before sharing the result, confirm that the transcript is readable, subtitles are synchronized, paragraphs are not duplicated, captions stay within platform limits, and translated text preserves the original timing. These checks help prevent rework in YouTube, Vimeo, social video, LMS, legal review, and agency handoff workflows.",
-        "Continue with the adjacent workflow when you need transcript generation, subtitle creation, caption translation, or file-level QA.",
-        "Common use cases: transcription accuracy benchmark open dataset methodology, transcription online, free transcription, research/transcription accuracy benchmark 2026, research/transcription accuracy."
+        "Research · Protocol 1.0.0 (frozen, tag benchmark-protocol-v1.0.0 ) · Generated 2026-09-12",
+        "How much does audio condition affect AI transcription accuracy? We built a frozen, versioned evaluation protocol — dataset, ground truth, normalization rules, and scoring code — and are running the same audio through multiple transcription systems as access allows. Every number below is generated directly from benchmark_v1_report.json , not typed into this page.",
+        "1 of 5 planned systems evaluated across 5 speech conditions. This benchmark is NOT complete and must not be cited as a finished multi-system comparison until more systems are executed.",
+        "1 of 5 planned systems have been run:",
+        "In our Phase 1 pilot data (one open-source Whisper baseline, not a multi-system result yet), word error rate roughly doubled going from clean read speech to synthetic background noise.",
+        "This is a single-system data point across multiple conditions, generated from the frozen protocol below — not a finished cross-vendor study. See the per-condition table for exact figures with 95% confidence intervals and sample sizes.",
+        "136 utterances scored, 0 failures excluded from aggregates.",
+        "VideoText.io, \"AI Transcription Accuracy Benchmark\" (protocol benchmark-protocol-v1.0.0 ), 2026. videotext.io/research/transcription-accuracy-benchmark-2026"
       ],
       "faqQuestions": [
-        "How accurate is AI transcription?",
+        "How much does audio condition affect AI transcription accuracy?",
         "What dataset and ground truth does this benchmark use?",
-        "Is this benchmark data or a marketing claim?",
-        "Has VideoText itself been benchmarked here?"
+        "Is this benchmark complete?",
+        "Is this benchmark data or a marketing claim?"
       ],
-      "tables": [],
+      "tables": [
+        {
+          "text": "Condition Utterances Audio (min) Accented speech 42 4.0 Clean read speech 40 7.0 Multi-speaker (synthetic, sequential) 6 1.9 Noisy speech (synthetic, additive noise) 32 5.6 Reduced mic quality (synthetic) 16 2.8",
+          "rows": [
+            [
+              "Condition",
+              "Utterances",
+              "Audio (min)"
+            ],
+            [
+              "Accented speech",
+              "42",
+              "4.0"
+            ],
+            [
+              "Clean read speech",
+              "40",
+              "7.0"
+            ],
+            [
+              "Multi-speaker (synthetic, sequential)",
+              "6",
+              "1.9"
+            ],
+            [
+              "Noisy speech (synthetic, additive noise)",
+              "32",
+              "5.6"
+            ],
+            [
+              "Reduced mic quality (synthetic)",
+              "16",
+              "2.8"
+            ]
+          ]
+        },
+        {
+          "text": "Condition n / duration Corpus WER (95% CI) RTF Punctuation F1 Diarization Accented speech 42 / 4.0 min 1.33 % ( 0.31 – 2.64 %) 2.09x 0.976 not_applicable Clean read speech 40 / 7.0 min 2.85 % ( 1.82 – 4.01 %) 2.47x not_applicable not_applicable Multi-speaker (synthetic, sequential) 6 / 1.9 min 3.28 % ( 1.96 – 4.28 %) 2.97x not_applicable not_applicable Noisy speech (synthetic, additive noise) 32 / 5.6 min 5.05 % ( 3.62 – 6.78 %) 2.55x not_applicable not_applicable Reduced mic quality (synthetic) 16 / 2.8 min 3.85 % ( 2.19 – 5.67 %) 2.56x not_applicable not_applicable",
+          "rows": [
+            [
+              "Condition",
+              "n / duration",
+              "Corpus WER (95% CI)",
+              "RTF",
+              "Punctuation F1",
+              "Diarization"
+            ],
+            [
+              "Accented speech",
+              "42 / 4.0 min",
+              "1.33 % ( 0.31 – 2.64 %)",
+              "2.09x",
+              "0.976",
+              "not_applicable"
+            ],
+            [
+              "Clean read speech",
+              "40 / 7.0 min",
+              "2.85 % ( 1.82 – 4.01 %)",
+              "2.47x",
+              "not_applicable",
+              "not_applicable"
+            ],
+            [
+              "Multi-speaker (synthetic, sequential)",
+              "6 / 1.9 min",
+              "3.28 % ( 1.96 – 4.28 %)",
+              "2.97x",
+              "not_applicable",
+              "not_applicable"
+            ],
+            [
+              "Noisy speech (synthetic, additive noise)",
+              "32 / 5.6 min",
+              "5.05 % ( 3.62 – 6.78 %)",
+              "2.55x",
+              "not_applicable",
+              "not_applicable"
+            ],
+            [
+              "Reduced mic quality (synthetic)",
+              "16 / 2.8 min",
+              "3.85 % ( 2.19 – 5.67 %)",
+              "2.56x",
+              "not_applicable",
+              "not_applicable"
+            ]
+          ]
+        }
+      ],
       "internalLinks": [
-        "/subtitle-tools",
-        "/transcription-tools",
-        "/translate-subtitles",
-        "/video-to-subtitles",
+        "/",
+        "/accuracy-test",
+        "/best-transcription-tool",
+        "/research/transcription-accuracy-benchmark-2026-v1-dataset-manifest.jsonl",
+        "/research/transcription-accuracy-benchmark-2026-v1-protocol.json",
+        "/research/transcription-accuracy-benchmark-2026-v1-results.csv",
+        "/transcription-benchmark",
         "/video-to-transcript"
       ],
       "listItems": [
-        "Prepare source media, transcript text, or subtitle files before running the workflow.",
-        "Review timestamps, speaker labels, caption density, and export format requirements.",
-        "Use related tools for translation, validation, repair, burning captions, or compression."
+        "Whisper baseline (open-source) — evaluated",
+        "VideoText (production) — not yet evaluated ( VIDEOTEXT_API_KEY not set in environment (see docs/API_PRIVATE_BETA.md) )",
+        "OpenAI Whisper API — not yet evaluated ( OPENAI_API_KEY not set in environment )",
+        "Deepgram — not yet evaluated ( DEEPGRAM_API_KEY not set in environment )",
+        "AssemblyAI — not yet evaluated ( ASSEMBLYAI_API_KEY not set in environment )",
+        "Dataset: 136 audio files across 5 conditions",
+        "Protocol frozen as benchmark-protocol-v1.0.0, dataset hash 5f429d2090c4…",
+        "Every reference transcript is verbatim from a licensed source or a documented synthetic transform of one — none were generated by an ASR system or by us",
+        "Primary metric: Word Error Rate (WER), computed corpus-level as sum(errors)/sum(reference words) — never averaged as per-utterance ratios, and never collapsed with other metrics into one \"accuracy score.\"",
+        "Confidence intervals: 95% CI via 2000-resample percentile bootstrap over utterances, reported alongside every corpus WER figure.",
+        "Separate metrics: diarization (DER), timestamp error, punctuation F1, real-time factor, and API cost per audio-hour are tracked as independent fields — reported only where valid ground truth or system output exists, marked \"not applicable\" otherwise rather than defaulted to a number.",
+        "Dataset hash: 5f429d2090c40bb6f2ab88994560199f962988367467a4d7d6d28ee81254800d — any change to any audio file or transcript changes this hash.",
+        "Full protocol, normalization rules, inclusion/exclusion criteria, and per-system settings: protocol.json and PROTOCOL.md in the repository .",
+        "spontaneous conversational speech — not sourced in v1, disclosed rather than fabricated.",
+        "natural multi speaker dialogue including overlap — not sourced in v1, disclosed rather than fabricated.",
+        "technical domain vocabulary — not sourced in v1, disclosed rather than fabricated.",
+        "dedicated named entity numbers dates condition — not sourced in v1, disclosed rather than fabricated.",
+        "Multi-speaker condition is a synthetic, non-overlapping, two-speaker concatenation — not a natural conversation and not overlapping speech.",
+        "Noisy-speech and reduced-mic-quality conditions are documented synthetic transforms of clean speech, not independently recorded noisy/low-quality audio.",
+        "Only one system (an open-source Whisper baseline) has been executed as of this report. VideoText, OpenAI, Deepgram, and AssemblyAI runners are implemented and tested against the missing-credential path, but have not produced results yet.",
+        "Per-utterance results (CSV)",
+        "Dataset manifest with per-file SHA256 hashes (JSONL)",
+        "Frozen protocol (JSON)",
+        "Full source: dataset prep scripts, scorers, runners, unit tests"
       ],
       "ctaTexts": [],
       "metrics": {
-        "wordCount": 268,
-        "paragraphCount": 6,
-        "h2Count": 4,
+        "wordCount": 745,
+        "paragraphCount": 8,
+        "h2Count": 6,
         "faqCount": 4,
-        "internalLinkCount": 5,
-        "htmlSize": 13797,
+        "internalLinkCount": 8,
+        "htmlSize": 21844,
         "uniqueParagraphRatio": 1,
-        "duplicateParagraphReuseFrequency": 3,
-        "duplicateH2ReuseFrequency": 3,
+        "duplicateParagraphReuseFrequency": 0,
+        "duplicateH2ReuseFrequency": 0,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
-        "visibleTextLength": 2008,
-        "averageParagraphWords": 33,
-        "averageParagraphRichness": 0.8722929606625259,
-        "uniqueSemanticSectionCount": 4,
+        "visibleTextLength": 5183,
+        "averageParagraphWords": 23.625,
+        "averageParagraphRichness": 0.9168215871254163,
+        "uniqueSemanticSectionCount": 6,
         "h2Diversity": 1,
         "faqDiversity": 1,
-        "tableCount": 0,
-        "listItemCount": 3,
-        "semanticStructureVariety": 4,
-        "practicalSignalCount": 19,
+        "tableCount": 2,
+        "listItemCount": 24,
+        "semanticStructureVariety": 5,
+        "practicalSignalCount": 9,
         "genericPatternCount": 0,
-        "pageUniquenessRatio": 0.5,
-        "reusedContentRatio": 0.5,
+        "pageUniquenessRatio": 1,
+        "reusedContentRatio": 0,
         "topicalCoverageRatio": 1
       },
       "bannedPhraseHits": [],
-      "duplicateParagraphs": [
-        {
-          "text": "Choose the closest VideoText tool, inspect the generated transcript or subtitle output, then download SRT, VTT, TXT, or review-ready text depending on your delivery target. For subtitle pages, check line length, reading speed, timing overlap, and cue structure before publishing.",
-          "pageCount": 3
-        },
-        {
-          "text": "Before sharing the result, confirm that the transcript is readable, subtitles are synchronized, paragraphs are not duplicated, captions stay within platform limits, and translated text preserves the original timing. These checks help prevent rework in YouTube, Vimeo, social video, LMS, legal review, and agency handoff workflows.",
-          "pageCount": 3
-        },
-        {
-          "text": "Continue with the adjacent workflow when you need transcript generation, subtitle creation, caption translation, or file-level QA.",
-          "pageCount": 3
-        }
-      ],
-      "duplicateH2s": [
-        {
-          "text": "What this page helps you do",
-          "pageCount": 3
-        },
-        {
-          "text": "Quality checks before export",
-          "pageCount": 3
-        },
-        {
-          "text": "Related VideoText tools",
-          "pageCount": 3
-        }
-      ],
+      "duplicateParagraphs": [],
+      "duplicateH2s": [],
       "duplicateFaqs": [],
-      "warnings": [
-        "Low word count: 268 words (< 300)",
-        "Paragraphs reused on other pages; max reuse frequency 3"
-      ],
+      "warnings": [],
       "criticals": [],
-      "priorityScore": 23,
+      "priorityScore": 6,
       "thinContent": {
         "route": "/research/transcription-accuracy-benchmark-2026",
-        "thinContentRisk": 21,
+        "thinContentRisk": 6,
         "classification": "HEALTHY",
         "issues": [
-          "50% duplicated paragraph reuse"
+          "3 shallow or low-information paragraphs"
         ],
-        "recommendations": [
-          "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-        ],
+        "recommendations": [],
         "components": {
-          "semanticContentDepth": 35,
-          "templateDuplicationRisk": 30,
+          "semanticContentDepth": 26,
+          "templateDuplicationRisk": 0,
           "searchIntentCoverage": 0,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
-          "htmlRichness": 16,
-          "aiTemplatePatternRisk": 0
+          "htmlRichness": 0,
+          "aiTemplatePatternRisk": 12
         },
         "missingSubtopics": [],
-        "weakSections": [],
-        "semanticExpansionOpportunities": [
-          "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
-        ]
+        "weakSections": [
+          "Several paragraphs are too short to add standalone informational value"
+        ],
+        "semanticExpansionOpportunities": []
       }
     },
     {
@@ -58624,220 +58502,108 @@
       "exists": true,
       "title": "Transcription Benchmark | VideoText",
       "metaDescription": "VideoText workflow page for transcription benchmark. Learn the relevant transcript, subtitle, formatting, export, or comparison. Fast, accurate, free tier.",
-      "h1": "Fastest Transcription Software? Benchmark Data & Methodology",
+      "h1": "Transcription benchmark",
       "h2s": [
-        "What this accuracy benchmark actually measures",
-        "How the benchmark tests were conducted",
-        "Benchmark results you can verify yourself",
-        "Teams that rely on transcription accuracy data",
-        "Edge cases that stress-test transcription accuracy",
-        "Benchmark methodology and scoring approach",
-        "Transcription accuracy and benchmark questions",
-        "Related performance and accuracy tests"
+        "Evidence-based accuracy research",
+        "How fast is VideoText, really?",
+        "What VideoText is built for",
+        "When VideoText may not be the best choice",
+        "FAQ"
       ],
       "paragraphs": [
-        "Benchmark reference for broad transcription software evaluation: median and P90 processing speed, output depth checks, and reproducible methodology by file length.",
-        "Select recordings that represent real workflow conditions: clear speech, multi-speaker with 3+ participants, recordings with background noise (HVAC, crowd, traffic), technical vocabulary, non-native accents, and fast speech above 175 WPM.",
-        "Have two independent transcriptionists produce ground-truth text for each test recording. Resolve disagreements through arbitration. Ground truth quality determines benchmark reliability — a flawed reference transcript produces meaningless WER numbers.",
-        "Upload the same recordings to each tool without pre-processing. Record wall-clock processing time from upload completion to transcript available. Use default settings unless the specific goal is to benchmark custom configurations.",
-        "Calculate WER and speaker attribution accuracy from raw output before any editing. Then time how long a single editor takes to bring each raw transcript to delivery-ready quality — same editor, same criteria, measured independently for each tool output.",
-        "Accuracy measured separately for clear speech, moderate noise (SNR 15–25dB), and heavy noise (SNR below 15dB). Results broken out by content type: interview, meeting, podcast, lecture, technical presentation — each has meaningfully different baseline accuracy.",
-        "Wall-clock time from upload completion to transcript ready, measured at 30, 60, and 120 minutes of source audio. Processing time is measured without upload duration — network speed is not a benchmark variable for the transcription engine itself.",
-        "Minutes of human editing time required to bring raw transcript to delivery quality, measured per hour of source audio. This metric captures the total operational cost better than WER alone, since a 92% accurate but unstructured transcript may require more editing than an 88% accurate but well-labeled one.",
-        "Use benchmark data across multiple audio conditions — not just the vendor's best-case scenario — before committing to a paid plan or enterprise contract. Test with your actual content type.",
-        "Run the same recordings you process weekly through each tool under consideration. Measure cleanup time, not just WER — it is the cost that your editors pay on every job.",
-        "Run controlled accuracy tests across multiple providers using a standardized test set with verified ground truth. Document audio conditions precisely — SNR level, speaker count, language, and content type — so results are reproducible.",
-        "Clear studio speech (SNR >30dB): WER typically 3–6%. Office recording with HVAC noise (SNR 20–25dB): WER typically 8–14%. Meeting room with multiple speakers sharing a single microphone (SNR <15dB): WER typically 15–25%. Vendor-published accuracy numbers rarely specify which condition they measured.",
-        "Some transcription models degrade in quality after 30–60 minutes of continuous audio — topic drift, speaker fatigue in the audio signal, and model context limits all contribute. A benchmark that only tests 10-minute clips does not reveal this degradation.",
-        "Most ASR models maintain accuracy up to approximately 160–170 WPM. Above 175 WPM — common in panel discussions, auction recordings, and some podcast styles — accuracy drops sharply. A benchmark that does not include fast-speech samples misses a common real-world failure mode.",
-        "WER counts incorrect words but does not penalize for speaker misattribution separately. A transcript that is 93% accurate on individual words but assigns 30% of dialogue to the wrong speaker will fail completely for any workflow that depends on knowing who said what.",
-        "WER = (Substitutions + Deletions + Insertions) / Total Reference Words. Calculated case-insensitively. Punctuation errors typically excluded. A 5% WER means 5 errors per 100 reference words — which for a 10,000-word transcript produces approximately 500 errors requiring correction.",
-        "Clear speech: single speaker, SNR above 30dB, minimal reverberation. Moderate noise: 2–4 speakers, SNR 15–25dB, background hum or traffic. Challenging: 4+ speakers on shared microphone, SNR below 15dB, overlapping speech and background noise.",
-        "Transcriptionist A produces ground truth. Transcriptionist B independently reviews and marks disagreements. Arbitration resolves disagreements using the source audio as the authoritative reference. Ground truth files are locked before any tool testing begins.",
-        "Measured separately from WER. Speaker attribution error rate = percentage of words assigned to the incorrect speaker label in the benchmark output. A separate metric from word accuracy because speaker label errors are categorically different from transcription word errors.",
-        "WER (Word Error Rate) = (Substitutions + Deletions + Insertions) / Total Reference Words. A 5% WER means approximately 5 errors per 100 words. WER is calculated against a verified ground-truth transcript, case-insensitively, typically excluding punctuation errors. It measures word-level accuracy but does not score speaker attribution errors, formatting quality, or the readability of the output — which is why WER alone is an incomplete operational benchmark.",
-        "The same human editor processes the raw output from each tool under identical conditions: same recording, same quality criteria for \"delivery-ready,\" timed start-to-finish. The editor is not told which tool produced which output to prevent bias. Cleanup time is measured in minutes per hour of source audio. This metric captures speaker label corrections, paragraph restructuring, inaudible-section review, and verbatim level normalization — all the editing steps WER does not measure.",
-        "Most vendor-published accuracy numbers are measured on best-case audio conditions: studio-quality single-speaker speech at low noise levels. Real-world recordings — meetings, podcasts, interviews with consumer microphones — produce meaningfully lower accuracy across all tools. A vendor reporting 99% accuracy has likely measured on clean studio audio. The relevant question is accuracy at the SNR level and speaker count of your actual recordings.",
-        "It depends on the architecture. Some ASR models process audio in fixed chunks (typically 30 minutes) and reassemble independently. These models maintain consistent accuracy across length but may introduce artifacts at chunk boundaries. Other models use longer context windows that can handle topic drift better but may slow down for very long files. Testing with your actual recording duration, not just short samples, is the only reliable way to evaluate long-file behavior.",
-        "Use recordings from your actual workflow — same audio conditions, same speaker count, same content type. Do not use vendor-provided sample audio for evaluation. Measure three things: raw WER against a verified transcript, processing time per hour of audio, and cleanup time for one editor to bring the raw output to your delivery standard. The tool with the best combination of those three metrics for your content type is the right choice, regardless of marketing accuracy claims."
+        "This page previously displayed processing-speed figures that were not backed by a published dataset or methodology. We removed them rather than let unverified numbers stand next to our evidence-based research. See below for what we can currently substantiate.",
+        "We publish a reproducible transcription accuracy study — dataset, ground truth, scoring code, raw results, and a downloadable CSV — at our transcription accuracy benchmark . It's an early-stage pilot (one condition, one open-source baseline model so far), and it says so plainly. A processing-speed study built to the same standard is planned; until it exists, we won't publish speed numbers here that we can't trace back to a dataset and script.",
+        "We don't have a published, sourced speed benchmark yet — see above for what we do have.",
+        "VideoText is built for batch and async processing of long-form recordings (meetings, podcasts, webinars). We'd rather say that plainly than publish specific minute-by-minute figures we can't trace to a dataset and script."
       ],
       "faqQuestions": [
-        "What does Word Error Rate actually measure?",
-        "How do you benchmark cleanup time fairly across tools?",
-        "Why do transcription accuracy numbers vary so much between vendors?",
-        "Does transcription accuracy degrade for long recordings?",
-        "How should I test transcription tools for my specific use case?"
+        "How fast is VideoText, really?",
+        "What is the fastest transcription software?",
+        "How long does it take to transcribe a 2-hour video?",
+        "Are benchmark numbers measured from upload start?",
+        "How can I see real benchmark data?"
       ],
       "tables": [],
       "internalLinks": [
-        "/guideline-format",
-        "/pricing",
-        "/tools",
-        "/translate-subtitles",
-        "/video-to-subtitles",
+        "/",
+        "/ai-transcription-tools",
+        "/best-transcription-tool",
+        "/research/transcription-accuracy-benchmark-2026",
         "/video-to-transcript"
       ],
       "listItems": [
-        "Word Error Rate measures how many words in the transcript differ from the ground truth — but it does not measure which errors matter. A transcript with 7% WER that misattributes 40% of speaker turns requires more editing than a 10% WER transcript where all speaker labels are correct. WER is a useful starting point, not an operational conclusion.",
-        "Benchmark audio diversity is the most commonly gamed variable in transcription accuracy claims. Testing only studio-quality clear speech (SNR above 30dB) overstates real-world accuracy by 8–15% for typical meeting, interview, and podcast content recorded with consumer-grade microphones in office environments.",
-        "Cleanup time — the number of minutes a human editor spends bringing a raw AI transcript to delivery-ready quality — is the operationally relevant metric that most transcription vendors do not publish. A tool with 94% WER that produces poorly structured output may require more editing time than an 89% WER tool that outputs clean paragraph structure with accurate speaker labels."
+        "Designed for recorded, file-based workflows rather than live/real-time capture",
+        "Built for batch processing of long-form content (podcasts, webinars, meetings)",
+        "A sourced, reproducible speed benchmark is on the roadmap — see the accuracy benchmark for the standard it will follow",
+        "Processing recorded long-form video and audio (meetings, podcasts, webinars).",
+        "Batch and async workflows rather than live transcription.",
+        "Structured export output (transcript, subtitles, summary) rather than raw text alone.",
+        "Real-time meeting transcription with bot attendance → tools built for live capture are a better fit.",
+        "Collaborative timeline editing inside a video editor → an editor-integrated tool is a better fit."
       ],
       "ctaTexts": [],
       "metrics": {
-        "wordCount": 1395,
-        "paragraphCount": 24,
-        "h2Count": 8,
+        "wordCount": 436,
+        "paragraphCount": 4,
+        "h2Count": 5,
         "faqCount": 5,
-        "internalLinkCount": 6,
-        "htmlSize": 22501,
+        "internalLinkCount": 5,
+        "htmlSize": 12862,
         "uniqueParagraphRatio": 1,
-        "duplicateParagraphReuseFrequency": 5,
+        "duplicateParagraphReuseFrequency": 0,
         "duplicateH2ReuseFrequency": 7,
-        "duplicateFaqReuseFrequency": 3,
+        "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
-        "visibleTextLength": 9811,
-        "averageParagraphWords": 41.916666666666664,
-        "averageParagraphRichness": 0.8819124397645806,
-        "uniqueSemanticSectionCount": 8,
+        "visibleTextLength": 2912,
+        "averageParagraphWords": 38.75,
+        "averageParagraphRichness": 0.8963875381388253,
+        "uniqueSemanticSectionCount": 5,
         "h2Diversity": 1,
         "faqDiversity": 1,
         "tableCount": 0,
-        "listItemCount": 3,
+        "listItemCount": 8,
         "semanticStructureVariety": 4,
-        "practicalSignalCount": 16,
-        "genericPatternCount": 0,
-        "pageUniquenessRatio": 0.04166666666666663,
-        "reusedContentRatio": 0.9583333333333334,
+        "practicalSignalCount": 13,
+        "genericPatternCount": 1,
+        "pageUniquenessRatio": 1,
+        "reusedContentRatio": 0,
         "topicalCoverageRatio": 1
       },
       "bannedPhraseHits": [],
-      "duplicateParagraphs": [
-        {
-          "text": "Select recordings that represent real workflow conditions: clear speech, multi-speaker with 3+ participants, recordings with background noise (HVAC, crowd, traffic), technical vocabulary, non-native accents, and fast speech above 175 WPM.",
-          "pageCount": 5
-        },
-        {
-          "text": "Have two independent transcriptionists produce ground-truth text for each test recording. Resolve disagreements through arbitration. Ground truth quality determines benchmark reliability — a flawed reference transcript produces meaningless WER numbers.",
-          "pageCount": 5
-        },
-        {
-          "text": "Upload the same recordings to each tool without pre-processing. Record wall-clock processing time from upload completion to transcript available. Use default settings unless the specific goal is to benchmark custom configurations.",
-          "pageCount": 5
-        },
-        {
-          "text": "Calculate WER and speaker attribution accuracy from raw output before any editing. Then time how long a single editor takes to bring each raw transcript to delivery-ready quality — same editor, same criteria, measured independently for each tool output.",
-          "pageCount": 5
-        },
-        {
-          "text": "Accuracy measured separately for clear speech, moderate noise (SNR 15–25dB), and heavy noise (SNR below 15dB). Results broken out by content type: interview, meeting, podcast, lecture, technical presentation — each has meaningfully different baseline accuracy.",
-          "pageCount": 5
-        },
-        {
-          "text": "Wall-clock time from upload completion to transcript ready, measured at 30, 60, and 120 minutes of source audio. Processing time is measured without upload duration — network speed is not a benchmark variable for the transcription engine itself.",
-          "pageCount": 5
-        },
-        {
-          "text": "Minutes of human editing time required to bring raw transcript to delivery quality, measured per hour of source audio. This metric captures the total operational cost better than WER alone, since a 92% accurate but unstructured transcript may require more editing than an 88% accurate but well-labeled one.",
-          "pageCount": 5
-        },
-        {
-          "text": "Use benchmark data across multiple audio conditions — not just the vendor's best-case scenario — before committing to a paid plan or enterprise contract. Test with your actual content type.",
-          "pageCount": 5
-        },
-        {
-          "text": "Run the same recordings you process weekly through each tool under consideration. Measure cleanup time, not just WER — it is the cost that your editors pay on every job.",
-          "pageCount": 5
-        },
-        {
-          "text": "Run controlled accuracy tests across multiple providers using a standardized test set with verified ground truth. Document audio conditions precisely — SNR level, speaker count, language, and content type — so results are reproducible.",
-          "pageCount": 5
-        }
-      ],
+      "duplicateParagraphs": [],
       "duplicateH2s": [
         {
-          "text": "What this accuracy benchmark actually measures",
+          "text": "When VideoText may not be the best choice",
           "pageCount": 7
-        },
-        {
-          "text": "Teams that rely on transcription accuracy data",
-          "pageCount": 7
-        },
-        {
-          "text": "Transcription accuracy and benchmark questions",
-          "pageCount": 7
-        },
-        {
-          "text": "Related performance and accuracy tests",
-          "pageCount": 7
-        },
-        {
-          "text": "How the benchmark tests were conducted",
-          "pageCount": 5
-        },
-        {
-          "text": "Benchmark results you can verify yourself",
-          "pageCount": 5
-        },
-        {
-          "text": "Edge cases that stress-test transcription accuracy",
-          "pageCount": 5
-        },
-        {
-          "text": "Benchmark methodology and scoring approach",
-          "pageCount": 5
         }
       ],
-      "duplicateFaqs": [
-        {
-          "text": "What does Word Error Rate actually measure?",
-          "pageCount": 3
-        },
-        {
-          "text": "How do you benchmark cleanup time fairly across tools?",
-          "pageCount": 3
-        },
-        {
-          "text": "Why do transcription accuracy numbers vary so much between vendors?",
-          "pageCount": 3
-        },
-        {
-          "text": "Does transcription accuracy degrade for long recordings?",
-          "pageCount": 3
-        },
-        {
-          "text": "How should I test transcription tools for my specific use case?",
-          "pageCount": 3
-        }
-      ],
-      "warnings": [
-        "Paragraphs reused on other pages; max reuse frequency 5",
-        "FAQ questions reused on other pages; max reuse frequency 3"
-      ],
+      "duplicateFaqs": [],
+      "warnings": [],
       "criticals": [],
-      "priorityScore": 27,
+      "priorityScore": 11,
       "thinContent": {
         "route": "/transcription-benchmark",
-        "thinContentRisk": 27,
+        "thinContentRisk": 11,
         "classification": "HEALTHY",
         "issues": [
-          "96% duplicated paragraph reuse"
+          "AI/template-like sentence patterns detected (1)"
         ],
         "recommendations": [
-          "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
+          "Replace generic AI-style transitions with concrete examples and constraints."
         ],
         "components": {
-          "semanticContentDepth": 4,
-          "templateDuplicationRisk": 61,
+          "semanticContentDepth": 43,
+          "templateDuplicationRisk": 7,
           "searchIntentCoverage": 0,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,
-          "htmlRichness": 8,
-          "aiTemplatePatternRisk": 0
+          "htmlRichness": 12,
+          "aiTemplatePatternRisk": 8
         },
         "missingSubtopics": [],
         "weakSections": [],
         "semanticExpansionOpportunities": [
-          "Rewrite duplicated paragraphs with route-specific examples and differentiated insights."
+          "Replace generic AI-style transitions with concrete examples and constraints."
         ]
       }
     },
@@ -63378,7 +63144,7 @@
         "htmlSize": 18841,
         "uniqueParagraphRatio": 1,
         "duplicateParagraphReuseFrequency": 5,
-        "duplicateH2ReuseFrequency": 5,
+        "duplicateH2ReuseFrequency": 7,
         "duplicateFaqReuseFrequency": 0,
         "paragraphDuplicationRatio": 0,
         "visibleTextLength": 4089,
@@ -63437,11 +63203,11 @@
       ],
       "duplicateH2s": [
         {
-          "text": "Why VideoText is faster than most transcription tools",
-          "pageCount": 5
+          "text": "When VideoText may not be the best choice",
+          "pageCount": 7
         },
         {
-          "text": "When VideoText may not be the best choice",
+          "text": "Why VideoText is faster than most transcription tools",
           "pageCount": 5
         },
         {
@@ -63454,10 +63220,10 @@
         "Paragraphs reused on other pages; max reuse frequency 5"
       ],
       "criticals": [],
-      "priorityScore": 25,
+      "priorityScore": 26,
       "thinContent": {
         "route": "/videotext-vs-turboscribe",
-        "thinContentRisk": 25,
+        "thinContentRisk": 26,
         "classification": "HEALTHY",
         "issues": [
           "60% duplicated paragraph reuse",
@@ -63468,7 +63234,7 @@
         ],
         "components": {
           "semanticContentDepth": 20,
-          "templateDuplicationRisk": 40,
+          "templateDuplicationRisk": 42,
           "searchIntentCoverage": 0,
           "engineeringLeakage": 0,
           "topicalCompleteness": 0,

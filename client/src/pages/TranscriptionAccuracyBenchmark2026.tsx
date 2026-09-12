@@ -1,217 +1,220 @@
+import React from 'react'
 import { Link } from 'react-router-dom'
 import AnswerBlock from '../components/AnswerBlock'
+import report from '../data/benchmarkV1Report.json'
+void React
 
-const CSV_PATH = '/research/transcription-accuracy-benchmark-2026-pilot.csv'
+const CSV_PATH = '/research/transcription-accuracy-benchmark-2026-v1-results.csv'
+const MANIFEST_PATH = '/research/transcription-accuracy-benchmark-2026-v1-dataset-manifest.jsonl'
+const PROTOCOL_JSON_PATH = '/research/transcription-accuracy-benchmark-2026-v1-protocol.json'
+const REPO_URL = 'https://github.com/guntupalli09/videotext.io/tree/main/research/benchmark/v1'
 
-const PILOT_SUMMARY = {
-  dataset: 'LibriSpeech test-clean (public domain, professionally aligned reference transcripts)',
-  condition: 'Clean, single-speaker, read speech',
-  model: 'Whisper baseline — open-source "small" model (faster-whisper, int8, CPU)',
-  utterances: 25,
-  speakers: 5,
-  audioMinutes: '4.3',
-  corpusWer: '2.52%',
-  realtimeFactor: '2.9x',
+type ConditionSummary = { n_utterances: number; total_duration_sec: number }
+type SystemEntry =
+  | { status: 'not_evaluated'; reason: string }
+  | { status: 'evaluated'; results: SystemResults }
+type SystemResults = {
+  n_scored_utterances: number
+  n_failures: number
+  conditions: Record<string, ConditionAggregate>
+}
+type ConditionAggregate = {
+  n_utterances: number
+  total_audio_sec: number
+  wer: {
+    corpus_pct: number
+    ci95_low_pct: number
+    ci95_high_pct: number
+    mean_utterance_pct: number
+    median_utterance_pct: number
+  }
+  rtf_mean: number | null
+  punctuation: string | { terminal_f1_mean: number | null }
+  diarization: string
+  timestamp_error?: string
+  cost_per_audio_hour_usd?: string
 }
 
-const PLANNED_CONDITIONS = [
-  { condition: 'Clean speech (single speaker)', status: 'Measured — Phase 1 pilot', detail: '25 LibriSpeech utterances, 5 speakers' },
-  { condition: 'Noisy / background-music speech', status: 'Not yet measured', detail: 'Requires a noise-augmented corpus (e.g. MUSAN-mixed speech)' },
-  { condition: 'Accented speech', status: 'Not yet measured', detail: 'Requires an accent-labeled corpus (e.g. Common Voice)' },
-  { condition: 'Multi-speaker conversation (diarization)', status: 'Not yet measured', detail: 'Requires speaker-labeled ground truth (e.g. AMI, CALLHOME)' },
-  { condition: 'Timestamp accuracy', status: 'Not yet measured', detail: 'Requires word-level forced-alignment ground truth' },
-]
+const SYSTEM_LABELS: Record<string, string> = {
+  videotext_production: 'VideoText (production)',
+  whisper_baseline_opensource: 'Whisper baseline (open-source)',
+  openai_whisper_api: 'OpenAI Whisper API',
+  deepgram: 'Deepgram',
+  assemblyai: 'AssemblyAI',
+}
 
-const PLANNED_TOOLS = [
-  { tool: 'VideoText', status: 'Not yet tested', note: 'Requires running our production pipeline against the shared dataset' },
-  { tool: 'Whisper (open-source baseline)', status: 'Tested — Phase 1', note: '2.52% corpus WER on clean speech (this pilot)' },
-  { tool: 'OpenAI Whisper API', status: 'Not yet tested', note: 'Requires an API key' },
-  { tool: 'Deepgram', status: 'Not yet tested', note: 'Requires an API key' },
-  { tool: 'AssemblyAI', status: 'Not yet tested', note: 'Requires an API key' },
-  { tool: 'YouTube auto-captions', status: 'Not yet tested', note: 'Requires captioned video sources' },
-  { tool: 'Otter.ai', status: 'Not yet tested', note: 'No public transcription API — requires manual export' },
-  { tool: 'Descript', status: 'Not yet tested', note: 'No public transcription API — requires manual export' },
-]
+const CONDITION_LABELS: Record<string, string> = {
+  clean_read_speech: 'Clean read speech',
+  noisy_speech_synthetic: 'Noisy speech (synthetic, additive noise)',
+  accented_speech: 'Accented speech',
+  reduced_mic_quality_synthetic: 'Reduced mic quality (synthetic)',
+  multi_speaker_sequential_synthetic: 'Multi-speaker (synthetic, sequential)',
+}
+
+function formatMinutes(sec: number): string {
+  return (sec / 60).toFixed(1)
+}
 
 export default function TranscriptionAccuracyBenchmark2026() {
+  const systems = report.systems as Record<string, SystemEntry>
+  const evaluatedSystems = Object.entries(systems).filter(([, s]) => s.status === 'evaluated') as [string, { status: 'evaluated'; results: SystemResults }][]
+  const pendingSystems = Object.entries(systems).filter(([, s]) => s.status === 'not_evaluated') as [string, { status: 'not_evaluated'; reason: string }][]
+  const conditionOrder = Object.keys(report.dataset_summary.conditions)
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 py-12">
       <div className="mx-auto max-w-5xl px-6 space-y-10">
         <Link to="/" className="text-sm text-blue-600 hover:text-blue-700">← Back to home</Link>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Research · Phase 1 pilot · Updated 2026</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Research · Protocol {report.protocol_version} (frozen, tag {report.protocol_git_tag}) · Generated {report.report_generated_at_utc.slice(0, 10)}
+          </p>
           <h1 className="mt-2 text-4xl font-medium text-gray-900 dark:text-white">
             AI Transcription Accuracy Benchmark
           </h1>
           <p className="mt-3 text-gray-600 dark:text-gray-300 max-w-3xl">
-            An open, reproducible study measuring transcription accuracy across tools using identical
-            audio, ground-truth transcripts, and a public scoring methodology. This page publishes
-            our dataset, our code, our results — including where we underperform — not a marketing
-            comparison.
+            How much does audio condition affect AI transcription accuracy? We built a frozen,
+            versioned evaluation protocol — dataset, ground truth, normalization rules, and scoring
+            code — and are running the same audio through multiple transcription systems as access
+            allows. Every number below is generated directly from{' '}
+            <code className="text-xs bg-gray-100 dark:bg-gray-900 px-1 py-0.5 rounded">benchmark_v1_report.json</code>,
+            not typed into this page.
           </p>
         </div>
 
+        <section className="rounded-xl border border-amber-300 bg-amber-50/80 p-5 text-sm dark:border-amber-700 dark:bg-amber-950/30">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white">This benchmark is not complete</h2>
+          <p className="mt-2 text-gray-700 dark:text-gray-300">{report.completeness_note}</p>
+          <p className="mt-2 text-gray-700 dark:text-gray-300">
+            {report.systems_evaluated_count} of {report.systems_total_planned} planned systems have been run:
+          </p>
+          <ul className="mt-2 list-disc pl-5 text-gray-700 dark:text-gray-300 space-y-1">
+            {evaluatedSystems.map(([key]) => (
+              <li key={key}><strong>{SYSTEM_LABELS[key] || key}</strong> — evaluated</li>
+            ))}
+            {pendingSystems.map(([key, s]) => (
+              <li key={key}>{SYSTEM_LABELS[key] || key} — not yet evaluated ({s.reason})</li>
+            ))}
+          </ul>
+        </section>
+
         <AnswerBlock
-          question="How accurate is AI transcription today?"
-          shortAnswer={`On clean, single-speaker speech, an open-source Whisper baseline scored ${PILOT_SUMMARY.corpusWer} word error rate in our Phase 1 pilot.`}
-          expanded="This is one data point from a small, reproducible pilot — not a finished 8-tool study. We're publishing it now, with full methodology and the underlying data, and will expand it condition-by-condition and tool-by-tool as described below. Treat every number on this page as scoped to exactly the condition and tool it's labeled with."
+          question="How much does audio condition affect AI transcription accuracy?"
+          shortAnswer="In our Phase 1 pilot data (one open-source Whisper baseline, not a multi-system result yet), word error rate roughly doubled going from clean read speech to synthetic background noise."
+          expanded="This is a single-system data point across multiple conditions, generated from the frozen protocol below — not a finished cross-vendor study. See the per-condition table for exact figures with 95% confidence intervals and sample sizes."
           bullets={[
-            `Dataset: ${PILOT_SUMMARY.dataset}`,
-            `Condition tested so far: ${PILOT_SUMMARY.condition}`,
-            `Sample: ${PILOT_SUMMARY.utterances} utterances, ${PILOT_SUMMARY.speakers} speakers, ${PILOT_SUMMARY.audioMinutes} minutes of audio`,
+            `Dataset: ${report.dataset_summary.n_files} audio files across ${report.dataset_summary.n_conditions} conditions`,
+            `Protocol frozen as ${report.protocol_git_tag}, dataset hash ${report.dataset_hash.slice(0, 12)}…`,
+            'Every reference transcript is verbatim from a licensed source or a documented synthetic transform of one — none were generated by an ASR system or by us',
           ]}
         />
 
-        <section className="rounded-xl border border-amber-300 bg-amber-50/80 p-5 text-sm dark:border-amber-700 dark:bg-amber-950/30">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white">What this page is — and isn't — right now</h2>
-          <p className="mt-2 text-gray-700 dark:text-gray-300">
-            This is a <strong>Phase 1 pilot</strong>, not the full "8 tools × 200 files" benchmark. So far we've
-            validated the scoring pipeline end-to-end on one clean-speech condition using an open-source
-            Whisper model as a baseline — VideoText itself has not been run through this pipeline yet, and
-            neither have Deepgram, AssemblyAI, Otter, Descript, or YouTube captions. We're publishing the
-            pilot rather than waiting, because every number here is real, sourced, and reproducible, and we'd
-            rather show partial honest progress than a complete but unverifiable comparison. See{' '}
-            <a
-              href="https://github.com/guntupalli09/videotext.io/tree/main/research/benchmark"
-              className="text-blue-700 hover:underline"
-              target="_blank"
-              rel="noreferrer"
-            >
-              the benchmark source code and README
-            </a>{' '}
-            for exactly what's measured and what isn't yet.
-          </p>
-        </section>
-
         <section>
-          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Phase 1 results (measured)</h2>
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Dataset composition</h2>
           <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
-            <table className="min-w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-900">
-                <tr>
-                  <th className="px-4 py-3 text-left">Metric</th>
-                  <th className="px-4 py-3 text-left">Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['Model tested', PILOT_SUMMARY.model],
-                  ['Condition', PILOT_SUMMARY.condition],
-                  ['Dataset', PILOT_SUMMARY.dataset],
-                  ['Utterances / speakers', `${PILOT_SUMMARY.utterances} / ${PILOT_SUMMARY.speakers}`],
-                  ['Audio tested', `${PILOT_SUMMARY.audioMinutes} minutes`],
-                  ['Corpus word error rate (WER)', PILOT_SUMMARY.corpusWer],
-                  ['Processing speed', `${PILOT_SUMMARY.realtimeFactor} realtime (CPU, no GPU)`],
-                ].map(([k, v]) => (
-                  <tr key={k} className="border-t border-gray-200 dark:border-gray-800">
-                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{k}</td>
-                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{v}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
-            <a href={CSV_PATH} className="text-blue-700 hover:underline" download>
-              Download the per-utterance results CSV
-            </a>{' '}
-            — every row includes the reference transcript, the hypothesis transcript, and the exact
-            error counts used to compute WER.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">What's tested vs. planned</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Conditions:</p>
-          <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800 mb-6">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50 dark:bg-gray-900">
                 <tr>
                   <th className="px-4 py-3 text-left">Condition</th>
-                  <th className="px-4 py-3 text-left">Status</th>
-                  <th className="px-4 py-3 text-left">Detail</th>
+                  <th className="px-4 py-3 text-left">Utterances</th>
+                  <th className="px-4 py-3 text-left">Audio (min)</th>
                 </tr>
               </thead>
               <tbody>
-                {PLANNED_CONDITIONS.map((row) => (
-                  <tr key={row.condition} className="border-t border-gray-200 dark:border-gray-800">
-                    <td className="px-4 py-3">{row.condition}</td>
-                    <td className={`px-4 py-3 ${row.status.startsWith('Measured') ? 'text-emerald-700 dark:text-emerald-400 font-medium' : 'text-gray-500'}`}>{row.status}</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.detail}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Tools:</p>
-          <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
-            <table className="min-w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-900">
-                <tr>
-                  <th className="px-4 py-3 text-left">Tool</th>
-                  <th className="px-4 py-3 text-left">Status</th>
-                  <th className="px-4 py-3 text-left">Note</th>
-                </tr>
-              </thead>
-              <tbody>
-                {PLANNED_TOOLS.map((row) => (
-                  <tr key={row.tool} className="border-t border-gray-200 dark:border-gray-800">
-                    <td className="px-4 py-3 font-medium">{row.tool}</td>
-                    <td className={`px-4 py-3 ${row.status.startsWith('Tested') ? 'text-emerald-700 dark:text-emerald-400 font-medium' : 'text-gray-500'}`}>{row.status}</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.note}</td>
-                  </tr>
-                ))}
+                {conditionOrder.map((cond) => {
+                  const c = report.dataset_summary.conditions[cond as keyof typeof report.dataset_summary.conditions] as ConditionSummary
+                  return (
+                    <tr key={cond} className="border-t border-gray-200 dark:border-gray-800">
+                      <td className="px-4 py-3">{CONDITION_LABELS[cond] || cond}</td>
+                      <td className="px-4 py-3">{c.n_utterances}</td>
+                      <td className="px-4 py-3">{formatMinutes(c.total_duration_sec)}</td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
         </section>
 
+        {evaluatedSystems.map(([systemKey, systemEntry]) => (
+          <section key={systemKey}>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
+              {SYSTEM_LABELS[systemKey] || systemKey} — results by condition
+            </h2>
+            <p className="text-sm text-gray-500 mb-4">
+              {systemEntry.results.n_scored_utterances} utterances scored, {systemEntry.results.n_failures} failures excluded from aggregates.
+            </p>
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+              <table className="min-w-full text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-900">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Condition</th>
+                    <th className="px-4 py-3 text-left">n / duration</th>
+                    <th className="px-4 py-3 text-left">Corpus WER (95% CI)</th>
+                    <th className="px-4 py-3 text-left">RTF</th>
+                    <th className="px-4 py-3 text-left">Punctuation F1</th>
+                    <th className="px-4 py-3 text-left">Diarization</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(systemEntry.results.conditions).map(([cond, agg]) => (
+                    <tr key={cond} className="border-t border-gray-200 dark:border-gray-800">
+                      <td className="px-4 py-3">{CONDITION_LABELS[cond] || cond}</td>
+                      <td className="px-4 py-3">{agg.n_utterances} / {formatMinutes(agg.total_audio_sec)} min</td>
+                      <td className="px-4 py-3 font-medium">
+                        {agg.wer.corpus_pct}% <span className="text-gray-500 font-normal">({agg.wer.ci95_low_pct}–{agg.wer.ci95_high_pct}%)</span>
+                      </td>
+                      <td className="px-4 py-3">{agg.rtf_mean ? `${agg.rtf_mean}x` : '—'}</td>
+                      <td className="px-4 py-3">
+                        {typeof agg.punctuation === 'string' ? agg.punctuation : (agg.punctuation.terminal_f1_mean ?? '—')}
+                      </td>
+                      <td className="px-4 py-3">{agg.diarization}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ))}
+
         <section className="rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-          <h2 className="text-xl font-medium text-gray-900 dark:text-white">Methodology</h2>
+          <h2 className="text-xl font-medium text-gray-900 dark:text-white">Methodology (frozen protocol {report.protocol_version})</h2>
           <ul className="mt-3 list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1.5">
-            <li>
-              <strong>Metric:</strong> Word Error Rate (WER) — substitutions + deletions + insertions, divided
-              by reference word count — computed via a real Levenshtein-alignment implementation, not
-              estimated. Text is lowercased and stripped of punctuation before scoring (standard practice,
-              since not every engine outputs punctuation).
-            </li>
-            <li>
-              <strong>Ground truth:</strong> LibriSpeech test-clean reference transcripts, which are
-              professionally aligned to public-domain LibriVox audiobook recordings.
-            </li>
-            <li>
-              <strong>Reproducibility:</strong> every script (dataset prep, transcription runner, scorer,
-              unit tests) is public in the VideoText.io repository, alongside the raw per-utterance results.
-            </li>
-            <li>
-              <strong>Planned additions:</strong> Diarization Error Rate (DER) for speaker attribution and
-              timestamp mean-absolute-error are implemented and unit-tested in the scoring engine already,
-              but have not been run yet — they need multi-speaker and forced-alignment ground truth we
-              don't have wired up yet (see Limitations).
-            </li>
+            <li><strong>Primary metric:</strong> Word Error Rate (WER), computed corpus-level as sum(errors)/sum(reference words) — never averaged as per-utterance ratios, and never collapsed with other metrics into one "accuracy score."</li>
+            <li><strong>Confidence intervals:</strong> 95% CI via 2000-resample percentile bootstrap over utterances, reported alongside every corpus WER figure.</li>
+            <li><strong>Separate metrics:</strong> diarization (DER), timestamp error, punctuation F1, real-time factor, and API cost per audio-hour are tracked as independent fields — reported only where valid ground truth or system output exists, marked "not applicable" otherwise rather than defaulted to a number.</li>
+            <li><strong>Dataset hash:</strong> <code className="text-xs bg-gray-100 dark:bg-gray-900 px-1 py-0.5 rounded">{report.dataset_hash}</code> — any change to any audio file or transcript changes this hash.</li>
+            <li>Full protocol, normalization rules, inclusion/exclusion criteria, and per-system settings: <a href={PROTOCOL_JSON_PATH} className="text-blue-700 hover:underline">protocol.json</a> and <a href={REPO_URL} target="_blank" rel="noreferrer" className="text-blue-700 hover:underline">PROTOCOL.md in the repository</a>.</li>
           </ul>
         </section>
 
         <section className="rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-          <h2 className="text-xl font-medium text-gray-900 dark:text-white">Limitations</h2>
+          <h2 className="text-xl font-medium text-gray-900 dark:text-white">Limitations and known gaps</h2>
           <ul className="mt-3 list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1.5">
-            <li>Small sample: 25 utterances, one condition, one model. Not statistically representative of
-              real-world audio diversity.</li>
-            <li>Read audiobook speech is easier to transcribe than spontaneous speech, meetings, or phone
-              calls — this pilot's low WER should not be read as a general-purpose accuracy claim.</li>
-            <li>VideoText has not yet been benchmarked here. When it is, we will publish the result
-              regardless of how it compares to other tools, including any categories where VideoText
-              performs worse.</li>
-            <li>Diarization and timestamp accuracy are not yet measured against any tool.</li>
+            {report.known_gaps_not_fabricated.map((gap) => (
+              <li key={gap}>{gap.replace(/_/g, ' ')} — not sourced in v1, disclosed rather than fabricated.</li>
+            ))}
+            <li>Multi-speaker condition is a synthetic, non-overlapping, two-speaker concatenation — not a natural conversation and not overlapping speech.</li>
+            <li>Noisy-speech and reduced-mic-quality conditions are documented synthetic transforms of clean speech, not independently recorded noisy/low-quality audio.</li>
+            <li>Only one system (an open-source Whisper baseline) has been executed as of this report. VideoText, OpenAI, Deepgram, and AssemblyAI runners are implemented and tested against the missing-credential path, but have not produced results yet.</li>
+          </ul>
+        </section>
+
+        <section className="rounded-xl border border-blue-200 bg-blue-50/60 p-5 text-sm dark:border-blue-900 dark:bg-blue-950/30">
+          <p className="font-semibold text-gray-900 dark:text-white mb-2">Reproducibility &amp; downloads</p>
+          <ul className="space-y-1 text-gray-700 dark:text-gray-300">
+            <li><a href={CSV_PATH} className="text-blue-700 hover:underline" download>Per-utterance results (CSV)</a></li>
+            <li><a href={MANIFEST_PATH} className="text-blue-700 hover:underline" download>Dataset manifest with per-file SHA256 hashes (JSONL)</a></li>
+            <li><a href={PROTOCOL_JSON_PATH} className="text-blue-700 hover:underline" download>Frozen protocol (JSON)</a></li>
+            <li><a href={REPO_URL} target="_blank" rel="noreferrer" className="text-blue-700 hover:underline">Full source: dataset prep scripts, scorers, runners, unit tests</a></li>
           </ul>
         </section>
 
         <section className="rounded-xl border border-blue-200 bg-blue-50/60 p-5 text-sm dark:border-blue-900 dark:bg-blue-950/30">
           <p className="font-semibold text-gray-900 dark:text-white mb-2">Citation</p>
           <p className="text-gray-700 dark:text-gray-300">
-            VideoText.io, "AI Transcription Accuracy Benchmark" (Phase 1 pilot), 2026.{' '}
+            VideoText.io, "AI Transcription Accuracy Benchmark" (protocol {report.protocol_git_tag}), 2026.{' '}
             <span className="text-gray-500">videotext.io/research/transcription-accuracy-benchmark-2026</span>
           </p>
         </section>
@@ -219,9 +222,10 @@ export default function TranscriptionAccuracyBenchmark2026() {
         <section className="rounded-xl border border-gray-200 dark:border-gray-800 p-4 text-sm">
           <p className="font-semibold text-gray-900 dark:text-white mb-2">Related pages</p>
           <div className="flex flex-wrap gap-3">
+            <Link to="/transcription-benchmark" className="text-blue-700 hover:underline">Transcription benchmark (speed)</Link>
+            <Link to="/accuracy-test" className="text-blue-700 hover:underline">Accuracy test</Link>
             <Link to="/best-transcription-tool" className="text-blue-700 hover:underline">Best transcription tool</Link>
             <Link to="/video-to-transcript" className="text-blue-700 hover:underline">Video to transcript</Link>
-            <Link to="/ai-transcription-tools" className="text-blue-700 hover:underline">AI transcription tools</Link>
           </div>
         </section>
       </div>

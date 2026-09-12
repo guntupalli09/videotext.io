@@ -1,0 +1,40 @@
+{
+  "system": "whisper_baseline_opensource",
+  "model": "whisper-small (faster-whisper, int8, CPU)",
+  "settings": {
+    "model_size": "small",
+    "device": "cpu",
+    "compute_type": "int8",
+    "beam_size": 5,
+    "language": "en",
+    "faster_whisper_version": "1.2.1",
+    "ctranslate2_version": "4.8.2",
+    "python_version": "3.11.15",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "git_commit": "3dae249eb6ff73766254c02475812f98e2500d93"
+  },
+  "request_timestamp": "2026-09-12T06:03:30Z",
+  "http_status": 200,
+  "processing_sec": 4.247,
+  "raw_response": {
+    "text": "What is called perception differs from sensation by the fact that the sensational ingredients bring up habitual associates, images and expectations of their usual correlates, all of which are subjectively indistinguishable from the sensation.",
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 6.46,
+        "text": " What is called perception differs from sensation by the fact that the sensational ingredients"
+      },
+      {
+        "start": 6.46,
+        "end": 13.780000000000001,
+        "text": " bring up habitual associates, images and expectations of their usual correlates, all of which are"
+      },
+      {
+        "start": 13.780000000000001,
+        "end": 17.1,
+        "text": " subjectively indistinguishable from the sensation."
+      }
+    ],
+    "language": "en"
+  }
+}

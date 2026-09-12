@@ -742,14 +742,14 @@ const STATIC_META: RouteMeta[] = [
     path: '/research/transcription-accuracy-benchmark-2026',
     title: `AI Transcription Accuracy Benchmark — Open Dataset & Methodology | ${SITE_NAME}`,
     description:
-      'A reproducible transcription accuracy study: public dataset, ground-truth transcripts, scoring code, raw outputs, and a downloadable CSV. Phase 1 pilot results and open methodology.',
+      'How much does audio condition affect AI transcription accuracy? A frozen, versioned benchmark protocol with public dataset, ground truth, scoring code, raw outputs, and downloadable CSV/JSON.',
     h1: 'AI Transcription Accuracy Benchmark',
     breadcrumbLabel: 'Transcription Accuracy Benchmark',
     faq: [
-      { q: 'How accurate is AI transcription?', a: 'In our Phase 1 pilot, an open-source Whisper baseline scored 2.52% word error rate on 25 clean, single-speaker LibriSpeech utterances — a narrow, reproducible data point, not a general accuracy claim.' },
-      { q: 'What dataset and ground truth does this benchmark use?', a: 'LibriSpeech test-clean, a public-domain corpus (CC BY 4.0) of LibriVox audiobook recordings with professionally aligned reference transcripts.' },
-      { q: 'Is this benchmark data or a marketing claim?', a: 'Every number on this page traces to a public dataset, a scoring script, and raw model output published alongside it — including a downloadable CSV of per-utterance results.' },
-      { q: 'Has VideoText itself been benchmarked here?', a: 'Not yet. This pilot tested an open-source Whisper baseline only; VideoText, Deepgram, AssemblyAI, and other tools are planned additions once API access is available.' },
+      { q: 'How much does audio condition affect AI transcription accuracy?', a: 'In our protocol v1.0.0 results (one open-source Whisper baseline, not yet a multi-system comparison), corpus word error rate was 2.85% on clean read speech versus 5.05% on synthetically noisy speech — roughly double. Full per-condition figures with 95% confidence intervals are on the page.' },
+      { q: 'What dataset and ground truth does this benchmark use?', a: '136 audio files across 5 conditions (clean read speech, synthetic noise, accented speech, synthetic reduced mic quality, synthetic multi-speaker) drawn from LibriSpeech test-clean and VCTK, both CC BY 4.0, plus Apache-2.0 noise clips from RIRS_NOISES. Every reference transcript is verbatim from its source corpus or a documented synthetic transform of one.' },
+      { q: 'Is this benchmark complete?', a: 'No. Only one system (an open-source Whisper baseline) has been executed so far. VideoText, OpenAI, Deepgram, and AssemblyAI runners are built and tested but have not produced results yet — the page states this explicitly rather than implying a finished comparison.' },
+      { q: 'Is this benchmark data or a marketing claim?', a: 'Every number on the page is generated directly from a versioned report file (benchmark_v1_report.json), not typed into the page — with a frozen protocol, a hashed dataset manifest, and downloadable CSV/JSON for independent verification.' },
     ],
   },
 ]

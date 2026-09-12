@@ -1,0 +1,6 @@
+{
+  "system": "openai_whisper_api",
+  "status": "skipped",
+  "reason": "OPENAI_API_KEY not set in environment",
+  "recorded_at_utc": "2026-09-12T05:58:10Z"
+}

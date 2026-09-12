@@ -1,9 +1,16 @@
 # AI Transcription Accuracy Benchmark — methodology & pipeline
 
+**Superseded by `v1/` (protocol `benchmark-protocol-v1.0.0`).** The
+material below describes the original single-condition pilot that
+validated the scoring approach. It is kept for history; the frozen
+protocol, expanded 5-condition dataset, production-system runners, and the
+report the live research page actually renders from now live in
+[`v1/`](./v1/) — start with `v1/PROTOCOL.md`.
+
 This directory holds the scoring engine and pilot data behind the public
 research page at `/research/transcription-accuracy-benchmark-2026`.
 
-## Current status: Phase 1 pilot (this commit)
+## Current status: Phase 1 pilot (superseded, see above)
 
 - **Dataset:** 25 utterances (~4.3 min), 5 speakers, drawn from
   [LibriSpeech test-clean](https://www.openslr.org/12/) — public-domain

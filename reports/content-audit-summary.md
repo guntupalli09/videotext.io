@@ -10,7 +10,7 @@ Generated: local-dist-snapshot
 | Missing local /dist HTML | 1 |
 | Pages with banned phrases | 0 |
 | Pages flagged thin | 4 |
-| Pages with high duplication | 258 |
+| Pages with high duplication | 255 |
 | High thin-content risk pages | 0 |
 | Critical thin-content risk pages | 1 |
 
@@ -25,9 +25,9 @@ _None._
 | Path | Words | Paragraphs | H2s | FAQs | Thin risk |
 | --- | --- | --- | --- | --- | --- |
 | /blog | 0 | 0 | 0 | 0 | 100 (CRITICAL THIN-CONTENT RISK) |
-| /docs/api | 254 | 6 | 4 | 0 | 23 (HEALTHY) |
-| /integrations/zapier | 268 | 6 | 4 | 0 | 23 (HEALTHY) |
-| /research/transcription-accuracy-benchmark-2026 | 268 | 6 | 4 | 4 | 21 (HEALTHY) |
+| /docs/api | 254 | 6 | 4 | 0 | 22 (HEALTHY) |
+| /integrations/zapier | 268 | 6 | 4 | 0 | 22 (HEALTHY) |
+| /accuracy-test | 273 | 4 | 3 | 1 | 14 (HEALTHY) |
 
 
 ## Pages with high duplication
@@ -59,9 +59,6 @@ _None._
 | /tools/vtt-to-srt | 100% | 96% | 49 | 25 |
 | /translate-subtitles | 100% | 96% | 49 | 25 |
 | /video-to-subtitles | 100% | 96% | 49 | 25 |
-| /accuracy-test | 100% | 96% | 5 | 3 |
-| /fastest-transcription-software | 100% | 96% | 5 | 3 |
-| /transcription-benchmark | 100% | 96% | 5 | 3 |
 | /audio-to-text-converter | 100% | 91% | 25 | 0 |
 | /best-podcast-transcription-tool | 100% | 91% | 17 | 0 |
 | /add-subtitles-to-video | 100% | 90% | 49 | 0 |
@@ -104,8 +101,8 @@ _None._
 | /voice-to-text-online | 100% | 83% | 17 | 0 |
 | /youtube-auto-captions-alternative | 100% | 83% | 19 | 33 |
 | /best-caption-generator | 100% | 82% | 49 | 0 |
-| /best-transcription-tool-for-journalists | 100% | 82% | 5 | 0 |
-| /best-transcription-tool-for-students | 100% | 82% | 5 | 0 |
+| /best-transcription-tool-for-journalists | 100% | 82% | 3 | 0 |
+| /best-transcription-tool-for-students | 100% | 82% | 3 | 0 |
 | /caption-maker | 100% | 82% | 49 | 0 |
 | /deepgram-alternative | 100% | 82% | 59 | 0 |
 | /ditto-transcripts-alternative | 100% | 82% | 59 | 33 |
@@ -134,6 +131,9 @@ _None._
 | /genio-alternative | 100% | 79% | 59 | 33 |
 | /gmr-transcript-format-guide | 100% | 79% | 29 | 0 |
 | /gotranscript-transcription-rules | 100% | 79% | 29 | 0 |
+| /headliner-alternative | 100% | 79% | 59 | 33 |
+| /hedy-ai-alternative | 100% | 79% | 59 | 33 |
+| /interview-transcription-tool | 100% | 79% | 17 | 0 |
 
 
 ## Top repeated paragraphs
@@ -220,28 +220,20 @@ _None._
    - Pages: /adobe-premiere-captions-alternative, /capcut-captions, /instagram-reel-transcript, /reels-captions, /shorts-captions
 14. **4 pages** — is it free?
    - Pages: /compress-video, /fix-subtitles, /video-to-subtitles, /video-to-transcript
-15. **3 pages** — why do transcription accuracy numbers vary so much between vendors?
-   - Pages: /accuracy-test, /fastest-transcription-software, /transcription-benchmark
-16. **3 pages** — how should i test transcription tools for my specific use case?
-   - Pages: /accuracy-test, /fastest-transcription-software, /transcription-benchmark
-17. **3 pages** — does transcription accuracy degrade for long recordings?
-   - Pages: /accuracy-test, /fastest-transcription-software, /transcription-benchmark
-18. **3 pages** — how do you benchmark cleanup time fairly across tools?
-   - Pages: /accuracy-test, /fastest-transcription-software, /transcription-benchmark
-19. **3 pages** — does videotext delete my files after transcription?
+15. **3 pages** — does videotext delete my files after transcription?
    - Pages: /easyscribe-alternative, /transcription-for-journalists, /vocallab-alternative
-20. **3 pages** — what does word error rate actually measure?
-   - Pages: /accuracy-test, /fastest-transcription-software, /transcription-benchmark
-21. **2 pages** — can videotext generate subtitles like rev?
+16. **2 pages** — can videotext generate subtitles like rev?
    - Pages: /rev-alternative, /videotext-vs-rev
-22. **2 pages** — how do i generate subtitles from a video?
+17. **2 pages** — how do i generate subtitles from a video?
    - Pages: /generate-subtitles-from-video, /video-to-subtitles
-23. **2 pages** — why are youtube auto captions inaccurate?
+18. **2 pages** — why are youtube auto captions inaccurate?
    - Pages: /youtube-auto-captions-alternative, /youtube-captions
-24. **2 pages** — which whisper model does videotext use?
+19. **2 pages** — which whisper model does videotext use?
    - Pages: /whisper-online, /whisper-transcription
-25. **2 pages** — how do i add captions to a video?
+20. **2 pages** — how do i add captions to a video?
    - Pages: /add-captions-to-video, /video-captions
+21. **2 pages** — is videotext free for students?
+   - Pages: /notability-alternative, /transcription-for-students
 
 
 ## Top repeated H2s

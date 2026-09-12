@@ -1,0 +1,40 @@
+{
+  "system": "whisper_baseline_opensource",
+  "model": "whisper-small (faster-whisper, int8, CPU)",
+  "settings": {
+    "model_size": "small",
+    "device": "cpu",
+    "compute_type": "int8",
+    "beam_size": 5,
+    "language": "en",
+    "faster_whisper_version": "1.2.1",
+    "ctranslate2_version": "4.8.2",
+    "python_version": "3.11.15",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "git_commit": "3dae249eb6ff73766254c02475812f98e2500d93"
+  },
+  "request_timestamp": "2026-09-12T06:03:13Z",
+  "http_status": 200,
+  "processing_sec": 5.275,
+  "raw_response": {
+    "text": "Everyone could observe his agitation and prostration, a prostration which was, indeed, the more remarkable since people were not accustomed to see him, with his arms hanging listlessly by his side. His head bewildered, and his eyes, with all their bright intelligence, bedimmed.",
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 7.32,
+        "text": " Everyone could observe his agitation and prostration, a prostration which was, indeed, the more remarkable"
+      },
+      {
+        "start": 7.32,
+        "end": 13.1,
+        "text": " since people were not accustomed to see him, with his arms hanging listlessly by his side."
+      },
+      {
+        "start": 13.1,
+        "end": 17.44,
+        "text": " His head bewildered, and his eyes, with all their bright intelligence, bedimmed."
+      }
+    ],
+    "language": "en"
+  }
+}

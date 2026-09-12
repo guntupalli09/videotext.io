@@ -28,13 +28,10 @@ Semantically similar page clusters that may look templated at scale.
 8. **h2-structure** — 6 pages
    - Signature: where transcription cleanup wastes the most time from long recording to structured usable transcript teams running high volume transcription workflows transcription workflow questions answered related transcription and …
    - Pages: /google-meet-transcription, /meeting-transcription, /podcast-transcription, /teams-meeting-transcription, /video-interview-transcription, /zoom-recording-transcription
-9. **h2-structure** — 5 pages
-   - Signature: what this accuracy benchmark actually measures how the benchmark tests were conducted benchmark results you can verify yourself teams that rely on transcription accuracy data edge cases that stress test transcription ac…
-   - Pages: /accuracy-test, /best-transcription-tool-for-journalists, /best-transcription-tool-for-students, /fastest-transcription-software, /transcription-benchmark
-10. **cta** — 5 pages
+9. **cta** — 5 pages
    - Signature: upload a long recording to compare outputs
    - Pages: /best-transcription-tool, /best-transcription-tool-for-journalists, /best-transcription-tool-for-students, /fastest-transcription-software, /fastest-transcription-tool
-11. **h2-structure** — 4 pages
+10. **h2-structure** — 4 pages
    - Signature: why auto captions fail creator workflows turning youtube videos into structured reusable content youtube transcript outputs for creator workflows creator workflows powered by youtube transcripts youtube specific transcr…
    - Pages: /best-youtube-transcription-tool, /youtube-auto-captions-alternative, /youtube-captions, /youtube-subtitle-generator
 

@@ -1,0 +1,35 @@
+{
+  "system": "whisper_baseline_opensource",
+  "model": "whisper-small (faster-whisper, int8, CPU)",
+  "settings": {
+    "model_size": "small",
+    "device": "cpu",
+    "compute_type": "int8",
+    "beam_size": 5,
+    "language": "en",
+    "faster_whisper_version": "1.2.1",
+    "ctranslate2_version": "4.8.2",
+    "python_version": "3.11.15",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "git_commit": "3dae249eb6ff73766254c02475812f98e2500d93"
+  },
+  "request_timestamp": "2026-09-12T06:05:08Z",
+  "http_status": 200,
+  "processing_sec": 3.419,
+  "raw_response": {
+    "text": "often has my mother said while on her lap I laid my head. She feared for time I was not made but for eternity.",
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 5.64,
+        "text": " often has my mother said while on her lap I laid my head. She feared for time I"
+      },
+      {
+        "start": 5.64,
+        "end": 9.64,
+        "text": " was not made but for eternity."
+      }
+    ],
+    "language": "en"
+  }
+}

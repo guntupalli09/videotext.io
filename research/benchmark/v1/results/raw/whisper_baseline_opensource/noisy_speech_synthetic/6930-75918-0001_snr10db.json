@@ -1,0 +1,45 @@
+{
+  "system": "whisper_baseline_opensource",
+  "model": "whisper-small (faster-whisper, int8, CPU)",
+  "settings": {
+    "model_size": "small",
+    "device": "cpu",
+    "compute_type": "int8",
+    "beam_size": 5,
+    "language": "en",
+    "faster_whisper_version": "1.2.1",
+    "ctranslate2_version": "4.8.2",
+    "python_version": "3.11.15",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "git_commit": "3dae249eb6ff73766254c02475812f98e2500d93"
+  },
+  "request_timestamp": "2026-09-12T06:05:48Z",
+  "http_status": 200,
+  "processing_sec": 5.252,
+  "raw_response": {
+    "text": "The English voted to the French baskets of flowers of which they had made a plentiful provision to greet the arrival of the young princess. The French, in return, invited the English to a supper, which was to be given the next day.",
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 5.44,
+        "text": " The English voted to the French baskets of flowers of which they had made a plentiful provision"
+      },
+      {
+        "start": 5.44,
+        "end": 8.48,
+        "text": " to greet the arrival of the young princess."
+      },
+      {
+        "start": 8.48,
+        "end": 13.64,
+        "text": " The French, in return, invited the English to a supper, which was to be given the next"
+      },
+      {
+        "start": 13.64,
+        "end": 14.040000000000001,
+        "text": " day."
+      }
+    ],
+    "language": "en"
+  }
+}

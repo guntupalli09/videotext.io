@@ -23,6 +23,9 @@ import BestOtterAlternatives from './pages/BestOtterAlternatives'
 import BestDescriptAlternatives from './pages/BestDescriptAlternatives'
 import ApiDocs from './pages/ApiDocs'
 import ZapierIntegration from './pages/ZapierIntegration'
+import TranscriptionAccuracyBenchmark2026 from './pages/TranscriptionAccuracyBenchmark2026'
+import TranscriptionBenchmark from './pages/TranscriptionBenchmark'
+import AccuracyTest from './pages/AccuracyTest'
 import { ROUTE_SEO } from './lib/seoMeta'
 import { getAllSeoEntries, getPageLabel, getRelatedSuggestionsForEntry, getSeoEntry, type FaqItem, type SeoDeepContent, type SeoRegistryEntry, type SeoTutorialContent } from './lib/seoRegistry'
 import { getCanonicalPathForRoute, resolveInternalLinkPath } from './lib/primaryUrls'
@@ -68,6 +71,9 @@ const SSR_PAGES: Record<string, React.ComponentType> = {
   // would duplicate/CTA-mismatch on a technical reference and an integration guide.
   '/docs/api': ApiDocs,
   '/integrations/zapier': ZapierIntegration,
+  '/research/transcription-accuracy-benchmark-2026': TranscriptionAccuracyBenchmark2026,
+  '/transcription-benchmark': TranscriptionBenchmark,
+  '/accuracy-test': AccuracyTest,
 }
 
 const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'title' | 'description'>> = {

@@ -1,0 +1,1 @@
+Apache 2.0 (per https://www.openslr.org/28/)
