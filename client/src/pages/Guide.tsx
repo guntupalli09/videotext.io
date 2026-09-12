@@ -231,7 +231,7 @@ const TOOL_GUIDES: ToolGuide[] = [
       'Fix overlapping timestamps and gaps for YouTube and other platforms.',
       'Grammar and punctuation corrections, line break normalization.',
       'Remove filler words (um, uh, like, etc.) from cue text.',
-      'Pro/Agency: in-app subtitle editor to tweak segments.',
+      'Pro: in-app subtitle editor to tweak segments.',
     ],
   },
   {

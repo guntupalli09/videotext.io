@@ -122,12 +122,10 @@ All 19 free tools run in the browser — no upload, no account:
 
 ## Pricing
 
-| Plan | Price | Video Minutes |
-|------|-------|---------------|
-| Free | $0/mo | 3 imports |
-| Basic | $19/mo | 450 min |
-| Pro | $49/mo | 1,200 min + batch |
-| Agency | $129/mo | 3,000 min + batch |
+| Plan | Price | Included |
+|------|-------|----------|
+| Free | $0/mo | 3 imports/month, files up to 30 min |
+| Pro | $7.99/mo | Full workflow: longer uploads, batch, translation, delivery |
 
 ---
 

@@ -14,7 +14,7 @@ Professional video utilities platform: transcribe video to text, generate and tr
 - **Faster long-video transcription**: parallel chunking + merge (same result shape).
 - **Optional GPU FFmpeg**: set `FFMPEG_USE_GPU=true` to use GPU decode/encode where available.
 - **Result caching**: repeat processing (same user + file + tool + options) returns instantly within `CACHE_TTL_DAYS`.
-- **Plan limits**: Free = 3 imports/month (resets on the 1st), 30 min max per video; Basic = 450 min/month, 45 min max per video. See [§5 Billing & usage](#5-billing--usage).
+- **Plan limits**: Free = 3 imports/month (resets on the 1st), 30 min max per video; Pro = $7.99/mo for full workflow with longer uploads. See [§5 Billing & usage](#5-billing--usage).
 - **Usage tracking**: Batch jobs charge minutes per video; all tools show minutes remaining and refetch when a job completes.
 - **Client: fast load & revisits** — Route-level code splitting (lazy-loaded pages), prefetch on link hover/focus, and PWA (precache of static assets; API is never cached). See [§10 Client: performance, devices & reliability](#10-client-performance-devices--reliability).
 - **Client: mobile & reliability** — Chunked upload is mobile-optimised (smaller chunks, sequential, per-chunk timeout and retry with exponential backoff); “keep tab open” reminder during upload; offline banner when the app loses connection; user-facing “Check your connection” message on network/abort errors; error boundary and unhandled-rejection safety net.

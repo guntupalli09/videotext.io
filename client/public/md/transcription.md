@@ -64,9 +64,7 @@ In-app translation (one-click after transcription): English, Hindi, Telugu, Span
 | Plan | Price | Minutes |
 |------|-------|---------|
 | Free | $0/mo | 3 imports |
-| Basic | $19/mo | 450 min |
-| Pro | $49/mo | 1,200 min |
-| Agency | $129/mo | 3,000 min |
+| Pro | $7.99/mo | Full transcription and subtitle workflow |
 
 Free plan requires no credit card. 7-day money-back guarantee on paid plans.
 

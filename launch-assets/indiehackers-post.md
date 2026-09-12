@@ -44,7 +44,7 @@ File lifecycle: deleted immediately after the job completes.
 
 3. **SEO from day 1.** 28+ long-tail pages targeting searches like "mp4 to srt", "subtitle timing fixer", "meeting transcript generator". Organic traffic is compounding slowly but consistently.
 
-4. **Pricing at the right ceiling.** Free → Basic ($19) → Pro ($49) → Agency ($129). The jump from Free to Basic is the hardest. I made it easier by giving the free tier real value (not crippled), so when people hit the 3-import limit, they've already seen the tool work.
+4. **Pricing at the right ceiling.** Free (3 imports/mo) → Pro ($7.99/mo). One paid plan keeps checkout simple. I made the free tier real value (not crippled), so when people hit the 3-import limit, they've already seen the tool work.
 
 ---
 

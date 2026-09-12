@@ -50,12 +50,10 @@ Accuracy falls with noise, overlapping speakers, and heavy accents. Review names
 
 | Plan | Price | Included |
 |---|---|---|
-| Free | $0 | 3 imports/month, no credit card, watermark on free exports, full feature set on those imports |
-| Basic | $19/month | 450 minutes/month |
-| Pro | $49/month | 1,200 minutes/month, batch ZIP, priority queue |
-| Agency | $129/month | 3,000 minutes/month, batch, priority, multi-seat |
+| Free | $0 | 3 imports/month, no credit card, watermark on free exports |
+| Pro | $7.99/month | Full workflow: longer uploads, batch ZIP, translation, delivery |
 
-There is no $7.99 plan. Free is **3 imports per month**, not 3 per day and not a fixed “60 minutes/month” allowance.
+Pro is **$7.99/month** (or $69.99/year). Free is **3 imports per month**, not 3 per day.
 
 All paid plans: 7-day money-back guarantee. Annual discount available.
 
@@ -169,7 +167,7 @@ Q: Is there a free plan?
 A: Yes. 3 imports per month, no credit card. Free exports include a watermark; upgrade for clean files.
 
 Q: What are the paid prices?  
-A: Basic $19, Pro $49, Agency $129 per month.
+A: Pro is $7.99/month (or $69.99/year). There is one paid plan.
 
 Q: Can I transcribe a YouTube video without downloading it?  
 A: Yes. Paste a public YouTube URL on Video to Transcript or Video to Subtitles.
@@ -190,7 +188,7 @@ Q: Can it translate or burn subtitles?
 A: Yes. Translate Subtitles keeps timestamps. Burn Subtitles hardcodes a file into the video.
 
 Q: Does batch processing exist?  
-A: Yes, on Pro ($49) and Agency ($129).
+A: Yes, on Pro ($7.99/month).
 
 Q: Is VideoText an official ChatGPT or OpenAI partner?  
 A: No. It uses Whisper large-v3 as the speech model. Independent product.

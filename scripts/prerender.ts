@@ -79,9 +79,9 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/pricing',
-    title: `Pricing — Free, Basic, Pro & Agency Plans | ${SITE_NAME}`,
+    title: `Pricing — Free & Pro Plans | ${SITE_NAME}`,
     description:
-      "VideoText pricing: Free 3 imports/month, Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Multi-language, batch on Pro+. 7-day money-back guarantee.",
+      "VideoText pricing: Free 3 imports/month, no credit card. Pro $7.99/mo — full transcription, subtitles, translation, batch processing, and delivery workflows. 7-day money-back guarantee.",
     h1: 'Simple, Transparent Pricing',
     keywords: ['VideoText pricing', 'pricing plans', 'free transcription tool', 'cheap video transcription', 'affordable transcription service', 'transcription pricing comparison', 'monthly subscription plans', 'no hidden fees', 'money-back guarantee'],
   },
@@ -420,10 +420,10 @@ const STATIC_META: RouteMeta[] = [
     path: '/trint-alternative',
     title: `Cheaper Trint Alternative That Starts Free | ${SITE_NAME}`,
     description:
-      'Trint starts at $80/month. VideoText starts free and scales to $10/month — same Whisper AI accuracy, plus subtitle burning, batch processing, and translation.',
+      'Trint starts at $80/month. VideoText starts free — Pro at $7.99/mo with same Whisper AI accuracy, plus subtitle burning, batch processing, and translation.',
     breadcrumbLabel: 'Trint Alternative',
     faq: [
-      { q: 'Why is VideoText cheaper than Trint?', a: 'Trint is priced for enterprise workflows at $80/month. VideoText is built for individuals and small teams — free tier included, paid plans from $10/month for 450 minutes of transcription.' },
+      { q: 'Why is VideoText cheaper than Trint?', a: 'Trint is priced for enterprise workflows at $80/month. VideoText is built for individuals and small teams — free tier included, Pro at $7.99/month for the full workflow.' },
       { q: 'Does VideoText match Trint\'s transcription accuracy?', a: 'Both use OpenAI Whisper. VideoText benchmarks at 98.5% word accuracy on clear audio, comparable to Trint\'s published figures.' },
       { q: 'Can I export transcripts from VideoText like Trint?', a: 'Yes. VideoText exports plain text (TXT), SRT, VTT, and more on paid plans. Unlike Trint, VideoText also exports subtitle files and can burn captions directly into video.' },
     ],
@@ -432,10 +432,10 @@ const STATIC_META: RouteMeta[] = [
     path: '/rev-alternative',
     title: `Best Rev Alternative with Flat-Rate Pricing | ${SITE_NAME}`,
     description:
-      'Rev AI charges $0.25/minute. VideoText starts free and costs $10/month for 450 minutes. Same AI accuracy, plus subtitle export, translation, and YouTube support.',
+      'Rev AI charges $0.25/minute. VideoText starts free — Pro at $7.99/mo flat with no per-minute fees. Same AI accuracy, plus subtitle export and translation.',
     breadcrumbLabel: 'Rev Alternative',
     faq: [
-      { q: 'How is VideoText pricing different from Rev?', a: 'Rev AI charges per-minute ($0.25/min). A 450-minute month costs $112.50 on Rev. VideoText\'s Basic plan covers 450 minutes for $10/month flat — no per-minute billing.' },
+      { q: 'How is VideoText pricing different from Rev?', a: 'Rev AI charges per-minute ($0.25/min). A 450-minute month costs $112.50 on Rev. VideoText Pro is $7.99/month flat — no per-minute billing.' },
       { q: 'Does VideoText support YouTube transcription like Rev?', a: 'Yes. Paste any public YouTube URL directly into VideoText — no download required. Rev does not offer YouTube URL input.' },
       { q: 'Can VideoText generate subtitles like Rev?', a: 'Yes. VideoText generates SRT and VTT subtitle files from any video. You can also translate subtitles to 50+ languages and burn them into the video permanently.' },
     ],
@@ -456,10 +456,10 @@ const STATIC_META: RouteMeta[] = [
     path: '/sonix-alternative',
     title: `Best Free Sonix Alternative – No Per-Minute Fees | ${SITE_NAME}`,
     description:
-      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free and is $10/month flat — Whisper AI accuracy, YouTube URL support, subtitle burning, zero per-minute billing.',
+      'Sonix charges $22/month plus $0.10/minute overage. VideoText starts free — Pro at $7.99/mo flat with Whisper AI accuracy, subtitle burning, and zero per-minute billing.',
     breadcrumbLabel: 'Sonix Alternative',
     faq: [
-      { q: 'How does VideoText pricing compare to Sonix?', a: 'Sonix charges $22/month plus $0.10/minute for any overage. VideoText is $10/month for 450 minutes flat — no per-minute fees, ever.' },
+      { q: 'How does VideoText pricing compare to Sonix?', a: 'Sonix charges $22/month plus $0.10/minute for any overage. VideoText Pro is $7.99/month flat — no per-minute fees, ever.' },
       { q: 'Is VideoText as accurate as Sonix?', a: 'Both use Whisper AI. VideoText benchmarks at 98.5% word accuracy on clear audio, on par with Sonix\'s published accuracy.' },
       { q: 'Does VideoText support YouTube URL input like Sonix?', a: 'Yes. Paste any YouTube URL directly into VideoText. Sonix requires manual video download and upload. VideoText streams the audio directly from YouTube — no download needed.' },
     ],
@@ -472,7 +472,7 @@ const STATIC_META: RouteMeta[] = [
     breadcrumbLabel: 'EasyScribe Alternative',
     faq: [
       { q: 'What does VideoText offer that EasyScribe does not?', a: 'VideoText adds YouTube URL transcription, SRT and VTT subtitle export, subtitle translation to 50+ languages, subtitle burning into video, and batch processing. EasyScribe is limited to basic audio file transcription.' },
-      { q: 'Is VideoText free like EasyScribe?', a: 'Yes. VideoText has a free tier with 3 imports per month and no credit card required. Paid plans: Basic $19, Pro $49, Agency $129.' },
+      { q: 'Is VideoText free like EasyScribe?', a: 'Yes. VideoText has a free tier with 3 imports per month and no credit card required. Pro is $7.99/month for the full workflow.' },
     ],
   },
   {
@@ -1116,24 +1116,8 @@ function buildPricingProductJsonLd(routePath: string): object | null {
       },
       {
         '@type': 'Offer',
-        name: 'Basic',
-        price: '19',
-        priceCurrency: 'USD',
-        availability: 'https://schema.org/InStock',
-        url: `${SITE_URL}/pricing`,
-      },
-      {
-        '@type': 'Offer',
         name: 'Pro',
-        price: '49',
-        priceCurrency: 'USD',
-        availability: 'https://schema.org/InStock',
-        url: `${SITE_URL}/pricing`,
-      },
-      {
-        '@type': 'Offer',
-        name: 'Agency',
-        price: '129',
+        price: '7.99',
         priceCurrency: 'USD',
         availability: 'https://schema.org/InStock',
         url: `${SITE_URL}/pricing`,

@@ -152,7 +152,7 @@ function PricingSection() {
               {pricing.monthly.displayAmount}
               <span className="text-sm font-normal opacity-60">/mo</span>
             </p>
-            <p className="mb-4 text-sm text-blue-100/80">1,200 min · full transcription and delivery workflows</p>
+            <p className="mb-4 text-sm text-blue-100/80">Full transcription and delivery workflows</p>
             <button
               type="button"
               onClick={() => void handleProCheckout()}

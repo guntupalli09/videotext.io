@@ -971,7 +971,7 @@ Today we are covering subtitle formats.`}
         </p>
         <h3 className="text-base font-medium text-gray-900 dark:text-white mt-6">How it works</h3>
         <p>
-          Upload up to 20 videos in a single session. Choose your subtitle language (or multiple languages on Pro/Agency). The jobs run in parallel workers — not sequentially. When all jobs complete, you download a single ZIP file containing one SRT per video, named to match your original filenames.
+          Upload up to 20 videos in a single session. Choose your subtitle language (or multiple languages on Pro). The jobs run in parallel workers — not sequentially. When all jobs complete, you download a single ZIP file containing one SRT per video, named to match your original filenames.
         </p>
         <p>
           If one video fails (corrupt file, unsupported codec, audio too short), the rest of the batch continues. The ZIP includes the successful files and a log showing which files failed and why.

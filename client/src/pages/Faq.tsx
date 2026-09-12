@@ -175,13 +175,13 @@ const FAQ_ITEMS = [
     category: "Billing",
     icon: CreditCard,
     q: "How does the free tier work?",
-    a: "Sign up for free (no credit card) to get 3 imports per month (resets on the 1st). Single language, watermark on subtitle exports. Transcript and subtitles are always available. Paid plans: Basic $19 (450 min), Pro $49 (1,200 min), Agency $129 (3,000 min). Upgrade any time on the Pricing page.",
+    a: "Sign up for free (no credit card) to get 3 imports per month (resets on the 1st). Files up to 30 minutes. Watermark on free exports. Transcript and subtitles are always available. Pro is $7.99/month for longer uploads, watermark-free exports, batch processing, formatting, QA, and delivery workflows. Upgrade any time on the Pricing page.",
   },
   {
     category: "Billing",
     icon: CreditCard,
     q: "What does Pro include that Free doesn't?",
-    a: "Pro ($49/month, 1,200 min) unlocks: AI Summary, AI Chapters, Speaker diarization, Transcript translation (70+ languages), Batch processing (up to 20 videos), longer videos, more languages, and no watermark on exports. Basic is $19/month (450 min). Agency is $129/month (3,000 min).",
+    a: "Pro ($7.99/month) unlocks: longer audio and video uploads, AI Summary, AI Chapters, Speaker diarization, Transcript translation (70+ languages), Batch processing (up to 20 videos), client-ready formatting and QA, burn subtitles and compress video, and watermark-free exports.",
   },
   {
     category: "Billing",

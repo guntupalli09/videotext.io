@@ -15,7 +15,7 @@ export default function HeroTrustChips({ className = '' }: { className?: string 
         ))}
       </ul>
       <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
-        Start free. Paid plans (Basic $19 / Pro $49 / Agency $129) only if you outgrow 3 imports/mo.
+        Start free. Pro from $7.99/mo only if you outgrow 3 imports/mo.
       </p>
     </div>
   )

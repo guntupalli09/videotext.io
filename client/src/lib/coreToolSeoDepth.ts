@@ -196,7 +196,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
     faq: [
       { q: 'How do I convert a video to a transcript?', a: 'Upload MP4, MOV, or WebM. VideoText transcribes with Whisper large-v3 and returns transcript text plus SRT/VTT, summary, and chapters.' },
       { q: 'What formats can I upload?', a: 'MP4, MOV, WebM, MKV, and common audio formats. Download from your platform first if needed.' },
-      { q: 'Is it free?', a: 'Yes. Free plan: 3 imports per month, no credit card; watermark on free exports. Paid plans are Basic $19, Pro $49, and Agency $129.' },
+      { q: 'Is it free?', a: 'Yes. Free plan: 3 imports per month, no credit card; watermark on free exports. Paid plans are Pro $7.99/month.' },
       { q: 'How accurate is it?', a: 'About 98.5%+ on clear audio. Set the spoken language when you know it. Noisy or overlapping speech will need a review pass.' },
       { q: 'Does VideoText keep my files?', a: 'Files are deleted after processing. Uploads are not kept as a library.' },
       { q: 'What is the difference between this and Video to Subtitles?', a: 'This page is the full text workflow: transcript + SRT/VTT + summary + chapters. Video to Subtitles is the caption-first hub when the main job is a subtitle file.' },
@@ -368,7 +368,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
     faq: [
       { q: 'Does this transcribe video?', a: 'No. It formats an existing transcript. Use Video to Transcript to get the text from a video upload.' },
       { q: 'What style guides can I apply?', a: 'Presets for Rev, GoTranscript, TranscribeMe, and Scribie-style rules. Cards are editable. You can also work from uploaded client notes in your workflow.' },
-      { q: 'Is guideline formatting free?', a: 'Yes. Free plan: 3 imports per month, no credit card; watermark on free exports. Paid plans are Basic $19, Pro $49, and Agency $129.' },
+      { q: 'Is guideline formatting free?', a: 'Yes. Free plan: 3 imports per month, no credit card; watermark on free exports. Paid plans are Pro $7.99/month.' },
       { q: 'Is this the same as Fix Subtitles?', a: 'No. Guideline format is transcript style (verbatim, speakers, fillers). Fix Subtitles is caption-file QC: overlaps, long lines, and CPS.' },
       { q: 'When should I use this in the workflow?', a: 'After Video to Transcript, before you invoice or send to client QA. If the client also wants SRT, generate or export captions and run Fix Subtitles separately.' },
     ],
