@@ -147,7 +147,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const { seoH1, seoIntro, faq = [], seoTutorial } = props
   const location = useLocation()
   const isSubtitleHub = location.pathname === '/video-to-subtitles'
-  const isSrtSibling = location.pathname === '/srt-generator' || location.pathname === '/video-to-srt'
+  const isSrtSibling = location.pathname === '/srt-generator'
   const effectiveFaq = faq
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -1027,7 +1027,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const layoutProps = {
     breadcrumbs,
     title: seoH1 ?? 'Video to Subtitles — Full Caption Hub',
-    subtitle: seoIntro ?? 'Turn video or a YouTube URL into timed SRT/VTT, then fix, translate, or burn. For transcript + summary + chapters, use Video to Transcript.',
+    subtitle: seoIntro ?? 'Upload MP4/MOV/WebM → timed SRT/VTT, then fix, translate, or burn. For transcript + summary + chapters, use Video to Transcript.',
     icon: <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />,
     tags: ['SRT', 'VTT', 'Subtitles', 'Captions', 'Timestamps', 'Multi-format'],
     sidebar: null,
@@ -1062,13 +1062,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               <>
                 <SamplesModule sourcePath={location.pathname} samplesHref="/samples#subtitle" />
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Looking for a narrower intent?{' '}
-                  <Link to="/srt-generator" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                    SRT file generator
-                  </Link>
-                  {' · '}
-                  <Link to="/video-to-srt" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                    Video to SRT converter
+                  Need Netflix or BBC QC before delivery?{' '}
+                  <Link to="/netflix-ttsc-checklist" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                    TTSC pre-delivery checklist
                   </Link>
                 </p>
               </>
@@ -1647,7 +1643,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             Need the full VideoText caption product?
           </p>
           <p className="mt-1 text-sm text-blue-800 dark:text-blue-200">
-            This page is the {location.pathname === '/srt-generator' ? 'SRT file maker/creator' : 'video → SRT converter'}.
+            This page is the SRT file maker/creator (video in, timed .srt out).
             {' '}
             <Link to="/video-to-subtitles" className="font-semibold underline hover:no-underline">
               Video to Subtitles

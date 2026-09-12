@@ -56,6 +56,7 @@ const TranslateSubtitles = lazy(() => import('./pages/TranslateSubtitles'))
 const FixSubtitles = lazy(() => import('./pages/FixSubtitles'))
 const BurnSubtitles = lazy(() => import('./pages/BurnSubtitles'))
 const CompressVideo = lazy(() => import('./pages/CompressVideo'))
+const NetflixTtscChecklistPage = lazy(() => import('./pages/NetflixTtscChecklistPage'))
 const SeoToolPage = lazy(() => import('./pages/SeoToolPage'))
 const FeedbackView = lazy(() => import('./pages/FeedbackView'))
 const SurveyPage = lazy(() => import('./pages/SurveyPage'))
@@ -616,7 +617,9 @@ function App() {
             <Route path="/youtube-transcript-editor" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/youtube-video-to-transcript" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/google-meet-transcript" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/video-to-srt" element={<Navigate to="/srt-generator" replace />} />
             <Route path="/srt-to-word" element={<Navigate to="/tools/srt-to-text" replace />} />
+            <Route path="/netflix-ttsc-checklist" element={<NetflixTtscChecklistPage />} />
             <Route path="/otter-vs-videotext" element={<OtterVsVideoText />} />
             <Route path="/descript-vs-videotext" element={<DescriptVsVideoText />} />
             <Route path="/ai-transcription-tools" element={<AiTranscriptionTools />} />
@@ -661,6 +664,7 @@ function App() {
                 '/youtube-transcript-editor',
                 '/interview-transcription-tool',
                 '/google-meet-transcript',
+                '/video-to-srt',
                 '/srt-to-word',
                 '/batch-process',
                 '/zoom-meeting-transcript',

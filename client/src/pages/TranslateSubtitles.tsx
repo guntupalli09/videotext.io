@@ -38,6 +38,7 @@ import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 import { Film, Wrench, MessageSquare } from 'lucide-react'
 import SeoJourneyBanner from '../components/SeoJourneyBanner'
+import SerpTrustStrip from '../components/SerpTrustStrip'
 import { getSeoJourneyBanner } from '../lib/seoJourneyConfig'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { LANGUAGES } from '../lib/languages'
@@ -820,6 +821,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
   return (
     <>
+      <SerpTrustStrip />
       {journey && <SeoJourneyBanner data={journey} />}
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" tool="translate-subtitles" />

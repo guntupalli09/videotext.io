@@ -33,7 +33,7 @@ const GRAMMAR_FIXER_EXIT = '/subtitle-grammar-fixer'
 const ALT_TO_TRANSCRIPT: SeoJourneyBannerData = {
   kicker: 'Skip the comparison — use the tool',
   title: 'Upload once → transcript + SRT + summary',
-  body: 'Problem: you need words from a file or YouTube URL, not another feature matrix. Three steps on Video to Transcript.',
+  body: 'Problem: you need words from a video upload, not another feature matrix. Three steps on Video to Transcript.',
   steps: TRANSCRIPT_STEPS,
   primary: { label: 'Open Video to Transcript', href: '/video-to-transcript' },
   secondary: [
@@ -146,21 +146,11 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
   '/srt-generator': {
     kicker: 'File maker → full caption hub',
     title: 'Need more than a .srt download?',
-    body: 'This page is the SRT file generator (maker/creator). The full product — timed SRT/VTT plus fix, translate, and burn — lives on Video to Subtitles.',
+    body: 'This page is the SRT file generator (video in, timed SRT out). The full product — fix, translate, and burn — lives on Video to Subtitles.',
     primary: { label: 'Open the Video to Subtitles hub', href: '/video-to-subtitles' },
     secondary: [
-      { label: 'Video to SRT converter', href: '/video-to-srt' },
+      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Translate', href: '/translate-subtitles' },
-    ],
-  },
-  '/video-to-srt': {
-    kicker: 'Converter → full caption hub',
-    title: 'Need the full caption product?',
-    body: 'This page is the converter: video in, timed SRT out. Video to Subtitles is the hub for SRT/VTT plus fix, translate, burn, and a path to transcript + summary.',
-    primary: { label: 'Open the Video to Subtitles hub', href: '/video-to-subtitles' },
-    secondary: [
-      { label: 'SRT file generator', href: '/srt-generator' },
-      { label: 'Fix Subtitles', href: '/fix-subtitles' },
     ],
   },
   '/capcut-captions': {
@@ -275,7 +265,7 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
     title: 'Browser-local checks + AI SRT generation',
     body: 'Subtitletools.com runs similar free converters in-browser. VideoText adds Whisper SRT generation, translate, burn, and Netflix QC repair — start with a free check, exit to a core tool.',
     steps: SUBTITLE_QA_STEPS,
-    primary: { label: 'Generate SRT from video', href: '/video-to-srt' },
+    primary: { label: 'Generate SRT from video', href: '/srt-generator' },
     secondary: [
       { label: 'Character limit checker', href: '/tools/subtitle-character-checker' },
       { label: 'Subtitle grammar fixer', href: '/subtitle-grammar-fixer' },

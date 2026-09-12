@@ -73,11 +73,9 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'caption-generator': '/video-to-subtitles',
   'closed-caption-generator': '/video-to-subtitles',
   'free-subtitle-generator': '/video-to-subtitles',
-  // NOTE: '/video-to-srt' and '/srt-generator' are intentionally NOT aliased here.
-  // Both have their own distinct real-world search demand and Google rankings
-  // that outperform '/video-to-subtitles' (see reports/seo-baseline-2026-08-31.md
-  // §6) — canonicalizing them away was actively suppressing indexable, high-traffic
-  // pages. They now self-canonicalize (see client/src/lib/seoRegistry.ts entries).
+  // GSC (Sep 2026): /srt-generator outranked /video-to-srt for the same intent (~12.8k vs ~7.7k impr).
+  // Consolidate video-to-srt → srt-generator (301 + canonical).
+  'video-to-srt': '/srt-generator',
   'translate-video': '/translate-subtitles',
   'video-translation': '/translate-subtitles',
   'bulk-video-transcription': '/video-to-transcript',

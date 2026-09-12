@@ -906,8 +906,8 @@ const MONEY_TITLE_PATHS = new Set([
   '/burn-subtitles',
   '/compress-video',
   '/youtube-transcript-generator',
-  '/video-to-srt',
   '/srt-generator',
+  '/netflix-ttsc-checklist',
   '/voice-recorder',
   '/guideline-format',
 ])
@@ -1283,7 +1283,7 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
   '/subtitle-tools': [
     { path: '/video-to-subtitles', label: 'Video to Subtitles' },
     { path: '/srt-generator', label: 'SRT File Generator' },
-    { path: '/video-to-srt', label: 'Video to SRT Converter' },
+    { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC Checklist' },
     { path: '/subtitle-generator', label: 'Subtitle Generator' },
     { path: '/auto-subtitle-generator', label: 'Auto Subtitle Generator' },
     { path: '/youtube-subtitle-generator', label: 'YouTube Subtitle Generator' },
@@ -1596,7 +1596,7 @@ function buildCanonicalToolsSection(hubPath: string): string {
   if (hubPath === '/subtitle-tools') {
     tools = [
       { path: '/srt-generator', label: 'SRT File Generator' },
-      { path: '/video-to-srt', label: 'Video to SRT Converter' },
+      { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC Checklist' },
       { path: '/translate-subtitles', label: 'Translate Subtitles' },
       { path: '/burn-subtitles', label: 'Burn Subtitles into Video' },
     ]

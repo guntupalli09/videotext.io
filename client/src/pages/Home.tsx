@@ -49,7 +49,6 @@ const ALL_FEATURES = [
   { label: 'Video to Transcript', path: '/video-to-transcript' },
   { label: 'Video to Subtitles', path: '/video-to-subtitles' },
   { label: 'SRT File Generator', path: '/srt-generator' },
-  { label: 'Video to SRT', path: '/video-to-srt' },
   { label: 'Translate Subtitles', path: '/translate-subtitles' },
   { label: 'Subtitle Tools', path: '/subtitle-tools' },
   { label: 'Fix Subtitles', path: '/fix-subtitles' },

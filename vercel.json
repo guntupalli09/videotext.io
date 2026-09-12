@@ -186,6 +186,11 @@
       "status": 301
     },
     {
+      "src": "/video-to-srt",
+      "dest": "/srt-generator",
+      "status": 301
+    },
+    {
       "src": "/srt-to-word",
       "dest": "/tools/srt-to-text",
       "status": 301

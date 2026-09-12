@@ -12,6 +12,8 @@ import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import MoneyPagesCta from '../components/MoneyPagesCta'
 import SeoJourneyBanner from '../components/SeoJourneyBanner'
 import CapCutJsonToSrt from '../components/CapCutJsonToSrt'
+import SerpTrustStrip from '../components/SerpTrustStrip'
+import { shouldShowSerpTrustStrip } from '../lib/serpTrustPaths'
 import { getSeoJourneyBanner } from '../lib/seoJourneyConfig'
 import NotFound from './NotFound'
 import { resolveInternalLinkPath } from '../lib/primaryUrls'
@@ -121,6 +123,7 @@ export default function SeoToolPage() {
 
   return (
     <div className="min-h-screen">
+      {shouldShowSerpTrustStrip(pathname) && <SerpTrustStrip />}
       {journey && <SeoJourneyBanner data={journey} />}
       {pathname === '/capcut-captions' && <CapCutJsonToSrt />}
       <Suspense fallback={<RouteFallback />}>

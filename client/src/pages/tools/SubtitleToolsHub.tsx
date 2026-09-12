@@ -13,7 +13,7 @@ const SUBTITLE_TOOLS = [
     links: [
       { path: '/video-to-subtitles', label: 'Video to Subtitles (full product hub)' },
       { path: '/srt-generator', label: 'SRT File Generator' },
-      { path: '/video-to-srt', label: 'Video to SRT Converter' },
+      { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC Checklist' },
       { path: '/subtitle-generator', label: 'Subtitle Generator' },
       { path: '/auto-subtitle-generator', label: 'Auto Subtitle Generator' },
       { path: '/youtube-subtitle-generator', label: 'YouTube Subtitle Generator' },
@@ -109,7 +109,7 @@ export default function SubtitleToolsHub() {
             Browser-local converters and validators (like Subtitletools) — plus a path to AI SRT generation, translate, and QC repair when free checks are not enough.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/video-to-srt" className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
+            <Link to="/srt-generator" className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
               Generate SRT from video →
             </Link>
             <Link to="/subtitle-grammar-fixer" className="inline-flex items-center rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-colors">

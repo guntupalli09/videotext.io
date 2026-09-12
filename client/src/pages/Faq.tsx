@@ -39,14 +39,14 @@ const FAQ_ITEMS = [
   {
     category: "General",
     icon: HelpCircle,
-    q: "Can I transcribe a YouTube video without downloading it?",
-    a: "Yes. Paste any public youtube.com or youtu.be link into Video to Transcript or the YouTube Transcript Generator — no download needed. We stream the audio and return a transcript plus SRT/VTT, summary, and chapters.",
+    q: "How do I transcribe a YouTube video?",
+    a: "Download the video as MP4, then upload to Video to Transcript. You get transcript plus SRT/VTT, summary, and chapters. Files are deleted after processing.",
   },
   {
     category: "General",
     icon: HelpCircle,
     q: "What file formats are supported?",
-    a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. You can also paste a public YouTube URL (youtube.com or youtu.be) — no download required.",
+    a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. Download from your platform first if needed, then upload the file.",
   },
   {
     category: "General",
@@ -70,7 +70,7 @@ const FAQ_ITEMS = [
     category: "General",
     icon: HelpCircle,
     q: "How do I transcribe a video for free?",
-    a: "Sign up for free (no credit card). You get 3 imports per month. Go to Video to Transcript, upload your video (MP4, MOV, AVI, WebM) or paste a YouTube URL, set the language, and click Start. Your transcript is ready in 1–8 minutes depending on video length. Copy it or download as TXT.",
+    a: "Sign up for free (no credit card). You get 3 imports per month. Go to Video to Transcript, upload your video (MP4, MOV, AVI, WebM), set the language, and click Start. Your transcript is ready in 1–8 minutes depending on video length. Copy it or download as TXT.",
   },
   {
     category: "General",
