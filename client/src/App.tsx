@@ -86,6 +86,7 @@ const Open = lazy(() => import('./pages/Open'))
 const Samples = lazy(() => import('./pages/Samples'))
 const TranscriptionBenchmark = lazy(() => import('./pages/TranscriptionBenchmark'))
 const AccuracyTest = lazy(() => import('./pages/AccuracyTest'))
+const TranscriptionAccuracyBenchmark2026 = lazy(() => import('./pages/TranscriptionAccuracyBenchmark2026'))
 const BestTranscriptionTool = lazy(() => import('./pages/BestTranscriptionTool'))
 const FastestTranscriptionSoftware = lazy(() => import('./pages/FastestTranscriptionSoftware'))
 const FastestTranscriptionTool = lazy(() => import('./pages/FastestTranscriptionTool'))
@@ -589,6 +590,7 @@ function App() {
             <Route path="/samples" element={<Samples />} />
             <Route path="/transcription-benchmark" element={<TranscriptionBenchmark />} />
             <Route path="/accuracy-test" element={<AccuracyTest />} />
+            <Route path="/research/transcription-accuracy-benchmark-2026" element={<TranscriptionAccuracyBenchmark2026 />} />
             <Route path="/best-transcription-tool" element={<BestTranscriptionTool />} />
             <Route path="/fastest-transcription-software" element={<FastestTranscriptionSoftware />} />
             <Route path="/fastest-transcription-tool" element={<FastestTranscriptionTool />} />

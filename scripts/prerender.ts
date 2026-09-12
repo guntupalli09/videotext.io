@@ -738,6 +738,20 @@ const STATIC_META: RouteMeta[] = [
       { q: 'Can I replace Descript if I only need transcripts and subtitles?', a: 'Yes. VideoText is designed for transcript and subtitle generation. If you do not need timeline editing or audio correction, VideoText is a lighter and more affordable replacement.' },
     ],
   },
+  {
+    path: '/research/transcription-accuracy-benchmark-2026',
+    title: `AI Transcription Accuracy Benchmark — Open Dataset & Methodology | ${SITE_NAME}`,
+    description:
+      'A reproducible transcription accuracy study: public dataset, ground-truth transcripts, scoring code, raw outputs, and a downloadable CSV. Phase 1 pilot results and open methodology.',
+    h1: 'AI Transcription Accuracy Benchmark',
+    breadcrumbLabel: 'Transcription Accuracy Benchmark',
+    faq: [
+      { q: 'How accurate is AI transcription?', a: 'In our Phase 1 pilot, an open-source Whisper baseline scored 2.52% word error rate on 25 clean, single-speaker LibriSpeech utterances — a narrow, reproducible data point, not a general accuracy claim.' },
+      { q: 'What dataset and ground truth does this benchmark use?', a: 'LibriSpeech test-clean, a public-domain corpus (CC BY 4.0) of LibriVox audiobook recordings with professionally aligned reference transcripts.' },
+      { q: 'Is this benchmark data or a marketing claim?', a: 'Every number on this page traces to a public dataset, a scoring script, and raw model output published alongside it — including a downloadable CSV of per-utterance results.' },
+      { q: 'Has VideoText itself been benchmarked here?', a: 'Not yet. This pilot tested an open-source Whisper baseline only; VideoText, Deepgram, AssemblyAI, and other tools are planned additions once API access is available.' },
+    ],
+  },
 ]
 
 // ── Registry parser ───────────────────────────────────────────────────────────

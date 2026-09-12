@@ -34,6 +34,7 @@ export const STATIC_ROUTES = [
   '/interview-transcription-tool',
   '/transcription-benchmark',
   '/accuracy-test',
+  '/research/transcription-accuracy-benchmark-2026',
   '/fastest-transcription-software',
   '/ai-transcription-tools',
   '/ai-transcription-workflow',

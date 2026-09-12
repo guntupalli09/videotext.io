@@ -1,0 +1,25 @@
+{
+  "run_started_at_utc": "2026-09-12T04:29:05Z",
+  "git_commit": "b93b806ff09deb68f271ea06619d92198c95c4c7",
+  "tool": {
+    "name": "Whisper baseline (open-source)",
+    "model_size": "small",
+    "device": "cpu",
+    "compute_type": "int8",
+    "beam_size": 5,
+    "language": "en",
+    "faster_whisper_version": "1.2.1",
+    "ctranslate2_version": "4.8.2"
+  },
+  "environment": {
+    "python_version": "3.11.15",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "ffmpeg_version": "ffmpeg version 7.0.2-static https://johnvansickle.com/ffmpeg/  Copyright (c) 2000-2024 the FFmpeg developers"
+  },
+  "dataset": {
+    "name": "LibriSpeech test-clean",
+    "source_url": "https://www.openslr.org/12/",
+    "license": "CC BY 4.0 (Vassil Panayotov, 2014)"
+  },
+  "note": "This is an open-source Whisper baseline, not VideoText's production pipeline. VideoText calls OpenAI's hosted Whisper API (server/src/services/transcription.ts); no OPENAI_API_KEY was available when this run was executed."
+}
