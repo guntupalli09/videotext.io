@@ -1,0 +1,12 @@
+{
+  "condition": "clean_read_speech_single_speaker",
+  "dataset": "LibriSpeech test-clean (public domain, professionally aligned)",
+  "model": "whisper-small (faster-whisper, int8, CPU)",
+  "n_utterances": 25,
+  "n_speakers": 5,
+  "total_audio_sec": 257.8,
+  "corpus_wer_pct": 2.52,
+  "mean_utterance_wer_pct": 2.23,
+  "median_utterance_wer_pct": 0.0,
+  "realtime_factor": 2.89
+}

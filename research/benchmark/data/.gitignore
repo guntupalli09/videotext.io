@@ -1,0 +1,5 @@
+# Raw/derived audio is reproducible via prepare_pilot.py; don't commit large binaries.
+*.tar.gz
+LibriSpeech/
+pilot/
+pilot_wav/
