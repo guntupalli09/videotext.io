@@ -59,6 +59,7 @@ export default function SubtitleCharacterChecker() {
 
   return (
     <FreeToolLayout
+      collapseSeoSections
       title="Netflix Subtitle CPL Checker — Check 42-Character Limits"
       description="Check subtitle cues against Netflix-published character-per-line guidelines (42 CPL), BBC (37), or a wide 80-character preset. VideoText is not affiliated with or endorsed by Netflix."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
@@ -131,10 +132,10 @@ export default function SubtitleCharacterChecker() {
       ]}
       relatedTools={[
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-fix long lines, CPS, and formatting' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Full caption hub: generate SRT/VTT from video' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
-        { label: 'Burn Subtitles', path: '/burn-subtitles', desc: 'Hardcode the checked file into video' },
-        { label: 'SRT File Generator', path: '/srt-generator', desc: 'Create a timed SRT from video' },
+        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Overlaps, empty cues, and structure errors' },
+        { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Netflix 20 CPS / BBC 17 CPS presets' },
+        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'Full pre-delivery CPL, CPS, and overlap workflow' },
+        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Convert video to a timed SRT file' },
         { label: 'Free Subtitle Tools', path: '/subtitle-tools', desc: 'Converters, timing, validator, and more' },
       ]}
     >

@@ -149,7 +149,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const { seoH1, seoIntro, faq = [], seoTutorial } = props
   const location = useLocation()
   const isSubtitleHub = location.pathname === '/video-to-subtitles'
-  const isSrtSibling = location.pathname === '/srt-generator'
+  const isSrtSibling = location.pathname === '/video-to-srt'
   const effectiveFaq = faq
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -1669,8 +1669,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         />
       )}
 
-      {effectiveFaq.length > 0 && (
-        <CollapsibleFaqSection items={effectiveFaq} />
+      {effectiveFaq.length > 0 && !isSrtSibling && (
+        <CollapsibleFaqSection items={effectiveFaq} route={location.pathname} />
       )}
     </>
   )

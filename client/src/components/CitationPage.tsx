@@ -54,7 +54,7 @@ export default function CitationPage(props: CitationPageProps) {
           </div>
           <div className="flex flex-wrap gap-2 shrink-0">
             <Link to="/video-to-transcript" className="inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Video to Transcript</Link>
-            <Link to="/srt-generator" className="inline-flex rounded-lg border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-800 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/40">SRT Generator</Link>
+            <Link to="/video-to-srt" className="inline-flex rounded-lg border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-800 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/40">Video to SRT</Link>
           </div>
         </section>
 

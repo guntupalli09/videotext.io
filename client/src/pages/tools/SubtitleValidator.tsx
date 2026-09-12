@@ -91,11 +91,11 @@ export default function SubtitleValidator() {
       ]}
       relatedTools={[
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct overlaps, timing & long lines' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate timed SRT/VTT from video' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
-        { label: 'Burn Subtitles', path: '/burn-subtitles', desc: 'Hardcode a cleaned SRT into video' },
-        { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Netflix/YouTube line length check' },
+        { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Netflix-style 42 CPL / BBC 37 presets' },
+        { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: '20 CPS adult / 17 CPS children presets' },
+        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'CPL, CPS, and overlap checks before delivery' },
         { label: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing', desc: 'Bulk-adjust all timestamps' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate timed SRT/VTT from video' },
       ]}
     >
       <div className="space-y-4">

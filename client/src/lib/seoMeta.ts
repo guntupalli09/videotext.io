@@ -1421,14 +1421,9 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
     description: 'Compress video online with light, medium, or heavy compression settings. Reduce file size for sharing and uploads.',
     featureList: 'Video compression, Light compression, Medium compression, Heavy compression, MP4 output, No quality loss option',
   },
-  '/srt-generator': {
-    name: 'Free SRT File Generator from Video',
-    description: 'Create a timed SRT file from any video. Upload MP4/MOV/WebM, download SRT in seconds. Whisper AI. 3 free imports/mo, no card; watermark on free exports.',
-    featureList: 'SRT file generation, AI timing, Video file upload, Instant download, Files deleted after processing',
-  },
   '/video-to-srt': {
     name: 'Video to SRT Converter — Free Online',
-    description: 'Convert video to a timed SRT subtitle file online. Upload MP4/MOV/WebM. AI timestamps. Sign up free — 3 imports/mo; watermark on free exports.',
+    description: 'Convert video to a timed SRT subtitle file online. Upload MP4/MOV/WebM. Whisper large-v3 timestamps. Sign up free — 3 imports/mo; watermark on free exports.',
     featureList: 'Video to SRT conversion, AI timing, Video file upload, Instant download, Files deleted after processing',
   },
 }

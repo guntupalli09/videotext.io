@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import Seo from './Seo'
 import OpenStatsStrip from './OpenStatsStrip'
 import SeoJourneyBanner from './SeoJourneyBanner'
+import CollapsibleToolSection from './CollapsibleToolSection'
+import CollapsibleFaqSection from './CollapsibleFaqSection'
 import { getSeoJourneyBanner } from '../lib/seoJourneyConfig'
 import { resolveInternalLinkPath } from '../lib/primaryUrls'
 
@@ -35,6 +37,8 @@ interface FreeToolLayoutProps {
   hubLink?: { label: string; path: string }
   /** Show /open stats teaser (default true). */
   showOpenStatsStrip?: boolean
+  /** Wrap guide, content sections, and FAQ in collapsed blocks (SEO depth, tool stays primary). */
+  collapseSeoSections?: boolean
   /** Above-fold money CTA (fix / translate / burn). Visible without hunting. */
   moneyCta?: {
     kicker?: string
@@ -63,6 +67,7 @@ export default function FreeToolLayout({
   contentSections = [],
   hubLink,
   showOpenStatsStrip = true,
+  collapseSeoSections = false,
   moneyCta,
 }: FreeToolLayoutProps) {
   const { pathname } = useLocation()
@@ -240,57 +245,110 @@ export default function FreeToolLayout({
         </section>
 
         {/* Rich content sections — SEO depth text */}
-        {contentSections.length > 0 && (
-          <section className="space-y-6">
-            {contentSections.map((s, i) => (
-              <div key={i}>
-                <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-3">{s.heading}</h2>
-                {typeof s.body === 'string' ? (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{s.body}</p>
-                ) : (
-                  <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed space-y-3">{s.body}</div>
-                )}
-              </div>
-            ))}
-          </section>
-        )}
-
-        {/* Mini guide */}
-        {guideSteps.length > 0 && (
-          <section>
-            <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-5">
-              {guideTitle ?? `How to use this tool`}
-            </h2>
-            <ol className="space-y-4">
-              {guideSteps.map((s, i) => (
-                <li key={i} className="flex gap-4">
-                  <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold text-sm flex items-center justify-center">
-                    {i + 1}
-                  </span>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{s.step}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{s.desc}</p>
+        {contentSections.length > 0 &&
+          (collapseSeoSections ? (
+            <CollapsibleToolSection
+              id="tool-explainer"
+              title="About this tool"
+              route={pathname}
+              analyticsSection="how_it_works"
+              className="!max-w-3xl !px-0 !pt-8 !pb-8 !border-t-0"
+            >
+              <div className="space-y-6">
+                {contentSections.map((s, i) => (
+                  <div key={i}>
+                    <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{s.heading}</h2>
+                    {typeof s.body === 'string' ? (
+                      <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{s.body}</p>
+                    ) : (
+                      <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed space-y-3">{s.body}</div>
+                    )}
                   </div>
-                </li>
-              ))}
-            </ol>
-          </section>
-        )}
-
-        {/* FAQ */}
-        {faqs.length > 0 && (
-          <section>
-            <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-5">Frequently Asked Questions</h2>
-            <dl className="space-y-5">
-              {faqs.map((f, i) => (
-                <div key={i} className="border-b border-gray-100 dark:border-gray-700 pb-5 last:border-0 last:pb-0">
-                  <dt className="font-semibold text-gray-900 dark:text-white text-sm mb-1.5">{f.q}</dt>
-                  <dd className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{f.a}</dd>
+                ))}
+              </div>
+            </CollapsibleToolSection>
+          ) : (
+            <section className="space-y-6">
+              {contentSections.map((s, i) => (
+                <div key={i}>
+                  <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-3">{s.heading}</h2>
+                  {typeof s.body === 'string' ? (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{s.body}</p>
+                  ) : (
+                    <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed space-y-3">{s.body}</div>
+                  )}
                 </div>
               ))}
-            </dl>
-          </section>
-        )}
+            </section>
+          ))}
+
+        {/* Mini guide */}
+        {guideSteps.length > 0 &&
+          (collapseSeoSections ? (
+            <CollapsibleToolSection
+              id="tool-how-to"
+              title={guideTitle ?? 'How to use this tool'}
+              route={pathname}
+              analyticsSection="how_it_works"
+              className="!max-w-3xl !px-0 !pt-0 !pb-8 !border-t-0"
+            >
+              <ol className="space-y-4">
+                {guideSteps.map((s, i) => (
+                  <li key={i} className="flex gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold text-sm flex items-center justify-center">
+                      {i + 1}
+                    </span>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{s.step}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{s.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </CollapsibleToolSection>
+          ) : (
+            <section>
+              <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-5">
+                {guideTitle ?? `How to use this tool`}
+              </h2>
+              <ol className="space-y-4">
+                {guideSteps.map((s, i) => (
+                  <li key={i} className="flex gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold text-sm flex items-center justify-center">
+                      {i + 1}
+                    </span>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{s.step}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{s.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ))}
+
+        {/* FAQ */}
+        {faqs.length > 0 &&
+          (collapseSeoSections ? (
+            <CollapsibleFaqSection
+              items={faqs.map((f, i) => ({ ...f, id: `free-faq-${i}` }))}
+              route={pathname}
+              id="free-tool-faq"
+              className="!max-w-3xl !px-0 !pt-0 !pb-8 !border-t-0"
+            />
+          ) : (
+            <section>
+              <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-5">Frequently Asked Questions</h2>
+              <dl className="space-y-5">
+                {faqs.map((f, i) => (
+                  <div key={i} className="border-b border-gray-100 dark:border-gray-700 pb-5 last:border-0 last:pb-0">
+                    <dt className="font-semibold text-gray-900 dark:text-white text-sm mb-1.5">{f.q}</dt>
+                    <dd className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{f.a}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ))}
 
         {/* Related tools */}
         <section>

@@ -19,7 +19,7 @@ import { ArrowRight } from 'lucide-react';
 
 const HIGH_INTENT_GUIDES = [
   { label: 'Video to Transcript (Primary)', path: '/video-to-transcript', desc: 'Upload MP4/MOV — transcript, SRT/VTT, summary, and chapters' },
-  { label: 'SRT File Generator', path: '/srt-generator', desc: 'Video in, timed .srt out — high-volume caption intent' },
+  { label: 'Video to SRT', path: '/video-to-srt', desc: 'Convert video to timed .srt — highest-efficiency caption intent' },
   { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'SRT/VTT to 70+ languages with timestamps preserved' },
   { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'Pre-delivery workflow against Netflix-published TTSC limits' },
   { label: 'Best Transcription Tool', path: '/best-transcription-tool', desc: 'Decision support by speed, outputs, and workflow fit' },
@@ -46,7 +46,7 @@ const MORE_GUIDES = [
 const ALL_FEATURES = [
   { label: 'Video to Transcript', path: '/video-to-transcript' },
   { label: 'Video to Subtitles', path: '/video-to-subtitles' },
-  { label: 'SRT File Generator', path: '/srt-generator' },
+  { label: 'Video to SRT', path: '/video-to-srt' },
   { label: 'Translate Subtitles', path: '/translate-subtitles' },
   { label: 'Subtitle Tools', path: '/subtitle-tools' },
   { label: 'Fix Subtitles', path: '/fix-subtitles' },
@@ -225,7 +225,7 @@ export default function Home() {
               Choose your workflow path
             </h2>
             <p className="mt-2 max-w-3xl text-sm text-gray-500 dark:text-gray-400">
-              VideoText (videotext.io) is AI video-to-text software — not a generic &ldquo;video text&rdquo; paste tool. Core entry points: Video to Transcript, SRT Generator, and Translate Subtitles.
+              VideoText (videotext.io) is AI video-to-text software — not a generic &ldquo;video text&rdquo; paste tool. Core entry points: Video to Transcript, Video to SRT, and Translate Subtitles.
             </p>
           </div>
           <LinkGrid items={HIGH_INTENT_GUIDES} />

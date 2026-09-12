@@ -67,7 +67,7 @@ const EXISTING_PATHS = new Set([
   '/ai-transcription', '/audio-to-text', '/zoom-meeting-transcript',
   '/meeting-recording-to-transcript', '/interview-transcription', '/automatic-subtitles',
   '/caption-generator', '/closed-caption-generator', '/free-subtitle-generator',
-  '/srt-generator', '/webinar-transcription', '/meeting-transcription-tool',
+  '/video-to-srt', '/srt-generator', '/webinar-transcription', '/meeting-transcription-tool',
 ])
 
 /** Generate intent pages with proper topical authority linking.

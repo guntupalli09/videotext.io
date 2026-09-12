@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import PageGscSeoSections from '../../components/PageGscSeoSections'
 
 interface VideoInfo {
   name: string
@@ -79,7 +80,9 @@ export default function VideoMetadataViewer() {
   ] : []
 
   return (
+    <>
     <FreeToolLayout
+      collapseSeoSections
       title="Video Metadata Viewer — Check Video Info Without Uploading"
       description="View video file details — duration, resolution, aspect ratio, file size, and format — directly in your browser. Nothing is uploaded. Works on all video files."
       hubLink={{ label: 'Free Video Tools', path: '/tools' }}
@@ -87,7 +90,7 @@ export default function VideoMetadataViewer() {
         kicker: 'Have this file ready?',
         title: 'Generate SRT from the same video',
         body: 'You checked duration and resolution — upload the file on Video to SRT for Whisper-timed captions. Files deleted after processing.',
-        primary: { label: 'Generate SRT from video', path: '/srt-generator' },
+        primary: { label: 'Convert video to SRT', path: '/video-to-srt' },
         secondary: [
           { label: 'Full transcript + summary', path: '/video-to-transcript' },
           { label: 'Burn captions', path: '/burn-subtitles' },
@@ -159,5 +162,7 @@ export default function VideoMetadataViewer() {
       </div>
       <video ref={videoRef} className="hidden" />
     </FreeToolLayout>
+    <PageGscSeoSections path="/tools/video-metadata-viewer" />
+    </>
   )
 }

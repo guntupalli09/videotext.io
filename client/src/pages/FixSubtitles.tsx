@@ -10,6 +10,7 @@ import FailedState from '../components/FailedState'
 import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
 import CollapsibleFaqSection from '../components/CollapsibleFaqSection'
 import CollapsibleToolSection from '../components/CollapsibleToolSection'
+import PageGscSupplementFaq from '../components/PageGscSupplementFaq'
 import FreePlanNudge from '../components/FreePlanNudge'
 import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
@@ -1395,7 +1396,11 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       )}
 
       {faq.length > 0 && location.pathname !== '/fix-subtitles' && (
-        <CollapsibleFaqSection items={faq} />
+        <CollapsibleFaqSection items={faq} route={location.pathname} />
+      )}
+
+      {location.pathname === '/subtitle-grammar-fixer' && (
+        <PageGscSupplementFaq path="/subtitle-grammar-fixer" title="More QC questions" />
       )}
 
       <JobAuthGateModal

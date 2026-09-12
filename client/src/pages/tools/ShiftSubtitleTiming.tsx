@@ -52,6 +52,7 @@ export default function ShiftSubtitleTiming() {
 
   return (
     <FreeToolLayout
+      collapseSeoSections
       title="Subtitle Time Shifter — Delay or Advance All Subtitle Timestamps"
       description="Fix out-of-sync subtitles by shifting every timestamp forward or backward by any number of seconds. Works with SRT and VTT files. Free, browser-based, instant."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}

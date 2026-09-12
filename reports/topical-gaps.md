@@ -97,6 +97,16 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
+## /netflix-ttsc-checklist
+
+- **Missing subtopics:** timing and synchronization, platform export compatibility
+- **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing
+- **Expansion opportunities:**
+  - Add timing/sync guidance with common subtitle edge cases.
+  - Add platform-specific export and compatibility notes.
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+  - Replace generic AI-style transitions with concrete examples and constraints.
+
 ## /speechpad-transcription-guidelines
 
 - **Missing subtopics:** QA rejection criteria, privacy and storage
@@ -183,28 +193,12 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
-## /best-descript-alternatives
-
-- **Missing subtopics:** migration guidance
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Add switching/migration guidance and data export considerations.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
 ## /best-otter-alternatives
 
 - **Missing subtopics:** migration guidance
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
 - **Expansion opportunities:**
   - Add switching/migration guidance and data export considerations.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /best-youtube-transcription-tool
-
-- **Missing subtopics:** long recordings
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Add guidance for long recordings, large files, and batching.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /buzz-alternative
@@ -448,6 +442,13 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /auto-subtitle-generator
+
+- **Missing subtopics:** None detected
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /best-descript-alternatives
 
 - **Missing subtopics:** None detected
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
@@ -1136,21 +1137,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
-## /srt-generator
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
-
-## /srt-to-word
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
 ## /subly-alternative
 
 - **Missing subtopics:** None detected
@@ -1194,13 +1180,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /subtitle-reading-speed
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /subtitle-resources
 
 - **Missing subtopics:** None detected
 - **Weak sections:** None detected

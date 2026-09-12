@@ -95,7 +95,7 @@ If you're a video agency or content team:
 - Download as a ZIP
 
 No more doing them one by one.
-→ videotext.io (Pro/Agency plan)
+→ videotext.io (Pro plan — $7.99/mo)
 
 ---
 

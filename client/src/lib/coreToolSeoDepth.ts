@@ -61,8 +61,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
         { href: '/video-to-subtitles', label: 'Video to Subtitles', note: 'No SRT yet? Generate timed captions from video first.' },
         { href: '/fix-subtitles', label: 'Fix Subtitles', note: 'After translation, check overlaps, long lines, and CPS.' },
         { href: '/burn-subtitles', label: 'Burn Subtitles', note: 'Hardcode the translated track into the video for social.' },
-        { href: '/srt-generator', label: 'SRT file generator', note: 'Need a new .srt from video (file maker), not a translation.' },
-        { href: '/srt-generator', label: 'SRT file generator', note: 'Video in, timed SRT out — same engine as this hub.' },
+        { href: '/video-to-srt', label: 'Video to SRT', note: 'Need a new .srt from video, not a translation.' },
         { href: '/subtitle-tools', label: 'Free subtitle tools', note: 'In-browser convert, validate, and check character limits.' },
       ],
     },
@@ -219,8 +218,8 @@ const CORE: Record<string, CoreToolSeoDepth> = {
       heading: 'Who should use this hub (vs SRT siblings)',
       items: [
         { who: 'Creators who want captions plus the rest of VideoText', why: 'This is the product hub: video → timed subtitles, then fix / translate / burn, and transcript+summary when you need words not just cues.' },
-        { who: 'People who searched “SRT file generator”', why: 'Use /srt-generator — that page is the file maker/creator. It links back here for the full product.' },
-        { who: 'People who searched “video to SRT”', why: 'Use /srt-generator — video in, timed .srt out. Same engine, narrower intent.' },
+        { who: 'People who searched “video to SRT”', why: 'Use /video-to-srt — convert video to a timed .srt file. Same engine, narrower intent than this hub.' },
+        { who: 'People who searched “SRT file generator”', why: '/srt-generator redirects to /video-to-srt — one canonical page for both phrasings.' },
       ],
     },
     outputs: {
@@ -242,8 +241,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
     related: {
       heading: 'File-maker siblings and next tools',
       links: [
-        { href: '/srt-generator', label: 'SRT file generator', note: 'Create a new .srt from video (maker/creator intent).' },
-        { href: '/srt-generator', label: 'SRT file generator', note: 'Video → timed SRT file (canonical for “video to srt” searches).' },
+        { href: '/video-to-srt', label: 'Video to SRT', note: 'Convert video to a timed .srt file (canonical URL).' },
         { href: '/video-to-transcript', label: 'Video to Transcript', note: 'Full text package: transcript + SRT + summary + chapters.' },
         { href: '/fix-subtitles', label: 'Fix Subtitles', note: 'Overlaps, long lines, CPS, formatting.' },
         { href: '/translate-subtitles', label: 'Translate Subtitles', note: '70+ languages, timestamps kept.' },
@@ -254,8 +252,8 @@ const CORE: Record<string, CoreToolSeoDepth> = {
       { q: 'How do I generate subtitles from a video?', a: 'Upload a video, choose SRT or VTT, and download the timed file. Whisper large-v3 creates the cues.' },
       { q: 'Can I also get a transcript and summary?', a: 'Yes. Use Video to Transcript for transcript + SRT/VTT + summary + chapters from a video upload. This hub stays caption-first.' },
       { q: 'Is it free?', a: 'Yes. 3 imports per month, no card; watermark on free exports. Files are deleted after processing.' },
-      { q: 'How is this different from the SRT file generator?', a: 'This page is the full product hub (captions plus the VideoText workflow). /srt-generator is the file maker/creator for “srt file generator” searches. Same engine; different intent.' },
-      { q: 'How is this different from the SRT file generator?', a: '/srt-generator is the file maker page (video in, SRT out). Use that if you searched “video to srt” or “srt file generator”. Come here when you want the caption product and next steps (fix, translate, burn, transcript).' },
+      { q: 'How is this different from Video to SRT?', a: 'This page is the full product hub (captions plus the VideoText workflow). /video-to-srt is the narrow “convert video to .srt” page. Same engine; different intent.' },
+      { q: 'How is this different from Video to SRT?', a: '/video-to-srt converts video to a timed SRT file. Use that if you searched “video to srt” or “srt file generator” (/srt-generator redirects there). Come here when you want the caption product and next steps (fix, translate, burn, transcript).' },
     ],
   },
 
@@ -305,6 +303,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
         { href: '/guideline-format', label: 'Client guidelines', note: 'Transcript style rules (verbatim, speakers) — different from cue QC.' },
         { href: '/tools/subtitle-validator', label: 'Subtitle validator', note: 'Free in-browser scan before or after a fix pass.' },
         { href: '/tools/subtitle-character-checker', label: 'Character limit checker', note: 'Netflix-style / BBC CPL presets — within or over limit per cue.' },
+        { href: '/netflix-ttsc-checklist', label: 'Netflix TTSC checklist', note: 'Optional pre-delivery scan workflow before vendor handoff.' },
       ],
     },
     faq: [
@@ -520,9 +519,11 @@ const CORE: Record<string, CoreToolSeoDepth> = {
     related: {
       heading: 'Linked checks in this checklist',
       links: [
+        { href: '/subtitle-tools', label: 'Free subtitle tools hub', note: 'Entry from high-traffic validator and converter pages.' },
         { href: '/tools/subtitle-character-checker', label: 'Netflix-style CPL checker', note: '42-character line preset.' },
         { href: '/tools/subtitle-reading-speed', label: 'Reading speed checker', note: '20 CPS adult / 17 CPS children presets.' },
         { href: '/tools/subtitle-validator', label: 'Subtitle validator', note: 'Overlaps, empty cues, structure.' },
+        { href: '/video-to-srt', label: 'Video to SRT', note: 'Generate a new timed file when QC fails on source video.' },
         { href: '/subtitle-grammar-fixer', label: 'Subtitle Grammar Fixer', note: 'Line breaks, timing, and CPS repair.' },
       ],
     },
