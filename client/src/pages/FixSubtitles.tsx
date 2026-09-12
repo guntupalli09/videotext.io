@@ -9,6 +9,7 @@ import {
 import FailedState from '../components/FailedState'
 import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
 import CollapsibleFaqSection from '../components/CollapsibleFaqSection'
+import CollapsibleToolSection from '../components/CollapsibleToolSection'
 import FreePlanNudge from '../components/FreePlanNudge'
 import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
@@ -55,15 +56,25 @@ const FINDING_META: Record<string, { icon: typeof Film; colorText: string; color
 }
 const DEFAULT_FINDING_META = { icon: AlertTriangle, colorText: 'text-gray-600 dark:text-gray-400', colorBg: 'bg-gray-50 dark:bg-gray-900', colorBorder: 'border-gray-200 dark:border-gray-700', label: 'Issue' }
 
+export type WhatThisFixesItem = {
+  name: string
+  before: string
+  after: string
+}
+
 /** Optional SEO overrides for alternate entry points. Do NOT duplicate logic. */
 export type FixSubtitlesSeoProps = {
   seoH1?: string
   seoIntro?: string
   faq?: { q: string; a: string }[]
+  /** Route-specific problem/solution rows rendered below the tool UI. */
+  whatThisFixes?: WhatThisFixesItem[]
+  /** Honest scope limits — trust signal for professional buyers. */
+  limitsNotIncluded?: string[]
 }
 
 export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
-  const { seoH1, seoIntro, faq = [] } = props
+  const { seoH1, seoIntro, faq = [], whatThisFixes = [], limitsNotIncluded = [] } = props
   const location = useLocation()
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -1354,6 +1365,30 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
       {location.pathname === '/fix-subtitles' && (
         <CoreToolSeoDepth path="/fix-subtitles" />
+      )}
+
+      {whatThisFixes.length > 0 && (
+        <CollapsibleToolSection id="what-this-fixes" title="What this fixes">
+          <ul className="max-w-4xl space-y-component-sm">
+            {whatThisFixes.map((item) => (
+              <li key={item.name} className="text-sm text-gray-700 dark:text-gray-300 sm:text-base">
+                <span className="font-medium text-gray-900 dark:text-white">{item.name}.</span>{' '}
+                <span className="text-gray-500 dark:text-gray-400">Before:</span> {item.before}{' '}
+                <span className="text-gray-500 dark:text-gray-400">After:</span> {item.after}
+              </li>
+            ))}
+          </ul>
+        </CollapsibleToolSection>
+      )}
+
+      {limitsNotIncluded.length > 0 && (
+        <CollapsibleToolSection id="what-this-does-not-do" title="What this does not do">
+          <ul className="max-w-4xl list-disc space-y-micro pl-5 text-sm text-gray-700 dark:text-gray-300 sm:text-base">
+            {limitsNotIncluded.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </CollapsibleToolSection>
       )}
 
       {faq.length > 0 && location.pathname !== '/fix-subtitles' && (

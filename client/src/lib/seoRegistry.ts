@@ -549,21 +549,31 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/subtitle-grammar-fixer',
-    title: 'Subtitle Grammar Fixer — Auto-Correct Caption Text | VideoText',
+    // A/B title/meta variants (swap in seoRegistry + SubtitleGrammarFixerPage):
+    // V1 "correct this caption" — Title: Broken Caption? Fix SRT Timing & Text Fast | Meta: Your caption file has bad timecodes or typos and a deadline. Upload SRT/VTT, get overlaps, CPS errors, and grammar fixed. Ready for platform QC.
+    // V2 "srt fixer" — Title: SRT Fixer — Repair Overlaps, Drift & CPS Errors | Meta: SRT rejected at upload? Fix overlapping cues, timing drift after re-encode, CPS violations, and line breaks. Upload, download a clean file.
+    // V3 "subtitle fixer" — Title: Subtitle Fixer for Bad Timings & Text Errors | Meta: Overlapping cues, wrong line breaks, or QC rejection? Upload SRT or VTT, fix timing and caption text in one pass. Works before platform upload.
+    // V4 "correct my caption" (active) — Title: Caption Won't Upload? Fix Timing & Grammar Now | Meta: Platform rejected your captions for overlaps or reading speed. Correct timecodes, capitalization, and line lengths across the whole file.
+    title: 'Caption Won\'t Upload? Fix Timing & Grammar Now | VideoText',
     description:
-      'Fix grammar and formatting in SRT/VTT files. Upload subtitles, get corrected text and timing. Free. Same tool as Fix Subtitles.',
-    h1: 'Subtitle Grammar Fixer — Auto-Correct Caption Text',
+      'Platform rejected your captions for overlaps or reading speed. Correct timecodes, capitalization, and line lengths across the whole file.',
+    h1: 'Caption Won\'t Upload? Fix Timing & Grammar Now',
     intro:
-      'Fix grammar and formatting in SRT/VTT files. Upload subtitles, get corrected text and timing. Free.',
+      'Your SRT or VTT failed platform QC — overlapping cues, CPS violations, or mangled text. Upload the file, choose what to repair, download a corrected track. Same engine as Fix Subtitles; 3 imports/mo on the free plan.',
     breadcrumbLabel: 'Subtitle Grammar Fixer',
     toolKey: 'fix-subtitles',
     relatedSlugs: ['/translate-subtitles', '/burn-subtitles'],
     indexable: false,
     intentKey: 'subtitle-grammar-fixer',
     faq: [
-      { q: 'What does the subtitle grammar fixer do?', a: 'The subtitle grammar fixer corrects timing, formatting, and structural issues in SRT and VTT files. It fixes overlapping timestamps, lines that are too long for the screen, and spacing errors. Enable the grammar-fix option when processing to also improve caption text capitalization and punctuation.' },
-      { q: 'Is the subtitle grammar fixer free?', a: 'Yes. Upload your SRT or VTT file and download a corrected version at no cost within the monthly free limit. Sign up for free to try. The fixer handles timing and formatting automatically — you do not need to edit the file manually after downloading.' },
-      { q: 'Do timestamps change when fixing grammar?', a: 'The fixer can correct overlapping or invalid timestamps — for example, when a cue starts before the previous one ends. Otherwise, valid timestamps stay exactly as they were. The output file is ready to upload to YouTube, Vimeo, or any platform immediately after downloading.' },
+      { q: 'Does the fixer preserve my timestamps when nothing is wrong?', a: 'Yes. Cues with valid start/end times and no overlap are left unchanged. Timestamps are only adjusted when you enable Fix timing and the scan finds an overlap, zero/negative duration, or a cue that reads faster than 21 characters per second — the tool extends or trims to make the file structurally valid.' },
+      { q: 'What CPS limit does the scan use?', a: 'Validation flags cues above 21 characters per second (CPS) and lines longer than 42 characters per row (CPL). When Fix timing is on, short cues with too much text get extended toward a 1.5-second minimum display where the next cue allows it. Platform-specific limits (Netflix 17 CPS, etc.) may still need a manual pass — run the free character checker if your brief specifies a stricter number.' },
+      { q: 'Does it accept both SRT and VTT?', a: 'Yes. Upload either format; the download matches what you uploaded (.srt in, .srt out). WebVTT headers and cue styling tags are preserved where the parser already supports them.' },
+      { q: 'What happens to speaker labels like [JOHN] or >>?', a: 'Speaker prefixes and bracketed names stay on the same cue unless you enable Grammar fix, which may normalize casing inside the line but does not remove labels. For a dedicated line-break or CPL pass without grammar changes, leave Grammar fix off and use Line breaks (CPL) only.' },
+      { q: 'Can I batch-fix multiple subtitle files?', a: 'This page processes one file per job. Batch subtitle export and multi-file queues are on paid plans via Batch Process. For a single urgent file, upload → fix → download is usually under two minutes.' },
+      { q: 'Which checkboxes should I turn on for a rejected upload?', a: 'Start with defaults: overlaps are always repaired. Add Fix timing if QC cited reading speed or invalid durations. Add Line breaks (CPL) for long single-line cues. Add Grammar fix for capitalization, punctuation, and spelling — it keeps line length close to the original so timing stays stable.' },
+      { q: 'Will grammar fix rewrite my dialogue?', a: 'No. The grammar pass corrects spelling, homophones, casing, and punctuation only — not meaning or register. If the AI pass is unavailable, a local fallback applies sentence case and terminal punctuation without changing word choice.' },
+      { q: 'How is this different from /fix-subtitles?', a: 'Same tool and pipeline. This page is the canonical entry for caption-QC and grammar-fix intent; /fix-subtitles is the primary product URL. Use either — outputs are identical.' },
     ],
   },
   {

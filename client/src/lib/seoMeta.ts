@@ -685,6 +685,10 @@ export const BLOG_POST_DATES: Record<string, { datePublished: string; dateModifi
   '/blog/clean-verbatim-vs-full-verbatim': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
   '/blog/what-is-transcript-qa': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
   '/blog/freelance-transcription-style-guide-cheatsheet': { datePublished: '2026-05-05', dateModified: '2026-05-05' },
+  '/blog/srt-timings-drift-after-re-encoding': { datePublished: '2026-09-12', dateModified: '2026-09-12' },
+  '/blog/overlapping-subtitle-cues-cause-and-fix': { datePublished: '2026-09-12', dateModified: '2026-09-12' },
+  '/blog/cps-violations-rejected-at-platform-qc': { datePublished: '2026-09-12', dateModified: '2026-09-12' },
+  '/blog/fixing-capitalization-punctuation-across-subtitle-file': { datePublished: '2026-09-12', dateModified: '2026-09-12' },
 }
 
 /** BlogPosting JSON-LD for individual blog post pages. Returns null if no date metadata found. */
