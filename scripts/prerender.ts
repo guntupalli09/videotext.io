@@ -564,9 +564,9 @@ const STATIC_META: RouteMeta[] = [
   },
   {
     path: '/tools/subtitle-character-checker',
-    title: `Subtitle Character Limits — Pass/Fail | ${SITE_NAME}`,
+    title: `Netflix Subtitle CPL Checker — Check 42-Character Limits | ${SITE_NAME}`,
     description:
-      'Check SRT or VTT line lengths against Netflix TTSC (42 CPL), BBC (37), or a wide 80-character preset. Instant pass/fail per cue. Free, in-browser, no account.',
+      'Check subtitle cues against Netflix-published character-per-line guidelines (42 CPL), BBC (37), or a wide 80-character preset. VideoText is not affiliated with or endorsed by Netflix.',
     h1: 'Check Subtitle Character Limits',
     breadcrumbLabel: 'Character Limit Checker',
   },

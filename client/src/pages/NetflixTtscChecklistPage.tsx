@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import Seo from '../components/Seo'
 import SerpTrustStrip from '../components/SerpTrustStrip'
+import { NetflixTrademarkDisclaimer } from '../components/NetflixTrademarkDisclaimer'
 
 /** B2B delivery checklist — links to existing free tools and grammar fixer, not a new product. */
 const CHECKLIST = [
@@ -27,18 +28,18 @@ const CHECKLIST = [
 ]
 
 const WORKFLOW = [
-  { step: 'Receive TTSC brief', detail: 'Confirm genre, language tier, and adult vs children CPS ceiling before QC.' },
-  { step: 'Run matching free checker', detail: 'Use the browser tool that matches your expected failure mode (CPL, CPS, overlaps).' },
+  { step: 'Receive TTSC brief', detail: 'Confirm genre, language tier, and adult vs children CPS ceiling from your client brief.' },
+  { step: 'Run matching free checker', detail: 'Use the browser tool that matches your expected issue (CPL, CPS, overlaps).' },
   { step: 'One-pass auto-fix', detail: 'Upload the same file to Subtitle Grammar Fixer — enable Fix timing and Line breaks (CPL) as needed.' },
-  { step: 'Re-scan before handoff', detail: 'Re-run the checker on Netflix (20 CPS) or BBC (17 CPS) preset; attach pass log to delivery package.' },
+  { step: 'Re-scan before handoff', detail: 'Re-run the checker on Netflix-style (20 CPS) or BBC (17 CPS) preset; attach scan summary to your delivery package.' },
 ]
 
 export default function NetflixTtscChecklistPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <Seo
-        title="Netflix TTSC Conformance Checklist — Vendor QC Workflow | VideoText"
-        description="B2B pre-delivery checklist for Netflix TTSC: 42 CPL, 20 CPS adult (17 children). Free browser checks + grammar fixer — not a separate tool."
+        title="Netflix TTSC Checklist — Pre-Delivery Caption Workflow | VideoText"
+        description="Workflow checklist against Netflix-published TTSC limits (42 CPL, 20 CPS adult). Maps rules to free browser checkers — VideoText is not affiliated with or endorsed by Netflix."
         canonicalPath="/netflix-ttsc-checklist"
       />
       <SerpTrustStrip />
@@ -49,15 +50,17 @@ export default function NetflixTtscChecklistPage() {
             Localization vendor workflow
           </p>
           <h1 className="text-3xl md:text-4xl font-display font-medium text-gray-900 dark:text-white">
-            Netflix TTSC conformance checklist
+            Netflix TTSC pre-delivery checklist
           </h1>
+          <NetflixTrademarkDisclaimer />
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-            This page is a <strong className="font-medium text-gray-800 dark:text-gray-200">delivery checklist</strong> for
-            localization vendors and QC leads — not a new VideoText product. It maps TTSC rules to free browser checkers
-            and the existing Subtitle Grammar Fixer you already use elsewhere on the site.
+            This page is a <strong className="font-medium text-gray-800 dark:text-gray-200">workflow checklist</strong> for
+            localization vendors and QC leads — not a new VideoText product. It maps publicly known Netflix-style TTSC
+            limits to free browser checkers and the existing Subtitle Grammar Fixer you already use elsewhere on the site.
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Always confirm the current TTSC brief for genre, language, and client tier before submission.
+            Always confirm the current TTSC brief for genre, language, and client tier before submission. Passing these
+            checks does not guarantee vendor or platform acceptance.
           </p>
         </header>
 
@@ -68,7 +71,7 @@ export default function NetflixTtscChecklistPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50/80 dark:bg-gray-800/80">
               <tr>
-                {['TTSC rule', 'Free check (existing tool)', 'Auto-fix (existing tool)'].map((h) => (
+                {['TTSC-style rule', 'Free check (existing tool)', 'Auto-fix (existing tool)'].map((h) => (
                   <th key={h} className="text-left px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
@@ -126,10 +129,11 @@ export default function NetflixTtscChecklistPage() {
           </div>
         </section>
 
-        <section className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-6 space-y-2">
+        <section className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-6 space-y-3">
+          <NetflixTrademarkDisclaimer />
           <p>
-            VideoText&apos;s grammar fixer scan uses <strong className="font-medium">21 CPS</strong> as an EBU-style warning threshold — not Netflix&apos;s delivery ceiling.
-            Netflix TTSC fails at <strong className="font-medium">20 CPS</strong> (adult) or <strong className="font-medium">17 CPS</strong> (children).
+            VideoText&apos;s grammar fixer scan uses <strong className="font-medium">21 CPS</strong> as an EBU-style warning threshold — not Netflix&apos;s published delivery ceiling.
+            Netflix-published TTSC guidelines commonly cite <strong className="font-medium">20 CPS</strong> (adult) or <strong className="font-medium">17 CPS</strong> (children).
           </p>
           <p>
             No new account type or vendor SKU — this checklist routes to the same free tools and paid grammar fixer available on the rest of the site.

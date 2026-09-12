@@ -71,7 +71,7 @@ const SUBTITLE_TOOLS = [
     icon: Wand2,
     description: 'Learn subtitle formats and best practices',
     links: [
-      { path: '/tools/subtitle-character-checker', label: 'Character Limit Checker (Netflix CPL)' },
+      { path: '/tools/subtitle-character-checker', label: 'Netflix-style CPL Checker (42 chars)' },
       { path: '/open-captions-vs-closed-captions', label: 'Open vs Closed Captions' },
       { path: '/free-captions-and-subtitles', label: 'Free Captions & Subtitles' },
       { path: '/ada-video-captions', label: 'ADA Video Captions' },
@@ -174,7 +174,7 @@ export default function SubtitleToolsHub() {
                   ['Browser-local SRT/VTT tools', 'Yes', 'Yes'],
                   ['AI SRT from video upload', 'Yes (Whisper)', 'No'],
                   ['Translate SRT (70+ languages)', 'Yes', 'Limited'],
-                  ['Netflix QC auto-fix', 'Yes', 'Check only'],
+                  ['CPL/CPS auto-fix (grammar fixer)', 'Yes', 'Check only'],
                   ['Burn captions into video', 'Yes', 'No'],
                 ].map(([feature, vt, st]) => (
                   <tr key={feature}>
@@ -271,7 +271,7 @@ export default function SubtitleToolsHub() {
               { q: 'Are these subtitle tools really free?', a: 'Yes. Converters, timing, validator, reading-speed, and character-limit tools run in your browser. No account and no upload. If you need a new SRT from video, use the SRT file generator or the video to SRT converter (those use the AI workflow and include 3 free imports per month).' },
               { q: 'Do subtitle files get uploaded to a server?', a: 'No. When you use tools like the Subtitle Validator or Shift Timing tool, your file is read by your browser locally using the HTML5 File API. The file content is processed in JavaScript in your browser tab and never leaves your device.' },
               { q: 'What subtitle formats are supported?', a: 'Most tools support SRT (SubRip Text) and VTT (WebVTT) — the two most widely used formats. SRT is universally compatible with editing software and platforms. VTT is the web standard required for HTML5 players. Some tools only accept SRT, so if you have a VTT file, use the VTT to SRT converter first.' },
-              { q: 'How do I check Netflix or YouTube line limits?', a: 'Open the Subtitle Character Limit Checker, upload an SRT or VTT, and pick Netflix TTSC (42 CPL) or BBC (37). YouTube does not publish a CPL limit — use Wide (80) only as a display-width check. You get a pass/fail report per cue. Need the file in another language first? Translate Subtitles keeps timestamps intact.' },
+              { q: 'How do I check Netflix-style or YouTube line limits?', a: 'Open the Netflix-style CPL Checker, upload an SRT or VTT, and pick Netflix-published TTSC (42 CPL) or BBC (37). YouTube does not publish a CPL limit — use Wide (80) only as a display-width check. You get a per-cue within/over preset report. VideoText is not affiliated with Netflix. Need the file in another language first? Translate Subtitles keeps timestamps intact.' },
             ].map(({ q, a }) => (
               <div key={q}>
                 <p className="font-semibold text-gray-900 dark:text-white text-sm mb-1">{q}</p>

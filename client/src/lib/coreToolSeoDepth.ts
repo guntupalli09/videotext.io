@@ -304,7 +304,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
         { href: '/burn-subtitles', label: 'Burn Subtitles', note: 'Hardcode the cleaned file into the video.' },
         { href: '/guideline-format', label: 'Client guidelines', note: 'Transcript style rules (verbatim, speakers) — different from cue QC.' },
         { href: '/tools/subtitle-validator', label: 'Subtitle validator', note: 'Free in-browser scan before or after a fix pass.' },
-        { href: '/tools/subtitle-character-checker', label: 'Character limit checker', note: 'Netflix / YouTube / BBC line-length pass/fail.' },
+        { href: '/tools/subtitle-character-checker', label: 'Character limit checker', note: 'Netflix-style / BBC CPL presets — within or over limit per cue.' },
       ],
     },
     faq: [

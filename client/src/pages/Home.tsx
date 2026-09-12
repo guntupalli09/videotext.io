@@ -21,7 +21,7 @@ const HIGH_INTENT_GUIDES = [
   { label: 'Video to Transcript (Primary)', path: '/video-to-transcript', desc: 'Upload MP4/MOV — transcript, SRT/VTT, summary, and chapters' },
   { label: 'SRT File Generator', path: '/srt-generator', desc: 'Video in, timed .srt out — high-volume caption intent' },
   { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'SRT/VTT to 70+ languages with timestamps preserved' },
-  { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'B2B vendor QC workflow — CPL, CPS, overlaps before delivery' },
+  { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'Pre-delivery workflow against Netflix-published TTSC limits' },
   { label: 'Best Transcription Tool', path: '/best-transcription-tool', desc: 'Decision support by speed, outputs, and workflow fit' },
   { label: 'Podcast Transcription Tool', path: '/podcast-transcription-tool', desc: 'Create show notes, clips, and searchable transcript assets' },
   { label: 'Meeting Recording to Transcript', path: '/meeting-recording-to-transcript', desc: 'Hub workflow for Zoom, Meet, Teams, and webinar recordings' },
@@ -59,9 +59,9 @@ const ALL_FEATURES = [
 const FREE_TOOLS = [
   { label: 'SRT → VTT Converter', path: '/tools/srt-to-vtt', desc: 'For HTML5 video players & web apps', icon: '⇄' },
   { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Catch timing overlaps & format errors', icon: '✓' },
-  { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Verify Netflix & EBU CPS limits', icon: '⏱' },
+  { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Compare CPS to Netflix-style & EBU presets', icon: '⏱' },
   { label: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing', desc: 'Fix out-of-sync subtitles instantly', icon: '↔' },
-  { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Check 42-char Netflix line limits', icon: '≤' },
+  { label: 'Netflix-style CPL Checker', path: '/tools/subtitle-character-checker', desc: 'Check 42-char Netflix-published line limits', icon: '≤' },
   { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine multiple subtitle files', icon: '⊕' },
 ];
 

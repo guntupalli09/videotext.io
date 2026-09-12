@@ -1065,9 +1065,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               <>
                 <SamplesModule sourcePath={location.pathname} samplesHref="/samples#subtitle" />
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Need Netflix or BBC QC before delivery?{' '}
+                  Checking against Netflix-published or BBC limits before delivery?{' '}
                   <Link to="/netflix-ttsc-checklist" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                    TTSC pre-delivery checklist
+                    TTSC-style pre-delivery checklist
                   </Link>
                 </p>
               </>

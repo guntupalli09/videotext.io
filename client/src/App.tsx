@@ -639,7 +639,7 @@ function App() {
             <Route path="/transcribe-meeting-recording" element={<Navigate to="/meeting-recording-to-transcript" replace />} />
             <Route path="/translate-subtitles" element={<TranslateSubtitles
               seoH1="Translate Subtitles (SRT/VTT) to 70+ Languages"
-              seoIntro="Upload SRT or VTT, pick a target language, download with every cue time preserved. Example: English → Spanish for YouTube or Netflix delivery. Then run the grammar fixer if CPL/CPS fails QC."
+              seoIntro="Upload SRT or VTT, pick a target language, download with every cue time preserved. Example: English → Spanish for YouTube or streaming delivery. Then run the grammar fixer if CPL/CPS exceeds your preset."
             />} />
             <Route path="/translation" element={<TranslateSubtitles />} />
             <Route path="/free-captions-and-subtitles" element={<VideoToSubtitles />} />

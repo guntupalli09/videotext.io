@@ -270,7 +270,7 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
   '/subtitle-tools': {
     kicker: 'Subtitletools alternative',
     title: 'Browser-local checks + AI SRT generation',
-    body: 'Subtitletools.com runs similar free converters in-browser. VideoText adds Whisper SRT generation, translate, burn, and Netflix QC repair — start with a free check, exit to a core tool.',
+    body: 'Subtitletools.com runs similar free converters in-browser. VideoText adds Whisper SRT generation, translate, burn, and Netflix-style CPL/CPS repair — start with a free check, exit to a core tool.',
     steps: SUBTITLE_QA_STEPS,
     primary: { label: 'Generate SRT from video', href: '/srt-generator' },
     secondary: [

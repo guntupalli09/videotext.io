@@ -112,9 +112,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Compress video online with light, medium, or heavy settings. Reduce size for uploads and sharing. Files deleted after processing. 3 free imports/mo.',
   },
   '/netflix-ttsc-checklist': {
-    title: 'Netflix TTSC Conformance Checklist — Vendor QC Workflow | VideoText',
+    title: 'Netflix TTSC Checklist — Pre-Delivery Caption Workflow | VideoText',
     description:
-      'B2B TTSC delivery checklist for localization vendors: 42 CPL, 20 CPS adult (17 children). Maps rules to free checkers and Subtitle Grammar Fixer — not a separate product.',
+      'Workflow checklist against Netflix-published TTSC limits (42 CPL, 20 CPS adult). Maps rules to free browser checkers — VideoText is not affiliated with or endorsed by Netflix.',
   },
   '/batch-process': {
     title: 'Batch Video to Subtitles — Multiple Videos at Once',
@@ -400,12 +400,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   },
   '/subtitle-reading-speed': {
     title: 'Subtitle Reading Speed Checker — CPS Analyzer | VideoText',
-    description: 'Check subtitle CPS against Netflix TTSC (20 adult), BBC (17), and EBU (21). YouTube has no published CPS limit — use presets for readability checks.',
+    description: 'Compare subtitle CPS against Netflix-published TTSC (20 adult), BBC (17), and EBU (21) presets. YouTube has no published CPS limit — use presets for readability checks only.',
   },
   '/subtitle-character-checker': {
-    title: 'Netflix CPL Fail? Check Every Cue for Pass/Fail | VideoText',
+    title: 'Netflix Subtitle CPL Checker — Check 42-Character Limits | VideoText',
     description:
-      'Upload SRT or VTT — instant pass/fail per cue against Netflix TTSC (42 CPL), BBC (37), or a wide 80-character preset before QC rejects the file.',
+      'Check subtitle cues against Netflix-published character-per-line guidelines (42 CPL), BBC (37), or a wide 80-character preset. VideoText is not affiliated with or endorsed by Netflix.',
   },
   '/subtitle-word-counter': {
     title: 'Count Cues, Words & CPS Before You Quote a Job | VideoText',
@@ -434,9 +434,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Check every subtitle cue for characters-per-second against Netflix TTSC (20 CPS adult), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
   },
   '/tools/subtitle-character-checker': {
-    title: 'Netflix CPL Fail? Check Every Cue for Pass/Fail | VideoText',
+    title: 'Netflix Subtitle CPL Checker — Check 42-Character Limits | VideoText',
     description:
-      'Upload SRT or VTT — instant pass/fail per cue against Netflix TTSC (42 CPL), BBC (37), or a wide 80-character preset before QC rejects the file.',
+      'Check subtitle cues against Netflix-published character-per-line guidelines (42 CPL), BBC (37), or a wide 80-character preset. VideoText is not affiliated with or endorsed by Netflix.',
   },
   '/tools/subtitle-word-counter': {
     title: 'Count Cues, Words & CPS Before You Quote a Job | VideoText',

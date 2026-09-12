@@ -90,7 +90,7 @@ export default function WordsPerMinute() {
         { q: 'How many words per minute is normal speech?', a: 'Natural conversation is 120–150 WPM. Formal presentations run 100–120 WPM. Rapid speech (auctioneers, speed-readers) can exceed 250 WPM, though this is incomprehensible in subtitles.' },
         { q: 'How does WPM relate to CPS?', a: 'WPM and CPS are related but different. WPM counts words per minute across the whole video. CPS counts characters per second per individual subtitle cue. A 150 WPM speaker averages roughly 13–15 CPS, well within Netflix TTSC\'s 20 CPS adult limit.' },
         { q: 'Can I use this to plan subtitle timing?', a: 'Yes. If you know your WPM, you can estimate how many words will fit in a given subtitle cue duration. A 3-second cue at 150 WPM speaker rate holds approximately 7–8 words.' },
-        { q: 'My rate is 200 WPM — will my subtitles fail QC?', a: 'Potentially. At 200 WPM with average English word length (~4.7 chars + space = ~5.7 chars), CPS is approximately 200 × 5.7 / 60 ≈ 19 CPS — close to Netflix TTSC\'s 20 CPS adult ceiling. Consider speaking slightly slower or extending subtitle display durations.' },
+        { q: 'My rate is 200 WPM — will my subtitles exceed Netflix-style CPS presets?', a: 'Possibly. At 200 WPM with average English word length (~4.7 chars + space = ~5.7 chars), CPS is approximately 200 × 5.7 / 60 ≈ 19 CPS — close to the Netflix-published 20 CPS adult ceiling. Consider speaking slightly slower or extending subtitle display durations, then verify with the reading-speed checker.' },
       ]}
       relatedTools={[
         { label: 'Video Script Timer', path: '/tools/video-script-timer', desc: 'Estimate video length from your script' },
