@@ -16,6 +16,9 @@ const CORE_PATHS = new Set([
   '/fix-subtitles',
   '/burn-subtitles',
   '/compress-video',
+  '/batch-process',
+  // Manually-built tool pages (App.tsx routes, own schemas) outside the auto-generated
+  // registry — registry entries reference these via relatedSlugs.
   '/guideline-format',
 ])
 
