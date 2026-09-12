@@ -7,6 +7,7 @@
     "prerender": "cd client && npx tsx ../scripts/prerender.ts",
     "seo:weekly": "tsx scripts/seo/run-weekly.ts",
     "seo:fetch": "tsx scripts/seo/fetch-gsc.ts",
+    "seo:gsc-predeploy": "tsx scripts/seo/snapshot-gsc-predeploy.ts",
     "seo:kpi": "tsx scripts/seo/kpi-monitor.ts",
     "seo:sync": "npx tsx scripts/seo/sync-routes-from-registry.ts",
     "seo:sitemap": "tsx scripts/seo/generate-sitemap.ts",
