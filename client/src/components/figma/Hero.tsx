@@ -122,8 +122,11 @@ export function Hero() {
           <span className="brand-moment">Client-ready.</span>
         </h1>
 
-        <p className="mx-auto mb-6 max-w-xl text-center text-base leading-relaxed text-white/60 sm:text-lg">
+        <p className="mx-auto mb-2 max-w-xl text-center text-base leading-relaxed text-white/60 sm:text-lg">
           Built to cut QA time. Upload once — get transcripts and subtitles your client can approve on the first pass.
+        </p>
+        <p className="mx-auto mb-6 max-w-lg text-center text-sm leading-relaxed text-white/45">
+          <span className="font-semibold text-white/70">VideoText</span> is the product at videotext.io — AI video-to-text software, not a generic &ldquo;video text&rdquo; paste box or YouTube URL tool.
         </p>
 
         <HeroActions />

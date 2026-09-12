@@ -15,6 +15,8 @@ import ResultUpgradeCard from '../components/ResultUpgradeCard'
 import ResultHeader from '../components/ResultHeader'
 import { incrementJobCompletedCount } from '../lib/jobCount'
 import { ToolLayout } from '../components/figma/ToolLayout'
+import SerpTrustStrip from '../components/SerpTrustStrip'
+import { shouldShowSerpTrustStrip } from '../lib/serpTrustPaths'
 import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingInterface } from '../components/figma/ProcessingInterface'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
@@ -1043,6 +1045,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
   return (
     <>
+      {shouldShowSerpTrustStrip(location.pathname) && <SerpTrustStrip />}
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="watermark" tool="video-to-subtitles" />
         {status === 'idle' && !selectedFile && (

@@ -4,6 +4,9 @@ export const SERP_TRUST_PATHS = new Set([
   '/capcut-captions',
   '/translate-subtitles',
   '/video-to-transcript',
+  '/video-to-subtitles',
+  '/fix-subtitles',
+  '/subtitle-tools',
 ])
 
 export function shouldShowSerpTrustStrip(pathname: string): boolean {

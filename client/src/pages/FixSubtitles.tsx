@@ -18,6 +18,8 @@ import { WATERMARK_DOC_FOOTER, WATERMARK_DOC_HEADER, watermarkTextExport, drawPd
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import { ToolLayout } from '../components/figma/ToolLayout'
+import SerpTrustStrip from '../components/SerpTrustStrip'
+import { shouldShowSerpTrustStrip } from '../lib/serpTrustPaths'
 import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingInterface } from '../components/figma/ProcessingInterface'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
@@ -785,6 +787,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
   return (
     <>
+      {shouldShowSerpTrustStrip(location.pathname) && <SerpTrustStrip />}
       <ToolLayout {...layoutProps}>
         {status === 'idle' && !selectedFile && !showIssues && (
           <div className="space-y-component-sm">

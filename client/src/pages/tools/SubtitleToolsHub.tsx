@@ -3,6 +3,7 @@ import { MessageSquare, Wand2, Languages, Wrench, Zap, ArrowRight } from 'lucide
 import Seo from '../../components/Seo'
 import OpenStatsStrip from '../../components/OpenStatsStrip'
 import SeoJourneyBanner from '../../components/SeoJourneyBanner'
+import SerpTrustStrip from '../../components/SerpTrustStrip'
 import { getSeoJourneyBanner } from '../../lib/seoJourneyConfig'
 
 const SUBTITLE_TOOLS = [
@@ -93,6 +94,7 @@ export default function SubtitleToolsHub() {
   const journey = getSeoJourneyBanner('/subtitle-tools')
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
+      <SerpTrustStrip />
       {journey && <SeoJourneyBanner data={journey} />}
       <Seo
         title="Subtitletools Alternative — Free SRT Convert & Validate | VideoText"

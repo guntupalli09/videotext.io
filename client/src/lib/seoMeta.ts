@@ -27,9 +27,9 @@ export function isMoneyCorePath(pathname: string): boolean {
 /** Static (non-SEO-registry) routes: title + description. */
 const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> = {
   '/': {
-    title: 'VideoText — AI SRT Generator & Video to Transcript | VideoText',
+    title: 'VideoText — AI Video-to-Text Software (Not Generic “Video Text”) | VideoText',
     description:
-      'VideoText is AI video-to-text software: upload MP4/MOV for transcript, SRT/VTT, summary, and chapters. Whisper large-v3. 3 free imports/mo. Files deleted after processing.',
+      'VideoText (videotext.io) is AI video-to-text software — upload MP4/MOV for transcript, SRT/VTT, summary, and chapters. Not a paste-URL tool. Whisper large-v3. 3 free imports/mo. Files deleted after processing.',
   },
   '/pricing': {
     title: 'Pricing — Free, Basic, Pro & Agency Plans | VideoText',
@@ -94,7 +94,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/translate-subtitles': {
     title: 'Translate SRT/VTT — Timestamps Stay Intact | VideoText',
     description:
-      'Upload SRT or VTT, pick from 70+ languages, download with every cue time preserved — ready for YouTube, Vimeo, Netflix QC, or client delivery.',
+      'Upload SRT or VTT, pick from 70+ languages, download with every cue time preserved. Free: 3 imports/mo, no card. Files deleted after processing. USD Pro $49/mo.',
   },
   '/fix-subtitles': {
     title: 'Fix Subtitles — Timing, CPS & Lines | VideoText',
@@ -112,9 +112,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Compress video online with light, medium, or heavy settings. Reduce size for uploads and sharing. Files deleted after processing. 3 free imports/mo.',
   },
   '/netflix-ttsc-checklist': {
-    title: 'Netflix TTSC Pre-Delivery Checklist — CPL, CPS & QC | VideoText',
+    title: 'Netflix TTSC Conformance Checklist — Vendor QC Workflow | VideoText',
     description:
-      'Netflix TTSC specs: 42 CPL, 20 CPS adult (17 children). Free browser checkers plus one-click auto-fix before platform QC. Files deleted after processing.',
+      'B2B TTSC delivery checklist for localization vendors: 42 CPL, 20 CPS adult (17 children). Maps rules to free checkers and Subtitle Grammar Fixer — not a separate product.',
   },
   '/batch-process': {
     title: 'Batch Video to Subtitles — Multiple Videos at Once',

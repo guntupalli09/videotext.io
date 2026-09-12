@@ -21,12 +21,16 @@ const SUBTITLE_STEPS = [
   { title: 'Fix, translate, or burn', detail: 'Continue on the matching core tool. CapCut/editor pages stay the entry; burn/fix/translate are the exits.' },
 ]
 
-/** Shared QC workflow steps — exit is always Subtitle Grammar Fixer. */
-const SUBTITLE_QA_STEPS = [
-  { title: 'Scan or convert', detail: 'Run a checker, convert TTML, or merge tracks — surface CPL, overlap, or CPS problems before upload.' },
-  { title: 'Note the failures', detail: 'Over-limit lines, stacked cues, and unreadable CPS are mechanical — not worth fixing row by row in a text editor.' },
-  { title: 'Auto-fix in one upload', detail: 'Open Subtitle Grammar Fixer with the same file. Overlaps, timing, line breaks, and grammar — one download.' },
+/** Utility-tool exit funnel: convert/merge/shift → validate → grammar fixer → generate SRT. */
+const UTILITY_TOOL_EXIT_STEPS = [
+  { title: 'Finish on this page', detail: 'Convert, merge, or shift — download the output file when done.' },
+  { title: 'Validate', detail: 'Run Subtitle Validator for overlaps, timecodes, and format errors.' },
+  { title: 'Auto-fix QC', detail: 'Subtitle Grammar Fixer repairs CPL, CPS, overlaps, and grammar in one pass.' },
+  { title: 'Need SRT from video?', detail: 'Use SRT Generator to transcribe source video with Whisper — same platform.' },
 ]
+
+/** Shared QC workflow steps — exit is always Subtitle Grammar Fixer. */
+const SUBTITLE_QA_STEPS = UTILITY_TOOL_EXIT_STEPS
 
 const GRAMMAR_FIXER_EXIT = '/subtitle-grammar-fixer'
 
@@ -114,12 +118,15 @@ const SUBTITLE_QA_JOURNEYS: Record<string, SeoJourneyBannerData> = {
     secondary: [{ label: 'Reading speed checker', href: '/tools/subtitle-reading-speed' }],
   },
   '/tools/merge-srt-files': {
-    kicker: 'Merge → overlap cleanup',
+    kicker: 'Merge → validate → fix → generate',
     title: 'Merged tracks often stack cues at the join',
-    body: 'Problem: combining forced narrative + main subs sorted the rows — but overlap errors at the merge boundary will fail upload validators.',
-    steps: SUBTITLE_QA_STEPS,
-    primary: { label: 'Trim overlaps & fix timing', href: GRAMMAR_FIXER_EXIT },
-    secondary: [{ label: 'Subtitle validator', href: '/tools/subtitle-validator' }],
+    body: 'Problem: combining forced narrative + main subs sorted the rows — overlap errors at the merge boundary will fail upload validators.',
+    steps: UTILITY_TOOL_EXIT_STEPS,
+    primary: { label: 'Validate merged file', href: '/tools/subtitle-validator' },
+    secondary: [
+      { label: 'Auto-fix QC', href: GRAMMAR_FIXER_EXIT },
+      { label: 'Generate SRT from video', href: '/srt-generator' },
+    ],
   },
   '/subtitle-line-break-fixer': {
     kicker: 'Line breaks → full QC',
@@ -267,36 +274,32 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
     steps: SUBTITLE_QA_STEPS,
     primary: { label: 'Generate SRT from video', href: '/srt-generator' },
     secondary: [
+      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Character limit checker', href: '/tools/subtitle-character-checker' },
       { label: 'Subtitle grammar fixer', href: '/subtitle-grammar-fixer' },
     ],
   },
-  '/translate-subtitles': {
-    kicker: 'After translation → QC',
-    title: 'Translated SRT still needs a CPS/CPL pass',
-    body: 'Machine translation often expands line length and reading speed. Run the grammar fixer before client or platform upload.',
-    steps: SUBTITLE_QA_STEPS,
-    primary: { label: 'Fix timing & CPL after translate', href: '/subtitle-grammar-fixer' },
-    secondary: [
-      { label: 'Burn translated captions', href: '/burn-subtitles' },
-      { label: 'Character checker', href: '/tools/subtitle-character-checker' },
-    ],
-  },
   '/tools/shift-subtitle-timing': {
-    kicker: 'Shifted timing → validate',
+    kicker: 'Shift → validate → fix → generate',
     title: 'Bulk offset done — check overlaps and CPS next',
     body: 'A global shift can fix sync but may create new overlaps at cue boundaries or push reading speed over limit.',
-    steps: SUBTITLE_QA_STEPS,
-    primary: { label: 'Validate & auto-fix', href: '/subtitle-grammar-fixer' },
-    secondary: [{ label: 'Subtitle validator', href: '/tools/subtitle-validator' }],
+    steps: UTILITY_TOOL_EXIT_STEPS,
+    primary: { label: 'Validate shifted file', href: '/tools/subtitle-validator' },
+    secondary: [
+      { label: 'Auto-fix QC', href: GRAMMAR_FIXER_EXIT },
+      { label: 'Generate SRT from video', href: '/srt-generator' },
+    ],
   },
   '/tools/srt-to-vtt': {
-    kicker: 'Converted → delivery check',
+    kicker: 'Convert → validate → fix → generate',
     title: 'SRT to VTT done — run QC before upload',
     body: 'Format conversion does not fix line length or reading speed. WebVTT players still reject unreadable cues.',
-    steps: SUBTITLE_QA_STEPS,
-    primary: { label: 'QC pass on converted file', href: '/subtitle-grammar-fixer' },
-    secondary: [{ label: 'Reading speed checker', href: '/tools/subtitle-reading-speed' }],
+    steps: UTILITY_TOOL_EXIT_STEPS,
+    primary: { label: 'Validate converted file', href: '/tools/subtitle-validator' },
+    secondary: [
+      { label: 'Auto-fix QC', href: GRAMMAR_FIXER_EXIT },
+      { label: 'Generate SRT from video', href: '/srt-generator' },
+    ],
   },
   '/tools/srt-to-text': {
     kicker: 'Extracted text → new SRT?',

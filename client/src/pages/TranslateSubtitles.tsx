@@ -37,9 +37,9 @@ import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobTo
 import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 import { Film, Wrench, MessageSquare } from 'lucide-react'
-import SeoJourneyBanner from '../components/SeoJourneyBanner'
 import SerpTrustStrip from '../components/SerpTrustStrip'
-import { getSeoJourneyBanner } from '../lib/seoJourneyConfig'
+import TranslateSerpHero from '../components/TranslateSerpHero'
+import TranslatePostQcBanner from '../components/TranslatePostQcBanner'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { LANGUAGES } from '../lib/languages'
 import { exportFileStem, joinExportFilename, targetLangFileSlug } from '../lib/exportFileNames'
@@ -806,7 +806,10 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     </button>
   )
 
-  const kindSelector = (status === 'idle' || inputKind === 'documents') && !docTranslated && (
+  const isPrimaryTranslate = location.pathname === '/translate-subtitles'
+  const showDocumentKind = !isPrimaryTranslate || inputKind === 'documents'
+
+  const kindSelector = showDocumentKind && (status === 'idle' || inputKind === 'documents') && !docTranslated && (
     <div className="mb-5 rounded-xl border border-blue-300/60 dark:border-blue-500/40 bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-950/30 dark:to-blue-950/20 p-4 sm:p-5">
       <p className="text-xs font-bold tracking-wide uppercase text-blue-700 dark:text-blue-300">Choose what to translate</p>
       <p className="mt-1 text-sm text-gray-700 dark:text-gray-200">Translate subtitle files or full transcript documents from this same page.</p>
@@ -817,16 +820,26 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     </div>
   )
 
-  const journey = getSeoJourneyBanner(location.pathname)
-
   return (
     <>
       <SerpTrustStrip />
-      {journey && <SeoJourneyBanner data={journey} />}
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" tool="translate-subtitles" />
 
+        {isPrimaryTranslate && status === 'idle' && inputKind === 'subtitles' && (
+          <TranslateSerpHero targetLanguage={targetLanguage} onSelectLanguage={setTargetLanguage} />
+        )}
+
         {kindSelector}
+
+        {isPrimaryTranslate && status === 'idle' && inputKind === 'subtitles' && (
+          <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+            Need to translate a transcript document instead?{' '}
+            <button type="button" onClick={() => switchKind('documents')} className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+              Switch to document mode
+            </button>
+          </p>
+        )}
 
         {/* ══════════════ SUBTITLES PATH ══════════════ */}
         {inputKind === 'subtitles' && (
@@ -836,6 +849,9 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             {/* Upload: no file */}
             {status === 'idle' && tab === 'upload' && !selectedFile && (
               <div className="space-y-component-sm">
+                {isPrimaryTranslate && (
+                  <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
+                )}
                 <UploadZone
                   immediateSelect
                   onFileSelect={handleFileSelect}
@@ -954,6 +970,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             {/* Completed — full result for signed-in users */}
             {status === 'completed' && result && isLoggedIn() && (
               <div className="space-y-component">
+                {isPrimaryTranslate && inputKind === 'subtitles' && <TranslatePostQcBanner />}
                 <TranslateResult
                   title="Translation complete!"
                   fileName={result.fileName ?? fallbackTranslatedName(translateFallbackExt)}
