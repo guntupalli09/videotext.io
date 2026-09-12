@@ -10,13 +10,13 @@ export type SeoJourneyBannerData = {
 }
 
 const TRANSCRIPT_STEPS = [
-  { title: 'Get the recording', detail: 'Download the file from the platform, or paste a YouTube URL if you already posted it there.' },
-  { title: 'Upload or paste on Video to Transcript', detail: 'Whisper large-v3 turns speech into text plus SRT/VTT, summary, and chapters.' },
+  { title: 'Get the recording', detail: 'Download MP4/MOV from Zoom, Meet, Loom, or your editor — upload the file here.' },
+  { title: 'Upload on Video to Transcript', detail: 'Whisper large-v3 turns speech into text plus SRT/VTT, summary, and chapters.' },
   { title: 'Download and continue', detail: 'Format to a client guide, fix captions, or translate the SRT — files deleted after processing.' },
 ]
 
 const SUBTITLE_STEPS = [
-  { title: 'Upload the video', detail: 'MP4/MOV or a YouTube URL. This page is the entry — not a dead-end download.' },
+  { title: 'Upload the video', detail: 'MP4, MOV, or WebM. This page is the entry — not a dead-end download.' },
   { title: 'Get timed SRT or VTT', detail: 'Whisper large-v3 writes cues. Free: 3 imports/mo, no card.' },
   { title: 'Fix, translate, or burn', detail: 'Continue on the matching core tool. CapCut/editor pages stay the entry; burn/fix/translate are the exits.' },
 ]
@@ -181,7 +181,7 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
   },
   '/loom-transcription': {
     kicker: 'Loom recording → transcript',
-    title: 'Upload the Loom file (or a YouTube URL) → transcript',
+    title: 'Upload the Loom MP4 → transcript',
     body: 'Download the Loom MP4, then use Video to Transcript. You also get SRT/VTT, summary, and chapters. Files deleted after processing.',
     steps: TRANSCRIPT_STEPS,
     primary: { label: 'Open Video to Transcript', href: '/video-to-transcript' },
@@ -189,7 +189,7 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
   },
   '/vimeo-transcription': {
     kicker: 'Vimeo video → transcript',
-    title: 'Upload the Vimeo file (or a YouTube URL) → transcript',
+    title: 'Upload the Vimeo MP4 → transcript',
     body: 'Download your Vimeo MP4, then use Video to Transcript for text + SRT/VTT + summary + chapters.',
     steps: TRANSCRIPT_STEPS,
     primary: { label: 'Open Video to Transcript', href: '/video-to-transcript' },
@@ -269,6 +269,54 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
     body: 'Permanently embed SRT or VTT into the video frames. This alias funnels to the canonical burn page so we do not split rankings.',
     primary: { label: 'Burn Subtitles into Video', href: '/burn-subtitles' },
     secondary: [{ label: 'Need an SRT first?', href: '/video-to-subtitles' }],
+  },
+  '/subtitle-tools': {
+    kicker: 'Subtitletools alternative',
+    title: 'Browser-local checks + AI SRT generation',
+    body: 'Subtitletools.com runs similar free converters in-browser. VideoText adds Whisper SRT generation, translate, burn, and Netflix QC repair — start with a free check, exit to a core tool.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Generate SRT from video', href: '/video-to-srt' },
+    secondary: [
+      { label: 'Character limit checker', href: '/tools/subtitle-character-checker' },
+      { label: 'Subtitle grammar fixer', href: '/subtitle-grammar-fixer' },
+    ],
+  },
+  '/translate-subtitles': {
+    kicker: 'After translation → QC',
+    title: 'Translated SRT still needs a CPS/CPL pass',
+    body: 'Machine translation often expands line length and reading speed. Run the grammar fixer before client or platform upload.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Fix timing & CPL after translate', href: '/subtitle-grammar-fixer' },
+    secondary: [
+      { label: 'Burn translated captions', href: '/burn-subtitles' },
+      { label: 'Character checker', href: '/tools/subtitle-character-checker' },
+    ],
+  },
+  '/tools/shift-subtitle-timing': {
+    kicker: 'Shifted timing → validate',
+    title: 'Bulk offset done — check overlaps and CPS next',
+    body: 'A global shift can fix sync but may create new overlaps at cue boundaries or push reading speed over limit.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Validate & auto-fix', href: '/subtitle-grammar-fixer' },
+    secondary: [{ label: 'Subtitle validator', href: '/tools/subtitle-validator' }],
+  },
+  '/tools/srt-to-vtt': {
+    kicker: 'Converted → delivery check',
+    title: 'SRT to VTT done — run QC before upload',
+    body: 'Format conversion does not fix line length or reading speed. WebVTT players still reject unreadable cues.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'QC pass on converted file', href: '/subtitle-grammar-fixer' },
+    secondary: [{ label: 'Reading speed checker', href: '/tools/subtitle-reading-speed' }],
+  },
+  '/tools/srt-to-text': {
+    kicker: 'Extracted text → new SRT?',
+    title: 'Need timed captions again?',
+    body: 'Plain text from SRT is great for blogs — to republish as captions, regenerate from source video or fix an existing track.',
+    primary: { label: 'Generate SRT from video', href: '/srt-generator' },
+    secondary: [
+      { label: 'Fix existing SRT', href: '/subtitle-grammar-fixer' },
+      { label: 'Video to transcript', href: '/video-to-transcript' },
+    ],
   },
   '/video-with-subtitles': {
     kicker: 'Same product as Burn Subtitles',

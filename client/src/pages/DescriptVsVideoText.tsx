@@ -5,10 +5,10 @@ void React
 export default function DescriptVsVideoText() {
   return (
     <CitationPage
-      title="Descript vs VideoText"
-      intro="Comparison page for teams choosing between an editor-first stack and a transcription-first stack."
-      answerQuestion="Should I use Descript or VideoText for transcription?"
-      answerShort="Use Descript when editing is the core workflow; use VideoText when transcription speed, output formats, and benchmarked throughput matter most."
+      title="Descript vs VideoText — SRT Export Compared"
+      intro="Descript vs VideoText for transcription and subtitle delivery. VideoText is file-upload → SRT/VTT export; Descript is edit-first with captions locked in the timeline."
+      answerQuestion="Descript vs VideoText — which is better for SRT export?"
+      answerShort="VideoText for standalone SRT/VTT files, translate, and burn-in. Descript when you edit and publish inside one timeline."
       answerExpanded="Descript combines editing and transcription in one product. VideoText focuses on fast transcription output and extraction-ready exports."
       answerBullets={['Descript: edit-and-publish workflow', 'VideoText: transcription-and-export workflow', 'Choose based on primary bottleneck: editing vs throughput']}
       comparisonRows={[

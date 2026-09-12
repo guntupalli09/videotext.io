@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import { MessageSquare, Wand2, Languages, Wrench, Zap, ArrowRight } from 'lucide-react'
 import Seo from '../../components/Seo'
 import OpenStatsStrip from '../../components/OpenStatsStrip'
+import SeoJourneyBanner from '../../components/SeoJourneyBanner'
+import { getSeoJourneyBanner } from '../../lib/seoJourneyConfig'
 
 const SUBTITLE_TOOLS = [
   {
@@ -88,22 +90,32 @@ const STANDARDS = [
 ]
 
 export default function SubtitleToolsHub() {
+  const journey = getSeoJourneyBanner('/subtitle-tools')
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
+      {journey && <SeoJourneyBanner data={journey} />}
       <Seo
-        title="Free Subtitle Tools: Convert & Validate | VideoText"
-        description="Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded."
+        title="Subtitletools Alternative — Free SRT Convert & Validate | VideoText"
+        description="Free browser subtitle tools like Subtitletools: convert SRT↔VTT, validate CPL/CPS, shift timing — plus AI SRT generation when you need a new file. Nothing uploaded."
         canonicalPath="/subtitle-tools"
       />
       {/* Hero */}
       <div className="bg-gray-950 text-white py-16 px-4 border-b border-white/[0.06]">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">
-            Free Subtitle Tools for Creators
+            Free Subtitle Tools — Subtitletools Alternative
           </h1>
           <p className="text-lg text-white/55 max-w-2xl">
-            Convert formats, shift timing, validate cues, and check character limits in your browser. No account. Nothing uploaded.
+            Browser-local converters and validators (like Subtitletools) — plus a path to AI SRT generation, translate, and QC repair when free checks are not enough.
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link to="/video-to-srt" className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
+              Generate SRT from video →
+            </Link>
+            <Link to="/subtitle-grammar-fixer" className="inline-flex items-center rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+              Fix CPL & CPS in one pass
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -142,6 +154,37 @@ export default function SubtitleToolsHub() {
             )
           })}
         </div>
+
+        {/* Subtitletools comparison */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white">VideoText vs Subtitletools.com</h2>
+          <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  {['Feature', 'VideoText', 'Subtitletools'].map((h) => (
+                    <th key={h} className="text-left px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                {[
+                  ['Browser-local SRT/VTT tools', 'Yes', 'Yes'],
+                  ['AI SRT from video upload', 'Yes (Whisper)', 'No'],
+                  ['Translate SRT (70+ languages)', 'Yes', 'Limited'],
+                  ['Netflix QC auto-fix', 'Yes', 'Check only'],
+                  ['Burn captions into video', 'Yes', 'No'],
+                ].map(([feature, vt, st]) => (
+                  <tr key={feature}>
+                    <td className="px-4 py-2.5 text-gray-900 dark:text-white">{feature}</td>
+                    <td className="px-4 py-2.5 text-green-700 dark:text-green-400 font-medium">{vt}</td>
+                    <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400">{st}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         {/* What are subtitle tools */}
         <section className="space-y-4">

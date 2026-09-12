@@ -11,7 +11,7 @@ export const PRIMARY_URLS: Record<string, string> = {
   'subtitle-translation': '/translate-subtitles',
   'batch-processing': '/batch-process',
   'bulk-video-transcription': '/batch-process',
-  'youtube-transcript': '/youtube-transcript-generator',
+  'youtube-transcript': '/video-to-transcript',
   'video-transcript': '/video-to-transcript',
   'srt-to-vtt': '/tools/srt-to-vtt',
   'subtitle-tools': '/subtitle-tools',

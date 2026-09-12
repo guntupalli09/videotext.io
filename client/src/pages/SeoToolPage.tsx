@@ -11,6 +11,7 @@ import type { SeoToolKey } from '../lib/seoRegistry'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import MoneyPagesCta from '../components/MoneyPagesCta'
 import SeoJourneyBanner from '../components/SeoJourneyBanner'
+import CapCutJsonToSrt from '../components/CapCutJsonToSrt'
 import { getSeoJourneyBanner } from '../lib/seoJourneyConfig'
 import NotFound from './NotFound'
 import { resolveInternalLinkPath } from '../lib/primaryUrls'
@@ -109,10 +110,6 @@ export default function SeoToolPage() {
   if (entry.toolKey === 'video-to-subtitles' && entry.tutorialContent) {
     toolProps.seoTutorial = entry.tutorialContent
   }
-  if (entry.toolKey === 'video-to-transcript' && entry.defaultInputMode === 'youtube') {
-    toolProps.defaultInputMode = 'youtube'
-  }
-
   const intentClass = getIntentClass(entry.intentKey, entry.toolKey)
   const routeFamily = getRouteFamily(pathname)
   const ctaIntent = intentClass === 'comparisonAlternative' ? 'switching' : intentClass === 'howTo' ? 'cleanup' : intentClass
@@ -125,6 +122,7 @@ export default function SeoToolPage() {
   return (
     <div className="min-h-screen">
       {journey && <SeoJourneyBanner data={journey} />}
+      {pathname === '/capcut-captions' && <CapCutJsonToSrt />}
       <Suspense fallback={<RouteFallback />}>
         <Tool {...toolProps} />
       </Suspense>

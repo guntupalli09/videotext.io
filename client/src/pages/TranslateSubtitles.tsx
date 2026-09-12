@@ -37,6 +37,8 @@ import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobTo
 import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 import { Film, Wrench, MessageSquare } from 'lucide-react'
+import SeoJourneyBanner from '../components/SeoJourneyBanner'
+import { getSeoJourneyBanner } from '../lib/seoJourneyConfig'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { LANGUAGES } from '../lib/languages'
 import { exportFileStem, joinExportFilename, targetLangFileSlug } from '../lib/exportFileNames'
@@ -814,8 +816,11 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     </div>
   )
 
+  const journey = getSeoJourneyBanner(location.pathname)
+
   return (
     <>
+      {journey && <SeoJourneyBanner data={journey} />}
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" tool="translate-subtitles" />
 

@@ -657,10 +657,10 @@ const STATIC_META: RouteMeta[] = [
   // ── Hub pages ────────────────────────────────────────────────────────────────
   {
     path: '/subtitle-tools',
-    title: `Free Subtitle Tools: Convert & Validate | ${SITE_NAME}`,
+    title: `Subtitletools Alternative — Free SRT Convert & Validate | ${SITE_NAME}`,
     description:
-      'Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded.',
-    h1: 'Free Subtitle Tools for Creators',
+      'Free browser subtitle tools like Subtitletools: convert SRT↔VTT, validate CPL/CPS, shift timing — plus AI SRT generation when you need a new file. Nothing uploaded.',
+    h1: 'Free Subtitle Tools — Subtitletools Alternative',
     breadcrumbLabel: 'Subtitle Tools',
   },
   // ── Comparison / vs pages ────────────────────────────────────────────────

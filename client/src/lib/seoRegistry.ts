@@ -1198,17 +1198,17 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/video-to-srt',
     title: 'Video to SRT Converter — Free Online | VideoText',
     description:
-      'Convert video to a timed SRT subtitle file online. Upload MP4/MOV or a YouTube URL. AI timestamps. Sign up free — 3 imports/mo; watermark on free exports.',
+      'Convert video to a timed SRT subtitle file online. Upload MP4, MOV, or WebM — AI timestamps. Sign up free — 3 imports/mo; watermark on free exports.',
     h1: 'Convert Video to an SRT File',
     intro:
-      'Turn a video into a timed SRT subtitle file. Upload MP4, MOV, or a YouTube URL — VideoText transcribes the speech and writes the SRT. Need a file maker instead? Use the SRT file generator. For the full caption product (fix, translate, burn, transcript + summary), use Video to Subtitles. Files deleted after processing. Try 3 free imports this month.',
+      'Turn a video file into a timed SRT subtitle file. Upload MP4, MOV, or WebM — VideoText transcribes the speech and writes the SRT. Need a file maker instead? Use the SRT file generator. For the full caption product (fix, translate, burn, transcript + summary), use Video to Subtitles. Files deleted after processing. Try 3 free imports this month.',
     breadcrumbLabel: 'Video to SRT',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-subtitles', '/srt-generator', '/translate-subtitles', '/subtitle-tools'],
     indexable: true,
     intentKey: 'video-to-srt',
     faq: [
-      { q: 'How do I convert a video to an SRT file?', a: 'Upload an MP4 or MOV, or paste a YouTube URL. VideoText transcribes the audio and downloads a timed SRT you can add in YouTube Studio, Vimeo, or any editor. Sign up free to try — 3 imports per month, no card.' },
+      { q: 'How do I convert a video to an SRT file?', a: 'Upload an MP4, MOV, or WebM file. VideoText transcribes the audio and downloads a timed SRT you can add in YouTube Studio, Vimeo, or any editor. Sign up free to try — 3 imports per month, no card.' },
       { q: 'Is this video to SRT converter free?', a: 'Yes. The free plan includes 3 imports per month with no credit card. SRT downloads on the free tier include a watermark; upgrade for clean exports.' },
       { q: 'What is the difference between Video to SRT and the SRT file generator?', a: 'This page is the converter: video in, SRT out. The SRT file generator is the same workflow framed as creating a new subtitle file (maker/creator). Use this page if you searched “video to srt”; use /srt-generator if you searched “srt file generator”.' },
       { q: 'When should I use Video to Subtitles instead?', a: 'Use /video-to-subtitles when you want the full caption product hub — timed SRT/VTT plus next steps (fix, translate, burn) and a path to transcript + summary. This page stays a converter.' },
@@ -1219,10 +1219,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/srt-generator',
     title: 'Need an SRT File From Your Video? Generate Here | VideoText',
     description:
-      'Upload MP4 or paste a YouTube URL — download a timed .srt in minutes. Whisper large-v3. Use on YouTube, Vimeo, or any editor.',
+      'Upload MP4, MOV, or WebM — download a timed .srt in minutes. Whisper large-v3. Use on YouTube, Vimeo, or any editor.',
     h1: 'Free SRT File Generator from Video',
     intro:
-      'Make a timed SRT subtitle file from video — a file maker, not a caption-format converter. Upload a video or YouTube URL and download SRT. For the full caption product hub (fix, translate, burn, transcript + summary), use Video to Subtitles. Whisper large-v3. Files deleted after processing. Try 3 free imports this month.',
+      'Make a timed SRT subtitle file from a video upload — a file maker, not a caption-format converter. Upload MP4/MOV/WebM and download SRT. For the full caption product hub (fix, translate, burn, transcript + summary), use Video to Subtitles. Whisper large-v3. Files deleted after processing. Try 3 free imports this month.',
     breadcrumbLabel: 'SRT Generator',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-subtitles', '/video-to-srt', '/translate-subtitles', '/subtitle-tools'],
@@ -1279,16 +1279,15 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   // ── Phase 2: 30 high-intent SEO pages ──────────────────────────────────────────
   {
     path: '/youtube-transcript-generator',
-    title: 'Free YouTube Transcript Generator — No Download',
-    description: 'Free YouTube transcript generator. Paste any video URL — get transcript, SRT/VTT subtitles, summary + chapters instantly. No downloading required. 98.5% accurate. 50,000+ creators use VideoText.',
-    h1: 'Free YouTube Transcript Generator',
-    intro: 'Convert any YouTube video to a clean, searchable transcript in 2-3 minutes. No download needed — paste the URL and get transcript + subtitles + summary + chapters, ready to export. Works with long-form YouTube content.',
-    breadcrumbLabel: 'YouTube Transcript Generator',
+    title: 'Video to Transcript — Upload Your File | VideoText',
+    description: 'Upload MP4 or MOV for transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.',
+    h1: 'Video to Transcript',
+    intro: 'Upload your video file for a full transcript, SRT/VTT subtitles, summary, and chapters. Download the source from YouTube Studio or your editor first, then upload here.',
+    breadcrumbLabel: 'Video to Transcript',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/youtube-transcript-generator', '/video-to-subtitles'],
-    indexable: true,
+    relatedSlugs: ['/video-to-transcript', '/video-to-subtitles'],
+    indexable: false,
     intentKey: 'youtube-transcript-generator',
-    defaultInputMode: 'youtube',
     faq: [
       { q: 'How do I get a transcript from a YouTube video?', a: 'Paste the video URL into our tool (youtube.com or youtu.be links work). Click Transcribe. Get full transcript + subtitles + summary in 2-3 minutes. No login required.' },
       { q: 'Is the YouTube transcript generator free?', a: 'Yes. Free tier gives you 3 imports per month, no credit card required. Pro plan is $49/month for continued transcription.' },
@@ -2200,7 +2199,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     breadcrumbLabel: 'Interview Transcription Tool',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/interview-transcription', '/journalism-transcription', '/research-interview-transcription', '/best-transcription-tool', '/podcast-transcription-tool'],
-    indexable: true,
+    indexable: false,
     intentKey: 'interview-transcription-tool',
     faq: [
       { q: 'Is this accurate enough for quote extraction?', a: 'For clear recordings, yes. You should still review sensitive quotes before publication, but structured output and speaker segmentation reduce manual verification time significantly.' },
@@ -4629,7 +4628,8 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'capcut-captions-to-srt',
     faq: [
-      { q: 'Can I export CapCut captions as an SRT file?', a: 'CapCut does not natively export a standalone SRT. Export the video from CapCut without burned-in captions, upload the MP4 here, and VideoText writes a timed SRT/VTT from the audio.' },
+      { q: 'Can I convert CapCut JSON to SRT?', a: 'Yes — use the free CapCut JSON → SRT converter at the top of this page (runs in your browser). If you only have the video, export MP4 without burned-in captions and upload below to generate SRT from audio.' },
+      { q: 'Can I export CapCut captions as an SRT file?', a: 'CapCut does not natively export a standalone SRT. Export caption JSON and convert above, or export the video without burned-in captions and upload the MP4 here for Whisper-generated SRT/VTT.' },
       { q: 'What should I do after I have the SRT?', a: 'Stay on this page only to generate the file. Then leave: Fix Subtitles for timing/CPS/lines, Translate Subtitles for 70+ languages, or Burn Subtitles to hardcode open captions. This CapCut page does not compete with those tools.' },
       { q: 'Why would I want an SRT instead of CapCut’s built-in captions?', a: 'CapCut overlays cannot be toggled off or uploaded as a YouTube/Vimeo track. An SRT is a real caption file you can edit, translate, or burn.' },
       { q: 'Can I burn the SRT back into the video?', a: 'Yes — on /burn-subtitles (hardcode / open captions). Generate the SRT here first, then burn. Do not treat this CapCut page as the burn product.' },
@@ -5865,7 +5865,6 @@ const STATIC_PAGE_LABELS: Record<string, string> = {
 /** Popular footer links — money tools + pages that actually get GSC traffic. Keep short (6–8). */
 const POPULAR_FOOTER_PATHS: string[] = [
   '/video-to-transcript',
-  '/youtube-transcript-generator',
   '/video-to-subtitles',
   '/srt-generator',
   '/video-to-srt',

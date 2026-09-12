@@ -127,27 +127,67 @@
     },
     {
       "src": "/youtube-transcript",
-      "dest": "/youtube-transcript-generator",
+      "dest": "/video-to-transcript",
       "status": 301
     },
     {
       "src": "/youtube-transcript-transcription",
-      "dest": "/youtube-transcript-generator",
+      "dest": "/video-to-transcript",
       "status": 301
     },
     {
       "src": "/youtube-to-text",
-      "dest": "/youtube-transcript-generator",
+      "dest": "/video-to-transcript",
       "status": 301
     },
     {
       "src": "/youtube-video-transcript",
-      "dest": "/youtube-transcript-generator",
+      "dest": "/video-to-transcript",
       "status": 301
     },
     {
       "src": "/youtube-to-transcript",
-      "dest": "/youtube-transcript-generator",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-transcript-generator",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-url-to-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-video-to-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/how-to-transcript-youtube",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-transcript-editor",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/interview-transcription-tool",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/google-meet-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/srt-to-word",
+      "dest": "/tools/srt-to-text",
       "status": 301
     },
     {

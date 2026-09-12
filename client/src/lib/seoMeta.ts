@@ -27,9 +27,9 @@ export function isMoneyCorePath(pathname: string): boolean {
 /** Static (non-SEO-registry) routes: title + description. */
 const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> = {
   '/': {
-    title: 'VideoText: Video to Text & Subtitles | VideoText',
+    title: 'VideoText — AI SRT Generator & Video to Transcript | VideoText',
     description:
-      'VideoText is AI video-to-text software: transcript, SRT/VTT, summary, and chapters from a video or YouTube URL. Whisper large-v3. 3 free imports/mo.',
+      'VideoText is AI video-to-text software: upload MP4/MOV for transcript, SRT/VTT, summary, and chapters. Whisper large-v3. 3 free imports/mo. Files deleted after processing.',
   },
   '/pricing': {
     title: 'Pricing — Free, Basic, Pro & Agency Plans | VideoText',
@@ -79,7 +79,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/video-to-transcript': {
     title: 'Video to Transcript — Free AI, 98.5% | VideoText',
     description:
-      'Upload video or a YouTube URL. Get transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.',
+      'Upload MP4, MOV, WebM, or MKV. Get transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.',
   },
   '/guideline-format': {
     title: 'Client Rejected Your Transcript Format? | VideoText',
@@ -89,12 +89,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/video-to-subtitles': {
     title: 'Video to Subtitles — Full Caption Hub | VideoText',
     description:
-      'Caption-first hub: video or YouTube URL → timed SRT/VTT, then fix, translate, or burn. Transcript + summary lives on Video to Transcript. 3 free imports/mo.',
+      'Upload video → timed SRT/VTT, then fix, translate, or burn. Transcript + summary on Video to Transcript. Whisper large-v3. 3 free imports/mo.',
   },
   '/translate-subtitles': {
-    title: 'Need This Caption Track in Another Language? | VideoText',
+    title: 'Translate SRT/VTT — Timestamps Stay Intact | VideoText',
     description:
-      'Upload SRT or VTT, pick from 70+ languages, download with original cue times intact — ready for YouTube, Vimeo, or client QC.',
+      'Upload SRT or VTT, pick from 70+ languages, download with every cue time preserved — ready for YouTube, Vimeo, Netflix QC, or client delivery.',
   },
   '/fix-subtitles': {
     title: 'Fix Subtitles — Timing, CPS & Lines | VideoText',
@@ -330,8 +330,8 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Compare leading Otter alternatives with speed, output quality, and best-use-case guidance.',
   },
   '/best-descript-alternatives': {
-    title: 'Best Descript Alternatives — Transcription-First Options',
-    description: 'Compare Descript alternatives for teams prioritizing transcription speed and structured outputs.',
+    title: 'Descript Alternative for SRT Export & Transcription | VideoText',
+    description: 'Descript alternative for exportable SRT/VTT: upload MP4/MOV, get transcript + subtitles in minutes. Translate, burn, and QC — no timeline editor required.',
   },
   '/ai-transcription-workflow': {
     title: 'AI Transcription Workflow — Video to Publish-Ready Content',
@@ -484,8 +484,8 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Netflix or broadcast delivered TTML/DFXP? Convert to SRT in the browser — timecodes and dialogue preserved. Import into Premiere or run QC.',
   },
   '/subtitle-tools': {
-    title: 'Free Subtitle Tools: Convert & Validate | VideoText',
-    description: 'Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded.',
+    title: 'Subtitletools Alternative — Free SRT Convert & Validate | VideoText',
+    description: 'Free browser subtitle tools like Subtitletools: convert SRT↔VTT, validate CPL/CPS, shift timing — plus AI SRT generation when you need a new file. Nothing uploaded.',
   },
   '/subtitle-resources': {
     title: 'Subtitle Standards — CPS, CPL & Format Specs | VideoText',
@@ -659,7 +659,7 @@ const FAQ_SCHEMA_ITEMS = [
   { q: 'Is my content used for AI training?', a: "No. Your content is used only to deliver the service you requested. We do not use it for training AI models or any other secondary purpose." },
   { q: 'Do I need to sign up?', a: "Sign up for a free account to try. No credit card required. You get 3 free imports per month. Upgrade when you need more imports, languages, or batch processing." },
   { q: 'Can I transcribe a YouTube video without downloading it?', a: "Yes. Paste any public youtube.com or youtu.be link into Video to Transcript or the YouTube Transcript Generator — no download needed." },
-  { q: 'What file formats are supported?', a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. You can also paste a public YouTube URL — no download required." },
+  { q: 'What file formats are supported?', a: "Videos: MP4, MOV, AVI, WebM (MKV where noted). Subtitles: SRT and VTT. Upload the file from your editor or download it from your platform first." },
   { q: 'How accurate is VideoText transcription?', a: "VideoText uses OpenAI Whisper large-v3. On clear speech with minimal background noise, accuracy is approximately 98.5% word accuracy. Setting the spoken language manually improves results for non-English content." },
   { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 imports per month. Single language, watermark on subtitle exports. Upgrade any time for more features and batch processing." },
   { q: 'Can I translate subtitles or transcripts?', a: "Yes. Use the Translate Subtitles tool for SRT/VTT files. For transcripts, use the \"Also translate to\" option before starting to get a full translation in 70+ languages." },
@@ -1392,8 +1392,8 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   },
   '/video-to-subtitles': {
     name: 'Video to Subtitles — Full Caption Hub',
-    description: 'Caption-first VideoText hub: timed SRT/VTT from video or YouTube URL, then fix, translate, or burn. Transcript + summary + chapters via Video to Transcript.',
-    featureList: 'SRT generation, VTT generation, YouTube URL input, Caption workflow hub, Handoff to fix/translate/burn',
+    description: 'Caption-first VideoText hub: upload video → timed SRT/VTT, then fix, translate, or burn. Transcript + summary + chapters via Video to Transcript.',
+    featureList: 'SRT generation, VTT generation, Video file upload, Caption workflow hub, Handoff to fix/translate/burn',
   },
   '/translate-subtitles': {
     name: 'Translate Subtitles to Any Language',
@@ -1417,13 +1417,13 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
   },
   '/srt-generator': {
     name: 'Free SRT File Generator from Video',
-    description: 'Create a timed SRT file from any video. Upload or paste a YouTube URL, download SRT in seconds. Whisper AI. 3 free imports/mo, no card; watermark on free exports.',
-    featureList: 'SRT file generation, AI timing, YouTube URL input, Instant download, Files deleted after processing',
+    description: 'Create a timed SRT file from any video. Upload MP4/MOV/WebM, download SRT in seconds. Whisper AI. 3 free imports/mo, no card; watermark on free exports.',
+    featureList: 'SRT file generation, AI timing, Video file upload, Instant download, Files deleted after processing',
   },
   '/video-to-srt': {
     name: 'Video to SRT Converter — Free Online',
-    description: 'Convert video to a timed SRT subtitle file online. Upload MP4/MOV or a YouTube URL. AI timestamps. Sign up free — 3 imports/mo; watermark on free exports.',
-    featureList: 'Video to SRT conversion, AI timing, YouTube URL input, Instant download, Files deleted after processing',
+    description: 'Convert video to a timed SRT subtitle file online. Upload MP4/MOV/WebM. AI timestamps. Sign up free — 3 imports/mo; watermark on free exports.',
+    featureList: 'Video to SRT conversion, AI timing, Video file upload, Instant download, Files deleted after processing',
   },
 }
 
