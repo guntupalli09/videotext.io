@@ -94,7 +94,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/translate-subtitles': {
     title: 'Translate SRT/VTT — Timestamps Stay Intact | VideoText',
     description:
-      'Upload SRT or VTT, pick from 70+ languages, download with every cue time preserved. Free: 3 imports/mo, no card. Files deleted after processing. USD Pro $49/mo.',
+      'Upload SRT or VTT, pick from 70+ languages, download with every cue time preserved. Free: 3 imports/mo, no card. Files deleted after processing. Pro from $7.99/mo.',
   },
   '/fix-subtitles': {
     title: 'Fix Subtitles — Timing, CPS & Lines | VideoText',

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useProPricing } from '../contexts/PricingContext'
 
 const QUICK_LANGS = ['Spanish', 'French', 'German', 'Hindi', 'Arabic', 'Portuguese', 'Japanese', 'Chinese (Simplified)'] as const
 
@@ -9,6 +10,8 @@ type Props = {
 
 /** Above-fold SERP hero for /translate-subtitles — upload-first, timestamps preserved. */
 export default function TranslateSerpHero({ targetLanguage, onSelectLanguage }: Props) {
+  const { pricing } = useProPricing()
+
   return (
     <div className="mb-5 rounded-xl border border-blue-200/80 dark:border-blue-800/50 bg-gradient-to-br from-blue-50/90 to-white dark:from-blue-950/40 dark:to-gray-950 px-4 py-4 sm:px-5 sm:py-5">
       <p className="text-xs font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300">
@@ -56,9 +59,9 @@ export default function TranslateSerpHero({ targetLanguage, onSelectLanguage }: 
         )}
       </div>
       <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-        Free: 3 imports/mo · No card · Files deleted after processing ·{' '}
+        Free: 3 imports/mo · No card · Files deleted after processing · Pro {pricing.priceLabel} ·{' '}
         <Link to="/pricing" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-          USD Pro $49/mo
+          See all plans
         </Link>
       </p>
     </div>
