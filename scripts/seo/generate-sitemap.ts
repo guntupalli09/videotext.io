@@ -176,6 +176,7 @@ ${blogUrls.join('\n')}
   const legacyWritten = writeSitemapFiles('sitemap.xml', indexXml)
   console.log('[SEO] sitemap.xml (→ index):', legacyWritten[0])
 
+  // Bing sitemap ping only — not IndexNow. Changed URLs: npm run seo:indexnow (post-deploy on main).
   // Google retired the sitemap ping endpoint in 2023 — resubmit via Search Console UI.
   // Bing still accepts pings; opt in with SITEMAP_PING=1 (Google ping skipped always).
   if (process.env.SITEMAP_PING === '1' || process.env.SITEMAP_PING === 'true') {
