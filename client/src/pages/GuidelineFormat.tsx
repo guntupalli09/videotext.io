@@ -3385,15 +3385,19 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
                 path: "/gotranscript-guidelines",
               },
               {
-                label: "GoTranscript Format",
+                label: "GoTranscript Timestamps",
                 path: "/gotranscript-transcription-format",
               },
               {
-                label: "GoTranscript Style Guide",
+                label: "GoTranscript Speaker Labels",
                 path: "/gotranscript-style-guide",
               },
               {
-                label: "GoTranscript Rules",
+                label: "GoTranscript Inaudible Tags",
+                path: "/gotranscript-inaudible-tags",
+              },
+              {
+                label: "GoTranscript Verbatim Rules",
                 path: "/gotranscript-transcription-rules",
               },
               {

@@ -51,6 +51,7 @@ export type BrandSlug =
   | 'gotranscript-transcription-format'
   | 'gotranscript-style-guide'
   | 'gotranscript-transcription-rules'
+  | 'gotranscript-inaudible-tags'
   | 'gotranscript-test-guide'
   | 'transcribeme-guidelines'
   | 'transcribeme-transcription-style'
@@ -909,6 +910,7 @@ export const BRAND_DATA_MAP: Record<string, BrandData> = {
   'gotranscript-transcription-format': GOTRANSCRIPT_DATA,
   'gotranscript-style-guide': GOTRANSCRIPT_DATA,
   'gotranscript-transcription-rules': GOTRANSCRIPT_DATA,
+  'gotranscript-inaudible-tags': { ...GOTRANSCRIPT_DATA, tagline: 'Inaudible, unintelligible, and crosstalk tags' },
   'gotranscript-test-guide': { ...GOTRANSCRIPT_DATA, tagline: 'How to pass the GoTranscript qualification test' },
   // TranscribeMe pages
   'transcribeme-guidelines': TRANSCRIBEME_DATA,
