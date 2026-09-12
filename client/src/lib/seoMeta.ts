@@ -395,7 +395,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   },
   '/subtitle-reading-speed': {
     title: 'Subtitle Reading Speed Checker — CPS Analyzer | VideoText',
-    description: 'Check subtitle reading speed with characters-per-second and words-per-minute guidance for Netflix, BBC, EBU, YouTube, and social captions.',
+    description: 'Check subtitle CPS against Netflix TTSC (20 adult), BBC (17), and EBU (21). YouTube has no published CPS limit — use presets for readability checks.',
   },
   '/subtitle-character-checker': {
     title: 'Netflix CPL Fail? Check Every Cue for Pass/Fail | VideoText',
