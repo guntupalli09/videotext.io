@@ -169,6 +169,7 @@ ${blogUrls.join('\n')}
   const legacyWritten = writeSitemapFiles('sitemap.xml', indexXml)
   console.log('[SEO] sitemap.xml (→ index):', legacyWritten[0])
 
+  // Bing sitemap ping only — not IndexNow. Changed URLs: npm run seo:indexnow (post-deploy).
   if (process.env.SITEMAP_PING !== '0' && process.env.SITEMAP_PING !== 'false') {
     // Ping with index; to submit core only first, use: SITEMAP_PING_URL=https://videotext.io/sitemap-core.xml
     const pingUrl = normalizeUrl(process.env.SITEMAP_PING_URL || `${SITE_URL}/sitemap-index.xml`)
