@@ -54,12 +54,12 @@ Professional video utilities platform: transcribe video to text, generate and tr
 | Tool | Route | Description |
 |------|--------|-------------|
 | **Video → Transcript** | `/video-to-transcript` | Extract spoken text from video (upload or URL). Optional summary, chapters, speaker diarization, glossary. |
-| **Video → Subtitles** | `/video-to-subtitles` | Generate SRT/VTT from video. Multi-language (Basic+: 2, Pro: 5, Agency: 10). Includes a **“View in another language”** (plain-text) translation viewer for copy/paste. |
+| **Video → Subtitles** | `/video-to-subtitles` | Generate SRT/VTT from video. Multi-language on Pro (70+ languages). Includes a **“View in another language”** (plain-text) translation viewer for copy/paste. |
 | **Translate Subtitles** | `/translate-subtitles` | Translate SRT/VTT to Arabic, Hindi, etc. Upload or paste. |
 | **Fix Subtitles** | `/fix-subtitles` | Auto-correct timing, grammar, line breaks, remove fillers. |
 | **Burn Subtitles** | `/burn-subtitles` | Hardcode subtitles into video (dual upload: video + SRT/VTT). |
 | **Compress Video** | `/compress-video` | Reduce file size (web / mobile / archive profiles). |
-| **Batch Processing** | `/batch-process` | Process multiple videos (Pro/Agency). |
+| **Batch Processing** | `/batch-process` | Process multiple videos (Pro). |
 
 ### Video → Transcript: tree and branches
 
@@ -94,7 +94,7 @@ Internal (worker-only) tool type: `batch-video-to-subtitles` (queued by `/api/ba
 All tools share the same backbone:
 
 - **Client uploads** to the API (`/api/upload`, `/api/upload/dual`, or `/api/batch/upload`).
-- API enqueues a Bull job (Redis). **Tier limits** (max concurrent jobs, max duration/size per plan) are enforced at upload; Pro/Agency jobs may go to a **priority queue** when the queue is long.
+- API enqueues a Bull job (Redis). **Tier limits** (max concurrent jobs, max duration/size per plan) are enforced at upload; paid jobs may go to a **priority queue** when the queue is long.
 - **Worker** (`server/src/workers/videoProcessor.ts`) runs the tool pipeline and writes outputs into `TEMP_FILE_PATH` (or `/tmp`).
 - Client polls `GET /api/job/:jobId` and downloads via `GET /api/download/:filename`.
 
@@ -226,22 +226,20 @@ Valid `toolType` values: `video-to-transcript`, `video-to-subtitles`, `translate
 
 ## 5. Billing & usage
 
-- **Plans:** free, basic, pro, agency. Stored in user model; set by Stripe webhooks (checkout, invoice, subscription deleted) or by headers `x-user-id` / `x-plan` when no JWT.
+- **Plans sold:** Free and Pro ($7.99/mo). Legacy basic/agency plan types may still exist for existing subscribers in `server/src/utils/limits.ts`. Stored in user model; set by Stripe webhooks (checkout, invoice, subscription deleted) or by headers `x-user-id` / `x-plan` when no JWT.
 
 ### Tier limits
 
 Source of truth: `server/src/utils/limits.ts`.
 
-| Tier   | Minutes/month | Max video duration | Max file size | Max concurrent jobs | Max languages | Batch | Batch max videos | Batch max duration |
-|--------|----------------|--------------------|---------------|---------------------|---------------|-------|-------------------|---------------------|
-| **Free**   | 3 imports | 30 min   | 2 GB   | 1 | 1 | No  | —  | —  |
-| **Basic**  | 450  | 45 min   | 5 GB   | 1 | 2 | No  | —  | —  |
-| **Pro**    | 1200 | 120 min (2 h) | 10 GB  | 2 | 5 | Yes | 20  | 60 min total  |
-| **Agency** | 3000 | 240 min (4 h) | 20 GB  | 3 | 10 | Yes | 100 | 300 min total |
+| Tier   | Price | Max video duration | Max file size | Max concurrent jobs | Batch |
+|--------|-------|--------------------|---------------|---------------------|-------|
+| **Free**   | $0 (3 imports/mo) | 30 min   | 2 GB   | 1 | No  |
+| **Pro**    | $7.99/mo | 120 min (2 h) | 10 GB  | 4 | Yes (up to 20 videos) |
 
 - **Per-video:** Upload and worker enforce **max video duration** and **max file size** per tier; exceeding either returns a clear error (upgrade message).
-- **Monthly:** Usage is charged when a job completes; **minutes per month** resets on billing period (paid) or calendar month (free). Overage is allowed only for users with a Stripe customer ID.
-- **Batch (Pro/Agency):** Batch upload is allowed only when `batchEnabled` is true. Each batch is limited by **batch max videos** and **batch max duration** (total duration of all videos in that batch). Translation minutes cap applies for multi-language; see `server/src/utils/metering.ts`.
+- **Monthly:** Free tier gates on import count (3/month). Pro has expanded workflow access. Usage is recorded when a job completes.
+- **Batch (Pro):** Batch upload is allowed only when `batchEnabled` is true. Each batch is limited by **batch max videos** and **batch max duration** (total duration of all videos in that batch). Translation minutes cap applies for multi-language; see `server/src/utils/metering.ts`.
 - **Usage:** Recorded in the **worker** when a job **completes** (totalMinutes, translatedMinutes for multi-language, etc.). Batch jobs charge minutes per video. Reset on invoice period (paid) or calendar month (free). Overage allowed only for users with `stripeCustomerId`.
 - **Client:** Sends `x-user-id` and `x-plan`; after checkout, client stores `userId` and `plan`. Minutes remaining is shown on every tool (UsageCounter + UsageDisplay) and refetches when a job completes.
 - **Server-side enforcement:** Upload and batch routes call `enforceUsageLimits()` before queueing; paid plans are only trusted from auth or from an existing Stripe-backed user (no plan spoofing via headers). See `server/src/utils/limits.ts` and the upload/batch/usage routes.
@@ -262,7 +260,7 @@ Paid plans require email verification before checkout; after purchase users can 
 
 ### Promo codes (early testers)
 
-You can offer **30%, 50%, 70%, or 100% off** the first payment for **Basic** and **Pro** to attract early testers, testimonials, and feedback.
+You can offer **30%, 50%, 70%, or 100% off** the first Pro payment to attract early testers, testimonials, and feedback.
 
 1. **Create coupons and promotion codes in Stripe** (one-time):
    ```bash
@@ -275,9 +273,9 @@ You can offer **30%, 50%, 70%, or 100% off** the first payment for **Basic** and
 
 2. **Add the printed env vars** to `server/.env` (local dev) and to the `.env` next to `docker-compose.yml` if you run API/worker in Docker.
 
-3. **On the Pricing page**, users can enter a promo code (e.g. EARLY30) before clicking “Choose Basic” or “Choose Pro”. The code is applied at Stripe Checkout; the discount is shown on the Stripe payment page. Stripe Checkout also has “Add promotion code” so users can enter a code there if they didn’t on your site.
+3. **On the Pricing page**, users can enter a promo code (e.g. EARLY30) before subscribing to Pro. The code is applied at Stripe Checkout; the discount is shown on the Stripe payment page. Stripe Checkout also has “Add promotion code” so users can enter a code there if they didn’t on your site.
 
-Promo codes apply only to Basic and Pro (not Agency or one-time overage). Invalid or unconfigured codes return a clear error.
+Promo codes apply to Pro only. Invalid or unconfigured codes return a clear error.
 
 ### Remaining improvements for full robustness
 
@@ -288,7 +286,7 @@ Promo codes apply only to Basic and Pro (not Agency or one-time overage). Invali
 
 ## 6. Stripe (go live)
 
-1. **Products & prices** in Dashboard: Basic/Pro/Agency (monthly; optional annual). One-time overage price. Copy Price IDs into env.
+1. **Products & prices** in Dashboard: Pro (monthly and annual). Copy Price IDs into env.
 2. **API keys:** Use **Secret key** (test or live) in `STRIPE_SECRET_KEY`.
 3. **Webhook:** Add endpoint `https://YOUR_API_DOMAIN/api/stripe/webhook`; events: `checkout.session.completed`, `invoice.payment_succeeded`, `customer.subscription.deleted`. Set **Signing secret** in `STRIPE_WEBHOOK_SECRET`.
 4. **Success/cancel:** Use `BASE_URL` or client `frontendOrigin` so redirects go to your frontend.

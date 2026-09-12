@@ -121,7 +121,7 @@ export function Menu({ isOpen, onClose }: MenuProps) {
                 <MenuItem
                   icon={Gift}
                   label="Refer and earn: 45 min free"
-                  sublabel="(Free, Basic, Pro)"
+                  sublabel="(Free, Pro)"
                   onClick={() => console.log('Refer and earn')}
                   highlight
                 />

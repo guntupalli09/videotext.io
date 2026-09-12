@@ -1273,7 +1273,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       { q: 'How accurate is the transcript compared to YouTube captions?', a: 'VideoText achieves 98.5% accuracy (OpenAI Whisper large-v3) vs YouTube auto-captions at 70-80%. We also auto-label speakers, generate summaries, and detect chapters — YouTube cannot do this.' },
       { q: 'Can I use YouTube transcripts for blog posts?', a: 'Yes. Convert one YouTube video into: blog post (using full transcript), social media snippets (using chapters), email newsletter content, knowledge base articles. Transcripts include timestamps for easy citing.' },
       { q: 'Can I use this for content research or academic citations?', a: 'Yes. Exact timestamps [00:15:30] let you quote and cite specific moments. Export as PDF or DOCX for academic/professional use. Perfect for research papers and reports.' },
-      { q: 'Can I transcribe long YouTube videos like podcasts or webinars?', a: 'Yes. Free tier: 30 min/video. Pro: 2 hours/video. Agency: 4 hours/video. Processing speed: ~1 minute per 10 minutes of video. Long-form content fully supported.' },
+      { q: 'Can I transcribe long YouTube videos like podcasts or webinars?', a: 'Yes. Free tier: files up to 30 minutes. Pro: longer uploads (up to 2 hours per file). Processing speed: ~1 minute per 10 minutes of video. Long-form content fully supported on Pro.' },
     ],
     deepContent: {
       proofPoints: [

@@ -51,7 +51,7 @@ export function getTexTrigger(ctx: TexTriggerContext): TexTriggerResult | null {
   if (pathname.includes('translate') && ctx.hasMultipleLanguages && plan === 'agency') {
     return {
       id: 'suggest-zip',
-      message: 'Agency plan: you can export multiple languages as ZIP.',
+      message: 'Pro plan: you can export multiple languages as ZIP.',
       link: { path: '/translate-subtitles', label: 'Translate Subtitles' },
     }
   }

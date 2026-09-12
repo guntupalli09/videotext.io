@@ -1136,7 +1136,7 @@ function buildPricingProductJsonLd(routePath: string): object | null {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: 'VideoText Transcription & Subtitle Plans',
-    description: 'Pricing plans for VideoText AI transcription and subtitle tools: Free, Basic, Pro, and Agency.',
+    description: 'VideoText pricing: Free (3 imports/month) and Pro ($7.99/mo) for the full transcription and subtitle workflow.',
     brand: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
     category: 'SaaS',
     offers: [
