@@ -538,7 +538,7 @@ VideoText has a single **observability stack** for debugging across UI, API, and
 | Health | `GET /health` → `{"status":"ok"}` |
 | SEO: sync routes | `npm run seo:sync` |
 | SEO: validate registry | `npm run seo:validate-registry` |
-| SEO: sitemap | `npm run seo:sitemap` (optional: `SITE_URL`, `SITEMAP_PING`) |
+| SEO: sitemap | `npm run seo:sitemap` (optional: `SITE_URL`; `lastmod` from git content dates; resubmit in GSC UI — Google ping retired 2023; Bing ping opt-in via `SITEMAP_PING=1`) |
 | SEO: smoke test | `BASE_URL=http://localhost:4173 npm run seo:smoke` (after building and serving client) |
 | SEO: health check | `npm run seo:health` (robots + sitemap; set `SEO_HEALTH_MODE=strict` for full URL checks) |
 | Observability | **[docs/OBSERVABILITY.md](docs/OBSERVABILITY.md)** — logs, Sentry, health endpoints, request ID |

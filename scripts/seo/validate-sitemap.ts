@@ -5,7 +5,7 @@
  */
 import * as path from 'path'
 import * as fs from 'fs'
-import { getSitemapPaths, getHashnodeBlogPaths } from './registry'
+import { CORE_PATHS, getSitemap2Paths, getHashnodeBlogPaths } from './registry'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
 import { getHashnodePostUrl, contentSlugFromLiveSlug } from '../../client/src/lib/blogSlugMap'
 
@@ -23,6 +23,28 @@ function extractUrlsFromXml(xml: string): string[] {
     found.push(match[1])
   }
   return found
+}
+
+function extractLastmodsFromXml(xml: string): string[] {
+  const lastmodRe = /<lastmod>([^<]+)<\/lastmod>/g
+  const found: string[] = []
+  let match: RegExpExecArray | null
+  while ((match = lastmodRe.exec(xml)) !== null) {
+    found.push(match[1])
+  }
+  return found
+}
+
+function getExpectedSitemapPaths(): string[] {
+  return [...new Set([
+    ...CORE_PATHS,
+    ...getSitemap2Paths(),
+    ...getHashnodeBlogPaths(),
+  ])]
+    .map((p) => getCanonicalPathForRoute(p))
+    .filter(Boolean)
+    .filter((p) => p !== '/site-index')
+    .filter((p, i, arr) => arr.indexOf(p) === i)
 }
 
 function normalizeUrl(url: string): string {
@@ -64,7 +86,7 @@ function main(): void {
   const blogSitemapUrls = extractUrlsFromXml(fs.readFileSync(blogSitemapPath, 'utf8'))
   const found = [...coreUrls, ...programmaticUrls, ...blogSitemapUrls].map(normalizeUrl)
 
-  const indexablePaths = getSitemapPaths()
+  const indexablePaths = getExpectedSitemapPaths()
   const expectedUrls = new Set(
     indexablePaths.map((p) => normalizeUrl(canonicalUrlForPath(p)))
   )
@@ -113,6 +135,26 @@ function main(): void {
     }
   }
 
+  const lastmods = [
+    ...extractLastmodsFromXml(fs.readFileSync(corePath, 'utf8')),
+    ...extractLastmodsFromXml(fs.readFileSync(programmaticPath, 'utf8')),
+    ...extractLastmodsFromXml(fs.readFileSync(blogSitemapPath, 'utf8')),
+  ]
+  const uniqueLastmods = new Set(lastmods)
+  const today = new Date().toISOString().slice(0, 10)
+  const todayCount = lastmods.filter((d) => d === today).length
+  if (lastmods.length > 0 && uniqueLastmods.size === 1) {
+    console.error('[validate-sitemap] All URLs share one lastmod — Google may ignore it:', [...uniqueLastmods][0])
+    failed = true
+  } else if (lastmods.length > 20 && todayCount / lastmods.length > 0.9) {
+    console.error(
+      '[validate-sitemap] >90% of lastmod values are build date',
+      today,
+      '— check resolve-lastmod.ts',
+    )
+    failed = true
+  }
+
   if (failed) {
     process.exit(1)
   }
@@ -125,6 +167,8 @@ function main(): void {
     blogSitemapUrls.length,
     ', total:',
     found.length,
+    ', unique lastmod dates:',
+    uniqueLastmods.size,
   )
 }
 

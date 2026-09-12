@@ -8,13 +8,13 @@
   </url>
   <url>
     <loc>https://videotext.io/pricing</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://videotext.io/privacy</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-05-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -26,7 +26,7 @@
   </url>
   <url>
     <loc>https://videotext.io/terms</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-05-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -39,12 +39,12 @@
   <url>
     <loc>https://blog.videotext.io</loc>
     <lastmod>2026-09-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/samples</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-05-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -62,25 +62,25 @@
   </url>
   <url>
     <loc>https://videotext.io/audio-to-text-converter</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/video-caption-generator</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/add-subtitles-to-video</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/podcast-transcription</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -104,7 +104,7 @@
   </url>
   <url>
     <loc>https://videotext.io/compress-video</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -116,19 +116,19 @@
   </url>
   <url>
     <loc>https://videotext.io/best-transcription-tool</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-05-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/fastest-transcription-tool</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-05-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/podcast-transcription-tool</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -146,25 +146,25 @@
   </url>
   <url>
     <loc>https://videotext.io/fastest-transcription-software</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/ai-transcription-tools</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/ai-transcription-workflow</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/teams-meeting-transcript</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -182,7 +182,7 @@
   </url>
   <url>
     <loc>https://videotext.io/voice-recorder</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -218,145 +218,145 @@
   </url>
   <url>
     <loc>https://videotext.io/whisper-online</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/fireflies-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/kapwing-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/submagic-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/castmagic-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/riverside-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/zubtitle-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/adobe-premiere-captions-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/assembly-ai-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/notta-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/tactiq-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/subly-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/meetgeek-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/maestra-alternative</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/mp3-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/wav-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/m4a-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/mkv-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/avi-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/aac-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/ogg-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/flac-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/subtitle-editor</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/online-subtitle-editor</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -368,37 +368,37 @@
   </url>
   <url>
     <loc>https://videotext.io/sdh-subtitles</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/open-captions-vs-closed-captions</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/video-accessibility</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/ada-video-captions</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/how-to-create-srt-file</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/how-to-add-subtitles-to-mp4</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -410,55 +410,55 @@
   </url>
   <url>
     <loc>https://videotext.io/about</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/compare</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/open</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-05-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/changelog</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/integrations/zapier</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-08-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/docs/api</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-08-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/temi-vs-videotext</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/videotext-vs-rev</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/otter-vs-videotext</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -470,13 +470,13 @@
   </url>
   <url>
     <loc>https://videotext.io/videotext-vs-turboscribe</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/best-otter-alternatives</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -488,73 +488,73 @@
   </url>
   <url>
     <loc>https://videotext.io/voice-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/speech-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/voice-to-text-online</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/online-voice-recorder</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/voice-recorder-online</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/free-voice-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/speak-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/microphone-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/dictation-tool</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/voice-memo-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/voice-notes-to-text</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://videotext.io/voice-to-text-converter</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
