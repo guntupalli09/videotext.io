@@ -31,16 +31,29 @@ benchmark. They are intentionally not dressed up as the full "8 tools ×
 200 files" study — that would be exactly the kind of unfounded claim this
 project exists to avoid making.
 
-## Why this matters for the page's credibility
+## Audit: unsupported claims on existing pages (resolved)
 
-Two pages already live on the site — `/transcription-benchmark` and
-`/accuracy-test` — that state specific-looking numbers (e.g. "99.1%
-accuracy", a full Otter/Descript/Rev comparison table) with no dataset,
-scoring methodology, or reproducible source behind them. The whole premise
-of a linkable research asset is that every number on it can be traced to a
-dataset + method + script. Before publishing the new page, reconcile or
-retire those two pages so the site isn't making contradictory, unsourced
-accuracy claims next to a rigorously sourced one.
+`/transcription-benchmark` and `/accuracy-test` previously stated
+specific-looking numbers with no dataset, ground truth, or scoring
+methodology behind them. Every quantitative claim on those two pages was
+audited and removed or replaced — none of those numbers were reused,
+cited, or reconciled with this benchmark's real results. What was removed:
+
+- `/transcription-benchmark`: a full speed table (webinar/interview/meeting/
+  podcast processing times with P50/P90 and "12x faster than realtime"
+  claims), FAQ answers stating specific minute figures, a "processes long
+  videos in ~3–5 minutes" claim, and a "Methodology" section asserting a
+  200-clip/18-hour dataset and a March 2026 benchmark batch that did not
+  exist anywhere in the repo.
+- `/accuracy-test`: an "accuracy by condition" table (99.1% studio audio
+  down to 87.4% heavy background noise) and a tool-comparison table making
+  unsubstantiated claims about Otter, Descript, and Rev's speed/accuracy —
+  the latter also carried competitor-disparagement risk since none of it
+  was measured.
+
+Both pages now state plainly that they don't have sourced numbers to
+publish for those claims, and link to this benchmark's real (if narrow-
+scope) pilot results instead.
 
 ## Reproducing this pilot
 

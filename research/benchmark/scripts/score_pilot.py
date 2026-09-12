@@ -56,9 +56,13 @@ def main():
     total_audio_sec = sum(r["duration_sec"] for r in rows)
     total_proc_sec = sum(r["processing_sec"] for r in rows)
 
+    metadata_path = ROOT / "results" / "experiment_metadata.json"
+    experiment_metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else None
+
     summary = {
         "condition": "clean_read_speech_single_speaker",
-        "dataset": "LibriSpeech test-clean (public domain, professionally aligned)",
+        "dataset": "LibriSpeech test-clean",
+        "dataset_license": "CC BY 4.0 (Vassil Panayotov, 2014) — https://www.openslr.org/12/",
         "model": rows[0]["model"],
         "n_utterances": len(rows),
         "n_speakers": len(set(r["speaker_id"] for r in rows)),
@@ -67,6 +71,7 @@ def main():
         "mean_utterance_wer_pct": round(statistics.mean(wers), 2),
         "median_utterance_wer_pct": round(statistics.median(wers), 2),
         "realtime_factor": round(total_audio_sec / total_proc_sec, 2),
+        "experiment_metadata": experiment_metadata,
     }
 
     with SUMMARY_OUT.open("w") as f:
