@@ -46,7 +46,7 @@ export default function SubtitleValidator() {
         kicker: 'Overlaps, CPS, or long lines?',
         title: 'Fix this file in one click',
         body: 'Out of sync, overlapping, or CPS fail → the Fix tool auto-corrects timing, lines, and reading speed.',
-        primary: { label: 'Fix this file in one click', path: '/fix-subtitles' },
+        primary: { label: 'Fix overlaps & CPS in one pass', path: '/subtitle-grammar-fixer' },
         secondary: [
           { label: 'Translate', path: '/translate-subtitles' },
           { label: 'Burn', path: '/burn-subtitles' },
@@ -139,7 +139,7 @@ export default function SubtitleValidator() {
             )}
 
             {!isValid && (
-              <a href="/fix-subtitles" className="block w-full py-2.5 rounded-xl border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 font-semibold text-sm text-center hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+              <a href="/subtitle-grammar-fixer" className="block w-full py-2.5 rounded-xl border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 font-semibold text-sm text-center hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
                 Fix issues automatically with AI →
               </a>
             )}

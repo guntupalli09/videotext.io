@@ -187,14 +187,6 @@ const STATIC_META: RouteMeta[] = [
     ],
   },
   {
-    path: '/guideline-format',
-    title: `Format Transcripts to Client Guides | ${SITE_NAME}`,
-    description:
-      'Format a transcript to Rev, GoTranscript, TranscribeMe, or Scribie-style rules. Editable presets. Files deleted after processing. 3 free imports/mo.',
-    h1: 'Format Transcripts to Client Guidelines',
-    breadcrumbLabel: 'Format to client guidelines',
-  },
-  {
     path: '/video-to-subtitles',
     title: `Video to Subtitles — Full Caption Hub | ${SITE_NAME}`,
     description:
@@ -663,14 +655,6 @@ const STATIC_META: RouteMeta[] = [
     h1: 'Free Subtitle Tools for Creators',
     breadcrumbLabel: 'Subtitle Tools',
   },
-  {
-    path: '/subtitle-resources',
-    title: `Subtitle Resources & Standards — Formats, Netflix Rules, CPS Limits | ${SITE_NAME}`,
-    description:
-      'Subtitle format specs, Netflix delivery requirements, platform character limits, reading speed standards, and timing rules — all in one reference guide.',
-    breadcrumbLabel: 'Subtitle Resources',
-  },
-
   // ── Comparison / vs pages ────────────────────────────────────────────────
   {
     path: '/temi-vs-videotext',
@@ -917,7 +901,7 @@ const MONEY_TITLE_PATHS = new Set([
   '/video-to-srt',
   '/srt-generator',
   '/voice-recorder',
-  '/guideline-format',
+  '/rev-style-guide',
 ])
 
 function stripTrailingTitleStops(value: string): string {
@@ -1322,7 +1306,7 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
     { path: '/tools/ttml-to-srt', label: 'TTML to SRT' },
     { path: '/tools/html-to-srt', label: 'HTML to SRT' },
     { path: '/tools/shift-subtitle-timing', label: 'Shift Subtitle Timing' },
-    { path: '/subtitle-resources', label: 'Subtitle Resources & Standards' },
+    { path: '/tools/subtitle-character-checker', label: 'Character Limit Checker' },
     { path: '/open-captions-vs-closed-captions', label: 'Open vs Closed Captions' },
     { path: '/free-captions-and-subtitles', label: 'Free Captions & Subtitles' },
     { path: '/ada-video-captions', label: 'ADA Video Captions' },

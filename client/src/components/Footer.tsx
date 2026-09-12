@@ -50,7 +50,7 @@ export default function Footer() {
               <li><Link to="/subtitle-tools" className="hover:text-white transition-colors">Subtitle tools</Link></li>
               <li><Link to="/tools" className="hover:text-white transition-colors">Free tools</Link></li>
               <li><Link to="/alternatives" className="hover:text-white transition-colors">All alternatives</Link></li>
-              <li><Link to="/subtitle-resources" className="hover:text-white transition-colors">Subtitle resources</Link></li>
+              <li><Link to="/subtitle-tools" className="hover:text-white transition-colors">Subtitle tools</Link></li>
               <li><Link to="/transcription-benchmark" className="hover:text-white transition-colors">Transcription benchmark</Link></li>
               <li><Link to="/accuracy-test" className="hover:text-white transition-colors">Accuracy test</Link></li>
             </ul>

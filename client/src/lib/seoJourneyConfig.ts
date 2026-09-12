@@ -21,6 +21,15 @@ const SUBTITLE_STEPS = [
   { title: 'Fix, translate, or burn', detail: 'Continue on the matching core tool. CapCut/editor pages stay the entry; burn/fix/translate are the exits.' },
 ]
 
+/** Shared QC workflow steps — exit is always Subtitle Grammar Fixer. */
+const SUBTITLE_QA_STEPS = [
+  { title: 'Scan or convert', detail: 'Run a checker, convert TTML, or merge tracks — surface CPL, overlap, or CPS problems before upload.' },
+  { title: 'Note the failures', detail: 'Over-limit lines, stacked cues, and unreadable CPS are mechanical — not worth fixing row by row in a text editor.' },
+  { title: 'Auto-fix in one upload', detail: 'Open Subtitle Grammar Fixer with the same file. Overlaps, timing, line breaks, and grammar — one download.' },
+]
+
+const GRAMMAR_FIXER_EXIT = '/subtitle-grammar-fixer'
+
 const ALT_TO_TRANSCRIPT: SeoJourneyBannerData = {
   kicker: 'Skip the comparison — use the tool',
   title: 'Upload once → transcript + SRT + summary',
@@ -46,7 +55,94 @@ const ALT_TO_SUBTITLES: SeoJourneyBannerData = {
   ],
 }
 
+/** Professional subtitle-QA cluster — context-specific copy, shared steps, grammar-fixer exit. */
+const SUBTITLE_QA_JOURNEYS: Record<string, SeoJourneyBannerData> = {
+  '/tools/ttml-to-srt': {
+    kicker: 'TTML convert → QC pass',
+    title: 'Converted SRT often fails CPL or overlap checks next',
+    body: 'Problem: Netflix and broadcast TTML converts cleanly — then Premiere or platform QC flags line length and stacked cues you did not see in XML.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Fix timing, CPL & grammar in one pass', href: GRAMMAR_FIXER_EXIT },
+    secondary: [{ label: 'Character limit checker', href: '/tools/subtitle-character-checker' }],
+  },
+  '/tools/subtitle-character-checker': {
+    kicker: 'CPL scan → bulk repair',
+    title: 'Flagged cues over the CPL limit? Fix them in one pass',
+    body: 'Problem: you counted characters cue by cue — now dozens fail Netflix or BBC line limits and manual re-wrap will take all afternoon.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Auto-wrap lines & fix CPS', href: GRAMMAR_FIXER_EXIT },
+    secondary: [{ label: 'Subtitle validator', href: '/tools/subtitle-validator' }],
+  },
+  '/subtitle-character-checker': {
+    kicker: 'CPL scan → bulk repair',
+    title: 'Flagged cues over the CPL limit? Fix them in one pass',
+    body: 'Problem: you counted characters cue by cue — now dozens fail Netflix or BBC line limits and manual re-wrap will take all afternoon.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Auto-wrap lines & fix CPS', href: GRAMMAR_FIXER_EXIT },
+    secondary: [{ label: 'Subtitle validator', href: '/tools/subtitle-validator' }],
+  },
+  '/tools/subtitle-validator': {
+    kicker: 'Validator → auto-fix',
+    title: 'Overlaps or CPS errors? Repair the whole file at once',
+    body: 'Problem: the validator listed overlaps and reading-speed failures — fixing each timestamp by hand is the wrong use of your rate.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Fix overlaps, timing & lines', href: GRAMMAR_FIXER_EXIT },
+    secondary: [{ label: 'Character limit checker', href: '/tools/subtitle-character-checker' }],
+  },
+  '/subtitle-validator': {
+    kicker: 'Validator → auto-fix',
+    title: 'Overlaps or CPS errors? Repair the whole file at once',
+    body: 'Problem: the validator listed overlaps and reading-speed failures — fixing each timestamp by hand is the wrong use of your rate.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Fix overlaps, timing & lines', href: GRAMMAR_FIXER_EXIT },
+    secondary: [{ label: 'Character limit checker', href: '/tools/subtitle-character-checker' }],
+  },
+  '/tools/subtitle-word-counter': {
+    kicker: 'CPS report → repair',
+    title: 'High CPS lines in the report will fail platform QC',
+    body: 'Problem: the word count looks fine but characters-per-second on dense cues will get rejected — extending display time manually fights the next overlap.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Fix reading speed & overlaps', href: GRAMMAR_FIXER_EXIT },
+    secondary: [{ label: 'Reading speed checker', href: '/tools/subtitle-reading-speed' }],
+  },
+  '/subtitle-word-counter': {
+    kicker: 'CPS report → repair',
+    title: 'High CPS lines in the report will fail platform QC',
+    body: 'Problem: the word count looks fine but characters-per-second on dense cues will get rejected — extending display time manually fights the next overlap.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Fix reading speed & overlaps', href: GRAMMAR_FIXER_EXIT },
+    secondary: [{ label: 'Reading speed checker', href: '/tools/subtitle-reading-speed' }],
+  },
+  '/tools/merge-srt-files': {
+    kicker: 'Merge → overlap cleanup',
+    title: 'Merged tracks often stack cues at the join',
+    body: 'Problem: combining forced narrative + main subs sorted the rows — but overlap errors at the merge boundary will fail upload validators.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Trim overlaps & fix timing', href: GRAMMAR_FIXER_EXIT },
+    secondary: [{ label: 'Subtitle validator', href: '/tools/subtitle-validator' }],
+  },
+  '/subtitle-line-break-fixer': {
+    kicker: 'Line breaks → full QC',
+    title: 'Long lines fixed — still have overlaps or CPS failures?',
+    body: 'Problem: CPL pass alone does not clear overlapping timecodes or reading-speed rejects — you need timing repair on the same file.',
+    steps: SUBTITLE_QA_STEPS,
+    primary: { label: 'Run full timing & grammar pass', href: GRAMMAR_FIXER_EXIT },
+    secondary: [{ label: 'Fix Subtitles (primary URL)', href: '/fix-subtitles' }],
+  },
+  '/subtitle-grammar-fixer': {
+    kicker: 'QC cluster exit — you are here',
+    title: 'Upload below — overlaps, CPS, and grammar in one job',
+    body: 'Problem: checkers flagged mechanical failures. Enable Fix timing for CPS/overlaps and Line breaks (CPL) for long rows — overlaps are always repaired.',
+    primary: { label: 'Upload & fix this file', href: GRAMMAR_FIXER_EXIT },
+    secondary: [
+      { label: 'Character checker', href: '/tools/subtitle-character-checker' },
+      { label: 'Subtitle validator', href: '/tools/subtitle-validator' },
+    ],
+  },
+}
+
 export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
+  ...SUBTITLE_QA_JOURNEYS,
   '/srt-generator': {
     kicker: 'File maker → full caption hub',
     title: 'Need more than a .srt download?',
@@ -162,7 +258,7 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
   '/rev-alternative': {
     ...ALT_TO_TRANSCRIPT,
     secondary: [
-      { label: 'Format to client guidelines', href: '/guideline-format' },
+      { label: 'Format to client guidelines', href: '/rev-style-guide' },
       { label: 'Video to Subtitles', href: '/video-to-subtitles' },
     ],
   },

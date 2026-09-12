@@ -1217,9 +1217,9 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/srt-generator',
-    title: 'Free SRT File Generator from Video | VideoText',
+    title: 'Need an SRT File From Your Video? Generate Here | VideoText',
     description:
-      'Create a timed SRT file from any video. Upload or paste a YouTube URL, download SRT in seconds. Whisper AI. 3 free imports/mo, no card; watermark on free exports.',
+      'Upload MP4 or paste a YouTube URL — download a timed .srt in minutes. Whisper large-v3. Use on YouTube, Vimeo, or any editor.',
     h1: 'Free SRT File Generator from Video',
     intro:
       'Make a timed SRT subtitle file from video — a file maker, not a caption-format converter. Upload a video or YouTube URL and download SRT. For the full caption product hub (fix, translate, burn, transcript + summary), use Video to Subtitles. Whisper large-v3. Files deleted after processing. Try 3 free imports this month.',
@@ -4618,8 +4618,9 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
 
   {
     path: '/capcut-captions',
-    title: 'CapCut Captions to SRT — Free Online | VideoText',
-    description: 'Export CapCut captions as a downloadable SRT or VTT. Upload the CapCut MP4 (no burned-in text). Then fix, translate, or burn. 3 free imports/mo, no card.',
+    title: 'CapCut Won\'t Export SRT? Pull Captions Out Here | VideoText',
+    description:
+      'Export MP4 without burned-in text, upload here, download a real SRT or VTT you can edit in Premiere or upload to YouTube.',
     h1: 'Export CapCut Captions as an SRT File',
     intro: 'CapCut auto-captions stay locked in the app. Export the video without burned-in text, upload it here, and download a real SRT/VTT. This page is the CapCut entry — next steps are Fix Subtitles, Translate Subtitles, or Burn Subtitles. Free: 3 imports/mo, no card. Files deleted after processing.',
     breadcrumbLabel: 'CapCut Captions to SRT',

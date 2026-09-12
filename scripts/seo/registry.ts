@@ -27,7 +27,7 @@ export const STATIC_ROUTES = [
   '/fix-subtitles',
   '/burn-subtitles',
   '/compress-video',
-  '/guideline-format',
+  '/rev-style-guide',
   '/best-transcription-tool',
   '/fastest-transcription-tool',
   '/podcast-transcription-tool',
@@ -94,7 +94,7 @@ export const CORE_PATHS: string[] = [
   '/fix-subtitles',
   '/burn-subtitles',
   '/compress-video',
-  '/guideline-format',
+  '/rev-style-guide',
   '/best-transcription-tool',
   '/fastest-transcription-tool',
   '/podcast-transcription-tool',
@@ -211,7 +211,6 @@ export const FREE_TOOL_AND_HUB_PATHS: string[] = [
   '/tools/ttml-to-srt',
   '/tools/html-to-srt',
   '/subtitle-tools',
-  '/subtitle-resources',
 ]
 
 /** Programmatic-only paths (from targets × intents). Submit after core. */

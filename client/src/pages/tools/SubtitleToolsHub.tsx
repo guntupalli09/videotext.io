@@ -68,7 +68,7 @@ const SUBTITLE_TOOLS = [
     icon: Wand2,
     description: 'Learn subtitle formats and best practices',
     links: [
-      { path: '/subtitle-resources', label: 'Subtitle Resources & Standards' },
+      { path: '/tools/subtitle-character-checker', label: 'Character Limit Checker (Netflix CPL)' },
       { path: '/open-captions-vs-closed-captions', label: 'Open vs Closed Captions' },
       { path: '/free-captions-and-subtitles', label: 'Free Captions & Subtitles' },
       { path: '/ada-video-captions', label: 'ADA Video Captions' },

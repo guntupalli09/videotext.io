@@ -2,6 +2,8 @@ import { useLocation } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import Seo from './Seo'
 import OpenStatsStrip from './OpenStatsStrip'
+import SeoJourneyBanner from './SeoJourneyBanner'
+import { getSeoJourneyBanner } from '../lib/seoJourneyConfig'
 import { resolveInternalLinkPath } from '../lib/primaryUrls'
 
 interface FaqItem {
@@ -65,9 +67,11 @@ export default function FreeToolLayout({
 }: FreeToolLayoutProps) {
   const { pathname } = useLocation()
   const isSubtitleCluster = hubLink?.path === '/subtitle-tools'
+  const journey = getSeoJourneyBanner(pathname)
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Seo title={title} description={description} canonicalPath={pathname} />
+      {journey && <SeoJourneyBanner data={journey} />}
       {/* Hero */}
       <div className="bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-3xl mx-auto px-4 py-10 sm:py-14 text-center">

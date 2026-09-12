@@ -65,7 +65,7 @@ export default function SubtitleCharacterChecker() {
         kicker: 'Netflix 42 · YouTube 80 · BBC 37',
         title: 'Fix this file in one click',
         body: 'Line-length fail? Fix Subtitles reflows long lines and CPS so the file can pass.',
-        primary: { label: 'Fix this file in one click', path: '/fix-subtitles' },
+        primary: { label: 'Fix CPL & CPS in one pass', path: '/subtitle-grammar-fixer' },
         secondary: [
           { label: 'Translate', path: '/translate-subtitles' },
           { label: 'Burn', path: '/burn-subtitles' },

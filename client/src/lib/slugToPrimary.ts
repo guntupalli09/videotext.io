@@ -22,6 +22,9 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'subtitle-language-checker': '/translate-subtitles',
   'subtitle-grammar-fixer': '/fix-subtitles',
   'subtitle-line-break-fixer': '/fix-subtitles',
+  // Dead SEO landings → live cluster (301 + canonical)
+  'subtitle-resources': '/subtitle-tools',
+  'guideline-format': '/rev-style-guide',
   'hardcoded-captions': '/burn-subtitles',
   'video-with-subtitles': '/burn-subtitles',
   // GSC: /burn-subtitles-into-video ranked better than the money URL for the same

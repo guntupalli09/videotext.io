@@ -50,7 +50,6 @@ const Guide = lazy(() => import('./pages/Guide'))
 const Terms = lazy(() => import('./pages/Terms'))
 const VoiceRecorder = lazy(() => import('./pages/VoiceRecorder'))
 const VideoToTranscript = lazy(() => import('./pages/VideoToTranscript'))
-const GuidelineFormat = lazy(() => import('./pages/GuidelineFormat'))
 const VideoToSubtitles = lazy(() => import('./pages/VideoToSubtitles'))
 const TranslateSubtitles = lazy(() => import('./pages/TranslateSubtitles'))
 const FixSubtitles = lazy(() => import('./pages/FixSubtitles'))
@@ -127,7 +126,6 @@ const AspectRatioCalculator = lazy(() => import('./pages/tools/AspectRatioCalcul
 const TimestampConverter = lazy(() => import('./pages/tools/TimestampConverter'))
 const VideoMetadataViewer = lazy(() => import('./pages/tools/VideoMetadataViewer'))
 const SubtitleToolsHub = lazy(() => import('./pages/tools/SubtitleToolsHub'))
-const SubtitleResources = lazy(() => import('./pages/SubtitleResources'))
 // Format converter tools — client-side only, zero server dependency
 const SbvToSrt = lazy(() => import('./pages/tools/SbvToSrt'))
 const SrtToSbv = lazy(() => import('./pages/tools/SrtToSbv'))
@@ -624,7 +622,7 @@ function App() {
             <Route path="/voice-recorder" element={<VoiceRecorder />} />
             <Route path="/s/:slug" element={<ShareTranscript />} />
             <Route path="/embed/:slug" element={<EmbedTranscript />} />
-            <Route path="/guideline-format" element={<GuidelineFormat />} />
+            <Route path="/guideline-format" element={<Navigate to="/rev-style-guide" replace />} />
             <Route path="/video-to-transcript" element={<VideoToTranscript
               seoH1="Video to Transcript — Free AI Transcription, 98.5% Accurate"
               seoIntro="Upload any video or paste a YouTube URL and get a full transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in one pass. Powered by OpenAI Whisper large-v3 — 98.5% word accuracy on clean audio. A 2-hour video processes in under 5 minutes. Zero data retention: your files are deleted immediately after processing."
@@ -647,6 +645,8 @@ function App() {
             {/* SEO utility routes: registry-driven; same tools, alternate URLs. No backend or behavior change. */}
             {getAllSeoPaths()
               .filter((path) => ![
+                '/guideline-format',
+                '/subtitle-resources',
                 '/burn-subtitles-into-video',
                 '/youtube-transcript',
                 '/youtube-transcript-transcription',
@@ -683,7 +683,7 @@ function App() {
             <Route path="/tools/timestamp-converter" element={<TimestampConverter />} />
             <Route path="/tools/video-metadata-viewer" element={<VideoMetadataViewer />} />
             <Route path="/subtitle-tools" element={<SubtitleToolsHub />} />
-            <Route path="/subtitle-resources" element={<SubtitleResources />} />
+            <Route path="/subtitle-resources" element={<Navigate to="/subtitle-tools" replace />} />
             <Route path="/tools/sbv-to-srt" element={<SbvToSrt />} />
             <Route path="/tools/srt-to-sbv" element={<SrtToSbv />} />
             <Route path="/tools/ass-to-srt" element={<AssToSrt />} />

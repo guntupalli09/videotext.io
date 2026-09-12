@@ -16,7 +16,7 @@ export const MONEY_CORE_PATHS = [
   '/fix-subtitles',
   '/burn-subtitles',
   '/compress-video',
-  '/guideline-format',
+  '/rev-style-guide',
   '/youtube-transcript-generator',
 ] as const
 
@@ -82,9 +82,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Upload video or a YouTube URL. Get transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.',
   },
   '/guideline-format': {
-    title: 'Format Transcripts to Client Guides | VideoText',
+    title: 'Client Rejected Your Transcript Format? | VideoText',
     description:
-      'Format a transcript to Rev, GoTranscript, TranscribeMe, or Scribie-style rules. Editable presets. Files deleted after processing. 3 free imports/mo.',
+      'Apply Rev, GoTranscript, or Scribie presets — speaker labels, verbatim mode, punctuation. Paste transcript, export client-ready copy.',
   },
   '/video-to-subtitles': {
     title: 'Video to Subtitles — Full Caption Hub | VideoText',
@@ -92,9 +92,9 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Caption-first hub: video or YouTube URL → timed SRT/VTT, then fix, translate, or burn. Transcript + summary lives on Video to Transcript. 3 free imports/mo.',
   },
   '/translate-subtitles': {
-    title: 'Translate Subtitles to Any Language | VideoText',
+    title: 'Need This Caption Track in Another Language? | VideoText',
     description:
-      'Translate SRT or VTT to 70+ languages with timestamps intact. Upload, pick a language, download. Free to try. Files deleted after processing.',
+      'Upload SRT or VTT, pick from 70+ languages, download with original cue times intact — ready for YouTube, Vimeo, or client QC.',
   },
   '/fix-subtitles': {
     title: 'Fix Subtitles — Timing, CPS & Lines | VideoText',
@@ -398,12 +398,14 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Check subtitle reading speed with characters-per-second and words-per-minute guidance for Netflix, BBC, EBU, YouTube, and social captions.',
   },
   '/subtitle-character-checker': {
-    title: 'Subtitle Character Limits — Pass/Fail | VideoText',
-    description: 'Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account.',
+    title: 'Netflix CPL Fail? Check Every Cue for Pass/Fail | VideoText',
+    description:
+      'Upload SRT or VTT — instant pass/fail per cue against Netflix (42), BBC (37), or YouTube (80) character limits before QC rejects the file.',
   },
   '/subtitle-word-counter': {
-    title: 'Subtitle Word Counter — Count Words in SRT & VTT Files | VideoText',
-    description: 'Count words, characters, cues, WPM, and CPS in subtitle files. Use the report to estimate subtitle density, reading speed, and caption editing workload.',
+    title: 'Count Cues, Words & CPS Before You Quote a Job | VideoText',
+    description:
+      'Upload SRT or VTT for cue count, word total, and CPS per line — scope subtitle editing and catch reading-speed problems before delivery.',
   },
 
   '/tools/shift-subtitle-timing': {
@@ -427,12 +429,14 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Check every subtitle cue for characters-per-second against Netflix (17 CPS), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
   },
   '/tools/subtitle-character-checker': {
-    title: 'Subtitle Character Limits — Pass/Fail | VideoText',
-    description: 'Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account.',
+    title: 'Netflix CPL Fail? Check Every Cue for Pass/Fail | VideoText',
+    description:
+      'Upload SRT or VTT — instant pass/fail per cue against Netflix (42), BBC (37), or YouTube (80) character limits before QC rejects the file.',
   },
   '/tools/subtitle-word-counter': {
-    title: 'Subtitle Word Counter — Count Words in SRT & VTT Files | VideoText',
-    description: 'Count words, characters, and get speaking rate stats (WPM, CPS) from any SRT or VTT subtitle file. Free, browser-based, instant results.',
+    title: 'Count Cues, Words & CPS Before You Quote a Job | VideoText',
+    description:
+      'Upload SRT or VTT for cue count, word total, and CPS per line — scope subtitle editing and catch reading-speed problems before delivery.',
   },
   '/tools/video-script-timer': {
     title: 'Video Script Timer — How Long Will My Video Be? | VideoText',
@@ -475,16 +479,18 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Convert HTML captions or transcript exports to SRT format. Supports data-start timing attributes, TTML-style begin/end attributes, and bracketed timestamps. Free, browser-based.',
   },
   '/tools/ttml-to-srt': {
-    title: 'TTML to SRT Converter — Convert DFXP & EBU-TT Subtitles Free | VideoText',
-    description: 'Convert TTML, DFXP, or EBU-TT subtitle files to SRT format. Used for Netflix, broadcast, and enterprise video workflows. Free, browser-based.',
+    title: 'TTML Won\'t Upload? Convert to SRT for Your NLE | VideoText',
+    description:
+      'Netflix or broadcast delivered TTML/DFXP? Convert to SRT in the browser — timecodes and dialogue preserved. Import into Premiere or run QC.',
   },
   '/subtitle-tools': {
     title: 'Free Subtitle Tools: Convert & Validate | VideoText',
     description: 'Free browser subtitle tools: convert SRT↔VTT, shift timing, validate files, check reading speed and character limits. No account. Nothing uploaded.',
   },
   '/subtitle-resources': {
-    title: 'Subtitle Resources & Standards — Formats, Netflix Rules, CPS Limits | VideoText',
-    description: 'Subtitle format specs, Netflix delivery requirements, platform character limits, reading speed standards, and timing rules — all in one reference guide.',
+    title: 'Subtitle Standards — CPS, CPL & Format Specs | VideoText',
+    description:
+      'Netflix CPS limits, SRT vs VTT syntax, line-length rules, and timing benchmarks — reference before QC or platform upload.',
   },
   '/blog/video-transcription-accuracy-whisper': {
     title: "Whisper AI Transcription Accuracy: What to Expect in 2026 | VideoText",
@@ -658,9 +664,9 @@ const FAQ_SCHEMA_ITEMS = [
   { q: 'How does the free tier work?', a: "Sign up for free (no credit card) to get 3 imports per month. Single language, watermark on subtitle exports. Upgrade any time for more features and batch processing." },
   { q: 'Can I translate subtitles or transcripts?', a: "Yes. Use the Translate Subtitles tool for SRT/VTT files. For transcripts, use the \"Also translate to\" option before starting to get a full translation in 70+ languages." },
   { q: 'What is the maximum video duration?', a: "Free: 30 minutes per video. Pro: 2 hours. To transcribe a longer video, trim or split it into segments before uploading." },
-  { q: 'How do I format a transcript for a client\'s style guide or Rev-type rules?', a: 'Use Format → Client guidelines (/guideline-format). Paste your raw transcript or jump from Video → Transcript with "Make this client-ready →". Pick presets such as Rev, GoTranscript, TranscribeMe, or Scribie, tweak the editable rule cards, or upload PDF/DOCX guidance.' },
+  { q: 'How do I format a transcript for a client\'s style guide or Rev-type rules?', a: 'Use Format → Client guidelines (/rev-style-guide). Paste your raw transcript or jump from Video → Transcript with "Make this client-ready →". Pick presets such as Rev, GoTranscript, TranscribeMe, or Scribie, tweak the editable rule cards, or upload PDF/DOCX guidance.' },
   { q: 'What does "clean verbatim vs full verbatim" mean for freelancers?', a: 'Clean verbatim removes filler words and disfluencies for readability; full verbatim keeps them. Marketplace briefs spell out which variant you owe—see /blog/clean-verbatim-vs-full-verbatim.' },
-  { q: 'What is transcript QA and how does VideoText help before I invoice?', a: 'Transcript QA is the checklist pass against names, glossary, punctuation, timestamps, and style compliance. Produce the text in Video → Transcript, then map platform rules inside /guideline-format so reviewers know what you matched before payout.' },
+  { q: 'What is transcript QA and how does VideoText help before I invoice?', a: 'Transcript QA is the checklist pass against names, glossary, punctuation, timestamps, and style compliance. Produce the text in Video → Transcript, then map platform rules inside /rev-style-guide so reviewers know what you matched before payout.' },
 ]
 
 /** Published dates for blog posts — used for BlogPosting JSON-LD and og:article meta. */

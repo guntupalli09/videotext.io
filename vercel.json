@@ -226,6 +226,16 @@
       "status": 301
     },
     {
+      "src": "/subtitle-resources",
+      "dest": "/subtitle-tools",
+      "status": 301
+    },
+    {
+      "src": "/guideline-format",
+      "dest": "/rev-style-guide",
+      "status": 301
+    },
+    {
       "handle": "filesystem"
     },
     {
