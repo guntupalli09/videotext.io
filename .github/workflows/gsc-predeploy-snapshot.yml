@@ -8,7 +8,13 @@ on:
       branch:
         description: 'Branch to commit snapshot CSVs to'
         required: false
-        default: 'cursor/recover-impressions-qa-cluster-36d1'
+        default: 'main'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/gsc-predeploy-snapshot.yml'
+      - 'scripts/seo/snapshot-gsc-predeploy.ts'
+      - 'scripts/seo/gsc-predeploy-pages.txt'
 
 permissions:
   contents: write
