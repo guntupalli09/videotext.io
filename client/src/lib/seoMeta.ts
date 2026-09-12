@@ -1422,7 +1422,7 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
     featureList: 'Video compression, Light compression, Medium compression, Heavy compression, MP4 output, No quality loss option',
   },
   '/video-to-srt': {
-    name: 'Video to SRT — Free Online Converter',
+    name: 'Video to SRT Converter — Free Online',
     description: 'Convert video to a timed SRT subtitle file online. Upload MP4/MOV/WebM. Whisper large-v3 timestamps. Sign up free — 3 imports/mo; watermark on free exports.',
     featureList: 'Video to SRT conversion, AI timing, Video file upload, Instant download, Files deleted after processing',
   },

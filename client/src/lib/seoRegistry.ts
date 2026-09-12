@@ -1191,10 +1191,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/video-to-srt',
-    title: 'Video to SRT — Convert Video to SRT Free Online | VideoText',
+    title: 'Video to SRT Converter — Free Online | VideoText',
     description:
       'Convert video to SRT online. Upload MP4, MOV, or WebM — download a timed .srt in minutes. Whisper large-v3. Use on YouTube, Vimeo, or any editor.',
-    h1: 'Video to SRT — Free Online Converter',
+    h1: 'Convert Video to SRT Online',
     intro:
       'Convert video to a timed SRT subtitle file — upload MP4/MOV/WebM and download .srt ready for YouTube, Vimeo, or any editor. For the full caption product hub (fix, translate, burn, transcript + summary), use Video to Subtitles. Whisper large-v3. Files deleted after processing. Try 3 free imports this month.',
     breadcrumbLabel: 'Video to SRT',
