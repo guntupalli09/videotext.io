@@ -31,6 +31,12 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://blog.videotext.io/cps-violations-rejected-at-platform-qc</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://blog.videotext.io/descript-alternative</loc>
     <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
@@ -44,6 +50,12 @@
   </url>
   <url>
     <loc>https://blog.videotext.io/fireflies-alternative-transcription</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://blog.videotext.io/fixing-capitalization-punctuation-across-subtitle-file</loc>
     <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
@@ -109,6 +121,12 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://blog.videotext.io/overlapping-subtitle-cues-cause-and-fix</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://blog.videotext.io/real-workflow-behind-qa-review</loc>
     <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
@@ -134,6 +152,12 @@
   </url>
   <url>
     <loc>https://blog.videotext.io/speaker-diarization-problems-nobody-talks-about</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://blog.videotext.io/srt-timings-drift-after-re-encoding</loc>
     <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>

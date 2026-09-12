@@ -26,7 +26,7 @@ const UTILITY_TOOL_EXIT_STEPS = [
   { title: 'Finish on this page', detail: 'Convert, merge, or shift — download the output file when done.' },
   { title: 'Validate', detail: 'Run Subtitle Validator for overlaps, timecodes, and format errors.' },
   { title: 'Auto-fix QC', detail: 'Subtitle Grammar Fixer repairs CPL, CPS, overlaps, and grammar in one pass.' },
-  { title: 'Need SRT from video?', detail: 'Use SRT Generator to transcribe source video with Whisper — same platform.' },
+  { title: 'Need SRT from video?', detail: 'Use Video to SRT to transcribe source video with Whisper — same platform.' },
 ]
 
 /** Shared QC workflow steps — exit is always Subtitle Grammar Fixer. */
@@ -125,7 +125,7 @@ const SUBTITLE_QA_JOURNEYS: Record<string, SeoJourneyBannerData> = {
     primary: { label: 'Validate merged file', href: '/tools/subtitle-validator' },
     secondary: [
       { label: 'Auto-fix QC', href: GRAMMAR_FIXER_EXIT },
-      { label: 'Generate SRT from video', href: '/srt-generator' },
+      { label: 'Convert video to SRT', href: '/video-to-srt' },
     ],
   },
   '/subtitle-line-break-fixer': {
@@ -150,10 +150,10 @@ const SUBTITLE_QA_JOURNEYS: Record<string, SeoJourneyBannerData> = {
 
 export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
   ...SUBTITLE_QA_JOURNEYS,
-  '/srt-generator': {
-    kicker: 'File maker → full caption hub',
+  '/video-to-srt': {
+    kicker: 'Video to SRT → full caption hub',
     title: 'Need more than a .srt download?',
-    body: 'This page is the SRT file generator (video in, timed SRT out). The full product — fix, translate, and burn — lives on Video to Subtitles.',
+    body: 'This page converts video to a timed SRT file. The full product — fix, translate, and burn — lives on Video to Subtitles.',
     primary: { label: 'Open the Video to Subtitles hub', href: '/video-to-subtitles' },
     secondary: [
       { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
@@ -272,7 +272,7 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
     title: 'Browser-local checks + AI SRT generation',
     body: 'Subtitletools.com runs similar free converters in-browser. VideoText adds Whisper SRT generation, translate, burn, and Netflix-style CPL/CPS repair — start with a free check, exit to a core tool.',
     steps: SUBTITLE_QA_STEPS,
-    primary: { label: 'Generate SRT from video', href: '/srt-generator' },
+    primary: { label: 'Convert video to SRT', href: '/video-to-srt' },
     secondary: [
       { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Character limit checker', href: '/tools/subtitle-character-checker' },
@@ -287,7 +287,7 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
     primary: { label: 'Validate shifted file', href: '/tools/subtitle-validator' },
     secondary: [
       { label: 'Auto-fix QC', href: GRAMMAR_FIXER_EXIT },
-      { label: 'Generate SRT from video', href: '/srt-generator' },
+      { label: 'Convert video to SRT', href: '/video-to-srt' },
     ],
   },
   '/tools/srt-to-vtt': {
@@ -298,14 +298,14 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
     primary: { label: 'Validate converted file', href: '/tools/subtitle-validator' },
     secondary: [
       { label: 'Auto-fix QC', href: GRAMMAR_FIXER_EXIT },
-      { label: 'Generate SRT from video', href: '/srt-generator' },
+      { label: 'Convert video to SRT', href: '/video-to-srt' },
     ],
   },
   '/tools/srt-to-text': {
     kicker: 'Extracted text → new SRT?',
     title: 'Need timed captions again?',
     body: 'Plain text from SRT is great for blogs — to republish as captions, regenerate from source video or fix an existing track.',
-    primary: { label: 'Generate SRT from video', href: '/srt-generator' },
+    primary: { label: 'Convert video to SRT', href: '/video-to-srt' },
     secondary: [
       { label: 'Fix existing SRT', href: '/subtitle-grammar-fixer' },
       { label: 'Video to transcript', href: '/video-to-transcript' },

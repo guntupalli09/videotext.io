@@ -87,7 +87,7 @@ export default function VideoMetadataViewer() {
         kicker: 'Have this file ready?',
         title: 'Generate SRT from the same video',
         body: 'You checked duration and resolution — upload the file on Video to SRT for Whisper-timed captions. Files deleted after processing.',
-        primary: { label: 'Generate SRT from video', path: '/srt-generator' },
+        primary: { label: 'Convert video to SRT', path: '/video-to-srt' },
         secondary: [
           { label: 'Full transcript + summary', path: '/video-to-transcript' },
           { label: 'Burn captions', path: '/burn-subtitles' },

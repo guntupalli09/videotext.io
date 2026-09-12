@@ -186,8 +186,8 @@
       "status": 301
     },
     {
-      "src": "/video-to-srt",
-      "dest": "/srt-generator",
+      "src": "/srt-generator",
+      "dest": "/video-to-srt",
       "status": 301
     },
     {

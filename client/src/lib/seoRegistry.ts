@@ -279,7 +279,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Generate subtitles from any video in seconds. Upload your video file and our AI transcribes the speech, aligns every word to a timestamp, and produces a ready-to-use SRT or VTT subtitle file. Upload to YouTube, embed in a web player, or burn directly into the video. Supports 90+ languages. Free tier.',
     breadcrumbLabel: 'Subtitle Generator',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/video-to-transcript', '/translate-subtitles', '/srt-generator', '/burn-subtitles'],
+    relatedSlugs: ['/video-to-transcript', '/translate-subtitles', '/video-to-srt', '/burn-subtitles'],
     indexable: false,
     intentKey: 'subtitle-generator',
     faq: [
@@ -1119,7 +1119,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Generate automatic subtitles for any video in seconds. Upload your video and our AI creates accurate, timed SRT or VTT captions ready for YouTube, web players, or social media. Supports multiple languages. Free tier. Sign up for free to try.',
     breadcrumbLabel: 'Automatic Subtitles',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/video-to-subtitles', '/caption-generator', '/srt-generator'],
+    relatedSlugs: ['/video-to-subtitles', '/caption-generator', '/video-to-srt'],
     indexable: false,
     intentKey: 'automatic-subtitles',
     faq: [
@@ -1190,23 +1190,23 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     ],
   },
   {
-    path: '/srt-generator',
-    title: 'Need an SRT File From Your Video? Generate Here | VideoText',
+    path: '/video-to-srt',
+    title: 'Video to SRT — Convert Video to SRT Free Online | VideoText',
     description:
-      'Upload MP4, MOV, or WebM — download a timed .srt in minutes. Whisper large-v3. Use on YouTube, Vimeo, or any editor.',
-    h1: 'Free SRT File Generator from Video',
+      'Convert video to SRT online. Upload MP4, MOV, or WebM — download a timed .srt in minutes. Whisper large-v3. Use on YouTube, Vimeo, or any editor.',
+    h1: 'Video to SRT — Free Online Converter',
     intro:
-      'Make a timed SRT subtitle file from a video upload — a file maker, not a caption-format converter. Upload MP4/MOV/WebM and download SRT. For the full caption product hub (fix, translate, burn, transcript + summary), use Video to Subtitles. Whisper large-v3. Files deleted after processing. Try 3 free imports this month.',
-    breadcrumbLabel: 'SRT Generator',
+      'Convert video to a timed SRT subtitle file — upload MP4/MOV/WebM and download .srt ready for YouTube, Vimeo, or any editor. For the full caption product hub (fix, translate, burn, transcript + summary), use Video to Subtitles. Whisper large-v3. Files deleted after processing. Try 3 free imports this month.',
+    breadcrumbLabel: 'Video to SRT',
     toolKey: 'video-to-subtitles',
     relatedSlugs: ['/video-to-subtitles', '/translate-subtitles', '/subtitle-tools'],
     indexable: true,
-    intentKey: 'srt-generator',
+    intentKey: 'video-to-srt',
     faq: [
-      { q: 'What is an SRT file generator?', a: 'An SRT file generator (also called an SRT file maker or creator) transcribes speech in a video and writes a timed .srt file. You upload video and download captions ready for YouTube, Vimeo, or an editor.' },
-      { q: 'Is the SRT file generator free?', a: 'Yes. Sign up free for 3 imports per month — no card. Free exports include a watermark; paid plans remove it.' },
+      { q: 'How do I convert video to SRT?', a: 'Upload MP4, MOV, or WebM. VideoText transcribes speech with Whisper large-v3 and writes a timed .srt file. Download and upload to YouTube, Vimeo, or any editor.' },
+      { q: 'Is video to SRT free?', a: 'Yes. Sign up free for 3 imports per month — no card. Free exports include a watermark; paid plans remove it.' },
       { q: 'Does it support multiple languages?', a: 'Yes. Set the spoken language before processing for best accuracy. After you have an SRT, use Translate Subtitles to create versions in 70+ languages without losing timestamps.' },
-      { q: 'Video to SRT vs SRT file generator?', a: 'Same workflow — video in, timed .srt out. This page targets “srt file generator” searches. /video-to-srt redirects here. For the full caption hub, use /video-to-subtitles.' },
+      { q: 'Video to SRT vs SRT file generator?', a: 'Same workflow — video in, timed .srt out. This page is the canonical URL for “video to srt” searches. /srt-generator redirects here. For the full caption hub, use /video-to-subtitles.' },
     ],
   },
   // ── Video translation variants ───────────────────────────────────────────────
@@ -1537,7 +1537,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Generate subtitles automatically from any video. Upload your file and get SRT or VTT with accurate timestamps. No manual typing. Free tier.',
     breadcrumbLabel: 'Auto Subtitle Generator',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/automatic-subtitles', '/video-to-subtitles', '/srt-generator'],
+    relatedSlugs: ['/automatic-subtitles', '/video-to-subtitles', '/video-to-srt'],
     indexable: true,
     intentKey: 'auto-subtitle-generator',
     faq: [
@@ -1585,7 +1585,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Add captions to video online. Upload your file and get SRT or VTT. Burn captions into the video or export for YouTube. No software to install. Free tier.',
     breadcrumbLabel: 'Caption Video Online',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/caption-generator', '/add-subtitles-to-video', '/srt-generator'],
+    relatedSlugs: ['/caption-generator', '/add-subtitles-to-video', '/video-to-srt'],
     indexable: true,
     intentKey: 'caption-video-online',
     faq: [
@@ -1601,7 +1601,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Generate subtitles from any video. Upload MP4, MOV, WebM. Get SRT or VTT with accurate timestamps. Export for YouTube, Vimeo, or any platform. Free tier.',
     breadcrumbLabel: 'Generate Subtitles from Video',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/video-to-subtitles', '/srt-generator'],
+    relatedSlugs: ['/video-to-subtitles', '/video-to-srt'],
     indexable: true,
     intentKey: 'generate-subtitles-from-video',
     faq: [
@@ -3762,7 +3762,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Subtitle Edit is a free Windows desktop application for creating and editing subtitle files. It requires Windows, a local installation, and manual captioning work. VideoText automates the caption generation step: upload your video and get an accurate SRT/VTT subtitle file in minutes with no manual timing work. Then edit the file in Subtitle Edit if needed for fine-tuning. Free tier, browser-based.",
     breadcrumbLabel: 'Subtitle Edit Alternative',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/video-to-subtitles', '/fix-subtitles', '/srt-generator', '/burn-subtitles'],
+    relatedSlugs: ['/video-to-subtitles', '/fix-subtitles', '/video-to-srt', '/burn-subtitles'],
     indexable: true,
     intentKey: 'subtitle-edit-alternative',
     faq: [
@@ -3781,7 +3781,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Vizard is an AI video editing platform focused on repurposing long-form video into short clips, with auto-captions built in. If you need accurate transcription and subtitle export without the full video editing workflow, VideoText is more direct: upload any video, get a speaker-labeled transcript and SRT/VTT file in minutes. Translate to 70+ languages, burn captions, export in multiple formats. Free tier.",
     breadcrumbLabel: 'Vizard Alternative',
     toolKey: 'video-to-transcript',
-    relatedSlugs: ['/video-to-subtitles', '/srt-generator', '/translate-subtitles', '/capcut-alternative'],
+    relatedSlugs: ['/video-to-subtitles', '/video-to-srt', '/translate-subtitles', '/capcut-alternative'],
     indexable: true,
     intentKey: 'vizard-alternative',
     faq: [
@@ -3882,7 +3882,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "YouTube's auto-captions are generated after you upload a video, can take hours to appear, have lower accuracy than Whisper (especially for accents and technical content), and cannot be downloaded as SRT files. VideoText lets you generate accurate SRT captions before uploading to YouTube — upload your video, get a corrected SRT, then upload the SRT directly to YouTube Studio for instant, accurate captions. Free tier.",
     breadcrumbLabel: 'YouTube Auto-Captions Alternative',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/video-to-subtitles', '/fix-subtitles', '/translate-subtitles', '/srt-generator'],
+    relatedSlugs: ['/video-to-subtitles', '/fix-subtitles', '/translate-subtitles', '/video-to-srt'],
     indexable: true,
     intentKey: 'youtube-auto-captions-alternative',
     faq: [
@@ -4106,7 +4106,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       "Movavi is a desktop video editor and converter that includes subtitle editing tools but requires manual subtitle creation. VideoText automates subtitle generation: upload your video and get a Whisper-accurate SRT or VTT file in minutes with no manual timing work. Translate to 70+ languages. Burn captions into video. Free tier.",
     breadcrumbLabel: 'Movavi Alternative',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/video-to-subtitles', '/srt-generator', '/srt-generator', '/subtitle-edit-alternative'],
+    relatedSlugs: ['/video-to-subtitles', '/video-to-srt', '/video-to-srt', '/subtitle-edit-alternative'],
     indexable: true,
     intentKey: 'movavi-alternative',
     faq: [
@@ -4697,7 +4697,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'To create an SRT file correctly, you need the exact block structure: subtitle number, start/end timestamps, subtitle text, then a blank line. This guide covers the manual method with a real format example, common validation mistakes (timing overlaps, bad timestamp separators, missing blank lines), and the faster AI workflow for long videos.',
     breadcrumbLabel: 'How to Create SRT File',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/video-to-subtitles', '/srt-generator', '/srt-generator', '/how-to-add-subtitles-to-mp4'],
+    relatedSlugs: ['/video-to-subtitles', '/video-to-srt', '/video-to-srt', '/how-to-add-subtitles-to-mp4'],
     indexable: true,
     intentKey: 'how-to-create-srt-file',
     tutorialContent: {
@@ -4802,7 +4802,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intro: 'Create subtitles for any video with AI. Upload your video file or upload MP4/MOV and our subtitle maker generates timed SRT and VTT files in seconds. Translate subtitles to 70+ languages. Burn them into your video. Download and upload to YouTube, Vimeo, or any platform. No software to install — free tier available.',
     breadcrumbLabel: 'Subtitle Maker',
     toolKey: 'video-to-subtitles',
-    relatedSlugs: ['/video-to-subtitles', '/caption-generator', '/auto-captions', '/srt-generator'],
+    relatedSlugs: ['/video-to-subtitles', '/caption-generator', '/auto-captions', '/video-to-srt'],
     indexable: true,
     intentKey: 'subtitle-maker',
     canonicalGroup: 'subtitle-generator',
@@ -5836,7 +5836,7 @@ const STATIC_PAGE_LABELS: Record<string, string> = {
 const POPULAR_FOOTER_PATHS: string[] = [
   '/video-to-transcript',
   '/video-to-subtitles',
-  '/srt-generator',
+  '/video-to-srt',
   '/burn-subtitles',
   '/translate-subtitles',
   '/voice-recorder',

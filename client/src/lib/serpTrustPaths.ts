@@ -1,6 +1,6 @@
 /** High-traffic SERP landing pages that show the trust strip (US + global). */
 export const SERP_TRUST_PATHS = new Set([
-  '/srt-generator',
+  '/video-to-srt',
   '/capcut-captions',
   '/translate-subtitles',
   '/video-to-transcript',

@@ -73,9 +73,10 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'caption-generator': '/video-to-subtitles',
   'closed-caption-generator': '/video-to-subtitles',
   'free-subtitle-generator': '/video-to-subtitles',
-  // GSC (Sep 2026): /srt-generator outranked /video-to-srt for the same intent (~12.8k vs ~7.7k impr).
-  // Consolidate video-to-srt → srt-generator (301 + canonical).
-  'video-to-srt': '/srt-generator',
+  // GSC pre-deploy baseline (Sep 2026): /video-to-srt earns same clicks from 62% of impressions vs
+  // /srt-generator (264 vs 258 clicks; 5.08% vs 3.32% CTR). Verb-first URL wins — consolidate
+  // srt-generator → video-to-srt (301 + canonical) before deploy.
+  'srt-generator': '/video-to-srt',
   'translate-video': '/translate-subtitles',
   'video-translation': '/translate-subtitles',
   'bulk-video-transcription': '/video-to-transcript',

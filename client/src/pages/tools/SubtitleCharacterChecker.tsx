@@ -134,7 +134,7 @@ export default function SubtitleCharacterChecker() {
         { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Full caption hub: generate SRT/VTT from video' },
         { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
         { label: 'Burn Subtitles', path: '/burn-subtitles', desc: 'Hardcode the checked file into video' },
-        { label: 'SRT File Generator', path: '/srt-generator', desc: 'Create a timed SRT from video' },
+        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Convert video to a timed SRT file' },
         { label: 'Free Subtitle Tools', path: '/subtitle-tools', desc: 'Converters, timing, validator, and more' },
       ]}
     >
