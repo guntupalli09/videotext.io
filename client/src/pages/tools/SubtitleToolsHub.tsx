@@ -79,9 +79,9 @@ const SUBTITLE_TOOLS = [
 ]
 
 const STANDARDS = [
-  { platform: 'Netflix', cps: '20 (EN)', chars: '42', lines: '2', notes: '17 CPS for most languages' },
+  { platform: 'Netflix', cps: '20 (adult)', chars: '42', lines: '2', notes: '17 CPS for children\'s content (TTSC)' },
   { platform: 'BBC iPlayer', cps: '17', chars: '37', lines: '2', notes: 'EBU R37 compliant' },
-  { platform: 'Amazon Prime', cps: '17', chars: '42', lines: '2', notes: 'Similar to Netflix guidelines' },
+  { platform: 'Amazon Prime', cps: '20', chars: '42', lines: '2', notes: 'Similar to Netflix TTSC' },
   { platform: 'YouTube', cps: 'No limit', chars: 'No limit', lines: '3', notes: 'Auto-captions may wrap' },
   { platform: 'Apple TV+', cps: '17', chars: '40', lines: '2', notes: 'Follows EBU STL spec' },
   { platform: 'Disney+', cps: '17', chars: '42', lines: '2', notes: 'IMSC-1 compatible required' },
@@ -226,7 +226,7 @@ export default function SubtitleToolsHub() {
               { q: 'Are these subtitle tools really free?', a: 'Yes. Converters, timing, validator, reading-speed, and character-limit tools run in your browser. No account and no upload. If you need a new SRT from video, use the SRT file generator or the video to SRT converter (those use the AI workflow and include 3 free imports per month).' },
               { q: 'Do subtitle files get uploaded to a server?', a: 'No. When you use tools like the Subtitle Validator or Shift Timing tool, your file is read by your browser locally using the HTML5 File API. The file content is processed in JavaScript in your browser tab and never leaves your device.' },
               { q: 'What subtitle formats are supported?', a: 'Most tools support SRT (SubRip Text) and VTT (WebVTT) — the two most widely used formats. SRT is universally compatible with editing software and platforms. VTT is the web standard required for HTML5 players. Some tools only accept SRT, so if you have a VTT file, use the VTT to SRT converter first.' },
-              { q: 'How do I check Netflix or YouTube line limits?', a: 'Open the Subtitle Character Limit Checker, upload an SRT or VTT, and pick Netflix (42), YouTube (80), or BBC (37). You get a pass/fail report per cue. Need the file in another language first? Translate Subtitles keeps timestamps intact.' },
+              { q: 'How do I check Netflix or YouTube line limits?', a: 'Open the Subtitle Character Limit Checker, upload an SRT or VTT, and pick Netflix TTSC (42 CPL) or BBC (37). YouTube does not publish a CPL limit — use Wide (80) only as a display-width check. You get a pass/fail report per cue. Need the file in another language first? Translate Subtitles keeps timestamps intact.' },
             ].map(({ q, a }) => (
               <div key={q}>
                 <p className="font-semibold text-gray-900 dark:text-white text-sm mb-1">{q}</p>

@@ -559,14 +559,14 @@ const STATIC_META: RouteMeta[] = [
     path: '/tools/subtitle-reading-speed',
     title: `Subtitle Reading Speed Checker — CPS Analyzer | ${SITE_NAME}`,
     description:
-      'Check every subtitle cue for characters-per-second against Netflix (17 CPS), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
+      'Check every subtitle cue for characters-per-second against Netflix TTSC (20 CPS adult), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
     breadcrumbLabel: 'Reading Speed Checker',
   },
   {
     path: '/tools/subtitle-character-checker',
     title: `Subtitle Character Limits — Pass/Fail | ${SITE_NAME}`,
     description:
-      'Check SRT or VTT line lengths against Netflix (42), YouTube (80), or BBC (37) limits. Instant pass/fail per cue. Free, in-browser, no account.',
+      'Check SRT or VTT line lengths against Netflix TTSC (42 CPL), BBC (37), or a wide 80-character preset. Instant pass/fail per cue. Free, in-browser, no account.',
     h1: 'Check Subtitle Character Limits',
     breadcrumbLabel: 'Character Limit Checker',
   },

@@ -48,7 +48,7 @@ const LIMITS_NOT_INCLUDED = [
   'Does not translate cues; use Translate Subtitles for language versions, then return here for CPS cleanup.',
   'Does not burn captions into video — download SRT/VTT only unless you continue on Burn Subtitles.',
   'Scene-cut warnings need an optional video upload for context; the fixer will not split a cue at a cut without that signal.',
-  'Client-specific CPS targets stricter than 21 char/s (e.g. Netflix 17) may still need manual review after the automatic pass.',
+  'Platform CPS limits stricter than the 21 char/s scan threshold (e.g. Netflix TTSC 20 adult / 17 children) may still need manual review after the automatic pass.',
   'Batch multi-file queues require a paid plan; this page runs one subtitle file per job.',
 ]
 
@@ -59,7 +59,7 @@ const FAQ = [
   },
   {
     q: 'What CPS limit does the scan use?',
-    a: 'Validation flags cues above 21 characters per second and lines longer than 42 characters per row. When Fix timing is on, short cues with too much text get extended toward a 1.5-second minimum where the next cue allows it. Stricter brief limits may need a second pass with the free character checker.',
+    a: 'Validation flags cues above 21 characters per second (EBU-style tool threshold) and lines longer than 42 characters per row (Netflix TTSC CPL). When Fix timing is on, short cues with too much text get extended toward a 1.5-second minimum where the next cue allows it. Netflix TTSC is 20 CPS adult / 17 CPS children — run the free reading-speed checker if your brief requires a stricter ceiling.',
   },
   {
     q: 'Does it accept both SRT and VTT?',

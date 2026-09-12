@@ -40,7 +40,7 @@ URL: https://videotext.io/burn-subtitles
 ### Fix Subtitles (Caption Correction)
 URL: https://videotext.io/fix-subtitles
 - Fix overlapping timestamps
-- Fix reading speed violations (>17 CPS)
+- Fix reading speed violations (tool flags >21 CPS; Netflix TTSC is 20 CPS adult)
 - Fix line length violations
 - Fix formatting errors
 - Works on SRT and VTT from any source
@@ -56,10 +56,10 @@ URL: https://videotext.io/translate-subtitles
 ## Caption Quality Standards
 
 VideoText captions meet these broadcast standards:
-- **Netflix:** ≤42 chars/line, ≤17 CPS, ≤2 lines
-- **YouTube:** ≤80 chars/line, ≤21 CPS
+- **Netflix (TTSC):** ≤42 chars/line, ≤20 CPS adult (≤17 CPS children), ≤2 lines
+- **YouTube:** no published CPL or CPS delivery limits; target ≤20 CPS for readability
 - **BBC:** ≤37 chars/line, ≤17 CPS
-- **EBU R37:** ≤21 CPS
+- **EBU R37:** ≤21 CPS (tool scan threshold)
 
 Free tools to check your captions:
 - [Reading Speed Checker](https://videotext.io/tools/subtitle-reading-speed) — CPS per cue vs Netflix/BBC/EBU

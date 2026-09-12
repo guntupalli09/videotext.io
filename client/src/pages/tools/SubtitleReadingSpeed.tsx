@@ -15,7 +15,7 @@ export default function SubtitleReadingSpeed() {
   const [standard, setStandard] = useState<'netflix' | 'bbc' | 'ebu'>('netflix')
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const limits = { netflix: 17, bbc: 17, ebu: 21 }
+  const limits = { netflix: 20, bbc: 17, ebu: 21 }
   const limit = limits[standard]
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -57,7 +57,7 @@ export default function SubtitleReadingSpeed() {
   return (
     <FreeToolLayout
       title="Subtitle Reading Speed Checker — CPS Analyzer"
-      description="Analyze every subtitle cue's Characters Per Second (CPS) against Netflix (17), BBC (17), and EBU (21) broadcast standards. Instant per-cue pass/fail, free."
+      description="Analyze every subtitle cue's Characters Per Second (CPS) against Netflix TTSC (20 adult), BBC (17), and EBU (21) broadcast standards. Instant per-cue pass/fail, free."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
       moneyCta={{
         kicker: 'CPS fail?',
@@ -80,12 +80,12 @@ export default function SubtitleReadingSpeed() {
             <>
               <p>Different organizations set different CPS limits based on audience research:</p>
               <ul className="list-disc list-inside mt-2 space-y-1.5">
-                <li><strong className="text-gray-900 dark:text-white">Netflix</strong> — maximum 17 CPS for most languages; 20 CPS for Asian character languages</li>
+                <li><strong className="text-gray-900 dark:text-white">Netflix (TTSC)</strong> — 20 CPS for adult programming; 17 CPS for children&apos;s content</li>
                 <li><strong className="text-gray-900 dark:text-white">BBC</strong> — maximum 17 CPS for all content, strict across all programmes</li>
                 <li><strong className="text-gray-900 dark:text-white">EBU (European Broadcasting Union)</strong> — maximum 21 CPS, referenced in EBU-TT and EBU STL specifications</li>
-                <li><strong className="text-gray-900 dark:text-white">Amazon Prime</strong> — follows Netflix-equivalent specs at 17 CPS</li>
+                <li><strong className="text-gray-900 dark:text-white">Amazon Prime</strong> — follows Netflix-equivalent specs (typically 20 CPS adult, 42 CPL)</li>
               </ul>
-              <p className="mt-2">For most content, 17 CPS is the safe target. This tool highlights anything above your chosen standard.</p>
+              <p className="mt-2">The Netflix preset here uses 20 CPS (adult TTSC). Children&apos;s titles need the stricter 17 CPS ceiling — verify against your brief.</p>
             </>
           ),
         },
@@ -93,17 +93,17 @@ export default function SubtitleReadingSpeed() {
       guideTitle="How to check subtitle reading speed"
       guideSteps={[
         { step: 'Upload your SRT or VTT file', desc: 'Click "Choose file" or paste the subtitle content.' },
-        { step: 'Select a broadcast standard', desc: 'Netflix and BBC allow 17 CPS; EBU allows 21 CPS. Netflix is most commonly used for streaming delivery.' },
+        { step: 'Select a broadcast standard', desc: 'Netflix TTSC allows 20 CPS (adult); BBC allows 17 CPS; EBU allows 21 CPS.' },
         { step: 'Review per-cue results', desc: 'Green = readable, Yellow = slightly fast, Red = too fast. Hover any cue to see the text.' },
       ]}
       faqs={[
-        { q: 'What is CPS in subtitles?', a: 'CPS stands for Characters Per Second — how many characters a viewer must read per second. It is: total characters in cue ÷ cue duration in seconds. The broadcast safe limit is 17–21 CPS depending on platform.' },
-        { q: 'What is the maximum CPS for Netflix?', a: 'Netflix limits subtitles to 17 CPS for English and most western languages. Asian languages (Chinese, Japanese, Korean) are allowed up to 20 CPS due to higher information density per character.' },
-        { q: 'What CPS standard should I use for YouTube?', a: 'YouTube has no strict CPS enforcement, but targeting under 20 CPS is recommended for viewer comfort. Use the EBU (21 CPS) standard as a minimum check for YouTube content.' },
+        { q: 'What is CPS in subtitles?', a: 'CPS stands for Characters Per Second — how many characters a viewer must read per second. It is: total characters in cue ÷ cue duration in seconds. Published delivery limits range from 17 CPS (BBC, Netflix kids) to 21 CPS (EBU).' },
+        { q: 'What is the maximum CPS for Netflix?', a: 'Netflix TTSC specifies 20 CPS for adult programming and 17 CPS for children\'s content. The Netflix preset in this tool uses 20 CPS. Always confirm genre and language rules in the current TTSC before delivery.' },
+        { q: 'What CPS standard should I use for YouTube?', a: 'YouTube does not publish or enforce a CPS limit on creator uploads. For readability, many editors target under 20 CPS. Use the EBU (21 CPS) preset as a practical warning threshold, not a YouTube delivery rule.' },
         { q: 'Does space count in CPS?', a: 'Yes. All characters including spaces and punctuation count toward the CPS total. "Hello world" is 11 characters including the space.' },
         { q: 'My subtitles are too fast — how do I fix them?', a: 'Options: extend the cue duration (so CPS drops), shorten the text, or split the cue into two cues. Our AI-powered Fix Subtitles tool can auto-correct reading speed violations.' },
         { q: 'Does reading speed matter for YouTube?', a: 'Yes. Fast subtitles frustrate viewers and hurt audience retention. While YouTube does not reject uploads for high CPS, viewer experience and accessibility are affected. Aim for under 20 CPS for all content.' },
-        { q: 'What is a safe CPS for hearing-impaired viewers?', a: 'Research suggests viewers with hearing impairments read subtitles more slowly on average. BBC and Netflix both use 17 CPS precisely to accommodate this audience. For SDH (Subtitles for the Deaf and Hard of Hearing), always use 17 CPS or lower.' },
+        { q: 'What is a safe CPS for hearing-impaired viewers?', a: 'Research suggests viewers with hearing impairments read subtitles more slowly on average. BBC caps at 17 CPS; Netflix TTSC uses 17 CPS for children\'s content. For SDH (Subtitles for the Deaf and Hard of Hearing), 17 CPS or lower is the safer target regardless of platform.' },
         { q: 'What if a cue has zero duration?', a: 'A zero-duration cue has infinite CPS (division by zero). The tool shows these as errors rather than a numeric CPS value. Fix the timing before delivery.' },
       ]}
       relatedTools={[

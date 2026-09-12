@@ -400,7 +400,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   '/subtitle-character-checker': {
     title: 'Netflix CPL Fail? Check Every Cue for Pass/Fail | VideoText',
     description:
-      'Upload SRT or VTT — instant pass/fail per cue against Netflix (42), BBC (37), or YouTube (80) character limits before QC rejects the file.',
+      'Upload SRT or VTT — instant pass/fail per cue against Netflix TTSC (42 CPL), BBC (37), or a wide 80-character preset before QC rejects the file.',
   },
   '/subtitle-word-counter': {
     title: 'Count Cues, Words & CPS Before You Quote a Job | VideoText',
@@ -426,12 +426,12 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
   },
   '/tools/subtitle-reading-speed': {
     title: 'Subtitle Reading Speed Checker — CPS Analyzer | VideoText',
-    description: 'Check every subtitle cue for characters-per-second against Netflix (17 CPS), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
+    description: 'Check every subtitle cue for characters-per-second against Netflix TTSC (20 CPS adult), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
   },
   '/tools/subtitle-character-checker': {
     title: 'Netflix CPL Fail? Check Every Cue for Pass/Fail | VideoText',
     description:
-      'Upload SRT or VTT — instant pass/fail per cue against Netflix (42), BBC (37), or YouTube (80) character limits before QC rejects the file.',
+      'Upload SRT or VTT — instant pass/fail per cue against Netflix TTSC (42 CPL), BBC (37), or a wide 80-character preset before QC rejects the file.',
   },
   '/tools/subtitle-word-counter': {
     title: 'Count Cues, Words & CPS Before You Quote a Job | VideoText',

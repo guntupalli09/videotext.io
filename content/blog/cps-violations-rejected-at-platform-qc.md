@@ -38,7 +38,7 @@ Example:
 We're going to need additional authorization from compliance.
 ```
 
-52 characters ÷ 1.2 s ≈ **43 CPS**. Many platforms cap between 17 and 21 CPS for adult programming.
+52 characters ÷ 1.2 s ≈ **43 CPS**. Netflix TTSC caps adult programming at **20 CPS**; EBU guidance allows up to **21 CPS** as a warning threshold.
 
 ---
 
@@ -46,13 +46,13 @@ We're going to need additional authorization from compliance.
 
 Always read the **current** client brief — these numbers shift by genre and service tier:
 
-- **Netflix** — often cited around **17 CPS** maximum for most languages; stricter for kids. CPL commonly **42** per line, **84** per cue (two lines).
+- **Netflix (TTSC)** — **20 CPS** for adult programming; **17 CPS** for children's content. CPL **42** per line, **84** per cue (two lines).
 - **BBC / Ofcom-style** — **17 CPS** guidance for live and pre-recorded; emphasis on readable minimum display **1.5 s** for short cues.
-- **Amazon Prime / studio deliverables** — frequently **20–21 CPS** in QC tooling; CPL **42**.
-- **YouTube auto-captions** — no hard upload CPS gate for creator uploads, but **readability** complaints map to the same math; many internal QC tools use **21 CPS** as a warning threshold.
+- **Amazon Prime / studio deliverables** — Netflix-equivalent specs: typically **20 CPS** adult; CPL **42**.
+- **YouTube** — no published CPS or CPL delivery limits for creator uploads; **readability** still matters — many editors target under **20 CPS** and use **21 CPS** as an internal warning threshold.
 - **SDH broadcast US** — **15–20 CPS** depending on network; children's lower.
 
-Your validator might use 21 CPS as a **warning** and 17 as a **fail**. Know which side of that gap your file sits on before submission.
+VideoText's fixer scan uses **21 CPS** as an EBU-style warning threshold — not Netflix's delivery spec. Netflix TTSC fails at **20 CPS** (adult) or **17 CPS** (children). Know which ceiling your brief requires before submission.
 
 ---
 
@@ -126,7 +126,7 @@ Sort by CPS descending; fix the top twenty offenders first — usually clears 80
 
 A feature-length file with **400 CPS warnings** needs iterative extend-split-wrap. Each extension checks the neighbor; each split re-indexes cues. Do that by hand and you will introduce overlaps in act three.
 
-Automated repair follows the same order a senior QC tech uses: fix overlaps first, extend durations where the timeline allows, wrap lines over 42 characters. Upload the rejected file to the [subtitle grammar fixer](https://videotext.io/subtitle-grammar-fixer), enable **Fix timing** and **Line breaks (CPL)**, and download the corrected track. Re-run your CPS report — cues still above a **client-specific** 17 CPS ceiling need human splits or approved rewrites, but the bulk mechanical work should drop from hours to minutes.
+Automated repair follows the same order a senior QC tech uses: fix overlaps first, extend durations where the timeline allows, wrap lines over 42 characters. Upload the rejected file to the [subtitle grammar fixer](https://videotext.io/subtitle-grammar-fixer), enable **Fix timing** and **Line breaks (CPL)**, and download the corrected track. Re-run your CPS report against the correct platform preset — cues still above **20 CPS** (Netflix adult) or **17 CPS** (children/BBC) need human splits or approved rewrites, but the bulk mechanical work should drop from hours to minutes.
 
 ---
 
